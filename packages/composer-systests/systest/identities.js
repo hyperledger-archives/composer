@@ -31,7 +31,10 @@ chai.use(require('chai-as-promised'));
 process.setMaxListeners(Infinity);
 
 describe('Identity system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
     let participant;
@@ -52,6 +55,7 @@ describe('Identity system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-identities')
@@ -59,6 +63,10 @@ describe('Identity system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     beforeEach(() => {

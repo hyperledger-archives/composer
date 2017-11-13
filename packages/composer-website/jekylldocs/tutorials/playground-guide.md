@@ -14,17 +14,17 @@ In this step by step tutorial we'll walk through setting up a business network, 
 
 ## Step One: Open the {{site.data.conrefs.composer_full}} Playground
 
-Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Wallet** screen. The **My Wallet** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
+Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Business Network** screen. The **My Business Network** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
 
 ## Step Two: Creating a new business network
 
 Next, we want to create a new business network from scratch. A business network has a couple of defining properties; a name, and an optional description. You can also choose to base a new business network on an existing template, or import your own template.
 
-1. Click **Deploy a new business network** under the Web Profile heading to get started.
+1. Click **Deploy a new business network** under the Web Browser heading to get started.
 
 2. The new business network needs a name, let's call it `tutorial-network`.
 
-3. Optionally, you can put in a network description.
+3. Optionally, you can enter a description for your business network.
 
 4. Next we must select a business network to base ours on, because we want to build the network from scratch, click **empty-business-network**.
 
@@ -37,11 +37,11 @@ Next, we want to create a new business network from scratch. A business network 
 
 ## Step Three: Connecting to the business network
 
-Now that we've created and deployed the business network, you should see a new ID card called _admin_ for our business network _tutorial-network_ in your wallet. The wallet can contain ID cards to connect to multiple deployed business networks.
+Now that we've created and deployed the business network, you should see a new business network card called _admin_ for our business network _tutorial-network_ in your wallet. The wallet can contain business network cards to connect to multiple deployed business networks.
 
-When connecting to an external blockchain, ID cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.
+When connecting to an external blockchain, business network cards represent everything necessary to connect to a business network. They include connection details, authentication material, and metadata.
 
-To connect to our business network click **Connect now** under our ID card.
+To connect to our business network click **Connect now** under our business network card.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_2.mp4" type="video/mp4" />
@@ -114,47 +114,19 @@ For more information on writing transaction processor functions, check our [docu
       This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
 
-## Step Six: Adding an access control file
+## Step Six: Access control
 
-Access control files define the access control rules for business networks. Our network is simple, so we just want some basic rules to allow us full access.
+Access control files define the access control rules for business networks. Our network is simple, so the default access control file doesn't need editing. The basic file gives the current participant `networkAdmin` full access to business network and system-level operations.
 
 While you can have multiple model or script files, you can only have one access control file in any business network.
 
 For more information on access control files, check our [documentation](../reference/acl_language.html).
 
-
-1. Click the **Add a file** button.
-
-2. Click the **Access Control file** and click **Add**.
-
-3. Delete the lines of code in the access control file and replace it with the following code:
-
-        /**
-         * Access control rules for mynetwork
-         */
-        rule Default {
-            description: "Allow all participants access to all resources"
-            participant: "ANY"
-            operation: ALL
-            resource: "org.acme.mynetwork.*"
-            action: ALLOW
-        }
-
-        rule SystemACL {
-          description:  "System ACL to permit all access"
-          participant: "org.hyperledger.composer.system.Participant"
-          operation: ALL
-          resource: "org.hyperledger.composer.system.**"
-          action: ALLOW
-        }
-
-      This access control rule allows all participants to access all business network resources, and allows all users to have system access control privileges.
-
 ## Step Seven: Deploying the updated business network
 
-Now that we've created our model, script, and access control files, we need to deploy and test our business network.
+Now that we have model, script, and access control files, we need to deploy and test our business network.
 
-Click **Update** to deploy our new model, script, and transaction script files.
+Click **Update** to deploy the changes to our business network.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
@@ -235,7 +207,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
 
 Now that we have two _Traders_ and a _Commodity_ to trade between them, we can test our _Trade_ transaction.
 
-Transactions are the basis of all change in a {{site.data.conrefs.composer_full}} business network, if you want to experiment with your own after this tutorial, try creating another business network from the **My Wallet** screen and using a more advanced business network template.
+Transactions are the basis of all change in a {{site.data.conrefs.composer_full}} business network, if you want to experiment with your own after this tutorial, try creating another business network from the **My Business Network** screen and using a more advanced business network template.
 
 To test the _Trade_ transaction:
 
@@ -254,13 +226,19 @@ To test the _Trade_ transaction:
 
 4. Click **Submit**.
 
-5. To check that our asset has changed ownership from `TRADER1` to `TRADER2`, click the **Commodity** tab, and expand the data section for the asset. You should see that the owner is listed as `resource:org.acme.mynetwork.Trader#TRADER2`.
+5. Check that our asset has changed ownership from `TRADER1` to `TRADER2`, by expanding the data section for the asset. You should see that the owner is listed as `resource:org.acme.mynetwork.Trader#TRADER2`.
 
 6. To view the full transaction history of our business network, click **All Transactions** on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the _Trader_ participants and the _Commodity_ asset, are recorded as transactions, even though they're not defined as transactions in our business network model. These transactions are known as 'System Transactions' and are common to all business networks, and defined in the {{site.data.conrefs.composer_full}} Runtime.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
 </video>
+
+## Logging out of the business network
+
+Now that transactions have successfully run, we should log out of the business network, ending up at the **My Business Network** screen where we started.
+
+1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **My Business Networks**.
 
 ## What next?
 

@@ -19,7 +19,7 @@ It's worth highlighting that the style of the API is to use promises. Typically 
 
 If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea.
 
-##  Modules required
+## Modules required
 
 ```javascript
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
@@ -87,10 +87,10 @@ this.titlesRegistry.addAll([landTitle1, landTitle2]);
 This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a 'participant', the getParticipantRegistry API is used.
 
 ```javascript
-    this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
-      .then((personRegistry) => {
-          return personRegistry.add(owner);
-      })
+this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
+  .then((personRegistry) => {
+      return personRegistry.add(owner);
+  })
 ```
 
 ##Listing assets in a regsitry
@@ -177,5 +177,5 @@ What we need to do here is create a 'serializer'.  This is able to create a reso
 
 ## References
 
-* [**JavaScript API Documentation**](../jsdoc/index.html)
+* [**JavaScript API Documentation**](../api/api-doc-index.html)
 * [**Promises tutorial**](https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics)

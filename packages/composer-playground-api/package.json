@@ -1,10 +1,10 @@
 {
   "name": "composer-playground-api",
-  "version": "0.13.0",
+  "version": "0.15.1",
   "description": "The REST API for the Hyperledger Composer Playground",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "bin": {
     "composer-playground-api": "cli.js"
@@ -45,29 +45,29 @@
     "logError": true
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-http": "^3.0.0",
-    "eslint": "^3.17.1",
-    "jsdoc": "^3.4.3",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "nyc": "^11.1.0",
-    "proxyquire": "^1.7.11",
-    "sinon": "^2.3.8"
+    "chai": "3.5.0",
+    "chai-http": "3.0.0",
+    "eslint": "3.17.1",
+    "jsdoc": "3.5.5",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "proxyquire": "1.7.11",
+    "sinon": "2.3.8"
   },
   "dependencies": {
-    "async": "^2.5.0",
-    "body-parser": "^1.17.0",
-    "composer-common": "0.13.0",
-    "composer-connector-server": "0.13.0",
-    "dotenv": "^4.0.0",
-    "express": "^4.15.2",
-    "http-status": "^1.0.1",
-    "npm-registry-client": "^8.4.0",
-    "request": "^2.81.0",
-    "semver": "^5.3.0",
-    "socket.io": "^1.7.3",
-    "tar": "^3.1.5"
+    "async": "2.5.0",
+    "body-parser": "1.17.0",
+    "composer-common": "0.15.1",
+    "composer-connector-server": "0.15.1",
+    "dotenv": "4.0.0",
+    "express": "4.15.2",
+    "http-status": "1.0.1",
+    "npm-registry-client": "8.4.0",
+    "request": "2.81.0",
+    "semver": "5.3.0",
+    "socket.io": "1.7.3",
+    "tar": "3.1.5"
   },
   "nyc": {
     "exclude": [

@@ -7,6 +7,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const BrowserFS = require('browserfs/dist/node/index');
 const bfs_fs = BrowserFS.BFSRequire('fs');
+const IdCard = require('composer-common').IdCard;
 
 describe('hyperledger-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
 
@@ -16,7 +17,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
         const adminConnection = new AdminConnection({ fs: bfs_fs });
         return adminConnection.createProfile('generatorProfile',{type : 'embedded'})
         .then(() => {
-            return adminConnection.connect('generatorProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('generatorProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             const banana = fs.readFileSync(path.resolve(__dirname+'/data/', 'digitalPropertyNetwork.bna'));
@@ -24,6 +25,10 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
+        })
+        .then(() => {
+            const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@digitalproperty-network', idCard);
         })
         .then(() => {
             return helpers.run(path.join(__dirname, '../generators/angular'))
@@ -37,10 +42,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
                 appDescription: 'A digitalPropertyNetwork application',
                 authorName: 'TestUser',
                 authorEmail: 'TestUser@TestApp.com',
-                networkIdentifier: 'digitalproperty-network',
-                connectionProfileName: 'generatorProfile',
-                enrollmentId: 'admin',
-                enrollmentSecret: 'Xurw3yU9zI0l',
+                cardName: 'admin@digitalproperty-network',
                 apiServer: 'generate',
                 apiPort: 3000,
                 apiNamespace: 'always'

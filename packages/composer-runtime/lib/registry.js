@@ -67,19 +67,22 @@ class Registry extends EventEmitter {
     getAll() {
         return this.dataCollection.getAll()
             .then((objects) => {
-                return objects.map((object) => {
-                    object = Registry.removeInternalProperties(object);
-                    return this.serializer.fromJSON(object);
-                }).reduce((promise, resource) => {
-                    return promise.then((resources) => {
-                        return this.accessController.check(resource, 'READ')
+                return objects.reduce((promiseChain, resource) => {
+                    return promiseChain.then((newResources) => {
+                        let object = Registry.removeInternalProperties(resource);
+                        try {
+                            let resourceToCheckAccess = this.serializer.fromJSON(object);
+                            return this.accessController.check(resourceToCheckAccess, 'READ')
                             .then(() => {
-                                resources.push(resource);
-                                return resources;
-                            })
-                            .catch((error) => {
-                                return resources;
+                                newResources.push(resourceToCheckAccess);
+                                return newResources;
+                            }).catch((e) => {
+                                return newResources;
                             });
+                        } catch (err) {
+                            return newResources;
+                        }
+
                     });
                 }, Promise.resolve([]));
             });
@@ -153,7 +156,7 @@ class Registry extends EventEmitter {
      * with an error.
      */
     addAll(resources, options) {
-        options = options || { forceAdd : false };
+        options = options || { forceAdd: false };
         return resources.reduce((result, resource) => {
             return result.then(() => {
                 return this.add(resource, options);
@@ -172,9 +175,19 @@ class Registry extends EventEmitter {
      * with an error.
      */
     add(resource, options) {
-        return this.accessController.check(resource, 'CREATE')
+
+        return Promise.resolve().then(() => {
+            if (!(resource instanceof Resource)) {
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+            }
+        })
             .then(() => {
-                options = options || { forceAdd : false };
+                return this.accessController.check(resource, 'CREATE');
+            })
+            .then(() => {
+                options = options || { forceAdd: false };
                 let id = resource.getIdentifier();
                 let object = this.serializer.toJSON(resource, {
                     convertResourcesToRelationships: options.convertResourcesToRelationships
@@ -228,13 +241,22 @@ class Registry extends EventEmitter {
      * with an error.
      */
     update(resource, options) {
-        options = options || {};
-        let id = resource.getIdentifier();
-        let object = this.serializer.toJSON(resource, {
-            convertResourcesToRelationships: options.convertResourcesToRelationships
-        });
-        object = this.addInternalProperties(object);
-        return this.dataCollection.get(id)
+        let id;
+        let object;
+
+        return Promise.resolve().then(() => {
+            if (!(resource instanceof Resource)) {
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot update type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+            }
+            options = options || {};
+            id = resource.getIdentifier();
+            object = this.serializer.toJSON(resource, {
+                convertResourcesToRelationships: options.convertResourcesToRelationships                });                object = this.addInternalProperties(object);
+
+            return this.dataCollection.get(id);
+        })
             .then((oldResource) => {
                 return this.serializer.fromJSON(oldResource);
             })

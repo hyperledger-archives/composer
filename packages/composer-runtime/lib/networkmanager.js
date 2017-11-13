@@ -14,13 +14,13 @@
 
 'use strict';
 
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Context = require('./context');
+const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const TransactionHandler = require('./transactionhandler');
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+
 const LOG = Logger.getLog('IdentityManager');
-const createHash = require('sha.js');
-
-
 
 /**
  * A class for managing networks.
@@ -37,10 +37,63 @@ class NetworkManager extends TransactionHandler {
 
         LOG.info('<ResourceManager>', 'Binding in the tx names and impl');
         this.bind(
+            'org.hyperledger.composer.system.StartBusinessNetwork',
+            this.startBusinessNetwork
+        );
+        this.bind(
             'org.hyperledger.composer.system.UpdateBusinessNetwork',
             this.updateBusinessNetwork
         );
+        this.bind(
+            'org.hyperledger.composer.system.ResetBusinessNetwork',
+            this.resetBusinessNetwork
+        );
+        this.bind(
+            'org.hyperledger.composer.system.SetLogLevel',
+            this.setLogLevel
+        );
+    }
 
+    /**
+     * Set the log level for the runtime.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    setLogLevel(api, transaction) {
+        const method = 'setLogLevel';
+        LOG.entry(method, transaction);
+        let dataService = this.context.getDataService();
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = this.context.getSerializer().fromJSON(result);
+                return this.context.getAccessController().check(resource, 'UPDATE');
+            })
+            .then(() => {
+                return this.context.getLoggingService().setLogLevel(transaction.newLogLevel);
+            });
+
+
+    }
+
+    /**
+     * Start the business network archive.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    startBusinessNetwork(api, transaction) {
+        const method = 'startBusinessNetwork';
+        LOG.entry(method, transaction);
+        LOG.exit(method);
+        return Promise.resolve();
     }
 
     /**
@@ -51,16 +104,8 @@ class NetworkManager extends TransactionHandler {
      * with an error.
      */
     updateBusinessNetwork(api, transaction) {
-
         const method = 'updateBusinessNetwork';
         LOG.entry(method, transaction);
-
-        const Context = require('./context');
-        // if (args.length !== 1) {
-        //     LOG.error(method, 'Invalid arguments', args);
-        //     throw new Error('Inavblid arguements');
-        //     //util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive'])
-        // }
         let dataService = this.context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
         let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
@@ -144,6 +189,77 @@ class NetworkManager extends TransactionHandler {
                 LOG.exit(method);
             });
 
+    }
+
+    /**
+     * Reset the business network by clearing all data.
+     * @param {api} api The request context.
+     * @param {Transaction} transaction The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    resetBusinessNetwork(api, transaction) {
+        const method = 'resetBusinessNetwork';
+        LOG.entry(method, transaction);
+        let dataService = this.context.getDataService();
+
+        let sysdata, resource;
+        return dataService.getCollection('$sysdata')
+            .then((result) => {
+                sysdata = result;
+                return sysdata.get('metanetwork');
+            })
+            .then((result) => {
+                resource = this.context.getSerializer().fromJSON(result);
+                return this.context.getAccessController().check(resource, 'UPDATE');
+            })
+            .then( ()=>{
+                return this._resetRegistries( 'Asset');
+            })
+            .then(() => {
+                return this._resetRegistries( 'Participant');
+            })
+            .then(() => {
+                return this._resetRegistries( 'Transaction');
+            })
+            .then ( ()=> {
+                // force creation of defaults as we know the don't exist
+                // Create all other default registries.
+                LOG.debug(method, 'Creating default registries');
+                let registryManager = this.context.getRegistryManager();
+                return registryManager.createDefaults(true);
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Reset all registries of the specified type by clearing all data.
+     * @param {String} type of the registry to reset
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    _resetRegistries(type) {
+        const method = '_resetRegistries';
+        LOG.entry(method, type);
+        let registryManager = this.context.getRegistryManager();
+        return registryManager.getAll(type)
+            .then((registries) => {
+                return registries.reduce((promise, registry) => {
+                    return promise.then(() => {
+                        if (registry.system) {
+                            LOG.debug(method, 'Not removing system registry', type, registry.id);
+                            return;
+                        }
+                        LOG.debug(method, 'Removing registry', type, registry.id);
+                        return registryManager.remove(type, registry.id);
+                    });
+                }, Promise.resolve());
+            })
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
 }

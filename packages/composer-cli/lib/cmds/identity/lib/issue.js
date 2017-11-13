@@ -15,6 +15,7 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
+const Create = require('../../card/lib/create');
 
 /**
  * <p>
@@ -23,7 +24,7 @@ const cmdUtil = require('../../utils/cmdutils');
  * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
-class Issue {
+class IssueCard {
 
   /**
     * Command process for deploy command
@@ -32,50 +33,40 @@ class Issue {
     */
     static handler(argv) {
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
+        let issuingCard;
+        let cardName = argv.card;
         let newUserId = argv.newUserId;
         let participantId = argv.participantId;
         let issuer = !!argv.issuer;
 
-        return (() => {
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
-        })
-        .then(() => {
-            let issueOptions = cmdUtil.parseOptions(argv);
-            issueOptions.issuer = issuer;
-            return businessNetworkConnection.issueIdentity(participantId, newUserId, issueOptions);
-        })
-        .then((result) => {
-            console.log(`An identity was issued to the participant '${participantId}'`);
-            console.log('The participant can now connect to the business network with the following details:');
-            console.log(`  userID = ${result.userID}`);
-            console.log(`  userSecret = ${result.userSecret}`);
-        });
+        return Promise.resolve()
+            .then(() => {
+
+                return cmdUtil.createAdminConnection().exportCard(cardName);
+            })
+            .then((result) =>{
+                issuingCard = result;
+                businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+                return businessNetworkConnection.connect(cardName);
+            })
+            .then(() => {
+                let issueOptions = cmdUtil.parseOptions(argv);
+                issueOptions.issuer = issuer;
+                return businessNetworkConnection.issueIdentity(participantId, newUserId, issueOptions);
+            })
+            .then((result) => {
+                let metadata= {
+                    userName : result.userID,
+                    version : 1,
+                    enrollmentSecret: result.userSecret,
+                    businessNetwork : issuingCard.getBusinessNetworkName()
+                };
+
+                // re-use the logic in the create command to create the id card
+                return Create.createCard(metadata,issuingCard.getConnectionProfile(),argv);
+            });
     }
 
 }
 
-module.exports = Issue;
+module.exports = IssueCard;

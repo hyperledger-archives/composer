@@ -19,11 +19,8 @@ const Submit = require ('./lib/submit.js');
 module.exports.command = 'submit [options]';
 module.exports.describe = 'Submit a transaction to a business network';
 module.exports.builder = {
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' },
-    data: { alias: 'd', required: true, describe: 'Transactions JSON object as a string', type: 'string' }
+    data: { alias: 'd', required: true, describe: 'Transactions JSON object as a string', type: 'string' },
+    card: { alias: 'c', required: false, description: 'The cardname to use to connect to the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

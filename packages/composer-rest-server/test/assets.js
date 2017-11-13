@@ -18,6 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
 
@@ -61,21 +62,21 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             ISINCode: 'ISIN_2',
             bond: {
                 $class: 'org.acme.bond.Bond',
-                dayCountFraction: 'EOM',
+                dayCountFraction: 'EOY',
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 2000,
                 instrumentId: [
                     'BobCorp'
                 ],
-                issuer: 'resource:org.acme.bond.Issuer#1',
-                maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                issuer: 'resource:org.acme.bond.Issuer#2',
+                maturity: '2018-12-27T21:03:52.000Z',
+                parValue: 2000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
-                    period: 'MONTH',
-                    periodMultiplier: 6
+                    period: 'YEAR',
+                    periodMultiplier: 1
                 }
             }
         }, {
@@ -87,13 +88,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 3000,
                 instrumentId: [
                     'CharlieCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#1',
                 maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                parValue: 3000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
@@ -109,13 +110,13 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 exchangeId: [
                     'NYSE'
                 ],
-                faceAmount: 1000,
+                faceAmount: 4000,
                 instrumentId: [
                     'DogeCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#1',
                 maturity: '2018-02-27T21:03:52.000Z',
-                parValue: 1000,
+                parValue: 4000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
                     period: 'MONTH',
@@ -128,6 +129,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let businessNetworkConnection;
         let assetRegistry;
         let serializer;
+        let idCard;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -136,7 +138,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 type : 'embedded'
             })
             .then(() => {
-                return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -146,11 +148,12 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.deploy(businessNetworkDefinition);
             })
             .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard('admin@bond-network', idCard);
+            })
+            .then(() => {
                 return server({
-                    connectionProfileName: 'defaultProfile',
-                    businessNetworkIdentifier: 'bond-network',
-                    participantId: 'admin',
-                    participantPwd: 'adminpw',
+                    card: 'admin@bond-network',
                     fs: bfs_fs,
                     namespaces: namespaces
                 });
@@ -158,7 +161,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then((result) => {
                 app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');

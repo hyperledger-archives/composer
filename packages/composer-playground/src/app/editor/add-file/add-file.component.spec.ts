@@ -22,8 +22,7 @@ import { ClientService } from '../../services/client.service';
 import * as sinon from 'sinon';
 
 import { expect } from 'chai';
-
-const fs = require('fs');
+import { FileService } from '../../services/file.service';
 
 class MockAdminService {
     ensureConnection(): Promise<any> {
@@ -66,16 +65,16 @@ describe('AddFileComponent', () => {
     let mockModelManager;
     let mockScriptManager;
     let mockAclManager;
-    let mockClientService;
     let mockSystemModelFile;
     let mockSystemAsset;
     let mockAclFile;
     let mockQueryManager;
     let mockQueryFile;
+    let mockFileService;
 
     beforeEach(() => {
 
-        mockClientService = sinon.createStubInstance(ClientService);
+        mockFileService = sinon.createStubInstance(FileService);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -89,7 +88,7 @@ describe('AddFileComponent', () => {
             providers: [
                 {provide: AdminService, useClass: MockAdminService},
                 {provide: AlertService, useClass: MockAlertService},
-                {provide: ClientService, useValue: mockClientService},
+                {provide: FileService, useValue: mockFileService},
                 NgbActiveModal
             ]
         });
@@ -278,7 +277,7 @@ describe('AddFileComponent', () => {
         it('should create a new script file', async(() => {
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns('newfile.js');
-            mockClientService.createScriptFile.returns(mockScript);
+            mockFileService.createScriptFile.returns(mockScript);
 
             let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.js');
@@ -288,7 +287,7 @@ describe('AddFileComponent', () => {
 
             // Assertions
             component.fileType.should.equal('js');
-            mockClientService.createScriptFile.calledWith(file.name, 'JS', file.toString());
+            mockFileService.createScriptFile.calledWith(file.name, 'JS', file.toString());
             component.currentFile.should.deep.equal(mockScript);
             component.currentFileName.should.equal(mockScript.getIdentifier());
         }));
@@ -298,7 +297,7 @@ describe('AddFileComponent', () => {
             component.addScriptFileName = fileName;
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns(fileName);
-            mockClientService.createScriptFile.returns(mockScript);
+            mockFileService.createScriptFile.returns(mockScript);
 
             let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
             let file = new File([b], '');
@@ -308,7 +307,7 @@ describe('AddFileComponent', () => {
 
             // Assertions
             component.fileType.should.equal('js');
-            mockClientService.createScriptFile.calledWith(fileName, 'JS', file.toString());
+            mockFileService.createScriptFile.calledWith(fileName, 'JS', file.toString());
             component.currentFile.should.deep.equal(mockScript);
             component.currentFileName.should.equal(mockScript.getIdentifier());
             component.currentFileName.should.equal(fileName);
@@ -324,14 +323,14 @@ describe('AddFileComponent', () => {
             let file = new File([b], 'newfile.cto');
             let dataBuffer = new Buffer('/**CTO File**/ namespace test');
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), 'models/' + file.name);
-            mockClientService.createModelFile.returns(mockModel);
+            mockFileService.createModelFile.returns(mockModel);
 
             // Run method
             component.createModel(file, dataBuffer);
 
             // Assertions
             component.fileType.should.equal('cto');
-            mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), 'models/' + file.name);
+            mockFileService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), 'models/' + file.name);
             component.currentFile.should.deep.equal(mockModel);
             component.currentFileName.should.equal(mockModel.getName());
         }));
@@ -346,14 +345,14 @@ describe('AddFileComponent', () => {
             let file = new File([b], '');
             let dataBuffer = new Buffer('/**CTO File**/ namespace test');
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), fileName);
-            mockClientService.createModelFile.returns(mockModel);
+            mockFileService.createModelFile.returns(mockModel);
 
             // Run method
             component.createModel(null, dataBuffer);
 
             // Assertions
             component.fileType.should.equal('cto');
-            mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), fileName);
+            mockFileService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), fileName);
             component.currentFile.should.deep.equal(mockModel);
             component.currentFileName.should.equal(mockModel.getName());
             component.currentFileName.should.equal(fileName);
@@ -365,14 +364,14 @@ describe('AddFileComponent', () => {
             let dataBuffer = new Buffer('/**RULE File**/ all the rules');
             let filename = 'permissions.acl';
             let mockRuleFile = sinon.createStubInstance(AclFile);
-            mockClientService.createAclFile.returns(mockRuleFile);
+            mockFileService.createAclFile.returns(mockRuleFile);
 
             // Run method
             component.createRules(dataBuffer);
 
             // Assertions
             component.fileType.should.equal('acl');
-            mockClientService.createAclFile.should.have.been.calledWith(filename, dataBuffer.toString());
+            mockFileService.createAclFile.should.have.been.calledWith(filename, dataBuffer.toString());
             component.currentFile.should.deep.equal(mockRuleFile);
             component.currentFileName.should.equal(filename);
         }));
@@ -382,14 +381,14 @@ describe('AddFileComponent', () => {
         it('should create a new query file named queries.qry', async(() => {
             let dataBuffer = new Buffer('/**QUERY File**/ query things');
             let filename = 'queries.qry';
-            mockClientService.createQueryFile.returns(mockQueryFile);
+            mockFileService.createQueryFile.returns(mockQueryFile);
 
             // Run method
             component.createQuery(dataBuffer);
 
             // Assertions
             component.fileType.should.equal('qry');
-            mockClientService.createQueryFile.should.have.been.calledWith(filename, dataBuffer.toString());
+            mockFileService.createQueryFile.should.have.been.calledWith(filename, dataBuffer.toString());
             component.currentFile.should.deep.equal(mockQueryFile);
             component.currentFileName.should.equal(filename);
         }));
@@ -414,15 +413,15 @@ describe('AddFileComponent', () => {
         it('should set current file to a script file, created by calling createScript with correct parameters', async(() => {
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns('lib/script.js');
-            mockClientService.getScripts.returns([]);
-            mockClientService.createScriptFile.returns(mockScript);
+            mockFileService.getScripts.returns([]);
+            mockFileService.createScriptFile.returns(mockScript);
             component.fileType = 'js';
 
             // Run method
             component.changeCurrentFileType();
 
             // Assertions
-            mockClientService.createScriptFile.getCall(0).args[0].should.equal('lib/script.js');
+            mockFileService.createScriptFile.getCall(0).args[0].should.equal('lib/script.js');
         }));
 
         it('should increment a script file name if one already exists', async(() => {
@@ -432,8 +431,8 @@ describe('AddFileComponent', () => {
             mockScript.getIdentifier.returns('lib/script.js');
             mockScript0.getIdentifier.returns('lib/script0.js');
             mockScript1.getIdentifier.returns('lib/script1.js');
-            mockClientService.getScripts.returns([mockScript, mockScript0, mockScript1]);
-            mockClientService.createScriptFile.returns(mockScript);
+            mockFileService.getScripts.returns([mockScript, mockScript0, mockScript1]);
+            mockFileService.createScriptFile.returns(mockScript);
 
             component.fileType = 'js';
 
@@ -441,11 +440,11 @@ describe('AddFileComponent', () => {
             component.changeCurrentFileType();
 
             // Assertions
-            mockClientService.createScriptFile.getCall(0).args[0].should.equal('lib/script2.js');
+            mockFileService.createScriptFile.getCall(0).args[0].should.equal('lib/script2.js');
         }));
 
         it('should change this.currentFileType to a cto file', async(() => {
-            mockClientService.getModelFiles.returns([]);
+            mockFileService.getModelFiles.returns([]);
             let b = new Blob(
                 [`/**
  * New model file
@@ -461,7 +460,7 @@ namespace org.acme.model`],
 
 namespace org.acme.model`);
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
-            mockClientService.createModelFile.returns(mockModel);
+            mockFileService.createModelFile.returns(mockModel);
             component.fileType = 'cto';
 
             // Run method
@@ -491,7 +490,7 @@ namespace org.acme.model`);
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
 
             // One element, so the number 0 should be appended
-            mockClientService.getModelFiles.returns([mockModel]);
+            mockFileService.getModelFiles.returns([mockModel]);
 
             component.fileType = 'cto';
 
@@ -499,7 +498,7 @@ namespace org.acme.model`);
             component.changeCurrentFileType();
 
             // Assertions
-            mockClientService.createModelFile.getCall(0).args[1].should.be.equal('models/org.acme.model0.cto');
+            mockFileService.createModelFile.getCall(0).args[1].should.be.equal('models/org.acme.model0.cto');
             component.currentFileName.should.equal('models/org.acme.model0.cto');
         });
 
@@ -514,7 +513,7 @@ namespace org.acme.model`);
             mockFile3.getNamespace.returns('org.acme.model3');
             let mockFile4 = sinon.createStubInstance(ModelFile);
             mockFile4.getNamespace.returns('org.acme.model4');
-            mockClientService.getModelFiles.returns([mockFile, mockFile0, mockFile1, mockFile3, mockFile4]);
+            mockFileService.getModelFiles.returns([mockFile, mockFile0, mockFile1, mockFile3, mockFile4]);
 
             let b = new Blob(
                 [`/**
@@ -532,7 +531,7 @@ namespace org.acme.model`],
 namespace org.acme.model`);
 
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
-            mockClientService.createModelFile.returns(mockModel);
+            mockFileService.createModelFile.returns(mockModel);
             component.fileType = 'cto';
 
             // Run method
@@ -549,7 +548,7 @@ namespace org.acme.model`);
  */`);
 
             let mockQuery = new QueryFile('queries.qry', mockQueryManager, dataBuffer.toString());
-            mockClientService.createAclFile.returns(mockQuery);
+            mockFileService.createAclFile.returns(mockQuery);
             component.fileType = 'qry';
 
             component.changeCurrentFileType();
@@ -572,7 +571,7 @@ namespace org.acme.model`);
  }`);
 
             let mockAcl = new AclFile('permissions.acl', mockAclManager, dataBuffer.toString());
-            mockClientService.createAclFile.returns(mockAcl);
+            mockFileService.createAclFile.returns(mockAcl);
             component.fileType = 'acl';
 
             component.changeCurrentFileType();

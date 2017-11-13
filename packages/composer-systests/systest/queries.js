@@ -47,6 +47,12 @@ describe('Query system tests', () => {
             conceptValue: {
                 $class: 'systest.queries.SampleConcept',
                 stringValue: 'string ' + (i % 4),
+                stringArrayValue: [
+                    'array string 0_' + (i % 4),
+                    'array string 1_' + (i % 4),
+                    'array string 2_' + (i % 4),
+                    'array string 3_' + (i % 4)
+                ],
                 doubleValue: 2.5 * (i % 8),
                 integerValue: 1000 * (i % 16),
                 longValue: 100000 * (i % 32),
@@ -54,7 +60,79 @@ describe('Query system tests', () => {
                 booleanValue: (i % 2) ? true : false,
                 enumValue: 'VALUE_' + (i % 8)
             },
+            conceptArrayValue: [
+                {
+                    $class: 'systest.queries.SampleConcept',
+                    stringValue: 'string ' + (i % 4),
+                    stringArrayValue: [
+                        'array string 0_' + (i % 4),
+                        'array string 1_' + (i % 4),
+                        'array string 2_' + (i % 4),
+                        'array string 3_' + (i % 4)
+                    ],
+                    doubleValue: 2.5 * (i % 8),
+                    integerValue: 1000 * (i % 16),
+                    longValue: 100000 * (i % 32),
+                    dateTimeValue: new Date(100000 * (i % 16)).toISOString(),
+                    booleanValue: (i % 2) ? true : false,
+                    enumValue: 'VALUE_' + (i % 8)
+                },
+                {
+                    $class: 'systest.queries.SampleConcept',
+                    stringValue: 'string ' + (i % 4),
+                    stringArrayValue: [
+                        'array string 0_' + (i % 4),
+                        'array string 1_' + (i % 4),
+                        'array string 2_' + (i % 4),
+                        'array string 3_' + (i % 4)
+                    ],
+                    doubleValue: 2.5 * (i % 8),
+                    integerValue: 1000 * (i % 16),
+                    longValue: 100000 * (i % 32),
+                    dateTimeValue: new Date(100000 * (i % 16)).toISOString(),
+                    booleanValue: (i % 2) ? true : false,
+                    enumValue: 'VALUE_' + (i % 8)
+                },
+                {
+                    $class: 'systest.queries.SampleConcept',
+                    stringValue: 'string ' + (i % 4),
+                    stringArrayValue: [
+                        'array string 0_' + (i % 4),
+                        'array string 1_' + (i % 4),
+                        'array string 2_' + (i % 4),
+                        'array string 3_' + (i % 4)
+                    ],
+                    doubleValue: 2.5 * (i % 8),
+                    integerValue: 1000 * (i % 16),
+                    longValue: 100000 * (i % 32),
+                    dateTimeValue: new Date(100000 * (i % 16)).toISOString(),
+                    booleanValue: (i % 2) ? true : false,
+                    enumValue: 'VALUE_' + (i % 8)
+                },
+                {
+                    $class: 'systest.queries.SampleConcept',
+                    stringValue: 'string ' + (i % 4),
+                    stringArrayValue: [
+                        'array string 0_' + (i % 4),
+                        'array string 1_' + (i % 4),
+                        'array string 2_' + (i % 4),
+                        'array string 3_' + (i % 4)
+                    ],
+                    doubleValue: 2.5 * (i % 8),
+                    integerValue: 1000 * (i % 16),
+                    longValue: 100000 * (i % 32),
+                    dateTimeValue: new Date(100000 * (i % 16)).toISOString(),
+                    booleanValue: (i % 2) ? true : false,
+                    enumValue: 'VALUE_' + (i % 8)
+                }
+            ],
             stringValue: 'string ' + (i % 4),
+            stringArrayValue: [
+                'array string 0_' + (i % 4),
+                'array string 1_' + (i % 4),
+                'array string 2_' + (i % 4),
+                'array string 3_' + (i % 4)
+            ],
             doubleValue: 2.5 * (i % 8),
             integerValue: 1000 * (i % 16),
             longValue: 100000 * (i % 32),
@@ -94,11 +172,11 @@ describe('Query system tests', () => {
         return result;
     }
 
-        /**
-         * Generate a transaction.
-         * @param {Number} i The index.
-         * @return {Object} The generated transaction.
-         */
+    /**
+     * Generate a transaction.
+     * @param {Number} i The index.
+     * @return {Object} The generated transaction.
+     */
     function generateTransaction(i) {
         let result = {
             $class: 'systest.queries.SampleTransaction',
@@ -160,11 +238,8 @@ describe('Query system tests', () => {
                 participantsAsJSON.sort((a, b) => {
                     return a.participantId.localeCompare(b.participantId);
                 });
-            });
-    });
-
-    beforeEach(function () {
-        return client.getAssetRegistry('systest.queries.SampleAsset')
+                return client.getAssetRegistry('systest.queries.SampleAsset');
+            })
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
             })
@@ -197,6 +272,10 @@ describe('Query system tests', () => {
                     return serializer.toJSON(transaction);
                 });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     ['assets', 'participants', 'transactions'].forEach((type) => {
@@ -317,6 +396,153 @@ describe('Query system tests', () => {
                         });
                         actual.should.deep.equal(expected.filter((thing) => {
                             return thing.conceptValue.stringValue === 'string 1';
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string property using a parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringValue == _$inputStringValue)`);
+                return client.query(query, { inputStringValue: 'string 1' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringValue === 'string 1';
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a string array property using CONTAINS with a string literal', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringArrayValue CONTAINS 'array string 0_3')`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringArrayValue.indexOf('array string 0_3') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a string array property using CONTAINS with a string array literal', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringArrayValue CONTAINS ['array string 0_1', 'array string 0_3'])`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringArrayValue.indexOf('array string 0_1') > -1 && thing.stringArrayValue.indexOf('array string 0_3') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a string array property using CONTAINS with a string parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringArrayValue CONTAINS _$inputStringArrayValue)`);
+                return client.query(query, { inputStringArrayValue: 'array string 1_2' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringArrayValue.indexOf('array string 1_2') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a string array property using CONTAINS with a string array parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringArrayValue CONTAINS _$inputStringArrayValue)`);
+                return client.query(query, { inputStringArrayValue: [ 'array string 1_0', 'array string 1_2' ] })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringArrayValue.indexOf('array string 1_0') > -1 && thing.stringArrayValue.indexOf('array string 1_2') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string array property using CONTAINS with a string literal', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringArrayValue CONTAINS 'array string 0_3')`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringArrayValue.indexOf('array string 0_3') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string array property using CONTAINS with a string array literal', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringArrayValue CONTAINS ['array string 0_1', 'array string 0_3'])`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringArrayValue.indexOf('array string 0_1') > -1 && thing.conceptValue.stringArrayValue.indexOf('array string 0_3') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string array property using CONTAINS with a string parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringArrayValue CONTAINS _$inputStringArrayValue)`);
+                return client.query(query, { inputStringArrayValue: 'array string 1_2' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringArrayValue.indexOf('array string 1_2') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a nested string array property using CONTAINS with a string array parameter', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptValue.stringArrayValue CONTAINS _$inputStringArrayValue)`);
+                return client.query(query, { inputStringArrayValue: [ 'array string 1_0', 'array string 1_2' ] })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptValue.stringArrayValue.indexOf('array string 1_0') > -1 && thing.conceptValue.stringArrayValue.indexOf('array string 1_2') > -1;
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a concept array property using CONTAINS with a nested expression', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptArrayValue CONTAINS (stringValue == 'string 2'))`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptArrayValue.some((concept) => {
+                                return concept.stringValue === 'string 2';
+                            });
+                        }));
+                    });
+            });
+
+            it('should execute a dynamic query on a concept array property using CONTAINS with a nested expression', () => {
+                const query = client.buildQuery(`SELECT ${resource} WHERE (conceptArrayValue CONTAINS (stringValue == _$inputStringValue))`);
+                return client.query(query, { inputStringValue: 'string 3' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.conceptArrayValue.some((concept) => {
+                                return concept.stringValue === 'string 3';
+                            });
                         }));
                     });
             });

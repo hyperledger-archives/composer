@@ -86,4 +86,21 @@ describe('JSONWriter', () => {
 
     });
 
+    describe('#toString', () => {
+        it('should write out a string', () => {
+            writer.writeArrayStringValue('hello world');
+            writer.getBuffer().should.equal('"hello world"');
+            writer.toString().should.equal('indent 0 firstItem false');
+
+        });
+    });
+
+    describe('#toString', () => {
+        it('should write out a string', () => {
+            writer.writeArrayStringValue('hello world');
+            writer.getBuffer().should.equal('"hello world"');
+            writer.toString().should.equal('indent 0 firstItem false');
+
+        });
+    });
 });

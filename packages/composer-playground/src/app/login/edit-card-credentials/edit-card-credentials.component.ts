@@ -13,6 +13,11 @@ export class EditCardCredentialsComponent {
     @Input() connectionProfile: any;
     @Output() idCardAdded = new EventEmitter<any>();
 
+    maxFileSize: number = 5242880;
+    supportedFileTypes: string[] = ['.pem'];
+
+    expandInput: boolean = false;
+
     private userId: string = null;
     private userSecret: string = null;
     private busNetName: string = null;
@@ -20,6 +25,7 @@ export class EditCardCredentialsComponent {
     private useCerts: boolean = true;
     private addedPublicCertificate: string;
     private addedPrivateCertificate: string;
+
     private useParticipantCard: boolean = true;
     private peerAdmin: boolean = false;
     private channelAdmin: boolean = false;
@@ -31,10 +37,6 @@ export class EditCardCredentialsComponent {
 
     close() {
         this.idCardAdded.emit(false);
-    }
-
-    useCertificates(option: boolean) {
-        this.useCerts = option;
     }
 
     useParticipantCardType(option: boolean) {
@@ -122,5 +124,27 @@ export class EditCardCredentialsComponent {
                 this.addInProgress = false;
                 this.idCardAdded.emit(false);
             });
+    }
+
+    updateCredentials($event) {
+        // credentials not valid yet
+        if (!$event || !$event.userId) {
+            this.userId = null;
+            this.userSecret = null;
+            this.addedPrivateCertificate = null;
+            this.addedPublicCertificate = null;
+            return;
+        }
+
+        if ($event.secret) {
+            this.useCerts = false;
+            this.userSecret = $event.secret;
+
+        } else {
+            this.addedPublicCertificate = $event.cert;
+            this.addedPrivateCertificate = $event.key;
+        }
+
+        this.userId = $event.userId;
     }
 }

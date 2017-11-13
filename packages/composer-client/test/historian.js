@@ -73,11 +73,9 @@ describe('Historian', () => {
         it('should invoke the chain-code and return the historian', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.resolve(
+            sandbox.stub(Registry, 'getRegistry').resolves(
                     {id: 'org.hyperledger.composer.system.HistorianRecord', name: 'doge registry'}
-                );
-            });
+            );
 
             // Invoke the getIdentityRegistry function.
             return Historian
@@ -101,11 +99,7 @@ describe('Historian', () => {
         it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', () => {
-                return Promise.reject(
-                    new Error('failed to invoke chain-code')
-                );
-            });
+            sandbox.stub(Registry, 'getRegistry').rejects(new Error('failed to invoke chain-code'));
 
             // Invoke the getIdentityRegistry function.
             return Historian

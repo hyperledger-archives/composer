@@ -1,21 +1,23 @@
 <section *ngIf="!showSubScreen" class="header">
-    <h1>My Wallet</h1>
+    <h1>My Business Networks</h1>
     <div *ngIf="!showSubScreen">
-        <button *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
-            <span>Import ID card</span>
+        <button id="importIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
+            <span>Import Business Network Card</span>
         </button>
-        <button *ngIf="usingLocally" type="button" class="secondary" (click)="createIdCard()">
-            <span>Create ID card</span>
+        <button id="createIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="createIdCard()">
+            <span>Create Business Network Card</span>
         </button>
     </div>
 </section>
 <section *ngIf="!showSubScreen" class="main-view">
     <div class="connection-profile" *ngFor="let connectionProfileRef of connectionProfileRefs;">
         <span class="connection-profile-title">
-            <h2>Identity cards for {{this.connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
-            <tutorial-link *ngIf="this.connectionProfileRef === 'web-$default' && idCards.size == indestructibleCards.length"></tutorial-link>
+            <h2>Connection: {{connectionProfileRef === 'web-$default' ? 'Web Browser' : this.connectionProfileNames.get(connectionProfileRef) }}</h2>
         </span>
         <div class="identities">
+            <identity-card *ngIf="configService.isWebOnly() && connectionProfileRef === 'web-$default' && idCards.size === indestructibleCards.length"
+                           (onDeploySample)="deploySample(connectionProfileRef)">
+            </identity-card>
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
                            [indestructible]="(indestructibleCards.indexOf(cardRef) > -1)"
@@ -54,7 +56,7 @@
         <tutorial-link *ngIf="showDeployNetwork"></tutorial-link>
     </div>
     <div *ngIf="showDeployNetwork">
-        <deploy-business-network (finishedSampleImport)="finishedDeploying()"></deploy-business-network>
+        <deploy-business-network (finishedSampleImport)="finishedDeploying()" [showCredentials]="showCredentials"></deploy-business-network>
     </div>
     <div *ngIf="creatingIdCard">
         <create-identity-card [connectionProfileRefs]="connectionProfileRefs"

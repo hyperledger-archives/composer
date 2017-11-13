@@ -14,7 +14,7 @@ excerpt: The REST server can be [**configured to multiple user mode**](./enablin
 
 By default, the {{site.data.conrefs.composer_full}} REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity **alice1** to digitally sign all transactions:
 
-    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
+    composer-rest-server -c alice1@my-network
 
 This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.
 
@@ -34,70 +34,45 @@ You can use the `-m true` argument to start the REST server with multiple user m
 
 For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:
 
-    composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -m true
+    composer-rest-server -c admin@my-network -m true
 
 The `-m true` argument automatically enables REST API authentication. You can alternatively supply both arguments, `-a true -m true`, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.
 
-Now, navigate to the REST API explorer at [http://localhost:3000/explorer/](http://localhost:3000/explorer/). If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an `No enrollment ID or enrollment secret has been provided` error message.
+Now, navigate to the REST API explorer at [http://localhost:3000/explorer/](http://localhost:3000/explorer/). If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an `A business network card has not been specified` error message.
 
 If you see a `HTTP 401 Authorization Required` error message, you have not authenticated correctly to the REST API.
 
-## Adding a Blockchain identity to the default wallet
+## Adding a business network card to the wallet
 
-First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.acme.mynetwork.Trader#alice@email.com`, and the secret is `suchs3cret`.
+First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.acme.mynetwork.Trader#alice@email.com`, and that you have created a business network card for this Blockchain identity stored in the file `alice1@my-network.card`.
 
-Follow these steps to add a Blockchain identity to the default wallet:
+Follow these steps to add a business network card to the wallet:
 
-1. Navigate to the REST API explorer at http://localhost:3000/explorer/.
-2. List all of the authenticated clients wallets by expanding the **Wallet** category and calling the `GET /wallets` operation.
-    The response from the operation should be similiar to the following:
-
-    ```json
-    [
-      {
-        "description": "Default wallet",
-        "id": 1
-      }
-    ]
-    ```
-
-    Each wallet has a unique ID that will be used in subsequent REST API calls for interacting with the wallet. Note down the value of the `id` property for the wallet with the description `Default wallet`, in this example `1`.
-3. List the Blockchain identities in the default wallet by calling the `GET /wallets/{id}/identities` operation with the `id` parameter set to the unique wallet ID noted from step 2.
-    The response from the operation should be:
+1. Navigate to the REST API explorer at http://localhost:3000/explorer/, and then navigate to the wallet APIs by expanding the **Wallet** category.
+2. Check that the wallet does not contain any business network cards by calling the `GET /wallet` operation. The response from the operation should be:
 
     ```json
     []
     ```
-
-    This means that there are no Blockchain identities in the default wallet.
-4. Add the Blockchain identity to the default wallet by calling the `POST /wallets/{id}/identities` operation with the `id` parameter set to the unique wallet ID noted from step 2, and the `data` parameter set to the following JSON payload (do not include the `id` property in the JSON payload):
-
-    ```json
-    {
-      "enrollmentID": "alice1",
-      "enrollmentSecret": "suchs3cret"
-    }
-    ```
-
-    The response from the operation should be similiar to the following:
-
-    ```json
-    {
-      "enrollmentID": "alice1",
-      "enrollmentSecret": "suchs3cret",
-      "id": 2
-    }
-    ```
-
-    The Blockchain identity for `alice1` has now been added to the default wallet. Each Blockchain identity has a unique ID that will be used in subsequent REST API calls for interacting with the Blockchain identity. Note down the value of the `id` property for the Blockchain identity, in this example `2`.
-5. Set the Blockchain identity as the default Blockchain identity for the default wallet by calling the `POST /wallets/{id}/identities/{fk}/setDefault` operation with the `id` parameter set to the unique wallet ID noted from step 2, and the `fk` parameter set to the unique Blockchain identity ID noted from step 4.
-    The response from the operation should be:
+3. Import the business network card into the wallet by calling the `POST /wallet/import` operation. You must specify the business network card file `alice1@my-network.card` by clicking the **Choose File** button. The response from the operation should be:
 
     ```
     no content
     ```
 
-    The Blockchain identity has now been set as the default Blockchain identity for the default wallet.
+    The business network card `alice1@my-network` has now been imported into the wallet.
+4. Check that the wallet does contain the business network card `alice1@my-network` by calling the `GET /wallet` operation. The response from the operation should be:
+
+    ```json
+    [
+        {
+            "name": "alice1@my-network",
+            "default": true
+        }
+    ]
+    ```
+
+    The business network card `alice1@my-network` is displayed. The value of the `default` property is `true`, which means that this business network card will be used by default when interacting with the business network.
 
 Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.
 

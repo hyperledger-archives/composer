@@ -52,6 +52,7 @@ describe('InstanceGenerator', () => {
         modelManager.addModelFile(modelFile);
         let resource = factory.newResource('org.acme.test', 'MyAsset', 'asset1');
         parameters.stack = new TypedStack(resource);
+        parameters.seen = [resource.getFullyQualifiedType()];
         let classDeclaration = resource.getClassDeclaration();
         return classDeclaration.accept(visitor, parameters);
     };
@@ -72,6 +73,20 @@ describe('InstanceGenerator', () => {
             }`);
             resource.theValue.should.be.a('string');
         });
+        it('should not throw a recursion error', () => {
+            let resource = test(`namespace org.acme.test
+            participant MyParticipant identified by participantId{
+                o String participantId
+                o String value
+            }
+            asset MyAsset identified by assetId {
+                o String assetId
+                o String theValue
+                o MyParticipant test1
+                o MyParticipant test2
+            }`);
+            should.exist(resource.theValue);
+        });
 
         it('should generate empty array value for array property with empty generator ', () => {
             useEmptyGenerator();
@@ -81,6 +96,15 @@ describe('InstanceGenerator', () => {
                 o String[] theValues
             }`);
             resource.theValues.should.be.a('Array').that.is.empty;
+        });
+        it('should return null for optional recursive field ', () => {
+            parameters.includeOptionalFields = true;
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o MyAsset theValues optional
+            }`);
+            should.not.exist(resource.theValues);
         });
 
         it('should generate one default value for a string array property with sample generator ', () => {
@@ -93,7 +117,29 @@ describe('InstanceGenerator', () => {
             resource.theValues.should.be.a('Array').and.have.lengthOf(1);
             resource.theValues[0].should.be.a('String');
         });
+        it('should return an empty array with sample generator, when empty array is recursive ', () => {
+            useSampleGenerator();
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o MyAsset[] theValues
+            }`);
+            resource.theValues.should.be.a('Array').and.have.lengthOf(0);
+        });
+        it('should throw an error when field is recursive ', () => {
+            try {
 
+                test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o MyAsset theValues
+            }`);
+
+            } catch (error) {
+                error.should.match(/Model is recursive./);
+            }
+
+        });
         it('should generate a default value for a date/time property', () => {
             let resource = test(`namespace org.acme.test
             asset MyAsset identified by assetId {
@@ -224,7 +270,7 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 --> MyAsset theValue
             }`);
-            resource.theValue.getIdentifier().should.match(/^assetId:\d{4}$/);
+            resource.theValue.getIdentifier().should.match(/^\d{4}$/);
         });
 
         it('should generate a default value for a relationship array property', () => {
@@ -234,7 +280,7 @@ describe('InstanceGenerator', () => {
                 --> MyAsset[] theValues
             }`);
             resource.theValues.should.be.a('Array').and.have.lengthOf(1);
-            resource.theValues[0].getIdentifier().should.match(/^assetId:\d{4}$/);
+            resource.theValues[0].getIdentifier().should.match(/^\d{4}$/);
         });
 
         it('should generate a default value for a resource property', () => {
@@ -247,7 +293,7 @@ describe('InstanceGenerator', () => {
                 o String assetId
                 o MyInnerAsset theValue
             }`);
-            resource.theValue.getIdentifier().should.match(/^innerAssetId:\d{4}$/);
+            resource.theValue.getIdentifier().should.match(/^\d{4}$/);
             resource.theValue.theValue.should.be.a('string');
         });
 
@@ -262,7 +308,7 @@ describe('InstanceGenerator', () => {
                 o MyInnerAsset[] theValues
             }`);
             resource.theValues.should.be.a('Array').and.have.lengthOf(1);
-            resource.theValues[0].getIdentifier().should.match(/^innerAssetId:\d{4}$/);
+            resource.theValues[0].getIdentifier().should.match(/^\d{4}$/);
             resource.theValues[0].theValue.should.be.a('string');
         });
 
@@ -327,7 +373,7 @@ describe('InstanceGenerator', () => {
             resource.theValue.should.be.a('String');
         });
 
-        it('should generate concrete subclass for abstract reference', function() {
+        it('should generate concrete subclass for abstract reference', function () {
             let resource = test(`namespace org.acme.test
             asset MyAsset identified by id {
                 o String id

@@ -83,19 +83,21 @@ app-editor {
       }
 
       .edit-label{
-        line-height: 2.5rem;
+        line-height: 1.8rem;
         font-weight:bold;
         flex:0 0 auto;
       }
 
       .edit-file-hidden{
-        line-height: 2.3rem;
+        margin-top: 0.25rem;
+        line-height: 1.7rem;
         color: $secondary-text;
         flex-shrink:1;
       }
 
       .edit-file-label{
-        line-height: 2.5rem;
+        margin-top: 0.3rem;
+        line-height: 1.8rem;
         font-weight: bold;
         color: $primary-text;
         flex-shrink: 1;
@@ -106,13 +108,20 @@ app-editor {
       .edit-file-row{
         flex:2;
         display:flex;
-        padding-bottom:$space-medium;
 
         .edit-file-value{
             flex-basis:50%;
             display:flex;
             flex-direction: column;
+
+            input {
+              height: 1.8rem;
+            }
         }
+      }
+
+      .error-message {
+        margin-top: -1rem;
       }
     }
 

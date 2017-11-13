@@ -29,7 +29,16 @@ chai.use(require('chai-as-promised'));
 
 process.setMaxListeners(Infinity);
 
+
+
+
+
+
 describe('Access control system tests', () => {
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     let businessNetworkDefinition;
     let client, aliceClient, bobClient;
@@ -56,6 +65,10 @@ describe('Access control system tests', () => {
         });
         let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.acl'), 'utf8'));
         businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+
+
+        bnID = businessNetworkDefinition.getName();
+
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-accesscontrols')
@@ -63,6 +76,10 @@ describe('Access control system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     beforeEach(() => {

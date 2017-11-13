@@ -15,12 +15,18 @@
 'use strict';
 
 const Connection = require('../lib/connection');
+const os = require('os');
+const path = require('path');
 const SecurityContext = require('../lib/securitycontext');
 const SecurityException = require('../lib/securityexception');
 const Util = require('../lib/util');
-
-require('chai').should();
+const uuid = require('uuid');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('Util', function () {
 
@@ -46,13 +52,13 @@ describe('Util', function () {
         it('should throw for an undefined security context', function () {
             (function () {
                 Util.securityCheck(undefined);
-            }).should.throw(SecurityException, 'A valid SecurityContext must be specified.');
+            }).should.throw(SecurityException, 'Connection needs to be connected. Call connect(..)');
         });
 
         it('should throw for a null security context', function () {
             (function () {
                 Util.securityCheck(null);
-            }).should.throw(SecurityException, 'A valid SecurityContext must be specified.');
+            }).should.throw(SecurityException, 'Connection needs to be connected. Call connect(..)');
         });
 
         it('should throw for an invalid type of security context', function () {
@@ -102,6 +108,43 @@ describe('Util', function () {
                     sinon.assert.calledOnce(mockConnection.queryChainCode);
                     sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'function', ['arg1', 'arg2']);
                 });
+        });
+
+        it('should query the chain-code and return the result', function () {
+            return Util.queryChainCode(mockSecurityContext, 'function', [true, false])
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.queryChainCode);
+                    sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'function', ['true', 'false']);
+                });
+        });
+
+    });
+
+    describe('#createTransactionId', function() {
+        it('should perform a security check', function () {
+            mockConnection.createTransactionId.resolves('42');
+            let stub = sandbox.stub(Util, 'securityCheck');
+            return Util
+                .createTransactionId(mockSecurityContext)
+                .then(() => {
+                    sinon.assert.called(stub);
+                });
+        });
+
+        it('call the connection to get a txid',function(){
+            mockConnection.createTransactionId.resolves('42');
+            return Util
+                .createTransactionId(mockSecurityContext)
+                .should.eventually.be.equal('42');
+        });
+
+
+        it('call the connection to get a txid and cope with null',function(){
+            mockConnection.createTransactionId.resolves(null);
+            sandbox.stub(uuid, 'v4').returns('56');
+            return Util
+                .createTransactionId(mockSecurityContext)
+                .should.eventually.be.deep.equal({ id: '56', idStr: '56' });
         });
 
     });
@@ -159,6 +202,19 @@ describe('Util', function () {
             Util.isNull('hello').should.equal(false);
         });
 
+    });
+
+    describe('#homeDirectory', function() {
+        it('should return valid path', function() {
+            const result = Util.homeDirectory();
+            path.isAbsolute(result).should.be.true;
+        });
+
+        it('should return root directory if os.homedir function returns undefined', function() {
+            sandbox.stub(os, 'homedir').returns(undefined);
+            const result = Util.homeDirectory();
+            result.should.equal(path.sep);
+        });
     });
 
 });

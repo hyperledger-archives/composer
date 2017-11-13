@@ -33,49 +33,27 @@ class Bind {
     */
     static handler(argv) {
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
         let participantId = argv.participantId;
         let certificateFile = argv.certificateFile;
         let certificate;
+        let cardName;
+
         try {
             certificate = fs.readFileSync(certificateFile).toString();
         } catch(error) {
             return Promise.reject(new Error('Unable to read certificate file ' + certificateFile + '. ' + error.message));
         }
 
-        return (() => {
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
-        })
-        .then(() => {
-            return businessNetworkConnection.bindIdentity(participantId, certificate);
-        })
-        .then((result) => {
-            console.log(`An identity was bound to the participant '${participantId}'`);
-            console.log('The participant can now connect to the business network using the identity');
-        });
+        cardName = argv.card;
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        return businessNetworkConnection.connect(cardName)
+            .then(() => {
+                return businessNetworkConnection.bindIdentity(participantId, certificate);
+            })
+            .then((result) => {
+                console.log(`An identity was bound to the participant '${participantId}'`);
+                console.log('The participant can now connect to the business network using the identity');
+            });
     }
 
 }

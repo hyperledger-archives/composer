@@ -15,11 +15,26 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeployComponent } from './deploy.component';
+import {
+    ModelManager,
+    BusinessNetworkDefinition,
+    AssetDeclaration,
+    ParticipantDeclaration,
+    TransactionDeclaration
+} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 let should = chai.should();
+
+@Directive({
+    selector: 'credentials'
+})
+class MockCredentialsDirective {
+    @Output()
+    public credentials: EventEmitter<any> = new EventEmitter<any>();
+}
 
 @Directive({
     selector: '[fileDragDrop]'
@@ -81,6 +96,11 @@ describe('DeployComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
+    let mockModelManager;
+    let mockBusinessNetworkDefinition;
+    let mockAssetDeclaration;
+    let mockParticipantDeclaration;
+    let mockTransactionDeclaration;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -88,6 +108,11 @@ describe('DeployComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+        mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+        mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -99,7 +124,7 @@ describe('DeployComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective],
+            declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective, MockCredentialsDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
@@ -185,41 +210,53 @@ describe('DeployComponent', () => {
     });
 
     describe('deployEmptyNetwork', () => {
-        beforeEach(() => {
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
-        });
-
         it('should create the empty business network if chosen', fakeAsync(() => {
             component['networkName'] = 'myName';
             component['networkDescription'] = 'myDescription';
 
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
+            const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+            mockBusinessNetworkService.createNewBusinessDefinition.returns(businessNetworkDefinition);
 
             component.deployEmptyNetwork();
 
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            component['currentBusinessNetwork'].should.equal(businessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([]);
+            businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
-            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve({network: 'myNetwork'}));
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
+
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
+            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve(mockBusinessNetworkDefinition));
             component.selectNetwork('bob');
 
             tick();
 
             component['chosenNetwork'];
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
+            component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
         }));
 
         it('should select the empty network', () => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
             component.selectNetwork({name: 'empty-business-network'});
-
             empty.should.have.been.called;
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({name: 'empty-business-network'});
         });
     });
 
@@ -305,10 +342,22 @@ describe('DeployComponent', () => {
                 getPackageJson: sinon.stub().returns({json: 'some json'})
             };
 
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
+
+            mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+
             let businessNetworkMock = {
                 network: 'mockNetwork',
-                getMetadata: sinon.stub().returns(metaDataMock)
+                getMetadata: sinon.stub().returns(metaDataMock),
+                getModelManager: sinon.stub().returns(mockModelManager)
             };
+
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
 
             mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve(businessNetworkMock));
 
@@ -322,9 +371,13 @@ describe('DeployComponent', () => {
 
             mockClientService.getBusinessNetworkFromArchive.should.have.been.called;
             component['currentBusinessNetwork'].network.should.equal('mockNetwork');
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
             component['expandInput'].should.equal(false);
             component['chosenNetwork'].should.deep.equal({json: 'some json'});
             component['sampleDropped'].should.equal(true);
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({json: 'some json'});
         }));
 
         it('should handle error', fakeAsync(() => {
@@ -409,6 +462,52 @@ describe('DeployComponent', () => {
     });
 
     describe('setNetworkName', () => {
+
+        it('should set the name and desc to values passed', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('my-network');
+          component['networkDescription'].should.deep.equal('some description');
+        }));
+
+        it('should not update the name if a user has changed the value', fakeAsync(() => {
+          component['networkName'] = 'user-entered-name';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('user-entered-name');
+          component['networkDescription'].should.deep.equal('some description');
+        }));
+
+        it('should not update the description if a user has changed the value', fakeAsync(() => {
+          component['networkDescription'] = 'user entered description';
+          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+
+          tick();
+
+          component['networkName'].should.deep.equal('my-network');
+          component['networkDescription'].should.deep.equal('user entered description');
+        }));
+
+        it('should set name to undefined when no name sent', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({});
+
+          tick();
+
+          should.equal(component['networkName'], undefined);
+        }));
+
+        it('should set desc to \'\' when no desc sent', fakeAsync(() => {
+          component.updateBusinessNetworkNameAndDesc({});
+
+          tick();
+
+          component['networkDescription'].should.deep.equal('');
+        }));
+
         it('should set the network name', () => {
             component['setNetworkName']('bob');
 
@@ -442,6 +541,112 @@ describe('DeployComponent', () => {
 
             component['networkName'].should.equal('');
             component['networkNameValid'].should.equal(true);
+        });
+    });
+
+    describe('updateCredentials', () => {
+        it('should set details to null if no event', () => {
+            component.updateCredentials(null);
+
+            should.not.exist(component['userId']);
+            should.not.exist(component['userSecret']);
+            should.not.exist(component['credentials']);
+        });
+
+        it('should set the userId and secret', () => {
+            let event = {userId: 'myUserId', secret: 'mySecret'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['userSecret'].should.equal('mySecret');
+
+            should.not.exist(component['credentials']);
+        });
+
+        it('should set the credentials', () => {
+            let event = {userId: 'myUserId', cert: 'myCert', key: 'myKey'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['credentials'].should.deep.equal({certificate: 'myCert', privateKey: 'myKey'});
+
+            should.not.exist(component['userSecret']);
+        });
+    });
+
+    describe('isInvalidDeploy', () => {
+        it('should set invalid if no network name', () => {
+            component['networkName'] = null;
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if network name invalid', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = false;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if deploy in progress', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = true;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set invalid if no userId', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = true;
+
+            component['userId'] = null;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(true);
+        });
+
+        it('should set valid', () => {
+            component['networkName'] = 'myNetwork';
+
+            component['networkNameValid'] = true;
+
+            component['deployInProgress'] = false;
+
+            component['showCredentials'] = false;
+
+            let result = component.isInvalidDeploy();
+
+            result.should.equal(false);
         });
     });
 });

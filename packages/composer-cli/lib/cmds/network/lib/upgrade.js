@@ -35,26 +35,18 @@ class Upgrade {
         let adminConnection;
         let spinner;
 
-        return (() => {
-            spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(argv.connectionProfileName, argv.upgradeId, argv.upgradeSecret, argv.businessNetworkName);
-        })()
+        let cardName = argv.card;
+
+        spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
+        adminConnection = cmdUtil.createAdminConnection();
+        return adminConnection.connect(cardName)
         .then((result) => {
             return adminConnection.upgrade();
         }).then((result) => {
             spinner.succeed();
-            console.log();
-
             return result;
         }).catch((error) => {
-
-            if (spinner) {
-                spinner.fail();
-            }
-
-            console.log();
-
+            spinner.fail();
             throw error;
         });
     }

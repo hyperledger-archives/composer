@@ -34,14 +34,13 @@ const TransactionRegistry = require('./transactionregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const Registry = require('./registry');
-
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const LOG = Logger.getLog('BusinessNetworkConnection');
 
 /**
  * Use this class to connect to and then interact with a deployed BusinessNetworkDefinition.
  * Use the AdminConnection class in the composer-admin module to deploy BusinessNetworksDefinitions.
  * @extends EventEmitter
- * @see See [EventEmitter]{@link module:composer-client.EventEmitter}
  * @class
  * @memberof module:composer-client
  */
@@ -51,8 +50,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * Create an instance of the BusinessNetworkConnection class.
      * must be called to connect to a deployed BusinessNetworkDefinition.
      * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {ConnectionProfileStore} [options.connectionProfileStore] - specify a connection profile store to use.
-     * @param {Object} [options.fs] - specify an fs implementation to use.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
      */
     constructor(options) {
         super();
@@ -75,12 +73,16 @@ class BusinessNetworkConnection extends EventEmitter {
                 envConnectionProfileStore
             );
         }
+
+        this.cardStore = options.cardStore || new FileSystemCardStore({ fs: options.fs || fs });
+
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
         this.securityContext = null;
         this.businessNetwork = null;
         this.dynamicQueryFile = null;
+        this.card = null;
     }
 
     /**
@@ -409,41 +411,117 @@ class BusinessNetworkConnection extends EventEmitter {
      * at runtime that override options set in the connection profile.
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
+     * @private
      */
-    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
-        const method = 'connect';
+    connectWithDetails(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+        const method = '_connect';
         LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
+
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
-                connection.on('events', (events) => {
-                    events.forEach((event) => {
-                        let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
-                        this.emit('event', serializedEvent);
-                    });
-                });
-                this.connection = connection;
-                return connection.login(enrollmentID, enrollmentSecret);
-            })
-            .then((securityContext) => {
-                this.securityContext = securityContext;
-                return this.ping();
-            })
-            .then(() => {
-                return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
-            })
-            .then((buffer) => {
-                let businessNetworkJSON = JSON.parse(buffer.toString());
-                let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-            })
-            .then((businessNetwork) => {
-                this.businessNetwork = businessNetwork;
-                this.dynamicQueryFile = this.businessNetwork.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
                 LOG.exit(method);
-                return this.businessNetwork;
+                return this._connectionLogin(connection,enrollmentID, enrollmentSecret);
             });
+
     }
 
+    /**
+     * Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.
+     * @example
+     * // Connect and log in to HLF
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('cardName')
+     * .then(function(businessNetworkDefinition){
+     *     // Connected
+     * });
+     * @param {String} cardName  businessNetworkCard Name (must have been imported already)
+     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
+     * at runtime that override options set in the connection profile.
+     * which will override those in the specified connection profile.
+     * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
+     */
+    connect(cardName,additionalConnectOptions){
+        const method = 'connectWithCard';
+        LOG.entry(method,cardName);
+
+        return this.cardStore.get(cardName)
+            .then((retrievedCard)=>{
+                this.card = retrievedCard;
+                if (!additionalConnectOptions) {
+                    additionalConnectOptions = {};
+                }
+                additionalConnectOptions.cardName = cardName;
+                return this.connectionProfileManager.connectWithData(this.card.getConnectionProfile(), this.card.getBusinessNetworkName(), additionalConnectOptions);
+            })
+            .then((connection) => {
+                LOG.exit(method);
+
+                let secret = this.card.getEnrollmentCredentials();
+                if (!secret){
+                    secret='na';
+                } else {
+                    secret=secret.secret;
+                }
+
+                return this._connectionLogin(connection,this.card.getUserName(),secret);
+
+            });
+
+    }
+
+    /**
+     * Get the business network card used by this connection, if a business network card was used.
+     * @return {IdCard} The business network card used by this connection, or null if a business
+     * network card was not used.
+     * @private
+     */
+    getCard() {
+        return this.card;
+    }
+
+    /**
+     * Internal method to login and process the connection
+     * @private
+     * @param {Connection} connection connection just established
+     * @param {String} enrollId enrollment id
+     * @param {String} enrollmentSecret enrollment secret
+     * @return {Promise} resolved promise to a BusinessNetworkDefinition when complete
+     *
+     */
+    _connectionLogin(connection,enrollId,enrollmentSecret){
+        const method = '_connectionLogin';
+        LOG.entry(method);
+
+        return Promise.resolve()
+             .then(() =>{
+                 connection.on('events', (events) => {
+                     events.forEach((event) => {
+                         let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
+                         this.emit('event', serializedEvent);
+                     });
+                 });
+                 this.connection = connection;
+                 return connection.login(enrollId,enrollmentSecret);
+             })
+         .then((securityContext) => {
+             this.securityContext = securityContext;
+             return this.ping();
+         })
+          .then(() => {
+              return Util.queryChainCode(this.securityContext, 'getBusinessNetwork', []);
+          })
+          .then((buffer) => {
+              let businessNetworkJSON = JSON.parse(buffer.toString());
+              let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+              return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+          })
+          .then((businessNetwork) => {
+              this.businessNetwork = businessNetwork;
+              this.dynamicQueryFile = this.businessNetwork.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
+              LOG.exit(method);
+              return this.businessNetwork;
+          });
+    }
 
     /**
      * Given a fully qualified name, works out and looks up the registry that this resource will be found in.
@@ -508,6 +586,7 @@ class BusinessNetworkConnection extends EventEmitter {
                 this.securityContext = null;
                 this.businessNetwork = null;
                 this.dynamicQueryFile = null;
+                this.card = null;
                 LOG.exit(method);
             });
     }
@@ -527,7 +606,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     // Submitted a transaction.
      * });
      * @param {Resource} transaction - The transaction to submit. Use {@link
-     * Factory#newTransaction newTransaction} to create this object.
+     * common-Factory#newTransaction newTransaction} to create this object.
      * @return {Promise} A promise that will be fulfilled when the transaction has
      * been processed.
      */
@@ -540,18 +619,14 @@ class BusinessNetworkConnection extends EventEmitter {
         if (!(classDeclaration instanceof TransactionDeclaration)) {
             throw new Error(classDeclaration.getFullyQualifiedName() + ' is not a transaction');
         }
-        let id = transaction.getIdentifier();
-        if (id === null || id === undefined) {
-            id = uuid.v4();
-            transaction.setIdentifier(id);
-        }
-        let timestamp = transaction.timestamp;
-        if (timestamp === null || timestamp === undefined) {
-            timestamp = transaction.timestamp = new Date();
-        }
 
-        let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        return Util.createTransactionId(this.securityContext)
+        .then ((id)=>{
+            transaction.setIdentifier(id.idStr);
+            transaction.timestamp = new Date();
+            let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId:id.id});
+        });
 
     }
 

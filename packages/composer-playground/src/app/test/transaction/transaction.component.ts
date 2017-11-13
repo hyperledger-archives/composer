@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 import { TransactionDeclaration } from 'composer-common';
-import leftPad = require('left-pad');
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -53,37 +51,31 @@ export class TransactionComponent implements OnInit {
     };
 
     constructor(public activeModal: NgbActiveModal,
-                private clientService: ClientService,
-                private initializationService: InitializationService) {
+                private clientService: ClientService) {
     }
 
-    ngOnInit(): Promise<any> {
-        return this.initializationService.initialize()
-        .then(() => {
+    ngOnInit() {
+        let introspector = this.clientService.getBusinessNetwork().getIntrospector();
+        this.transactionTypes = introspector.getClassDeclarations()
+            .filter((modelClassDeclaration) => {
+                // Non-abstract, non-system transactions only please!
+                return !modelClassDeclaration.isAbstract() &&
+                    !modelClassDeclaration.isSystemType() &&
+                    modelClassDeclaration instanceof TransactionDeclaration;
+            });
 
-            let introspector = this.clientService.getBusinessNetwork().getIntrospector();
-            this.transactionTypes = introspector.getClassDeclarations()
-                .filter((modelClassDeclaration) => {
-                    // Non-abstract, non-system transactions only please!
-                    return !modelClassDeclaration.isAbstract() &&
-                           !modelClassDeclaration.isSystemType() &&
-                            modelClassDeclaration instanceof TransactionDeclaration;
-                });
+        // Set first in list as selectedTransaction
+        if (this.transactionTypes && this.transactionTypes.length > 0) {
+            this.selectedTransaction = this.transactionTypes[0];
+            this.selectedTransactionName = this.selectedTransaction.getName();
 
-            // Set first in list as selectedTransaction
-            if (this.transactionTypes && this.transactionTypes.length > 0) {
-                this.selectedTransaction = this.transactionTypes[0];
-                this.selectedTransactionName = this.selectedTransaction.getName();
+            // We wish to hide certain items in a transaction, set these here
+            this.hiddenTransactionItems.set(this.selectedTransaction.getIdentifierFieldName(), uuid.v4());
+            this.hiddenTransactionItems.set('timestamp', new Date());
 
-                // We wish to hide certain items in a transaction, set these here
-                this.hiddenTransactionItems.set(this.selectedTransaction.getIdentifierFieldName(), uuid.v4());
-                this.hiddenTransactionItems.set('timestamp', new Date());
-
-                // Create a resource definition for the base item
-                this.generateTransactionDeclaration();
-            }
-
-        });
+            // Create a resource definition for the base item
+            this.generateTransactionDeclaration();
+        }
     }
 
     /**
@@ -93,6 +85,8 @@ export class TransactionComponent implements OnInit {
     onTransactionSelect(transactionType) {
         this.selectedTransaction = transactionType;
         this.selectedTransactionName = this.selectedTransaction.getName();
+        this.resourceDefinition = null;
+        this.includeOptionalFields = false;
         this.generateTransactionDeclaration();
     }
 
@@ -132,17 +126,36 @@ export class TransactionComponent implements OnInit {
             generateParameters);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         try {
-            let json = serializer.toJSON(resource);
+            let replacementJSON = serializer.toJSON(resource);
+            let existingJSON = JSON.parse(this.resourceDefinition);
             // remove hidden items from json
             this.hiddenTransactionItems.forEach((value, key) => {
-                delete json[key];
+                delete replacementJSON[key];
             });
-            this.resourceDefinition = JSON.stringify(json, null, 2);
+            if (existingJSON) {
+                this.resourceDefinition = JSON.stringify(this.updateExistingJSON(existingJSON, replacementJSON), null, 2);
+            } else {
+                // Initial popup, no previous data to protect
+                this.resourceDefinition = JSON.stringify(replacementJSON, null, 2);
+            }
             this.onDefinitionChanged();
         } catch (error) {
             // We can't generate a sample instance for some reason.
             this.definitionError = error.toString();
         }
+    }
+
+    private updateExistingJSON(previousJSON, toUpdateWithJSON): object {
+        for (let key in toUpdateWithJSON) {
+            if (previousJSON.hasOwnProperty(key) && toUpdateWithJSON.hasOwnProperty(key)) {
+                if (previousJSON[key] !== null && typeof previousJSON[key] === 'object' && toUpdateWithJSON[key] !== null && typeof toUpdateWithJSON[key] === 'object') {
+                    toUpdateWithJSON[key] = this.updateExistingJSON(previousJSON[key], toUpdateWithJSON[key]);
+                } else if (previousJSON[key].toString().length > 0 && previousJSON[key] !== 0) {
+                    toUpdateWithJSON[key] = previousJSON[key];
+                }
+            }
+        }
+        return toUpdateWithJSON;
     }
 
     /**
@@ -151,20 +164,20 @@ export class TransactionComponent implements OnInit {
     private submitTransaction() {
         this.submitInProgress = true;
         return Promise.resolve()
-        .then(() => {
-            let json = JSON.parse(this.resourceDefinition);
-            let serializer = this.clientService.getBusinessNetwork().getSerializer();
-            this.submittedTransaction = serializer.fromJSON(json);
-            return this.clientService.getBusinessNetworkConnection().submitTransaction(this.submittedTransaction);
-        })
-        .then(() => {
-            this.submitInProgress = false;
-            this.definitionError = null;
-            this.activeModal.close(this.submittedTransaction);
-        })
-        .catch((error) => {
-            this.definitionError = error.toString();
-            this.submitInProgress = false;
-        });
+            .then(() => {
+                let json = JSON.parse(this.resourceDefinition);
+                let serializer = this.clientService.getBusinessNetwork().getSerializer();
+                this.submittedTransaction = serializer.fromJSON(json);
+                return this.clientService.getBusinessNetworkConnection().submitTransaction(this.submittedTransaction);
+            })
+            .then(() => {
+                this.submitInProgress = false;
+                this.definitionError = null;
+                this.activeModal.close(this.submittedTransaction);
+            })
+            .catch((error) => {
+                this.definitionError = error.toString();
+                this.submitInProgress = false;
+            });
     }
 }

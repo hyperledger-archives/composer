@@ -21,6 +21,7 @@ const EventEmitter = require('events');
 const Registry = require('../lib/registry');
 const Resource = require('composer-common').Resource;
 const Serializer = require('composer-common').Serializer;
+const ClassDeclaration = require('composer-common').ClassDeclaration;
 
 const chai = require('chai');
 chai.should();
@@ -115,7 +116,7 @@ describe('Registry', () => {
                 });
         });
 
-        it('should not throw or leak information about resources that cannot be accessed', () => {
+        it('should not throw or leak information about resources that cannot be accessed due to ACL rules', () => {
             mockAccessController.check.withArgs(mockResource2, 'READ').rejects(new AccessException(mockResource2, 'READ', mockParticipant));
             return registry.getAll()
                 .then((resources) => {
@@ -126,6 +127,24 @@ describe('Registry', () => {
                     resources.should.deep.equal([mockResource1]);
                 });
         });
+
+        it('should not throw or leak information about existing resources that cannot be accessed due to not being valid in the model', () => {
+            let err = new Error('serializer error');
+            let ARGS = {
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            };
+            mockSerializer.fromJSON.withArgs(ARGS).throws(err);
+
+            return registry.getAll()
+                .then((resources) => {
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource1, 'READ');
+                    resources.should.all.be.an.instanceOf(Resource);
+                    resources.should.deep.equal([mockResource1]);
+                });
+        });
+
 
         it('should return errors from the data service', () => {
             mockDataCollection.getAll.rejects();
@@ -227,10 +246,15 @@ describe('Registry', () => {
     describe('#addAll', () => {
 
         let mockResource1, mockResource2;
+        let mockClassDeclaration1, mockClassDeclaration2;
 
         beforeEach(() => {
             // New resources.
             mockResource1 = sinon.createStubInstance(Resource);
+            mockClassDeclaration1 = sinon.createStubInstance(ClassDeclaration);
+            mockResource1.getClassDeclaration.returns(mockClassDeclaration1);
+            mockResource1.getClassDeclaration().getSystemType();
+            mockClassDeclaration1.getSystemType.returns('Asset');
             mockResource1.theValue = 'the value 1';
             mockResource1.getIdentifier.returns('doge1');
             mockSerializer.toJSON.withArgs(mockResource1).onFirstCall().returns({
@@ -238,6 +262,10 @@ describe('Registry', () => {
                 assetId: 'doge1'
             });
             mockResource2 = sinon.createStubInstance(Resource);
+            mockClassDeclaration2 = sinon.createStubInstance(ClassDeclaration);
+            mockResource2.getClassDeclaration.returns(mockClassDeclaration2);
+            mockResource2.getClassDeclaration().getSystemType();
+            mockClassDeclaration2.getSystemType.returns('Asset');
             mockResource2.theValue = 'the value 2';
             mockResource2.getIdentifier.returns('doge2');
             mockSerializer.toJSON.withArgs(mockResource2).onFirstCall().returns({
@@ -298,10 +326,15 @@ describe('Registry', () => {
     describe('#add', () => {
 
         let mockResource;
+        let mockClassDeclaration;
 
         beforeEach(() => {
             // New resources.
             mockResource = sinon.createStubInstance(Resource);
+            mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockResource.getClassDeclaration.returns(mockClassDeclaration);
+            mockResource.getClassDeclaration().getSystemType();
+            mockClassDeclaration.getSystemType.returns('Asset');
             mockResource.theValue = 'the value 1';
             mockResource.getIdentifier.returns('doge1');
             mockSerializer.toJSON.withArgs(mockResource).onFirstCall().returns({
@@ -331,12 +364,27 @@ describe('Registry', () => {
                     });
                 });
         });
+        it('should throw error adding a resource to the wrong registry', () => {
+            mockClassDeclaration.getSystemType.returns('Transaction');
+            mockDataCollection.add.resolves();
+            let mockEventHandler = sinon.stub();
+            registry.on('resourceadded', mockEventHandler);
+            return registry.add(mockResource)
+                .should.be.rejectedWith(/Cannot add type: Transaction to Asset/);
+
+        });
 
         it('should throw if the access controller throws an exception', () => {
             mockAccessController.check.withArgs(mockResource, 'CREATE').rejects(new AccessException(mockResource, 'CREATE', mockParticipant));
             mockDataCollection.add.resolves();
             return registry.add(mockResource)
                 .should.be.rejectedWith(AccessException);
+        });
+
+        it('should throw if resource not specified', () => {
+
+            return registry.add({})
+                .should.be.rejectedWith(/Expected a Resource./);
         });
 
         it('should return errors from the data service', () => {
@@ -350,13 +398,23 @@ describe('Registry', () => {
 
         let mockResource1, mockResource2;
         let mockOldResource1, mockOldResource2;
+        let mockClassDeclaration1, mockClassDeclaration2;
+        let mockOldClassDeclaration1, mockOldClassDeclaration2;
 
         beforeEach(() => {
             // New resources.
             mockResource1 = sinon.createStubInstance(Resource);
+            mockClassDeclaration1 = sinon.createStubInstance(ClassDeclaration);
+            mockResource1.getClassDeclaration.returns(mockClassDeclaration1);
+            mockResource1.getClassDeclaration().getSystemType();
+            mockClassDeclaration1.getSystemType.returns('Asset');
             mockResource1.getIdentifier.returns('doge1');
             mockResource1.theValue = 'newValue1';
             mockResource2 = sinon.createStubInstance(Resource);
+            mockClassDeclaration2 = sinon.createStubInstance(ClassDeclaration);
+            mockResource2.getClassDeclaration.returns(mockClassDeclaration2);
+            mockResource2.getClassDeclaration().getSystemType();
+            mockClassDeclaration2.getSystemType.returns('Asset');
             mockResource2.getIdentifier.returns('doge2');
             mockResource2.theValue = 'newValue2';
             mockSerializer.toJSON.withArgs(mockResource1).onFirstCall().returns({
@@ -371,6 +429,10 @@ describe('Registry', () => {
             });
             // Old resources.
             mockOldResource1 = sinon.createStubInstance(Resource);
+            mockOldClassDeclaration1 = sinon.createStubInstance(ClassDeclaration);
+            mockOldResource1.getClassDeclaration.returns(mockOldClassDeclaration1);
+            mockOldResource1.getClassDeclaration().getSystemType();
+            mockOldClassDeclaration1.getSystemType.returns('Asset');
             mockOldResource1.getIdentifier.returns('doge1');
             mockOldResource1.theValue = 'oldValue1';
             mockDataCollection.get.withArgs('doge1').resolves({
@@ -384,6 +446,10 @@ describe('Registry', () => {
                 theValue: 'oldValue1'
             }).returns(mockOldResource1);
             mockOldResource2 = sinon.createStubInstance(Resource);
+            mockOldClassDeclaration2 = sinon.createStubInstance(ClassDeclaration);
+            mockOldResource2.getClassDeclaration.returns(mockOldClassDeclaration2);
+            mockOldResource2.getClassDeclaration().getSystemType();
+            mockOldClassDeclaration2.getSystemType.returns('Asset');
             mockOldResource2.getIdentifier.returns('doge2');
             mockOldResource2.theValue = 'oldValue2';
             mockDataCollection.get.withArgs('doge2').resolves({
@@ -452,10 +518,15 @@ describe('Registry', () => {
     describe('#update', () => {
 
         let mockResource, mockOldResource;
+        let mockClassDeclaration, mockOldClassDeclaration;
 
         beforeEach(() => {
             // New resources.
             mockResource = sinon.createStubInstance(Resource);
+            mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockResource.getClassDeclaration.returns(mockClassDeclaration);
+            mockResource.getClassDeclaration().getSystemType();
+            mockClassDeclaration.getSystemType.returns('Asset');
             mockResource.getIdentifier.returns('doge1');
             mockResource.theValue = 'newValue';
             mockSerializer.toJSON.withArgs(mockResource).onFirstCall().returns({
@@ -465,6 +536,10 @@ describe('Registry', () => {
             });
             // Old resources.
             mockOldResource = sinon.createStubInstance(Resource);
+            mockOldClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+            mockOldResource.getClassDeclaration.returns(mockOldClassDeclaration);
+            mockOldResource.getClassDeclaration().getSystemType();
+            mockOldClassDeclaration.getSystemType.returns('Asset');
             mockOldResource.getIdentifier.returns('doge1');
             mockOldResource.theValue = 'oldValue';
             mockDataCollection.get.withArgs('doge1').resolves({
@@ -502,6 +577,16 @@ describe('Registry', () => {
                     });
                 });
         });
+        it('should throw an error updating a resource to the wrong registry', () => {
+
+            mockDataCollection.update.resolves();
+            mockClassDeclaration.getSystemType.returns('Transaction');
+            mockOldClassDeclaration.getSystemType.returns('Transaction');
+            let mockEventHandler = sinon.stub();
+            registry.on('resourceupdated', mockEventHandler);
+            return registry.update(mockResource)
+                .should.be.rejectedWith(/Cannot update type: Transaction to Asset/);
+        });
 
         it('should throw if the access controller throws an exception', () => {
             mockAccessController.check.withArgs(mockOldResource, 'UPDATE').rejects(new AccessException(mockOldResource, 'UPDATE', mockParticipant));
@@ -513,6 +598,11 @@ describe('Registry', () => {
         it('should return errors from the data service', () => {
             mockDataCollection.update.rejects();
             return registry.update(mockResource).should.be.rejected;
+        });
+        it('should throw if resource not specified', () => {
+
+            return registry.update({})
+                .should.be.rejectedWith(/Expected a Resource./);
         });
 
     });

@@ -2,19 +2,32 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
+import { Directive, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
 import * as sinon from 'sinon';
+import * as chai from 'chai';
+
+let should = chai.should();
 
 import { EditCardCredentialsComponent } from './edit-card-credentials.component';
 import { IdentityCardService } from '../../services/identity-card.service';
 import { AlertService } from '../../basic-modals/alert.service';
 
+@Directive({
+    selector: 'credentials'
+})
+class MockCredentialsDirective {
+    @Output()
+    public credentials: EventEmitter<any> = new EventEmitter<any>();
+}
+
 describe('EditCardCredentialsComponent', () => {
     let component: EditCardCredentialsComponent;
     let fixture: ComponentFixture<EditCardCredentialsComponent>;
 
-    let mockActiveModal;
+    let sandbox;
     let mockIdentityCardService;
     let mockAlertService;
 
@@ -26,9 +39,13 @@ describe('EditCardCredentialsComponent', () => {
         mockAlertService.busyStatus$ = {next: sinon.stub()};
         mockAlertService.errorStatus$ = {next: sinon.stub()};
 
+        sandbox = sinon.sandbox.create();
+
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditCardCredentialsComponent],
+            declarations: [
+                EditCardCredentialsComponent, MockCredentialsDirective
+            ],
             providers: [
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService}
@@ -190,7 +207,6 @@ describe('EditCardCredentialsComponent', () => {
     });
 
     describe('#validContents', () => {
-
         it('should not enable validation if trying to set certificates', () => {
             // Certs path
             component['useCerts'] = true;
@@ -389,18 +405,6 @@ describe('EditCardCredentialsComponent', () => {
         });
     });
 
-    describe('#useCertificates', () => {
-        it('should set flag to false when passed false', () => {
-            component['useCertificates'](false);
-            component['useCerts'].should.be.false;
-        });
-
-        it('should set flag to true when passed true', () => {
-            component['useCertificates'](true);
-            component['useCerts'].should.be.true;
-        });
-    });
-
     describe('#useParticipantCardType', () => {
         it('should set flag to false when passed false', () => {
             component['useParticipantCardType'](false);
@@ -418,6 +422,41 @@ describe('EditCardCredentialsComponent', () => {
             let spy = sinon.spy(component.idCardAdded, 'emit');
             component['close']();
             spy.should.have.been.calledWith(false);
+        });
+    });
+
+    describe('updateCredentials', () => {
+        it('should set details to null if no event', () => {
+            component.updateCredentials(null);
+
+            should.not.exist(component['userId']);
+            should.not.exist(component['userSecret']);
+            should.not.exist(component['addedPrivateCertificate']);
+            should.not.exist(component['addedPublicCertificate']);
+        });
+
+        it('should set the userId and secret', () => {
+            let event = {userId: 'myUserId', secret: 'mySecret'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['userSecret'].should.equal('mySecret');
+
+            should.not.exist(component['addedPrivateCertificate']);
+            should.not.exist(component['addedPublicCertificate']);
+        });
+
+        it('should set the credentials', () => {
+            let event = {userId: 'myUserId', cert: 'myCert', key: 'myKey'};
+
+            component.updateCredentials(event);
+
+            component['userId'].should.equal('myUserId');
+            component['addedPrivateCertificate'].should.equal('myKey');
+            component['addedPublicCertificate'].should.equal('myCert');
+
+            should.not.exist(component['userSecret']);
         });
     });
 });

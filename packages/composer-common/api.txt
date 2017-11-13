@@ -29,13 +29,20 @@ class BusinessNetworkMetadata {
    + string getVersion() 
    + string getIdentifier() 
 }
+class BusinessNetworkCardStore {
+   + String getDefaultCardName(IdCard) 
+   + Promise get(String) 
+   + Promise put(String,IdCard) 
+   + Promise getAll() 
+   + Promise delete(String) 
+}
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newResource(string,string,string,Object,boolean,string,boolean) throws TypeNotFoundException
+   + Resource newResource(string,string,string,Object,boolean,string,boolean,boolean) throws TypeNotFoundException
    + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string,boolean) 
-   + Resource newEvent(string,string,string,Object,string,boolean) 
+   + Resource newTransaction(string,string,string,Object,string,boolean,boolean) 
+   + Resource newEvent(string,string,string,Object,string,boolean,boolean) 
 }
 class FileWallet extends Wallet {
    + string getHomeDirectory() 
@@ -58,6 +65,8 @@ class IdCard {
    + String[] getRoles() 
    + Promise fromArchive() 
    + Promise toArchive(Object,String) 
+   + Promise fromDirectory(String,undefined) 
+   + Promise toDirectory(String,undefined) 
 }
 class IllegalModelException extends BaseFileException {
    + void constructor(String,ModelFile,Object,String,String,String,String) 
@@ -129,7 +138,7 @@ class SecurityException extends BaseException {
 class Serializer {
    + void constructor(Factory,ModelManager) 
    + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
-   + Resource fromJSON(Object,Object,boolean) 
+   + Resource fromJSON(Object,Object,boolean,boolean) 
 }
 class ValidationException extends BaseException {
    + void constructor(string) 

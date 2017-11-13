@@ -141,11 +141,8 @@ describe('Transaction (query specific) system tests', () => {
                 participantsAsJSON.sort(function (a, b) {
                     return a.participantId.localeCompare(b.participantId);
                 });
-            });
-    });
-
-    beforeEach(function () {
-        return client.getAssetRegistry('systest.transactions.queries.SampleAsset')
+                return client.getAssetRegistry('systest.transactions.queries.SampleAsset');
+            })
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
             })
@@ -155,6 +152,10 @@ describe('Transaction (query specific) system tests', () => {
             .then((participantRegistry) => {
                 return participantRegistry.addAll(participantsAsResources);
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     ['assets', 'participants'].forEach((type) => {

@@ -196,57 +196,36 @@ class WebConnection extends Connection {
      * Deploy a business network. For the web connector this just translates to
      * a start request as no install is required.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deploy options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
-        return this.start(securityContext, businessNetwork, deployOptions);
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
+        return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
     }
 
     /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific start options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed and the network started, or rejected with an error.
      */
-    start(securityContext, businessNetwork, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         let container = WebConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeID = container.getUUID();
         let engine = WebConnection.createEngine(container);
-        WebConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeID);
+        WebConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeID);
         WebConnection.addChaincode(chaincodeID, container, engine);
         let context = new WebContext(engine, identity, this);
-        return businessNetwork.toArchive()
-            .then((businessNetworkArchive) => {
-                const initArgs = {};
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
-            })
+        return engine.init(context, 'init', [startTransaction])
             .then(() => {
-                return this.setChaincodeID(businessNetwork.getName(), chaincodeID);
-            })
-            .then(() => {
-                securityContext.setChaincodeID(chaincodeID);
-                return this.ping(securityContext);
-            });
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
-            .then((buffer) => {
-                return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
+                return this.setChaincodeID(businessNetworkIdentifier, chaincodeID);
             });
     }
 
@@ -330,25 +309,56 @@ class WebConnection extends Connection {
      * rejected with an error.
      */
     getIdentity(identityName) {
-        if (identityName === 'admin') {
-            const certificateContents = identityName;
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from(certificateContents).toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
-            return Promise.resolve({
-                identifier: '',
-                name: 'admin',
-                issuer: DEFAULT_ISSUER,
-                secret: 'adminpw',
-                certificate,
-                imported: false
-            });
-        }
+        let identities;
         return this.getIdentities()
-            .then((identities) => {
+            .then((identities_) => {
+                identities = identities_;
                 return identities.get(identityName);
+            })
+            .catch((error) => {
+                if (identityName === 'admin') {
+                    return this._createAdminIdentity();
+                }
+                throw error;
+            });
+    }
+
+    /**
+     * Create the default admin identity.
+     * @return {Promise} A promise that is resolved with the admin identity when complete,
+     * or rejected with an error.
+     */
+    _createAdminIdentity() {
+        const identityName = 'admin';
+        const certificateContents = identityName;
+        const certificate = [
+            '-----BEGIN CERTIFICATE-----',
+            Buffer.from(certificateContents).toString('base64'),
+            '-----END CERTIFICATE-----'
+        ].join('\n').concat('\n');
+        const identifier = createHash('sha256').update(certificateContents).digest('hex');
+        const identity = {
+            identifier,
+            name: identityName,
+            issuer: DEFAULT_ISSUER,
+            secret: 'adminpw',
+            certificate,
+            imported: false,
+            options: {
+                issuer: true
+            }
+        };
+        let identities;
+        return this.getIdentities()
+            .then((identities_) => {
+                identities = identities_;
+                return identities.add(identityName, identity);
+            })
+            .then(() => {
+                return identities.add(identifier, identity);
+            })
+            .then(() => {
+                return identity;
             });
     }
 
@@ -388,6 +398,10 @@ class WebConnection extends Connection {
      */
     createIdentity(securityContext, identityName, options) {
         let identities;
+        const currentIdentity = securityContext.getIdentity();
+        if (!currentIdentity.options.issuer) {
+            throw new Error(`The identity ${currentIdentity.name} does not have permission to create a new identity ${identityName}`);
+        }
         return this.getIdentities()
             .then((identities_) => {
                 identities = identities_;
@@ -405,11 +419,17 @@ class WebConnection extends Connection {
                 }
                 const certificateContents = identityName + ':' + uuid.v4();
                 const certificate = [
-                    '----- BEGIN CERTIFICATE -----',
+                    '-----BEGIN CERTIFICATE-----',
                     Buffer.from(certificateContents).toString('base64'),
-                    '----- END CERTIFICATE -----'
+                    '-----END CERTIFICATE-----'
                 ].join('\n').concat('\n');
-                const identifier = createHash('sha256').update(certificateContents).digest('hex');
+                const bytes = certificate
+                    .replace(/-----BEGIN CERTIFICATE-----/, '')
+                    .replace(/-----END CERTIFICATE-----/, '')
+                    .replace(/[\r\n]+/g, '');
+                const buffer = Buffer.from(bytes, 'base64');
+                const sha256 = createHash('sha256');
+                const identifier = sha256.update(buffer).digest('hex');
                 const secret = uuid.v4().substring(0, 8);
                 const identity = {
                     identifier,
@@ -417,7 +437,8 @@ class WebConnection extends Connection {
                     issuer: DEFAULT_ISSUER,
                     secret,
                     certificate,
-                    imported: false
+                    imported: false,
+                    options: options || {}
                 };
                 return identities.add(identityName, identity)
                     .then(() => {
@@ -489,6 +510,15 @@ class WebConnection extends Connection {
             });
     }
 
+    /**
+     * Create a new transaction id
+     * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved with a transaction id
+     */
+    createTransactionId(securityContext){
+        return Promise.resolve(null);
+    }
 }
 
 module.exports = WebConnection;

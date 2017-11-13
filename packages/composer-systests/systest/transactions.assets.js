@@ -27,7 +27,10 @@ chai.use(require('chai-as-promised'));
 
 
 describe('Transaction (asset specific) system tests', () => {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -46,6 +49,7 @@ describe('Transaction (asset specific) system tests', () => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-transactions-assets')
@@ -53,6 +57,10 @@ describe('Transaction (asset specific) system tests', () => {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     it('should submit and execute a transaction that contains assets', () => {

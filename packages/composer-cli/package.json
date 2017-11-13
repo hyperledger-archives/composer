@@ -1,10 +1,10 @@
 {
   "name": "composer-cli",
-  "version": "0.13.0",
+  "version": "0.15.1",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "bin": {
     "composer": "cli.js"
@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "nyc mocha --recursive -t 10000"
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
+    "nyc": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -29,32 +31,33 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "chai-things": "^0.2.0",
-    "eslint": "^3.17.1",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "nyc": "^11.1.0",
-    "sinon": "^2.3.8"
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "chai-things": "0.2.0",
+    "eslint": "3.17.1",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "sinon": "2.3.8"
   },
   "dependencies": {
-    "chalk": "^1.1.3",
-    "cli-table": "^0.3.1",
-    "composer-admin": "0.13.0",
-    "composer-client": "0.13.0",
-    "composer-common": "0.13.0",
-    "composer-rest-server": "0.13.0",
-    "homedir": "^0.6.0",
-    "mkdirp": "^0.5.1",
-    "npm-paths": "^0.1.3",
-    "nunjucks": "^3.0.0",
-    "ora": "^1.2.0",
-    "prettyjson": "^1.2.1",
-    "prompt": "^1.0.0",
-    "sanitize-filename": "^1.6.1",
-    "shelljs": "^0.7.7",
-    "yargs": "^8.0.1"
+    "chalk": "1.1.3",
+    "cli-table": "0.3.1",
+    "composer-admin": "0.15.1",
+    "composer-client": "0.15.1",
+    "composer-common": "0.15.1",
+    "composer-rest-server": "0.15.1",
+    "figlet": "1.2.0",
+    "homedir": "0.6.0",
+    "mkdirp": "0.5.1",
+    "npm-paths": "0.1.3",
+    "nunjucks": "3.0.0",
+    "ora": "1.2.0",
+    "prettyjson": "1.2.1",
+    "prompt": "1.0.0",
+    "sanitize-filename": "1.6.1",
+    "shelljs": "0.7.7",
+    "yargs": "10.0.3"
   },
   "license-check-config": {
     "src": [
@@ -75,7 +78,9 @@
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "lib/shellcmds/**",
+      "shell.js"
     ],
     "reporter": [
       "text-summary",
@@ -83,9 +88,9 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 70,
-    "branches": 56,
-    "functions": 62,
-    "lines": 70
+    "statements": 83,
+    "branches": 64,
+    "functions": 78,
+    "lines": 83
   }
 }

@@ -21,12 +21,14 @@ const Connector = require('loopback-connector').Connector;
 const crypto = require('crypto');
 const debug = require('debug')('loopback:connector:composer');
 const EventEmitter = require('events');
+const IdCard = require('composer-common').IdCard;
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
 const NodeCache = require('node-cache');
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 const util = require('util');
+const FilterParser = require('./filterparser');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -42,14 +44,8 @@ class BusinessNetworkConnector extends Connector {
         super('composer', settings);
 
         // Check for required properties.
-        if (!settings.connectionProfileName) {
-            throw new Error('connectionProfileName not specified');
-        } else if (!settings.businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
-        } else if (!settings.participantId) {
-            throw new Error('participantId not specified');
-        } else if (!settings.participantPwd) {
-            throw new Error('participantPwd not specified');
+        if (!settings.card) {
+            throw new Error('card not specified');
         }
 
         // Assign defaults for any optional properties.
@@ -90,15 +86,16 @@ class BusinessNetworkConnector extends Connector {
         if (this.settings.multiuser && options && options.accessToken) {
 
             // Check that the LoopBack application has supplied the required information.
-            if (!options.enrollmentID || !options.enrollmentSecret) {
-                throw new Error('No enrollment ID or enrollment secret has been provided');
+            if (!options.card) {
+                throw new Error('A business network card has not been specified');
+            } else if (!options.cardStore) {
+                throw new Error('A business network card store has not been specified');
             }
 
-            // The connection wrapper key is a hash of the user ID, enrollment ID, and enrollment secret.
+            // The connection wrapper key is a hash of the access token and business network card.
             const key = crypto.createHmac('sha256', 'such secret')
                 .update(options.accessToken.id)
-                .update(options.enrollmentID)
-                .update(options.enrollmentSecret)
+                .update(options.card)
                 .digest('hex');
 
             // Check to see if a connection wrapper already exists for the key, if not create one.
@@ -106,9 +103,8 @@ class BusinessNetworkConnector extends Connector {
             if (!connectionWrapper) {
                 debug('Creating new connection wrapper for key', key);
                 const settings = Object.assign(this.settings, {
-                    participantId: options.enrollmentID,
-                    participantPwd: options.enrollmentSecret,
-                    wallet: options.wallet
+                    cardStore: options.cardStore,
+                    card: options.card
                 });
                 connectionWrapper = new BusinessNetworkConnectionWrapper(settings);
                 this.connectionWrappers.set(key, connectionWrapper);
@@ -271,7 +267,7 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Retrieves all the instances of objects in the Business Network.
      * @param {string} lbModelName The name of the model.
-     * @param {string} filter The filter of which objects to get
+     * @param {Object} filter The filter of which objects to get
      * @param {Object} options The options provided by Loopback.
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
@@ -279,46 +275,67 @@ class BusinessNetworkConnector extends Connector {
     all(lbModelName, filter, options, callback) {
         debug('all', lbModelName, filter, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
 
                 // check for resolve include filter
                 let doResolve = this.isResolveSet(filter);
-                debug('doResolve', doResolve);
                 let filterKeys = Object.keys(filter);
 
-                if(filterKeys.indexOf('where') >= 0) {
+                if (filterKeys.indexOf('where') !== -1) {
                     const keys = Object.keys(filter.where);
-                    if (keys.length === 0) {
-                        throw new Error('The destroyAll operation without a where clause is not supported');
+                    const nKeys = keys.length;
+                    if (nKeys === 0) {
+                        throw new Error('The Loopback ALL operation, without a full WHERE clause, is not supported');
                     }
                     let identifierField = this.getClassIdentifier(composerModelName);
-                    if(!filter.where[identifierField]) {
-                        throw new Error('The specified filter does not match the identifier in the model');
-                    }
 
-                    // Check we have the right identifier for the object type
+                    // Check if the filter is a simple ID query
+                    // - will be undefined if no identifier involved
+                    // - will have a single string objectId if a simple query on the identifier
+                    // - will have an object if identifier is involved with more complex query
                     let objectId = filter.where[identifierField];
-                    if(doResolve) {
+                    if (doResolve) {
+                        if (typeof objectId === 'undefined'|| objectId === null) {
+                            throw new Error('Unable to resolve: the filter field value is not specified');
+                        }
+                        // ensure only support resolving via the id field
+                        if ( nKeys !== 1 ) {
+                            throw new Error('Unable to resolve: only one id field is supported');
+                        }
+
                         return registry.resolve(objectId)
                             .then((result) => {
-                                debug('Got Result:', result);
+                                debug('registry.resolve result:', result);
                                 return [ result ];
                             });
 
-                    } else {
+                    } else if (objectId && typeof objectId === 'string') {
                         return registry.get(objectId)
                             .then((result) => {
-                                debug('Got Result:', result);
+                                debug('registry.get result:', result);
                                 return [ this.serializer.toJSON(result) ];
                             });
+                    } else {
+                        // perform filter query when id is not the first field
+                        const queryString = FilterParser.parseFilter(filter, composerModelName);
+                        const query = networkConnection.buildQuery(queryString);
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('networkConnection.query result:', result);
+                            return result.map((res) =>{
+                                return this.serializer.toJSON(res);
+                            });
+                        });
                     }
-                } else if(doResolve) {
-                    debug('no where filter, about to resolve on all');
+                } else if (doResolve) {
+                    debug('No `where` filter, about to perform resolveAll');
                     // get all unresolved objects
                     return registry.resolveAll()
                         .then((result) => {
@@ -328,7 +345,7 @@ class BusinessNetworkConnector extends Connector {
 
                 } else {
                     // get all unresolved objects
-                    debug('no where filter, about to get all');
+                    debug('No `where` filter, about to perform getAll');
                     return registry.getAll()
                         .then((result) => {
                             debug('Got Result:', result);
@@ -342,17 +359,18 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     callback(null, []);
                     return;
                 }
+                debug('all', 'error thrown doing all', error);
                 callback(error);
             });
     }
 
     /**
      * check if the filter contains an Include filter
-     * @param {string} filter The filter of which objects to get
+     * @param {Object} filter The filter of which objects to get
      * @return {boolean} true if there is an include that specifies to resolve
      */
     isResolveSet(filter) {
@@ -408,23 +426,45 @@ class BusinessNetworkConnector extends Connector {
     count(lbModelName, where, options, callback) {
         debug('count', lbModelName, where, options);
         let composerModelName = this.getComposerModelName(lbModelName);
+        let networkConnection = null;
 
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                networkConnection = businessNetworkConnection;
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
             })
             .then((registry) => {
                 const fields = Object.keys(where || {});
-                if (fields.length > 0) {
-                    let idField = fields[0];
-                    if(this.isValidId(composerModelName, idField)) {
+                const numFields = fields.length;
+                if (numFields > 0) {
+                    // Check if the filter is a simple ID query
+                    let idField = null;
+                    let bFound = false;
+                    // find the valid id from the list of fields
+                    for( let i=0; i<numFields; i++){
+                        if(this.isValidId(composerModelName,fields[i])){
+                            idField = fields[i];
+                            bFound = true;
+                            break;
+                        }
+                    }
+                    // find the key in the list fields
+                    if(bFound) {
                         // Just a basic existence check for now
                         return registry.exists(where[idField])
                             .then((exists) => {
                                 return exists ? 1 : 0;
                             });
                     } else {
-                        throw new Error(idField+' is not valid for asset '+composerModelName);
+                        const queryConditions = FilterParser.parseWhereCondition(where, composerModelName);
+                        const queryString = 'SELECT ' + composerModelName + ' WHERE ' + queryConditions;
+                        const query = networkConnection.buildQuery(queryString);
+
+                        return networkConnection.query(query, {})
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.length;
+                        });
                     }
                 } else {
                     return registry.getAll()
@@ -437,7 +477,7 @@ class BusinessNetworkConnector extends Connector {
                 callback(null, result);
             })
             .catch((error) => {
-                debug('exists', 'error thrown doing exists', error);
+                debug('count', 'error thrown doing count', error);
                 callback(error);
             });
     }
@@ -549,7 +589,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('replaceById', 'error thrown doing update', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -648,7 +688,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('destroy', 'error thrown doing remove', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -719,6 +759,9 @@ class BusinessNetworkConnector extends Connector {
                 }
                 idField = keys[0];
                 if(!this.isValidId(composerModelName, idField)) {
+
+                // using where object to query the object back:
+
                     throw new Error('The specified filter does not match the identifier in the model');
                 }
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);
@@ -739,7 +782,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('update', 'error thrown doing update', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -783,7 +826,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('destroyAll', 'error thrown doing remove', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -839,7 +882,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('getIdentityByID', 'error thrown doing getIdentityByID', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);
@@ -858,9 +901,22 @@ class BusinessNetworkConnector extends Connector {
      */
     issueIdentity(participant, userID, issueOptions, options, callback) {
         debug('issueIdentity', participant, userID, issueOptions, options);
+        let issuingCard;
         return this.ensureConnected(options)
             .then((businessNetworkConnection) => {
+                // Save the current business network card so we can create a new one.
+                issuingCard = businessNetworkConnection.getCard();
                 return businessNetworkConnection.issueIdentity(participant, userID, issueOptions);
+            })
+            .then((result) => {
+                const metadata = {
+                    userName: result.userID,
+                    version: 1,
+                    enrollmentSecret: result.userSecret,
+                    businessNetwork: issuingCard.getBusinessNetworkName()
+                };
+                const newCard = new IdCard(metadata, issuingCard.getConnectionProfile());
+                return newCard.toArchive({ type: 'nodebuffer' });
             })
             .then((result) => {
                 callback(null, result);
@@ -1027,7 +1083,7 @@ class BusinessNetworkConnector extends Connector {
             })
             .catch((error) => {
                 debug('getHistorianRecordByID', 'error thrown doing getHistorianRecordByID', error);
-                if (error.message.match(/does not exist/)) {
+                if (error.message.match(/Object with ID.*does not exist/)) {
                     error.statusCode = error.status = 404;
                 }
                 callback(error);

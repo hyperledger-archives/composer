@@ -20,7 +20,7 @@ const program = require('commander');
 const PlantUMLGenerator = require('./fromjs/plantumlgenerator');
 const APISignatureGenerator = require('./fromjs/apisignaturegenerator');
 const JavaScriptParser = require('./javascriptparser');
-
+const JSONGenerator = require('./fromjs/jsongenerator');
 /**
  * Generates Plant UML files from Javascript source files
  *
@@ -34,6 +34,7 @@ program
     .usage('[options]')
     .option('-o, --outputDir <outputDir>', 'Output directory')
     .option('-i, --inputDir <inputDir>', 'Input source directory')
+    .option('-s, --single <singlefile>', 'Single file to process')
     .option('-f, --format <format>', 'Format of code to generate. Defaults to PlantUML.', 'PlantUML')
     .option('-p, --private', 'Include classes that have the @private JSDoc annotation')
     .parse(process.argv);
@@ -47,12 +48,23 @@ case 'PlantUML':
 case 'APISignature':
     fileProcessor = new APISignatureGenerator();
     break;
+case 'JSON':
+    fileProcessor = new JSONGenerator();
+    break;
 }
 
-console.log('Input dir ' + program.inputDir);
 
-// Loop through all the files in the input directory
-processDirectory(program.inputDir,fileProcessor);
+if (program.inputDir){
+    // Loop through all the files in the input directory
+    console.log('Input dir ' + program.inputDir);
+    processDirectory(program.inputDir,fileProcessor);
+}
+else if (program.single){
+    console.log('Single file '+program.single);
+    processFile(path.resolve(program.single),fileProcessor);
+} else {
+    console.log('no file option given');
+}
 
 /**
  * Processes all the Javascript files within a directory.
@@ -88,10 +100,9 @@ function processDirectory(path, fileProcessor) {
  */
 function processFile(file, fileProcessor) {
     let filePath = path.parse(file);
-    if (filePath.ext === '.js') {
-        //console.log('%s is a file.', file);
+    if (filePath.ext === '.js' && filePath.base !== 'parser.js') {  //ignore the generated parsers
         let fileContents = fs.readFileSync(file, 'utf8');
-        const parser = new JavaScriptParser(fileContents, program.private);
+        const parser = new JavaScriptParser(fileContents, program.private, null, false);
         fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
     }
 }

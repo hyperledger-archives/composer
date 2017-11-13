@@ -1,34 +1,51 @@
 // Tables
 .composer {
-  table {
-    width: 100%;
-    border-spacing: 0 $space-smedium;
+    table {
+        width: 100%;
+        border-spacing: 0 $space-smedium;
 
-    thead {
-      tr {
-        th {
-          text-align: left;
-          padding: 0 $space-smedium;
-          font-weight: 700;
+        thead {
+            tr {
+                th {
+                    text-align: left;
+                    padding: 0 $space-smedium;
+                    font-weight: 700;
+                }
+            }
         }
-      }
-    }
 
-    tbody {
-      tr {
-        background-color: $white;
-        box-shadow: 0 2px 5px -1px $fifth-highlight;
-        margin-bottom: $space-medium;
+        tbody {
+            tr {
+                background-color: $white;
+                box-shadow: 0 2px 5px -1px $fifth-highlight;
+                margin-bottom: $space-medium;
 
+                td {
+                    padding: $space-smedium;
 
-        td {
-          padding: $space-smedium;
-
-          &.clickable {
-            cursor: pointer;
-          }
+                    &.clickable {
+                        cursor: pointer;
+                    }
+                }
+            }
         }
-      }
+
+        &.no-shadow {
+            tbody {
+                tr {
+                    box-shadow: none;
+
+                    th {
+                        text-align: start;
+                        padding-right: $space-medium;
+                    }
+
+                    td {
+                        vertical-align: text-top;
+                        padding: $space-smedium 0;
+                    }
+                }
+            }
+        }
     }
-  }
 }

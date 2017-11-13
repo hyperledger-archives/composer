@@ -3,6 +3,7 @@ import { Http, RequestOptions, URLSearchParams } from '@angular/http';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
+import { FileService } from './file.service';
 import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkDefinition } from 'composer-common';
@@ -10,10 +11,12 @@ import { IdentityCardService } from './identity-card.service';
 
 @Injectable()
 export class SampleBusinessNetworkService {
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private alertService: AlertService,
                 private identityCardService: IdentityCardService,
+                private fileService: FileService,
                 private http: Http) {
     }
 
@@ -21,7 +24,7 @@ export class SampleBusinessNetworkService {
         return new BusinessNetworkDefinition(name, description, packageJson, readme);
     }
 
-    public getSampleList() {
+    public getSampleList(): Promise<any> {
         return this.http.get(PLAYGROUND_API + '/api/getSampleList')
             .toPromise()
             .then((response) => {
@@ -54,10 +57,51 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string): Promise<void> {
+    generateBootstrapTransactions(businessNetworkDefinition: BusinessNetworkDefinition, identityName: string, credentials): Object[] {
+        const factory = businessNetworkDefinition.getFactory();
+        const serializer = businessNetworkDefinition.getSerializer();
+        const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
+        const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
+        const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
+        Object.assign(addParticipantTransaction, {
+            resources: [participant],
+            targetRegistry
+        });
+
+        let identityTransaction;
+
+        if (!credentials) {
+            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+            Object.assign(identityTransaction, {
+                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+                identityName
+            });
+        } else {
+            let certificate = credentials.certificate;
+
+            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+            Object.assign(identityTransaction, {
+                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
+                certificate
+            });
+        }
+
+        const result = [
+            addParticipantTransaction,
+            identityTransaction
+        ].map((bootstrapTransaction) => {
+            return serializer.toJSON(bootstrapTransaction);
+        });
+        return result;
+    }
+
+    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, networkName: string, networkDescription: string, networkId: string, networkSecret: string, credentials): Promise<string> {
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = networkName;
         packageJson.description = networkDescription;
+
+        let newCardRef: string;
+        let channelAdminCardRef: string;
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
 
@@ -69,14 +113,15 @@ export class SampleBusinessNetworkService {
         return this.adminService.connectWithoutNetwork(true)
             .then(() => {
                 this.alertService.busyStatus$.next({
-                    title: 'Installing Business Network'
+                    title: 'Installing Business Network',
+                    force: true
                 });
                 return this.adminService.install(newNetwork.getName());
             })
             .then(() => {
                 let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
                 let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                let channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
+                channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
 
                 return this.identityCardService.setCurrentIdentityCard(channelAdminCardRef);
             })
@@ -84,33 +129,77 @@ export class SampleBusinessNetworkService {
                 return this.adminService.connectWithoutNetwork(true);
             })
             .then(() => {
+                if (networkSecret) {
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), networkSecret, this.identityCardService.getCurrentIdentityCard().getConnectionProfile())
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                            return this.identityCardService.setCurrentIdentityCard(idCardRef);
+                        })
+                        .then(() => {
+                            return this.adminService.connectWithoutNetwork(true);
+                        })
+                        .then(() => {
+                            let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
+                            let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                            return this.adminService.exportIdentity(qpn, networkId);
+                        })
+                        .then((retrievedCertificate) => {
+                            credentials = {};
+                            credentials.certificate = retrievedCertificate.certificate;
+                            return this.identityCardService.setCurrentIdentityCard(channelAdminCardRef);
+                        })
+                        .then(() => {
+                            return this.adminService.connectWithoutNetwork(true);
+                        });
+                } else if (credentials) {
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), null, this.identityCardService.getCurrentIdentityCard().getConnectionProfile(), credentials)
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                        });
+                } else {
+                    networkId = 'admin';
+                    return this.identityCardService.createIdentityCard(networkId, newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile())
+                        .then((idCardRef: string) => {
+                            newCardRef = idCardRef;
+                        });
+                }
+            })
+            .then(() => {
                 this.alertService.busyStatus$.next({
-                    title: 'Starting Business Network'
+                    title: 'Starting Business Network',
+                    force: true
                 });
 
-                return this.adminService.start(newNetwork);
-            })
-            .then(() => {
-                return this.clientService.refresh(newNetwork.getName());
-            })
-            .then(() => {
-                return this.clientService.reset();
-            })
-            .then(() => {
-                return this.identityCardService.createIdentityCard('admin', newNetwork.getName(), 'adminpw', this.identityCardService.getCurrentIdentityCard().getConnectionProfile());
+                const bootstrapTransactions = this.generateBootstrapTransactions(businessNetworkDefinition, networkId, credentials);
+
+                return this.adminService.start(newNetwork, {bootstrapTransactions});
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
+                return newCardRef;
             })
             .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                throw error;
+                if (newCardRef) {
+                    return this.identityCardService.deleteIdentityCard(newCardRef)
+                        .then(() => {
+                            this.alertService.busyStatus$.next(null);
+                            return Promise.reject(error);
+                        })
+                        .catch(() => {
+                            // Ignore error from deleting
+                            this.alertService.busyStatus$.next(null);
+                            return Promise.reject(error);
+                        });
+                } else {
+                    this.alertService.busyStatus$.next(null);
+                    throw error;
+                }
             });
     }
 
     public updateBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        let currentBusinessNetworkName = this.clientService.getBusinessNetworkName();
-        let currentBusinessNetworkDescription = this.clientService.getBusinessNetworkDescription();
+        let currentBusinessNetworkName = this.fileService.getBusinessNetworkName();
+        let currentBusinessNetworkDescription = this.fileService.getBusinessNetworkDescription();
 
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = currentBusinessNetworkName;
@@ -130,7 +219,7 @@ export class SampleBusinessNetworkService {
                 return this.clientService.refresh(newNetwork.getName());
             })
             .then(() => {
-                return this.clientService.reset();
+                return this.adminService.reset(newNetwork.getName());
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);

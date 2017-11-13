@@ -19,7 +19,7 @@ const BaseFileException = require('../basefileexception');
 /**
  * Exception throws when a Composer file is syntactically invalid
  * @extends BaseFileException
- * @see See [BaseFileException]{@link module:composer-common.BaseFileException}
+ * @see See {@link BaseFileException}
  * @class
  * @memberof module:composer-common
  */
@@ -32,7 +32,7 @@ class ParseException extends BaseFileException {
      */
     constructor(message, fileLocation) {
 
-        let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+        let fullMessage = message;
 
         // The parser does not give us back the end location of an invalid token.
         // Making the end column equal to the end column makes use of
@@ -46,6 +46,7 @@ class ParseException extends BaseFileException {
                     }
                 }
             }
+            fullMessage+= ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
         }
         super(message, fileLocation, fullMessage);
     }

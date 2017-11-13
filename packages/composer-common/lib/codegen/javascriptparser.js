@@ -35,8 +35,9 @@ class JavaScriptParser {
    * @param {string} fileContents - the text of the JS file to parse
    * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
    * @param {number} [ecmaVersion] - the ECMAScript version to use
+   * @param {boolean} [engineMode] - true if being used by engine for TP/ACL function Parsing
    */
-    constructor(fileContents, includePrivates, ecmaVersion) {
+    constructor(fileContents, includePrivates, ecmaVersion, engineMode = true) {
         let comments = [];
         this.tokens = [];
 
@@ -57,8 +58,7 @@ class JavaScriptParser {
         if (ecmaVersion) {
             options.ecmaVersion = ecmaVersion;
         }
-        // let parser = new Parser(options, fileContents);
-        // let ast = parser.parse();
+
         acorn.plugins.composereof=function(parser){
 
             parser.extend('parseTopLevel', function(nextMethod){
@@ -84,13 +84,38 @@ class JavaScriptParser {
         this.classes = [];
         this.functions = [];
 
-        for (let n = 0; n < ast.body.length; n++) {
-            let statement = ast.body[n];
+        let nodesToProcess = ast.body;
 
-            // record the end of the previous node.
+        // engine mode only wants to look at the top level function definitions
+        // but the js doc generator wants to look at everything so this parser
+        // needs to handle both requirements.
+        if (!engineMode) {
+            nodesToProcess = [];
+            const walk = require('acorn/dist/walk');
+            walk.simple(ast, {
+                FunctionDeclaration(node) {
+                    if (node.id && node.id.name){
+                        nodesToProcess.push(node);
+                    }
+                },
+                FunctionExpression(node) {
+                    if (node.id && node.id.name){
+                        nodesToProcess.push(node);
+                    }
+                },
+                ClassDeclaration(node) {
+                    nodesToProcess.push(node);
+                }
+            });
+        }
+
+        for (let n = 0; n < nodesToProcess.length; n++) {
+            let statement = nodesToProcess[n];
+
+            // record the end of the previous node, required for engineMode only
             let previousEnd = -1;
             if (n !== 0) {
-                previousEnd = ast.body[n-1].end;
+                previousEnd = nodesToProcess[n-1].end;
             }
 
             if (statement.type === 'VariableDeclaration') {
@@ -109,8 +134,14 @@ class JavaScriptParser {
                     }
                 }
             }
-            else if (statement.type === 'FunctionDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+            else if (statement.type === 'FunctionDeclaration' || (statement.type === 'FunctionExpression' && !engineMode)) {
+                let closestComment;
+                // different approaches to finding comments depending on mode as they are not compatible.
+                if (!engineMode) {
+                    closestComment = JavaScriptParser.findCommentBefore(comments, statement.loc.start.line);
+                } else {
+                    closestComment = JavaScriptParser.searchForComment(statement.start, statement.end, previousEnd, comments);
+                }
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -118,8 +149,10 @@ class JavaScriptParser {
                 let decorators = [];
                 let throws = '';
                 let example = '';
+                let commentData;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
+                    commentData = doctrine.parse(comment, {unwrap: true, sloppy: true});
                     returnType = JavaScriptParser.getReturnType(comment);
                     visibility = JavaScriptParser.getVisibility(comment);
                     parameterTypes = JavaScriptParser.getMethodArguments(comment);
@@ -141,42 +174,57 @@ class JavaScriptParser {
                         throws: throws,
                         decorators: decorators,
                         functionText : JavaScriptParser.getText(statement.start, statement.end, fileContents),
-                        example: example
+                        example: example,
+                        commentData : commentData
                     };
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, previousEnd, comments);
+                let closestComment;
+                if (!engineMode) {
+                    closestComment = JavaScriptParser.findCommentBefore(comments, statement.loc.start.line);
+                } else {
+                    closestComment = JavaScriptParser.searchForComment(statement.start, statement.end, previousEnd, comments);
+                }
                 let privateClass = false;
+                let d;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
+                    d = doctrine.parse(comment, {unwrap: true, sloppy: true});
                     privateClass = JavaScriptParser.getVisibility(comment) === '-';
                 }
 
                 if(privateClass === false || includePrivates) {
-                    const clazz = { name: statement.id.name};
+                    d = d || [];
+                    const clazz = { name: statement.id.name , commentData : d  };
                     clazz.methods = [];
 
                     for(let n=0; n < statement.body.body.length; n++) {
                         let thing = statement.body.body[n];
-                        // previousEnd is the end of the node before the ClassDeclaration
-                        let previousThingEnd = previousEnd;
-                        if (n !== 0) {
-                            // record the end of the previous thing inside the ClassDeclaration
-                            let previousThing = statement.body.body[n-1];
-                            previousThingEnd = previousThing.end;
-                        }
 
                         if (thing.type === 'MethodDefinition') {
-                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, previousThingEnd, comments);
+                            let closestComment;
+                            if (!engineMode) {
+                                closestComment = JavaScriptParser.findCommentBefore(comments, thing.loc.start.line);
+                            } else {
+                                // previousEnd is the end of the node before the ClassDeclaration
+                                let previousThingEnd = previousEnd;
+                                if (n !== 0) {
+                                    // record the end of the previous thing inside the ClassDeclaration
+                                    previousThingEnd = statement.body.body[n-1].end;
+                                }
+                                closestComment = JavaScriptParser.searchForComment(thing.key.start, thing.key.end, previousThingEnd, comments);
+                            }
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
                             let throws = '';
                             let decorators = [];
                             let example = '';
+                            let commentData;
                             if(closestComment >= 0) {
                                 let comment = comments[closestComment].value;
+                                commentData = doctrine.parse(comment, {unwrap: true, sloppy: true});
                                 returnType = JavaScriptParser.getReturnType(comment);
                                 visibility = JavaScriptParser.getVisibility(comment);
                                 methodArgs = JavaScriptParser.getMethodArguments(comment);
@@ -184,8 +232,8 @@ class JavaScriptParser {
                                 throws = JavaScriptParser.getThrows(comment);
                                 example = JavaScriptParser.getExample(comment);
                             }
-
-                            if(visibility === '+' || includePrivates) {
+                            commentData = commentData || [];
+                            if(visibility === '+' || visibility === '~' || includePrivates) {
                                 const method = {
                                     visibility: visibility,
                                     returnType: returnType,
@@ -193,7 +241,8 @@ class JavaScriptParser {
                                     methodArgs: methodArgs,
                                     decorators: decorators,
                                     throws: throws,
-                                    example: example
+                                    example: example,
+                                    commentData : commentData
                                 };
                                 clazz.methods.push(method);
                             }
@@ -208,7 +257,6 @@ class JavaScriptParser {
                 }
             }
         }
-
     }
 
     /**
@@ -261,7 +309,36 @@ class JavaScriptParser {
     }
 
     /**
+     * Find the comments that are directly above a specific line number.
+     * This is used when order of the nodes cannot be guaranteed but
+     * limitation is that all comments must directly precede what they
+     * are commenting (ie no blank lines)
+     *
+     * @param {string[]} comments - the end of the range
+     * @param {integer} lineNumber - current linenumber
+     * @return {integer} the comment index or -1 if there are no comments
+     * @private
+     */
+    static findCommentBefore(comments,lineNumber) {
+        let foundIndex = -1;
+
+        for(let n=0; n < comments.length; n++) {
+            let comment = comments[n];
+            let endComment = parseInt(comment.loc.end.line);
+
+            if ( (lineNumber - endComment) === 1) {
+                foundIndex = n;
+                break;
+            }
+
+        }
+        return foundIndex;
+    }
+
+    /**
      * Find the comments that are above and closest to the start of the range.
+     * This is used in engineMode and supports locating comments that aren't
+     * directly before a TP function. It assumes that nodes will be in order
      *
      * @param {integer} rangeStart - the start of the range
      * @param {integer} rangeEnd - the end of the range
@@ -270,7 +347,7 @@ class JavaScriptParser {
      * @return {integer} the comment index or -1 if there are no comments
      * @private
      */
-    static findCommentBefore(rangeStart, rangeEnd, stopPoint, comments) {
+    static searchForComment(rangeStart, rangeEnd, stopPoint, comments) {
         let foundIndex = -1;
         let distance = -1;
 
@@ -309,15 +386,25 @@ class JavaScriptParser {
     /**
      * Extracts the visibilty from a comment block
      * @param {string} comment - the comment block
-     * @return {string} the return visibility (either + for public, or - for private)
+     * @return {string} the return visibility (either + for public, ~ for protected, or - for private)
      * @private
      */
     static getVisibility(comment) {
         const PRIVATE = 'private';
-        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
+        const PROTECTED = 'protected';
+
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE,PROTECTED]});
         const tags = parsedComment.tags;
+
         if (tags.length > 0) {
-            return '-';
+            switch(tags[0].title){
+            case PRIVATE:
+                return '-';
+            case PROTECTED:
+                return '~';
+            default:
+                return '+';
+            }
         }
         return '+';
     }
@@ -407,7 +494,7 @@ class JavaScriptParser {
 
         const tags = parsedComment.tags;
 
-        // param is mentined but not picked up by parser
+        // param is mentioned but not picked up by parser
         if (comment.indexOf('@'+TAG) !== -1 && tags.length === 0) {
             throw new Error('Malformed JSDoc comment: ' + comment );
         }

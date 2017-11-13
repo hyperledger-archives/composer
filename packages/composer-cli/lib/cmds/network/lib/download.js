@@ -37,38 +37,20 @@ class Download {
     */
     static handler(argv) {
 
-
         let businessNetworkDefinition;
         let businessNetworkName;
         let spinner;
+        let cardName = argv.card;
 
         let businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
-        return (() => {
 
+        spinner = ora('Downloading deployed Business Network Archive').start();
 
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then (() => {
-            spinner = ora('Downloading deployed Business Network Archive').start();
-            return businessNetworkConnection.connect(argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret)
-                .then((result) => {
-                    businessNetworkDefinition = result;
-                    return businessNetworkConnection.disconnect();
-                });
+        return businessNetworkConnection.connect(cardName)
+        .then((result) => {
+            businessNetworkDefinition = result;
+            return businessNetworkConnection.disconnect();
         })
         .then (() => {
             spinner.succeed();
@@ -81,7 +63,8 @@ class Download {
             if (!argv.archiveFile){
                 argv.archiveFile = sanitize(businessNetworkName,{replacement:'_'})+'.bna';
             }
-          // need to write this out to the required file now.
+
+            // need to write this out to the required file now.
             return businessNetworkDefinition.toArchive();
         }).then ( (result) => {
             //write the buffer to a file

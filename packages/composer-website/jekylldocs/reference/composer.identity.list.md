@@ -23,33 +23,11 @@ composer identity list [options]
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
+  -c, --card                   The business network card to use [string] [required]
 ```
 
 ## Options
 
-`--connectionProfileName, -p`
-
-The connection profile name.  
-Example: `hlfv1`
-
-`--businessNetworkName, -n`
-
-The name of the deployed Business Network to connect to.  
-Example:
-`digitalproperty-network`
-
-`--enrollId, -i`
-
-The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: `maeid1`
-
-`--enrollSecret, -s`
-
-The enrollment secret of the identity that should be used to connect to deployed
-Business Network.  
-Example: `Xurw3yU9zI0l`
+`--card, -c`
+The business network card to use when listing identities.
+Example: `admin@tutorial-network`

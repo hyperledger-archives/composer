@@ -16,6 +16,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { UpdateComponent } from './update.component';
 import { ActiveDrawer } from '../common/drawer';
+import {
+    ModelManager,
+    BusinessNetworkDefinition,
+    AssetDeclaration,
+    ParticipantDeclaration,
+    TransactionDeclaration
+} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -82,6 +89,11 @@ describe('UpdateComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
+    let mockModelManager;
+    let mockBusinessNetworkDefinition;
+    let mockAssetDeclaration;
+    let mockParticipantDeclaration;
+    let mockTransactionDeclaration;
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
@@ -89,6 +101,11 @@ describe('UpdateComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+        mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+        mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
 
         mockAlertService.errorStatus$ = {
             next: sinon.stub()
@@ -150,7 +167,7 @@ describe('UpdateComponent', () => {
 
     describe('onShow', () => {
         it('should get the list of sample networks', fakeAsync(() => {
-            mockClientService.getBusinessNetworkName.returns('my-network');
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
             let selectNetworkStub = sinon.stub(component, 'selectNetwork');
             let addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
             mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
@@ -167,6 +184,7 @@ describe('UpdateComponent', () => {
         }));
 
         it('should handle error', fakeAsync(() => {
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
             mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
 
             component.onShow();
@@ -190,41 +208,53 @@ describe('UpdateComponent', () => {
     });
 
     describe('deployEmptyNetwork', () => {
-        beforeEach(() => {
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
-        });
-
         it('should create the empty business network if chosen', fakeAsync(() => {
             component['networkName'] = 'myName';
             component['networkDescription'] = 'myDescription';
 
-            mockBusinessNetworkService.createNewBusinessDefinition.returns({network: 'myNetwork'});
+            const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+            mockBusinessNetworkService.createNewBusinessDefinition.returns(businessNetworkDefinition);
 
             component.deployEmptyNetwork();
 
             tick();
             mockBusinessNetworkService.createNewBusinessDefinition.should.have.been.calledWith('', '', sinon.match.object, sinon.match.string);
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            component['currentBusinessNetwork'].should.equal(businessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([]);
+            businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
 
     describe('selectNetwork', () => {
         it('should select the network', fakeAsync(() => {
-            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve({network: 'myNetwork'}));
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
+            mockBusinessNetworkService.getChosenSample.returns(Promise.resolve(mockBusinessNetworkDefinition));
             component.selectNetwork('bob');
 
             tick();
 
             component['chosenNetwork'];
-            component['currentBusinessNetwork'].should.deep.equal({network: 'myNetwork'});
+            component['currentBusinessNetwork'].should.deep.equal(mockBusinessNetworkDefinition);
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith('bob');
         }));
 
         it('should select the empty network', () => {
+            let mockUpdateBusinessNetworkNameAndDesc = sinon.stub(component, 'updateBusinessNetworkNameAndDesc');
             let empty = sinon.stub(component, 'deployEmptyNetwork');
 
             component.selectNetwork({name: 'empty-business-network'});
 
             empty.should.have.been.called;
+            mockUpdateBusinessNetworkNameAndDesc.should.have.been.calledWith({name: 'empty-business-network'});
         });
     });
 
@@ -310,9 +340,19 @@ describe('UpdateComponent', () => {
                 getPackageJson: sinon.stub().returns({json: 'some json'})
             };
 
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
+
+            mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getParticipantDeclarations.returns([mockParticipantDeclaration]);
+            mockModelManager.getTransactionDeclarations.returns([mockTransactionDeclaration]);
+            mockModelManager.getAssetDeclarations.returns([mockAssetDeclaration]);
+
             let businessNetworkMock = {
                 network: 'mockNetwork',
-                getMetadata: sinon.stub().returns(metaDataMock)
+                getMetadata: sinon.stub().returns(metaDataMock),
+                getModelManager: sinon.stub().returns(mockModelManager)
             };
 
             mockClientService.getBusinessNetworkFromArchive.returns(Promise.resolve(businessNetworkMock));
@@ -327,6 +367,9 @@ describe('UpdateComponent', () => {
 
             mockClientService.getBusinessNetworkFromArchive.should.have.been.called;
             component['currentBusinessNetwork'].network.should.equal('mockNetwork');
+            component['currentBusinessNetwork']['participants'].should.deep.equal([mockParticipantDeclaration]);
+            component['currentBusinessNetwork']['transactions'].should.deep.equal([mockTransactionDeclaration]);
+            component['currentBusinessNetwork']['assets'].should.deep.equal([mockAssetDeclaration]);
             component['expandInput'].should.equal(false);
             component['chosenNetwork'].should.deep.equal({json: 'some json'});
             component['sampleDropped'].should.equal(true);

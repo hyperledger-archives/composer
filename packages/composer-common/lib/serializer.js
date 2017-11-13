@@ -35,7 +35,7 @@ class Serializer {
     /**
      * Create a Serializer.
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Composer}</strong>
+     * retrieve instances from {@link BusinessNetworkDefinition}</strong>
      * </p>
      * @param {Factory} factory - The Factory to use to create instances
      * @param {ModelManager} modelManager - The ModelManager to use for validation etc.
@@ -128,6 +128,8 @@ class Serializer {
      * @param {Object} options - the optional serialization options
      * @param {boolean} options.acceptResourcesForRelationships - handle JSON objects
      * in the place of strings for relationships, defaults to false.
+     * @param {boolean} options.validate - validate the structure of the Resource
+     * with its model prior to serialization (default to true)
      * @return {Resource} The new populated resource
      */
     fromJSON(jsonObject, options) {
@@ -140,6 +142,9 @@ class Serializer {
 
         // default the options.
         options = options || {};
+        if(options.validate === undefined) {
+            options.validate = true;
+        }
 
         // create a new instance, using the identifier field name as the ID.
         let resource;
@@ -166,6 +171,12 @@ class Serializer {
         parameters.factory = this.factory;
         const populator = new JSONPopulator(options.acceptResourcesForRelationships === true);
         classDeclaration.accept(populator, parameters);
+
+        // validate the resource against the model
+        if(options.validate) {
+            resource.validate();
+        }
+
         return resource;
     }
 }

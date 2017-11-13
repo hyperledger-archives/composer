@@ -30,24 +30,15 @@ class BusinessNetworkConnectionWrapper {
         debug('BusinessNetworkConnectionWrapper', settings);
 
         // Check for required properties.
-        if (!settings.connectionProfileName) {
-            throw new Error('connectionProfileName not specified');
-        } else if (!settings.businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
-        } else if (!settings.participantId) {
-            throw new Error('participantId not specified');
-        } else if (!settings.participantPwd) {
-            throw new Error('participantPwd not specified');
+        if (!settings.card) {
+            throw new Error('card not specified');
         }
         this.settings = settings;
-        this.additionalConnectOptions = {};
-        if (settings.wallet) {
-            this.additionalConnectOptions.wallet = settings.wallet;
-        }
 
         // Create the new disconnected business network connection.
         this.businessNetworkConnection = new BusinessNetworkConnection({
-            fs: settings.fs
+            fs: settings.fs,
+            cardStore: settings.cardStore
         });
         this.connected = this.connecting = false;
         this.connectionPromise = null;
@@ -78,13 +69,7 @@ class BusinessNetworkConnectionWrapper {
         debug('connect');
         this.connecting = true;
         this.connected = false;
-        this.connectionPromise = this.businessNetworkConnection.connect(
-                this.settings.connectionProfileName,
-                this.settings.businessNetworkIdentifier,
-                this.settings.participantId,
-                this.settings.participantPwd,
-                this.additionalConnectOptions
-            )
+        this.connectionPromise = this.businessNetworkConnection.connect(this.settings.card)
             .then((businessNetwork) => {
                 this.businessNetwork = businessNetwork;
                 this.serializer = this.businessNetwork.getSerializer();

@@ -103,11 +103,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
         modalRef.result.then((transaction) => {
             // refresh current resource list
-            if (this.chosenRegistry === this.registries['historian']) {
-                this.registryReload = !this.registryReload;
-            } else {
-                this.chosenRegistry = this.registries['historian'];
-            }
+            this.registryReload = !this.registryReload;
 
             let plural = (this.eventsTriggered.length > 1) ? 's' : '';
 

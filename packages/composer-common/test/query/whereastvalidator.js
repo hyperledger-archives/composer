@@ -18,7 +18,7 @@ const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const Property = require('../../lib/introspect/property');
 const WhereAstValidator = require('../../lib/query/whereastvalidator');
 
-require('chai').should();
+let should = require('chai').should();
 const sinon = require('sinon');
 
 describe('WhereAstValidator', () => {
@@ -109,7 +109,123 @@ describe('WhereAstValidator', () => {
                 wv.verifyTypeCompatibility( mockInvalidProperty, false);
             }).should.throw(/Property invalidProperty of type Invalid/);
         });
-
+        it('should throw for null property', () => {
+            (() => {
+                let wv = new WhereAstValidator(mockAssetDeclaration);
+                wv.verifyTypeCompatibility( mockInvalidProperty);
+            }).should.throw(/Property invalidProperty cannot be compared/);
+        });
     });
+
+    describe('#verifyProperty', ()=>{
+        it('No error path',()=>{
+            mockAssetDeclaration.getNestedProperty.returns(mockStringProperty);
+            let wv = new WhereAstValidator(mockAssetDeclaration);
+            let result = wv.verifyProperty(mockBooleanProperty, {});
+            result.should.equal(mockStringProperty);
+        });
+        it('Error path',()=>{
+            mockAssetDeclaration.getNestedProperty.returns(null);
+            let wv = new WhereAstValidator(mockAssetDeclaration);
+            ( ()=>{
+                wv.verifyProperty(mockBooleanProperty, {});
+            }).should.throw(/not found/);
+        });
+    });
+
+    describe('#verifyMemberExpression', ()=>{
+        it('Error path #1',()=>{
+
+            let wv = new WhereAstValidator(mockAssetDeclaration);
+            let ast = {object:mockBooleanProperty,property:42};
+            let parameters = {};
+
+            sinon.stub(wv,'visit').returns({});
+
+            (()=>{wv.visitMemberExpression(ast,parameters);})
+            .should.throw(/not found on type/);
+        });
+
+        it('Error path #2',()=>{
+
+            let wv = new WhereAstValidator(mockAssetDeclaration);
+            let ast = {object:mockBooleanProperty,property:42};
+            let parameters = {};
+
+            sinon.stub(wv,'visit').returns(null);
+
+            let r = wv.visitMemberExpression(ast,parameters);
+            should.equal(r,null);
+        });
+
+        it('Good path',()=>{
+            let wv = new WhereAstValidator(mockAssetDeclaration);
+            let ast = {object:mockStringProperty,property:42};
+            let parameters = {};
+
+            sinon.stub(wv,'visit').returns('fred');
+            mockAssetDeclaration.getNestedProperty.withArgs('fred.fred').returns({});
+            let r = wv.visitMemberExpression(ast,parameters);
+            should.equal(r,'fred.fred');
+        });
+    });
+
+
+    describe('#reportIncompatibleType', ()=>{
+        it( ' test array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(true);
+            (()=>{
+                WhereAstValidator.reportIncompatibleType(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined cannot be compared with fred/);
+
+        });
+        it( ' test not array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(false);
+            (()=>{
+                WhereAstValidator.reportIncompatibleType(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined cannot be compared with fred/);
+
+        });
+    }  );
+
+    describe('#reportIncompatibleOperator', ()=>{
+        it( ' test array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(true);
+            (()=>{
+                WhereAstValidator.reportIncompatibleOperator(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined cannot be compared using the fred operator/);
+
+        });
+        it( ' test not array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(false);
+            (()=>{
+                WhereAstValidator.reportIncompatibleOperator(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined cannot be compared using the fred operator/);
+
+        });
+    }  );
+
+    describe('#reportUnsupportedType', ()=>{
+        it( ' test array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(true);
+            (()=>{
+                WhereAstValidator.reportUnsupportedType(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined of type undefined\[\] cannot be compared with a literal value./);
+
+        });
+        it( ' test not array ', ()=>{
+            let mockProperty = sinon.createStubInstance(Property);
+            mockProperty.isArray.returns(false);
+            (()=>{
+                WhereAstValidator.reportUnsupportedType(mockAssetDeclaration,mockProperty,'fred');
+            }).should.throw(/Property undefined of type undefined cannot be compared with a literal value./);
+
+        });
+    }  );
 
 });

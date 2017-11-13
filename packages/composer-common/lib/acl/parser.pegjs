@@ -1449,12 +1449,20 @@ BindingNoInstance
   };
 }
 
+BindingRootRecursive
+  = '**'
+    {
+        return {
+            type: "BindingRootRecursive",
+            qualifiedName: '**',
+            location: location()
+        };
+    }
+
 Noun
  = Binding
  / BindingNoInstance
-
-NounNoInstance
- = BindingNoInstance
+ / BindingRootRecursive
 
 /**
  * A single verb.
@@ -1494,6 +1502,7 @@ Participant
  = 'ANY'
  / Binding
  / BindingNoInstance
+ / BindingRootRecursive
 
 Predicate
  = "(" __ test:$Expression __ ")" __
@@ -1509,8 +1518,12 @@ StringSequence "string"
         return chars.join("");
       }
 
+Transaction
+ = BindingNoInstance
+ / BindingRootRecursive
+
 SimpleTransactionSpecification
- = "transaction:" __ "\"" binding:BindingNoInstance "\"" __
+ = "transaction:" __ "\"" binding:Transaction "\"" __
 {
     return {
         binding: binding
@@ -1518,7 +1531,7 @@ SimpleTransactionSpecification
 }
 
 ConditionalTransactionSpecification
- = "transaction" __ variableBinding:VariableBinding? __ ":" __ "\"" binding:BindingNoInstance "\"" __
+ = "transaction" __ variableBinding:VariableBinding? __ ":" __ "\"" binding:Transaction "\"" __
 {
     return {
         variableBinding: variableBinding,

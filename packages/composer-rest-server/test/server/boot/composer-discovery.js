@@ -19,9 +19,9 @@ const boot = require('loopback-boot');
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const composerDiscovery = require('../../../server/boot/composer-discovery');
+const IdCard = require('composer-common').IdCard;
 const loopback = require('loopback');
 require('loopback-component-passport');
-const LoopBackWallet = require('../../../lib/loopbackwallet');
 const path = require('path');
 
 require('chai').should();
@@ -35,6 +35,7 @@ describe('composer-discovery boot script', () => {
     let composerConfig;
     let app;
     let sandbox;
+    let idCard;
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -43,23 +44,24 @@ describe('composer-discovery boot script', () => {
             type : 'embedded'
         })
         .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
+        })
+        .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
         });
     });
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         composerConfig = {
-            connectionProfileName: 'defaultProfile',
-            businessNetworkIdentifier: 'bond-network',
-            participantId: 'admin',
-            participantPwd: 'adminpw',
+            card: 'admin@bond-network',
             fs: bfs_fs
         };
         app = loopback();
@@ -148,24 +150,6 @@ describe('composer-discovery boot script', () => {
             .then(() => {
                 sinon.assert.calledOnce(cb);
                 cb.args[0][0].should.match(/such error/);
-            });
-    });
-
-    it('should discover the business network using a wallet to persist certificates', () => {
-        sinon.spy(app.loopback, 'createDataSource');
-        app.datasources.db.name = 'MongoDB';
-        const cb = sinon.stub();
-        return composerDiscovery(app, cb)
-            .then(() => {
-                return app.models.Wallet.findOne({ where: { createdAsSystem: true } });
-            })
-            .then((wallet) => {
-                wallet.should.exist;
-                return app.models.WalletIdentity.findOne({ where: { walletId: wallet.id, enrollmentID: 'admin', enrollmentSecret: 'adminpw' }});
-            })
-            .then((identity) => {
-                identity.should.exist;
-                app.loopback.createDataSource.args[0][1].wallet.should.be.an.instanceOf(LoopBackWallet);
             });
     });
 

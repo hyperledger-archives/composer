@@ -5,7 +5,7 @@ category: start
 section: installing
 sidebar: sidebars/accordion-toc0.md
 excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
-index-order: 203
+index-order: 204
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}
@@ -19,16 +19,14 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
 
 The following are prerequisites for installing the required development tools:
 
-```
-Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
-Docker Engine: Version 17.03 or higher
-Docker-Compose: Version 1.8 or higher
-Node: 6.x (note version 7 is not supported)
-npm: v3.x or v5.x
-git: 2.9.x or higher
-Python: 2.7.x
-A code editor of your choice, we recommend VSCode.
-```
+- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+- Docker Engine: Version 17.03 or higher
+- Docker-Compose: Version 1.8 or higher
+- Node: 8.9 or higher (note version 9 is not supported)
+- npm: v5.x
+- git: 2.9.x or higher
+- Python: 2.7.x
+- A code editor of your choice, we recommend VSCode.
 
 **Please do not install {{site.data.conrefs.composer_full}} as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues installation errors). {{site.data.conrefs.composer_full}} should be installed as non-privileged user.**
 
@@ -118,7 +116,7 @@ docker rmi $(docker images dev-* -q)
         cd ~/fabric-tools
         ./downloadFabric.sh
         ./startFabric.sh
-        ./createComposerProfile.sh
+        ./createPeerAdminCard.sh
 
     Then at the end of your development session
 
@@ -127,14 +125,14 @@ docker rmi $(docker images dev-* -q)
         ./teardownFabric.sh
 
 
-> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
+> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks.
 
 
 ## Script details
 
 ![](../assets/img/developer-tools-commands.png).
 
-This diagram explains the order in which the scripts can be run. 
+This diagram explains the order in which the scripts can be run.
 
 **Downloading Fabric**
 
@@ -157,14 +155,14 @@ Issue from the `fabric-tools` directory
 ./stopFabric.sh
 ```
 
-**Create {{site.data.conrefs.composer_full}} Profile**
+**Create PeerAdmin Card**
 
-Issue from the `fabric-tools` directory
+Create a business network card for the peer administrator specific to the {{site.data.conrefs.hlfv1}} instance running.
 ```
-./createComposerProfile.sh
+./createPeerAdminCard.sh
 ```
 
-Note: this creates a {{site.data.conrefs.composer_full}} profile specifically to connect to the development fabric you've already started.
+Note: this creates and imports a business network card to connect to the development fabric you've already started.
 
 **Teardown Fabric**
 

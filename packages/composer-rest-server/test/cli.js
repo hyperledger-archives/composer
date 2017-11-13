@@ -31,10 +31,7 @@ describe('composer-rest-server CLI unit tests', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         sandbox.stub(Util, 'getConnectionSettings').resolves({
-            connectionProfileName: 'defaultProfile',
-            businessNetworkName: 'org-acme-biznet',
-            enrollementId: 'admin',
-            enrollementSecret: 'adminpw',
+            card: 'admin@org-acme-biznet',
             namespaces: 'always',
             authentication: false,
             websockets: true,
@@ -88,11 +85,8 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.calledOnce(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org-acme-biznet',
-                connectionProfileName: 'defaultProfile',
+                card: 'admin@org-acme-biznet',
                 namespaces: 'always',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
                 authentication: false,
                 multiuser: undefined,
                 websockets: true,
@@ -109,7 +103,7 @@ describe('composer-rest-server CLI unit tests', () => {
 
     it('should throw an error if command line arguments specified but some are missing', () => {
         let listen = sinon.stub();
-        process.argv = [ process.argv0, 'cli.js', '-n', 'org-acme-biznet' ];
+        process.argv = [ process.argv0, 'cli.js', '-a' ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub().resolves({
             app: {
@@ -139,10 +133,7 @@ describe('composer-rest-server CLI unit tests', () => {
         get.withArgs('port').returns(3000);
         process.argv = [
             process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw'
+            '-c', 'admin@org-acme-biznet'
         ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub().resolves({
@@ -162,11 +153,8 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org-acme-biznet',
-                connectionProfileName: 'defaultProfile',
+                card: 'admin@org-acme-biznet',
                 namespaces: 'always',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
                 port: undefined,
                 authentication: false,
                 multiuser: false,
@@ -188,10 +176,7 @@ describe('composer-rest-server CLI unit tests', () => {
         get.withArgs('port').returns(3000);
         process.argv = [
             process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw',
+            '-c', 'admin@org-acme-biznet',
             '-a'
         ];
         delete require.cache[require.resolve('yargs')];
@@ -212,11 +197,8 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org-acme-biznet',
-                connectionProfileName: 'defaultProfile',
+                card: 'admin@org-acme-biznet',
                 namespaces: 'always',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
                 port: undefined,
                 authentication: true,
                 multiuser: false,
@@ -238,10 +220,7 @@ describe('composer-rest-server CLI unit tests', () => {
         get.withArgs('port').returns(3000);
         process.argv = [
             process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw',
+            '-c', 'admin@org-acme-biznet',
             '-m'
         ];
         delete require.cache[require.resolve('yargs')];
@@ -262,11 +241,8 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org-acme-biznet',
-                connectionProfileName: 'defaultProfile',
+                card: 'admin@org-acme-biznet',
                 namespaces: 'always',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
                 port: undefined,
                 authentication: true,
                 multiuser: true,
@@ -291,10 +267,7 @@ describe('composer-rest-server CLI unit tests', () => {
         get.withArgs('loopback-component-explorer').returns(true);
         process.argv = [
             process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw'
+            '-c', 'admin@org-acme-biznet'
         ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub().resolves({
@@ -331,10 +304,7 @@ describe('composer-rest-server CLI unit tests', () => {
         get.withArgs('url').returns('http://localhost:3000');
         process.argv = [
             process.argv0, 'cli.js',
-            '-p', 'defaultProfile',
-            '-n', 'org-acme-biznet',
-            '-i', 'admin',
-            '-s', 'adminpw'
+            '-c', 'admin@org-acme-biznet'
         ];
         delete require.cache[require.resolve('yargs')];
         const server = sinon.stub().resolves({

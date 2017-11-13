@@ -24,9 +24,13 @@ const TestUtil = require('./testutil');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
+chai.use(require('chai-as-promised'));
 
 describe('Participant system tests', function () {
-
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
     let businessNetworkDefinition;
     let client;
 
@@ -39,6 +43,7 @@ describe('Participant system tests', function () {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+        bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-participants')
@@ -46,6 +51,10 @@ describe('Participant system tests', function () {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     let createParticipant = (participantId) => {
@@ -558,158 +567,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should find participants in a participant registry', function () {
-        let participantRegistry;
-        return client
-            .addParticipantRegistry('myregistry', 'my new participant registry')
-            .then(function (result) {
-                participantRegistry = result;
-                let participant1 = createParticipant('dogeParticipant1');
-                let participant2 = createParticipant('dogeParticipant2');
-                let participant3 = createParticipant('dogeParticipant3');
-                let participant4 = createParticipant('dogeParticipant4');
-                let participant5 = createParticipant('dogeParticipant5');
-                return participantRegistry.addAll([participant1, participant2, participant3, participant4, participant5]);
-            })
-            .then(function () {
-                return participantRegistry.find(`
-                    (participantId = 'dogeParticipant1') or
-                    (participantId = 'dogeParticipant3') or
-                    (participantId = 'dogeParticipant5')
-                `);
-            })
-            .then(function (participants) {
-                participants.length.should.equal(3);
-                participants.sort((a, b) => {
-                    return a.getIdentifier().localeCompare(b.getIdentifier());
-                });
-                validateParticipant(participants[0], 'dogeParticipant1');
-                validateParticipant(participants[1], 'dogeParticipant3');
-                validateParticipant(participants[2], 'dogeParticipant5');
-            });
-    });
 
-    it('should find participants in a participant registry using expressions that access related participants', function () {
-        let factory = client.getBusinessNetwork().getFactory();
-        let participantRegistry;
-        return client
-            .getParticipantRegistry('systest.participants.SimpleParticipantCircle')
-            .then(function (result) {
-                participantRegistry = result;
-                let circle1 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                let circle2 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                let circle3 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle1');
-                return participantRegistry.addAll([circle1, circle2, circle3]);
-            })
-            .then(function () {
-                return participantRegistry.find(`
-                    (participantId = 'circle1') and
-                    (next.participantId = 'circle2') and
-                    (next.next.participantId = 'circle3') and
-                    (next.next.next.participantId = 'circle1')
-                `);
-            })
-            .then(function (participants) {
-                participants.length.should.equal(1);
-                participants[0].participantId.should.equal('circle1');
-            });
-    });
 
-    it('should query participants in a participant registry', function () {
-        let participantRegistry;
-        return client
-            .addParticipantRegistry('myregistry', 'my new participant registry')
-            .then(function (result) {
-                participantRegistry = result;
-                let participant1 = createParticipant('dogeParticipant1');
-                let participant2 = createParticipant('dogeParticipant2');
-                let participant3 = createParticipant('dogeParticipant3');
-                let participant4 = createParticipant('dogeParticipant4');
-                let participant5 = createParticipant('dogeParticipant5');
-                return participantRegistry.addAll([participant1, participant2, participant3, participant4, participant5]);
-            })
-            .then(function () {
-                return participantRegistry.query(`
-                    (participantId = 'dogeParticipant1') or
-                    (participantId = 'dogeParticipant3') or
-                    (participantId = 'dogeParticipant5')
-                    ?
-                    {
-                        'myParticipantId': participantId,
-                        'combinedValue': stringValue & ':' & enumValue,
-                        'someMaths': longValue - integerValue
-                    }
-                    :
-                    null
-                `);
-            })
-            .then(function (participants) {
-                participants.sort((a, b) => {
-                    return a.myParticipantId.localeCompare(b.myParticipantId);
-                });
-                participants.should.deep.equal([
-                    {
-                        myParticipantId: 'dogeParticipant1',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    },
-                    {
-                        myParticipantId: 'dogeParticipant3',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    },
-                    {
-                        myParticipantId: 'dogeParticipant5',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    }
-                ]);
-            });
-    });
-
-    it('should query participants in a participant registry using expressions that access related participants', function () {
-        let factory = client.getBusinessNetwork().getFactory();
-        let participantRegistry;
-        return client
-            .getParticipantRegistry('systest.participants.SimpleParticipantCircle')
-            .then(function (result) {
-                participantRegistry = result;
-                let circle1 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                let circle2 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                let circle3 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle1');
-                return participantRegistry.addAll([circle1, circle2, circle3]);
-            })
-            .then(function () {
-                return participantRegistry.query(`
-                    (participantId = 'circle1') and
-                    (next.participantId = 'circle2') and
-                    (next.next.participantId = 'circle3') and
-                    (next.next.next.participantId = 'circle1')
-                    ?
-                    {
-                        'myParticipantId': participantId,
-                        'nextParticipantId': next.participantId,
-                        'nextNextParticipantId': next.next.participantId,
-                        'backToTheParticipantId': next.next.next.participantId
-                    }
-                    :
-                    null
-                `);
-            })
-            .then(function (participants) {
-                participants.should.deep.equal([{
-                    myParticipantId: 'circle1',
-                    nextParticipantId: 'circle2',
-                    nextNextParticipantId: 'circle3',
-                    backToTheParticipantId: 'circle1'
-                }]);
-            });
-    });
 
 });

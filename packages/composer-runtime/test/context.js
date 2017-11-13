@@ -23,6 +23,7 @@ const CompiledAclBundle = require('../lib/compiledaclbundle');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Context = require('../lib/context');
+const Container = require('../lib/container');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
@@ -34,7 +35,6 @@ const IdentityService = require('../lib/identityservice');
 const Introspector = require('composer-common').Introspector;
 const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
-const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
 const NetworkManager = require('../lib/networkmanager');
@@ -44,6 +44,7 @@ const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
 const TransactionLogger = require('../lib/transactionlogger');
+const LoggingService = require('../lib/loggingservice');
 
 const chai = require('chai');
 const should = chai.should();
@@ -108,6 +109,25 @@ describe('Context', () => {
             return context.loadBusinessNetworkRecord()
                 .then((businessNetworkRecord) => {
                     businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                });
+        });
+
+        it('should not load the business record twice', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            return context.loadBusinessNetworkRecord()
+                .then((businessNetworkRecord) => {
+                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    return context.loadBusinessNetworkRecord();
+                })
+                .then((businessNetworkRecord) => {
+                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledOnce(mockDataCollection.get);
                 });
         });
 
@@ -277,6 +297,44 @@ describe('Context', () => {
 
     });
 
+    describe('#getIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should get the current identity', () => {
+            context.currentIdentity = mockIdentity;
+            context.getIdentity().should.equal(mockIdentity);
+        });
+
+    });
+
+    describe('#setIdentity', () => {
+
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
+        });
+
+        it('should set the current identity', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+        });
+
+        it('should throw if a current identity has been set', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+            (() => {
+                context.setIdentity(mockIdentity);
+            }).should.throw(/A current identity has already been specified/);
+        });
+
+    });
+
     describe('#loadCurrentParticipant', () => {
 
         let mockIdentityManager;
@@ -291,11 +349,6 @@ describe('Context', () => {
             sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
             mockIdentity = sinon.createStubInstance(Resource);
             mockParticipant = sinon.createStubInstance(Resource);
-        });
-
-        it('should set/get identity', () => {
-            context.setIdentity(mockIdentity);
-            context.getIdentity().should.equal(mockIdentity);
         });
 
         it('should get the identity, validate it, and get the participant', () => {
@@ -359,70 +412,6 @@ describe('Context', () => {
             mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
             return context.loadCurrentParticipant()
                 .should.be.rejectedWith(/such error/);
-        });
-
-        it('should not ignore an activation required error from looking up the identity for admin users', () => {
-            mockIdentityManager.getIdentity.resolves(mockIdentity);
-            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-            context.function = 'bindIdentity';
-            const error = new Error('such error');
-            error.activationRequired = true;
-            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-            // let promise = Promise.resolve();
-            let promises=[];
-
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                promises.push(context.loadCurrentParticipant());
-            });
-
-            return Promise.all(promises).catch(()=> {
-                promises[0].should.be.rejectedWith(/such error/);
-                promises[1].should.be.rejectedWith(/such error/);
-                promises[2].should.be.rejectedWith(/such error/);
-            });
-
-        });
-
-        it('should ignore any errors from looking up the identity for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.rejects(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
-        });
-
-        it('should ignore any errors from validating the identity for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
-        });
-
-        it('should ignore any errors from looking up the participant for admin users', () => {
-            let promise = Promise.resolve();
-            ['admin', 'Admin', 'WebAppAdmin'].forEach((admin) => {
-                mockIdentityService.getName.returns(admin);
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).rejects(new Error('such error'));
-                promise = promise.then(() => {
-                    return context.loadCurrentParticipant()
-                        .should.eventually.be.null;
-                });
-            });
-            return promise;
         });
 
     });
@@ -615,11 +604,25 @@ describe('Context', () => {
                     context.participant.should.equal(mockParticipant);
                 });
         });
-
+        it('should  initialize the context with the correct loggingservices', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            let mockContainer = sinon.createStubInstance(Container);
+            let mockLoggingService = sinon.createStubInstance(LoggingService);
+            mockContainer.getLoggingService.returns(mockLoggingService);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getLoggingService().should.deep.equal(mockLoggingService);
+                });
+        });
         it('should not initialize the context with the current participant if reinitializing', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
             mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
             context.loadCurrentParticipant.resolves(mockParticipant);
+            let mockContainer = sinon.createStubInstance(Container);
+
+            mockContainer.getLoggingService.returns();
             return context.initialize({ reinitialize: true })
                 .then(() => {
                     should.equal(context.participant, null);
@@ -631,6 +634,14 @@ describe('Context', () => {
             return context.initialize({ sysregistries: mockSystemRegistries2 })
                 .then(() => {
                     context.sysregistries.should.equal(mockSystemRegistries2);
+                });
+        });
+
+        it('should initialize the context with the specified container', () => {
+            let mockContainer = sinon.createStubInstance(Container);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getContainer().should.equal(mockContainer);
                 });
         });
 
@@ -933,22 +944,6 @@ describe('Context', () => {
 
     });
 
-    describe('#getQueryExecutor', () => {
-
-        it('should return a new query executor', () => {
-            let mockResolver = sinon.createStubInstance(Resolver);
-            sinon.stub(context, 'getResolver').returns(mockResolver);
-            context.getQueryExecutor().should.be.an.instanceOf(QueryExecutor);
-        });
-
-        it('should return an existing query executor', () => {
-            let mockQueryExecutor = sinon.createStubInstance(QueryExecutor);
-            context.queryExecutor = mockQueryExecutor;
-            context.getQueryExecutor().should.equal(mockQueryExecutor);
-        });
-
-    });
-
     describe('#getIdentityManager', () => {
 
         it('should return a new identity manager', () => {
@@ -1066,6 +1061,24 @@ describe('Context', () => {
             (() => {
                 context.setTransaction(mockTransaction);
             }).should.throw(/A current transaction has already been specified/);
+        });
+
+    });
+
+    describe('#clearTransaction', () => {
+
+        it('should clear the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockTransactionLogger = sinon.createStubInstance(TransactionLogger);
+            context.transaction = mockTransaction;
+            context.transactionLogger = mockTransactionLogger;
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.clearTransaction();
+            should.equal(context.transaction, null);
+            should.equal(context.transactionLogger, null);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, null);
         });
 
     });

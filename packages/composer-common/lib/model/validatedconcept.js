@@ -31,7 +31,7 @@ const TypedStack = require('../serializer/typedstack');
  * other domain classes that can be serialized for long-term persistent storage.
  * </p>
  * @extends Identifiable
- * @see See [Resource]{@link module:composer-common.Resource}
+ * @see See {@link Resource}
  * @class
  * @memberof module:composer-common
  */

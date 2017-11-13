@@ -18,6 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
 
@@ -134,6 +135,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let assetRegistry;
         let participantRegistry;
         let serializer;
+        let idCard;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -142,7 +144,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 type : 'embedded'
             })
             .then(() => {
-                return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -152,11 +154,12 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.deploy(businessNetworkDefinition);
             })
             .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard('admin@bond-network', idCard);
+            })
+            .then(() => {
                 return server({
-                    connectionProfileName: 'defaultProfile',
-                    businessNetworkIdentifier: 'bond-network',
-                    participantId: 'admin',
-                    participantPwd: 'adminpw',
+                    card: 'admin@bond-network',
                     fs: bfs_fs,
                     namespaces: namespaces
                 });
@@ -164,7 +167,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then((result) => {
                 app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');

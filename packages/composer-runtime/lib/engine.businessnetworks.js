@@ -101,55 +101,7 @@ class EngineBusinessNetworks {
             });
     }
 
-    /**
-     * Reset the business network by clearing all data.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    resetBusinessNetwork(context, args) {
-        const method = 'resetBusinessNetwork';
-        LOG.entry(method, context, args);
-        if (args.length !== 0) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resetBusinessNetwork', []));
-        }
-        let dataService = context.getDataService();
 
-        return dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-
-                return sysregistries.getAll()
-                    .then((registries) => {
-                        return registries
-
-                        .reduce((cur, next) => {
-                            return cur.then(() => {
-                                let registryType = next.type;
-                                let registryId = next.registryId;
-                                LOG.debug(method, 'Deleting collection', registryType, registryId);
-                                return dataService.deleteCollection(registryType + ':' + registryId)
-                                    .then(() => {
-                                        LOG.debug(method, 'Deleting record of collection from $sysregistries', registryType, registryId);
-                                        return sysregistries.remove(registryType + ':' + registryId);
-                                    });
-                            });
-                        }, Promise.resolve());
-                    });
-            })
-            .then ( ()=> {
-                // force creation of defaults as we know the don't exist
-                // Create all other default registries.
-                LOG.debug(method, 'Creating default registries');
-                let registryManager = context.getRegistryManager();
-                return registryManager.createDefaults(true);
-
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
 
 }
 

@@ -143,7 +143,7 @@ class Composer {
         const adminConnection = new AdminConnection({ fs: bfs_fs });
         return adminConnection.createProfile('defaultProfile', { type : 'embedded' })
             .then(() => {
-                return adminConnection.connect('defaultProfile', userID, userSecret);
+                return adminConnection.connectWithDetails('defaultProfile', userID, userSecret);
             })
             .then(() => {
                 return adminConnection;
@@ -189,7 +189,7 @@ class Composer {
 
             this.events.push(event);
         });
-        return businessNetworkConnection.connect('defaultProfile', businessNetworkIdentifier, userID, userSecret)
+        return businessNetworkConnection.connectWithDetails('defaultProfile', businessNetworkIdentifier, userID, userSecret)
             .then(() => {
                 return businessNetworkConnection;
             });
@@ -282,7 +282,7 @@ class Composer {
                 return assetRegistry.get(expectedResource.getIdentifier());
             })
             .then((actualResource) => {
-                this.compareResources(expectedResource, actualResource);
+                this.compareResources(actualResource, expectedResource);
             });
         }, Promise.resolve())
             .catch((error) => {
@@ -405,7 +405,7 @@ class Composer {
                 return participantRegistry.get(expectedResource.getIdentifier());
             })
             .then((actualResource) => {
-                this.compareResources(expectedResource, actualResource);
+                this.compareResources(actualResource, expectedResource);
             });
         }, Promise.resolve())
             .catch((error) => {

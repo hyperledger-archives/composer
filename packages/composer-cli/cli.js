@@ -19,8 +19,6 @@
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs');
-
-
 const chalk = require('chalk');
 const version = 'v' +require('./package.json').version;
 
@@ -35,19 +33,6 @@ let results = yargs
     .alias('v', 'version')
     .version(version)
     .describe('v', 'show version information')
-    .command(
-    {
-        command: 'shell',
-        aliases: ['shell', 'i'],
-        desc: 'Interactive shell',
-        builder: (yargs) => yargs,
-        handler: (argv) => {
-            console.log('Starting shell...');
-            argv.thePromise = require('./shell.js').shell();
-        }
-    }
-
-    )
     .argv;
 
 if (typeof(results.thePromise) !== 'undefined'){
@@ -57,7 +42,6 @@ if (typeof(results.thePromise) !== 'undefined'){
         process.exit(0);
     }).catch((error) => {
         console.log(error+chalk.red('\nCommand failed\n'));
-
         process.exit(1);
     });
 } else {

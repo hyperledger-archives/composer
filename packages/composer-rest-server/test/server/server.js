@@ -20,6 +20,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const IdCard = require('composer-common').IdCard;
 const path = require('path');
 const server = require('../../server/server');
 const WebSocket = require('ws');
@@ -39,6 +40,7 @@ const certContents = fs.readFileSync(certFile, 'utf8');
 describe('server', () => {
 
     let composerConfig;
+    let idCard;
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -47,22 +49,23 @@ describe('server', () => {
             type : 'embedded'
         })
         .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
         .then((businessNetworkDefinition) => {
             return adminConnection.deploy(businessNetworkDefinition);
+        })
+        .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
         });
     });
 
     beforeEach(() => {
         composerConfig = {
-            connectionProfileName: 'defaultProfile',
-            businessNetworkIdentifier: 'bond-network',
-            participantId: 'admin',
-            participantPwd: 'adminpw',
+            card: 'admin@bond-network',
             fs: bfs_fs
         };
         delete process.env.COMPOSER_DATASOURCES;
@@ -105,7 +108,7 @@ describe('server', () => {
     });
 
     it('should handle errors from any of the boot scripts', () => {
-        composerConfig.businessNetworkIdentifier = 'org.acme.doesnotexist';
+        composerConfig.card = 'nocardherelulz';
         return server(composerConfig)
             .should.be.rejectedWith();
     });
@@ -161,18 +164,75 @@ describe('server', () => {
                     return r.route.path;
                 });
                 routePaths.should.deep.equal(['/auth/local', '/auth/local/callback', '/auth/logout']);
+            });
+    });
+
+    it('should logout without an access token', () => {
+        composerConfig.authentication = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
+                    return r.route && r.route.path;
+                });
                 const req = {
                     logout: sinon.stub()
                 };
                 const res = {
-                    redirect: sinon.stub()
+                    redirect: sinon.stub(),
+                    clearCookie: sinon.stub()
                 };
                 const next = sinon.stub();
-                routes[2].route.stack[0].handle(req, res, next);
-                sinon.assert.calledOnce(req.logout);
-                sinon.assert.calledOnce(res.redirect);
-                sinon.assert.calledWith(res.redirect, '/');
-                sinon.assert.notCalled(next);
+                return routes[2].route.stack[0].handle(req, res, next)
+                    .then(() => {
+                        sinon.assert.calledOnce(req.logout);
+                        sinon.assert.calledTwice(res.clearCookie);
+                        sinon.assert.calledWith(res.clearCookie, 'access_token');
+                        sinon.assert.calledWith(res.clearCookie, 'userId');
+                        sinon.assert.calledOnce(res.redirect);
+                        sinon.assert.calledWith(res.redirect, '/');
+                        sinon.assert.notCalled(next);
+                    });
+            });
+    });
+
+    it('should logout with an access token', () => {
+        composerConfig.authentication = true;
+        return server(composerConfig)
+            .then((result) => {
+                result.app.should.exist;
+                result.server.should.exist;
+                const routes = result.app._router.stack.filter((r) => {
+                    return r.route && r.route.path;
+                });
+                const req = {
+                    logout: sinon.stub(),
+                    accessToken: {
+                        id: 'accessTokenId'
+                    }
+                };
+                const res = {
+                    redirect: sinon.stub(),
+                    clearCookie: sinon.stub()
+                };
+                const next = sinon.stub();
+                const logoutSpy = sinon.spy(result.app.models.user, 'logout');
+                return result.app.models.accessToken.create({ id: 'accessTokenId' })
+                    .then(() => {
+                        return routes[2].route.stack[0].handle(req, res, next);
+                    })
+                    .then(() => {
+                        sinon.assert.calledOnce(req.logout);
+                        sinon.assert.calledTwice(res.clearCookie);
+                        sinon.assert.calledWith(res.clearCookie, 'access_token');
+                        sinon.assert.calledWith(res.clearCookie, 'userId');
+                        sinon.assert.calledOnce(res.redirect);
+                        sinon.assert.calledWith(res.redirect, '/');
+                        sinon.assert.notCalled(next);
+                        sinon.assert.calledOnce(logoutSpy);
+                        sinon.assert.calledWith(logoutSpy, 'accessTokenId');
+                    });
             });
     });
 

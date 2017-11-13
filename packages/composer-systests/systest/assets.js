@@ -27,6 +27,10 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
 describe('Asset system tests', function () {
+    let bnID;
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     let businessNetworkDefinition;
     let client;
@@ -40,6 +44,9 @@ describe('Asset system tests', function () {
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
+
+        bnID = businessNetworkDefinition.getName();
+
         return TestUtil.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest-assets')
@@ -47,6 +54,10 @@ describe('Asset system tests', function () {
                         client = result;
                     });
             });
+    });
+
+    after(function () {
+        return TestUtil.undeploy(businessNetworkDefinition);
     });
 
     let createAsset = (assetId) => {
@@ -556,160 +567,6 @@ describe('Asset system tests', function () {
             })
             .then(function (asset) {
                 asset.next.next.assetId.should.equal('circle3');
-            });
-    });
-
-    it('should find assets in an asset registry', function () {
-        let assetRegistry;
-        return client
-            .addAssetRegistry('myregistry', 'my new asset registry')
-            .then(function (result) {
-                assetRegistry = result;
-                let asset1 = createAsset('dogeAsset1');
-                let asset2 = createAsset('dogeAsset2');
-                let asset3 = createAsset('dogeAsset3');
-                let asset4 = createAsset('dogeAsset4');
-                let asset5 = createAsset('dogeAsset5');
-                return assetRegistry.addAll([asset1, asset2, asset3, asset4, asset5]);
-            })
-            .then(function () {
-                return assetRegistry.find(`
-                    (assetId = 'dogeAsset1') or
-                    (assetId = 'dogeAsset3') or
-                    (assetId = 'dogeAsset5')
-                `);
-            })
-            .then(function (assets) {
-                assets.length.should.equal(3);
-                assets.sort((a, b) => {
-                    return a.getIdentifier().localeCompare(b.getIdentifier());
-                });
-                validateAsset(assets[0], 'dogeAsset1');
-                validateAsset(assets[1], 'dogeAsset3');
-                validateAsset(assets[2], 'dogeAsset5');
-            });
-    });
-
-    it('should find assets in an asset registry using expressions that access related assets', function () {
-        let factory = client.getBusinessNetwork().getFactory();
-        let assetRegistry;
-        return client
-            .getAssetRegistry('systest.assets.SimpleAssetCircle')
-            .then(function (result) {
-                assetRegistry = result;
-                let circle1 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
-                return assetRegistry.addAll([circle1, circle2, circle3]);
-            })
-            .then(function () {
-                return assetRegistry.find(`
-                    (assetId = 'circle1') and
-                    (next.assetId = 'circle2') and
-                    (next.next.assetId = 'circle3') and
-                    (next.next.next.assetId = 'circle1')
-                `);
-            })
-            .then(function (assets) {
-                assets.length.should.equal(1);
-                assets[0].assetId.should.equal('circle1');
-            });
-    });
-
-    it('should query assets in an asset registry', function () {
-        let assetRegistry;
-        return client
-            .addAssetRegistry('myregistry', 'my new asset registry')
-            .then(function (result) {
-                assetRegistry = result;
-                let asset1 = createAsset('dogeAsset1');
-                let asset2 = createAsset('dogeAsset2');
-                let asset3 = createAsset('dogeAsset3');
-                let asset4 = createAsset('dogeAsset4');
-                let asset5 = createAsset('dogeAsset5');
-                return assetRegistry.addAll([asset1, asset2, asset3, asset4, asset5]);
-            })
-            .then(function () {
-                return assetRegistry.query(`
-                    (assetId = 'dogeAsset1') or
-                    (assetId = 'dogeAsset3') or
-                    (assetId = 'dogeAsset5')
-                    ?
-                    {
-                        'myAssetId': assetId,
-                        'combinedValue': stringValue & ':' & enumValue,
-                        'someMaths': longValue - integerValue
-                    }
-                    :
-                    null
-                `);
-            })
-            .then(function (assets) {
-                assets.sort((a, b) => {
-                    return a.myAssetId.localeCompare(b.myAssetId);
-                });
-                assets.should.deep.equal([
-                    {
-                        myAssetId: 'dogeAsset1',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    },
-                    {
-                        myAssetId: 'dogeAsset3',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    },
-                    {
-                        myAssetId: 'dogeAsset5',
-                        combinedValue: 'hello world:WOW',
-                        someMaths: 130048
-                    }
-                ]);
-            });
-    });
-
-    it('should query assets in an asset registry using expressions that access related assets', function () {
-        let factory = client.getBusinessNetwork().getFactory();
-        let assetRegistry;
-        return client
-            .getAssetRegistry('systest.assets.SimpleAssetCircle')
-            .then(function (result) {
-                assetRegistry = result;
-                let circle1 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newResource('systest.assets', 'SimpleAssetCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
-                return assetRegistry.addAll([circle1, circle2, circle3]);
-            })
-            .then(function () {
-                return assetRegistry.query(`
-                    (assetId = 'circle1') and
-                    (next.assetId = 'circle2') and
-                    (next.next.assetId = 'circle3') and
-                    (next.next.next.assetId = 'circle1')
-                    ?
-                    {
-                        'myAssetId': assetId,
-                        'nextAssetId': next.assetId,
-                        'nextNextAssetId': next.next.assetId,
-                        'backToTheAssetId': next.next.next.assetId
-                    }
-                    :
-                    null
-                `);
-            })
-            .then(function (assets) {
-                assets.should.deep.equal([{
-                    myAssetId: 'circle1',
-                    nextAssetId: 'circle2',
-                    nextNextAssetId: 'circle3',
-                    backToTheAssetId: 'circle1'
-                }]);
             });
     });
 

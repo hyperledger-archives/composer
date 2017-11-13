@@ -48,6 +48,14 @@ describe('WebSecurityContext', () => {
 
     });
 
+    describe('#getUser', () => {
+
+        it('should get the current user ID', () => {
+            securityContext.getUser().should.equal(identity.name);
+        });
+
+    });
+
     describe('#getIdentity', () => {
 
         it('should get the current user ID', () => {

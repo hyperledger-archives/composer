@@ -2,7 +2,7 @@
 layout: default
 title: Historian
 section: reference
-index-order: 1011
+index-order:
 sidebar: sidebars/accordion-toc0.md
 excerpt: The Hyperledger Composer Historian provides a registry that contains information about historical transactions
 ---
@@ -96,4 +96,4 @@ More advanced queries can be used; for example, the following query selects and 
 
 - [Applying queries to a business network.](../business-network/query.html)
 - [Emitting events from transactions.](../business-network/publishing-events.html)
-- [{{site.data.conrefs.composer_full}} API documentation.](../jsdoc/index.html)
+- [{{site.data.conrefs.composer_full}} API documentation.](../api/api-doc-index.html)

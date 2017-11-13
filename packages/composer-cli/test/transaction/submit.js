@@ -79,8 +79,8 @@ describe('composer transaction submit CLI unit tests', () => {
             return Submit.handler(argv)
             .then((res) => {
                 argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.connectWithDetails);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connectWithDetails, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);
@@ -104,6 +104,34 @@ describe('composer transaction submit CLI unit tests', () => {
                 sinon.assert.calledWith(CmdUtil.prompt);
 
             });
+        });
+
+
+
+        it('should not error when all requred params (card based) are specified', () => {
+            sandbox.stub(CmdUtil, 'prompt').resolves(ENROLL_SECRET);
+
+            let argv = {
+                card: 'cardname',
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
+            };
+
+            return Submit.handler(argv)
+            .then((res) => {
+                sinon.assert.calledWith(mockBusinessNetworkConnection.connect,'cardname');
+
+            });
+        });
+
+        it('should  error when can not parse the json (card based)', () => {
+            sandbox.stub(JSON, 'parse').throws(new Error('failure'));
+
+            let argv = {
+                card: 'cardname',
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
+            };
+
+            return Submit.handler(argv).should.be.rejectedWith(/JSON error/);
         });
 
         it('should error when the transaction fails to submit', () => {

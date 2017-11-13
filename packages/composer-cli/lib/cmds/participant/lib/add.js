@@ -17,48 +17,24 @@
 const cmdUtil = require('../../utils/cmdutils');
 
 /**
- * <p>
  * Composer "participant add" command
- * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Add {
 
   /**
-    * Command process for deploy command
+    * Command process for "participant add" command
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
+        let cardName = argv.card;
 
-        return (() => {
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
+        return Promise.resolve()
         .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
             businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
+            return businessNetworkConnection.connect(cardName);
         })
         .then(() => {
             let data = argv.data;

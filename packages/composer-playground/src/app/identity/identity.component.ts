@@ -42,7 +42,7 @@ export class IdentityComponent implements OnInit {
         this.loadMyIdentities();
         return this.clientService.ensureConnected()
             .then(() => {
-                this.businessNetworkName = this.clientService.getMetaData().getName();
+                this.businessNetworkName = this.clientService.getBusinessNetwork().getName();
                 return this.clientService.getBusinessNetworkConnection().getIdentityRegistry();
             }).then((registry) => {
                 return registry.getAll();
@@ -212,7 +212,7 @@ export class IdentityComponent implements OnInit {
                             this.alertService.successStatus$.next({
                                 title: 'Removal Successful',
                                 text: userID + ' was successfully removed.',
-                                icon: '#icon-trash_32'
+                                icon: '#icon-bin_icon'
                             });
                         })
                         .catch((error) => {
@@ -267,7 +267,7 @@ export class IdentityComponent implements OnInit {
                             this.alertService.successStatus$.next({
                                 title: 'Revoke Successful',
                                 text: identity.name + ' was successfully revoked.',
-                                icon: '#icon-trash_32'
+                                icon: '#icon-bin_icon'
                             });
                         })
                         .catch((error) => {

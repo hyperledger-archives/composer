@@ -47,7 +47,7 @@ class ModelManager {
      * Create the ModelManager.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Composer}</strong>
+     * retrieve instances from {@link BusinessNetworkDefinition}</strong>
      * </p>
      */
     constructor() {
@@ -68,7 +68,7 @@ class ModelManager {
         // add the system model
         SYSTEM_MODELS.forEach((SYSTEM_MODEL) => {
             LOG.info(method, SYSTEM_MODEL);
-            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName, true);
+            let m = new ModelFile(this, SYSTEM_MODEL.contents, SYSTEM_MODEL.fileName);
             this.modelFiles[m.getNamespace()] = m;
         });
 
@@ -138,7 +138,7 @@ class ModelManager {
         }
 
         if (m.isSystemModelFile()) {
-            throw new Error('Cannot add a model file with the reserved system namspace: ' + m.getNamespace());
+            throw new Error('Cannot add a model file with the reserved system namespace: ' + m.getNamespace());
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
@@ -198,9 +198,9 @@ class ModelManager {
             throw new Error('model file does not exist');
         } else if (namespace === ModelUtil.getSystemNamespace()) {
             throw new Error('Cannot delete system namespace');
-
+        } else {
+            delete this.modelFiles[namespace];
         }
-        delete this.modelFiles[namespace];
     }
 
     /**
@@ -409,63 +409,70 @@ class ModelManager {
 
     /**
      * Get the AssetDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {AssetDeclaration[]} the AssetDeclarations defined in the model manager
      */
-    getAssetDeclarations() {
+    getAssetDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getAssetDeclarations());
+            return prev.concat(cur.getAssetDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the TransactionDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {TransactionDeclaration[]} the TransactionDeclarations defined in the model manager
      */
-    getTransactionDeclarations() {
+    getTransactionDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getTransactionDeclarations());
+            return prev.concat(cur.getTransactionDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EventDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EventDeclaration[]} the EventDeclaration defined in the model manager
      */
-    getEventDeclarations() {
+    getEventDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEventDeclarations());
+            return prev.concat(cur.getEventDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the ParticipantDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ParticipantDeclaration[]} the ParticipantDeclaration defined in the model manager
      */
-    getParticipantDeclarations() {
+    getParticipantDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getParticipantDeclarations());
+            return prev.concat(cur.getParticipantDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the EnumDeclarations defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {EnumDeclaration[]} the EnumDeclaration defined in the model manager
      */
-    getEnumDeclarations() {
+    getEnumDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getEnumDeclarations());
+            return prev.concat(cur.getEnumDeclarations(includeSystemType));
         }, []);
     }
 
     /**
      * Get the Concepts defined in this model manager
+     * @param {Boolean} includeSystemType - Include the decalarations of system type in returned data
      * @return {ConceptDeclaration[]} the ConceptDeclaration defined in the model manager
      */
-    getConceptDeclarations() {
+    getConceptDeclarations(includeSystemType = true) {
         return this.getModelFiles().reduce((prev, cur) => {
-            return prev.concat(cur.getConceptDeclarations());
+            return prev.concat(cur.getConceptDeclarations(includeSystemType));
         }, []);
     }
+
 }
 
 module.exports = ModelManager;

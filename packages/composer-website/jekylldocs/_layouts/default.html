@@ -13,6 +13,19 @@ markdown: 0
             {% include navbar.html %}
           </div>
 
+            <div class="search-form">
+              <form action="{{ site.baseurl }}/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="{{ site.baseurl }}/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
           <div class="docs-current-page-grid">
           <p>{{ page.title }}</p>
           </div>
@@ -103,3 +116,4 @@ markdown: 0
 })(document);
 </script>
 <script src="{{site.baseurl}}/assets/js/nav.js"></script>
+<script src="{{site.baseurl}}/assets/js/search_bar.js"></script>

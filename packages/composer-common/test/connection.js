@@ -192,18 +192,18 @@ describe('Connection', () => {
 
         it('should call _start and handle no error', () => {
             sinon.stub(connection, '_start').yields(null);
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
         it('should call _start and handle an error', () => {
             sinon.stub(connection, '_start').yields(new Error('error'));
-            return connection.start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
@@ -213,7 +213,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._start(mockSecurityContext, mockBusinessNetworkDefinition, { start: 'options' });
+                connection._start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
             }).should.throw(/abstract function called/);
         });
 
@@ -223,18 +223,18 @@ describe('Connection', () => {
 
         it('should call _deploy and handle no error', () => {
             sinon.stub(connection, '_deploy').yields(null);
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' })
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
                 });
         });
 
         it('should call _deploy and handle an error', () => {
             sinon.stub(connection, '_deploy').yields(new Error('error'));
-            return connection.deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' })
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
                 });
         });
 
@@ -244,36 +244,117 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._deploy(mockSecurityContext, mockBusinessNetworkDefinition, { deploy: 'options' });
+                connection._deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
             }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#reset', () => {
+
+        it('should throw an error when no name given', ()=>{
+            return connection.reset(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        });
+        it('should handle wrong network name data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection.reset(mockSecurityContext,'wrong-network')
+                    .should.eventually.be.rejectedWith(/Incorrect Business Network Identifier/);
+
+        });
+        it('should handle valid data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection.reset(mockSecurityContext,'acme-network')
+                    .then(()=>{
+                        sinon.assert.called(Util.invokeChainCode);
+                        sinon.assert.called(Util.queryChainCode);
+                    });
+
+        });
+
+        it('should handle valid data', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp=new Date();
+
+            return connection.reset(mockSecurityContext,'acme-network')
+                    .then(()=>{
+                        sinon.assert.called(Util.invokeChainCode);
+                        sinon.assert.called(Util.queryChainCode);
+                    });
+
         });
 
     });
 
     describe('#update', () => {
 
-        it('should call _update and handle no error', () => {
-            sinon.stub(connection, '_updateTx').resolves();
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-                .then(() => {
-                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                });
+        it('should reject if no network defn given',()=>{
+            (()=>{
+                connection.update(mockSecurityContext,null);
+            }).should.throw(/business network definition not specified/);
         });
 
-        it('should call _update and handle an error', () => {
-            sinon.stub(connection, '_updateTx').rejects(new Error('error'));
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._updateTx, mockSecurityContext, mockBusinessNetworkDefinition);
-                });
-        });
-
-    });
-
-    describe('#_updateTX', () => {
-
-        it('should throw as abstract method', () => {
+        it('should handle valid data', () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -295,7 +376,7 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection._updateTx(mockSecurityContext, mockBusinessNetworkDefinition)
+            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
@@ -303,14 +384,35 @@ describe('Connection', () => {
 
         });
 
-    });
+        it('should handle valid data minus tx id and with a hardcoded timestamp', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
 
-    describe('#_update', () => {
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
 
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._update(mockSecurityContext, mockBusinessNetworkDefinition);
-            }).should.throw(/abstract function called/);
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp='the epoch';
+
+            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
+            .then(()=>{
+                sinon.assert.called(Util.invokeChainCode);
+                sinon.assert.called(Util.queryChainCode);
+            });
+
         });
 
     });
@@ -536,4 +638,97 @@ describe('Connection', () => {
 
     });
 
+    describe('#createTransactionId', () => {
+
+        it('should call _createTransactionId and handle no error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(null,['5d5s6s78d7f6']);
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.eventually.be.deep.equal(['5d5s6s78d7f6'])
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+        it('should call _createTransactionId and handle an error', () => {
+            sinon.stub(connection, '_createTransactionId').yields(new Error('error'));
+            return connection.createTransactionId(mockSecurityContext)
+                        .should.be.rejectedWith(/error/)
+                        .then(() => {
+                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
+                        });
+        });
+
+    });
+
+    describe('#_createTransactionId', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                connection._createTransactionId(mockSecurityContext);
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#setLogLevel', () => {
+
+        it('should throw an error when no loglevel given', ()=>{
+            return connection.setLogLevel(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        });
+        it('should handle setting to a new level', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns('txid');
+
+            return connection.setLogLevel(mockSecurityContext,'debug');
+
+
+        });
+        it('should handle setting to a new level - alternate paths', () => {
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+
+            const buffer2 = Buffer.from(JSON.stringify({
+                data: 'aGsad33VsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
+            let mockFactory = sinon.createStubInstance(Factory);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            let mockTransaction = sinon.createStubInstance(Resource);
+
+            mockFactory.newTransaction.returns(mockTransaction);
+            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockBusinessNetworkDefinition.getName.returns('acme-network');
+            mockSerializer.toJSON.returns({key:'value'});
+            mockTransaction.getIdentifier.returns(null);
+            mockTransaction.timestamp = new Date();
+
+            return connection.setLogLevel(mockSecurityContext,'debug');
+
+
+        });
+    });
 });

@@ -13,6 +13,7 @@
  */
 
 'use strict';
+
 const Connection = require('composer-common').Connection;
 const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
@@ -33,7 +34,6 @@ const runtimePackageJSON = require('composer-runtime-hlfv1/package.json');
 
 // The chaincode path is the portion of the GOPATH after 'src'.
 const chaincodePath = 'composer';
-
 
 /**
  * Class representing a connection to a business network running on Hyperledger
@@ -311,7 +311,8 @@ class HLFConnection extends Connection {
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
-     * @returns {Promise} a promise for install completion
+     * @returns {Promise} a promise which resolves to true if chaincode was installed, false otherwise (if ignoring installed errors)
+     * @throws {Error} if chaincode was not installed and told not to ignore this scenario
      */
     install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
@@ -370,15 +371,21 @@ class HLFConnection extends Connection {
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
                 if (installOptions && installOptions.ignoreCCInstalled) {
-                    this._validateResponses(results[0], false, /chaincode .+ exists/);
+                    let errorIgnored = this._validateResponses(results[0], false, /chaincode .+ exists/);
                     LOG.debug(method, 'chaincode installed, or already installed');
+
+                    // if the error was ignored then no chaincode was installed
+                    return !errorIgnored;
                 } else {
                     this._validateResponses(results[0], false);
                     LOG.debug(method, 'chaincode installed');
+                    return true;
                 }
             })
-            .then(() => {
-                LOG.exit(method);
+            .then((chaincodeInstalled) => {
+                LOG.exit(method, chaincodeInstalled);
+                return chaincodeInstalled;
+
             })
             .catch((error) => {
                 const newError = new Error('Error trying install composer runtime. ' + error);
@@ -410,45 +417,37 @@ class HLFConnection extends Connection {
      * Instantiate the chaincode.
      *
      * @param {any} securityContext the security context
-     * @param {any} businessNetwork the business network
-     * @param {Object} startOptions an optional connection specific set of deployment options (see deploy for details)
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
+     * @param {Object} startOptions connector specific installation options
      * @returns {Promise} a promise for instantiation completion
      */
-    start(securityContext, businessNetwork, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         const method = 'start';
-        LOG.entry(method, securityContext, businessNetwork, startOptions);
+        LOG.entry(method, securityContext, businessNetworkIdentifier, startTransaction, startOptions);
 
-        if (!businessNetwork) {
-            throw new Error('businessNetwork not specified');
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!startTransaction) {
+            throw new Error('startTransaction not specified');
         }
 
-        let businessNetworkArchive;
         let finalTxId;
 
         // initialize the channel ready for instantiation
         LOG.debug(method, 'loading the channel configuration');
         return this._initializeChannel()
             .then(() => {
-                // serialise the business network
-                return businessNetwork.toArchive();
-            })
-            .then((bna) => {
-                businessNetworkArchive = bna;
                 // prepare and send the instantiate proposal
                 finalTxId = this.client.newTransactionID();
-
-                let initArgs = {};
-                if (startOptions && startOptions.logLevel) {
-                    initArgs.logLevel = startOptions.logLevel;
-                }
 
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetwork.getName(),
+                    chaincodeId: businessNetworkIdentifier,
                     txId: finalTxId,
                     fcn: 'init',
-                    args: [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]
+                    args: [startTransaction]
                 };
 
                 if (startOptions) {
@@ -509,7 +508,8 @@ class HLFConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HLFSecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @param {string} deployOptions.logLevel the level of logging for the composer runtime
      * @param {any} deployOptions.endorsementPolicy the endorsement policy (either a JSON string or Object) as defined by fabric node sdk
@@ -517,34 +517,42 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetwork, deployOptions) {
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
         const method = 'deploy';
-        LOG.entry(method, securityContext, businessNetwork, deployOptions);
+        LOG.entry(method, securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
         // Validate all the arguments.
-        if (!businessNetwork) {
-            throw new Error('businessNetwork not specified');
+        if (!businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!deployTransaction) {
+            throw new Error('deployTransaction not specified');
         }
 
         LOG.debug(method, 'installing composer runtime chaincode');
-        return this.install(securityContext, businessNetwork.getName(), {ignoreCCInstalled: true})
-            .then(() => {
+        let chaincodeInstalled;
+        return this.install(securityContext, businessNetworkIdentifier, {ignoreCCInstalled: true})
+            .then((chaincodeInstalled_) => {
                 // check to see if the chaincode is already instantiated
+                chaincodeInstalled = chaincodeInstalled_;
                 return this.channel.queryInstantiatedChaincodes();
             })
             .then((queryResults) => {
                 LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
                 let alreadyInstantiated = queryResults.chaincodes.some((chaincode) => {
-                    return chaincode.path === 'composer' && chaincode.name === businessNetwork.getName();
+                    return chaincode.path === 'composer' && chaincode.name === businessNetworkIdentifier;
                 });
                 if (alreadyInstantiated) {
                     LOG.debug(method, 'chaincode already instantiated');
+                    if (!chaincodeInstalled) {
+                        // chaincode was not installed so must have been installed already.
+                        throw new Error('Business network has already been deployed or undeployed and cannot be deployed again.');
+                    }
                     return Promise.resolve();
                 }
-                return this.start(securityContext, businessNetwork, deployOptions);
+                return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
             })
             .then(() => {
                 LOG.exit(method);
@@ -563,6 +571,7 @@ class HLFConnection extends Connection {
      * @param {any} responses the responses from the install, instantiate or invoke
      * @param {boolean} isProposal true is the responses are from a proposal
      * @param {regexp} pattern optional regular expression for message which isn't an error
+     * @return {boolean} true if error was ignored as per pattern request, false otherwise
      * @throws if not valid
      */
     _validateResponses(responses, isProposal, pattern) {
@@ -573,6 +582,7 @@ class HLFConnection extends Connection {
             throw new Error('No results were returned from the request');
         }
 
+        let errorsIgnored = false;
         responses.forEach((responseContent) => {
             if (responseContent instanceof Error) {
                 // check to see if we should ignore the error, this also means we cannot verify the proposal
@@ -580,6 +590,7 @@ class HLFConnection extends Connection {
                 if (!pattern || !pattern.test(responseContent.message)) {
                     throw responseContent;
                 }
+                errorsIgnored = true;
             } else {
 
                 // not an error, if it is from a proposal, verify the response
@@ -593,7 +604,6 @@ class HLFConnection extends Connection {
                     throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
                 }
             }
-
         });
 
         // if it was a proposal and all the responses were good, check that they compare
@@ -603,7 +613,8 @@ class HLFConnection extends Connection {
         if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
             LOG.warn('Peers do not agree, Read Write sets differ');
         }
-        LOG.exit(method);
+        LOG.exit(method, errorsIgnored);
+        return errorsIgnored;
     }
 
     /**
@@ -727,9 +738,11 @@ class HLFConnection extends Connection {
         });
 
         let txId = this.client.newTransactionID();
+        let peerArray = [this.channel.getPeers()[0]];
 
         // Submit the query request.
         const request = {
+            targets: peerArray,
             chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
@@ -763,10 +776,12 @@ class HLFConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} options options to pass to invoking chaincode
+     * @param {Object} options.transactionId Transaction Id to use.
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode(securityContext, functionName, args, options) {
         const method = 'invokeChainCode';
         LOG.entry(method, securityContext, functionName, args);
 
@@ -785,13 +800,17 @@ class HLFConnection extends Connection {
             }
         });
 
-        let txId = this.client.newTransactionID();
+        let txId;
+        if (options && options.transactionId){
+            txId = options.transactionId;
+        } else {
+            txId = this.client.newTransactionID();
+        }
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
         LOG.debug(method, 'loading channel configuration');
         return this._initializeChannel()
             .then(() => {
-
 
                 // Submit the transaction to the endorsers.
                 const request = {
@@ -870,7 +889,7 @@ class HLFConnection extends Connection {
                 enrollmentID: userID,
                 affiliation: options.affiliation || 'org1',  // or eg. org1.department1
                 attrs: [],
-                maxEnrollments: options.maxEnrollments || 0,
+                maxEnrollments: options.maxEnrollments || 1,
                 role: options.role || 'client'
             };
 
@@ -978,7 +997,7 @@ class HLFConnection extends Connection {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
                     if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with cdoe ${code}`));
+                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
                     } else {
                         resolve();
                     }
@@ -1073,6 +1092,17 @@ class HLFConnection extends Connection {
                 LOG.error(method, newError);
                 throw newError;
             });
+    }
+
+   /**
+     * Get a transaction id from the fabric client
+     * @param {any} securityContext security context
+     * @return {Promise} A promise that is resolved with a transaction id
+     */
+    createTransactionId(){
+        // Check that a valid security context has been specified.
+        let id = this.client.newTransactionID();
+        return Promise.resolve({id:id,idStr:id.getTransactionID()});
     }
 
 }

@@ -20,7 +20,7 @@
               <span>Use it yourself</span>
             </ng-template>
             <ng-template ngbPanelContent>
-                <p>Just add the ID card to your wallet to start using the new identity yourself</p>
+                <p>Just add the business network card to your wallet to start using the new identity yourself</p>
                 <div class="actions">
                   <button type="button" class="primary" (click)="addToWallet();">Add to wallet</button>
                 </div>
@@ -31,38 +31,15 @@
                   <svg class="bx--accordion__arrow" width="12" height="12" viewBox="0 0 8 12" fill-rule="evenodd">
                     <path d="M0 10.6L4.7 6 0 1.4 1.4 0l6.1 6-6.1 6z"></path>
                   </svg>
-                  <span>Send it to someone else (Playground)</span>
+                  <span>Send it to someone else</span>
                 </ng-template>
             <ng-template ngbPanelContent>
-                <p>Another Playground user can import the ID card to their wallet to start using the new identity</p>
+                <p>Another Playground user can import the business network card to their wallet to start using the new identity</p>
                 <div class="actions">
-                  <button type="button" class="primary" (click)="export();">Export ID card</button>
+                  <button type="button" class="primary" (click)="export();">Export Business Network Card</button>
                 </div>
             </ng-template>
           </ngb-panel>
-          <ngb-panel id="option-3">
-              <ng-template ngbPanelTitle>
-                  <svg class="bx--accordion__arrow" width="12" height="12" viewBox="0 0 8 12" fill-rule="evenodd">
-                    <path d="M0 10.6L4.7 6 0 1.4 1.4 0l6.1 6-6.1 6z"></path>
-                  </svg>
-                  <span>Send it to someone else (Command line)</span>
-                </ng-template>
-              <ng-template ngbPanelContent>
-                  <p>A Composer command line user will need to enroll the new identity using the secret shown below</p>
-                  
-                  <dl class="enrollment-credentials">
-                    <dt>User ID</dt>
-                    <dd>{{userID}}</dd>
-
-                    <dt>User Secret</dt>
-                    <dd>{{userSecret}}</dd>
-                  </dl>
-
-                  <div class="actions">
-                    <button type="button" class="primary" ngxClipboard [cbContent]="newIdentity" (cbOnSuccess)="activeModal.close()">Copy to clipboard</button>
-                  </div>
-              </ng-template>
-            </ngb-panel>
         </ngb-accordion>
     </div>
   </div>

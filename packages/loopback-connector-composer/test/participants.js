@@ -19,8 +19,8 @@ const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
+const IdCard = require('composer-common').IdCard;
 const loopback = require('loopback');
-const Util = require('composer-common').Util;
 
 const chai = require('chai');
 const should = chai.should();
@@ -57,15 +57,17 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let businessNetworkConnection;
         let participantRegistry;
         let serializer;
+        let adminConnection;
+        let idCard;
 
         before(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
+            adminConnection = new AdminConnection({ fs: bfs_fs });
             return adminConnection.createProfile('defaultProfile', {
                 type : 'embedded'
             })
             .then(() => {
-                return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -75,14 +77,15 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return adminConnection.deploy(businessNetworkDefinition);
             })
             .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard('admin@bond-network', idCard);
+            })
+            .then(() => {
                 app = loopback();
                 const connectorSettings = {
                     name: 'composer',
                     connector: connector,
-                    connectionProfileName: 'defaultProfile',
-                    businessNetworkIdentifier: 'bond-network',
-                    participantId: 'admin',
-                    participantPwd: 'adminpw',
+                    card: 'admin@bond-network',
                     namespaces: namespaces,
                     fs: bfs_fs
                 };
@@ -125,7 +128,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
                 });
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
             })
             .then(() => {
                 return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
@@ -140,7 +143,10 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return Util.invokeChainCode(businessNetworkConnection.securityContext, 'resetBusinessNetwork', [])
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            .then( ()=>{
+                return adminConnection.reset('bond-network');
+            })
                 .then(() => {
                     return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Issuer');
                 })
@@ -173,6 +179,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return app.models[prefix + 'Issuer'].count({ memberId: 'MEMBER_999' })
                     .then((count) => {
                         count.should.equal(0);
+                    });
+            });
+            it('should count all of the participants using the other peroperty', () => {
+                return app.models[prefix + 'Issuer'].count({ name: 'Bob' })
+                    .then((count) => {
+                        count.should.equal(1);
+                    });
+            });
+            it('should count all of the participants using the and|or operator', () => {
+                return app.models[prefix + 'Issuer'].count({'or':[{name: 'Bob'}, {name: 'Alice'}]})
+                    .then((count) => {
+                        count.should.equal(2);
                     });
             });
 

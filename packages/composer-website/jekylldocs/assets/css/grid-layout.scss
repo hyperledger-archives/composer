@@ -28,10 +28,10 @@ $callout: #FFD640;
   //   }
 
   // Scrollbar overrides
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;  // IE 10+
+  // ::-webkit-scrollbar {
+  //   display: none;
+  // }
+  // -ms-overflow-style: none;  // IE 10+
 
   hr {
     display: none;
@@ -43,6 +43,13 @@ $callout: #FFD640;
     justify-items: start;
     overflow-y: scroll;
     height: 100vh;
+
+    // Scrollbar overrides
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;  // IE 10+
+
 
     .docs-pagenav-grid {
       padding-top: 5vh;
@@ -235,6 +242,10 @@ $callout: #FFD640;
     overflow-y: scroll;
     height: 100vh;
 
+    // ::-webkit-scrollbar {
+    //   display: initial;
+    // }
+
     .content-chunk {
       margin-left: 2rem;
       max-width: 750px;
@@ -313,6 +324,7 @@ $callout: #FFD640;
             padding: 1rem;
             color: white;
             border-radius: 4px;
+            padding-right: 4rem;
 
             code {
               padding-right: 35px;
@@ -406,6 +418,56 @@ $callout: #FFD640;
             }
           }
 
+        }
+
+        // Table styling
+
+        table {
+          font-size: 0.8rem;
+          display: block;
+          background-color: white;
+          padding: 1rem;
+
+          td {
+            border-bottom: 1px solid $keyline-highlight;
+            padding-bottom: 1rem;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding: 1rem;
+          }
+
+          th {
+            padding-bottom: 1rem;
+            padding-top: 1rem;
+            padding-right: 1rem;
+            padding: 1rem;
+            color: $secondary-text;
+          }
+
+          thead {
+            font-weight: 600;
+            padding-bottom: 1rem;
+            // border-bottom: 1px solid blue;
+          }
+          tbody {
+            // display: block;
+            tr {
+              transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+              &:last-of-type {
+                td {
+                  border-bottom: none;
+                }
+                &:hover {
+                  background-color: transparent;
+                }
+
+              }
+              &:hover {
+                background-color: $third-highlight;
+
+              }
+            }
+          }
         }
 
         }
@@ -594,4 +656,93 @@ copy-button {
   &:hover {
     background-color: #4B5368;
   }
+}
+
+// Search Bar
+
+.search-form {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1rem;
+
+  form {
+    display: flex;
+  }
+
+  .search-box {
+    overflow: hidden;
+    max-width: 0;
+    width: 250px;
+    transition: max-width 0.5s ease-in-out;
+    border: none;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-family: $font-stack;
+    color: $primary-text;
+    font-weight: 400;
+    font-size: 0.9rem;
+    line-height: 30px;
+    border-bottom: 2px solid transparent;
+
+    &.opened {
+      max-width: 70%;
+      border-bottom: 2px solid $primary-text;
+      padding-left: 0.8rem;
+
+
+      &:focus {
+        outline: none;
+        border-bottom: 2px solid $first-highlight;
+        background-color: $third-highlight;
+      }
+
+      &:hover {
+        background-color: $third-highlight;
+      }
+    }
+  }
+
+  .search-icon {
+    padding-top: 10px;
+    cursor: pointer;
+
+    &.hide {
+      display: none;
+    }
+
+    &:hover {
+      fill: $first-highlight;
+    }
+
+  }
+
+  .trigger {
+    width: 18px;
+    // height: 18px;
+  }
+
+  .submit-input {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border: none;
+    background-color: transparent;
+    width: 40px;
+    background-image: url('../img/Search_Icon_1.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: 0.3rem;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      background-color: $third-highlight;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
 }

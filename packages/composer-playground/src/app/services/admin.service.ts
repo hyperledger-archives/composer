@@ -72,7 +72,7 @@ export class AdminService {
             console.log('Connecting with connection profile %s with id %s', connectionProfileRef, userName);
         }
 
-        this.connectingPromise = this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
+        this.connectingPromise = this.getAdminConnection().connectWithDetails(connectionProfileRef, userName, enrollmentSecret, businessNetworkName)
             .then(() => {
                 this.isConnected = true;
                 this.connectingPromise = null;
@@ -121,7 +121,7 @@ export class AdminService {
                     force: true
                 });
 
-                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret);
+                return this.getAdminConnection().connectWithDetails(connectionProfileRef, userName, enrollmentSecret);
             })
             .then(() => {
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork(name, description);
@@ -138,7 +138,7 @@ export class AdminService {
                 });
 
                 console.log('Connecting to business network %s with connection profile %s with id %s', name, connectionProfileRef, userName);
-                return this.getAdminConnection().connect(connectionProfileRef, userName, enrollmentSecret, name);
+                return this.getAdminConnection().connectWithDetails(connectionProfileRef, userName, enrollmentSecret, name);
             })
             .then(() => {
                 return true;
@@ -175,6 +175,10 @@ export class AdminService {
         });
     }
 
+    public reset(businessNetworkDefinitionName): Promise<any> {
+        return this.getAdminConnection().reset(businessNetworkDefinitionName);
+    }
+
     public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
         return this.getAdminConnection().deploy(businessNetworkDefinition);
     }
@@ -187,8 +191,9 @@ export class AdminService {
         return this.getAdminConnection().install(businessNetworkDefinitionName);
     }
 
-    public start(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().start(businessNetworkDefinition);
+    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<void> {
+        // Cast to <any> as TypeScript does not know about default parameters :-(
+        return (<any> this.getAdminConnection()).start(businessNetworkDefinition, startOptions);
     }
 
     public importIdentity(connectionProfileName: string, id: string, certificate: string, privateKey: string): Promise<void> {

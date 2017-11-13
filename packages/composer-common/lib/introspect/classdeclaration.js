@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Decorated = require('./decorated');
 const Field = require('./field');
 const EnumValueDeclaration = require('./enumvaluedeclaration');
 const RelationshipDeclaration = require('./relationshipdeclaration');
@@ -33,7 +34,7 @@ const Introspector = require('./introspector');
  * @class
  * @memberof module:composer-common
  */
-class ClassDeclaration {
+class ClassDeclaration extends Decorated {
 
     /**
      * Create a ClassDeclaration from an Abstract Syntax Tree. The AST is the
@@ -44,24 +45,13 @@ class ClassDeclaration {
      * @throws {IllegalModelException}
      */
     constructor(modelFile, ast) {
-        if(!modelFile || !ast) {
+        super(ast);
+
+        if(!modelFile) {
             throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
         }
-
-        this.ast = ast;
         this.modelFile = modelFile;
         this.process();
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
     }
 
     /**
@@ -80,6 +70,9 @@ class ClassDeclaration {
      * @private
      */
     process() {
+
+        super.process();
+
         this.name = this.ast.id.name;
         this.properties = [];
         this.superType = null;
@@ -135,6 +128,8 @@ class ClassDeclaration {
      * @private
      */
     validate() {
+
+        super.validate();
 
         const declarations = this.getModelFile().getAllDeclarations();
         for(let n=0; n < declarations.length; n++) {

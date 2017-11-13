@@ -180,14 +180,15 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to install
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been installed, or rejected with an error.
      */
-    start(securityContext, businessNetworkDefinition, startOptions) {
+    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
         return new Promise((resolve, reject) => {
-            this._start(securityContext, businessNetworkDefinition, startOptions, (error) => {
+            this._start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -206,11 +207,12 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to start
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific statement options
      * @param {startCallback} callback The callback function to call when complete.
      */
-    _start(securityContext, businessNetworkDefinition, startOptions, callback) {
+    _start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, callback) {
         throw new Error('abstract function called');
     }
 
@@ -218,14 +220,15 @@ class Connection extends EventEmitter {
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetworkDefinition, deployOptions) {
+    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
         return new Promise((resolve, reject) => {
-            this._deploy(securityContext, businessNetworkDefinition, deployOptions, (error) => {
+            this._deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -244,11 +247,12 @@ class Connection extends EventEmitter {
      * Deploy a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} deployTransaction The serialized deploy transaction.
      * @param {Object} deployOptions connector specific deployment options
      * @param {deployCallback} callback The callback function to call when complete.
      */
-    _deploy(securityContext, businessNetworkDefinition, deployOptions, callback) {
+    _deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
         throw new Error('abstract function called');
     }
 
@@ -261,18 +265,6 @@ class Connection extends EventEmitter {
      * artefacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return this._updateTx(securityContext,businessNetworkDefinition);
-    }
-
-    /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been updated, or rejected with an error.
-     */
-    _updateTx(securityContext, businessNetworkDefinition) {
 
         // create the new transaction to update the network
         if (!businessNetworkDefinition) {
@@ -310,26 +302,101 @@ class Connection extends EventEmitter {
             let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
             return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
         });
-
-
     }
 
     /**
-     * @callback updateCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Updates an existing deployed business network definition.
+     * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @param {updateCallback} callback The callback function to call when complete.
+     * @param {String} businessNetworkIdentifier The identifier of the business network
+     * @return {Promise} A promise that is resolved once the business network
+     * artefacts have been reset, or rejected with an error.
      */
-    _update(securityContext, businessNetworkDefinition, callback) {
-        throw new Error('abstract function called');
+    reset(securityContext, businessNetworkIdentifier) {
+
+        let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!businessNetworkIdentifier) {
+                throw new Error('business network identifier not specified');
+            }
+
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+            // Send an update request to the chaincode.
+            // create the new system transaction to add the resources
+
+            if (currentDeployedNetwork.getName() !== businessNetworkIdentifier){
+                throw new Error('Incorrect Business Network Identifier');
+            }
+
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        });
     }
+
+    /**
+     * Resets an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} loglevel The new log level
+     * @return {Promise} A promise that is resolved once the business network
+     * logging level has been changed
+     */
+    setLogLevel(securityContext, loglevel) {
+        let currentDeployedNetwork;
+        return Promise.resolve()
+        .then(()=>{
+            // create the new transaction to update the network
+            if (!loglevel) {
+                throw new Error('Log Level not specified');
+            }
+
+            return Util.queryChainCode(securityContext, 'getBusinessNetwork', []);
+        })
+        .then((buffer) => {
+            let businessNetworkJSON = JSON.parse(buffer.toString());
+            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        })
+        .then((businessNetwork) => {
+            currentDeployedNetwork = businessNetwork;
+
+            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
+            let id = transaction.getIdentifier();
+            if (id === null || id === undefined) {
+                id = uuid.v4();
+                transaction.setIdentifier(id);
+            }
+            let timestamp = transaction.timestamp;
+            if (timestamp === null || timestamp === undefined) {
+                timestamp = transaction.timestamp = new Date();
+            }
+            transaction.newLogLevel = loglevel;
+            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
+            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        });
+    }
+
+
 
     /**
      * Upgrade the Hyperledger Composer runtime.
@@ -481,12 +548,14 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} [options] Options for the invoking chaing code to use
+     * @param {Object} [options.transactionId] Transaction Id to use.
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode(securityContext, functionName, args, options) {
         return new Promise((resolve, reject) => {
-            this._invokeChainCode(securityContext, functionName, args, (error) => {
+            this._invokeChainCode(securityContext, functionName, args, options, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -507,9 +576,11 @@ class Connection extends EventEmitter {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} [options] options for the invoking chain code
+     * @param {Object} [options.transactionId] Transaction Id to use.
      * @param {invokeChainCodeCallback} callback The callback function to call when complete.
      */
-    _invokeChainCode(securityContext, functionName, args, callback) {
+    _invokeChainCode(securityContext, functionName, args, options, callback) {
         throw new Error('abstract function called');
     }
 
@@ -591,6 +662,40 @@ class Connection extends EventEmitter {
      * @param {listCallback} callback The callback function to call when complete.
      */
     _list(securityContext, callback) {
+        throw new Error('abstract function called');
+    }
+
+
+    /**
+     * Create a Transaction Id
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that will be resolved with a representation of the id
+     */
+    createTransactionId(securityContext) {
+        return new Promise((resolve, reject) => {
+            this._createTransactionId(securityContext, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * @callback transactionIdCallback
+     * @protected
+     * @param {Error} error The error if any.
+     * @param {string} result Transaction id.
+     */
+
+    /**
+     * Create a transaction id
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {listCallback} callback The callback function to call when complete.
+     */
+    _createTransactionId(securityContext, callback) {
         throw new Error('abstract function called');
     }
 

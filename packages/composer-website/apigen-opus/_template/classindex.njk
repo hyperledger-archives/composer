@@ -1,0 +1,36 @@
+---
+layout: default
+title: API Class Index
+section: api
+sidebar: sidebars/accordion-toc0.md
+excerpt: The Client, Admin, and Runtime components of Hyperledger Composer
+index-order: {{index}}
+---
+# Index of Classes
+
+- [Common API](#common-api)
+- [Client API](#client-api)
+- [Admin API](#admin-api)
+- [Runtime API](#runtime-api)
+
+## Common API
+| Name  | Description |
+| :---- | :----------- |
+{% for c in common | sort(attribute='name') %}| [{{c.name}}](common-{{c.name | lower}}) | {{c.description}} |
+{% endfor %}
+## Client API
+| Name  | Description |
+| :---- | :----------- |
+{% for c in client | sort(attribute='name') %}|[{{c.name}}](client-{{c.name | lower}}) | {{c.description}} |
+{% endfor %}
+## Admin API
+| Name  | Description |
+| :---- | :----------- |
+{% for c in admin | sort(attribute='name') %}| [{{c.name}}](admin-{{c.name | lower}})| {{c.description}} |
+{% endfor %}
+## Runtime API
+| Name  | Description |
+| :---- | :----------- |
+{% for c in runtime | sort(attribute='name') %}| [{{c.name}}](runtime-{{c.name | lower}}) | {{c.description}} |
+{% endfor %}
+

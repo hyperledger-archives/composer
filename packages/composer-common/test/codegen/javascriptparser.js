@@ -17,10 +17,13 @@
 const JavascriptParser = require('./../../lib/codegen/javascriptparser');
 const fs = require('fs');
 const path = require('path');
-
+const doctrine = require('doctrine');
+const acorn = require('acorn');
 const chai = require('chai');
 chai.should();
+chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
+const sinon = require('sinon');
 
 const readTestExample = function(exampleName) {
     const exampleFile = path.resolve(__dirname, '../data/commentparsing/', exampleName);
@@ -28,8 +31,27 @@ const readTestExample = function(exampleName) {
 };
 
 describe('JavascriptParser', () => {
+    let sandbox;
+
+    beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
 
     describe('#constructor', () => {
+        let sandbox;
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
         it('should use a default ECMAScript version of 7', () => {
             const contents = `
                 let num = 3 ** 2;
@@ -50,18 +72,132 @@ describe('JavascriptParser', () => {
                 new JavascriptParser(contents, false, 5);
             }).should.throw(/The keyword .*class.* is reserved/);
         });
+
+
+        it('should accept a non-default ECMAScript version of 5', () => {
+            const contents = `
+            `;
+
+            sandbox.stub(acorn,'startNode').returns({body:[]});
+            new JavascriptParser(contents, false, 5);
+
+        });
+
+        it('should accept a non-default ECMAScript version of 5', () => {
+
+
+            new JavascriptParser('', false, 5);
+
+        });
+
+        it('should accept and return private methods', () => {
+            const contents = `
+            /**
+             * @private
+            */
+            function findAnimalsByOwnerId(farmerId) {
+                return query('select a from Animal a where a.owner == :farmerId');
+            }
+
+            `;
+
+            (() => {
+                new JavascriptParser(contents, true);
+            });
+        });
+
+        it('should accept and return private methods', () => {
+            const contents = `
+            /**
+             * @private
+            */
+            function findAnimalsByOwnerId(farmerId) {
+                return query('select a from Animal a where a.owner == :farmerId');
+            }
+
+            `;
+
+            (() => {
+                new JavascriptParser(contents, false);
+            });
+        });
+
+        it('should accept and return private classes & methods', () => {
+            const contents = `
+            /**
+             * @private
+            */
+            class P extends S{
+
+                /**
+                 * @private
+                */
+                findAnimalsByOwnerId(farmerId) {
+                    return query('select a from Animal a where a.owner == :farmerId');
+                }
+
+              }
+
+            `;
+
+            (() => {
+                new JavascriptParser(contents, true);
+            });
+        });
+        it('should accept and not return private classes & methods', () => {
+            const contents = `
+            /**
+             * @private
+            */
+            class P extends S{
+                /**
+                 * @private
+                */
+                findAnimalsByOwnerId(farmerId) {
+                    return query('select a from Animal a where a.owner == :farmerId');
+                }
+              }
+            `;
+
+            (() => {
+                new JavascriptParser(contents, false);
+            });
+        });
+        it('should accept and return private classes & methods', () => {
+            const contents = `
+            const r = require('./fred');
+            const t = require('bill');
+            /**
+             * @private
+            */
+            class P extends S{
+
+
+                /**
+                 * @private
+                */
+                findAnimalsByOwnerId(farmerId) {
+                    return query('select a from Animal a where a.owner == :farmerId');
+                }
+              }
+            `;
+
+            (() => {
+                new JavascriptParser(contents, true);
+            });
+        });
+
     });
 
     describe('#getClasses', () => {
         it('should return the classes', () => {
             const contents = `
                 class cls {
-
                 }
             `;
 
             const parser = new JavascriptParser(contents);
-            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [] }]);
+            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [],commentData:[] }]);
         });
     });
 
@@ -81,6 +217,30 @@ describe('JavascriptParser', () => {
 
             const parser = new JavascriptParser(contents);
             parser.getFunctions().should.deep.equal([{
+                'commentData': { 'description': 'Get the Animals, but do not resolve contained relationships',
+                    'tags':
+                    [ { 'title': 'query', 'description': null },
+                        { 'title': 'param', 'description': 'the email of the farmer',  'type':  {
+                            'name': 'String',
+                            'type': 'NameExpression'
+                        },
+                            'name': 'farmerId' },
+                        { 'title': 'returns',
+                            'description': 'the animals that belong to the farmer',
+                            'type': {
+                                'applications': [
+                                    {
+                                        'name': 'Animal',
+                                        'type': 'NameExpression'
+                                    }
+                                ],
+                                'expression': {
+                                    'name': 'Array',
+                                    'type': 'NameExpression'
+                                },
+                                'type': 'TypeApplication'
+                            }
+                        } ] },
                 'decorators': [
                     'query',
                     'param',
@@ -118,9 +278,23 @@ describe('JavascriptParser', () => {
         });
     });
 
-    describe('#findCommentBefore', () => {
-        it('should handle the basic of examples', () => {
+    describe('#getIncludes', () => {
+        it('call the method', () => {
             const code = readTestExample('BasicExample.js.txt');
+            const parser = new JavascriptParser(code);
+            parser.getIncludes();
+        });
+    });
+
+    describe('#searchForComment', () => {
+        let commentSpy;
+        beforeEach(() => {
+            commentSpy = sandbox.spy(JavascriptParser, 'searchForComment');
+        });
+
+        it('should handle comments not directly before function', () => {
+            const code = readTestExample('CommentNotDirectlyBeforeFunction.js.txt');
+            sinon.assert.notCalled(commentSpy);
             const parser = new JavascriptParser(code);
             parser.getFunctions().length.should.equal(1);
             const func = parser.getFunctions()[0];
@@ -128,10 +302,25 @@ describe('JavascriptParser', () => {
             func.parameterTypes.length.should.equal(1);
             func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
             func.name.should.equal('tradeCommodity');
+            sinon.assert.called(commentSpy);
+        });
+
+        it('should handle the basic of examples', () => {
+            const code = readTestExample('BasicExample.js.txt');
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code);
+            parser.getFunctions().length.should.equal(1);
+            const func = parser.getFunctions()[0];
+            func.decorators.should.deep.equal(['param', 'transaction']);
+            func.parameterTypes.length.should.equal(1);
+            func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
+            func.name.should.equal('tradeCommodity');
+            sinon.assert.called(commentSpy);
         });
 
         it('should handle the uncommented function following commented function', () => {
             const code = readTestExample('UncommentedFollowingCommented.js.txt');
+            sinon.assert.notCalled(commentSpy);
             const parser = new JavascriptParser(code);
             parser.getFunctions().length.should.equal(2);
             const func = parser.getFunctions()[0];
@@ -142,11 +331,13 @@ describe('JavascriptParser', () => {
             const func2 = parser.getFunctions()[1];
             func2.decorators.length.should.equal(0);
             func2.parameterTypes.length.should.equal(0);
+            sinon.assert.called(commentSpy);
         });
 
         it('should handle the class methods', () => {
             const code = readTestExample('ClassExample.js.txt');
-            const parser = new JavascriptParser(code, false, 7);
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code, false, 7, true);
             const clazz = parser.getClasses();
             clazz.length.should.equal(1);
             const methods = clazz[0].methods;
@@ -154,10 +345,12 @@ describe('JavascriptParser', () => {
             methods[0].decorators.length.should.equal(0);
             methods[1].decorators.should.deep.equal(['param', 'transaction']);
             methods[2].decorators.length.should.equal(0);
+            sinon.assert.called(commentSpy);
         });
 
         it('should handle the a complex example', () => {
             const code = readTestExample('ComplexExample.js.txt');
+            sinon.assert.notCalled(commentSpy);
             const parser = new JavascriptParser(code);
             const funcs = parser.getFunctions();
             funcs.length.should.equal(12);
@@ -172,7 +365,81 @@ describe('JavascriptParser', () => {
             });
             funcs[4].decorators.length.should.equal(1);
             funcs[4].decorators[0].should.equal('transaction');
+            sinon.assert.called(commentSpy);
         });
+
+    });
+
+
+    describe('#findCommentBefore', () => {
+        let commentSpy;
+        beforeEach(() => {
+            commentSpy = sandbox.spy(JavascriptParser, 'findCommentBefore');
+        });
+
+        it('should handle the basic of examples', () => {
+            const code = readTestExample('BasicExample.js.txt');
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code,null,null,false);
+            parser.getFunctions().length.should.equal(1);
+            const func = parser.getFunctions()[0];
+            func.decorators.should.deep.equal(['param', 'transaction']);
+            func.parameterTypes.length.should.equal(1);
+            func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
+            func.name.should.equal('tradeCommodity');
+            sinon.assert.called(commentSpy);
+        });
+
+        it('should handle the uncommented function following commented function', () => {
+            const code = readTestExample('UncommentedFollowingCommented.js.txt');
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code,null,null,false);
+            parser.getFunctions().length.should.equal(2);
+            const func = parser.getFunctions()[0];
+            func.decorators.should.deep.equal(['param', 'transaction']);
+            func.name.should.equal('tradeCommodity');
+            func.parameterTypes.length.should.equal(1);
+            func.parameterTypes[0].should.equal('org.acme.mynetwork.Trade');
+            const func2 = parser.getFunctions()[1];
+            func2.decorators.length.should.equal(0);
+            func2.parameterTypes.length.should.equal(0);
+            sinon.assert.called(commentSpy);
+        });
+
+        it('should handle the class methods', () => {
+            const code = readTestExample('ClassExample.js.txt');
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code, false, 7, false);
+            const clazz = parser.getClasses();
+            clazz.length.should.equal(1);
+            const methods = clazz[0].methods;
+            methods.length.should.equal(3);
+            methods[0].decorators.length.should.equal(0);
+            methods[1].decorators.should.deep.equal(['param', 'transaction']);
+            methods[2].decorators.length.should.equal(0);
+            sinon.assert.called(commentSpy);
+        });
+
+        it('should handle the a complex example', () => {
+            const code = readTestExample('ComplexExample.js.txt');
+            sinon.assert.notCalled(commentSpy);
+            const parser = new JavascriptParser(code,null,null,false);
+            const funcs = parser.getFunctions();
+            funcs.length.should.equal(12);
+            const noDecorators = [0, 1, 2, 3, 5, 6, 9, 10];
+            const allDecorators = [7, 8, 11];
+            noDecorators.forEach((value) => {
+                funcs[value].decorators.length.should.equal(0);
+            });
+            allDecorators.forEach((value) => {
+                funcs[value].decorators.length.should.equal(2);
+                funcs[value].decorators.should.deep.equal(['param', 'transaction']);
+            });
+            funcs[4].decorators.length.should.equal(1);
+            funcs[4].decorators[0].should.equal('transaction');
+            sinon.assert.called(commentSpy);
+        });
+
     });
 
     describe('#getDecorators', () => {
@@ -228,6 +495,16 @@ describe('JavascriptParser', () => {
     });
 
     describe('#getReturnType', () => {
+        let sandbox;
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
         it('should return the returns tag', () => {
             const comment = `
             /**
@@ -323,9 +600,105 @@ describe('JavascriptParser', () => {
                 JavascriptParser.getReturnType(comment);
             }).should.throw(Error);
         });
+        // slight concern that the codebase is doing checks that are unrequired
+        // following tests exercise this in coverage terms
+        it('Cope with different types of tag type:applications', () => {
+            const comment = `
+                /**
+                 * @Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns(
+                {
+                    tags:[
+                        {
+                            type:
+                            {
+                                applications:['somename']
+                            }
+
+                        }
+                    ]
+                });
+            JavascriptParser.getReturnType(comment);
+
+        });
+        it('Cope with different types of tag type:name', () => {
+            const comment = `
+                /**
+                 * @Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns(
+                {
+                    tags:[
+                        {
+                            type:
+                            {
+                                name:'somename'
+                            }
+
+                        }
+                    ]
+                });
+            JavascriptParser.getReturnType(comment);
+
+        });
+        it('Cope with different types of tag type:expression', () => {
+            const comment = `
+                /**
+                 * @Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns(
+                {
+                    tags:[
+                        {
+                            type:
+                            {
+                                expression:{name:'somename'}
+                            }
+
+                        }
+                    ]
+                });
+            JavascriptParser.getReturnType(comment);
+
+        });
+        it('Cope with different types of tag type:somethingelse', () => {
+            const comment = `
+                /**
+                 * @Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns(
+                {
+                    tags:[
+                        {
+                            type:
+                            {
+                                wibble:{name:'wobble'}
+                            }
+
+                        }
+                    ]
+                });
+            JavascriptParser.getReturnType(comment);
+
+        });
     });
 
+
     describe('#getThrows', () => {
+        let sandbox;
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
         it('should return the throws tag', () => {
             const comment = `
             /**
@@ -386,9 +759,32 @@ describe('JavascriptParser', () => {
                 JavascriptParser.getThrows(comment);
             }).should.throw(Error);
         });
+
+        // slight concern that the codebase is doing checks that are unrequired
+        // following tests exercise this in coverage terms
+        it('error if the type name / type ends up being null (somehow)', () => {
+            const comment = `
+                /**
+                 * @returns {Animal[]} Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns({tags:[ {type:{none:' '} } ] });
+            (()=>{JavascriptParser.getThrows(comment);})
+            .should.throws(/Malformed JSDoc comment/);
+        });
     });
 
     describe('#getMethodArguments', () => {
+        let sandbox;
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
         it('should return the correct method arguments defined in the comment', () => {
             const comment = `
                 /**
@@ -451,6 +847,22 @@ describe('JavascriptParser', () => {
             }).should.throw(Error);
         });
 
+        it('throws an error if there is a random }', () => {
+            const comment = `
+                    /**
+                     * Get the Animals, but do not resolve contained relationships
+                     * @query
+                     * @param {String} farmerId - }the email of the farmer
+                     * @returns {Animal[]} - the animals that belong to the farmer
+                    */
+            `;
+
+            (() => {
+                JavascriptParser.getMethodArguments(comment);
+            }).should.throw(Error);
+        });
+
+
         it ('doesn\'t throw an error if no description is given', () => {
             const comment = `
                 /**
@@ -462,6 +874,55 @@ describe('JavascriptParser', () => {
             `;
 
             JavascriptParser.getMethodArguments(comment);
+        });
+
+        // slight concern that the codebase is doing checks that are unrequired
+        // following tests exercise this in coverage terms
+        it('error if the type name ends up being null (somehow)', () => {
+            const comment = `
+                /**
+                 * @returns {Animal[]} Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns({tags:[ {type:{name:' '} } ] });
+            (()=>{JavascriptParser.getMethodArguments(comment);})
+            .should.throws(/Malformed JSDoc comment/);
+        });
+
+        it('Cope with different types of tag type', () => {
+            const comment = `
+                /**
+                 * @returns {Animal[]} Something valid
+                */
+            `;
+            sandbox.stub(doctrine,'parse').returns(
+                {
+                    tags:[
+                        {
+                            type:
+                            {
+                                applications:['somename']
+                            }
+
+                        },
+                        {
+                            type:
+                            {
+                                expression: {name:'somename'}
+                            }
+
+                        },
+                        {
+                            type:
+                            {
+                                wibble: {name:'somename'}
+                            }
+
+                        }
+                    ]
+                });
+            JavascriptParser.getMethodArguments(comment);
+
         });
     });
 

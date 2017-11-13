@@ -2,7 +2,7 @@
 @import '../../../assets/styles/base/variables';
 
 registry {
-    height: 90%;
+    height: 95%;
     display: block;
     position: relative;
     $highlighted: #e4e4e4;
@@ -68,7 +68,7 @@ registry {
                 display: flex;
 
                 .resource-icon {
-                    align-self: flex-end;
+                    margin-left: $space-small;
                 }
 
                 &.expanded {
@@ -141,6 +141,16 @@ registry {
                 display: block; // required to allow seperated tbody scrolling
                 height: 100%;
                 border-spacing: 0px;
+
+                .normal-column {
+                    width: 28%
+                }
+
+                .narrow-column {
+                    width: 16%;
+                    text-align: right;
+                }
+
                 thead, tbody {
                     display: block;
                 }

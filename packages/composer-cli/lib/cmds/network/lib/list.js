@@ -29,46 +29,25 @@ class List {
 
   /**
     * Command process for network list command
+    * The --card option can be used instead of the combination of --enrollId --enrollSecret --connectionProfileName --businessNetworkName
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
 
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
+
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
         let listOutput;
         let spinner;
+        let cardName = argv.card;
 
-        return (() => {
-            spinner = ora('List business network '+businessNetworkName);
+        spinner = ora('List business network from card '+ cardName );
+        spinner.start();
 
-            if (!argv.enrollSecret) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then (() => {
-            spinner.start();
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
-
-        })
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        return businessNetworkConnection.connect(cardName)
         .then ((result) => {
             businessNetworkDefinition = result;
 
@@ -138,6 +117,7 @@ class List {
                 spinner.fail();
             }
             console.log(List.getError(error));
+            throw error;
         });
     }
 

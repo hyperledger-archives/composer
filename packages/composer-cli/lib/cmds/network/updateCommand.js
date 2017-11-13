@@ -20,9 +20,7 @@ module.exports.command = 'update [options]';
 module.exports.describe = 'Update a business network';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
-    connectionProfileName: {alias: 'p', required: true, describe: 'The connection profile name', type: 'string' },
-    enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
+    card: { alias: 'c', required: true, description: 'The cardname to use to update the network', type: 'string'}
 };
 
 module.exports.handler = (argv) => {

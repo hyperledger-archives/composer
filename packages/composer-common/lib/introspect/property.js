@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Decorated = require('./decorated');
 const ModelUtil = require('../modelutil');
 
 /**
@@ -23,7 +24,7 @@ const ModelUtil = require('../modelutil');
  * @class
  * @memberof module:composer-common
  */
-class Property {
+class Property extends Decorated {
 
     /**
      * Create a Property.
@@ -32,20 +33,9 @@ class Property {
      * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
-        this.ast = ast;
+        super(ast);
         this.parent = parent;
         this.process();
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
     }
 
     /**
@@ -62,7 +52,10 @@ class Property {
      * @private
      */
     process() {
+        super.process();
+
         this.name = this.ast.id.name;
+        this.decorator = null;
 
         if(!this.name) {
             throw new Error('No name for type ' + this.ast );
@@ -95,11 +88,12 @@ class Property {
      * @private
      */
     validate(classDecl) {
+        super.validate();
+
         if(this.type) {
             classDecl.getModelFile().resolveType( 'property ' + this.getFullyQualifiedName(), this.type);
         }
     }
-
 
     /**
      * Returns the name of a property

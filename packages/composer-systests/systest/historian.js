@@ -25,7 +25,7 @@ process.setMaxListeners(Infinity);
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const fs = require('fs');
 let client;
-
+let bnID;
 let createAsset = (assetId) => {
     let factory = client.getBusinessNetwork().getFactory();
     let asset = factory.newResource('systest.assets', 'SimpleAsset', assetId);
@@ -129,11 +129,19 @@ let deployCommon =  ()=> {
     });
     let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
     businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+
+    bnID = businessNetworkDefinition.getName();
     return TestUtil.deploy(businessNetworkDefinition);
 };
 
 
 describe('Historian', () => {
+
+
+
+    beforeEach(() => {
+        return TestUtil.resetBusinessNetwork(bnID);
+    });
 
     describe('CRUD Asset', () => {
         it('should track updates for CREATE asset calls ', () => {
@@ -302,9 +310,19 @@ describe('Historian', () => {
         it('should track updates for CREATE Participant calls ', () => {
             let participantRegistry, addParticipantTransactionRegistry;
             let historian;
+            let existingHistorianIDs;
             let hrecords;
-            return client
-                .getParticipantRegistry('systest.participants.SimpleParticipant')
+            return client.getHistorian()
+                .then((result) => {
+                    historian = result;
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getParticipantRegistry('systest.participants.SimpleParticipant');
+                })
                 .then(function (result) {
                     participantRegistry = result;
                 })
@@ -321,9 +339,6 @@ describe('Historian', () => {
                     return participantRegistry.add(participant);
                 })
                 .then(() => {
-                    return client.getHistorian();
-                }).then((result) => {
-                    historian = result;
                     return client.getTransactionRegistry('org.hyperledger.composer.system.AddParticipant');
                 }).then((result) => {
                     addParticipantTransactionRegistry = result;
@@ -332,6 +347,8 @@ describe('Historian', () => {
 
                     // there should be a create participant record for the 3 participants
                     hrecords = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    }).filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddParticipant';
                     });
                     hrecords.length.should.equal(3);
@@ -512,6 +529,7 @@ describe('Historian', () => {
 
     describe('ACLs', () => {
 
+        let existingHistorianIDs;
         let aliceClient, bobClient, charlieClient;
         let alice, bob, charlie;
 
@@ -547,7 +565,16 @@ describe('Historian', () => {
 
 
             let aliceIdentity = uuid.v4(), bobIdentity = uuid.v4(), charlieIdentity = uuid.v4();
-            return client.getParticipantRegistry('systest.accesscontrols.SampleParticipant')
+            return client.getHistorian()
+                .then((historian) => {
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
+                })
                 .then((participantRegistry) => {
                     return participantRegistry.addAll([alice, bob, charlie]);
                 })
@@ -587,6 +614,10 @@ describe('Historian', () => {
                     return historian.getAll();
                 }).then((result) => {
 
+                    result = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    });
+
                     result.filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.IssueIdentity';
                     }).length.should.equal(3);
@@ -610,9 +641,11 @@ describe('Historian', () => {
             .then((result) => {
                 return result.getAll();
             }).then( (result)=>{
-                result.reduce((accumulator,value)=>{
-                    accumulator.push(value.transactionType);
-                    return accumulator; },[]).sort().should.deep.equal(expectedTxTypes);
+                result.filter((value) => {
+                    return existingHistorianIDs.indexOf(value.getIdentifier()) === -1;
+                }).map((value)=>{
+                    return value.transactionType;
+                }).sort().should.deep.equal(expectedTxTypes);
             } );
         });
         it('Deny bob alice access to historian', () => {
@@ -650,11 +683,20 @@ describe('Historian', () => {
     describe('Query', () => {
         it('For a set of historian records, then select these base on the transaction timestamp', () => {
 
+            let existingHistorianIDs;
             let assetRegistry;
             let historian;
             let hrecords;
-            return client
-                .getAssetRegistry('systest.assets.SimpleAsset')
+            return client.getHistorian()
+                .then((historian) => {
+                    return historian.getAll();
+                })
+                .then((historianRecords) => {
+                    existingHistorianIDs = historianRecords.map((historianRecord) => {
+                        return historianRecord.getIdentifier();
+                    });
+                    return client.getAssetRegistry('systest.assets.SimpleAsset');
+                })
                 .then(function (result) {
                     assetRegistry = result;
                 })
@@ -682,6 +724,8 @@ describe('Historian', () => {
 
                     // there should be a create asset record for the 3 assets
                     hrecords = result.filter((element) => {
+                        return existingHistorianIDs.indexOf(element.getIdentifier()) === -1;
+                    }).filter((element) => {
                         return element.transactionType === 'org.hyperledger.composer.system.AddAsset';
                     }).sort((a, b) => {
 

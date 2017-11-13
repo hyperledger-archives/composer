@@ -1,10 +1,10 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.13.0",
+  "version": "0.15.1",
   "description": "The web runtime container for Hyperledger Composer",
   "engines": {
-    "node": ">=6",
-    "npm": ">=3"
+    "node": ">=8",
+    "npm": ">=5"
   },
   "main": "index.js",
   "scripts": {
@@ -28,25 +28,25 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "brfs": "^1.4.3",
-    "browserify": "^13.3.0",
-    "browserify-istanbul": "^2.0.0",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.1",
-    "global": "^4.3.2",
-    "jsdoc": "^3.4.3",
-    "karma": "^1.3.0",
-    "karma-browserify": "^5.1.0",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-coverage": "^1.1.1",
-    "karma-mocha": "^1.3.0",
+    "brfs": "1.4.3",
+    "browserify": "13.3.0",
+    "browserify-istanbul": "2.0.0",
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "eslint": "3.17.1",
+    "global": "4.3.2",
+    "jsdoc": "3.5.5",
+    "karma": "1.3.0",
+    "karma-browserify": "5.1.0",
+    "karma-chai": "0.1.0",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-coverage": "1.1.1",
+    "karma-mocha": "1.3.0",
     "karma-spec-reporter": "0.0.26",
-    "license-check": "^1.1.5",
-    "mocha": "^3.4.2",
-    "sinon": "^2.3.8",
-    "watchify": "^3.7.0"
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "sinon": "2.3.8",
+    "watchify": "3.7.0"
   },
   "license-check-config": {
     "src": [
@@ -61,12 +61,12 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.13.0",
-    "composer-runtime": "0.13.0",
-    "composer-runtime-pouchdb": "0.13.0",
-    "pouchdb-adapter-idb": "~6.2.0",
-    "pouchdb-adapter-websql": "~6.2.0",
-    "uuid": "^3.0.1",
-    "xhr": "^2.4.0"
+    "composer-common": "0.15.1",
+    "composer-runtime": "0.15.1",
+    "composer-runtime-pouchdb": "0.15.1",
+    "pouchdb-adapter-idb": "6.2.0",
+    "pouchdb-adapter-websql": "6.2.0",
+    "uuid": "3.0.1",
+    "xhr": "2.4.0"
   }
 }

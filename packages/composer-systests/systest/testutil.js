@@ -16,17 +16,18 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const Docker = require('dockerode');
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-const Util = require('composer-common').Util;
+// const Util = require('composer-common').Util;
 
 
 let client;
+let docker = new Docker();
 let forceDeploy = false;
 
 /**
@@ -431,11 +432,11 @@ class TestUtil {
             enrollmentSecret = enrollmentSecret || password;
             // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-                return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
-                return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
-                return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
+                return thisClient.connectWithDetails('composer-systests', network, enrollmentID, enrollmentSecret);
             }
         })
         .then(() => {
@@ -452,12 +453,29 @@ class TestUtil {
     static deploy(businessNetworkDefinition, forceDeploy_) {
         const adminConnection = new AdminConnection();
         forceDeploy = forceDeploy_;
+        const bootstrapTransactions = [
+            {
+                $class: 'org.hyperledger.composer.system.AddParticipant',
+                resources: [
+                    {
+                        $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                        participantId: 'admin'
+                    }
+                ],
+                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+            },
+            {
+                $class: 'org.hyperledger.composer.system.IssueIdentity',
+                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                identityName: 'admin',
+            }
+        ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
-                    return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -467,7 +485,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
-                    return adminConnection.connect('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -477,10 +495,11 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and start the network on the peers for org1 and org2.
-                    return adminConnection.connect('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connectWithDetails('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, {
+                        bootstrapTransactions,
                         endorsementPolicy: {
                             identities: [
                                 {
@@ -515,9 +534,9 @@ class TestUtil {
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network on the peers for org1.
-            return adminConnection.connect('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
+            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -525,12 +544,12 @@ class TestUtil {
         } else if (!forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             // Connect, install the runtime and start the network.
-            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
-                    return adminConnection.start(businessNetworkDefinition);
+                    return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -538,9 +557,9 @@ class TestUtil {
         } else if (forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network.
-            return adminConnection.connect('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
                 .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition);
+                    return adminConnection.deploy(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -551,20 +570,70 @@ class TestUtil {
     }
 
     /**
-     * Reset the business network to its initial state.
+     * Undeploy the specified business network definition.
+     * @param {BusinessNetworkDefiniton} businessNetworkDefinition - the business network definition.
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static resetBusinessNetwork() {
+    static undeploy(businessNetworkDefinition) {
+        if (!TestUtil.isHyperledgerFabricV1()) {
+            return Promise.resolve();
+        }
+        return docker.listContainers()
+            .then((containers) => {
+                const matchingContainers = containers.filter((container) => {
+                    return container.Image.match(/^dev-/);
+                }).map((container) => {
+                    return docker.getContainer(container.Id);
+                });
+                return matchingContainers.reduce((promise, matchingContainer) => {
+                    return promise.then(() => {
+                        console.log(`Stopping Docker container ${matchingContainer.id} ...`);
+                        return matchingContainer.stop();
+                    });
+                }, Promise.resolve());
+            });
+    }
+
+    /**
+     * Reset the business network to its initial state.
+     * @param {String} identifier, business network identifier to reset
+     * @return {Promise} - a promise that will be resolved when complete.
+     */
+    static resetBusinessNetwork(identifier) {
         if (!client) {
             return Promise.resolve();
         }
-        // TODO: hack hack hack, this should be in the admin API.
-        let securityContext = client.securityContext;
-        if (!securityContext) {
-            return Promise.resolve();
+
+        if (TestUtil.isHyperledgerFabricV1() && !forceDeploy){
+            const adminConnection = new AdminConnection();
+            return adminConnection.connectWithDetails('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
+        } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
+            const adminConnection = new AdminConnection();
+            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
+        } else {
+
+            const adminConnection = new AdminConnection();
+            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
+            .then(() => {
+                return adminConnection.reset(identifier);
+            })
+            .then(() => {
+                return adminConnection.disconnect();
+            });
         }
 
-        return Util.invokeChainCode(client.securityContext, 'resetBusinessNetwork', []);
     }
 
 

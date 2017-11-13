@@ -28,6 +28,9 @@ export class IdentityCardComponent {
     onConnect: EventEmitter<string> = new EventEmitter<string>();
 
     @Output()
+    onDeploySample: EventEmitter<void> = new EventEmitter<void>();
+
+    @Output()
     onDismiss: EventEmitter<string> = new EventEmitter<string>();
 
     @Output()
@@ -38,6 +41,10 @@ export class IdentityCardComponent {
 
     connect() {
         this.onConnect.emit(this.identity.getUserName());
+    }
+
+    deploySample() {
+        this.onDeploySample.emit();
     }
 
     dismiss() {

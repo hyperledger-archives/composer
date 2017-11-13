@@ -18,6 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
@@ -93,6 +94,18 @@ describe('System REST API unit tests', () => {
     let businessNetworkConnection;
     let participantRegistry;
     let serializer;
+    let idCard;
+
+    const binaryParser = (res, cb) => {
+        res.setEncoding('binary');
+        res.data = '';
+        res.on('data', (chunk) => {
+            res.data += chunk;
+        });
+        res.on('end', () => {
+            cb(null, new Buffer(res.data, 'binary'));
+        });
+    };
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -101,7 +114,7 @@ describe('System REST API unit tests', () => {
             type : 'embedded'
         })
         .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -111,11 +124,12 @@ describe('System REST API unit tests', () => {
             return adminConnection.deploy(businessNetworkDefinition);
         })
         .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
+        })
+        .then(() => {
             return server({
-                connectionProfileName: 'defaultProfile',
-                businessNetworkIdentifier: 'bond-network',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
+                card: 'admin@bond-network',
                 fs: bfs_fs,
                 namespaces: 'never'
             });
@@ -123,7 +137,7 @@ describe('System REST API unit tests', () => {
         .then((result) => {
             app = result.app;
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Member');
@@ -187,7 +201,7 @@ describe('System REST API unit tests', () => {
                     res.should.be.json;
                     res.body.should.deep.equal({
                         version: version,
-                        participant: null
+                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin'
                     });
                 });
         });
@@ -204,8 +218,9 @@ describe('System REST API unit tests', () => {
                     const identities = res.body.sort((a, b) => {
                         return a.name.localeCompare(b.name);
                     });
-                    identities[0].name.should.equal('alice1');
-                    identities[1].name.should.equal('bob1');
+                    identities[0].name.should.equal('admin');
+                    identities[1].name.should.equal('alice1');
+                    identities[2].name.should.equal('bob1');
                 });
         });
 
@@ -215,7 +230,7 @@ describe('System REST API unit tests', () => {
 
         it('should return the specified identity', () => {
             return chai.request(app)
-                .get('/api/system/identities/' + identityIds[0])
+                .get('/api/system/identities/' + identityIds[1])
                 .then((res) => {
                     res.should.be.json;
                     const identity = res.body;
@@ -245,10 +260,15 @@ describe('System REST API unit tests', () => {
                         issuer: true
                     }
                 })
+                .buffer()
+                .parse(binaryParser)
                 .then((res) => {
-                    res.should.be.json;
-                    res.body.userID.should.equal('alice2');
-                    res.body.userSecret.should.be.a('string');
+                    res.should.have.status(200);
+                    res.body.should.be.an.instanceOf(Buffer);
+                    return IdCard.fromArchive(res.body);
+                })
+                .then((card) => {
+                    card.getUserName().should.equal('alice2');
                 });
         });
 

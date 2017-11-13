@@ -18,12 +18,13 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const ldapserver = require('./ldapserver');
 const server = require('../server/server');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-http'));
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
@@ -52,8 +53,21 @@ describe('Multiple user REST API unit tests', () => {
     let businessNetworkConnection;
     let participantRegistry;
     let serializer;
-    let aliceIdentity;
-    let bobIdentity;
+    let aliceCard, aliceCardData;
+    let aliceAdminCard, aliceAdminCardData;
+    let bobCard, bobCardData;
+    let idCard;
+
+    const binaryParser = (res, cb) => {
+        res.setEncoding('binary');
+        res.data = '';
+        res.on('data', (chunk) => {
+            res.data += chunk;
+        });
+        res.on('end', () => {
+            cb(null, new Buffer(res.data, 'binary'));
+        });
+    };
 
     before(() => {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -62,7 +76,7 @@ describe('Multiple user REST API unit tests', () => {
             type : 'embedded'
         })
         .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
@@ -70,6 +84,10 @@ describe('Multiple user REST API unit tests', () => {
         .then((businessNetworkDefinition) => {
             serializer = businessNetworkDefinition.getSerializer();
             return adminConnection.deploy(businessNetworkDefinition);
+        })
+        .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
         })
         .then(() => {
             return ldapserver.start();
@@ -94,10 +112,7 @@ describe('Multiple user REST API unit tests', () => {
                 }
             });
             return server({
-                connectionProfileName: 'defaultProfile',
-                businessNetworkIdentifier: 'bond-network',
-                participantId: 'admin',
-                participantPwd: 'adminpw',
+                card: 'admin@bond-network',
                 fs: bfs_fs,
                 namespaces: 'never',
                 authentication: true,
@@ -107,7 +122,7 @@ describe('Multiple user REST API unit tests', () => {
         .then((result) => {
             app = result.app;
             businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+            return businessNetworkConnection.connect('admin@bond-network');
         })
         .then(() => {
             return businessNetworkConnection.getParticipantRegistry('org.acme.bond.Member');
@@ -132,13 +147,30 @@ describe('Multiple user REST API unit tests', () => {
         .then(() => {
             return businessNetworkConnection.issueIdentity('org.acme.bond.Member#MEMBER_1', 'alice1', { issuer: true });
         })
-        .then((aliceIdentity_) => {
-            aliceIdentity = aliceIdentity_;
+        .then((aliceIdentity) => {
+            aliceCard = new IdCard({ userName: aliceIdentity.userID, enrollmentSecret: aliceIdentity.userSecret, businessNetwork: 'bond-network' }, idCard.getConnectionProfile());
+            aliceAdminCard = new IdCard({ userName: aliceIdentity.userID, enrollmentSecret: aliceIdentity.userSecret }, idCard.getConnectionProfile());
+            return aliceCard.toArchive({ type: 'nodebuffer' });
+        })
+        .then((aliceCardData_) => {
+            aliceCardData = aliceCardData_;
+            return aliceAdminCard.toArchive({ type: 'nodebuffer' });
+        })
+        .then((aliceAdminCardData_) => {
+            aliceAdminCardData = aliceAdminCardData_;
             return businessNetworkConnection.issueIdentity('org.acme.bond.Member#MEMBER_2', 'bob1', { issuer: true });
         })
-        .then((bobIdentity_) => {
-            bobIdentity = bobIdentity_;
+        .then((bobIdentity) => {
+            bobCard = new IdCard({ userName: bobIdentity.userID, enrollmentSecret: bobIdentity.userSecret, businessNetwork: 'bond-network' }, idCard.getConnectionProfile());
+            return bobCard.toArchive({ type: 'nodebuffer' });
+        })
+        .then((bobCardData_) => {
+            bobCardData = bobCardData_;
         });
+    });
+
+    beforeEach(() => {
+        return app.models.Card.destroyAll();
     });
 
     after(() => {
@@ -159,7 +191,7 @@ describe('Multiple user REST API unit tests', () => {
                 });
         });
 
-        it('should return 400 Bad Request if authenticated but no identities in wallet', () => {
+        it('should return 400 Bad Request if authenticated but no business network cards in wallet', () => {
             const agent = chai.request.agent(app);
             return agent
                 .post('/auth/ldap')
@@ -172,44 +204,19 @@ describe('Multiple user REST API unit tests', () => {
                 })
                 .catch((err) => {
                     err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/A business network card has not been specified/);
                 });
         });
 
-        it('should return 400 Bad Request if authenticated but identity in wallet but no default', () => {
+        it('should return 200 OK if authenticated and use first card added to wallet', () => {
             const agent = chai.request.agent(app);
             return agent
                 .post('/auth/ldap')
                 .send({ username: 'alice', password: 'secret' })
                 .then((res) => {
                     return agent
-                        .post('/api/wallets/1/identities')
-                        .send({ enrollmentID: aliceIdentity.userID, enrollmentSecret: aliceIdentity.userSecret });
-                })
-                .then(() => {
-                    return agent.get('/api/system/ping');
-                })
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((err) => {
-                    err.response.should.have.status(500);
-                });
-        });
-
-        it('should return 200 OK if authenticated and default identity in wallet', () => {
-            const agent = chai.request.agent(app);
-            return agent
-                .post('/auth/ldap')
-                .send({ username: 'alice', password: 'secret' })
-                .then((res) => {
-                    return agent
-                        .post('/api/wallets/1/identities')
-                        .send({ enrollmentID: aliceIdentity.userID, enrollmentSecret: aliceIdentity.userSecret });
-                })
-                .then((res) => {
-                    return agent
-                        .post(`/api/wallets/1/identities/${res.body.id}/setDefault`)
-                        .send();
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
                 })
                 .then(() => {
                     return agent.get('/api/system/ping');
@@ -221,20 +228,124 @@ describe('Multiple user REST API unit tests', () => {
                 });
         });
 
-        it('should return 200 OK if authenticated and default identity is subsequently changed', () => {
+        it('should return 204 No Content if authenticated and test first card added to wallet', () => {
             const agent = chai.request.agent(app);
             return agent
                 .post('/auth/ldap')
                 .send({ username: 'alice', password: 'secret' })
                 .then((res) => {
                     return agent
-                        .post('/api/wallets/1/identities')
-                        .send({ enrollmentID: aliceIdentity.userID, enrollmentSecret: aliceIdentity.userSecret });
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then(() => {
+                    return agent.head('/api/wallet/alice1@bond-network');
+                })
+                .then((res) => {
+                    res.should.have.status(204);
+                });
+        });
+
+        it('should return 204 No Content if authenticated and test renamed first card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import?name=foobar')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then(() => {
+                    return agent.head('/api/wallet/foobar');
+                })
+                .then((res) => {
+                    res.should.have.status(204);
+                });
+        });
+
+        it('should return 204 No Content if authenticated and test renamed first admin card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceAdminCardData, 'alice1@defaultProfile.card');
+                })
+                .then(() => {
+                    return agent.head('/api/wallet/alice1@defaultProfile');
+                })
+                .then((res) => {
+                    res.should.have.status(204);
+                });
+        });
+
+        it('should return 200 OK if authenticated and get first card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then(() => {
+                    return agent.get('/api/wallet/alice1@bond-network');
+                })
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.deep.equal({
+                        name: 'alice1@bond-network',
+                        default: true
+                    });
+                });
+        });
+
+        it('should return 200 OK if authenticated and export first card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then(() => {
+                    return agent
+                        .get('/api/wallet/alice1@bond-network/export')
+                        .buffer()
+                        .parse(binaryParser);
+                })
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.an.instanceOf(Buffer);
+                    return IdCard.fromArchive(res.body);
+                })
+                .then((card) => {
+                    card.getUserName().should.equal('alice1');
+                    should.equal(card.getConnectionProfile().wallet, undefined);
+                });
+        });
+
+        it('should return 200 OK if authenticated and keep using first card when second card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
                 })
                 .then((res) => {
                     return agent
-                        .post(`/api/wallets/1/identities/${res.body.id}/setDefault`)
-                        .send();
+                        .post('/api/wallet/import')
+                        .attach('card', bobCardData, 'bob1@bond-network.card');
                 })
                 .then(() => {
                     return agent.get('/api/system/ping');
@@ -243,16 +354,27 @@ describe('Multiple user REST API unit tests', () => {
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.participant.should.equal('org.acme.bond.Member#MEMBER_1');
+                });
+        });
+
+        it('should return 200 OK if authenticated and change default to second card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
                 })
                 .then((res) => {
                     return agent
-                        .post('/api/wallets/1/identities')
-                        .send({ enrollmentID: bobIdentity.userID, enrollmentSecret: bobIdentity.userSecret });
+                        .post('/api/wallet/import')
+                        .attach('card', bobCardData, 'bob1@bond-network.card');
                 })
                 .then((res) => {
                     return agent
-                        .post(`/api/wallets/1/identities/${res.body.id}/setDefault`)
-                        .send();
+                        .post('/api/wallet/bob1@bond-network/setDefault');
                 })
                 .then(() => {
                     return agent.get('/api/system/ping');
@@ -261,6 +383,59 @@ describe('Multiple user REST API unit tests', () => {
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.participant.should.equal('org.acme.bond.Member#MEMBER_2');
+                });
+        });
+
+        it('should return 200 OK if authenticated and use header for second card added to wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', bobCardData, 'bob1@bond-network.card');
+                })
+                .then(() => {
+                    return agent
+                        .get('/api/system/ping')
+                        .set('X-Composer-Card', 'bob1@bond-network');
+                })
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.participant.should.equal('org.acme.bond.Member#MEMBER_2');
+                });
+        });
+
+        it('should return 400 Bad Request if authenticated and default card is deleted from wallet', () => {
+            const agent = chai.request.agent(app);
+            return agent
+                .post('/auth/ldap')
+                .send({ username: 'alice', password: 'secret' })
+                .then((res) => {
+                    return agent
+                        .post('/api/wallet/import')
+                        .attach('card', aliceCardData, 'alice1@bond-network.card');
+                })
+                .then((res) => {
+                    return agent
+                        .delete('/api/wallet/alice1@bond-network');
+                })
+                .then(() => {
+                    return agent.get('/api/system/ping');
+                })
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/A business network card has not been specified/);
                 });
         });
 
