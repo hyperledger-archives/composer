@@ -128,19 +128,19 @@
 
         &.clear {
             background-color: transparent;
-            border: 1px solid $fifth-highlight;
+            border: 1px solid $primary-text;
             box-shadow: none;
             border-radius: 5px;
             padding: 0;
             font-size: 0.75em;
             line-height: 25px;
-            color: $secondary-text;
+            color: $primary-text;
             min-width: 0;
             padding: 0 $space-smedium;
 
             &:hover {
                 color: $white;
-                background-color: $second-highlight;
+                background-color: $primary-text;
             }
         }
 
