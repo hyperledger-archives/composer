@@ -79,12 +79,15 @@ describe('FileSystemCardStore', function() {
     describe('#put', function() {
         let tmpStorePath;
         let minimalCard;
+        let credentialsCard;
         let cardStore;
 
         beforeEach(function() {
-            const cardMetadata = { userName: 'conga' };
-            const cardConnectionProfile = { name: 'hlfv1' };
-            minimalCard = new IdCard(cardMetadata, cardConnectionProfile);
+            const minimalMetadata = { userName: 'conga' };
+            const minimalConnectionProfile = { name: 'hlfv1' };
+            minimalCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+            credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+            credentialsCard.setCredentials({ certificate: 'cert', privateKey: 'key' });
 
             return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
                 tmpStorePath = path;
@@ -101,10 +104,8 @@ describe('FileSystemCardStore', function() {
         it('should put a minimal identity card', function() {
             const cardName = 'minimal';
             return cardStore.put(cardName, minimalCard).then(() => {
-                return cardStore.get(cardName)
-                    .should.eventually.be.an.instanceof(IdCard)
-                    .that.deep.equals(minimalCard);
-            });
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
         });
 
         it('should throw on empty card name', function() {
@@ -112,27 +113,27 @@ describe('FileSystemCardStore', function() {
         });
 
         it('should throw on put error due to write permissions', function() {
+            const cardName = 'conga';
             return thenifyFs.chmod(tmpStorePath, 0o000).then(() => {
-                const cardName = 'conga';
-                return cardStore.put(cardName, minimalCard)
-                    .should.be.rejectedWith(cardName);
-            });
+                return cardStore.put(cardName, minimalCard);
+            }).should.be.rejectedWith(cardName);
         });
 
         it('should handle @ character in card name', function() {
             const cardName = 'conga@hyperledger';
             return cardStore.put(cardName, minimalCard).then(() => {
-                return cardStore.get(cardName)
-                    .should.eventually.be.an.instanceof(IdCard)
-                    .that.deep.equals(minimalCard);
-            });
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
+
         });
 
-        it('should throw on duplicate card', function() {
-            const cardName = 'minimal';
-            return cardStore.put(cardName, minimalCard).then(() => {
+        it('should replace (not only overwrite) existing card', function() {
+            const cardName = 'conga';
+            return cardStore.put(cardName, credentialsCard).then(() => {
                 return cardStore.put(cardName, minimalCard);
-            }).should.be.rejectedWith(cardName);
+            }).then(() => {
+                return cardStore.get(cardName);
+            }).should.eventually.be.an.instanceof(IdCard).that.deep.equals(minimalCard);
         });
     });
 
@@ -158,6 +159,17 @@ describe('FileSystemCardStore', function() {
         let tmpStorePath;
         let cardStore;
 
+        const createDummyCard = (cardName) => {
+            const cardPath = path.join(tmpStorePath, cardName);
+            return thenifyFs.mkdir(cardPath).then(() => {
+                const dummyFilePath = path.join(cardPath, 'dummyFile');
+                const dummyFileContent = 'This is an empty file';
+                return thenifyFs.writeFile(dummyFilePath, dummyFileContent);
+            }).then(() => {
+                return cardPath;
+            });
+        };
+
         beforeEach(function() {
             return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
                 tmpStorePath = path;
@@ -171,23 +183,26 @@ describe('FileSystemCardStore', function() {
             return thenifyRimraf(tmpStorePath, rimrafOptions);
         });
 
-        it('should throw on non-existent card name', function() {
+        it('should return false for non-existent card', () => {
+            return cardStore.delete('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
             const cardName = 'conga';
-            return cardStore.delete(cardName).should.be.rejectedWith(cardName);
+            return createDummyCard(cardName).then(() => {
+                return cardStore.delete(cardName);
+            }).should.become(true);
         });
 
         it('should delete an existing card', function() {
             const cardName = 'conga';
-            const cardPath = path.join(tmpStorePath, cardName);
-            return thenifyFs.mkdir(cardPath).then(() => {
-                const dummyFilePath = path.join(cardPath, 'dummyFile');
-                const dummyFileContent = 'This is an empty file';
-                return thenifyFs.writeFile(dummyFilePath, dummyFileContent);
-            }).then(() => {
+            let cardPath;
+            return createDummyCard(cardName).then((path) => {
+                cardPath = path;
                 return cardStore.delete(cardName);
             }).then(() => {
-                return thenifyFs.access(cardPath).should.be.rejected;
-            });
+                return thenifyFs.access(cardPath);
+            }).should.be.rejected;
         });
     });
 

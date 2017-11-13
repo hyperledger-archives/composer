@@ -15,6 +15,9 @@
 'use strict';
 
 const cmd = require('../../lib/cmds/archive.js');
+const listCommand = require('../../lib/cmds/archive/listCommand.js');
+const createCommand = require('../../lib/cmds/archive/createCommand.js');
+
 const yargs = require('yargs');
 require('chai').should();
 const chai = require('chai');
@@ -30,7 +33,12 @@ describe('composer archive cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        sandbox.stub(yargs, 'check').returns(yargs);
+        sandbox.stub(yargs, 'conflicts').returns(yargs);
+        sandbox.stub(yargs, 'group').returns(yargs);
+        sandbox.stub(yargs, 'options').returns(yargs);
+        sandbox.stub(yargs, 'usage').returns(yargs);
+        sandbox.stub(yargs, 'requiresArg').returns(yargs);
     });
 
     afterEach(() => {
@@ -53,4 +61,43 @@ describe('composer archive cmd launcher unit tests', function () {
 
     });
 
+    describe('cmd builder fn',()=>{
+        it('listCommand builder function',()=>{
+            listCommand.builder(yargs);
+            sinon.assert.calledOnce(yargs.options);
+        });
+
+        it('createCommand builder function',()=>{
+            createCommand.builder(yargs);
+            sinon.assert.calledOnce(yargs.usage);
+            sinon.assert.calledOnce(yargs.options);
+            sinon.assert.calledOnce(yargs.requiresArg);
+            sinon.assert.calledOnce(yargs.check);
+            sinon.assert.calledOnce(yargs.group);
+        });
+
+
+    });
+
+    describe('createCommand Check Function', ()=>{
+        it('check that singleton archiveFile, sourceType and sourceName are ok',
+        ()=>{
+            createCommand._checkFn({archiveFile:'',sourceType:'',sourceName:''}).should.equal(true);
+        });
+        it('check that more than one archiveFile fails',()=>{
+            (()=>{
+                createCommand._checkFn({sourceType:'',archiveFile:['a','b'],sourceName:''});
+            }).should.throws(/only be specified once/);
+        });
+        it('check that more than one sourceType fails',()=>{
+            (()=>{
+                createCommand._checkFn({sourceType:['a','b'],archiveFile:'',sourceName:''});
+            }).should.throws(/only be specified once/);
+        });
+        it('check that more than one archiveFile fails',()=>{
+            (()=>{
+                createCommand._checkFn({sourceType:'',archiveFile:'',sourceName:['a','b']});
+            }).should.throws(/only be specified once/);
+        });
+    });
 });

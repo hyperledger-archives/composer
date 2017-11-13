@@ -52,7 +52,7 @@ class Start {
 
         // needs promise resolve here in case the archive errors
         return Promise.resolve().then(() => {
-            console.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
+            cmdUtil.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
             let archiveFileContents = null;
             // Read archive file contents
             archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
@@ -61,17 +61,17 @@ class Start {
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log(chalk.blue.bold('Business network definition:'));
-            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
-            console.log();
+            cmdUtil.log(chalk.blue.bold('Business network definition:'));
+            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            cmdUtil.log();
             adminConnection = cmdUtil.createAdminConnection();
 
             return adminConnection.connect(cardName);
         })
         .then(() => {
             // need to get the card now for later use
-            return adminConnection.getCard(cardName);
+            return adminConnection.exportCard(cardName);
         })
         .then((_card) => {
             card = _card;
@@ -133,17 +133,11 @@ class Start {
             return result;
         }).then((result)=>{
             spinner.succeed();
-            console.log('Successfully created business network card to '+filename);
+            cmdUtil.log('Successfully created business network card to '+filename);
 
             return result;
         }).catch((error) => {
-
-            if (spinner) {
-                spinner.fail();
-            }
-
-            console.log();
-
+            spinner.fail();
             throw error;
         });
     }
