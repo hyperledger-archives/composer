@@ -15,6 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const fs = require('fs');
 const Logger = require('composer-common').Logger;
@@ -277,8 +278,7 @@ class CmdUtil {
      * @returns {String} A card name
      */
     static getDefaultCardName(card) {
-        const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
-        return card.getUserName() + '@' + locationName;
+        return BusinessNetworkCardStore.getDefaultCardName(card);
     }
 }
 

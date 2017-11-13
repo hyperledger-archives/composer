@@ -55,6 +55,10 @@ export class EditorFile {
         return modelFile.getNamespace();
     }
 
+    getDisplayId() {
+        return this.displayID;
+    }
+
     setId(id) {
         this.id = id;
     }

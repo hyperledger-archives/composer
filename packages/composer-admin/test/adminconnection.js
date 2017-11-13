@@ -25,6 +25,7 @@ const Factory = require('composer-common').Factory;
 const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdCard = require('composer-common').IdCard;
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const ModelManager = require('composer-common').ModelManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -37,58 +38,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-
-/**
- * Stub card store implementation.
- */
-class StubCardStore extends BusinessNetworkCardStore {
-    /**
-     * Constructor.
-     */
-    constructor() {
-        super();
-        this.cards = new Map();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    get(cardName) {
-        return Promise.resolve().then(() => {
-            return this.cards.get(cardName);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    put(cardName, card) {
-        return Promise.resolve().then(() => {
-            this.cards.set(cardName, card);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getAll() {
-        return Promise.resolve().then(() => {
-            return this.cards;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    delete(cardName) {
-        return Promise.resolve().then(() => {
-            if (!this.cards.delete(cardName)) {
-                throw new Error('Card not found: ' + cardName);
-            }
-        });
-    }
-
-}
 
 describe('AdminConnection', () => {
     const testProfileName = 'TEST_PROFILE';
@@ -138,7 +87,7 @@ describe('AdminConnection', () => {
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        cardStore = new StubCardStore();
+        cardStore = new MemoryCardStore();
         const adminConnectionOptions = {
             cardStore: cardStore
         };
@@ -1002,19 +951,6 @@ describe('AdminConnection', () => {
             });
         });
 
-        describe('#getCard', ()=>{
-            it('should return valid card if one exists', ()=>{
-                const cardName = 'conga-card';
-                return cardStore.put(cardName, peerAdminCard).then(() => {
-                    return adminConnection.getCard('conga-card');
-                }).then((result) => {
-                    result.should.be.instanceOf(IdCard);
-                    result.getUserName().should.deep.equal('PeerAdmin');
-                });
-            });
-
-        });
-
         describe('#getAllCards', function() {
             it('should return empty map when card store contains no cards', function() {
                 return adminConnection.getAllCards().should.eventually.be.instanceOf(Map).that.is.empty;
@@ -1053,8 +989,9 @@ describe('AdminConnection', () => {
         describe('#exportCard', ()=> {
 
             it('Card exists, but no credentials, call to export identity is correct executed',()=>{
+                const credentials = { certificate: 'String', privateKey: 'String' };
                 mockConnectionManager.exportIdentity = sinon.stub();
-                mockConnectionManager.exportIdentity.resolves({ certificate: 'String', privateKey: 'String' });
+                mockConnectionManager.exportIdentity.resolves(credentials);
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
 
@@ -1066,8 +1003,7 @@ describe('AdminConnection', () => {
                 }).then((result) => {
                     result.should.be.instanceOf(IdCard);
                     result.getUserName().should.equal('user');
-                    sinon.assert.calledOnce(mockConnectionManager.exportIdentity);
-                    sinon.assert.calledWith(userCard.setCredentials,{ certificate: 'String', privateKey: 'String' });
+                    result.getCredentials().should.equal(credentials);
                 });
 
             });
@@ -1088,7 +1024,7 @@ describe('AdminConnection', () => {
 
             });
 
-            it('Card exists, but with no credentials or secret',()=>{
+            it('should still export a card with no secret or credentials',()=>{
                 mockConnectionManager.exportIdentity = sinon.stub();
                 adminConnection.connection = mockConnection;
                 adminConnection.securityContext = mockSecurityContext;
@@ -1096,7 +1032,10 @@ describe('AdminConnection', () => {
 
                 return cardStore.put(cardName, userCard).then(() => {
                     return adminConnection.exportCard(cardName);
-                }).should.eventually.be.rejectedWith(/no credentials or secret so is invalid/);
+                }).then((result) => {
+                    result.should.be.instanceOf(IdCard);
+                    result.getUserName().should.equal('user');
+                });
 
             });
 

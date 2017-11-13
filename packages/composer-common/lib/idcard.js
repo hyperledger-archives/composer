@@ -42,8 +42,7 @@ const newErrorWithCause = (message, cause) => {
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
  * <p>
- * Instances of this class should be created using {@link IdCard#fromArchive}.
- * @private
+ * Instances of this class should be created using IdCard.fromArchive or IdCard.fromDirectory.
  * @class
  * @memberof module:composer-common
  */
@@ -53,7 +52,7 @@ class IdCard {
      * Create the IdCard.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link IdCard#fromArchive}</strong>
+     * retrieve instances from IdCard.fromArchive or IdCard.fromDirectory</strong>
      * @private
      * @param {Object} metadata - metadata associated with the card.
      * @param {Object} connectionProfile - connection profile associated with the card.
@@ -298,7 +297,7 @@ class IdCard {
      * @param {String} cardDirectory directory containing card data.
      * @param {*} [fs] Node file system API implementation to use for reading card data.
      * Defaults to the Node implementation.
-     * @return {Promise} Promise that resolves to an {@link IdCard}.
+     * @return {Promise} Promise that resolves to an IdCard.
      */
     static fromDirectory(cardDirectory, fs) {
         const method = 'fromDirectory';
@@ -322,7 +321,7 @@ class IdCard {
         const connectionPath = path.resolve(cardDirectory, CONNECTION_FILENAME);
         const credentialsPath = path.resolve(cardDirectory, CREDENTIALS_DIRNAME);
 
-        return fs.access(cardDirectory).catch(cause => {
+        return fs.stat(cardDirectory).catch(cause => {
             throw newErrorWithCause('Unable to read card directory: ' + cardDirectory, cause);
         }).then(() => {
             return fs.readFile(metadataPath, readOptions).catch(cause => {

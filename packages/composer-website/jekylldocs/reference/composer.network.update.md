@@ -13,7 +13,7 @@ excerpt: Composer Network Update CLI
 The `composer network update` utility is used to update a deployed business network archive from local disk to a {{site.data.conrefs.hlf_full}} runtime.
 
 ```
-composer network update -a <business-network-archive>  -p <connectionProfileName> -i <enrollment-id> -s <enrollment-secret>
+composer network update -a <business-network-archive> -c <card-name>
 ```
 
 The business network definition must have been previously deployed to the Fabric. The business network definition
@@ -21,18 +21,17 @@ is replaced within the same chaincode container.
 
 ### Options
 ```
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --archiveFile, -a            The business network archive file name  [string] [required]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  ```
+Options:
+  --help              Show help  [boolean]
+  -v, --version       Show version number  [boolean]
+  --card, -c          The card to use to update the network  [string] [required]
+  --archiveFile , -a  The business network archive file [string] [required]
+```
 
 ## Example Output
 
 ```
-composer network update -a digitalPropertyNetwork.bna -p hlfv1 -i PeerAdmin -s RandomString
+composer network update -a digitalPropertyNetwork.bna -c admin@digitalPropertyNetwork
 Deploying business network from archive: digitalPropertyNetwork.bna
 Business network definition:
 	Identifier: digitalproperty-network@0.0.1

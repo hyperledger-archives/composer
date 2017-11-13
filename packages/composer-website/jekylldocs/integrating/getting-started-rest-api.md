@@ -22,33 +22,30 @@ composer-rest-server
 You will then be asked to enter a few simple details about your business network. An example of consuming a deployed business network is shown below.
 
 ```bash
+? Enter the name of the business network card to use: admin@basic-sample-network
+? Specify if you want namespaces in the generated REST API: always use namespaces
+? Specify if you want to enable authentication for the REST API using Passport: No
+? Specify if you want to enable event publication over WebSockets: Yes
+? Specify if you want to enable TLS security for the REST API: No
 
- _   _                       _          _                 
-| | | |_   _ _ __   ___ _ __| | ___  __| | __ _  ___ _ __
-| |_| | | | | '_ \ / _ \ '__| |/ _ \/ _` |/ _` |/ _ \ '__|
-|  _  | |_| | |_) |  __/ |  | |  __/ (_| | (_| |  __/ |   
-|_| |_|\__, | .__/ \___|_|  |_|\___|\__,_|\__, |\___|_|   
-       |___/|_|                           |___/           
-  ____                                          
- / ___|___  _ __ ___  _ __   ___  ___  ___ _ __
-| |   / _ \| '_ ` _ \| '_ \ / _ \/ __|/ _ \ '__|
-| |__| (_) | | | | | | |_) | (_) \__ \  __/ |   
- \____\___/|_| |_| |_| .__/ \___/|___/\___|_|   
-                     |_|                                                     
-? Enter your Fabric Connection Profile Name: hlfv1
-? Enter your Business Network Identifier : digitalproperty-network
-? Enter your Fabric username : admin
-? Enter your secret: adminpw
-Loopback Connector for Hyperledger Composer
-Models Loaded Now
-Browse your REST API at http://0.0.0.0:3000/explorer
+To restart the REST server using the same options, issue the following command:
+   composer-rest-server -c admin@basic-sample-network -n always -w true
+
+Discovering types from business network definition ...
+Discovered types from business network definition
+Generating schemas for all types in business network definition ...
+Generated schemas for all types in business network definition
+Adding schemas for all types to Loopback ...
+Added schemas for all types to Loopback
+Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
 ```
 
 ## Looking at the generated APIs
 
 Launch your browser and go to the URL given (http://0.0.0.0:3000/explorer).  You'll see a screen similar to this.
 
-![LoopBack-1](./images/loopback-1.png)
+![LoopBack-1](../assets/img/tutorials/developer/lb_explorer.png)
 
 #Summary
 Using the Loopback framework on top of the {{site.data.conrefs.composer_full}} runtime has allowed us to generate a business domain specific REST api based on the deployed business network model!

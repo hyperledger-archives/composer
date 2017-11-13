@@ -24,25 +24,11 @@ class LoopBackWallet extends Wallet {
 
     /**
      * Constructor.
-     * @param {*} app The LoopBack application.
-     * @param {*} wallet The wallet instance.
-     * @param {string} enrollmentID The enrollment ID.
+     * @param {card} card The card instance.
      */
-    constructor(app, wallet, enrollmentID) {
+    constructor(card) {
         super();
-        this.app = app;
-        this.wallet = wallet;
-        this.enrollmentID = enrollmentID;
-    }
-
-    /**
-     * Get the wallet identity from the LoopBack managed data source.
-     * @private
-     * @return {Promise} A promise that is resolved with the wallet identity,
-     * or rejected with an error.
-     */
-    getWalletIdentity() {
-        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: this.enrollmentID } });
+        this.card = card;
     }
 
     /**
@@ -53,9 +39,9 @@ class LoopBackWallet extends Wallet {
      * error.
      */
     list() {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                return Object.keys(identity.data).sort();
+        return this.card.reload()
+            .then((card) => {
+                return Object.keys(card.data).sort();
             });
     }
 
@@ -69,9 +55,9 @@ class LoopBackWallet extends Wallet {
      * wallet, false otherwise.
      */
     contains(name) {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                return identity.data.hasOwnProperty(name);
+        return this.card.reload()
+            .then((card) => {
+                return card.data.hasOwnProperty(name);
             });
     }
 
@@ -83,9 +69,9 @@ class LoopBackWallet extends Wallet {
      * the named credentials, or rejected with an error.
      */
     get(name) {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                return identity.data[name];
+        return this.card.reload()
+            .then((card) => {
+                return card.data[name];
             });
     }
 
@@ -98,10 +84,10 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     add(name, value) {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                identity.data[name] = value;
-                return identity.save();
+        return this.card.reload()
+            .then((card) => {
+                card.data[name] = value;
+                return card.save();
             });
     }
 
@@ -114,10 +100,10 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     update(name, value) {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                identity.data[name] = value;
-                return identity.save();
+        return this.card.reload()
+            .then((card) => {
+                card.data[name] = value;
+                return card.save();
             });
     }
 
@@ -129,10 +115,10 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     remove(name) {
-        return this.getWalletIdentity()
-            .then((identity) => {
-                delete identity.data[name];
-                return identity.save();
+        return this.card.reload()
+            .then((card) => {
+                delete card.data[name];
+                return card.save();
             });
     }
 

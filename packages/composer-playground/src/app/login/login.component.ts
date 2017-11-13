@@ -286,7 +286,7 @@ export class LoginComponent implements OnInit {
                             this.alertService.successStatus$.next({
                                 title: 'ID Card Removed',
                                 text: 'The ID card was successfully removed from My Wallet.',
-                                icon: '#icon-trash_32'
+                                icon: '#icon-bin_icon'
                             });
 
                             return this.loadIdentityCards();

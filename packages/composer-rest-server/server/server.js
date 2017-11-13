@@ -24,6 +24,7 @@ const loopback = require('loopback');
 const loopbackPassport = require('loopback-component-passport');
 const path = require('path');
 const session = require('express-session');
+const Util = require('../lib/util');
 const WebSocket = require('ws');
 
 module.exports = function (composer) {
@@ -44,7 +45,7 @@ module.exports = function (composer) {
         // model dependent on whether or not the multiple user option has been specified.
         const models = require('./model-config.json');
         const multiuser = !!composer.multiuser;
-        models.Wallet.public = multiuser;
+        models.Card.public = multiuser;
 
         // Allow environment variable overrides for the datasources.json file.
         let dataSources = require('./datasources.json');
@@ -128,6 +129,7 @@ module.exports = function (composer) {
             for (let s in providers) {
                 let c = providers[s];
                 c.session = c.session !== false;
+                c.profileToUser = Util.profileToUser;
                 passportConfigurator.configureProvider(s, c);
             }
 

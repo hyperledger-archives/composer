@@ -585,7 +585,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.alertService.successStatus$.next({
                         title: 'Delete Successful',
                         text: this.fileType(deleteFile) + ' File ' + deleteFile.displayID + ' was deleted.',
-                        icon: '#icon-trash_32'
+                        icon: '#icon-bin_icon'
                     });
                 }
             }, (reason) => {
