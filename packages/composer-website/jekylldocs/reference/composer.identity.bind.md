@@ -28,7 +28,7 @@ Options:
   --enrollId, -i               The enrollment ID of the user  [string] [required]
   --enrollSecret, -s           The enrollment secret of the user  [string]
   --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
+  --certificateFile, -c        File containing the certificate  [string] [required]
 ```
 
 ## Options
@@ -56,7 +56,7 @@ The enrollment secret of the identity that should be used to connect to deployed
 Business Network.  
 Example: `Xurw3yU9zI0l`
 
-`--publicKeyFile, -c`
+`--certificateFile, -c`
 
 The path a file containing the certificate for the existing identity in PEM format.  
 Example: `/tmp/cert.pem`

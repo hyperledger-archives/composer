@@ -30,17 +30,17 @@ class Export {
     */
     static handler(args) {
 
-        let cardName = args.name;
-        let fileName = args.file;
+        const cardName = args.name;
+        const fileName = args.file || (cardName + '.card');
 
         const adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.exportCard(cardName)
-        .then((card) =>{
-            return Export.writeCardToFile(fileName,card);
-        })
-        .then(() => {
-            console.log('Successfully exported business network card: ' + cardName+' to '+fileName);
-        });
+            .then((card) => {
+                return Export.writeCardToFile(fileName,card);
+            })
+            .then(() => {
+                console.log('Successfully exported business network card: ' + cardName+' to '+fileName);
+            });
 
     }
 

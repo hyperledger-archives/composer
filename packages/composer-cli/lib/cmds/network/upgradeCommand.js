@@ -19,7 +19,7 @@ const Upgrade = require ('./lib/upgrade.js');
 module.exports.command = 'upgrade [options]';
 module.exports.describe = 'Upgrades the Hyperledger Composer runtime of a business network';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to upgrade the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to upgrade the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

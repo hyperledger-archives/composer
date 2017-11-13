@@ -14,7 +14,7 @@
 
 'use strict';
 
-const LoopBackWallet = require('../../lib/loopbackwallet');
+const LoopBackCardStore = require('../../lib/loopbackcardstore');
 
 module.exports = function (app) {
 
@@ -31,9 +31,7 @@ module.exports = function (app) {
     }
 
     // Extract the required models from the LoopBack application.
-    const userModel = app.models.user;
-    const WalletModel = app.models.Wallet;
-    const WalletIdentityModel = app.models.WalletIdentity;
+    const Card = app.models.Card;
 
     // Register a hook for all remote methods that loads the enrollment ID and
     // enrollment secret from the logged-in users wallet for passing to the connector.
@@ -48,51 +46,29 @@ module.exports = function (app) {
                 return next();
             }
 
-            // Extract the current user ID, and find the current user.
+            // Extract the current user ID.
             const userId = ctx.args.options.accessToken.userId;
-            let wallet;
-            return userModel.findById(userId)
-                .then((user) => {
+            if (!userId) {
+                return next();
+            }
 
-                    // If there is no user, bail.
-                    if (!user) {
-                        return;
+            // Check for the existance of a header specifying the card.
+            const cardName = ctx.req.get('X-Composer-Card');
+            if (cardName) {
+                ctx.args.options.cardStore = new LoopBackCardStore(Card, userId);
+                ctx.args.options.card = cardName;
+                return next();
+            }
+
+            // Find the default card for this user.
+            return Card.findOne({ where: { userId, default: true }})
+                .then((lbCard) => {
+
+                    // Store the card for the LoopBack connector to use.
+                    if (lbCard) {
+                        ctx.args.options.cardStore = new LoopBackCardStore(Card, userId);
+                        ctx.args.options.card = lbCard.name;
                     }
-
-                    // Find the default wallet for the current user.
-                    return WalletModel.findById(user.defaultWallet);
-                })
-                .then((wallet_) => {
-
-                    // If there is no default wallet, bail.
-                    wallet = wallet_;
-                    if (!wallet) {
-                        return;
-                    }
-
-                    // If the wallet does not have a default identity, bail.
-                    if (!wallet.defaultIdentity) {
-                        return;
-                    }
-
-                    // Find the default identity for the default wallet.
-                    return WalletIdentityModel.findById(wallet.defaultIdentity);
-
-                })
-                .then((identity) => {
-
-                    // If there is no default identity, bail.
-                    if (!identity) {
-                        return;
-                    }
-
-                    // Create a wallet for the LoopBack connector to use.
-                    ctx.args.options.wallet = new LoopBackWallet(app, wallet, identity.enrollmentID);
-
-                    // Store the enrollment ID and secret for the LoopBack
-                    // connector to use.
-                    ctx.args.options.enrollmentID = identity.enrollmentID;
-                    ctx.args.options.enrollmentSecret = identity.enrollmentSecret;
 
                 })
                 .then(() => {
@@ -101,6 +77,7 @@ module.exports = function (app) {
                 .catch((error) => {
                     next(error);
                 });
+
         });
 
 };

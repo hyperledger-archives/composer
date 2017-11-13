@@ -1,6 +1,6 @@
 {
   "name": "composer-admin",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Hyperledger Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
   "engines": {
     "node": ">=8",
@@ -19,7 +19,6 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "mocha": "mocha --recursive -t 10000",
     "nyc": "nyc mocha --recursive -t 10000"
-
   },
   "repository": {
     "type": "git",
@@ -44,8 +43,8 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "composer-common": "0.15.0",
-    "composer-connector-hlfv1": "0.15.0"
+    "composer-common": "0.15.1",
+    "composer-connector-hlfv1": "0.15.1"
   },
   "license-check-config": {
     "src": [

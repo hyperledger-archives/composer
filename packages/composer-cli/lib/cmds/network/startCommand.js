@@ -18,15 +18,25 @@ const Start = require ('./lib/start.js');
 
 module.exports.command = 'start [options]';
 module.exports.describe = 'Starts a business network';
-module.exports.builder = {
-    archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
-    loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG']},
-    option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
-    optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
-    networkAdmin: { alias: 'A', required: false, description: 'The identity name of the business network administrator', type: 'string' },
-    networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
-    networkAdminEnrollSecret: { alias: 'S', required: false, description: 'Use enrollment secret for the business network administrator', type: 'boolean', default: undefined },
-    card: { alias: 'c', required: true, description: 'The cardname to use to start the network', type:'string'}
+module.exports.builder = function (yargs) {
+    yargs.options({
+        archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
+        loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG']},
+        option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+        optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
+        networkAdmin: { alias: 'A', required: true, description: 'The identity name of the business network administrator', type: 'string' },
+        networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
+        networkAdminEnrollSecret: { alias: 'S', required: false, description: 'The enrollment secret for the business network administrator', type: 'string', default: undefined },
+        card: { alias: 'c', required: true, description: 'The cardname to use to start the network', type:'string'},
+        file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
+    });
+
+    // enforce the option after these options
+    yargs.requiresArg(['file','archiveFile','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
+
+    yargs.conflicts('C','S');
+
+    return yargs;
 };
 
 module.exports.handler = (argv) => {

@@ -212,7 +212,7 @@ export class IdentityComponent implements OnInit {
                             this.alertService.successStatus$.next({
                                 title: 'Removal Successful',
                                 text: userID + ' was successfully removed.',
-                                icon: '#icon-trash_32'
+                                icon: '#icon-bin_icon'
                             });
                         })
                         .catch((error) => {
@@ -267,7 +267,7 @@ export class IdentityComponent implements OnInit {
                             this.alertService.successStatus$.next({
                                 title: 'Revoke Successful',
                                 text: identity.name + ' was successfully revoked.',
-                                icon: '#icon-trash_32'
+                                icon: '#icon-bin_icon'
                             });
                         })
                         .catch((error) => {

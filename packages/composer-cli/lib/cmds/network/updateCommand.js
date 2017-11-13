@@ -19,7 +19,8 @@ const Update = require ('./lib/update.js');
 module.exports.command = 'update [options]';
 module.exports.describe = 'Update a business network';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to update the network', type:'string'}
+    archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
+    card: { alias: 'c', required: true, description: 'The cardname to use to update the network', type: 'string'}
 };
 
 module.exports.handler = (argv) => {

@@ -40,7 +40,7 @@ class Reset {
         return adminConnection.connect(cardName)
             .then(() => {
                 // nothing is returned from connect
-                return adminConnection.getCard(cardName);
+                return adminConnection.exportCard(cardName);
             })
             .then((card)=>{
                 spinner = ora('Resetting business network definition. This may take some seconds...').start();

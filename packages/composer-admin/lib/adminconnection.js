@@ -76,7 +76,7 @@ class AdminConnection {
             );
         }
 
-        this.cardStore = options.cardStore || new FileSystemCardStore();
+        this.cardStore = options.cardStore || new FileSystemCardStore({ fs: options.fs || fs });
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
@@ -117,7 +117,7 @@ class AdminConnection {
     }
 
     /**
-     * Import a business network card.
+     * Import a business network card. If a card of this name exists, it is replaced.
      * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
      * @return {Promise} Resolved when the card is imported
@@ -141,15 +141,6 @@ class AdminConnection {
             });
     }
 
-    /**
-     * Get a specific Business Network cards
-     * @param {String} cardName of the card to get
-     * @return {Promise} promise resolved with a business network card
-     */
-    getCard(cardName) {
-        return this.cardStore.get(cardName);
-    }
-
     /** Exports an network card.
      * Should the card not actually contain the certificates in the card, a exportIdentity will be
      * performed to get the details of the cards
@@ -163,7 +154,7 @@ class AdminConnection {
                 card=result;
                 let credentials = card.getCredentials();
                 //anything set? if so don't go and get the credentials again
-                if (Object.keys(credentials).length!==0){
+                if (credentials.certificate || credentials.privateKey) {
                     return card;
                 } else {
                     // check to make sure the credentials are present and if not then extract them.
@@ -177,15 +168,7 @@ class AdminConnection {
                             if (result){
                                 //{ certificate: String, privateKey: String }
                                 card.setCredentials(result);
-                                // put back the card, so that it has the ceritificates sotre
-                                return this.cardStore.put(cardName,card);
-                            } else {
-                                if(!card.getEnrollmentCredentials()){
-                                    // no secret either!
-                                    throw new Error(`Card ${cardName} has no credentials or secret so is invalid`);
-                                }
                             }
-                        }).then(()=>{
                             return card;
                         });
                 }

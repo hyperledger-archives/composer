@@ -37,10 +37,12 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "orderers": [
                 {
                     "url": "grpcs://",
+                    "hostnameOverride": "",
                     "cert": ""
                 },
                 {
                     "url": "grpcs://",
+                    "hostnameOverride": "",
                     "cert": ""
                 }
             ],
@@ -54,11 +56,13 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
                 {
                     "requestURL": "grpcs://",
                     "eventURL": "grpcs://",
+                    "hostnameOverride": "",
                     "cert": ""
                 },
                 {
                     "requestURL": "grpcs://",
                     "eventURL": "grpcs://",
+                    "hostnameOverride": "",
                     "cert": ""
                 }
             ],
@@ -105,7 +109,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
   - `orderers` is an array of objects which describe the orderes to communicate with. Within `orderers`, you must define the `url` of each orderer. If you are connecting via TLS, all `url` properties in your connection profile must begin with `grpcs://` and must also contain the correct TLS certificate in the `cert` property.
   - `peers` is an array of objects describing the peers to communicate with. Each `peer` must have a defined `requestURL` and a defined `eventURL`. If you are connecting using TLS, each `peer` must also have the correct TLS certificate in the `cert` property.
-
+  - `hostnameOverride` is used in a test environment only, when the server certificate's hostname does not match the actual host endpoint that the server process runs at, the application can work around the client TLS verify failure by setting this property to the value of the server certificate's hostname.
   - Each instance of the `cert` property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each `cert` property.  
 
         -----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----

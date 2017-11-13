@@ -8,8 +8,8 @@ ARG VERSION=latest
 
 # Need to install extra dependencies for native modules.
 RUN apk add --no-cache make gcc g++ python git libc6-compat && \
-    npm install --production -g composer-cli@${VERSION} && \
-    npm cache clean && \
+    npm install --unsafe-perm --production -g composer-cli@${VERSION} && \
+    npm cache clean --force && \
     apk del make gcc g++ python git
 
 # Remove yarn
