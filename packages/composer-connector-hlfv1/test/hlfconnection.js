@@ -45,6 +45,7 @@ chai.use(require('chai-as-promised'));
 
 const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
 
+//TODO: Ideally we should stub out hlftxeventhandler.
 describe('HLFConnection', () => {
 
     let sandbox;
@@ -585,7 +586,6 @@ describe('HLFConnection', () => {
             }).should.throw(/startTransaction not specified/);
         });
 
-        // TODO: should extract out _waitForEvents
         it('should request an event timeout based on connection settings', () => {
             connectOptions = {
                 orderers: [
@@ -881,8 +881,7 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
-        // TODO: should extract out _waitForEvents
-        it('should throw an error if the orderer throws an error', () => {
+        it('should throw an error if the orderer responds with an error', () => {
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -900,7 +899,7 @@ describe('HLFConnection', () => {
             // This is the event hub response.
             //mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.start(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -1114,7 +1113,6 @@ describe('HLFConnection', () => {
             }).should.throw(/deployTransaction not specified/);
         });
 
-        // TODO: should extract out _waitForEvents
         it('should request an event timeout based on connection settings', () => {
             connectOptions = {
                 orderers: [
@@ -1644,7 +1642,7 @@ describe('HLFConnection', () => {
         });
 
         // TODO: should extract out _waitForEvents
-        it('should throw an error if the commit throws an error', () => {
+        it('should throw an error if a commit fails', () => {
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1658,13 +1656,13 @@ describe('HLFConnection', () => {
             mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
-                status: 'FAILURE'
+                status: 'SUCCESS'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Peer has rejected transaction/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -1800,8 +1798,7 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
-        // TODO: should extract out _waitForEvents
-        it('should throw an error if the orderer throws an error', () => {
+        it('should throw an error if the orderer responds with an error', () => {
             sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
@@ -1818,7 +1815,7 @@ describe('HLFConnection', () => {
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             return connection.upgrade(mockSecurityContext)
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
@@ -2170,7 +2167,6 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/an error/);
         });
 
-        //TODO: Should extract out _waitForEvents
         it('should set the timeout to value specified in connection profile', () => {
             connectOptions = {
                 orderers: [
@@ -2236,7 +2232,7 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/Failed to receive commit notification/);
         });
 
-        it('should throw an error if the commit throws an error', () => {
+        it('should throw an error if the orderer responds with an error', () => {
             const proposalResponses = [{
                 response: {
                     status: 200
@@ -2253,7 +2249,7 @@ describe('HLFConnection', () => {
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/Failed to commit transaction/);
+                .should.be.rejectedWith(/Failed to send/);
         });
 
     });
