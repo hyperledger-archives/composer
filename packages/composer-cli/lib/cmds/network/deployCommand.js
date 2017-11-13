@@ -31,7 +31,7 @@ module.exports.builder = function (yargs) {
         file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
     });
 
-    // enforce the option after these options
+    // ensure these options (if used) are given a value
     yargs.requiresArg(['loglevel','file','archiveFile','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
 
     // Mark the options that conflict

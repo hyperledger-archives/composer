@@ -75,7 +75,9 @@ class IssueCard {
                 cmdUtil.log(chalk.blue('\tOutput file: ')+fileName);
             })
             .catch((error) => {
-                spinner.fail();
+                if (spinner){
+                    spinner.fail();
+                }
                 throw error;
             });
     }

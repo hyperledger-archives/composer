@@ -94,10 +94,10 @@ class List {
             let cpData = { name :cp.name , type: cp.type, channel:cp.channel };
 
             let listOutput={
-                userName:this.handleNull(card.getUserName()),
-                description:this.handleNull(card.getDescription()),
-                businessNetworkName:this.handleNull(card.getBusinessNetworkName()),
-                roles:this.handleNull(card.getRoles()),
+                userName:this.handleArray(card.getUserName()),
+                description:this.handleArray(card.getDescription()),
+                businessNetworkName:this.handleArray(card.getBusinessNetworkName()),
+                roles:this.handleArray(card.getRoles()),
                 connectionProfile:cpData
             };
 
@@ -125,7 +125,7 @@ class List {
      * @param {Object} o thing to otuput
      * @return {String} either 'none' of the object is undefined or the object itself
      */
-    static handleNull(o){
+    static handleArray(o){
 
         if (Array.isArray(o) && o.length===0) {
             return 'none';

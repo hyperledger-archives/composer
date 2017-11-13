@@ -59,7 +59,7 @@ class CmdUtil {
             if (fs.existsSync(argv.optionsFile)) {
                 mergedOptions = JSON.parse(fs.readFileSync(argv.optionsFile));
             } else {
-                this.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
+                CmdUtil.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
             }
         }
 
