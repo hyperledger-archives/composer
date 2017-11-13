@@ -20,10 +20,17 @@ module.exports.command = 'create [options]';
 module.exports.describe = 'Create Code artifacts from Business Network Archive';
 module.exports.builder = function (yargs){
 
-    return yargs.option('archiveFile',{alias: 'a', required: true,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
-        .option('format',{alias: 'f', required: true, describe: 'Format of code to generate: Java, Go (beta), PlantUML, Typescript (beta), JSONSchema.'})
-        .option('outputDir',{alias: 'o', required: true, describe:'Output Location'})
-        .usage('composer generator create --archiveFile digitialPropertyNetwork.bna --format Go --outputDir ./dev/go-app');
+    yargs.options(
+        {
+            'archiveFile':{alias: 'a', required: true,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string'},
+            'format':{alias: 'f', required: true, describe: 'Format of code to generate: Java, Go (beta), PlantUML, Typescript (beta), JSONSchema.'},
+            'outputDir':{alias: 'o', required: true, describe:'Output Location'}
+        }
+    );
+
+
+    yargs.usage('composer generator create --archiveFile digitialPropertyNetwork.bna --format Go --outputDir ./dev/go-app');
+    return yargs;
 };
 
 module.exports.handler = (argv) => {

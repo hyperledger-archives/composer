@@ -50,7 +50,7 @@ class Add {
                 });
         })
         .then((submitted) => {
-            console.log('Participant was added to participant registry.');
+            cmdUtil.log('Participant was added to participant registry.');
         });
     }
 

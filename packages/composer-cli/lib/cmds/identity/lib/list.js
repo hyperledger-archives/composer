@@ -55,7 +55,7 @@ class List {
             const json = identities.map((identity) => {
                 return serializer.toJSON(identity);
             });
-            console.log(Pretty.render(json,{
+            cmdUtil.log(Pretty.render(json,{
                 keysColor: 'blue',
                 dashColor: 'blue',
                 stringColor: 'white'
