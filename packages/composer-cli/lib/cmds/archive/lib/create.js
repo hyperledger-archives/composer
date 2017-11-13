@@ -19,15 +19,24 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const fs = require('fs');
 const sanitize = require('sanitize-filename');
+const cmdUtil = require('../../utils/cmdutils');
 
 /**
  * Composer Create Archive command
- *
- * composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network
- *
  * @private
  */
 class Create {
+
+    /**
+     * Fn to abstract out the module loading
+     * Makes the testing a lot eaiser
+     *
+     * @param {String} moduleName to load
+     * @return {Object} loaded modules
+     */
+    static loadModule(moduleName){
+        return require.resolve(moduleName);
+    }
 
   /**
     * Command process for deploy command
@@ -39,7 +48,7 @@ class Create {
 
         let inputDir = '';
 
-        console.log(chalk.blue.bold('Creating Business Network Archive\n'));
+        cmdUtil.log(chalk.blue.bold('Creating Business Network Archive\n'));
         if (argv.sourceType === 'module'){
             // using a npm module name
             //
@@ -48,22 +57,23 @@ class Create {
 
             let moduleIndexjs;
             try {
-                moduleIndexjs=require.resolve(moduleName);
+                moduleIndexjs=this.loadModule(moduleName);
             } catch (err){
+                console.log(err);
                 if (err.code==='MODULE_NOT_FOUND'){
                     let localName = process.cwd()+'/node_modules/'+moduleName;
-                    console.log(chalk.bold.yellow('Not found in main node_module search path, trying current directory'));
-                    console.log(chalk.yellow('\tCurrent Directory: ')+localName);
-                    moduleIndexjs=require.resolve(localName);
+                    cmdUtil.log(chalk.bold.yellow('Not found in main node_module search path, trying current directory'));
+                    cmdUtil.log(chalk.yellow('\tCurrent Directory: ')+localName);
+                    moduleIndexjs=this.loadModule(localName);
                 }else {
-                    console.log(chalk.blue.red('Unable to locate the npm module specified'));
+                    cmdUtil.log(chalk.blue.red('Unable to locate the npm module specified'));
                     return Promise.reject(err);
                 }
 
             }
 
             inputDir = path.dirname(moduleIndexjs);
-            // console.log('Resolved module name '+argv.sourceName+ '  to '+inputDir);
+
         }else {
           // loading from a file directory given by user
             if (argv.sourceName==='.'){
@@ -72,26 +82,25 @@ class Create {
                 inputDir = argv.sourceName;
             }
         }
-        console.log(chalk.blue.bold('\nLooking for package.json of Business Network Definition'));
-        console.log(chalk.blue('\tInput directory: ')+inputDir);
+        cmdUtil.log(chalk.blue.bold('\nLooking for package.json of Business Network Definition'));
+        cmdUtil.log(chalk.blue('\tInput directory: ')+inputDir);
 
         return BusinessNetworkDefinition.fromDirectory(inputDir).then( (result)=> {
-            console.log(chalk.blue.bold('\nFound:'));
-            console.log(chalk.blue('\tDescription: ')+result.getDescription());
-            console.log(chalk.blue('\tName: ')+result.getName());
-            console.log(chalk.blue('\tIdentifier: ')+result.getIdentifier());
-
+            cmdUtil.log(chalk.blue.bold('\nFound:'));
+            cmdUtil.log(chalk.blue('\tDescription: ')+result.getDescription());
+            cmdUtil.log(chalk.blue('\tName: ')+result.getName());
+            cmdUtil.log(chalk.blue('\tIdentifier: ')+result.getIdentifier());
 
             if (!argv.archiveFile){
                 argv.archiveFile = sanitize(result.getIdentifier(),{replacement:'_'})+'.bna';
             }
-          // need to write this out to the required file now.
+           // need to write this out to the required file now.
             return result.toArchive().then (
               (result) => {
                 //write the buffer to a file
                   fs.writeFileSync(argv.archiveFile,result);
-                  console.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to '));
-                  console.log(chalk.blue('\tOutput file: ')+argv.archiveFile);
+                  cmdUtil.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to '));
+                  cmdUtil.log(chalk.blue('\tOutput file: ')+argv.archiveFile);
                   return;
               }
 
