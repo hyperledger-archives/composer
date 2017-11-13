@@ -18,6 +18,7 @@ const Connection = require('composer-common').Connection;
 const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
 const HLFUtil = require('./hlfutil');
+const HLFTxEventHandler = require('./hlftxeventhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
@@ -103,6 +104,7 @@ class HLFConnection extends Connection {
         this.ccEvents = [];
         this.caClient = caClient;
         this.initialized = false;
+        this.commitTimeout = this.connectOptions.timeout * 1000;
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
@@ -433,6 +435,7 @@ class HLFConnection extends Connection {
         }
 
         let finalTxId;
+        let eventHandler;
 
         // initialize the channel ready for instantiation
         LOG.debug(method, 'loading the channel configuration');
@@ -478,6 +481,9 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+
+                eventHandler = new HLFTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -486,13 +492,13 @@ class HLFConnection extends Connection {
 
             })
             .then((response) => {
-
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${finalTxId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
 
             })
             .then(() => {
@@ -806,6 +812,7 @@ class HLFConnection extends Connection {
         } else {
             txId = this.client.newTransactionID();
         }
+        let eventHandler;
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
         LOG.debug(method, 'loading channel configuration');
@@ -832,6 +839,8 @@ class HLFConnection extends Connection {
                 const proposal = results[1];
                 const header = results[2];
 
+                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -840,13 +849,13 @@ class HLFConnection extends Connection {
             })
             .then((response) => {
                 // If the transaction was successful, wait for it to be committed.
-                // TODO: Should only listen for the events if SUCCESS is returned
                 LOG.debug(method, 'Received response from orderer', response);
 
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
             })
             .then(() => {
                 LOG.exit(method);
@@ -975,42 +984,6 @@ class HLFConnection extends Connection {
 
     }
 
-  /**
-     * wait for events from the peers associated with the provided transaction id.
-     * @param {string} txObj the transaction id to listen for events on
-     * @param {number} waitTime the time to wait in seconds for an event response
-     * @returns {Promise} A promise which resolves when all the events are received or rejected
-     * if an event is not received within the given timeout period
-     * @memberOf HLFConnection
-     */
-    _waitForEvents(txObj, waitTime) {
-        const txId = txObj.getTransactionID().toString();
-        const method = '_waitForEvents';
-        LOG.entry(method, txId, waitTime);
-        let eventPromises = [];
-        this.eventHubs.forEach((eh) => {
-            let txPromise = new Promise((resolve, reject) => {
-                const handle = setTimeout(() => {
-                    reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, waitTime * 1000);
-                eh.registerTxEvent(txId, (tx, code) => {
-                    clearTimeout(handle);
-                    eh.unregisterTxEvent(txId);
-                    if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-            eventPromises.push(txPromise);
-        });
-        return Promise.all(eventPromises)
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
-
     /**
      * return the logged in user
      * @returns {User} the logged in user
@@ -1036,6 +1009,7 @@ class HLFConnection extends Connection {
         }
 
         let txId;
+        let eventHandler;
         // check runtime versions to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
@@ -1067,6 +1041,8 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
@@ -1079,9 +1055,10 @@ class HLFConnection extends Connection {
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
 
             })
             .then(() => {
