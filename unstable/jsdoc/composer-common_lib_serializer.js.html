@@ -101,6 +101,8 @@
 'use strict';
 
 const EventDeclaration = require('./introspect/eventdeclaration');
+const ConceptDeclaration = require('./introspect/conceptdeclaration');
+const EnumDeclaration = require('./introspect/enumdeclaration');
 const Globalize = require('./globalize');
 const JSONGenerator = require('./serializer/jsongenerator');
 const JSONPopulator = require('./serializer/jsonpopulator');
@@ -242,6 +244,11 @@ class Serializer {
             resource = this.factory.newEvent( classDeclaration.getNamespace(),
                                               classDeclaration.getName(),
                                               jsonObject[classDeclaration.getIdentifierFieldName()] );
+        } else if (classDeclaration instanceof ConceptDeclaration) {
+            resource = this.factory.newConcept( classDeclaration.getNamespace(),
+                                                classDeclaration.getName() );
+        } else if (classDeclaration instanceof EnumDeclaration) {
+            throw new Error('Attempting to create an ENUM declaration is not supported.');
         } else {
             resource = this.factory.newResource( classDeclaration.getNamespace(),
                                                  classDeclaration.getName(),
