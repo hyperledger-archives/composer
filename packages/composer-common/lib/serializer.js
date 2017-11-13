@@ -162,7 +162,7 @@ class Serializer {
             resource = this.factory.newConcept( classDeclaration.getNamespace(),
                                                 classDeclaration.getName() );
         } else if (classDeclaration instanceof EnumDeclaration) {
-            resource = classDeclaration;
+            throw new Error('Attempting to create an ENUM declaration is not supported.');
         } else {
             resource = this.factory.newResource( classDeclaration.getNamespace(),
                                                  classDeclaration.getName(),

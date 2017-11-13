@@ -130,14 +130,15 @@ describe('Concept', function () {
             obj.isConcept().should.be.true;
         });
 
-        it('should generate an ENUM from JSON', function () {
+        it('should generate an error trying to create an ENUM from JSON', function () {
             let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
             modelManager.addModelFile(conceptModel, 'concept.cto');
             const factory = new Factory(modelManager);
             const serializer = new Serializer(factory, modelManager);
             const jsObject = JSON.parse('{"$class":"org.acme.biznet.assetStatus"}');
-            const obj = serializer.fromJSON(jsObject);
-            obj.isEnum().should.be.true;
+            (function () {
+                serializer.fromJSON(jsObject);
+            }).should.throw(/Attempting to create an ENUM declaration is not supported./);
         });
 
     });
