@@ -220,7 +220,8 @@ describe('composer deploy network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
-                        ,networkAdminEnrollSecret:'secret-secret'};
+                        ,networkAdminEnrollSecret:'secret-secret'
+                        ,file:'writetothisfile'};
 
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -293,6 +294,31 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
+        it('Good path, all parms correctly specified. with the certificate', function () {
+
+            let argv = {card:'cardname'
+                        ,archiveFile: 'testArchiveFile.zip'
+                        ,networkAdmin: 'admin'
+                        ,networkAdminCertificateFile:'certificate-file'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns('asdasdasd');
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return DeployCmd.handler(argv)
+                .then ((result) => {
+                    argv.thePromise.should.be.a('promise');
+                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                    sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                    sinon.assert.calledOnce(mockAdminConnection.connect);
+                    sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                    sinon.assert.calledOnce(mockAdminConnection.deploy);
+
+
+                });
+        });
 
 
         const sanitize = (result) => {
@@ -429,6 +455,7 @@ describe('composer deploy network CLI unit tests', function () {
 
         });
 
+
     });
 
     describe('using business network card',()=>{
@@ -436,9 +463,9 @@ describe('composer deploy network CLI unit tests', function () {
         it('Failure of the archive functions', function () {
 
             let argv = {card:'cardname'
-            ,networkAdmin: ['admin1']
-            ,networkAdminEnrollSecret: ['secret-secret']
-            ,archiveFile: 'testArchiveFile.zip'};
+                            ,networkAdmin: 'admin1'
+                            ,networkAdminEnrollSecret: 'secret-secret'
+                            ,archiveFile: 'testArchiveFile.zip'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).throws(new Error('failure'));
@@ -446,5 +473,17 @@ describe('composer deploy network CLI unit tests', function () {
                         .should.be.rejectedWith(/failure/);
         });
 
+        it('Failure of the adminconnection deploy function', function () {
+
+            let argv = {card:'cardname'
+                                        ,networkAdmin: 'admin1'
+                                        ,networkAdminEnrollSecret: 'secret-secret'
+                                        ,archiveFile: 'testArchiveFile.zip'};
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            mockAdminConnection.deploy.throws(new Error('failure'));
+            return DeployCmd.handler(argv)
+                                    .should.be.rejectedWith(/failure/);
+        });
     });
 });

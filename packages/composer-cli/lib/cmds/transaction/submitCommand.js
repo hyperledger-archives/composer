@@ -20,7 +20,7 @@ module.exports.command = 'submit [options]';
 module.exports.describe = 'Submit a transaction to a business network';
 module.exports.builder = {
     data: { alias: 'd', required: true, describe: 'Transactions JSON object as a string', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to connect to the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to connect to the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

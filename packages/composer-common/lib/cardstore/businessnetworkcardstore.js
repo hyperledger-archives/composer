@@ -66,8 +66,8 @@ class BusinessNetworkCardStore {
     /**
      * Delete a specific card from the store.
      * @abstract
-     * @param {String} cardName The name of the card to delete
-     * @return {Promise} A promise that resolves when the card is deleted.
+     * @param {String} cardName The name of the card to delete.
+     * @return {Promise} A promise that resolves to true if the card existed; otherwise false.
      */
     delete(cardName) {
         return Promise.reject(new Error('Abstract function called'));

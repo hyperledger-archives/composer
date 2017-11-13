@@ -51,8 +51,8 @@ class Bind {
                 return businessNetworkConnection.bindIdentity(participantId, certificate);
             })
             .then((result) => {
-                console.log(`An identity was bound to the participant '${participantId}'`);
-                console.log('The participant can now connect to the business network using the identity');
+                cmdUtil.log(`An identity was bound to the participant '${participantId}'`);
+                cmdUtil.log('The participant can now connect to the business network using the identity');
             });
     }
 

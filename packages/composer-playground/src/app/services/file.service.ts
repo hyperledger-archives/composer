@@ -18,6 +18,8 @@ export class FileService {
     private aclFile: EditorFile = null;
     private queryFile: EditorFile = null;
 
+    private dirty: Boolean = false;
+
     private currentFile: any = null;
 
     private currentBusinessNetwork;
@@ -102,6 +104,7 @@ export class FileService {
             }
         }
 
+        this.dirty = false;
         return allFiles;
     }
 
@@ -190,7 +193,6 @@ export class FileService {
         if (includePackageJson && this.getEditorPackageFile() !== null) {
             files.push(this.getEditorPackageFile());
         }
-
         return files;
     }
 
@@ -248,6 +250,7 @@ export class FileService {
             default:
                 throw new Error('Attempted addition of unknown file type: ' + type);
         }
+        this.dirty = true;
 
         return file;
     }
@@ -325,6 +328,7 @@ export class FileService {
             default:
                 throw new Error('Attempted update of unknown file type: ' + type);
         }
+        this.dirty = true;
 
         return updatedFile;
     }
@@ -359,6 +363,7 @@ export class FileService {
             default:
                 throw new Error('Attempted deletion of file unknown type: ' + type);
         }
+        this.dirty = true;
     }
 
     deleteAllFiles() {
@@ -370,6 +375,8 @@ export class FileService {
         this.packageJson = null;
 
         this.currentFile = null;
+
+        this.dirty = true;
     }
 
     replaceFile(oldId: string, newId: string, content: string, type: string): EditorFile {
@@ -386,6 +393,7 @@ export class FileService {
                     modelFile = this.createModelFile(this.getFile(oldId, 'model').getContent(), newId);
                     this.deleteFile(oldId, 'model');
                     this.addFile(modelFile.getNamespace(), modelFile.getName(), modelFile.getDefinitions(), 'model');
+                    this.dirty = true;
                     return this.getFile(modelFile.getNamespace(), 'model');
                 } catch (err) {
                     try {
@@ -393,6 +401,7 @@ export class FileService {
                         let actualContent = this.getFile(oldId, 'model').getContent();
                         this.deleteFile(oldId, 'model');
                         this.addFile(modelFile.getNamespace(), modelFile.getName(), actualContent, 'model');
+                        this.dirty = true;
                         return this.getFile(modelFile.getNamespace(), 'model');
                     } catch (err) {
                         throw new Error(err);
@@ -407,6 +416,7 @@ export class FileService {
                 }
                 this.addFile(newId, newId, this.getFile(oldId, 'script').getContent(), 'script');
                 this.deleteFile(oldId, 'script');
+                this.dirty = true;
                 return this.getFile(newId, 'script');
             default:
                 throw new Error('Attempted replace of ununsupported file type: ' + type);
@@ -574,10 +584,12 @@ export class FileService {
 
     setBusinessNetworkPackageJson(packageJson) {
         this.currentBusinessNetwork.setPackageJson(packageJson);
+        this.dirty = true;
     }
 
     setBusinessNetworkReadme(readme) {
         this.currentBusinessNetwork.setReadme(readme);
+        this.dirty = true;
     }
 
     setBusinessNetworkVersion(version: string) {
@@ -585,6 +597,7 @@ export class FileService {
         packageJson.version = version;
         this.currentBusinessNetwork.setPackageJson(packageJson);
         this.businessNetworkChanged$.next(true);
+        this.dirty = true;
     }
 
     getBusinessNetwork(): BusinessNetworkDefinition {
@@ -621,5 +634,13 @@ export class FileService {
 
     getMetaData() {
         return this.currentBusinessNetwork.getMetadata();
+    }
+
+    changesDeployed() {
+      this.dirty = false;
+    }
+
+    isDirty() {
+      return this.dirty;
     }
 }
