@@ -46,7 +46,7 @@ describe('composer identity request CLI unit tests', () => {
 
         testCard = new IdCard({ userName: 'SuccessKid' , businessNetwork :'penguin-network',enrollmentSecret:'humbolt'}, { name: 'myprofile' });
         testCard.setCredentials({certificate:'cert',privateKey:'nottelling'});
-        mockAdminConnection.getCard.resolves(testCard);
+        mockAdminConnection.exportCard.resolves(testCard);
     });
 
     afterEach(() => {

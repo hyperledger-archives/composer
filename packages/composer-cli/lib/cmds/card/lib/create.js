@@ -35,7 +35,11 @@ class Create {
             userName : argv.user };
 
         if (argv.role){
-            metadata.roles = argv.role;
+            if(Array.isArray(argv.role)) {
+                metadata.roles = argv.role;
+            } else {
+                metadata.roles = [argv.role];
+            }
         }
 
         if (argv.enrollSecret){

@@ -30,11 +30,19 @@ class Import {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
+        let cardToImport;
         let cardName;
+        let adminConnection;
         return Import.readCardFromFile(args.file).then(card => {
+            cardToImport = card;
             cardName = args.name || cmdUtil.getDefaultCardName(card);
-            const adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.importCard(cardName, card);
+            adminConnection = cmdUtil.createAdminConnection();
+            return adminConnection.exportCard(cardName);
+        }).then(existingCard => {
+            if (existingCard) {
+                throw new Error('Card already exists: ' + cardName);
+            }
+            return adminConnection.importCard(cardName, cardToImport);
         }).then(() => {
             console.log('Successfully imported business network card: ' + cardName);
         });
