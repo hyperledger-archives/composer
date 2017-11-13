@@ -1,6 +1,6 @@
 {
   "name": "composer-cucumber-steps",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "A library of Cucumber steps for testing Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -70,10 +70,10 @@
   "dependencies": {
     "browserfs": "1.1.0",
     "chai": "3.5.0",
-    "composer-admin": "0.15.0",
-    "composer-client": "0.15.0",
-    "composer-common": "0.15.0",
-    "composer-connector-embedded": "0.15.0",
+    "composer-admin": "0.15.1",
+    "composer-client": "0.15.1",
+    "composer-common": "0.15.1",
+    "composer-connector-embedded": "0.15.1",
     "thenify-all": "1.6.0"
   }
 }

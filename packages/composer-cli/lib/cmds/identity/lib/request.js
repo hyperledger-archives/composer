@@ -37,7 +37,7 @@ class Request {
         let adminConnection = cmdUtil.createAdminConnection();
         let actualLocation = argv.path ? path.resolve(argv.path) : path.join(os.homedir(), '/.identityCredentials');
         let enrollId;
-        return adminConnection.getCard(argv.card)
+        return adminConnection.exportCard(argv.card)
             .then((card)=>{
                 let profileName = card.getConnectionProfile().name;
                 enrollId = card.getUserName();

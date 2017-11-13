@@ -71,7 +71,7 @@ class Start {
         })
         .then(() => {
             // need to get the card now for later use
-            return adminConnection.getCard(cardName);
+            return adminConnection.exportCard(cardName);
         })
         .then((_card) => {
             card = _card;

@@ -117,7 +117,7 @@ class AdminConnection {
     }
 
     /**
-     * Import a business network card.
+     * Import a business network card. If a card of this name exists, it is replaced.
      * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
      * @return {Promise} Resolved when the card is imported
@@ -139,15 +139,6 @@ class AdminConnection {
                     return; // use secret
                 }
             });
-    }
-
-    /**
-     * Get a specific Business Network cards
-     * @param {String} cardName of the card to get
-     * @return {Promise} promise resolved with a business network card
-     */
-    getCard(cardName) {
-        return this.cardStore.get(cardName);
     }
 
     /** Exports an network card.
@@ -177,10 +168,7 @@ class AdminConnection {
                             if (result){
                                 //{ certificate: String, privateKey: String }
                                 card.setCredentials(result);
-                                // put back the card, so that it has the ceritificates sotre
-                                return this.cardStore.put(cardName,card);
                             }
-                        }).then(()=>{
                             return card;
                         });
                 }

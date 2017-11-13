@@ -43,8 +43,7 @@ class BusinessNetworkCardStore {
     }
 
     /**
-     * Puts a card in the store. It is an error to put a card name that already exists
-     * in the store.
+     * Puts a card in the store. If the named card already exists in the store, it will be replaced.
      * @abstract
      * @param {String} cardName The name of the card to save
      * @param {IdCard} card The card
@@ -67,8 +66,8 @@ class BusinessNetworkCardStore {
     /**
      * Delete a specific card from the store.
      * @abstract
-     * @param {String} cardName The name of the card to delete
-     * @return {Promise} A promise that resolves when the card is deleted.
+     * @param {String} cardName The name of the card to delete.
+     * @return {Promise} A promise that resolves to true if the card existed; otherwise false.
      */
     delete(cardName) {
         return Promise.reject(new Error('Abstract function called'));

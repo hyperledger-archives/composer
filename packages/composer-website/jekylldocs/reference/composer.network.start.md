@@ -16,7 +16,7 @@ Before using this command, read the topic [Deploying and Updating Business Netwo
 _Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the {{site.data.conrefs.hlf_full}} peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
 
 ```
-composer network start -a <business-network-archive> -i <user-id> -s <user-id-secret>
+composer network start -a <business-network-archive> -A <admin-name> -S adminpw -c <business-network-card> -f <name-of-admin-card>
 ```
 
 ### Options
@@ -27,15 +27,14 @@ Options:
   --help                             Show help  [boolean]
   -v, --version                      Show version number  [boolean]
   --archiveFile, -a                  The business network archive file name  [string] [required]
-  --connectionProfileName, -p        The connection profile name  [string] [required]
-  --loglevel, -l                     The initial loglevel to set (INFO|WARNING|ERROR|DEBUG)  [string]
+  --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
-  --startId, -i                      The id of the user permitted to start a network  [string] [required]
-  --startSecret, -s                  The secret of the user permitted to start a network, if required  [string]
   --networkAdmin, -A                 The identity name of the business network administrator  [string]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
-  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [string]
+  --card, -c                         The cardname to use to start the network  [string]
+  --file, -f                         File name of the card to be created  [string]
 ```
 
 

@@ -44,7 +44,7 @@ describe('composer undeploy network CLI unit tests', function () {
         mockAdminConnection.undeploy.resolves();
         mockIdCard = sinon.createStubInstance(IdCard);
         mockIdCard.getBusinessNetworkName.returns('penguin-network');
-        mockAdminConnection.getCard.resolves(mockIdCard);
+        mockAdminConnection.exportCard.resolves(mockIdCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
