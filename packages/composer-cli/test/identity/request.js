@@ -101,6 +101,81 @@ describe('composer identity request CLI unit tests', () => {
             });
     });
 
+    it('should request an identity using the specified enrollment ID', () => {
+        let argv = {
+            cardName : 'cardName',
+            user: 'doge'
+        };
+        let fsStub = sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(os, 'homedir').returns('/x');
+        mockAdminConnection.requestIdentity.withArgs(PROFILE_NAME, 'doge', USER_SECRET).resolves({
+            certificate: 'a',
+            key: 'b',
+            rootCertificate: 'c',
+            caName: 'caName'
+        });
+        return Request.handler(argv)
+            .then(() => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.requestIdentity);
+                sinon.assert.calledWith(mockAdminConnection.requestIdentity, PROFILE_NAME, 'doge', USER_SECRET);
+                sinon.assert.calledThrice(fsStub);
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/doge-pub.pem', 'a');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/doge-priv.pem', 'b');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/caName-root.pem', 'c');
+            });
+    });
+
+    it('should request an identity using the specified enrollment secret', () => {
+        let argv = {
+            cardName : 'cardName',
+            enrollSecret: 'suchs3cret'
+        };
+        let fsStub = sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(os, 'homedir').returns('/x');
+        mockAdminConnection.requestIdentity.withArgs(PROFILE_NAME, USER_ID, 'suchs3cret').resolves({
+            certificate: 'a',
+            key: 'b',
+            rootCertificate: 'c',
+            caName: 'caName'
+        });
+        return Request.handler(argv)
+            .then(() => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.requestIdentity);
+                sinon.assert.calledWith(mockAdminConnection.requestIdentity, PROFILE_NAME, USER_ID, 'suchs3cret');
+                sinon.assert.calledThrice(fsStub);
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/SuccessKid-pub.pem', 'a');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/SuccessKid-priv.pem', 'b');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/caName-root.pem', 'c');
+            });
+    });
+
+    it('should request an identity using the specified enrollment ID and secret', () => {
+        let argv = {
+            cardName : 'cardName',
+            user: 'doge',
+            enrollSecret: 'suchs3cret'
+        };
+        let fsStub = sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(os, 'homedir').returns('/x');
+        mockAdminConnection.requestIdentity.withArgs(PROFILE_NAME, 'doge', 'suchs3cret').resolves({
+            certificate: 'a',
+            key: 'b',
+            rootCertificate: 'c',
+            caName: 'caName'
+        });
+        return Request.handler(argv)
+            .then(() => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.requestIdentity);
+                sinon.assert.calledWith(mockAdminConnection.requestIdentity, PROFILE_NAME, 'doge', 'suchs3cret');
+                sinon.assert.calledThrice(fsStub);
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/doge-pub.pem', 'a');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/doge-priv.pem', 'b');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/caName-root.pem', 'c');
+            });
+    });
 
     it('should fail gracefully if requestIdentity fails', () => {
         let argv = {
