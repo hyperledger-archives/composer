@@ -45,9 +45,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     private addScriptFileExtension: string = '.js';
     private addModelFileExtension: string = '.cto';
 
-    private noError: boolean = true;
-    private dirty: boolean = false;
     private deploying: boolean = false;
+    private noError: boolean = true;
 
     private editActive: boolean = false; // Are the input boxes visible?
     private editingPackage: boolean = false; // Is the package.json being edited?
@@ -78,7 +77,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     .subscribe((noError) => {
                         if (this.editorFilesValidate() && noError) {
                             this.noError = noError;
-                            this.dirty = true;
                         } else {
                             this.noError = false;
                         }
@@ -158,11 +156,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.inputFileNameArray = this.formatFileName(file.displayID);
 
             // re-validate, since we do not persist bad files- they revert when navigated away
-            if (this.editorFilesValidate()) {
-                this.noError = true;
-            } else {
-                this.noError = false;
-            }
+            this.noError = this.editorFilesValidate();
 
             // remove fileError flag
             this.fileNameError = null;
@@ -218,7 +212,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
             this.editorFilesValidate();
         }
     }
@@ -261,7 +254,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
             this.editorFilesValidate();
         }
     }
@@ -295,7 +287,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
             this.editorFilesValidate();
         }
     }
@@ -310,7 +301,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.fileService.setBusinessNetworkReadme(readme);
                 this.files = this.fileService.getEditorFiles();
                 this.setCurrentFile(this.files[0]);
-                this.dirty = true;
             }, (reason) => {
                 if (reason && reason !== 1) {
                     this.alertService.errorStatus$.next(reason);
@@ -320,7 +310,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.fileService.setBusinessNetworkReadme(readme);
             this.files = this.fileService.getEditorFiles();
             this.setCurrentFile(this.files[0]);
-            this.dirty = true;
         }
     }
 
@@ -354,7 +343,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
             this.editorFilesValidate();
         }
     }
@@ -443,13 +431,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                 return this.adminService.update(this.fileService.getBusinessNetwork());
             })
             .then(() => {
-                this.dirty = false;
                 this.deploying = false;
                 return this.clientService.refresh(this.fileService.getBusinessNetworkName());
             })
             .then(() => {
                 this.updatePackageInfo();
                 this.updateFiles();
+                this.fileService.changesDeployed();
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
                     title: 'Update Successful',
@@ -504,7 +492,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     let newFile = this.fileService.replaceFile(this.currentFile.id, inputFileName, contents, 'script'); // file service uses its own saved contents so can rename an invalid file
                     this.files = this.fileService.getEditorFiles();
                     this.setCurrentFile(newFile);
-                    this.dirty = true;
                 } else {
                     this.editActive = false;
                 }
@@ -516,7 +503,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     let newFile = this.fileService.replaceFile(this.currentFile.id, inputFileName, contents, 'model'); // file service uses its own saved contents so it can use an invalid file, needs the last known good contents though so can get namespace if its can't from own contents
                     this.files = this.fileService.getEditorFiles();
                     this.setCurrentFile(newFile);
-                    this.dirty = true;
                 } else {
                     this.editActive = false;
                 }
