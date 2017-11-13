@@ -32,41 +32,11 @@ class Submit {
     */
     static handler(argv) {
         let businessNetworkConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = argv.connectionProfileName;
-        let businessNetworkName;
         let cardName = argv.card;
-        let usingCard = !(cardName===undefined);
 
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
+        return businessNetworkConnection.connect(cardName)
 
-        return (() => {
-            if (!argv.enrollSecret && !usingCard) {
-                return cmdUtil.prompt({
-                    name: 'enrollmentSecret',
-                    description: 'What is the enrollment secret of the user?',
-                    required: true,
-                    hidden: true,
-                    replace: '*'
-                })
-                .then((result) => {
-                    argv.enrollSecret = result.enrollmentSecret;
-                });
-            } else {
-                return Promise.resolve();
-            }
-        })()
-        .then(() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            businessNetworkName = argv.businessNetworkName;
-            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
-            if (!usingCard){
-                return businessNetworkConnection.connectWithDetails(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
-            } else {
-                return businessNetworkConnection.connect(cardName);
-            }
-        })
         .then(() => {
             let data = argv.data;
 
@@ -91,7 +61,7 @@ class Submit {
             return businessNetworkConnection.submitTransaction(resource);
         })
         .then((submitted) => {
-            console.log('Transaction Submitted.');
+            cmdUtil.log('Transaction Submitted.');
         });
     }
 

@@ -18,7 +18,7 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
 const path = require('path');
-
+const chalk = require('chalk');
 /**
  * Composer "card import" command
  * @private
@@ -44,7 +44,10 @@ class Import {
             }
             return adminConnection.importCard(cardName, cardToImport);
         }).then(() => {
-            console.log('Successfully imported business network card: ' + cardName);
+            cmdUtil.log(chalk.blue.bold('\nSuccessfully imported business network card'));
+            cmdUtil.log(chalk.blue('\tCard file: ')+args.file);
+            cmdUtil.log(chalk.blue('\tCard name: ')+cardName);
+
         });
     }
 

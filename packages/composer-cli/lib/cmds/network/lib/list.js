@@ -103,7 +103,7 @@ class List {
         })
         .then ((result) => {
             spinner.succeed();
-            console.log(Pretty.render(listOutput,{
+            cmdUtil.log(Pretty.render(listOutput,{
                 keysColor: 'blue',
                 dashColor: 'blue',
                 stringColor: 'white'
@@ -116,7 +116,7 @@ class List {
             if (spinner) {
                 spinner.fail();
             }
-            console.log(List.getError(error));
+            cmdUtil.log(List.getError(error));
             throw error;
         });
     }

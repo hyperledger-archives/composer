@@ -24,6 +24,7 @@ const JavaVisitor = CodeGen.JavaVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
+const cmdUtil = require('../../utils/cmdutils');
 /**
  * Composer Create Archive command
  *
@@ -42,49 +43,44 @@ class Create {
     static handler(argv) {
 
 
-        try {
+        cmdUtil.log('Listing Business Network Archive from '+argv.archiveFile);
+        let readFile = fs.readFileSync(argv.archiveFile);
+        return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
+            cmdUtil.log('Identifier:'+businessNetwork.getIdentifier());
+            cmdUtil.log('Name:'+businessNetwork.getName());
+            cmdUtil.log('Version:'+businessNetwork.getVersion());
 
-            console.log('Listing Business Network Archive from '+argv.archiveFile);
-            let readFile = fs.readFileSync(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
-                console.log('Identifier:'+businessNetwork.getIdentifier());
-                console.log('Name:'+businessNetwork.getName());
-                console.log('Version:'+businessNetwork.getVersion());
+            let visitor = null;
 
-                let visitor = null;
+            switch(argv.format) {
+            case 'Go':
+                visitor = new GoLangVisitor();
+                break;
+            case 'PlantUML':
+                visitor = new PlantUMLVisitor();
+                break;
+            case 'Typescript':
+                visitor = new TypescriptVisitor();
+                break;
+            case 'Java':
+                visitor = new JavaVisitor();
+                break;
+            case 'JSONSchema':
+                visitor = new JSONSchemaVisitor();
+                break;
+            default:
+                throw new Error ('Unrecognized code generator: ' + argv.format );
+            }
 
-                switch(argv.format) {
-                case 'Go':
-                    visitor = new GoLangVisitor();
-                    break;
-                case 'PlantUML':
-                    visitor = new PlantUMLVisitor();
-                    break;
-                case 'Typescript':
-                    visitor = new TypescriptVisitor();
-                    break;
-                case 'Java':
-                    visitor = new JavaVisitor();
-                    break;
-                case 'JSONSchema':
-                    visitor = new JSONSchemaVisitor();
-                    break;
-                default:
-                    throw new Error ('Unrecognized code generator: ' + argv.format );
-                }
+            let parameters = {};
+            parameters.fileWriter = new FileWriter(argv.outputDir);
+            businessNetwork.accept(visitor, parameters);
 
-                let parameters = {};
-                parameters.fileWriter = new FileWriter(argv.outputDir);
-                businessNetwork.accept(visitor, parameters);
+            return;
 
-                return;
+        });
 
-            });
 
-        } catch(e) {
-            console.log(e.stack);
-            console.log(e); // "oh, no!"
-        }
 
     }
 }
