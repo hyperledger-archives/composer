@@ -36,7 +36,7 @@ class BusinessNetworkCardStore {
      * Gets a card from the store.
      * @abstract
      * @param {String} cardName The name of the card to get
-     * @return {Promise} A promise that is resolved with an IdCard.
+     * @return {Promise} A promise that is resolved with an IdCard, or rejected if the card does not exist.
      */
     get(cardName) {
         return Promise.reject(new Error('Abstract function called'));
