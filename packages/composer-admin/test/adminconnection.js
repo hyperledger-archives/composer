@@ -969,12 +969,19 @@ describe('AdminConnection', () => {
         });
 
         describe('#deleteCard', function() {
-            it('should reject for non-existent card', function() {
+            it('should return false for non-existent card', function() {
                 const cardName = 'conga-card';
-                return adminConnection.deleteCard(cardName).should.be.rejectedWith(cardName);
+                return adminConnection.deleteCard(cardName).should.become(false);
             });
 
-            it('should succeed for an existing card', function() {
+            it('should return true for existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.deleteCard(cardName);
+                }).should.become(true);
+            });
+
+            it('should remove existing card', function() {
                 const cardName = 'conga-card';
                 return cardStore.put(cardName, peerAdminCard).then(() => {
                     return adminConnection.deleteCard(cardName);

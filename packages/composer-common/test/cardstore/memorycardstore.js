@@ -76,8 +76,15 @@ describe('MemoryCardStore', () => {
     });
 
     describe('#delete', () => {
-        it('should fail for non-existent card', () => {
-            return cardStore.delete('pengiun').should.be.rejected;
+        it('should return false for non-existent card', () => {
+            return cardStore.delete('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const name = 'conga';
+            return cardStore.put(name, testCard).then(() => {
+                return cardStore.delete(name);
+            }).should.become(true);
         });
 
         it('should delete existing card', () => {

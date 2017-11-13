@@ -39,28 +39,31 @@ describe('composer card delete CLI', function() {
         sandbox.restore();
     });
 
-    it('should delete existing card', function() {
-        adminConnectionStub.deleteCard.resolves();
+    it('should call AdminConnection.delete()', function() {
+        adminConnectionStub.deleteCard.resolves(true);
         const cardName = 'CARD_NAME';
         const args = { name: cardName };
         return DeleteCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.deleteCard);
             sinon.assert.calledWith(adminConnectionStub.deleteCard, cardName);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(cardName));
+        });
+    });
+
+    it('should delete existing card', function() {
+        adminConnectionStub.deleteCard.resolves(true);
+        const cardName = 'CARD_NAME';
+        const args = { name: cardName };
+        return DeleteCmd.handler(args).then(() => {
+            sinon.assert.calledWith(consoleLogSpy, sinon.match('Deleted Business Network Card: ' + cardName));
         });
     });
 
     it('should fail deleting non-existent card', function() {
-        const errorText = 'ERROR_MESSAGE';
-        adminConnectionStub.deleteCard.rejects(new Error(errorText));
+        adminConnectionStub.deleteCard.resolves(false);
         const cardName = 'CARD_NAME';
         const args = { name: cardName };
-        return DeleteCmd.handler(args).then((result) => {
-            sinon.assert.fail('Expected command to fail but it succeeded');
-        }, (error) => {
-            sinon.assert.calledOnce(adminConnectionStub.deleteCard);
-            sinon.assert.calledWith(adminConnectionStub.deleteCard, cardName);
-            error.toString().should.include(errorText);
+        return DeleteCmd.handler(args).then(() => {
+            sinon.assert.calledWith(consoleLogSpy, sinon.match('Card not found: ' + cardName));
         });
     });
 
