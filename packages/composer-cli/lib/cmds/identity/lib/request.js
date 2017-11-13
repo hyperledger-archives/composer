@@ -40,8 +40,8 @@ class Request {
         return adminConnection.exportCard(argv.card)
             .then((card)=>{
                 let profileName = card.getConnectionProfile().name;
-                enrollId = card.getUserName();
-                let enrollSecret = card.getEnrollmentCredentials().secret;
+                enrollId = argv.user || card.getUserName();
+                let enrollSecret = argv.enrollSecret || card.getEnrollmentCredentials().secret;
                 return adminConnection.requestIdentity(profileName, enrollId, enrollSecret);
             })
             .then((result) => {
