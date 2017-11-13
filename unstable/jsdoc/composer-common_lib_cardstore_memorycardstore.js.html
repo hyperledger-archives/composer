@@ -150,10 +150,7 @@ class MemoryCardStore extends BusinessNetworkCardStore {
      */
     delete(cardName) {
         const cardExisted = this.cards.delete(cardName);
-        if (!cardExisted) {
-            return Promise.reject(new Error('Card not found: ' + cardName));
-        }
-        return Promise.resolve();
+        return Promise.resolve(cardExisted);
     }
 
 }

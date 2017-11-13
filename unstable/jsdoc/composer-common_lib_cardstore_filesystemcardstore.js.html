@@ -215,14 +215,15 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
      * @inheritdoc
      */
     delete(cardName) {
-        const method = 'delete';
-
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.stat(cardPath).then(() => {
+        let cardExisted;
+        return this.thenifyFs.stat(cardPath).then(
+            stats => cardExisted = true,
+            error => cardExisted = false
+        ).then(() => {
             return thenifyRimraf(cardPath, this.rimrafOptions);
-        }).catch(cause => {
-            LOG.debug(method, cause);
-            throw new Error('Card not found: ' + cardName);
+        }).then(() => {
+            return cardExisted;
         });
     }
 
