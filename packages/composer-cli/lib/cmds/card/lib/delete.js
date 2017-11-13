@@ -27,8 +27,12 @@ class Delete {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
-        return cmdUtil.createAdminConnection().deleteCard(args.name).then(() => {
-            console.log('Deleted Business Network Card: ' + args.name);
+        return cmdUtil.createAdminConnection().deleteCard(args.name).then((cardExisted) => {
+            if (cardExisted) {
+                console.log('Deleted Business Network Card: ' + args.name);
+            } else {
+                console.log('Card not found: ' + args.name);
+            }
         });
     }
 

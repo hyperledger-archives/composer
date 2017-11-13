@@ -75,7 +75,7 @@ class List {
      * @returns {Promise} resolved when details are showed
      */
     static showCardDetails(cardName){
-        return cmdUtil.createAdminConnection().getCard(cardName)
+        return cmdUtil.createAdminConnection().exportCard(cardName)
         .then((card)=>{
 
             let cp = card.getConnectionProfile();
