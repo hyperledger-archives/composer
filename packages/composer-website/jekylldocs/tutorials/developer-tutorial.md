@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Developer Guide
+title: Developer Tutorial
 category: tutorials
 section: tutorials
 index-order: 302
 sidebar: sidebars/accordion-toc0.md
-excerpt: "The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric."
+excerpt: "The developer tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on {{site.data.conrefs.hlf_full}}."
 ---
 
 # Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
@@ -92,7 +92,7 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
          */
         function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            return getAssetRegistry('org.acme.mynetwork.Commodity')
+            return getAssetRegistry('org.acme.biznet.Commodity')
                 .then(function (assetRegistry) {
                     return assetRegistry.update(trade.commodity);
                 });
@@ -107,7 +107,7 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
 2. Add the following access control rules to `permissions.acl`:
 
         /**
-         * Access control rules for mynetwork
+         * Access control rules for tutorial-network
          */
         rule Default {
             description: "Allow all participants access to all resources"
@@ -141,7 +141,7 @@ After the command has run, a business network archive file called `tutorial-netw
 
 ## Step Four: Deploying the business network
 
-After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlfv1}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
+After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlf_full}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
 
 After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administrate the business network after deployment. This identity is referred to as a network admin.
 
@@ -151,7 +151,7 @@ A `PeerAdmin` business network card with the correct credentials is already crea
 
 #### Deploying the business network
 
-Deploying a business network to the {{site.data.conrefs.hlfv1}} requires the {{site.data.conrefs.composer_full}} chaincode to be installed on the peer, then the business network archive (`.bna`) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
+Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the {{site.data.conrefs.composer_full}} chaincode to be installed on the peer, then the business network archive (`.bna`) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
 
 1. To install the composer runtime, run the following command:
 
