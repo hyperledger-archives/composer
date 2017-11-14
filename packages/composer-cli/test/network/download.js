@@ -19,6 +19,7 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const fs = require('fs');
 const DownloadCmd = require('../../lib/cmds/network/downloadCommand.js');
+const Download = require('../../lib/cmds/network/lib/download.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 require('chai').should();
@@ -99,6 +100,14 @@ describe('composer network download CLI unit tests', function () {
                 sinon.assert.calledOnce(fs.writeFileSync);            });
         });
 
+
+
+        it('Failure of an internal function', function () {
+            let argv = {card: 'cardName'};
+            mockBusinessNetworkConnection.connect.rejects(new Error('failure'));
+            return Download.handler(argv).should.be.rejectedWith(/failure/);
+
+        });
 
     });
 

@@ -47,12 +47,10 @@ class LogLevel {
         })
         .then((result) => {
             if (newlevel) {
-                console.log(chalk.blue.bold('The logging level was successfully changed for: ')+businessNetworkName);
+                cmdUtil.log(chalk.blue.bold('The logging level was successfully changed for: ')+businessNetworkName);
             } else {
-                console.log(chalk.blue.bold('The current logging level is: ')+result);
+                cmdUtil.log(chalk.blue.bold('The current logging level is: ')+result);
             }
-        }).catch((error) => {
-            throw error;
         });
     }
 }

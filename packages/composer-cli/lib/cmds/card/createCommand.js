@@ -17,19 +17,11 @@
 const Create = require ('./lib/create.js');
 const checkFn = (argv,options)=>{
 
-
-    if (!argv.s){
-        // no secret given, so both certificate and key are a must
-        if (!(argv.c && argv.k)){
-            throw new Error('privateKey and certificate should both be specified');
+    ['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey'].forEach((e)=>{
+        if (Array.isArray(argv[e])){
+            throw new Error(`Option ${e} can only be specified once`);
         }
-
-    } else {
-        // we have a secret, so if any of the certificate are given this is wrong
-        if (argv.c  || argv.k){
-            throw new Error('Either the enrollSecret or the privateKey and certificate combination should be specified');
-        }
-    }
+    });
 
     return true;
 };
@@ -57,8 +49,12 @@ module.exports.builder = function (yargs) {
     // grouping for the card options - moves them away from the standard --version etc.
     yargs.group(['f','n','p','u','s','c','k','r'],'Card options');
 
+    yargs.implies('certificate','privateKey');
+    yargs.implies('privateKey','certificate');
+
     yargs.check(checkFn);
 
+    return yargs;
 };
 
 module.exports.handler = (argv) => {

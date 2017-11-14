@@ -43,9 +43,9 @@ class Ping {
             return businessNetworkConnection.ping();
         })
         .then((result) => {
-            console.log(chalk.blue.bold('The connection to the network was successfully tested: ')+businessNetworkDefinition.getName());
-            console.log(chalk.blue('\tversion: ') + result.version);
-            console.log(chalk.blue('\tparticipant: ') + (result.participant ? result.participant : '<no participant found>'));
+            cmdUtil.log(chalk.blue.bold('The connection to the network was successfully tested: ')+businessNetworkDefinition.getName());
+            cmdUtil.log(chalk.blue('\tversion: ') + result.version);
+            cmdUtil.log(chalk.blue('\tparticipant: ') + (result.participant ? result.participant : '<no participant found>'));
         }).catch((error) => {
             throw error;
         });

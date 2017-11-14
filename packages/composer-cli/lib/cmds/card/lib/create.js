@@ -18,6 +18,8 @@ const IdCard = require('composer-common').IdCard;
 const Export = require('./export');
 const fs = require('fs');
 const path = require('path');
+const cmdUtil = require('../../utils/cmdutils');
+const chalk = require('chalk');
 /**
  * Composer "card import" command
  * @private
@@ -60,7 +62,9 @@ class Create {
                 return this.createCard(metadata,profileData,argv);
             })
             .then((fileName) => {
-                console.log('Successfully created business network card to '+fileName);
+                cmdUtil.log(chalk.blue.bold('\nSuccessfully created business network card file to '));
+                cmdUtil.log(chalk.blue('\tOutput file: ')+fileName);
+                return;
             });
     }
 

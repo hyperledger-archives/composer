@@ -27,6 +27,7 @@ const GoLangVisitor = CodeGen.GoLangVisitor;
 const JSONSchemaVisitor = CodeGen.JSONSchemaVisitor;
 const PlantUMLVisitor = CodeGen.PlantUMLVisitor;
 const TypescriptVisitor = CodeGen.TypescriptVisitor;
+const JavaVisitor = CodeGen.JavaVisitor;
 const FileWriter = CodeGen.FileWriter;
 
 
@@ -48,6 +49,7 @@ let mockPlantUML;
 let mockTypescript;
 let mockJSONSchema;
 let mockFileWriter;
+let mockJava;
 
 let mockAdminConnection;
 
@@ -68,11 +70,14 @@ describe('composer generator create unit tests', function () {
         mockPlantUML = sinon.createStubInstance(PlantUMLVisitor);
         mockTypescript = sinon.createStubInstance(TypescriptVisitor);
         mockJSONSchema = sinon.createStubInstance(JSONSchemaVisitor);
+        mockJava = sinon.createStubInstance(JavaVisitor);
+
 
         mockGoLang.visit.returns('visited');
         mockPlantUML.visit.returns('visited');
         mockTypescript.visit.returns('visited');
         mockJSONSchema.visit.returns('visited');
+        mockJava.visit.returns('visited');
 
         mockFileWriter = sinon.createStubInstance(require('composer-common').CodeGen.FileWriter);
         CreateCode.FileWriter = mockFileWriter;
@@ -159,6 +164,24 @@ describe('composer generator create unit tests', function () {
                 sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockJSONSchema,parameters);
             });
         });
+
+        it('Good path, all parms correctly specified.', function () {
+
+            let argv = {archiveFile: 'testArchiveFile.zip'
+                                    ,format: 'Java'
+                                   ,outputDir: '/home'};
+
+            return Create.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledOnce(fs.readFileSync);
+                            let parameters = {};
+                            parameters.fileWriter = new FileWriter('/home');
+                            sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockJava,parameters);
+                        });
+        });
+
         it('Invalid generator specified', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'

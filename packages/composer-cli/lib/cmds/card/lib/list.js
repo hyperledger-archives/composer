@@ -44,28 +44,40 @@ class List {
      */
     static showtable(cardMap){
         const cardNames = Array.from(cardMap.keys());
+        let alltables = {};
+
         if (cardNames.length > 0) {
-            console.log('The following Business Network Cards are available:\n\n');
-            let table = new Table({
-                head: ['CardName', 'UserId', 'Network']
-            });
+            cmdUtil.log(chalk.bold.blue('The following Business Network Cards are available:\n'));
 
             cardNames.forEach((e)=>{
                 let tableLine = [];
                 let idCard = cardMap.get(e);
+                let bnn = idCard.getConnectionProfile().name;
+                let currenttable = alltables[bnn];
+                if (!currenttable){
+                    currenttable = new Table({
+                        head: ['Card Name', 'UserId', 'Business Network']
+                    });
+                    alltables[bnn]=currenttable;
+                }
 
                 tableLine.push(e);
                 tableLine.push(idCard.getUserName());
                 tableLine.push(idCard.getBusinessNetworkName());
-                table.push(tableLine);
+                currenttable.push(tableLine);
 
             });
-            console.log(table.toString());
-            console.log();
-            console.log('Issue '+chalk.blue.bold('composer card list --name <CardName>')+'  to get details of the card');
+
+            Object.keys(alltables).sort().forEach((n)=>{
+                cmdUtil.log(chalk.blue('Connection Profile: ')+n);
+                cmdUtil.log(alltables[n].toString());
+                cmdUtil.log('\n');
+            });
+
+            cmdUtil.log('Issue '+chalk.magenta('composer card list --name <Card Name>')+' to get details a specific card');
 
         } else {
-            console.log('There are no Business Network Cards available.');
+            cmdUtil.log('There are no Business Network Cards available.');
         }
 
     }
@@ -82,10 +94,10 @@ class List {
             let cpData = { name :cp.name , type: cp.type, channel:cp.channel };
 
             let listOutput={
-                userName:this.handleNull(card.getUserName()),
-                description:this.handleNull(card.getDescription()),
-                businessNetworkName:this.handleNull(card.getBusinessNetworkName()),
-                roles:this.handleNull(card.getRoles()),
+                userName:this.handleArray(card.getUserName()),
+                description:this.handleArray(card.getDescription()),
+                businessNetworkName:this.handleArray(card.getBusinessNetworkName()),
+                roles:this.handleArray(card.getRoles()),
                 connectionProfile:cpData
             };
 
@@ -100,7 +112,7 @@ class List {
             }else {
                 listOutput.credentialsSet='No Credentials set';
             }
-            console.log(Pretty.render(listOutput,{
+            cmdUtil.log(Pretty.render(listOutput,{
                 keysColor: 'blue',
                 dashColor: 'blue',
                 stringColor: 'white'
@@ -113,11 +125,9 @@ class List {
      * @param {Object} o thing to otuput
      * @return {String} either 'none' of the object is undefined or the object itself
      */
-    static handleNull(o){
+    static handleArray(o){
 
-        if (typeof o === 'undefined' || o===null){
-            return 'none';
-        } else if (Array.isArray(o) && o.length===0) {
+        if (Array.isArray(o) && o.length===0) {
             return 'none';
         } else {
             return o;
