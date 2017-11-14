@@ -929,21 +929,35 @@ class AdminConnection {
      * });
      *
      * @param {string} connectionProfile Name of the connection profile
-     * @param {string} enrollmentID The ID to enroll
-     * @param {string} enrollmentSecret The secret for the ID
+     * @param {string} [enrollmentID] The ID to enroll
+     * @param {string} [enrollmentSecret] The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @deprecated
      * @private
      */
-    requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
-        let savedConnectionManager;
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
-            .then((connectionManager) => {
-                savedConnectionManager = connectionManager;
-                return this.getProfile(connectionProfile);
-            })
-            .then((profileData) => {
-                return savedConnectionManager.requestIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
-            })
+    requestIdentity(cardName, enrollmentID, enrollmentSecret) {
+        let connectionProfileData;
+        let card;
+        return this.cardStore.get(cardName)
+          .then((result)=>{
+              card = result;
+              return card.getConnectionProfile();
+          })
+          .then((result)=>{
+              connectionProfileData = result;
+              return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+          })
+          .then((connectionManager) => {
+
+              enrollmentID = enrollmentID || card.getUserName();
+              enrollmentSecret = enrollmentSecret || card.getEnrollmentCredentials().secret;
+
+              // the connection profile is unused later but passing to keep code happy
+              return connectionManager.requestIdentity(connectionProfileData.name, connectionProfileData, enrollmentID, enrollmentSecret);
+          }).then((result)=>{
+              result.enrollId = enrollmentID;
+              return result;
+          })
             .catch((error) => {
                 throw new Error('failed to request identity. ' + error.message);
             });
