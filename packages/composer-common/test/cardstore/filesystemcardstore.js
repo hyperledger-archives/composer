@@ -206,4 +206,44 @@ describe('FileSystemCardStore', function() {
         });
     });
 
+    describe('#has', function() {
+        let tmpStorePath;
+        let cardStore;
+
+        const createDummyCard = (cardName) => {
+            const cardPath = path.join(tmpStorePath, cardName);
+            return thenifyFs.mkdir(cardPath).then(() => {
+                const dummyFilePath = path.join(cardPath, 'dummyFile');
+                const dummyFileContent = 'This is an empty file';
+                return thenifyFs.writeFile(dummyFilePath, dummyFileContent);
+            }).then(() => {
+                return cardPath;
+            });
+        };
+
+        beforeEach(function() {
+            return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
+                tmpStorePath = path;
+                const options = { storePath: tmpStorePath };
+                cardStore = new FileSystemCardStore(options);
+            });
+        });
+
+        afterEach(function() {
+            const rimrafOptions = { disableGlob: true };
+            return thenifyRimraf(tmpStorePath, rimrafOptions);
+        });
+
+        it('should return false for non-existent card', () => {
+            return cardStore.has('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const cardName = 'conga';
+            return createDummyCard(cardName).then(() => {
+                return cardStore.has(cardName);
+            }).should.become(true);
+        });
+
+    });
 });

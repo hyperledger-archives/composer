@@ -54,7 +54,9 @@ describe('composer card delete CLI', function() {
         const cardName = 'CARD_NAME';
         const args = { name: cardName };
         return DeleteCmd.handler(args).then(() => {
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Deleted Business Network Card: ' + cardName));
+            // regexp to quickly strip any colour coded console output
+            let regexp = new RegExp('.*Deleted Business Network Card:.*'+cardName);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(regexp));
         });
     });
 
@@ -63,7 +65,9 @@ describe('composer card delete CLI', function() {
         const cardName = 'CARD_NAME';
         const args = { name: cardName };
         return DeleteCmd.handler(args).then(() => {
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Card not found: ' + cardName));
+            // regexp to quickly strip any colour coded console output
+            let regexp = new RegExp('.*Card not found:.*'+cardName);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(regexp));
         });
     });
 

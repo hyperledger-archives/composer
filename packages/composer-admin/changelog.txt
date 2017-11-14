@@ -11,8 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.15.1 {9da5a3f4be0ca97018067a45f336155f} 2017-11-10
+Version 0.15.1 {1cdbc570fba640585d546ae9076740e8} 2017-11-10
 - Remove AdminConnection.getCard in favour of AdminConnection.exportCard
+- Add AdminConnection.hasCard to enable checks on card status
 
 Version 0.15.0 {9c957fda5d03d6e263263ea43e2897d4} 2017-10-31
 - Remove importIdentity, requestIdentity and exportIdentity from AdminConnection public API

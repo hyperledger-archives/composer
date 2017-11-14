@@ -54,6 +54,16 @@ class BusinessNetworkCardStore {
     }
 
     /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName){
+        return Promise.reject(new Error('Abstract function called'));
+    }
+
+    /**
      * Gets all cards from the store.
      * @abstract
      * @return {Promise} A promise that is resolved with a Map where

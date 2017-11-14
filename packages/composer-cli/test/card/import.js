@@ -39,7 +39,7 @@ describe('composer card import CLI', function() {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(adminConnectionStub);
         consoleLogSpy = sandbox.spy(console, 'log');
         sandbox.stub(process, 'exit');
-
+        adminConnectionStub.hasCard.resolves(true);
         testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         return testCard.toArchive({ type:'nodebuffer' }).then(buffer => {
             testCardBuffer = buffer;
@@ -89,12 +89,11 @@ describe('composer card import CLI', function() {
     it('should reject card if already imported', function() {
         sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const args = {
-            name: 'CONGA_CARD',
+            name: 'ALREADY_IMPORTED',
             file: cardFileName
         };
-        adminConnectionStub.importCard.resolves();
-        adminConnectionStub.exportCard.resolves(testCard);
-        return ImportCmd.handler(args).should.be.rejectedWith(args.name);
+        adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(false);
+        return ImportCmd.handler(args).should.be.rejectedWith(/already exists/);
     });
 
 });
