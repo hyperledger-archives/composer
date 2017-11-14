@@ -372,22 +372,27 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
-                if (installOptions && installOptions.ignoreCCInstalled) {
-                    let errorIgnored = this._validateResponses(results[0], false, /chaincode .+ exists/);
-                    LOG.debug(method, 'chaincode installed, or already installed');
+                const CCAlreadyInstalledPattern = /chaincode .+ exists/;
+                let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
-                    // if the error was ignored then no chaincode was installed
-                    return !errorIgnored;
-                } else {
-                    this._validateResponses(results[0], false);
-                    LOG.debug(method, 'chaincode installed');
-                    return true;
+                // is the composer runtime already installed on all the peers ?
+                let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
+                if (ignoredErrors === results[0].length && !calledFromDeploy) {
+                    const errorMsg = 'The Composer runtime is already installed on all the peers';
+                    throw new Error(errorMsg);
                 }
-            })
-            .then((chaincodeInstalled) => {
+
+                // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
+                if ((validResponses.length + ignoredErrors) !== results[0].length) {
+                    const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
+                    throw new Error(errorMsg);
+                }
+                LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
+
+                // return a boolean to indicate if any composer runtime was installed.
+                const chaincodeInstalled = validResponses.length !== 0;
                 LOG.exit(method, chaincodeInstalled);
                 return chaincodeInstalled;
-
             })
             .catch((error) => {
                 const newError = new Error('Error trying install composer runtime. ' + error);
@@ -476,7 +481,7 @@ class HLFConnection extends Connection {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from instantiating the composer runtime chaincode`, results);
                 let proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
@@ -485,7 +490,7 @@ class HLFConnection extends Connection {
                 eventHandler = new HLFTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
@@ -539,10 +544,10 @@ class HLFConnection extends Connection {
 
         LOG.debug(method, 'installing composer runtime chaincode');
         let chaincodeInstalled;
-        return this.install(securityContext, businessNetworkIdentifier, {ignoreCCInstalled: true})
+        return this.install(securityContext, businessNetworkIdentifier, {calledFromDeploy: true})
             .then((chaincodeInstalled_) => {
-                // check to see if the chaincode is already instantiated
                 chaincodeInstalled = chaincodeInstalled_;
+                // check to see if the chaincode is already instantiated
                 return this.channel.queryInstantiatedChaincodes();
             })
             .then((queryResults) => {
@@ -588,15 +593,20 @@ class HLFConnection extends Connection {
             throw new Error('No results were returned from the request');
         }
 
-        let errorsIgnored = false;
+        let validResponses = [];
+        let invalidResponseMsgs = [];
+        let ignoredErrors = 0;
+
         responses.forEach((responseContent) => {
             if (responseContent instanceof Error) {
-                // check to see if we should ignore the error, this also means we cannot verify the proposal
-                // or check the proposals across peers
-                if (!pattern || !pattern.test(responseContent.message)) {
-                    throw responseContent;
+                // check to see if we should ignore the error
+                if (pattern && pattern.test(responseContent.message)) {
+                    ignoredErrors++;
+                } else {
+                    const warning = `Response from attempted peer comms was an error: ${responseContent}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
                 }
-                errorsIgnored = true;
             } else {
 
                 // not an error, if it is from a proposal, verify the response
@@ -604,23 +614,37 @@ class HLFConnection extends Connection {
                     // the node-sdk doesn't provide any external utilities from parsing the responseContent.
                     // there are internal ones which may do what is needed or we would have to decode the
                     // protobufs ourselves but it should really be the node sdk doing this.
-                    LOG.warn('Response from peer was not valid');
+                    const warning = `Proposal response from peer failed verification. ${responseContent.response}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
+                } else if (responseContent.response.status !== 200) {
+                    const warning = `Unexpected response of ${responseContent.response.status}. Payload was: ${responseContent.response.payload}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
+                } else {
+                    validResponses.push(responseContent);
                 }
-                if (responseContent.response.status !== 200) {
-                    throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
-                }
+
             }
         });
+        if (validResponses.length === 0 && ignoredErrors < responses.length) {
+            let errorMsg = 'No valid responses from any peers.\n';
+            invalidResponseMsgs.forEach((invalidResponse) => {
+                errorMsg += invalidResponse;
+                errorMsg += '\n';
+            });
+            throw new Error(errorMsg);
+        }
 
-        // if it was a proposal and all the responses were good, check that they compare
+        // if it was a proposal and some of the  responses were good, check that they compare
         // but we can't reject it as we don't know if it would pass the endorsement policy
         // and if we did this would allow a malicious peer to stop transactions so we
-        // issue a warning so that it get's logged, but we don't know which peer it was
-        if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
+        // issue a warning so that it get's logged, but we don't know which peer(s) it was
+        if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
             LOG.warn('Peers do not agree, Read Write sets differ');
         }
-        LOG.exit(method, errorsIgnored);
-        return errorsIgnored;
+        LOG.exit(method, ignoredErrors);
+        return {ignoredErrors, validResponses};
     }
 
     /**
@@ -833,7 +857,7 @@ class HLFConnection extends Connection {
                 // Validate the endorsement results.
                 LOG.debug(method, `Received ${results.length} results(s) from invoking the composer runtime chaincode`, results);
                 const proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderers.
                 const proposal = results[1];
@@ -842,7 +866,7 @@ class HLFConnection extends Connection {
                 eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
@@ -1036,7 +1060,7 @@ class HLFConnection extends Connection {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
                 let proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
@@ -1044,7 +1068,7 @@ class HLFConnection extends Connection {
                 eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
