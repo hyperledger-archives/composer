@@ -993,6 +993,21 @@ describe('AdminConnection', () => {
             });
         });
 
+
+        describe('#hasCard', function() {
+            it('should return false for non-existent card', function() {
+                const cardName = 'conga-card';
+                return adminConnection.hasCard(cardName).should.become(false);
+            });
+
+            it('should return true for existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.hasCard(cardName);
+                }).should.become(true);
+            });
+        });
+
         describe('#exportCard', ()=> {
 
             it('Card exists, but no credentials, call to export identity is correct executed',()=>{
