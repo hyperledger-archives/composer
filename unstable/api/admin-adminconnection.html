@@ -333,6 +333,11 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">Get the current logging level of a business network. The connection must be connected for this method to succeed.</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#hascard">hasCard</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Has a existing card.</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#importcard">importCard</a></td>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Import a business network card. If a card of this name exists, it is replaced.</td>
@@ -527,6 +532,34 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">String</td>
 <td style="text-align: left">false</td>
 <td style="text-align: left">Name of the card to delete.</td>
+</tr>
+</tbody></table>
+
+<h2 id="hascard">hasCard</h2>
+
+<p><em>Promise hasCard( String name )</em></p>
+
+<p>Has a existing card.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - Resolves with true if the card with the name exists, resolved with false if not</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">Name of the card to check.</td>
 </tr>
 </tbody></table>
 

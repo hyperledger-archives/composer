@@ -298,6 +298,11 @@ ga('send', 'pageview');
 <td style="text-align: left">Get a default name for a given business network card.</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#has">has</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Has returns a boolean indicating whether a card with the specified name exists or not.</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#put">put</a></td>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Puts a card in the store. If the named card already exists in the store, it will be replaced.</td>
@@ -393,6 +398,34 @@ ga('send', 'pageview');
 <td style="text-align: left">IdCard</td>
 <td style="text-align: left">false</td>
 <td style="text-align: left">The card</td>
+</tr>
+</tbody></table>
+
+<h2 id="has">has</h2>
+
+<p><em>Promise has( String cardname )</em></p>
+
+<p>Has returns a boolean indicating whether a card with the specified name exists or not.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><code>Promise</code> - A promise resolved with true or false.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">The name of the card to check</td>
 </tr>
 </tbody></table>
 

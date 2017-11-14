@@ -279,6 +279,15 @@ class AdminConnection {
     }
 
     /**
+     * Has a existing card.
+     * @param {String} name Name of the card to check.
+     * @returns {Promise} Resolves with true if the card with the name exists, resolved with false if not
+     */
+    hasCard(name) {
+        return this.cardStore.has(name);
+    }
+
+    /**
      * Deletes the specified connection profile from the profile store being used by this
      * AdminConnection.
      * @example
