@@ -565,7 +565,7 @@ class LoopbackVisitor {
 
         // Create the schema.
         let jsonSchema = {
-            type: 'String',
+            type: 'any',
             description: `The identifier of an instance of ${relationshipDeclaration.getName()}`,
             required: !relationshipDeclaration.isOptional()
         };
