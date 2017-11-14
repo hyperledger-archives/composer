@@ -123,8 +123,11 @@ class MemoryCardStore extends BusinessNetworkCardStore {
      * @inheritdoc
      */
     get(cardName) {
-        const result = this.cards.get(cardName);
-        return Promise.resolve(result);
+        const card = this.cards.get(cardName);
+        if (!card) {
+            return Promise.reject(new Error('Card not found: ' + cardName));
+        }
+        return Promise.resolve(card);
     }
 
     /**
