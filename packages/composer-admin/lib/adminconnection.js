@@ -966,3 +966,4 @@ class AdminConnection {
 }
 
 module.exports = AdminConnection;
+undefined;

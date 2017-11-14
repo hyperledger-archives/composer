@@ -92,9 +92,8 @@ describe('composer card import CLI', function() {
             name: 'CONGA_CARD',
             file: cardFileName
         };
-        adminConnectionStub.importCard.resolves();
-        adminConnectionStub.exportCard.resolves(testCard);
-        return ImportCmd.handler(args).should.be.rejectedWith(args.name);
+        adminConnectionStub.importCard.rejects(new Error('already imported'));
+        return ImportCmd.handler(args).should.be.rejectedWith(/already imported/);
     });
 
 });

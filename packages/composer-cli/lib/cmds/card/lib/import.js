@@ -37,17 +37,11 @@ class Import {
             cardToImport = card;
             cardName = args.name || cmdUtil.getDefaultCardName(card);
             adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.exportCard(cardName);
-        }).then(existingCard => {
-            if (existingCard) {
-                throw new Error('Card already exists: ' + cardName);
-            }
             return adminConnection.importCard(cardName, cardToImport);
         }).then(() => {
             cmdUtil.log(chalk.blue.bold('\nSuccessfully imported business network card'));
             cmdUtil.log(chalk.blue('\tCard file: ')+args.file);
             cmdUtil.log(chalk.blue('\tCard name: ')+cardName);
-
         });
     }
 
