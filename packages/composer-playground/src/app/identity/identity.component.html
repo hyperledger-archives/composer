@@ -20,14 +20,14 @@
                     {{identityCards.get(cardRef).getUserName()}}
                 </div>
                 <div class="flex" *ngIf="cardRef===currentIdentity">
-                    IN USE
+                    In Use
                 </div>
                 <div class="flex" *ngIf="cardRef!==currentIdentity">
                     <i>In my wallet</i>
                 </div>
                 <div class="actions" *ngIf="cardRef!==currentIdentity">
                     <button class="clear" (click)="setCurrentIdentity(cardRef)">Use now</button>
-                    <button class="clear" (click)="removeIdentity(cardRef); $event.stopPropagation()">Remove</button>
+                    <button class="clear" (click)="openRemoveModal(cardRef); $event.stopPropagation()">Remove</button>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                     {{ id.name }}
                 </div>
                 <div class="issued-to cell-24">
-                    {{ id.participant.$identifier }}
+                    <span placement="top" container="body" ngbTooltip="{{ id.participant.$namespace }}.{{ id.participant.$type }}">{{ id.participant.$identifier }} ({{ id.participant.$type }})</span>
                 </div>
                 <div class="status cell-24">
                     {{ id.state }}

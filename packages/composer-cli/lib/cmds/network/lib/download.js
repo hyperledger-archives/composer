@@ -55,10 +55,10 @@ class Download {
         .then (() => {
             spinner.succeed();
             businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log(chalk.blue.bold('Business network definition:'));
-            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
-            console.log();
+            cmdUtil.log(chalk.blue.bold('Business network definition:'));
+            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            cmdUtil.log();
 
             if (!argv.archiveFile){
                 argv.archiveFile = sanitize(businessNetworkName,{replacement:'_'})+'.bna';
@@ -69,15 +69,10 @@ class Download {
         }).then ( (result) => {
             //write the buffer to a file
             fs.writeFileSync(argv.archiveFile,result);
-            console.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to: ')+argv.archiveFile);
+            cmdUtil.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to: ')+argv.archiveFile);
 
         }).catch( (error) => {
-            console.log(error);
-
-            if (spinner) {
-                spinner.fail();
-            }
-
+            spinner.fail();
             throw error;
         })
         ;

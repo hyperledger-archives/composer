@@ -20,7 +20,7 @@ const IdCard = require('../../lib/idcard');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
-const should = chai.should();
+chai.should();
 
 describe('MemoryCardStore', () => {
     let testCard;
@@ -51,10 +51,8 @@ describe('MemoryCardStore', () => {
             }).should.become(testCard);
         });
 
-        it('should return null or undefined for non-existent card', () => {
-            return cardStore.get('name').then(result => {
-                should.not.exist(result);
-            });
+        it('should throw for non-existent card', () => {
+            return cardStore.get('name').should.be.rejected;
         });
     });
 
