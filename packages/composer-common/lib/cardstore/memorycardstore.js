@@ -58,6 +58,13 @@ class MemoryCardStore extends BusinessNetworkCardStore {
     /**
      * @inheritdoc
      */
+    has(cardName) {
+        return Promise.resolve(this.cards.has(cardName));
+    }
+
+    /**
+     * @inheritdoc
+     */
     getAll() {
         return Promise.resolve(this.cards);
     }

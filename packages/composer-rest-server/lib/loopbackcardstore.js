@@ -121,6 +121,22 @@ class LoopBackCardStore extends BusinessNetworkCardStore {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
+    has(cardName) {
+        return this.Card.findOne({
+            where: {
+                userId: this.userId,
+                name: cardName
+            }
+        }).then((lbCard) => {
+            if (!lbCard) {
+                return false;
+            }
+            return true;
+        });
+    }
 }
 
 module.exports = LoopBackCardStore;

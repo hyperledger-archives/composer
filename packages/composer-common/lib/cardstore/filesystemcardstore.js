@@ -100,6 +100,20 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     /**
      * @inheritdoc
      */
+    has(cardName){
+        const cardPath = this._cardPath(cardName);
+        let cardExisted;
+        return this.thenifyFs.stat(cardPath).then(
+            stats => cardExisted = true,
+            error => cardExisted = false
+        ).then(() => {
+            return cardExisted;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     getAll() {
         const method = 'getAll';
 

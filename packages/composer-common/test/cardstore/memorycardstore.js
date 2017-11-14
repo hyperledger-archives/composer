@@ -97,4 +97,18 @@ describe('MemoryCardStore', () => {
         });
     });
 
+
+    describe('#has', () => {
+        it('should return false for non-existent card', () => {
+            return cardStore.has('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const name = 'conga';
+            return cardStore.put(name, testCard).then(() => {
+                return cardStore.has(name);
+            }).should.become(true);
+        });
+    });
+
 });

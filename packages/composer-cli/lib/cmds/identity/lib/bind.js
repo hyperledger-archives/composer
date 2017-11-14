@@ -18,10 +18,7 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 
 /**
- * <p>
  * Composer "identity bind" command
- * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Bind {

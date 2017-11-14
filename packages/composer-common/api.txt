@@ -33,6 +33,7 @@ class BusinessNetworkCardStore {
    + String getDefaultCardName(IdCard) 
    + Promise get(String) 
    + Promise put(String,IdCard) 
+   + Promise has(String) 
    + Promise getAll() 
    + Promise delete(String) 
 }
