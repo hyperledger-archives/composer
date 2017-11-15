@@ -327,9 +327,9 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard});
             });
         });
 
@@ -341,9 +341,9 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition, {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard,opt: 1});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard, opt: 1});
             });
         });
 
