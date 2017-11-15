@@ -603,14 +603,7 @@ describe('AdminConnection', () => {
     });
 
     describe('#requestIdentity', () => {
-        it('should be able to request an identity', () => {
-            mockConnectionManager.requestIdentity.resolves({
-                certificate: 'a',
-                key: 'b',
-                rootCertificate: 'c',
-                caName: 'caName',
-                enrollId : 'fred'
-            });
+        beforeEach(()=>{
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             let cardStub = sinon.createStubInstance(IdCard);
@@ -622,6 +615,17 @@ describe('AdminConnection', () => {
             cardStub.getCredentials.returns({});
             cardStub.getEnrollmentCredentials.returns({secret:'password'});
             cardStore.put('testCardname',cardStub);
+        });
+
+        it('should be able to request an identity', () => {
+            mockConnectionManager.requestIdentity.resolves({
+                certificate: 'a',
+                key: 'b',
+                rootCertificate: 'c',
+                caName: 'caName',
+                enrollId : 'fred'
+            });
+
 
             return adminConnection.requestIdentity('testCardname', 'id', 'secret')
                 .then(() => {
@@ -638,17 +642,6 @@ describe('AdminConnection', () => {
                 caName: 'caName',
                 enrollId : 'fred'
             });
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let cardStub = sinon.createStubInstance(IdCard);
-            let cp = config;
-            cp.name=testProfileName;
-            cardStub.getConnectionProfile.returns(cp);
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret:'password'});
-            cardStore.put('testCardname',cardStub);
 
             return adminConnection.requestIdentity('testCardname')
                 .then(() => {
@@ -660,8 +653,7 @@ describe('AdminConnection', () => {
         it('should throw an error if import fails', () => {
             mockConnectionManager.requestIdentity = sinon.stub();
             mockConnectionManager.requestIdentity.rejects(new Error('some error'));
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
+
             return adminConnection.requestIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
                 .should.be.rejectedWith(/failed to request identity/);
         });

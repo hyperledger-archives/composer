@@ -945,10 +945,7 @@ class AdminConnection {
         return this.cardStore.get(cardName)
           .then((result)=>{
               card = result;
-              return card.getConnectionProfile();
-          })
-          .then((result)=>{
-              connectionProfileData = result;
+              connectionProfileData = card.getConnectionProfile();
               return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
           })
           .then((connectionManager) => {
