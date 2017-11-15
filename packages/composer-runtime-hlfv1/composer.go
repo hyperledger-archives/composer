@@ -117,6 +117,10 @@ func (composer *Composer) createJavaScript() {
 		panic(err)
 	}
 
+	// Set the magic flag which stops us holding onto many tokens.
+	vm.PushBoolean(true)
+	vm.PutGlobalString("composerJavaScriptParserNoTokens")
+
 }
 
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
