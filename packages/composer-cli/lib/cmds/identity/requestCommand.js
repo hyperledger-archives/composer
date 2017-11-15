@@ -20,6 +20,8 @@ module.exports.command = 'request [options]';
 module.exports.describe = 'Request an identity\'s certificate and key';
 module.exports.builder = {
     card: { alias: 'c', required: true, describe: 'Name of the network card to use', type: 'string'},
+    user: { alias: 'u', required: false, describe: 'The name of the identity for the card (if different from the card)', type: 'string' },
+    enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user (if different from the card)', type: 'string' },
     path: { alias: 'd', required: false, describe: 'path where to store the certificates and key', type: 'string' }
 };
 

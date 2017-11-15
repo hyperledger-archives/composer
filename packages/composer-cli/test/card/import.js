@@ -56,6 +56,7 @@ describe('composer card import CLI', function() {
             file: cardFileName
         };
         adminConnectionStub.importCard.resolves();
+        adminConnectionStub.hasCard.resolves(false);
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
             sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.string, sinon.match.instanceOf(IdCard));
@@ -70,6 +71,7 @@ describe('composer card import CLI', function() {
             name: cardName
         };
         adminConnectionStub.importCard.resolves();
+        adminConnectionStub.hasCard.resolves(false);
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
             sinon.assert.calledWith(adminConnectionStub.importCard, cardName, sinon.match.instanceOf(IdCard));
@@ -92,7 +94,7 @@ describe('composer card import CLI', function() {
             name: 'ALREADY_IMPORTED',
             file: cardFileName
         };
-        adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(false);
+        adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(true);
         return ImportCmd.handler(args).should.be.rejectedWith(/already exists/);
     });
 
