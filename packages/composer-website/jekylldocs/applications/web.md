@@ -14,9 +14,9 @@ Web or mobile applications that need to interact with deployed business networks
 
 In addition the `yo hyperledger-composer` command can be used to generate a skeleton Angular project that calls the `composer-rest-server` to interact with a business network.
 
-Please follow the Developer Guide for an example of how to use the `composer-rest-server` and the Angular generator.
+Please follow the Developer Tutorial for an example of how to use the `composer-rest-server` and the Angular generator.
 
 ## References
 
-* [**Developer Guide**](../tutorials/developer-guide.html)
+* [**Developer Tutorial**](../tutorials/developer-tutorial.html)
 * [**Composer REST Server**](../integrating/getting-started-rest-api.html)

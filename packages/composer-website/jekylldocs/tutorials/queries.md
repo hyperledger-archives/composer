@@ -1,27 +1,27 @@
 ---
 layout: default
-title: Queries Guide
+title: Queries Tutorial
 category: tutorials
 section: tutorials
 index-order: 303
 sidebar: sidebars/accordion-toc0.md
-excerpt: "This guide will walk you through the steps required to create, then try out Composer Queries, adding to the Developer tutorial that precedes this. It connects to the running Hyperledger Fabric whence the user started up for the Developer tutorial."
+excerpt: "This tutorial will walk you through the steps required to create, then try out Composer Queries, adding to the Developer tutorial that precedes this. It connects to the running {{site.data.conrefs.hlf_full}} whence the user started up for the Developer tutorial."
 ---
 
 # Queries Tutorial using the Composer Query language and REST APIs
 
-In this tutorial, we will build on the [developer tutorial](./developer-guide.html), extending it to demonstrate {{site.data.conrefs.composer}} queries. The native {{site.data.conrefs.composer}} query language can filter results returned using criteria and can be invoked in transactions to perform operations, such as updating or removing assets on result sets.
+In this tutorial, we will build on the [developer tutorial](./developer-tutorial.html), extending it to demonstrate {{site.data.conrefs.composer}} queries. The native {{site.data.conrefs.composer}} query language can filter results returned using criteria and can be invoked in transactions to perform operations, such as updating or removing assets on result sets.
 
 Queries are defined in a query file (`.qry`) in the parent directory of the business network definition. Queries contain a WHERE clause, which defines the criteria by which assets or participants are selected.
 
-This tutorial uses the `tutorial-network` business network developed and deployed in the [Developer-Tutorial](developer-guide.html).
+This tutorial uses the `tutorial-network` business network developed and deployed in the [Developer-Tutorial](developer-tutorial.html).
 
 ## Prerequisites
 
 Before beginning this tutorial:
 
  - Complete the [development environment installation](../installing/development-tools.html).
- - Complete the [developer tutorial](./developer-guide.html).
+ - Complete the [developer tutorial](./developer-tutorial.html).
 
 ## Step One: Updating the business network
 
@@ -159,7 +159,7 @@ The queries used by the Transaction Processor logic are defined in a file which 
 
 ## Step Three: Regenerate your business network archive
 
-After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlfv1}} instance.
+After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlf_full}} instance.
 
 
 1. Using the command line, navigate to the `tutorial-network` directory.
@@ -358,6 +358,6 @@ Well done, you've now completed this tutorial and we hope you now have a much be
 
 ## Related Links
 
-- [Developer-Tutorial](developer-guide.html)
+- [Developer-Tutorial](developer-tutorial.html)
 - [Deploying a business network](../business-network/bnd-deploy.html)
 - [Network deploy command](../reference/composer.network.deploy.html)
