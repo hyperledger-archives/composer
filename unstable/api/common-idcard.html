@@ -261,7 +261,7 @@ ga('send', 'pageview');
 <p>An ID card. Encapsulates credentials and other information required to connect to a specific business network
 as a specific user.
 <p>
-Instances of this class should be created using IdCard.fromArchive or IdCard.fromDirectory.</p>
+Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory.</p>
 
 <h3 id="details">Details</h3>
 
@@ -280,6 +280,11 @@ Instances of this class should be created using IdCard.fromArchive or IdCard.fro
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#constructor">constructor</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Create the IdCard.</td>
+</tr>
 <tr>
 <td style="text-align: left"><a href="#fromarchive">fromArchive</a></td>
 <td style="text-align: left"><code>Promise</code></td>
@@ -343,6 +348,34 @@ Instances of this class should be created using IdCard.fromArchive or IdCard.fro
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
+
+<h2 id="new-idcard">new IdCard()</h2>
+
+<p>Create the IdCard.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Optional</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>metadata</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">metadata associated with the card.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>connectionProfile</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left">false</td>
+<td style="text-align: left">connection profile associated with the card.</td>
+</tr>
+</tbody></table>
 
 <h2 id="getusername">getUserName</h2>
 
