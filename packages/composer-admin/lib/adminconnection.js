@@ -928,7 +928,7 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      *
-     * @param {string} cardName Name of the carrd to use
+     * @param {string} cardName Name of the card to use
      * @param {string} [enrollmentID] The ID to enroll
      * @param {string} [enrollmentSecret] The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported

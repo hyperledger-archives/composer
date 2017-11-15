@@ -39,7 +39,7 @@ class Import {
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.hasCard(cardName);
         }).then((existingCard) => {
-            if (!existingCard) {
+            if (existingCard) {
                 throw new Error('Card already exists: ' + cardName);
             }
             return adminConnection.importCard(cardName, cardToImport);
