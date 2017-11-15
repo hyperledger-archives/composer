@@ -328,7 +328,27 @@ class QueryAnalyzer {
         // Pop the scope name off again.
         parameters.scopes.pop();
 
-        const result = [left, right];
+        // if the left is a string, it is the name of a property
+        // and we infer the type of the right from the model
+        // if the right is a parameter
+        let result = [];
+        if (typeof left === 'string' && (right instanceof Array && right.length > 0)) {
+            if(right[0].type === null) {
+                right[0].type = this.getParameterType(left, parameters);
+            }
+            result = result.concat(right);
+        }
+
+        // if the right is a string, it is the name of a property
+        // and we infer the type of the left from the model
+        // if the left is a parameter
+        if (typeof right === 'string' && (left instanceof Array && left.length > 0)) {
+            if(left[0].type === null) {
+                left[0].type = this.getParameterType(right, parameters);
+            }
+            result = result.concat(left);
+        }
+
         LOG.exit(method, result);
         return result;
     }
@@ -442,6 +462,8 @@ class QueryAnalyzer {
         LOG.entry(method, ast, parameters);
         const result = ast.elements.map((element) => {
             return this.visit(element, parameters);
+        }).filter((element) => {
+            return !(Array.isArray(element) && element.length === 0);
         });
         LOG.exit(method, result);
         return result;
