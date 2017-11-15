@@ -305,7 +305,7 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(0);
         });
 
         it('should process select with a contains and an array value', () => {
@@ -315,7 +315,7 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(0);
         });
 
         it('should process select with a contains and a parameter value', () => {
@@ -325,7 +325,17 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(1);
+        });
+
+        it('should process select with a contains and a reversed parameter value', () => {
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (_$inputStringValue CONTAINS stringValues)', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(1);
         });
 
         it('should process select with a contains and a nested expression', () => {
@@ -335,7 +345,7 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(0);
         });
 
         it('should process select with a contains and a nested expression with a parameter value', () => {
@@ -345,7 +355,7 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(1);
         });
 
         it('should process select with a contains and a nested expression with a reversed parameter value', () => {
@@ -355,7 +365,7 @@ describe('QueryAnalyzer', () => {
             queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
-            result.length.should.equal(2);
+            result.length.should.equal(1);
         });
 
         it('should throw for a select with a contains without a property name', () => {
