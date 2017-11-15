@@ -20,7 +20,7 @@ module.exports.command = 'loglevel [options]';
 module.exports.describe = 'Change the logging level of a business network';
 module.exports.builder = {
     newlevel: { alias: 'l', optional: true, describe: 'the new logging level', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG'] },
-    card: { alias: 'c', required: false, description: 'The cardname to use to change the log level the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to change the log level the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {
