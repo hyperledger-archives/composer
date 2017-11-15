@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -276,20 +277,20 @@ ga('send', 'pageview');
 }
 </code></pre></div>
 <ul>
-<li><code>transactionId</code> The transactionId of the transaction that caused the historian record to be created.</li>
-<li><code>String transactionType</code> The class of transaction that caused the historian record to be created.</li>
-<li><code>Transaction transactionInvoked</code> A relationship to the transaction which caused the historian record to be created.</li>
+<li><code>String transactionId</code> The transactionId of the transaction that caused the <code>HistorianRecord</code> asset to be created.</li>
+<li><code>String transactionType</code> The class of transaction that caused the <code>HistorianRecord</code> asset to be created.</li>
+<li><code>Transaction transactionInvoked</code> A relationship to the transaction which caused the <code>HistorianRecord</code> asset to be created.</li>
 <li><code>Participant participantInvoking</code> A relationship to the participant who submitted the transaction.</li>
 <li><code>Identity identityUsed</code> A relationship to the identity used to submit the transaction.</li>
 <li><code>Event[] eventsEmitted</code> An optional property containing any events which were emitted by the transaction.</li>
-<li><code>DateTime transactionTimestamp</code> The timestamp of the transaction which caused the historian record to be created.</li>
+<li><code>DateTime transactionTimestamp</code> The timestamp of the transaction which caused the <code>HistorianRecord</code> asset to be created.</li>
 </ul>
 
-<p>All historian record assets have relationships to the transaction that created them, the invoking participant of that transaction, and the identity used when the transaction was submitted. Applications that wish to obtain these attributes must resolve this relationship.</p>
+<p>All <code>HistorianRecord</code> assets have relationships to the transaction that created them, the invoking participant of that transaction, and the identity used when the transaction was submitted. Applications that wish to obtain these attributes must resolve this relationship.</p>
 
 <h2 id="system-transactions">System transactions</h2>
 
-<p>Several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add historian records:</p>
+<p>Several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add <code>HistorianRecord</code> assets:</p>
 
 <ul>
 <li>Adding, removing and updating assets</li>
@@ -319,7 +320,7 @@ ga('send', 'pageview');
 
 <h3 id="using-the-client-and-rest-apis-with-historian">Using the client and REST APIs with historian</h3>
 
-<p>Historian records can be returned using the <code>system/historian</code> and <code>system/historian/{id}</code> calls using the REST API.</p>
+<p><code>HistorianRecord</code> assets can be returned using the <code>system/historian</code> and <code>system/historian/{id}</code> calls using the REST API.</p>
 
 <p>When using the REST API, a GET call of <code>system/historian</code> will return <em>ALL</em> historian data. This call should be used with care, the return is not limited and may result in large volumes of data being returned.</p>
 

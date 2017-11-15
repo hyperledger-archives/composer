@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -275,7 +276,16 @@ ga('send', 'pageview');
 <li>A code editor of your choice, we recommend VSCode.</li>
 </ul>
 
-<p><strong>Please do not install Hyperledger Composer as a superuser - or use &#39;sudo&#39; or the &#39;root&#39; user, if on Linux (doing will cause issues installation errors). Hyperledger Composer should be installed as non-privileged user.</strong></p>
+<p>**If installing Hyperledger Composer using Linux, be aware of the following advice:</p>
+
+<ul>
+<li>Login as a normal user, rather than root.</li>
+<li>Do not <code>su</code> to root.</li>
+<li>When installing prerequisites, use curl, then unzip using sudo.</li>
+<li>Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it&#39;s actions are required to be run as root.</li>
+<li>Do not use npm with <code>sudo</code> or <code>su</code> to root to use it.</li>
+<li>Avoid installing node globally as root.**</li>
+</ul>
 
 <p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">curl <span class="nt">-O</span> https://hyperledger.github.io/composer/prereqs-ubuntu.sh
@@ -316,9 +326,13 @@ chmod u+x prereqs-ubuntu.sh
 
 <ol>
 <li><p>If you use VSCode, install the Hyperledger Composer VSCode plugin from the VSCode marketplace.</p></li>
-<li><p>If you want to run the Playground locally, install the <code>composer-playground</code> using the following command.</p>
+<li><p>If you want to run the connect to a business network using the Playground locally, install the <code>composer-playground</code> using the following command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
 </code></pre></div></li>
+<li><p>To run the playground locally run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-playground
+</code></pre></div>
+<p>The playground should open automatically at the following address: <a href="http://localhost:8080/login">http://localhost:8080/login</a></p></li>
 </ol>
 
 <h2 id="step-2-starting-hyperledger-fabric">Step 2: Starting Hyperledger Fabric</h2>
@@ -393,7 +407,7 @@ tar xvzf fabric-dev-servers.tar.gz
 
 <p><strong>Create PeerAdmin Card</strong></p>
 
-<p>Create a business network card for the peer administrator specific to the  instance running.
+<p>Create a business network card for the peer administrator specific to the Hyperledger Fabric instance running.
 <code>
 ./createPeerAdminCard.sh
 </code></p>
@@ -411,7 +425,7 @@ tar xvzf fabric-dev-servers.tar.gz
 
 <ul>
 <li>Begin <a href="../business-network/business-network-index.html"><strong>writing a business network definition</strong></a>.</li>
-<li>If you&#39;re looking for a tutorial on using the developer tools, see the <a href="../tutorials/developer-guide.html"><strong>developer guide</strong></a> to run through a sample with the developer tools.</li>
+<li>If you&#39;re looking for a tutorial on using the developer tools, see the <a href="../tutorials/developer-tutorial.html"><strong>developer guide</strong></a> to run through a sample with the developer tools.</li>
 </ul>
 
             

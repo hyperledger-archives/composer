@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -260,7 +261,7 @@ ga('send', 'pageview');
 <p><strong>Warning</strong>: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.</p>
 </blockquote>
 
-<p>The Historian is a registry populated with <code>HistorianRecords</code> that contains information about historical transactions.  When a transaction is submitted, the <code>HistorianRecord</code> is updated, and over time, maintains a history of transactions within a business network, and the participants and identities involved in submitting those transactions. Historian records can be queried using Composer Queries to extract specific records or data. An example would be tracking the lifecycle of an asset such as a Land Title, from creation (with a Land Title ID) through update, through ownership changes carried out by different identities and/or participants. The transactions associated with this example can be queried in Historian, say, over a given time period.</p>
+<p>The Historian is a registry populated with <code>HistorianRecords</code> that contains information about historical transactions.  When a transaction is submitted, the <code>HistorianRecord</code> is updated, and over time, maintains a history of transactions within a business network, and the participants and identities involved in submitting those transactions. <code>HistorianRecord</code> assets can be queried using Composer Queries to extract specific records or data. An example would be tracking the lifecycle of an asset such as a Land Title, from creation (with a Land Title ID) through update, through ownership changes carried out by different identities and/or participants. The transactions associated with this example can be queried in Historian, say, over a given time period.</p>
 
 <h2 id="historian-record">Historian Record</h2>
 
@@ -289,7 +290,7 @@ ga('send', 'pageview');
 
 <h2 id="tracking-transactions">Tracking Transactions</h2>
 
-<p>The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition, several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add historian records.</p>
+<p>The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition, several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add <code>HistorianRecord</code> assets.</p>
 
 <ul>
 <li>Add, Remove and Update of Assets</li>
@@ -303,7 +304,7 @@ ga('send', 'pageview');
 
 <p>The established APIs for querying and working with resources and relationship are applicable. The historian is a registry containing assets (HistorianRecords) so can be queried.</p>
 
-<p>For example to get all the Historian records a typical promise chain would be as follows.</p>
+<p>For example to get all the <code>HistorianRecord</code> assets a typical promise chain would be as follows.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    .then(() =&gt; {       
         return businessNetworkConnection.getHistorian();
     }).then((historian) =&gt; {

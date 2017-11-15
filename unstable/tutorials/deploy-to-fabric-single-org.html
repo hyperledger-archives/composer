@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Deploying to Hyperledger Fabric | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Deploying to Hyperledger Fabric</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html"><b>Introduction</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html"><b>Installing</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html"><b>Developing Applications</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p></li>
+<li><p><a href="../reference/reference-index.html"><b>Reference</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p></li>
+<li><p><a href="../api/api-doc-index.html"><b>API Reference</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../api/allData.html">API Class Index</a></li>
+<li><a href="../api/admin-adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api/client-assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api/client-businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api/client-historian.html">Historian (Client API)</a></li>
+<li><a href="../api/client-identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api/client-participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api/client-query.html">Query (Client API)</a></li>
+<li><a href="../api/client-registry.html">Registry (Client API)</a></li>
+<li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
+<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
+<li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
+<li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
+<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api/common-resource.html">Resource (Common API)</a></li>
+<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
+<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
+<li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-typed.html">Typed (Common API)</a></li>
+<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
+<li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
+<li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
+<li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
+<li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
+<li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
+<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
+<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
+<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="deploying-a-hyperledger-composer-blockchain-business-network-to-hyperledger-fabric-for-a-single-organisation">Deploying a Hyperledger Composer blockchain business network to Hyperledger Fabric for a single organisation</h1>
+
+<p>In the <a href="../installing/development-tools.html">development environment</a>, a simple Hyperledger Fabric network is created for you (<code>fabric-dev-servers</code>), along with all of the Hyperledger Composer configuration that you need in order to deploy a blockchain business network.</p>
+
+<p>This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of Hyperledger Fabric, including how to generate the necessary Hyperledger Composer configuration.</p>
+
+<p>This tutorial focuses on the steps required to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organisation. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of Hyperledger Fabric for multiple organisations.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ol>
+<li>Before you continue, ensure that you have followed the steps in <a href="../installing/development-tools.html">installing a development environment</a>.</li>
+</ol>
+
+<h2 id="step-one-starting-a-hyperledger-fabric-network">Step One: Starting a Hyperledger Fabric network</h2>
+
+<p>In order to follow this tutorial, you must start a Hyperledger Fabric network. You can use the simple Hyperledger Fabric network provided in the development environment, or you can use your own Hyperledger Fabric network that you have built by following the Hyperledger Fabric documentation.</p>
+
+<p>The tutorial will assume that you use the simple Hyperledger Fabric network provided in the development environment. If you use your own Hyperledger Fabric network, then you must map between the configuration detailed below and your own configuration.</p>
+
+<ol>
+<li><p>Start a clean Hyperledger Fabric by running the following commands:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+./stopFabric.sh
+./teardownFabric.sh
+./downloadFabric.sh
+./startFabric.sh
+</code></pre></div></li>
+<li><p>Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -n PeerAdmin@fabric-network
+composer card delete -n admin@tutorial-network
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-two-exploring-the-hyperledger-fabric-network">Step Two: Exploring the Hyperledger Fabric network</h2>
+
+<p>This step will explore the Hyperledger Fabric network that you have just started, so that you can understand how it has been configured, and what components it consists of. You will use all of the information in this section to configure Hyperledger Composer in subsequent steps.</p>
+
+<h4 id="configuration-files">Configuration files</h4>
+
+<p>The simple Hyperledger Fabric network provided in the development environment has been configured using the Hyperledger Fabric configuration tools <code>cryptogen</code> and <code>configtxgen</code>.</p>
+
+<p>The configuration for <code>cryptogen</code> is stored in the file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config.yaml
+</code></pre></div>
+<p>The configuration for <code>configtxgen</code> is stored in the file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/configtx.yaml
+</code></pre></div>
+<p>You can find more information about these configuration tools, what they do, and how to use them by reading the Hyperledger Fabric documentation.</p>
+
+<h4 id="organisations">Organisations</h4>
+
+<p>The simple Hyperledger Fabric network is made up of a single organisation called <code>Org1</code>. The organisation uses the domain name <code>org1.example.com</code>. Additionally, the Membership Services Provider (MSP) for this organisation is called <code>Org1MSP</code>. In this tutorial, you will deploy a blockchain business network that only the organisation <code>Org1</code> can interact with.</p>
+
+<h4 id="network-components">Network components</h4>
+
+<p>The Hyperledger Fabric network is made up of several components:</p>
+
+<ul>
+<li>A single peer node for <code>Org1</code>, named <code>peer0.org1.example.com</code>.
+
+<ul>
+<li>The request port is 7051.</li>
+<li>The event hub port is 7053.</li>
+</ul></li>
+<li>A single Certificate Authority (CA) for <code>Org1</code>, named <code>ca.org1.example.com</code>.
+
+<ul>
+<li>The CA port is 7054.</li>
+</ul></li>
+<li>A single orderer node, named <code>orderer.example.com</code>.
+
+<ul>
+<li>The orderer port is 7050.</li>
+</ul></li>
+</ul>
+
+<p>The Hyperledger Fabric network components are running inside Docker containers. When running Hyperledger Composer within a Docker container, the names above (for example, <code>peer0.org1.example.com</code>) can be used to interact with the Hyperledger Fabric network.</p>
+
+<p>This tutorial will run Hyperledger Composer commands on the Docker host machine, rather than from inside the Docker network. This means that the Hyperledger Composer commands must interact with the Hyperledger Fabric network using <code>localhost</code> as the host name and the exposed container ports.</p>
+
+<h4 id="users">Users</h4>
+
+<p>The organisation <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator. Administrators for an organisation have the permission to install the code for a blockchain business network onto their organisation&#39;s peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user <code>Admin@org1.example.com</code>.</p>
+
+<p>The user <code>Admin@org1.example.com</code> has a set of certificates and private key files stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+</code></pre></div>
+<p>You will use some of these files later on to interact with the Hyperledger Fabric network.</p>
+
+<p>In addition to the administrator, the CA (Certificate Authority) for <code>Org1</code> has been configured with a default user. This default user has an enrollment ID of <code>admin</code> and an enrollment secret of <code>adminpw</code>. However, this user does not have permission to deploy a blockchain business network.</p>
+
+<h4 id="channel">Channel</h4>
+
+<p>Finally, a channel named <code>composerchannel</code> has been created. The peer node <code>peer0.org1.example.com</code> has been joined to this channel. You can only deploy Hyperledger Composer blockchain business networks into existing channels, but you can create additional channels by following the Hyperledger Fabric documentation.</p>
+
+<h2 id="step-three-building-a-connection-profile">Step Three: Building a connection profile</h2>
+
+<p>A connection profile specifies all of the information required to locate and connect to the Hyperledger Fabric network, for example the host names and ports of all of the Hyperledger Fabric network components. In this step, you will create a connection profile for Hyperledger Composer to use to connect to the Hyperledger Fabric network.</p>
+
+<ol>
+<li><p>Create a connection profile file called <code>connection.json</code>.</p></li>
+<li><p>Give the connection profile <code>name</code> and <code>type</code> properties by adding the following three lines to the top of <code>connection.json</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "name": "fabric-network",
+  "type": "hlfv1",
+</code></pre></div>
+<p>The <code>name</code> property in a connection profile gives a name to the Hyperledger Fabric network, so we can reference it later on. In the connection profile you have just created, the name is <code>fabric-network</code>. You can use any name you like for the Hyperledger Fabric network.</p>
+
+<p>Hyperledger Composer is designed to be compatible with different types blockchain networks. Currently, only Hyperledger Fabric v1.0 is supported, but you must specify the type of blockchain network to use. The type for Hyperledger Fabric v1.0 is <code>hlfv1</code>.</p></li>
+<li><p>The name of the MSP that is used to connect to the Hyperledger Fabric network must be specified:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"mspID": "Org1MSP",
+</code></pre></div>
+<p>We are connecting as <code>Org1</code>, and the MSP for <code>Org1</code> is called <code>Org1MSP</code>.</p></li>
+<li><p>We must specify the host names and ports of all of the peer nodes in the Hyperledger Fabric network that we want to connect to.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": [
+    {
+        "requestURL": "grpc://localhost:7051",
+        "eventURL": "grpc://localhost:7053"
+    }
+],
+</code></pre></div>
+<p>Here, we have specified our single peer node <code>peer0.org1.example.com</code> (using the host name <code>localhost</code>), the request port 7051, and the event hub port 7053.</p>
+
+<p>The <code>peers</code> array can contain multiple peer nodes. If you have multiple peer nodes, you should add them all to the <code>peers</code> array so that Hyperledger Composer can interact with them.</p>
+
+<p>The blockchain business network will be deployed to all of the specified peer nodes. Once the blockchain business network has been deployed, the specified peer nodes will be used for querying the blockchain business network, endorsing transactions, and subscribing to events.</p></li>
+<li><p>We must specify the host name and port of the certificate authority (CA) in the Hyperledger Fabric network that we want to use for enrolling existing users and registering new users.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"ca": {
+    "url": "http://localhost:7054",
+    "name": "ca.org1.example.com"
+},
+</code></pre></div>
+<p>Here we have specified our single CA <code>ca.or1.example.com</code> (using the hostname <code>localhost</code>) and the CA port 7054.</p></li>
+<li><p>We must specify the host names and ports of all of the ordering nodes in the Hyperledger Fabric that we want to connect to.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderers": [
+    {
+        "url" : "grpc://localhost:7050"
+    }
+],
+</code></pre></div>
+<p>Here, we have specified our single orderer node <code>orderer.example.com</code> (using the hostname <code>localhost</code>) and the orderer port 7050.</p>
+
+<p>The <code>orderers</code> array can contain multiple orderer nodes. If you have multiple orderer nodes, you should add them all to the <code>orderers</code> array so that Hyperledger Composer can interact with them.</p></li>
+<li><p>We must specify the name of an existing channel. We will deploy our blockchain business network into the channel <code>composerchannel</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"channel": "composerchannel",
+</code></pre></div></li>
+<li><p>Finally, we can optionally specify a timeout for endorsing transactions when interacting with a blockchain business network.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">  "timeout": 300
+}
+</code></pre></div>
+<p>Here, we have specified a timeout of 300 seconds. If a transaction takes longer than 300 seconds to endorse, then a timeout error will be thrown.</p></li>
+<li><p>Save your changes to <code>connection.json</code>. The completed connection profile should look like the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "name": "fabric-network",
+  "type": "hlfv1",
+  "mspID": "Org1MSP",
+  "peers": [
+      {
+          "requestURL": "grpc://localhost:7051",
+          "eventURL": "grpc://localhost:7053"
+      }
+  ],
+  "ca": {
+      "url": "http://localhost:7054",
+      "name": "ca.org1.example.com"
+  },
+  "orderers": [
+      {
+          "url" : "grpc://localhost:7050"
+      }
+  ],
+  "channel": "composerchannel",
+  "timeout": 300
+}
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-four-locating-the-certificate-and-private-key-for-the-hyperledger-fabric-administrator">Step Four: Locating the certificate and private key for the Hyperledger Fabric administrator</h2>
+
+<p>In order to deploy a blockchain business network to this Hyperledger Fabric network, we must identify ourselves as an administrator with the permissions to perform this operation. In this step, you locate the files required to identify yourself as an administrator.</p>
+
+<p>The administrator for our Hyperledger Fabric network is a user called <code>Admin@org1.example.com</code>. The certificates and private key files for this user are stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+</code></pre></div>
+<p>You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the <code>signcerts</code> subdirectory and is named <code>Admin@org1.example.com-cert.pem</code>. If you look at the contents of this file, then you will find a PEM encoded certificate similar to the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE-----
+MIICGjCCAcCgAwIBAgIRANuOnVN+yd/BGyoX7ioEklQwCgYIKoZIzj0EAwIwczEL
+MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+cmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh
+Lm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNjI2MTI0OTI2WhcNMjcwNjI0MTI0OTI2
+WjBbMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMN
+U2FuIEZyYW5jaXNjbzEfMB0GA1UEAwwWQWRtaW5Ab3JnMS5leGFtcGxlLmNvbTBZ
+MBMGByqGSM49AgEGCCqGSM49AwEHA0IABGu8KxBQ1GkxSTMVoLv7NXiYKWj5t6Dh
+WRTJBHnLkWV7lRUfYaKAKFadSii5M7Z7ZpwD8NS7IsMdPR6Z4EyGgwKjTTBLMA4G
+A1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1UdIwQkMCKAIBmrZau7BIB9
+rRLkwKmqpmSecIaOOr0CF6Mi2J5H4aauMAoGCCqGSM49BAMCA0gAMEUCIQC4sKQ6
+CEgqbTYe48az95W9/hnZ+7DI5eSnWUwV9vCd/gIgS5K6omNJydoFoEpaEIwM97uS
+XVMHPa0iyC497vdNURA=
+-----END CERTIFICATE-----
+</code></pre></div>
+<p>Next, you must locate the private key file for this user. The private key is used to sign transactions as this identity. The private key file can be found in the <code>keystore</code> subdirectory. The name of the private key file is a long hexadecimal string, with a suffix of <code>_sk</code>, for example <code>114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk</code>. The name will change every time the configuration is generated. If you look at the contents of this file, then you will find a PEM encoded private key similar to the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg00IwLLBKoi/9ikb6
+ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
+4VkUyQR5y5Fle5UVH2GigChWnUoouTO2e2acA/DUuyLDHT0emeBMhoMC
+-----END PRIVATE KEY-----
+</code></pre></div>
+<p>Remember the path to both of these files, or copy them into the same directory as the connection profile file <code>connection.json</code> that you created in the previous step. You will need these files in the next step.</p>
+
+<h2 id="step-five-creating-a-business-network-card-for-the-hyperledger-fabric-administrator">Step Five: Creating a business network card for the Hyperledger Fabric administrator</h2>
+
+<p>A business network card contains all of the information required to connect to a blockchain business network and the underlying Hyperledger Fabric network. This information includes the connection profile created in step three, and the certificate and private key for the administrator located in step four.</p>
+
+<p>In this step you will create a business network card for the administrator to use to deploy the blockchain business network to the Hyperledger Fabric network.</p>
+
+<p>Run the <code>composer card create</code> command to create a business network card. You must specify the path to all three files that you either created or located in the previous steps:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk -r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>A business network card file called <code>PeerAdmin@fabric-network.card</code> will have been written to the current directory. Let&#39;s explore the options that we passed to the <code>composer card create</code> command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-p connection.json
+</code></pre></div>
+<p>This is the path to the connection profile file that we created in step three.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-u PeerAdmin
+</code></pre></div>
+<p>This is a name that we use to refer to the administrator user. Instead of using <code>Admin@org1.example.com</code> everywhere, which is quite lengthy to type, we have given a name of <code>PeerAdmin</code> so we can easily refer to this user.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-c Admin@org1.example.com-cert.pem
+</code></pre></div>
+<p>This is the path to the certificate file for the user <code>Admin@org1.example.com</code> that we located in step four.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-k 114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk
+</code></pre></div>
+<p>This is the path to the private key file for the user <code>Admin@org1.example.com</code> that we located in step four.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>Here, we specify which roles the user has. This information is required so that Hyperledger Composer knows which users are able to perform which operations. The user <code>Admin@org1.example.com</code> is an administrator for the Hyperledger Fabric network, and has the roles <code>PeerAdmin</code> (ability to install chaincode) and <code>ChannelAdmin</code> (ability to instantiate chaincode).</p>
+
+<h2 id="step-six-importing-the-business-network-card-for-the-hyperledger-fabric-administrator">Step Six: Importing the business network card for the Hyperledger Fabric administrator</h2>
+
+<p>Hyperledger Composer can only use business network cards that are placed into a wallet. The wallet is a directory on the file system that contains business network cards. In this step, you will import the business network card created in step five into the wallet so that you can use the business network card in subsequent steps.</p>
+
+<p>Run the <code>composer card import</code> command to import the business network card into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@fabric-network.card
+</code></pre></div>
+<p>Let&#39;s explore the options that we passed to the <code>composer card import</code> command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-f PeerAdmin@fabric-network.card
+</code></pre></div>
+<p>This is the path to the business network card file that we created in step five.</p>
+
+<p>You can now use this business network card by specifying the name <code>PeerAdmin@fabric-network</code>. You are now all set to deploy the blockchain business network to the Hyperledger Fabric network.</p>
+
+<p>We are going to deploy the blockchain business network <code>tutorial-network</code> that is created by following the <a href="./developer-tutorial.html">Developer Tutorial</a>.</p>
+
+<h2 id="step-seven-installing-the-hyperledger-composer-runtime-onto-the-hyperledger-fabric-peer-nodes">Step Seven: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes</h2>
+
+<p>Hyperledger Composer includes a component called the Hyperledger Composer runtime that provides all of the functionality to host and support a business network archive, for example data validation, error handling, transaction processor function execution, and access control. In Hyperledger Fabric terms, the Hyperledger Composer runtime is a standard chaincode.</p>
+
+<p>In this step, you will install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes. In Hyperledger Fabric terms, this is a chaincode install operation.</p>
+
+<p>Run the <code>composer runtime install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes that you specified in the connection profile file you created in step three:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -c PeerAdmin@fabric-network -n tutorial-network
+</code></pre></div>
+<p>Let&#39;s explore the options that we passed to the <code>composer runtime install</code> command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-c PeerAdmin@fabric-network
+</code></pre></div>
+<p>This is the name of the business network card that we imported into the wallet in step six.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-n tutorial-network
+</code></pre></div>
+<p>You must install a copy of the Hyperledger Composer runtime for each blockchain business network, and specify the name of the blockchain business network. Here we specify the name of the blockchain business network that we are deploying, <code>tutorial-network</code>.</p>
+
+<h2 id="step-eight-starting-the-blockchain-business-network">Step Eight: Starting the blockchain business network</h2>
+
+<p>In this step, you will start the blockchain business network. In Hyperledger Fabric terms, this is a chaincode instantiate operation.</p>
+
+<ul>
+<li><p>Run the <code>composer network start</code> command to start the blockchain business network:</p>
+
+<p>composer network start -c PeerAdmin@fabric-network -a tutorial-network.bna -A admin -S adminpw</p></li>
+</ul>
+
+<p>Let&#39;s explore the options that we passed to the <code>composer network start</code> command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-c PeerAdmin@fabric-network
+</code></pre></div>
+<p>This is the name of the business network card that we imported into the wallet in step six.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-a tutorial-network.bna
+</code></pre></div>
+<p>This is the path to the business network archive that contains the business network definition for our blockchain business network called <code>tutorial-network</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-A admin
+</code></pre></div>
+<p>When a blockchain business network is deployed, you must create at least one participant who will be a blockchain business network administrator. This participant is responsible for onboarding other participants into the blockchain business network. Here, we are specifying that we want to create a single blockchain business network administrator called <code>admin</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">-S adminpw
+</code></pre></div>
+<p>This specifies that our blockchain business network administrator <code>admin</code> will use an enrollment secret of <code>adminpw</code> to request a certificate and private key from the CA (Certificate Authority). When you specify this option, the name specified for the business network administrator must be an existing enrollment ID for a user that is already registered with the CA.</p>
+
+<p>Now that our blockchain business network has been started, we can interact with it using the business network card file <code>admin@tutorial-network.card</code> that was created.</p>
+
+<h2 id="step-nine-importing-the-business-network-card-for-the-business-network-administrator">Step Nine: Importing the business network card for the business network administrator</h2>
+
+<p>Run the <code>composer card import</code> command to import the business network card into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f admin@tutorial-network.card
+</code></pre></div>
+<p>You can now use this business network card by specifying the name <code>admin@tutorial-network</code>. You are now all set to interact with the running blockchain business network!</p>
+
+<h2 id="step-ten-testing-the-connection-to-the-blockchain-business-network">Step Ten: Testing the connection to the blockchain business network</h2>
+
+<p>Run the <code>composer network ping</code> command to test the connection to the blockchain business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@tutorial-network
+</code></pre></div>
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial you have seen how to configure Hyperledger Composer with all of the information required to connect to a Hyperledger Fabric network, and how to deploy a blockchain business network to that Hyperledger Fabric network.</p>
+
+<p>If you used the simple Hyperledger Fabric network provided in the development environment, why not try building your own Hyperledger Fabric network by following the Hyperledger Fabric documentation and see if you can successfully deploy a blockchain business network to it?</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

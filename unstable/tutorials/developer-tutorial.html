@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Developer Guide | Hyperledger Composer</title>
+    <title>Developer Tutorial | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Developer Guide</p>
+          <p>Developer Tutorial</p>
           </div>
 
           <nav class="context-nav">
@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -337,7 +338,7 @@ transaction Trade {
  */
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
+    return getAssetRegistry('org.acme.biznet.Commodity')
         .then(function (assetRegistry) {
             return assetRegistry.update(trade.commodity);
         });
@@ -352,7 +353,7 @@ function tradeCommodity(trade) {
 <li><p>Create a <code>permissions.acl</code> file in the <code>tutorial-network</code> directory.</p></li>
 <li><p>Add the following access control rules to <code>permissions.acl</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
- * Access control rules for mynetwork
+ * Access control rules for tutorial-network
  */
 rule Default {
     description: "Allow all participants access to all resources"
@@ -388,7 +389,7 @@ rule SystemACL {
 
 <h2 id="step-four-deploying-the-business-network">Step Four: Deploying the business network</h2>
 
-<p>After creating the <code>.bna</code> file, the business network can be deployed to the instance of . Normally, information from the Fabric administrator is required to create a <code>PeerAdmin</code> identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a <code>PeerAdmin</code> identity has been created already.</p>
+<p>After creating the <code>.bna</code> file, the business network can be deployed to the instance of Hyperledger Fabric. Normally, information from the Fabric administrator is required to create a <code>PeerAdmin</code> identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a <code>PeerAdmin</code> identity has been created already.</p>
 
 <p>After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administrate the business network after deployment. This identity is referred to as a network admin.</p>
 
@@ -398,7 +399,7 @@ rule SystemACL {
 
 <h4 id="deploying-the-business-network">Deploying the business network</h4>
 
-<p>Deploying a business network to the  requires the Hyperledger Composer chaincode to be installed on the peer, then the business network archive (<code>.bna</code>) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.</p>
+<p>Deploying a business network to the Hyperledger Fabric requires the Hyperledger Composer chaincode to be installed on the peer, then the business network archive (<code>.bna</code>) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.</p>
 
 <ol>
 <li><p>To install the composer runtime, run the following command:</p>

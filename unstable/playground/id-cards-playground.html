@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -268,6 +269,24 @@ ga('send', 'pageview');
 
 <hr>
 
+<h2 id="creating-a-peer-admin-card-using-playground"><a name="peeradmin"></a>Creating a peer admin card using Playground</h2>
+
+<p>Deploying a business network to a Hyperledger Fabric instance for the first time requires that the Hyperledger Composer chaincode be installed on the relevant Hyperledger Fabric peers, and that the business network then be instantiated on the channel. This process requires special Hyperledger Fabric privileges possessed by a peer or channel administrator.</p>
+
+<p>A peer admin business network card must be created in order to deploy a Hyperledger Composer business network to a Hyperledger Fabric instance. To create the peer admin business network card:</p>
+
+<ol>
+<li><p>From the <strong>My Business Networks</strong> screen, click <strong>Create Business Network Card</strong>.</p></li>
+<li><p>Select <strong>Hyperledger Fabric v1.0</strong> and click <strong>Next</strong>.</p></li>
+<li><p>Enter the details of your connection profile. For a better understanding of creating a connection profile, see <a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a> and click <strong>Next</strong>.</p></li>
+<li><p>Select <strong>Certificates</strong> and upload the certificate and private key information for the peer admin identity. The <a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a> tutorial gives an overview of where to find the correct certificates.</p></li>
+<li><p>Enter a name for the business network card.</p></li>
+<li><p>Select <strong>Admin Card</strong>, and then <strong>Peer Admin</strong> and <strong>Channel Admin</strong>.</p></li>
+<li><p>Click <strong>Next</strong></p></li>
+</ol>
+
+<p>The peer admin card should now be present in your <strong>My Business Networks</strong> screen. You can now deploy a business network to the Hyperledger Fabric instance using Playground.</p>
+
 <h2 id="providing-access-to-your-business-network-with-a-business-network-card"><a name="provide"></a>Providing Access To Your Business Network With a Business Network Card</h2>
 
 <p>Access to your Business Network is granted to another user through the provision of a Business Network Card. Once created, the Business Network Card may be exported and provided to the user for whom the card was created.</p>
@@ -284,7 +303,7 @@ ga('send', 'pageview');
 
 <ul>
 <li>Click the <strong>Test</strong> tab, and click <strong>Create New Participant</strong>.</li>
-<li>Complete the Participant defintion and click <strong>Create New</strong>.</li>
+<li>Complete the Participant definition and click <strong>Create New</strong>.</li>
 </ul>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Queries Guide | Hyperledger Composer</title>
+    <title>Queries Tutorial | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Queries Guide</p>
+          <p>Queries Tutorial</p>
           </div>
 
           <nav class="context-nav">
@@ -114,9 +114,10 @@ ga('send', 'pageview');
 <li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
-<li><a href="../tutorials/developer-guide.html">Developer Guide</a></li>
-<li><a href="../tutorials/queries.html">Queries Guide</a></li>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -256,11 +257,11 @@ ga('send', 'pageview');
             
               <h1 id="queries-tutorial-using-the-composer-query-language-and-rest-apis">Queries Tutorial using the Composer Query language and REST APIs</h1>
 
-<p>In this tutorial, we will build on the <a href="./developer-guide.html">developer tutorial</a>, extending it to demonstrate  queries. The native  query language can filter results returned using criteria and can be invoked in transactions to perform operations, such as updating or removing assets on result sets.</p>
+<p>In this tutorial, we will build on the <a href="./developer-tutorial.html">developer tutorial</a>, extending it to demonstrate  queries. The native  query language can filter results returned using criteria and can be invoked in transactions to perform operations, such as updating or removing assets on result sets.</p>
 
 <p>Queries are defined in a query file (<code>.qry</code>) in the parent directory of the business network definition. Queries contain a WHERE clause, which defines the criteria by which assets or participants are selected.</p>
 
-<p>This tutorial uses the <code>tutorial-network</code> business network developed and deployed in the <a href="developer-guide.html">Developer-Tutorial</a>.</p>
+<p>This tutorial uses the <code>tutorial-network</code> business network developed and deployed in the <a href="developer-tutorial.html">Developer-Tutorial</a>.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
@@ -268,7 +269,7 @@ ga('send', 'pageview');
 
 <ul>
 <li>Complete the <a href="../installing/development-tools.html">development environment installation</a>.</li>
-<li>Complete the <a href="./developer-guide.html">developer tutorial</a>.</li>
+<li>Complete the <a href="./developer-tutorial.html">developer tutorial</a>.</li>
 </ul>
 
 <h2 id="step-one-updating-the-business-network">Step One: Updating the business network</h2>
@@ -406,7 +407,7 @@ query selectCommoditiesWithHighQuantity {
 
 <h2 id="step-three-regenerate-your-business-network-archive">Step Three: Regenerate your business network archive</h2>
 
-<p>After changing the files in a business network, the business network must be repackaged as a business network archive (<code>.bna</code>) and redeployed to the  instance.</p>
+<p>After changing the files in a business network, the business network must be repackaged as a business network archive (<code>.bna</code>) and redeployed to the Hyperledger Fabric instance.</p>
 
 <ol>
 <li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
@@ -590,7 +591,7 @@ query selectCommoditiesWithHighQuantity {
 <h2 id="related-links">Related Links</h2>
 
 <ul>
-<li><a href="developer-guide.html">Developer-Tutorial</a></li>
+<li><a href="developer-tutorial.html">Developer-Tutorial</a></li>
 <li><a href="../business-network/bnd-deploy.html">Deploying a business network</a></li>
 <li><a href="../reference/composer.network.deploy.html">Network deploy command</a></li>
 </ul>
