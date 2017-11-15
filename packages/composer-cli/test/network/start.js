@@ -21,6 +21,8 @@ const Start = require('../../lib/cmds/network/lib/start.js');
 const StartCmd = require('../../lib/cmds/network/startCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const IdCard = require('composer-common').IdCard;
+const ora = require('ora');
+
 require('chai').should();
 
 const chai = require('chai');
@@ -539,6 +541,44 @@ describe('composer start network CLI unit tests', function () {
                 ]);
             });
         });
+
+        it('Should report correct error if connect fails', () => {
+            let argv = {card:'cardname'
+            ,archiveFile: 'testArchiveFile.zip'
+
+            ,networkAdmin: ['admin1']
+            ,networkAdminEnrollSecret: [true]
+            ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.rejects(new Error('some error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/some error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Should report correct error if export card fails', () => {
+            let argv = {card:'cardname'
+            ,archiveFile: 'testArchiveFile.zip'
+
+            ,networkAdmin: ['admin1']
+            ,networkAdminEnrollSecret: [true]
+            ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.resolves();
+            mockAdminConnection.exportCard.rejects(new Error('export error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/export error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
 
     });
 
