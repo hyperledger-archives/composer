@@ -46,4 +46,4 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
 
 ## What's next?
 
-* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-guide.html).
+* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-tutorial.html).

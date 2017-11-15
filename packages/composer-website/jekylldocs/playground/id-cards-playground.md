@@ -22,6 +22,27 @@ A Business Network Card can be created when an Identity is issued within the Pla
 
 ---
 
+## <a name="peeradmin"></a>Creating a peer admin card using Playground
+
+Deploying a business network to a {{site.data.conrefs.hlf_full}} instance for the first time requires that the {{site.data.conrefs.composer_full}} chaincode be installed on the relevant {{site.data.conrefs.hlf_full}} peers, and that the business network then be instantiated on the channel. This process requires special {{site.data.conrefs.hlf_full}} privileges possessed by a peer or channel administrator.
+
+A peer admin business network card must be created in order to deploy a {{site.data.conrefs.composer_full}} business network to a {{site.data.conrefs.hlf_full}} instance. To create the peer admin business network card:
+
+1. From the **My Business Networks** screen, click **Create Business Network Card**.
+
+2. Select **Hyperledger Fabric v1.0** and click **Next**.
+
+3. Enter the details of your connection profile. For a better understanding of creating a connection profile, see [Deploying to {{site.data.conrefs.hlf_full}}](../tutorials/deploy-to-fabric-single-org.html) and click **Next**.
+
+4. Select **Certificates** and upload the certificate and private key information for the peer admin identity. The [Deploying to {{site.data.conrefs.hlf_full}}](../tutorials/deploy-to-fabric-single-org.html) tutorial gives an overview of where to find the correct certificates.
+
+5. Enter a name for the business network card.
+
+6. Select **Admin Card**, and then **Peer Admin** and **Channel Admin**.
+
+7. Click **Next**
+
+The peer admin card should now be present in your **My Business Networks** screen. You can now deploy a business network to the {{site.data.conrefs.hlf_full}} instance using Playground.
 
 ## <a name="provide"></a>Providing Access To Your Business Network With a Business Network Card
 
@@ -38,7 +59,7 @@ When an identity is issued within Playground, there is an option to save the ide
 
 2. If required, create the participant to which you intend to assign the identity:
    - Click the **Test** tab, and click **Create New Participant**.
-   - Complete the Participant defintion and click **Create New**.
+   - Complete the Participant definition and click **Create New**.
 
     <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
         <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_11.mp4" type="video/mp4" />

@@ -28,7 +28,14 @@ The following are prerequisites for installing the required development tools:
 - Python: 2.7.x
 - A code editor of your choice, we recommend VSCode.
 
-**Please do not install {{site.data.conrefs.composer_full}} as a superuser - or use 'sudo' or the 'root' user, if on Linux (doing will cause issues installation errors). {{site.data.conrefs.composer_full}} should be installed as non-privileged user.**
+**If installing {{site.data.conrefs.composer_full}} using Linux, be aware of the following advice:
+
+- Login as a normal user, rather than root.
+- Do not `su` to root.
+- When installing prerequisites, use curl, then unzip using sudo.
+- Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it's actions are required to be run as root.
+- Do not use npm with `sudo` or `su` to root to use it.
+- Avoid installing node globally as root.**
 
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
@@ -76,9 +83,15 @@ The development tools you'll need can all be installed (as a non-privileged user
 
 1. If you use VSCode, install the {{site.data.conrefs.composer_full}} VSCode plugin from the VSCode marketplace.
 
-2. If you want to run the Playground locally, install the `composer-playground` using the following command.
+2. If you want to run the connect to a business network using the Playground locally, install the `composer-playground` using the following command.
 
         npm install -g composer-playground
+
+3. To run the playground locally run the following command:
+
+        composer-playground
+
+    The playground should open automatically at the following address: http://localhost:8080/login
 
 
 ## Step 2: Starting {{site.data.conrefs.hlf_full}}
@@ -157,7 +170,7 @@ Issue from the `fabric-tools` directory
 
 **Create PeerAdmin Card**
 
-Create a business network card for the peer administrator specific to the {{site.data.conrefs.hlfv1}} instance running.
+Create a business network card for the peer administrator specific to the {{site.data.conrefs.hlf_full}} instance running.
 ```
 ./createPeerAdminCard.sh
 ```
@@ -175,4 +188,4 @@ Issue from the `fabric-tools` directory
 ## What next?
 
 * Begin [**writing a business network definition**](../business-network/business-network-index.html).
-* If you're looking for a tutorial on using the developer tools, see the [**developer guide**](../tutorials/developer-guide.html) to run through a sample with the developer tools.
+* If you're looking for a tutorial on using the developer tools, see the [**developer guide**](../tutorials/developer-tutorial.html) to run through a sample with the developer tools.

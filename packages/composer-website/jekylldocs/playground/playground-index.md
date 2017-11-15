@@ -11,7 +11,7 @@ excerpt: Playground is a web tool for defining and testing Hyperledger Composer 
 # Using Playground
 The {{site.data.conrefs.composer_full}} Playground provides a user interface for the configuration, deployment and testing of a business network. Advanced Playground features permit users to manage the security of the business network, invite participants to business networks and connect to multiple blockchain business networks.
 
-If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-guide.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with Business Network Cards.
+If you are new to the Playground, we recommend that you follow the [Playground Tutorial](../tutorials/playground-tutorial.html) that will guide you through the process of creating, deploying and testing a new blockchain business network before you start interacting with Business Network Cards.
 
 **Please note**: If two or more users are using {{site.data.conrefs.composer_full}} Playground to connect to the same instance of {{site.data.conrefs.hlf_full}}, ensure that each user refreshes their browser after the business network definition is updated by another user. Refreshing the browser accepts the changes to the business network definition made by other users. If the the business network is changed without accepting the changes of other users the changes will be lost.
 

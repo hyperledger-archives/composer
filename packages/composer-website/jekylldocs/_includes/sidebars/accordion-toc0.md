@@ -3,7 +3,7 @@
 {% if page.index-order %}
 {% capture mods %}{{ page.index-order | modulo:100 }}{% endcapture %}
 {% if mods == "0" and page.exception == nil %}
-- [{{ page.title }}](..{{page.url}}.html)
+- [<b>{{ page.title }}</b><img src="{{site.baseurl}}/assets/img/chevron-left.svg" class="caret">](..{{page.url}}.html)
 {% elsif mods != "0" and page.exception == nil %}
   - [{{page.title}}](..{{page.url}}.html)
 {% endif %}

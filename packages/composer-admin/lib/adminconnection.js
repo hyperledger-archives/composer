@@ -560,6 +560,10 @@ class AdminConnection {
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
 
+        // a card should exist in the security context from the connect call
+        // use this in the start options
+        startOptions.card = this.securityContext.card;
+
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
@@ -928,22 +932,33 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      *
-     * @param {string} connectionProfile Name of the connection profile
-     * @param {string} enrollmentID The ID to enroll
-     * @param {string} enrollmentSecret The secret for the ID
+     * @param {string} cardName Name of the card to use
+     * @param {string} [enrollmentID] The ID to enroll
+     * @param {string} [enrollmentSecret] The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @deprecated
      * @private
      */
-    requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
-        let savedConnectionManager;
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
-            .then((connectionManager) => {
-                savedConnectionManager = connectionManager;
-                return this.getProfile(connectionProfile);
-            })
-            .then((profileData) => {
-                return savedConnectionManager.requestIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
-            })
+    requestIdentity(cardName, enrollmentID, enrollmentSecret) {
+        let connectionProfileData;
+        let card;
+        return this.cardStore.get(cardName)
+          .then((result)=>{
+              card = result;
+              connectionProfileData = card.getConnectionProfile();
+              return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+          })
+          .then((connectionManager) => {
+
+              enrollmentID = enrollmentID || card.getUserName();
+              enrollmentSecret = enrollmentSecret || card.getEnrollmentCredentials().secret;
+
+              // the connection profile is unused later but passing to keep code happy
+              return connectionManager.requestIdentity(connectionProfileData.name, connectionProfileData, enrollmentID, enrollmentSecret);
+          }).then((result)=>{
+              result.enrollId = enrollmentID;
+              return result;
+          })
             .catch((error) => {
                 throw new Error('failed to request identity. ' + error.message);
             });

@@ -327,9 +327,9 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard});
             });
         });
 
@@ -341,9 +341,9 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition, {opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard,opt: 1});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard, opt: 1});
             });
         });
 
@@ -603,24 +603,59 @@ describe('AdminConnection', () => {
     });
 
     describe('#requestIdentity', () => {
-        it('should be able to request an identity', () => {
-            mockConnectionManager.importIdentity = sinon.stub();
+        beforeEach(()=>{
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.requestIdentity(testProfileName, 'id', 'secret')
+            let cardStub = sinon.createStubInstance(IdCard);
+            let cp = config;
+            cp.name=testProfileName;
+            cardStub.getConnectionProfile.returns(cp);
+            cardStub.getUserName.returns('fred');
+            cardStub.getBusinessNetworkName.returns('network');
+            cardStub.getCredentials.returns({});
+            cardStub.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',cardStub);
+        });
+
+        it('should be able to request an identity', () => {
+            mockConnectionManager.requestIdentity.resolves({
+                certificate: 'a',
+                key: 'b',
+                rootCertificate: 'c',
+                caName: 'caName',
+                enrollId : 'fred'
+            });
+
+
+            return adminConnection.requestIdentity('testCardname', 'id', 'secret')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
                     sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'id', 'secret');
                 });
         });
 
+        it('should be able to request an identity with id and secret from the card', () => {
+            mockConnectionManager.requestIdentity.resolves({
+                certificate: 'a',
+                key: 'b',
+                rootCertificate: 'c',
+                caName: 'caName',
+                enrollId : 'fred'
+            });
+
+            return adminConnection.requestIdentity('testCardname')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'fred', 'password');
+                });
+        });
+
         it('should throw an error if import fails', () => {
             mockConnectionManager.requestIdentity = sinon.stub();
             mockConnectionManager.requestIdentity.rejects(new Error('some error'));
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
+
             return adminConnection.requestIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
-                .should.be.rejectedWith(/some error/);
+                .should.be.rejectedWith(/failed to request identity/);
         });
 
 
