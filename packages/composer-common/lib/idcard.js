@@ -42,7 +42,7 @@ const newErrorWithCause = (message, cause) => {
  * An ID card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
  * <p>
- * Instances of this class should be created using IdCard.fromArchive or IdCard.fromDirectory.
+ * Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory.
  * @class
  * @memberof module:composer-common
  */
@@ -50,10 +50,6 @@ class IdCard {
 
     /**
      * Create the IdCard.
-     * <p>
-     * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from IdCard.fromArchive or IdCard.fromDirectory</strong>
-     * @private
      * @param {Object} metadata - metadata associated with the card.
      * @param {Object} connectionProfile - connection profile associated with the card.
      */

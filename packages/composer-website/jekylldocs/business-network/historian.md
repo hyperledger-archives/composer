@@ -33,19 +33,19 @@ asset HistorianRecord identified by transactionId {
 }
 ```
 
-* `transactionId` The transactionId of the transaction that caused the historian record to be created.
-* `String transactionType` The class of transaction that caused the historian record to be created.
-* `Transaction transactionInvoked` A relationship to the transaction which caused the historian record to be created.
+* `String transactionId` The transactionId of the transaction that caused the `HistorianRecord` asset to be created.
+* `String transactionType` The class of transaction that caused the `HistorianRecord` asset to be created.
+* `Transaction transactionInvoked` A relationship to the transaction which caused the `HistorianRecord` asset to be created.
 * `Participant participantInvoking` A relationship to the participant who submitted the transaction.
 * `Identity identityUsed` A relationship to the identity used to submit the transaction.
 * `Event[] eventsEmitted` An optional property containing any events which were emitted by the transaction.
-* `DateTime transactionTimestamp` The timestamp of the transaction which caused the historian record to be created.
+* `DateTime transactionTimestamp` The timestamp of the transaction which caused the `HistorianRecord` asset to be created.
 
-All historian record assets have relationships to the transaction that created them, the invoking participant of that transaction, and the identity used when the transaction was submitted. Applications that wish to obtain these attributes must resolve this relationship.
+All `HistorianRecord` assets have relationships to the transaction that created them, the invoking participant of that transaction, and the identity used when the transaction was submitted. Applications that wish to obtain these attributes must resolve this relationship.
 
 ## System transactions
 
-Several operations that the {{site.data.conrefs.composer_full}} runtime makes are classed as transactions. These 'system transactions' are defined in the {{site.data.conrefs.composer_full}} system model. The following will add historian records:
+Several operations that the {{site.data.conrefs.composer_full}} runtime makes are classed as transactions. These 'system transactions' are defined in the {{site.data.conrefs.composer_full}} system model. The following will add `HistorianRecord` assets:
 
 - Adding, removing and updating assets
 - Adding, removing and updating participants
@@ -77,7 +77,7 @@ Data from the historian registry can be retrieved using either an API call, or q
 
 ### Using the client and REST APIs with historian
 
-Historian records can be returned using the `system/historian` and `system/historian/{id}` calls using the REST API.
+`HistorianRecord` assets can be returned using the `system/historian` and `system/historian/{id}` calls using the REST API.
 
 When using the REST API, a GET call of `system/historian` will return _ALL_ historian data. This call should be used with care, the return is not limited and may result in large volumes of data being returned.
 

@@ -5,7 +5,7 @@ category: playground
 section: playground
 index-order: 301
 sidebar: sidebars/accordion-toc0.md
-excerpt: The Playground guide runs through creating your first business network. In this guide, you'll create participants, assets, and transactions; and verify that the transactions worked correctly. If you want to run the playground guide locally [**install the Playground locally**](../installing/using-playground-locally.html) first, then use the playground guide.
+excerpt: The Playground tutorial runs through creating your first business network. In this tutorial, you'll create participants, assets, and transactions; and verify that the transactions worked correctly. If you want to run the playground tutorial locally [**install the Playground locally**](../installing/using-playground-locally.html) first, then use the playground tutorial.
 ---
 
 # Playground Tutorial
@@ -244,6 +244,6 @@ Now that transactions have successfully run, we should log out of the business n
 
 You've completed the initial {{site.data.conrefs.composer_full}} Playground tutorial, you might want to either begin building your own business network using our other samples or templates.
 
-You might want to try the [**Developer Tutorial**](../tutorials/developer-guide.html), to get your local development environment setup, generate a REST API and a skeleton web application.
+You might want to try the [**Developer Tutorial**](../tutorials/developer-tutorial.html), to get your local development environment setup, generate a REST API and a skeleton web application.
 
 Or you can [run {{site.data.conrefs.composer_full}} Playground locally](../installing/using-playground-locally.html) connected to a real instance of {{site.data.conrefs.hlf_full}}.
