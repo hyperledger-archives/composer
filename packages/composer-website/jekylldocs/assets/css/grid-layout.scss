@@ -43,13 +43,13 @@ $callout: #FFD640;
     justify-items: start;
     overflow-y: scroll;
     height: 100vh;
+    background-color: #f7f2f0;
 
     // Scrollbar overrides
     &::-webkit-scrollbar {
       display: none;
     }
     -ms-overflow-style: none;  // IE 10+
-
 
     .docs-pagenav-grid {
       padding-top: 5vh;
@@ -105,16 +105,16 @@ $callout: #FFD640;
       ul {
         padding-left: 0;
         margin: 0;
-        // margin-left: 1rem;
 
       li {
         list-style: none;
-        border-bottom: 1px solid $keyline-highlight;
         position: relative;
         overflow: hidden;
         transition: 0.4s;
+        background-color: $white;
         &.hide {
             height: 4rem !important;
+            background-color: #f7f2f0;
         }
         &:hover {
           border-right: 0px solid $first-highlight;
@@ -124,20 +124,20 @@ $callout: #FFD640;
               top: 0;
               right: 0px;
               bottom: 0;
-              width: 2px;
+              // width: 2px;
               background-color: $first-highlight;
           }
         }
         &.active {
           height: auto !important;
-          border-left-color: $first-highlight;
+          border-left-color: $black;
           &:after {
               content: " ";
               position: absolute;
               top: 0;
               right: 0px;
               bottom: 0;
-              width: 2px;
+              // width: 2px;
               background-color: $first-highlight;
           }
         }
@@ -152,12 +152,11 @@ $callout: #FFD640;
           }
         }
 
-
         ul {
           list-style: none;
           padding-left: 0;
           margin: 0;
-          margin-left: 2rem;
+          margin-left: 0rem;
           margin-top: 1rem;
           padding-bottom: 2rem;
           &:hover {
@@ -167,7 +166,7 @@ $callout: #FFD640;
                 top: 0;
                 right: 0px;
                 bottom: 0;
-                width: 2px;
+                // width: 2px;
                 background-color: $first-highlight;
             }
             // &:after {
@@ -177,14 +176,24 @@ $callout: #FFD640;
 
           li {
             border-bottom: none;
-            border-left: 2px solid $keyline-highlight;
+            border-left: 6px solid $white;
             &:hover {
-              border-left: 2px solid $first-highlight;
+              border-left: 6px solid $black;
               border-right: none;
             }
           }
         }
       }
+
+      .caret {
+        float: right;
+        width: 13px;
+        height: 13px;
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
     }
 
       a {
@@ -211,6 +220,7 @@ $callout: #FFD640;
           li {
             border-bottom: none;
             padding: 0;
+            background-color: #f7f2f0 !important;
 
             &:hover {
               border-right: none;
@@ -683,11 +693,13 @@ copy-button {
     font-size: 0.9rem;
     line-height: 30px;
     border-bottom: 2px solid transparent;
+    background-color: #f7f2f0;
 
     &.opened {
       max-width: 70%;
       border-bottom: 2px solid $primary-text;
       padding-left: 0.8rem;
+      background-color: $white;
 
 
       &:focus {
