@@ -110,7 +110,7 @@ describe('SampleBusinessNetworkService', () => {
                     throw('should not get here');
                 })
                 .catch((error) => {
-                    error.message.should.equal('some error');
+                    error.should.match(/Error connecting to/);
                 });
 
             tick();

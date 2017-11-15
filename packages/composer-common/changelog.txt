@@ -11,8 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.15.1 {6a730f0048593bd942b567da27ebadfc} 2017-11-14
+Version 0.15.1 {015d225161956eb66be1636cef324c8a} 2017-11-14
 - Add in has to the Card Store
+- Make IdCard constructor public
 
 Version 0.15.0 {bc4416a38d5d8d9d53dd4f5cbe3992aa} 2017-11-08
 - Add IdCard and BusinessNetworkCardStore to public API

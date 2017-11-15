@@ -18,12 +18,12 @@ const Client = require('composer-admin');
 
 const Request = require('../../lib/cmds/identity/requestCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+
 
 const fs = require('fs');
 const os = require('os');
 const mkdirp = require('mkdirp');
-const IdCard = require('composer-common').IdCard;
+
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -31,20 +31,16 @@ chai.use(require('chai-as-promised'));
 
 const USER_ID = 'SuccessKid';
 const USER_SECRET = 'humbolt';
-const store = new MemoryCardStore();
+
 
 describe('composer identity request CLI unit tests', () => {
-
     let sandbox;
     let mockAdminConnection;
-    let testCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        testCard = new IdCard({ userName: 'SuccessKid' , businessNetwork :'penguin-network',enrollmentSecret:'humbolt'}, {type:'embedded', name: 'myprofile' });
-        testCard.setCredentials({certificate:'cert',privateKey:'nottelling'});
-        store.put('cardName',testCard);
-        //mockAdminConnection = new Client.AdminConnection({cardStore:store});
+
+
         mockAdminConnection = sinon.createStubInstance(Client.AdminConnection);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
