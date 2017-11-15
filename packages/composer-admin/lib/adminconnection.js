@@ -560,6 +560,10 @@ class AdminConnection {
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
 
+        // a card should exist in the security context from the connect call
+        // use this in the start options
+        startOptions.card = this.securityContext.card;
+
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
@@ -941,10 +945,7 @@ class AdminConnection {
         return this.cardStore.get(cardName)
           .then((result)=>{
               card = result;
-              return card.getConnectionProfile();
-          })
-          .then((result)=>{
-              connectionProfileData = result;
+              connectionProfileData = card.getConnectionProfile();
               return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
           })
           .then((connectionManager) => {
