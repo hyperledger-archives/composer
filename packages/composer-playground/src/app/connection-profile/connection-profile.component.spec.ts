@@ -320,7 +320,6 @@ describe('ConnectionProfileComponent', () => {
                 mspID: ['Org1MSP', [Validators.required]],
                 ca: ['http://localhost:7054', [Validators.required]],
                 eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 timeout: [300, [Validators.pattern('[0-9]+')]]
             });
 
@@ -352,7 +351,6 @@ describe('ConnectionProfileComponent', () => {
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
                 timeout: 300
             };
 
@@ -375,7 +373,6 @@ describe('ConnectionProfileComponent', () => {
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
                 timeout: 300
             };
 
@@ -402,7 +399,6 @@ describe('ConnectionProfileComponent', () => {
                     url: ['http://localhost:7054', [Validators.required]],
                     name: ['']
                 }),
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 timeout: [300, [Validators.pattern('[0-9]+')]],
             });
 
@@ -417,7 +413,6 @@ describe('ConnectionProfileComponent', () => {
                 deployWaitTime: 300,
                 eventHubURL: 'grpc://localhost:7053',
                 invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
                 membershipServicesURL: 'grpc://localhost:7054',
                 name: 'new v06 Profile',
                 peerURL: 'grpc://localhost:7051',
@@ -434,7 +429,6 @@ describe('ConnectionProfileComponent', () => {
                 peerURL: ['grpc://localhost:7051', [Validators.required]],
                 membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
                 eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
                 invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
             });

@@ -30,7 +30,6 @@ export class ConnectionProfileComponent {
         channel: '',
         mspID: '',
         ca: {},
-        keyValStore: '',
         timeout: ''
     };
 
@@ -64,9 +63,6 @@ export class ConnectionProfileComponent {
             url: {
                 required: 'A Certificate Authority URL is required.'
             }
-        },
-        keyValStore: {
-            required: 'A Key Value Store Directory Path is required.',
         },
         timeout: {
             pattern: 'The Timeout (seconds) must be an integer.'
@@ -142,10 +138,6 @@ export class ConnectionProfileComponent {
                 peers: this.fb.array(
                     this.initPeers()
                 ),
-                keyValStore: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
-                    [Validators.required]
-                ],
                 // Is required and must be a number
                 timeout: [
                     this.connectionProfileData ? this.connectionProfileData.profile.timeout : 300,
