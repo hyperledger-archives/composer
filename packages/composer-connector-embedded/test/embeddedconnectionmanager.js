@@ -102,6 +102,7 @@ describe('EmbeddedConnectionManager', () => {
                 certificate: testCertificate,
                 privateKey: testPrivateKey
             };
+            mockIdentitiesDataCollection.exists.withArgs(identity.name).resolves(true);
             mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
             return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
                 .should.become({
@@ -115,6 +116,7 @@ describe('EmbeddedConnectionManager', () => {
                 name: 'ID',
                 certificate: testCertificate,
             };
+            mockIdentitiesDataCollection.exists.withArgs(identity.name).resolves(true);
             mockIdentitiesDataCollection.get.withArgs(identity.name).resolves(identity);
             return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity.name)
                 .then((credentials) => {
@@ -125,10 +127,70 @@ describe('EmbeddedConnectionManager', () => {
 
         it('return null for non-existent identity', function() {
             const identity = 'conga';
-            mockIdentitiesDataCollection.get.withArgs(identity).resolves(null);
+            mockIdentitiesDataCollection.exists.withArgs(identity).resolves(false);
+            mockIdentitiesDataCollection.get.withArgs(identity).rejects(new Error('nothing to get'));
             return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity)
                 .should.eventually.be.null;
         });
+
+        it('return an error for non-existent identity that it thinks exists', function() {
+            const identity = 'conga';
+            mockIdentitiesDataCollection.exists.withArgs(identity).resolves(true);
+            mockIdentitiesDataCollection.get.withArgs(identity).rejects(new Error('nothing to get'));
+
+            return connectionManager.exportIdentity('devFabric1', { connect: 'options' }, identity)
+                .should.be.rejectedWith(/nothing to get/);
+        });
+
+    });
+
+    describe('#removeIdentity', () => {
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(connectionManager.dataService, 'ensureCollection').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('should remove an existing identity', () => {
+            mockIdentitiesDataCollection.remove.withArgs('doge').resolves();
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
+            return connectionManager.removeIdentity('devFabric1', { connect: 'options' }, 'doge')
+                .then((removed) => {
+                    sinon.assert.calledOnce(mockIdentitiesDataCollection.exists);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.exists, 'doge');
+                    sinon.assert.calledOnce(mockIdentitiesDataCollection.remove);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.remove, 'doge');
+                    removed.should.be.true;
+                });
+        });
+
+        it('should do nothing if identity doesn\'t exist', () => {
+            mockIdentitiesDataCollection.remove.withArgs('doge').resolves();
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
+            return connectionManager.removeIdentity('devFabric1', { connect: 'options' }, 'doge')
+                .then((removed) => {
+                    sinon.assert.calledOnce(mockIdentitiesDataCollection.exists);
+                    sinon.assert.calledWith(mockIdentitiesDataCollection.exists, 'doge');
+                    sinon.assert.notCalled(mockIdentitiesDataCollection.remove);
+                    removed.should.be.false;
+                });
+        });
+
+        it('should throw an error if exists throws an error', () => {
+            mockIdentitiesDataCollection.remove.withArgs('doge').resolves();
+            mockIdentitiesDataCollection.exists.withArgs('doge').rejects(new Error('exists error'));
+            return connectionManager.removeIdentity('devFabric1', { connect: 'options' }, 'doge')
+                .should.eventually.be.rejectedWith(/exists error/);
+        });
+
+        it('should throw an error if remove throws an error', () => {
+            mockIdentitiesDataCollection.remove.withArgs('doge').rejects(new Error('exists error'));
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
+            return connectionManager.removeIdentity('devFabric1', { connect: 'options' }, 'doge')
+                .should.eventually.be.rejectedWith(/exists error/);
+        });
+
     });
 
     describe('#connect', () => {

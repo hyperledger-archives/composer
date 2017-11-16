@@ -84,9 +84,16 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * {@link null} if the named identity does not exist.
      */
     exportIdentity(connectionProfileName, connectionOptions, id) {
+        let identities;
         return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
-            .then((identities) => {
-                return identities.get(id);
+            .then((identities_) => {
+                identities = identities_;
+                return identities.exists(id);
+            })
+            .then((exists) => {
+                if (exists) {
+                    return identities.get(id);
+                }
             })
             .then((identity) => {
                 if (!identity) {
@@ -102,6 +109,33 @@ class EmbeddedConnectionManager extends ConnectionManager {
                     certificate: identity.certificate,
                     privateKey: privateKey
                 };
+            });
+    }
+
+    /**
+     * Remove an identity from a profile wallet.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @returns {Promise} a promise which resolves to true if identity existed and removed, false otherwise
+     * or rejects with an error.
+     */
+    removeIdentity(connectionProfile, connectionOptions, id) {
+        let identities;
+        let exists;
+        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
+            .then((identities_) => {
+                identities = identities_;
+                return identities.exists(id);
+            })
+            .then((exists_) => {
+                exists = exists_;
+                if (exists) {
+                    return identities.remove(id);
+                }
+            })
+            .then(() => {
+                return exists;
             });
     }
 

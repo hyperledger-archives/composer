@@ -26,6 +26,7 @@ const temp = require('temp').track();
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
 const EventHub = require('fabric-client/lib/EventHub');
+const TransactionID = require('fabric-client/lib/TransactionID');
 
 const LOG = Logger.getLog('HLFConnection');
 
@@ -170,9 +171,9 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!enrollmentID) {
-            throw new Error('enrollmentID not specified');
+            return Promise.reject(new Error('enrollmentID not specified'));
         } else if (!enrollmentSecret) {
-            throw new Error('enrollmentSecret not specified');
+            return Promise.reject(new Error('enrollmentSecret not specified'));
         }
 
         // Submit the enrollment request to Fabric CA.
@@ -269,7 +270,7 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!identity) {
-            throw new Error('identity not specified');
+            return Promise.reject(new Error('identity not specified'));
         }
 
         // Get the user context (certificate) from the state store.
@@ -321,7 +322,7 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
 
         if (!businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
+            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
         }
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
@@ -437,9 +438,9 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, businessNetworkIdentifier, startTransaction, startOptions);
 
         if (!businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
+            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
         } else if (!startTransaction) {
-            throw new Error('startTransaction not specified');
+            return Promise.reject(new Error('startTransaction not specified'));
         }
 
         let finalTxId;
@@ -540,9 +541,9 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
+            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
         } else if (!deployTransaction) {
-            throw new Error('deployTransaction not specified');
+            return Promise.reject(new Error('deployTransaction not specified'));
         }
 
         LOG.debug(method, 'installing composer runtime chaincode');
@@ -585,8 +586,8 @@ class HLFConnection extends Connection {
      * @param {any} responses the responses from the install, instantiate or invoke
      * @param {boolean} isProposal true is the responses are from a proposal
      * @param {regexp} pattern optional regular expression for message which isn't an error
-     * @return {boolean} true if error was ignored as per pattern request, false otherwise
-     * @throws if not valid
+     * @return {Object} number of ignored errors and valid responses
+     * @throws if there are no valid responses at all.
      */
     _validateResponses(responses, isProposal, pattern) {
         const method = '_validateResponses';
@@ -667,10 +668,10 @@ class HLFConnection extends Connection {
 
         // Validate all the arguments.
         if (!businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified');
+            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
         }
         if (businessNetworkIdentifier !== this.businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier does not match the business network identifier for this connection');
+            return Promise.reject(new Error('businessNetworkIdentifier does not match the business network identifier for this connection'));
         }
 
         // Send an undeploy request which will disable the chaincode.
@@ -755,20 +756,28 @@ class HLFConnection extends Connection {
         const method = 'queryChainCode';
         LOG.entry(method, securityContext, functionName, args);
 
+        if (!this.businessNetworkIdentifier) {
+            return Promise.reject(new Error('No business network has been specified for this connection'));
+        }
+
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
         // Validate all the arguments.
         if (!functionName) {
-            throw new Error('functionName not specified');
+            return Promise.reject(new Error('functionName not specified'));
         } else if (!Array.isArray(args)) {
-            throw new Error('args not specified');
+            return Promise.reject(new Error('args not specified'));
         }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
-                throw new Error('invalid arg specified: ' + arg);
-            }
-        });
+        try {
+            args.forEach((arg) => {
+                if (typeof arg !== 'string') {
+                    throw new Error('invalid arg specified: ' + arg);
+                }
+            });
+        } catch(error) {
+            return Promise.reject(error);
+        }
 
         let txId = this.client.newTransactionID();
         let peerArray = [this.channel.getPeers()[0]];
@@ -816,26 +825,42 @@ class HLFConnection extends Connection {
      */
     invokeChainCode(securityContext, functionName, args, options) {
         const method = 'invokeChainCode';
-        LOG.entry(method, securityContext, functionName, args);
+        LOG.entry(method, securityContext, functionName, args, options);
+
+        if (!this.businessNetworkIdentifier) {
+            return Promise.reject(new Error('No business network has been specified for this connection'));
+        }
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
 
         // Validate all the arguments.
         if (!functionName) {
-            throw new Error('functionName not specified');
+            return Promise.reject(new Error('functionName not specified'));
         } else if (!Array.isArray(args)) {
-            throw new Error('args not specified');
+            return Promise.reject(new Error('args not specified'));
         }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
-                throw new Error('invalid arg specified: ' + arg);
-            }
-        });
+
+        try {
+            args.forEach((arg) => {
+                if (typeof arg !== 'string') {
+                    throw new Error('invalid arg specified: ' + arg);
+                }
+            });
+        } catch(error) {
+            return Promise.reject(error);
+        }
 
         let txId;
-        if (options && options.transactionId){
-            txId = options.transactionId;
+        if (options && options.transactionId) {
+
+            // see if we have a proper transactionID object or perhaps its the data of a transactionId
+            if (options.transactionId instanceof TransactionID) {
+                txId = options.transactionId;
+            } else {
+                txId = this.client.newTransactionID();
+                Object.assign(txId, options.transactionId);
+            }
         } else {
             txId = this.client.newTransactionID();
         }
@@ -916,7 +941,7 @@ class HLFConnection extends Connection {
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
         if (!userID) {
-            throw new Error('userID not specified');
+            return Promise.reject(new Error('userID not specified'));
         }
         options = options || {};
 
@@ -1032,7 +1057,7 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext);
 
         if (!this.businessNetworkIdentifier) {
-            throw new Error('businessNetworkIdentifier not specified on connection');
+            return Promise.reject(new Error('No business network has been specified for this connection'));
         }
 
         let txId;
@@ -1103,10 +1128,15 @@ class HLFConnection extends Connection {
      * @param {any} securityContext security context
      * @return {Promise} A promise that is resolved with a transaction id
      */
-    createTransactionId(){
-        // Check that a valid security context has been specified.
+    createTransactionId() {
+        const method = 'createTransactionId';
+        LOG.entry(method);
         let id = this.client.newTransactionID();
-        return Promise.resolve({id:id,idStr:id.getTransactionID()});
+        LOG.exit(method, id.getTransactionID());
+        return Promise.resolve({
+            id:id,
+            idStr:id.getTransactionID()
+        });
     }
 
 }

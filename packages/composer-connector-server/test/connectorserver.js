@@ -125,6 +125,7 @@ describe('ConnectorServer', () => {
                 '/api/connectionUndeploy',
                 '/api/connectionUpdate',
                 '/api/connectionManagerExportIdentity',
+                '/api/connectionManagerRemoveIdentity',
                 '/api/connectionCreateTransactionId'
             ].sort());
             mockSocket.on.args.forEach((args) => {
@@ -319,6 +320,38 @@ describe('ConnectorServer', () => {
                 });
         });
     });
+
+    describe('#connectionManagerRemoveIdentity', () => {
+
+        it('should remove an identity', () => {
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.removeIdentity.resolves(true);
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, connectionProfile, connectionOptions, 'bob1');
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, true);
+                });
+        });
+
+        it('should handle errors removing an identity', () => {
+            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionManager.removeIdentity.rejects(new Error('import error'));
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.equal('import error');
+                    serializedError.stack.should.be.a('string');
+                });
+        });
+
+    });
+
 
     describe('#connectionManagerConnect', () => {
 
@@ -530,7 +563,6 @@ describe('ConnectorServer', () => {
 
     });
 
-
     describe('#connectionStart', () => {
 
         beforeEach(() => {
@@ -648,7 +680,6 @@ describe('ConnectorServer', () => {
         });
 
     });
-
 
     describe('#connectionUpdate', () => {
 
@@ -900,10 +931,10 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should invoke chain code', () => {
-            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args).resolves();
+        it('should invoke chain code with no options', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, cb)
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, null, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
                     sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args);
@@ -912,9 +943,34 @@ describe('ConnectorServer', () => {
                 });
         });
 
+        it('should invoke chain code with empty options', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves();
+            const cb = sinon.stub();
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, {}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args, {});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                });
+        });
+
+        it('should invoke chain code with transactionId', () => {
+            mockConnection.invokeChainCode.withArgs(mockSecurityContext, functionName, args, sinon.match.any).resolves();
+            const cb = sinon.stub();
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, {transactionId: 'tID'}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, functionName, args, {transactionId: 'tID'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                });
+        });
+
+
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInvokeChainCode(invalidID, securityContextID, functionName, args, cb)
+            return connectorServer.connectionInvokeChainCode(invalidID, securityContextID, functionName, args, {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -926,7 +982,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInvokeChainCode(connectionID, invalidID, functionName, args, cb)
+            return connectorServer.connectionInvokeChainCode(connectionID, invalidID, functionName, args, {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -939,7 +995,7 @@ describe('ConnectorServer', () => {
         it('should handle invoke chain code errors', () => {
             mockConnection.invokeChainCode.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, cb)
+            return connectorServer.connectionInvokeChainCode(connectionID, securityContextID, functionName, args, {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
