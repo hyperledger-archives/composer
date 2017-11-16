@@ -50,6 +50,7 @@ concept Bond {
     o PaymentFrequency paymentFrequency
     o String dayCountFraction
     --> Issuer issuer
+    --> Issuer[] owners optional
 }
 
 asset BondAsset identified by ISINCode {

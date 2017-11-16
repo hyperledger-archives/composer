@@ -344,7 +344,7 @@ class BusinessNetworkConnector extends Connector {
                     }
                 } else if (doResolve) {
                     debug('No `where` filter, about to perform resolveAll');
-                    // get all unresolved objects
+                    // get all resolved objects
                     return registry.resolveAll()
                         .then((result) => {
                             debug('Got Result:', result);
