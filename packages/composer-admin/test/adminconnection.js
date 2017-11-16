@@ -324,7 +324,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.start(businessNetworkDefinition)
+            return adminConnection.start(businessNetworkDefinition, {card: mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard});
@@ -338,7 +338,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.start(businessNetworkDefinition, {opt: 1})
+            return adminConnection.start(businessNetworkDefinition, {card: mockAdminIdCard,opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard,opt: 1});
@@ -382,7 +382,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.deploy(businessNetworkDefinition)
+            return adminConnection.deploy(businessNetworkDefinition,{card:mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card:mockAdminIdCard});
@@ -396,7 +396,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
+            return adminConnection.deploy(businessNetworkDefinition, {opt: 1,card:mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1,card:mockAdminIdCard});
