@@ -202,7 +202,7 @@ We will now integrate the newly updated business network with queries added, and
 
 6. Select **Yes** when asked whether to enable event publication.
 
-7. Select **No** when asked whether to enable TSL security.
+7. Select **No** when asked whether to enable TLS security.
 
 ## Step Six: Test the REST APIs and create some data
 
