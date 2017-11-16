@@ -8,13 +8,11 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: "This tutorial will walk you through the steps required to configure Composer for connection with a running Hyperledger Fabric instance."
 ---
 
-# Deploying a {{site.data.conrefs.composer_full}} blockchain business network to {{site.data.conrefs.hlf_full}} for a single organisation
+# Deploying a {{site.data.conrefs.composer_full}} blockchain business network to {{site.data.conrefs.hlf_full}} for a single organization
 
 In the [development environment](../installing/development-tools.html), a simple {{site.data.conrefs.hlf_full}} network is created for you (`fabric-dev-servers`), along with all of the {{site.data.conrefs.composer_full}} configuration that you need in order to deploy a blockchain business network.
 
-This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}}, including how to generate the necessary {{site.data.conrefs.composer_full}} configuration.
-
-This tutorial focuses on the steps required to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for a single organisation. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for multiple organisations.
+This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for a single organization, including how to generate the necessary {{site.data.conrefs.composer_full}} configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for multiple organizations.
 
 ## Prerequisites
 
@@ -57,9 +55,9 @@ The configuration for `configtxgen` is stored in the file:
 
 You can find more information about these configuration tools, what they do, and how to use them by reading the {{site.data.conrefs.hlf_full}} documentation.
 
-#### Organisations
+#### Organizations
 
-The simple {{site.data.conrefs.hlf_full}} network is made up of a single organisation called `Org1`. The organisation uses the domain name `org1.example.com`. Additionally, the Membership Services Provider (MSP) for this organisation is called `Org1MSP`. In this tutorial, you will deploy a blockchain business network that only the organisation `Org1` can interact with.
+The simple {{site.data.conrefs.hlf_full}} network is made up of a single organization called `Org1`. The organization uses the domain name `org1.example.com`. Additionally, the Membership Services Provider (MSP) for this organization is called `Org1MSP`. In this tutorial, you will deploy a blockchain business network that only the organization `Org1` can interact with.
 
 #### Network components
 
@@ -79,7 +77,7 @@ This tutorial will run {{site.data.conrefs.composer_full}} commands on the Docke
 
 #### Users
 
-The organisation `Org1` is configured with a user named `Admin@org1.example.com`. This user is an administrator. Administrators for an organisation have the permission to install the code for a blockchain business network onto their organisation's peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user `Admin@org1.example.com`.
+The organization `Org1` is configured with a user named `Admin@org1.example.com`. This user is an administrator. Administrators for an organization have the permission to install the code for a blockchain business network onto their organization's peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user `Admin@org1.example.com`.
 
 The user `Admin@org1.example.com` has a set of certificates and private key files stored in the directory:
 
