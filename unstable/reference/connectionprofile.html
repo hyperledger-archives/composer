@@ -279,6 +279,7 @@ ga('send', 'pageview');
 
 <p>Create a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    {
+        "name": "hlfv1"
         "type": "hlfv1",
         "orderers": [
             {
@@ -326,6 +327,7 @@ If you are connecting to Hyperledger Fabric v1.0 and are not using TLS or if you
 _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
 
     {
+    "name": "hlfv1"
     "type": "hlfv1",
     "orderers": [
         "grpc://localhost:7050"
@@ -351,6 +353,7 @@ _Please note: The simplified version of the connection profile will only work if
     }
 </code></pre></div>
 <ul>
+<li><code>name</code> is a name used to refer to the connection profile, and is required.</li>
 <li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0 is must be <code>hlfv1</code>.</li>
 <li><code>ca</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of <code>ca</code> as shown in the first Hyperledger Fabric v1.0 example above.</li>
 <li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>

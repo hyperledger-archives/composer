@@ -255,13 +255,11 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="deploying-a-hyperledger-composer-blockchain-business-network-to-hyperledger-fabric-for-a-single-organisation">Deploying a Hyperledger Composer blockchain business network to Hyperledger Fabric for a single organisation</h1>
+              <h1 id="deploying-a-hyperledger-composer-blockchain-business-network-to-hyperledger-fabric-for-a-single-organization">Deploying a Hyperledger Composer blockchain business network to Hyperledger Fabric for a single organization</h1>
 
 <p>In the <a href="../installing/development-tools.html">development environment</a>, a simple Hyperledger Fabric network is created for you (<code>fabric-dev-servers</code>), along with all of the Hyperledger Composer configuration that you need in order to deploy a blockchain business network.</p>
 
-<p>This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of Hyperledger Fabric, including how to generate the necessary Hyperledger Composer configuration.</p>
-
-<p>This tutorial focuses on the steps required to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organisation. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of Hyperledger Fabric for multiple organisations.</p>
+<p>This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organization, including how to generate the necessary Hyperledger Composer configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of Hyperledger Fabric for multiple organizations.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
@@ -305,9 +303,9 @@ composer card delete -n admin@tutorial-network
 </code></pre></div>
 <p>You can find more information about these configuration tools, what they do, and how to use them by reading the Hyperledger Fabric documentation.</p>
 
-<h4 id="organisations">Organisations</h4>
+<h4 id="organizations">Organizations</h4>
 
-<p>The simple Hyperledger Fabric network is made up of a single organisation called <code>Org1</code>. The organisation uses the domain name <code>org1.example.com</code>. Additionally, the Membership Services Provider (MSP) for this organisation is called <code>Org1MSP</code>. In this tutorial, you will deploy a blockchain business network that only the organisation <code>Org1</code> can interact with.</p>
+<p>The simple Hyperledger Fabric network is made up of a single organization called <code>Org1</code>. The organization uses the domain name <code>org1.example.com</code>. Additionally, the Membership Services Provider (MSP) for this organization is called <code>Org1MSP</code>. In this tutorial, you will deploy a blockchain business network that only the organization <code>Org1</code> can interact with.</p>
 
 <h4 id="network-components">Network components</h4>
 
@@ -338,7 +336,7 @@ composer card delete -n admin@tutorial-network
 
 <h4 id="users">Users</h4>
 
-<p>The organisation <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator. Administrators for an organisation have the permission to install the code for a blockchain business network onto their organisation&#39;s peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user <code>Admin@org1.example.com</code>.</p>
+<p>The organization <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator. Administrators for an organization have the permission to install the code for a blockchain business network onto their organization&#39;s peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user <code>Admin@org1.example.com</code>.</p>
 
 <p>The user <code>Admin@org1.example.com</code> has a set of certificates and private key files stored in the directory:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
