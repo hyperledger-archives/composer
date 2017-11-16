@@ -121,7 +121,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setInitialFile() {
-        if (this.files.length) {
+        if (this.files && this.files.length > 0) {
             let initialFile = this.files.find((file) => {
                 return file.isReadMe();
             });
@@ -154,9 +154,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
             // Update inputFileName
             this.inputFileNameArray = this.formatFileName(file.displayID);
-
-            // re-validate, since we do not persist bad files- they revert when navigated away
-            this.noError = this.editorFilesValidate();
 
             // remove fileError flag
             this.fileNameError = null;
@@ -212,7 +209,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -254,7 +251,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -287,7 +284,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -343,7 +340,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -560,11 +557,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.setInitialFile();
 
                     // validate the remaining (acl/cto files and conditionally enable deploy
-                    if (this.editorFilesValidate()) {
-                        this.fileService.businessNetworkChanged$.next(true);
-                    } else {
-                        this.fileService.businessNetworkChanged$.next(false);
-                    }
+                    this.noError = this.editorFilesValidate();
 
                     // Send alert
                     this.alertService.busyStatus$.next(null);
@@ -653,6 +646,12 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         if (this.fileService.validateFile('package', 'package') !== null) {
             allValid = false;
+        }
+
+        if (allValid) {
+            for (let file of this.files) {
+                this.fileService.updateBusinessNetwork(file.id, file);
+            }
         }
         return allValid;
     }
