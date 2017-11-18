@@ -1,3 +1,4 @@
 [submodule "packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3"]
 	path = packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3
-	url = https://gopkg.in/olebedev/go-duktape.v3.git
+	url = https://gopkg.in/sstone1/go-duktape.v3.git
+	branch = v3
