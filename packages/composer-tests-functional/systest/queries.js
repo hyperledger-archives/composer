@@ -25,7 +25,9 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('Query system tests', () => {
+describe('Query system tests', function() {
+
+    this.retries(TestUtil.retries());
 
     let businessNetworkDefinition;
     let client;

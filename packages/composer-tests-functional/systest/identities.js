@@ -30,10 +30,13 @@ chai.use(require('chai-as-promised'));
 
 process.setMaxListeners(Infinity);
 
-describe('Identity system tests', () => {
+describe('Identity system tests', function() {
+
+    this.retries(TestUtil.retries());
+
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
+        return TestUtil.resetBusinessNetwork(bnID, 0);
     });
     let businessNetworkDefinition;
     let client;

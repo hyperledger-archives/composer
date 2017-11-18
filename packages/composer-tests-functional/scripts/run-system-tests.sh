@@ -14,17 +14,17 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
-if [ "${SYSTEST}" = "" ]; then
-    echo You must set SYSTEST to 'embedded', 'hlfv1', 'proxy', or 'web', or a comma
+if [ "${FVTEST}" = "" ]; then
+    echo You must set FVTEST to 'embedded', 'hlfv1', 'proxy', or 'web', or a comma
     echo separated list of a set of system test configurations to run.
     echo For example:
-    echo  export SYSTEST=hlfv1
-    echo  export SYSTEST=embedded,proxy,web
+    echo  export FVTEST=hlfv1
+    echo  export FVTEST=embedded,proxy,web
     exit 1
 fi
 
 # Run for all specified configurations.
-for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
+for FVTEST in $(echo ${FVTEST} | tr "," " "); do
 
     # Set default timeouts
     export COMPOSER_PORT_WAIT_SECS=30
@@ -36,8 +36,8 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer-credentials/composer-systests*
 
     # Pull any required Docker images.
-    if [[ ${SYSTEST} == hlfv1* ]]; then
-        if [[ ${SYSTEST} == *tls ]]; then
+    if [[ ${FVTEST} == hlfv1* ]]; then
+        if [[ ${FVTEST} == *tls ]]; then
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
@@ -68,9 +68,9 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     fi
 
     # configure v1 to run the tests
-    if [[ ${SYSTEST} == hlfv1* ]]; then
+    if [[ ${FVTEST} == hlfv1* ]]; then
         sleep 10
-        if [[ ${SYSTEST} == *tls ]]; then
+        if [[ ${FVTEST} == *tls ]]; then
             # Create the channel
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c composerchannel -f /etc/hyperledger/configtx/composer-channel.tx --tls true --cafile /etc/hyperledger/orderer/tls/ca.crt
             # Join peer0 to the channel.
@@ -92,7 +92,7 @@ for SYSTEST in $(echo ${SYSTEST} | tr "," " "); do
     fi
 
     # Run the system tests.
-    npm run systest:${SYSTEST} 2>&1 | tee
+    npm run systest:${FVTEST} 2>&1 | tee
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then

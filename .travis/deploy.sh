@@ -22,9 +22,9 @@ if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "8" ]; then
     exit 0
 fi
 
-# Check that this is not the system tests.
-if [ "${SYSTEST}" != "" ]; then
-    echo Not executing as running system tests.
+# Check that this is not the functional verification tests.
+if [ "${FVTEST}" != "" ]; then
+    echo Not executing as running fv tests.
     exit 0
 fi
 

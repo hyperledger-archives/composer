@@ -23,12 +23,11 @@ const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-// const Util = require('composer-common').Util;
-
 
 let client;
 let docker = new Docker();
 let forceDeploy = false;
+let testRetries = 4;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -77,7 +76,7 @@ class TestUtil {
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabric() {
-        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf.*');
+        return process.env.FVTEST && process.env.FVTEST.match('^hlf.*');
     }
 
     /**
@@ -85,7 +84,7 @@ class TestUtil {
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabricV1() {
-        return process.env.SYSTEST && process.env.SYSTEST.match('^hlfv1.*');
+        return process.env.FVTEST && process.env.FVTEST.match('^hlfv1.*');
     }
 
     /**
@@ -138,7 +137,7 @@ class TestUtil {
             return Promise.resolve();
         }
         // startsWith not available in browser test environment
-        if (process.env.SYSTEST.match('^hlfv1')) {
+        if (process.env.FVTEST.match('^hlfv1')) {
             return Promise.resolve();
         }
         return TestUtil.waitForPort('localhost', 7050)
@@ -227,7 +226,7 @@ class TestUtil {
                     const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
                     mkdirp.sync(keyValStoreOrg2);
                     let connectionProfileOrg1, connectionProfileOrg2;
-                    if (process.env.SYSTEST.match('tls$')) {
+                    if (process.env.FVTEST.match('tls$')) {
                         console.log('setting up TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
                             type: 'hlfv1',
@@ -597,30 +596,45 @@ class TestUtil {
     /**
      * Reset the business network to its initial state.
      * @param {String} identifier, business network identifier to reset
+     * @param {int} retryCount, current retry number
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static resetBusinessNetwork(identifier) {
+    static resetBusinessNetwork(identifier, retryCount) {
         if (!client) {
             return Promise.resolve();
         }
 
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy){
             const adminConnection = new AdminConnection();
-            return adminConnection.connectWithDetails('composer-systests-org1', 'admin', 'NOTNEEDED',identifier)
+            return adminConnection.connectWithDetails('composer-systests-org1', 'admin', 'NOTNEEDED', identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
             .then(() => {
                 return adminConnection.disconnect();
+            })
+            .catch((err) => {
+                if (retryCount >= this.retries) {
+                    throw(err);
+                } else {
+                    this.resetBusinessNetwork(identifier, retryCount++);
+                }
             });
         } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
             const adminConnection = new AdminConnection();
-            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'admin', 'NOTNEEDED',identifier)
+            return adminConnection.connectWithDetails('composer-systests-org1-solo', 'admin', 'NOTNEEDED', identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
             })
             .then(() => {
                 return adminConnection.disconnect();
+            })
+            .catch((err) => {
+                if (retryCount >= this.retries) {
+                    throw(err);
+                } else {
+                    this.resetBusinessNetwork(identifier, retryCount++);
+                }
             });
         } else {
 
@@ -637,9 +651,12 @@ class TestUtil {
     }
 
 
-    /** Deploy the common systest business network
-     *  @return {Promise} - a promise that will be resolved when complete.
+    /** Return an integer for use as a number of retries
+     *  @return {int} - an integer
      */
+    static retries() {
+        return testRetries;
+    }
 
 }
 

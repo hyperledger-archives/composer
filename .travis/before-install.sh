@@ -31,14 +31,14 @@ npm install -g lerna@2 @alrra/travis-scripts asciify gnomon
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg
 echo "ABORT_CODE=0" >> ${DIR}/build.cfg
 
-# Abort the systest/integration if this is a merge build
+# Abort the fv/integration if this is a merge build
 # Check for the FC_TASK that is set in travis.yml, also the pull request is false => merge build
 # and that the TRAVIS_TAG is empty meaning this is not a release build
 if [ "${FC_TASK}" = "systest" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ -z "${TRAVIS_TAG}" ]; then
   if [[ "${TRAVIS_REPO_SLUG}" = hyperledger* ]]; then
     echo "ABORT_BUILD=true" > ${DIR}/build.cfg
     echo "ABORT_CODE=0" >> ${DIR}/build.cfg
-    echo Merge build from non release PR: ergo not running systest
+    echo Merge build from non release PR: ergo not running fv/integration tests
     exit 0
   fi
 fi

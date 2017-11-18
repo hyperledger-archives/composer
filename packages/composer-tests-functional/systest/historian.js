@@ -135,12 +135,12 @@ let deployCommon =  ()=> {
 };
 
 
-describe('Historian', () => {
+describe('Historian', function() {
 
-
+    this.retries(TestUtil.retries());
 
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
+        return TestUtil.resetBusinessNetwork(bnID, 0);
     });
 
     describe('CRUD Asset', () => {
