@@ -14,8 +14,11 @@
 
 package main
 
-// The version of this chaincode and the default pool size. 
-// version is replaced with the npm package version, PoolSize is
-// also replaced with a default value during the deployment process.
+// The version of this chaincode, the default pool size, and the
+// default garbage collection interval. All three values are
+// replaced as part of the deployment process; version is replaced
+// with the npm package version, and PoolSize/GCInterval are
+// replaced with defaults or user specified overrides.
 const version = "development"
 const PoolSize = 8
+const GCInterval = 5
