@@ -26,10 +26,13 @@ chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
-describe('Asset system tests', function () {
+describe('Asset system tests', function() {
+
+    this.retries(TestUtil.retries());
+
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
+        return TestUtil.resetBusinessNetwork(bnID, 0);
     });
 
     let businessNetworkDefinition;

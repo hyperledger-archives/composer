@@ -24,10 +24,13 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('HTTP POST system tests', () => {
+describe('HTTP POST system tests', function() {
+
+    this.retries(TestUtil.retries());
+
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
+        return TestUtil.resetBusinessNetwork(bnID, 0);
     });
     let businessNetworkDefinition;
     let client;

@@ -26,10 +26,13 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 
-describe('Transaction (participant specific) system tests', () => {
+describe('Transaction (participant specific) system tests', function() {
+
+    this.retries(TestUtil.retries());
+
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID);
+        return TestUtil.resetBusinessNetwork(bnID, 0);
     });
 
     let businessNetworkDefinition;
