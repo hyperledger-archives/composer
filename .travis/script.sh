@@ -56,7 +56,13 @@ elif [ "${SYSTEST}" = "e2e" ]; then
 elif [ "${SYSTEST}" != "" ]; then
 
     # Run the system tests.
-    ${DIR}/packages/composer-systests/scripts/run-system-tests.sh 
+    ${DIR}/packages/composer-tests-functional/scripts/run-system-tests.sh 
+    # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
+# Are we running integration tests?
+elif [ "${INTEST}" != "" ]; then
+
+    # Run the integration tests.
+    ${DIR}/packages/composer-tests-integration/scripts/run-integration-tests.sh 
     # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
 # We must be running unit tests.
 else

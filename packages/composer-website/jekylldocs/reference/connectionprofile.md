@@ -33,6 +33,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   Create a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
 
         {
+            "name": "hlfv1"
             "type": "hlfv1",
             "orderers": [
                 {
@@ -80,6 +81,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
     _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
 
         {
+        "name": "hlfv1"
         "type": "hlfv1",
         "orderers": [
             "grpc://localhost:7050"
@@ -104,6 +106,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         "maxRecvSize": 15
         }
 
+  - `name` is a name used to refer to the connection profile, and is required.
   - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0 is must be `hlfv1`.
   - `ca` defines the url of a {{site.data.conrefs.hlf_full}} certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of `ca` as shown in the first {{site.data.conrefs.hlf_full}} v1.0 example above.
   - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
