@@ -1,8 +1,8 @@
 {
-  "name": "composer-systests",
+  "name": "composer-tests-functional",
   "version": "0.15.2",
   "private": true,
-  "description": "System tests and automation for Hyperledger Composer",
+  "description": "Functional verification tests for Hyperledger Composer",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
