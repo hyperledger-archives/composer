@@ -624,7 +624,7 @@ describe('AccessController', () => {
     describe('#matchPredicate', () => {
 
         it('should call the compiled ACL bundle with an asset, participant, and transaction', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (resource.id == A1234) action: ALLOW}');
             mockResolver.prepare.withArgs(asset).resolves(asset2);
             mockResolver.prepare.withArgs(participant).resolves(participant2);
             mockResolver.prepare.withArgs(transaction).resolves(transaction2);
@@ -637,7 +637,7 @@ describe('AccessController', () => {
         });
 
         it('should call the compiled ACL bundle with an asset and participant', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (resource.id == A1234) action: ALLOW}');
             mockResolver.prepare.withArgs(asset).resolves(asset2);
             mockResolver.prepare.withArgs(participant).resolves(participant2);
             return controller.matchPredicate(asset, participant, undefined, aclManager.getAclRules()[0])
@@ -649,7 +649,7 @@ describe('AccessController', () => {
         });
 
         it('should call the compiled ACL bundle and lazily resolve relationships as they are accessed', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (resource.id == A1234) action: ALLOW}');
             mockResolver.prepare.withArgs(asset).resolves(asset2);
             mockResolver.prepare.withArgs(participant).resolves(participant2);
             mockResolver.prepare.withArgs(transaction).resolves(transaction2);
@@ -669,6 +669,24 @@ describe('AccessController', () => {
                     sinon.assert.callCount(mockCompiledAclBundle.execute, 4);
                     sinon.assert.calledWith(mockCompiledAclBundle.execute, aclManager.getAclRules()[0], asset2, participant2, transaction2);
                 });
+        });
+
+        it('should not fully evaluate the predicate if the predicate expression is "true" ', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (true) action: ALLOW}');
+            return controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
+            .should.eventually.be.true
+            .then(() => {
+                sinon.assert.notCalled(mockCompiledAclBundle.execute);
+            });
+        });
+
+        it('should not fully evaluate the predicate if the predicate expression is "false" ', () => {
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: (false) action: ALLOW}');
+            return controller.matchPredicate(asset, participant, transaction, aclManager.getAclRules()[0])
+            .should.eventually.be.false
+            .then(() => {
+                sinon.assert.notCalled(mockCompiledAclBundle.execute);
+            });
         });
 
     });
