@@ -263,12 +263,24 @@ describe('JavascriptParser', () => {
     });
 
     describe('#getTokens', () => {
+        afterEach(() => {
+            delete global.composerJavaScriptParserNoTokens;
+        });
+
         it('should return all of the tokens', () => {
             const contents = 'eval(true)';
             const parser = new JavascriptParser(contents);
             const tokens = parser.getTokens();
             tokens.should.have.lengthOf(5);
             tokens.should.all.have.property('loc');
+        });
+
+        it('should return no tokens if token collection is disabled', () => {
+            global.composerJavaScriptParserNoTokens = true;
+            const contents = 'eval(true)';
+            const parser = new JavascriptParser(contents);
+            const tokens = parser.getTokens();
+            tokens.should.have.lengthOf(0);
         });
     });
 

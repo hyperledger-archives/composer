@@ -342,13 +342,16 @@ class HLFConnection extends Connection {
             .then(() => {
                 // Update the chaincode source to have the runtime version in it.
                 // Also provide a default poolSize of 8 if not specified in install options.
+                // Also provide a default gcInterval of 5 (seconds) if not specified in install options.
                 const poolSize = installOptions && installOptions.poolSize ? installOptions.poolSize * 1 : 8;
+                const gcInterval = installOptions && installOptions.gcInterval ? installOptions.gcInterval * 1 : 5;
                 let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'constants.go');
                 let targetFileContents = `
                 package main
                 // The version for this chaincode.
                 const version = "${runtimePackageJSON.version}"
                 const PoolSize = ${poolSize}
+                const GCInterval = ${gcInterval}
                 `;
                 return this.fs.outputFile(targetFilePath, targetFileContents);
 

@@ -11,9 +11,9 @@ RUN deluser --remove-home node && \
     addgroup -g 1000 composer && \
     adduser -u 1000 -G composer -s /bin/sh -D composer && \
     apk add --no-cache make gcc g++ python git libc6-compat && \
-    su -c 'npm config set prefix ''/home/composer/.npm-global''' - composer && \
-    su -c 'npm install --production -g pm2 composer-playground@${VERSION}' - composer && \
-    su -c 'npm cache clean --force' - composer && \
+    su -c "npm config set prefix '/home/composer/.npm-global'" - composer && \
+    su -c "npm install --production -g pm2 composer-playground@${VERSION}" - composer && \
+    su -c "npm cache clean --force" - composer && \
     rm -rf /home/composer/.config /home/composer/.node-gyp /home/composer/.npm && \
     apk del make gcc g++ python git
 
