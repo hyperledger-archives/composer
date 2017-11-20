@@ -20,7 +20,7 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const UpdateCMD = require('../../lib/cmds/network/updateCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const Update = require('../../lib/cmds/network/lib/update.js');
-const Deploy = require('../../lib/cmds/network/lib/deploy.js');
+
 const IdCard = require('composer-common').IdCard;
 require('chai').should();
 
@@ -57,11 +57,11 @@ describe('composer update network CLI unit tests', function () {
 
     describe('update handler() method tests', () => {
 
-        it('should call deploy with true flag set', () => {
-            sandbox.stub(Deploy, 'handler');
+        it('should call update', () => {
+            sandbox.stub(Update, 'handler');
             Update.handler('some arg');
-            sinon.assert.calledOnce(Deploy.handler);
-            sinon.assert.calledWith(Deploy.handler, 'some arg', true);
+            sinon.assert.calledOnce(Update.handler);
+            sinon.assert.calledWith(Update.handler, 'some arg');
 
         });
     });
@@ -92,21 +92,46 @@ describe('composer update network CLI unit tests', function () {
             let testBusinessNetworkArchive;
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
             let argv = {card: 'cardName'};
-            sandbox.stub(Deploy, 'getArchiveFileContents');
-            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            sandbox.stub(CmdUtil, 'getArchiveFileContents');
+            CmdUtil.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
 
             return businessNetworkDefinition.toArchive()
                 .then((archive) => {
                     testBusinessNetworkArchive = archive;
-                    return UpdateCMD.handler(argv,true);
+                    return UpdateCMD.handler(argv);
                 })
                 .then ((result) => {
                     argv.thePromise.should.be.a('promise');
                     sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                     sinon.assert.calledOnce(mockAdminConnection.connect);
                     sinon.assert.calledWith(mockAdminConnection.connect,'cardName');
-
+                    sinon.assert.calledOnce(mockAdminConnection.update);
                 });
+        });
+
+        it('Get archive contents fails', function () {
+
+            let argv = {card: 'cardName'};
+            sandbox.stub(CmdUtil, 'getArchiveFileContents');
+            CmdUtil.getArchiveFileContents.throws(new Error('computer says no'));
+
+            return UpdateCMD.handler(argv).should.be.rejectedWith(/computer says no/);
+        });
+
+        it('Get archive contents fails', function () {
+            let businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
+
+            let testBusinessNetworkArchive;
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
+            let argv = {card: 'cardName'};
+            sandbox.stub(CmdUtil, 'getArchiveFileContents');
+            CmdUtil.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.update.throws(new Error('computer says no update'));
+            return businessNetworkDefinition.toArchive()
+                    .then((archive) => {
+                        testBusinessNetworkArchive = archive;
+                        return UpdateCMD.handler(argv);
+                    }).should.be.rejectedWith(/computer says no update/);
         });
     });
 });

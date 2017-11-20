@@ -292,6 +292,21 @@ class CmdUtil {
     static getDefaultCardName(card) {
         return BusinessNetworkCardStore.getDefaultCardName(card);
     }
+
+    /**
+      * Get contents from archive file
+      * @param {string} archiveFile connection profile name
+      * @return {String} archiveFileContents archive file contents
+      */
+    static getArchiveFileContents(archiveFile) {
+        let archiveFileContents;
+        if (fs.existsSync(archiveFile)) {
+            archiveFileContents = fs.readFileSync(archiveFile);
+        } else {
+            throw new Error('Archive file '+archiveFile+' does not exist.');
+        }
+        return archiveFileContents;
+    }
 }
 
 module.exports = CmdUtil;

@@ -340,6 +340,7 @@ class AdminConnection {
      * @param {Object} installOptions connector specific install options
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
+     *
      */
     install (businessNetworkIdentifier, installOptions) {
         return Promise.resolve().then(() => {
@@ -389,33 +390,15 @@ class AdminConnection {
      * @param {Object} [startOptions.card] The card to be used as the NetworkAdmin
      * @return {Promise} A promise that will be fufilled with the JSON for the start transaction.
      */
-    _buildStartTransaction(businessNetworkDefinition, startOptions = {}) {
+    _buildStartTransaction(businessNetworkDefinition, startOptions) {
         const method = '_buildStartTransaction';
         LOG.entry(method, businessNetworkDefinition, startOptions);
 
-        let identityName, identityCertificate;
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
         return Promise.resolve()
             .then(()=>{
-
-                if (!startOptions.card){
-                    LOG.entry(method,'Should be using card based approach');
-                    // todo in the future throw new Error('A card to use for the NetworkAdmin must be given');
-                    return this._getCurrentIdentity();
-                }
-                return startOptions.card.getCredentials();
-
-            })
-            .then((identity) => {
-
-                // Extract the current identity name and certificate.
-                identityName = this.securityContext.getUser();
-                identityCertificate = identity.certificate;
-
-                // Now serialize the business network archive.
                 return businessNetworkDefinition.toArchive();
-
             })
             .then((businessNetworkArchive) => {
 
@@ -426,23 +409,28 @@ class AdminConnection {
                 const classDeclaration = startTransaction.getClassDeclaration();
                 startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
 
-                // If the user has not supplied any bootstrap transactions, then we need
-                // to add some:
-                // 1) Create a NetworkAdmin participant for the current identity.
-                // 2) Bind the current identity to the new NetworkAdmin participant.
-                if (!startOptions.bootstrapTransactions || startOptions.bootstrapTransactions.length === 0) {
-                    LOG.debug(method, 'No bootstrap transactions specified');
-                    startTransaction.bootstrapTransactions = this._generateBootstrapTransactions(factory, identityName, identityCertificate);
-                    delete startOptions.bootstrapTransactions;
+
+                if (!startOptions.networkAdmins || !startOptions.networkAdmins.length>0){
+                    throw new Error('No network administrators are specified');
+                }
+                let bootstrapTransactions = this._buildNetworkAdminTransactions(businessNetworkDefinition,startOptions.networkAdmins);
+
+                // Merge the start options and bootstrap transactions.
+                if (startOptions.bootstrapTransactions) {
+                    startOptions.bootstrapTransactions = bootstrapTransactions.concat(startOptions.bootstrapTransactions);
+                } else {
+                    startOptions.bootstrapTransactions = bootstrapTransactions;
                 }
 
                 // Otherwise, parse all of the supplied bootstrap transactions.
-                if (startOptions.bootstrapTransactions) {
-                    startTransaction.bootstrapTransactions = startOptions.bootstrapTransactions.map((bootstrapTransactionJSON) => {
-                        return serializer.fromJSON(bootstrapTransactionJSON);
-                    });
-                    delete startOptions.bootstrapTransactions;
-                }
+                // if (startOptions.bootstrapTransactions) {
+                startTransaction.bootstrapTransactions = startOptions.bootstrapTransactions.map((bootstrapTransactionJSON) => {
+                    return serializer.fromJSON(bootstrapTransactionJSON);
+                });
+
+                //
+                delete startOptions.bootstrapTransactions;
+                delete startOptions.networkAdmins;
 
                 // Now handle the rest of the properties in the start options.
                 Object.keys(startOptions).forEach((key) => {
@@ -463,6 +451,72 @@ class AdminConnection {
             });
     }
 
+    /**
+     * Build the transactions to create a set of network administrators
+     *
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition usual network definition
+     * @param {Object[]} networkAdmins array of objects that are defining the network admins
+     *                                   [ { name, certificate } , { name, secret }]
+     * @return {Object[]} The bootstrap transactions.
+     * @private
+     */
+    _buildNetworkAdminTransactions(businessNetworkDefinition,networkAdmins){
+        const method = '_buildNetworkAdminTransactions';
+        LOG.entry(method, businessNetworkDefinition, networkAdmins);
+
+        const factory = businessNetworkDefinition.getFactory();
+        const serializer = businessNetworkDefinition.getSerializer();
+
+        // Convert the network administrators into add participant transactions.
+        const addParticipantTransactions = networkAdmins.map((networkAdmin) => {
+            const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName);
+            const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
+            const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
+            Object.assign(addParticipantTransaction, {
+                resources: [ participant ],
+                targetRegistry
+            });
+            LOG.debug(method, 'Created bootstrap transaction to add participant', addParticipantTransaction);
+            return addParticipantTransaction;
+        });
+
+        // Convert the network administrators into issue or bind identity transactions.
+        const identityTransactions = networkAdmins.map((networkAdmin) => {
+
+            // Handle a certificate which requires a bind identity transaction.
+            let identityTransaction;
+            if (networkAdmin.certificate) {
+                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+                Object.assign(identityTransaction, {
+                    participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
+                    certificate: networkAdmin.certificate
+                });
+                LOG.debug(method, 'Created bootstrap transaction to bind identity', identityTransaction);
+            }
+
+            // Handle an enrollment secret which requires an issue identity transaction.
+            if (networkAdmin.secret) {
+                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+                Object.assign(identityTransaction, {
+                    participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
+                    identityName: networkAdmin.userName
+                });
+                LOG.debug(method, 'Created bootstrap transaction to issue identity', identityTransaction);
+            }
+            return identityTransaction;
+
+        });
+
+                // Serialize all of the transactions into a single array.
+        const transactions = addParticipantTransactions.concat(identityTransactions);
+        const json = transactions.map((transaction) => {
+            return serializer.toJSON(transaction);
+        });
+        LOG.debug(method, 'Bootstrap transactions',JSON.stringify(json));
+        LOG.exit(method, json);
+        return json;
+
+    }
 
     /**
      * Starts a business network within the runtime previously installed to the Hyperledger Fabric with
@@ -520,6 +574,7 @@ class AdminConnection {
      *                deployOptions.card the card to use for the NetworkAdmin
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
+     * @deprecated Please install() and start()
      */
     deploy(businessNetworkDefinition, deployOptions ) {
         const method = 'deploy';
