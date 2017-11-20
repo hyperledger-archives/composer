@@ -195,7 +195,6 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         afterEach( ()=>{
-
             return adminConnection.connect('admin@bond-network')
             .then( ()=>{
                 adminConnection.undeploy();

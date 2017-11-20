@@ -17,15 +17,14 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const IdCard = require('composer-common').IdCard;
+
 require('loopback-component-passport');
 const server = require('../server/server');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
-
+const testUtil = require('./testutil');
 const bfs_fs = BrowserFS.BFSRequire('fs');
 
 ['always', 'never'].forEach((namespaces) => {
@@ -135,27 +134,16 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let assetRegistry;
         let participantRegistry;
         let serializer;
-        let idCard;
+        let businessNetworkDefinition;
+        let adminConnection;
 
-        before(() => {
+        beforeEach(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
-            return adminConnection.createProfile('defaultProfile', {
-                type : 'embedded'
-            })
-            .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
-            })
-            .then(() => {
-                return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
-            })
-            .then((businessNetworkDefinition) => {
+            adminConnection = new AdminConnection({ fs: bfs_fs });
+            return testUtil.startAndConnect(adminConnection)
+            .then( (result)=>{
+                businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.deploy(businessNetworkDefinition);
-            })
-            .then(() => {
-                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
-                return adminConnection.importCard('admin@bond-network', idCard);
             })
             .then(() => {
                 return server({
@@ -167,7 +155,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then((result) => {
                 app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connect('admin@bond-network');
             })
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
@@ -183,6 +171,16 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 return participantRegistry.addAll([
                     serializer.fromJSON(participantData[0])
                 ]);
+            });
+        });
+
+        afterEach( ()=>{
+            return adminConnection.connect('admin@bond-network')
+            .then( ()=>{
+                adminConnection.undeploy();
+            })
+            .then(()=>{
+                adminConnection.disconnect();
             });
         });
 
