@@ -49,7 +49,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     'AliceCorp'
                 ],
                 issuer: 'resource:org.acme.bond.Issuer#MEMBER_1',
-                maturity: '2017-02-27T21:03:52.000Z',
+                maturity: '2017-06-27T21:03:52.000Z',
                 parValue: 1000,
                 paymentFrequency: {
                     $class: 'org.acme.bond.PaymentFrequency',
@@ -404,6 +404,85 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         res.body.should.deep.equal([
                             assetData[2],
                             assetData[3]
+                        ]);
+                    });
+            });
+            it('should return all of the assets by matured status and before a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByIsMaturedBeforeMaturity?maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                            assetData[2],
+                            assetData[3],
+                            assetData[4]
+                        ]);
+                    });
+            });
+            it('should return all of the assets with a matured and a specific currency OR dayCount ', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByTheIsMaturedAndCurrencyORDayCount?currency=GBP&dayCount=2000000')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                            assetData[2]
+                        ]);
+                    });
+            });
+            it('should return all of the assets with a specific currency OR a specific dayCount and after a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyORTheDayCountAndMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
+                        ]);
+                    });
+            });
+            it('should return all of the assets by currency AND the dayCount or after a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyANDTheDayCountOrMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
+                        ]);
+                    });
+            });
+            it('should return all of the assets by currency or the dayCount AND after a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByTheCurrencyOrDayCountANDMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
+                        ]);
+                    });
+            });
+            it('should return all of the assets by currency or the dayCount or after a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyOrDayCountOrMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[0],
+                            assetData[1],
+                            assetData[2],
+                            assetData[3]
+                        ]);
+                    });
+            });
+            it('should return all of the assets by currency and the dayCount and after a mature date', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyAndDayCountAndMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
                         ]);
                     });
             });

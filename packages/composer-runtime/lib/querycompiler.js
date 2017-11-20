@@ -500,12 +500,19 @@ class QueryCompiler {
         let right = this.visit(ast.right, parameters);
 
         // Build the Mango selector for this operator.
-        const result = {};
-        result[operator] = [
-            left,
-            right
-        ];
+        let result = {};
 
+        let leftKey = Object.keys(left)[0];
+        let rightKey = Object.keys(right)[0];
+        if(operator === '$and' && leftKey !== '$or' && rightKey !=='$or' && leftKey !== rightKey){
+            result[leftKey] = left[leftKey];
+            result[rightKey] = right[rightKey];
+        } else {
+            result[operator] = [
+                left,
+                right
+            ];
+        }
         LOG.exit(method, result);
         return result;
     }
