@@ -20,7 +20,7 @@ module.exports.command = 'download [options]';
 module.exports.describe = 'Downloads a business network from the Hyperledger Fabric, does not undeploy';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name to write', type: 'string' },
-    card: { alias: 'c', required: false, description: 'The cardname to use to download the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to download the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

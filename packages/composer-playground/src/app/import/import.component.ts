@@ -55,14 +55,10 @@ export abstract class ImportComponent implements OnInit {
         this.npmInProgress = true;
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
-                this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-                this.selectNetwork(this.sampleNetworks[1]);
-                this.npmInProgress = false;
-
+                this.initNetworkList(sampleNetworkList);
             })
             .catch((error) => {
-                this.npmInProgress = false;
-                this.alertService.errorStatus$.next(error);
+                this.initNetworkList([]);
             });
     }
 
@@ -161,20 +157,17 @@ rule NetworkAdminSystem {
 
     closeSample() {
         this.sampleDropped = false;
-        this.selectNetwork(this.sampleNetworks[1]);
+        this.selectNetwork(this.sampleNetworks[0]);
     }
 
     addEmptyNetworkOption(networks: any[]): any[] {
-
         let newOrder = [];
-
-        // Append new network option to the list.
         newOrder.push(this.EMPTY_BIZNET);
 
+        console.log('>>', networks);
         for (let i = 0; i < networks.length; i++) {
             newOrder.push(networks[i]);
         }
-
         return newOrder;
     }
 
@@ -234,5 +227,15 @@ rule NetworkAdminSystem {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
+    }
+
+    private initNetworkList(sampleNetworkList): void {
+        this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
+        if (this.sampleNetworks.length === 1) {
+            this.selectNetwork(this.sampleNetworks[0]);
+        } else {
+            this.selectNetwork(this.sampleNetworks[1]);
+        }
+        this.npmInProgress = false;
     }
 }

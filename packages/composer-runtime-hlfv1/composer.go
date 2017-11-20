@@ -42,6 +42,19 @@ func NewComposer() (result *Composer) {
 	result = &Composer{}
 	result.createJavaScript()
 
+	// Create the garbage collection thread.
+	ticker := time.NewTicker(time.Second * GCInterval)
+	go func() {
+		vm := result.VM
+		for range ticker.C {
+			logger.Debug("Garbage collection ticker", result.Index)
+			vm.Lock()
+			vm.Gc(0)
+			vm.Gc(0)
+			vm.Unlock()
+		}
+	}()
+
 	// Create the container and engine objects.
 	result.Container = NewContainer(result.VM, nil)
 	result.Engine = NewEngine(result.VM, result.Container)
@@ -53,7 +66,7 @@ func NewComposer() (result *Composer) {
 func (composer *Composer) createJavaScript() {
 	logger.Debug("Entering Composer.createJavaScript")
 
-	start := time.Now()	
+	start := time.Now()
 	defer func() { logger.Debug("@perf Composer.createJavaScript total duration :", time.Now().Sub(start)) }()
 
 	defer func() { logger.Debug("Exiting Composer.createJavaScript") }()
@@ -117,6 +130,10 @@ func (composer *Composer) createJavaScript() {
 		panic(err)
 	}
 
+	// Set the magic flag which stops us holding onto many tokens.
+	vm.PushBoolean(true)
+	vm.PutGlobalString("composerJavaScriptParserNoTokens")
+
 }
 
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
@@ -124,8 +141,10 @@ func (composer *Composer) createJavaScript() {
 func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Init", &stub, function, arguments)
 
-	start := time.Now()	
-	defer func() { logger.Debug("@perf Composer.Init total duration for [", stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+	start := time.Now()
+	defer func() {
+		logger.Debug("@perf Composer.Init total duration for [", stub.GetTxID(), "] :", time.Now().Sub(start))
+	}()
 
 	defer func() { logger.Debug("Exiting Composer.Init", string(result), err) }()
 
@@ -162,8 +181,10 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Invoke", &stub, function, arguments)
 
-	start := time.Now()	
-	defer func() { logger.Debug("@perf Composer.Invoke total duration for [", stub.GetTxID(),"] :", time.Now().Sub(start)) }()
+	start := time.Now()
+	defer func() {
+		logger.Debug("@perf Composer.Invoke total duration for [", stub.GetTxID(), "] :", time.Now().Sub(start))
+	}()
 
 	defer func() { logger.Debug("Exiting Composer.Invoke", string(result), err) }()
 

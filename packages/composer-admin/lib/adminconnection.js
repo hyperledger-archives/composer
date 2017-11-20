@@ -461,6 +461,7 @@ class AdminConnection {
      * @private
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
      * @param {Object} [startOptions] The options for starting the business network.
+     * @param {Object} [startOptions.card] The card to be used as the NetworkAdmin
      * @return {Promise} A promise that will be fufilled with the JSON for the start transaction.
      */
     _buildStartTransaction(businessNetworkDefinition, startOptions = {}) {
@@ -473,11 +474,13 @@ class AdminConnection {
         return Promise.resolve()
             .then(()=>{
 
-                if (startOptions.card){
-                    return startOptions.card.getCredentials();
-                } else {
+                if (!startOptions.card){
+                    LOG.entry(method,'Should be using card based approach');
+                    // todo in the future throw new Error('A card to use for the NetworkAdmin must be given');
                     return this._getCurrentIdentity();
                 }
+                return startOptions.card.getCredentials();
+
             })
             .then((identity) => {
 
@@ -552,25 +555,20 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
      * @param {Object} [startOptions] connector specific start options
+     *                  startOptions.card the card to use for the NetworkAdmin
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    start(businessNetworkDefinition, startOptions = {}) {
+    start(businessNetworkDefinition, startOptions ) {
         const method = 'start';
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
 
-        // a card should exist in the security context from the connect call
-        // use this in the start options
-        startOptions.card = this.securityContext.card;
-
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
-
                 // Now we can start the business network.
                 return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
-
             })
             .then(() => {
                 LOG.exit(method);
@@ -593,15 +591,14 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
      * @param {Object} deployOptions connector specific deployment options
+     *                deployOptions.card the card to use for the NetworkAdmin
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    deploy(businessNetworkDefinition, deployOptions = {}) {
+    deploy(businessNetworkDefinition, deployOptions ) {
         const method = 'deploy';
         LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
-
-        deployOptions.card = this.securityContext.card;
 
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)

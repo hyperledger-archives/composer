@@ -193,7 +193,7 @@ Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the 
 
 5. Select **Yes** when asked whether to enable event publication.
 
-6. Select **No** when asked whether to enable TSL security.
+6. Select **No** when asked whether to enable TLS security.
 
 The generated API is connected to the deployed blockchain and business network.
 

@@ -166,12 +166,17 @@ describe('UpdateComponent', () => {
     });
 
     describe('onShow', () => {
-        it('should get the list of sample networks', fakeAsync(() => {
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
-            let selectNetworkStub = sinon.stub(component, 'selectNetwork');
-            let addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
-            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
 
+        let selectNetworkStub;
+        let addEmptyNetworkOption;
+        beforeEach(() => {
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
+            selectNetworkStub = sinon.stub(component, 'selectNetwork');
+        });
+
+        it('should get the list of sample networks', fakeAsync(() => {
+            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
             component.onShow();
             component['npmInProgress'].should.equal(true);
             tick();
@@ -184,17 +189,15 @@ describe('UpdateComponent', () => {
         }));
 
         it('should handle error', fakeAsync(() => {
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('my-network')});
             mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
-
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}]);
             component.onShow();
-
             component['npmInProgress'].should.equal(true);
             tick();
 
+            addEmptyNetworkOption.should.have.been.calledWith([]);
+            selectNetworkStub.should.have.been.calledWith({name: 'empty'});
             component['npmInProgress'].should.equal(false);
-
-            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
     });
 
@@ -285,7 +288,7 @@ describe('UpdateComponent', () => {
             component.closeSample();
 
             component['sampleDropped'].should.equal(false);
-            selectStub.should.have.been.calledWith({network: 'two'});
+            selectStub.should.have.been.calledWith({network: 'one'});
         });
     }));
 
