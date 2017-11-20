@@ -226,7 +226,8 @@ class EmbeddedConnection extends Connection {
      */
     undeploy(securityContext, businessNetworkIdentifier) {
         EmbeddedConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-        return Promise.resolve();
+        return this.connectionManager.cleanUp();
+        // return Promise.resolve();
     }
 
 

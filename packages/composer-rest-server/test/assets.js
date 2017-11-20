@@ -127,25 +127,43 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         let app;
         let businessNetworkConnection;
+        let adminConnection;
         let assetRegistry;
         let serializer;
         let idCard;
 
-        before(() => {
+        beforeEach(() => {
             BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
-            return adminConnection.createProfile('defaultProfile', {
-                type : 'embedded'
-            })
+            adminConnection = new AdminConnection({ fs: bfs_fs });
+            let metadata = { version:1 };
+            metadata.userName = 'PeerAdmin';
+            metadata.roles = 'PeerAdmin';
+            const deployCardName = 'deployer-card';
+
+            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+            idCard_PeerAdmin.setCredentials({ certificate: 'cert', privateKey: 'key' });
+            // return adminConnection.createProfile('defaultProfile', {
+            //     type : 'embedded'
+            // })
+            // .then(() => {
+            //     return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            // })
+            let businessNetworkDefinition;
+
+            return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
             .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connect(deployCardName);
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
             })
-            .then((businessNetworkDefinition) => {
+            .then((result) => {
+                businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.deploy(businessNetworkDefinition);
+                return adminConnection.install(businessNetworkDefinition.getName());
+            })
+            .then(()=>{
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
@@ -161,7 +179,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then((result) => {
                 app = result.app;
                 businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                // return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                return businessNetworkConnection.connect('admin@bond-network');
             })
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
@@ -172,6 +191,17 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     serializer.fromJSON(assetData[0]),
                     serializer.fromJSON(assetData[1])
                 ]);
+            });
+        });
+
+        afterEach( ()=>{
+
+            return adminConnection.connect('admin@bond-network')
+            .then( ()=>{
+                adminConnection.undeploy();
+            })
+            .then(()=>{
+                adminConnection.disconnect();
             });
         });
 

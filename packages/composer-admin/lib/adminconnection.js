@@ -582,6 +582,7 @@ class AdminConnection {
         Util.securityCheck(this.securityContext);
 
         // Build the start transaction.
+
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
             .then((startTransactionJSON) => {
                 // Now we can deploy the business network.
