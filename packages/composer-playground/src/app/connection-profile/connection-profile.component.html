@@ -139,13 +139,10 @@
                                         </div>
                                         <div class="nested-row">
                                             <div class="nested-property">
-                                                Event URL*
+                                                Event URL
                                             </div>
                                             <div class="nested-value">
-                                                <input [ngClass]="{'error-underline': v1FormErrors.peers.eventURL}" class="margin-right" type="text" formControlName="eventURL">
-                                                <div *ngIf="v1FormErrors.peers.eventURL" class="error-message">
-                                                    {{ v1FormErrors.peers.eventURL }}
-                                                </div>
+                                                <input class="margin-right" type="text" formControlName="eventURL">
                                                 <input hidden type="text" formControlName="cert">
                                             </div>
                                         </div>
@@ -193,7 +190,7 @@
                 <div class="info">Provide values for all required properties to continue.</div>
                 <div>
                     <button class="secondary" (click)="stopEditing()">Cancel</button>
-                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Save</button>
+                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Next</button>
                 </div>
             </footer>
             <footer *ngIf="v1Form.valid">

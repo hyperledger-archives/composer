@@ -221,7 +221,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.firstCall.should.have.been.calledWith(
                 {
                     requestURL: ['requestURL_1', Validators.required],
-                    eventURL: ['eventURL_1', Validators.required],
+                    eventURL: ['eventURL_1'],
                     cert: ['peerCert_1'],
                     hostnameOverride: ['peerHostname_1']
                 }
@@ -230,7 +230,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.secondCall.should.have.been.calledWith(
                 {
                     requestURL: ['requestURL_2', Validators.required],
-                    eventURL: ['eventURL_2', Validators.required],
+                    eventURL: ['eventURL_2'],
                     cert: ['peerCert_2']
                 }
             );
@@ -244,7 +244,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.firstCall.should.have.been.calledWith(
                 {
                     requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053', Validators.required],
+                    eventURL: ['grpc://localhost:7053'],
                     cert: ['']
                 }
             );
@@ -308,8 +308,8 @@ describe('ConnectionProfileComponent', () => {
             component['v1Form'] = component['fb'].group({
                 name: ['v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
                 peers: component['fb'].array([component['fb'].group({
-                    requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['', Validators.required],
+                    requestURL: ['', Validators.required],
+                    eventURL: [''],
                     cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
@@ -319,13 +319,13 @@ describe('ConnectionProfileComponent', () => {
                 channel: ['composerchannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
                 ca: ['http://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053'],
                 keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 timeout: [300, [Validators.pattern('[0-9]+')]]
             });
 
             component.onValueChanged();
-            component['v1FormErrors'].peers['eventURL'].should.equal('Every Peer Event URL is required.');
+            component['v1FormErrors'].peers['requestURL'].should.equal('Every Peer Request URL is required.');
             onValueChangedSpy.should.be.called;
         });
     });
@@ -389,7 +389,7 @@ describe('ConnectionProfileComponent', () => {
                 description: ['A description for a V1 Profile'],
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053', Validators.required],
+                    eventURL: ['grpc://localhost:7053'],
                     cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
@@ -433,7 +433,7 @@ describe('ConnectionProfileComponent', () => {
                 name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
                 peerURL: ['grpc://localhost:7051', [Validators.required]],
                 membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053'],
                 keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
                 invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
