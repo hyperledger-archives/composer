@@ -21,7 +21,7 @@ module.exports.describe = 'List the contents of a business network';
 module.exports.builder = {
     registry: {alias: 'r', optional: true, describe: 'List specific registry', type: 'string' },
     asset: {alias: 'a', optional: true, describe: 'List specific asset', type: 'string' },
-    card: {alias: 'c', required: false, describe: 'The card name used to list the network', type: 'string'}
+    card: {alias: 'c', required: true, describe: 'The card name used to list the network', type: 'string'}
 };
 
 module.exports.handler = (argv) => {

@@ -2,7 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { Component } from '@angular/core';
+import { Component, Input, Output, Directive } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
@@ -29,6 +29,15 @@ let should = chai.should();
 })
 class MockFooterComponent {
 
+}
+
+@Directive({
+    selector: '[ngbTooltip]'
+})
+class MockToolTipDirective {
+    @Input() public ngbTooltip: string;
+    @Input() public placement: string;
+    @Input() public container: string;
 }
 
 describe(`IdentityComponent`, () => {
@@ -78,7 +87,8 @@ describe(`IdentityComponent`, () => {
             imports: [FormsModule],
             declarations: [
                 IdentityComponent,
-                MockFooterComponent
+                MockFooterComponent,
+                MockToolTipDirective
             ],
             providers: [
                 {provide: NgbModal, useValue: mockModal},
@@ -538,7 +548,7 @@ describe(`IdentityComponent`, () => {
         }));
     });
 
-    describe('removeIdentity', () => {
+    describe('openRemoveModal', () => {
         it('should open the delete-confirm modal', fakeAsync(() => {
             component['identityCards'] = mockIDCards;
             let loadMock = sinon.stub(component, 'loadAllIdentities');
@@ -548,7 +558,7 @@ describe(`IdentityComponent`, () => {
                 result: Promise.resolve()
             });
 
-            component.removeIdentity('1234');
+            component.openRemoveModal('1234');
             tick();
 
             mockModal.open.should.have.been.called;
@@ -561,7 +571,7 @@ describe(`IdentityComponent`, () => {
                 result: Promise.reject('some error')
             });
 
-            component.removeIdentity('1234');
+            component.openRemoveModal('1234');
             tick();
 
             mockAlertService.busyStatus$.next.should.have.been.called;
@@ -575,38 +585,55 @@ describe(`IdentityComponent`, () => {
                 result: Promise.reject(null)
             });
 
-            component.removeIdentity('1234');
+            component.openRemoveModal('1234');
             tick();
 
             mockAlertService.busyStatus$.next.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 
-        it('should remove the identity from the wallet', fakeAsync(() => {
+        it('should open the delete-confirm modal and handle remove press', fakeAsync(() => {
             component['identityCards'] = mockIDCards;
-            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
+            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve(true)
             });
 
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            component.removeIdentity('1234');
+            component.openRemoveModal('1234');
 
             tick();
 
             mockAlertService.busyStatus$.next.should.have.been.called;
-            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
-            mockLoadAllIdentities.should.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockRemoveIdentity.should.have.been.calledWith('1234');
         }));
+    });
+    describe('removeIdentity', () => {
+      it('should remove the identity from the wallet', fakeAsync(() => {
+          component['identityCards'] = mockIDCards;
+          mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
 
-        it('should handle error when removing from wallet', fakeAsync(() => {
+          mockModal.open = sinon.stub().returns({
+              componentInstance: {},
+              result: Promise.resolve(true)
+          });
+
+          let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
+
+          component.removeIdentity('1234');
+
+          tick();
+
+          mockAlertService.busyStatus$.next.should.have.been.called;
+          mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
+          mockLoadAllIdentities.should.have.been.called;
+
+          mockAlertService.busyStatus$.next.should.have.been.called;
+          mockAlertService.successStatus$.next.should.have.been.called;
+          mockAlertService.errorStatus$.next.should.not.have.been.called;
+      }));
+      it('should handle error when removing from wallet', fakeAsync(() => {
             component['identityCards'] = mockIDCards;
             mockIdentityCardService.deleteIdentityCard.returns(Promise.reject('some error'));
 
@@ -691,31 +718,6 @@ describe(`IdentityComponent`, () => {
 
             mockClientService.revokeIdentity.should.have.been.called;
             mockRemoveIdentity.should.have.been.calledWith('1234');
-            mockLoadAllIdentities.should.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
-
-        it('should revoke the identity from the client service not remove from wallet', fakeAsync(() => {
-            component['cardRefs'] = [];
-            component['businessNetworkName'] = 'myNetwork';
-            component['myIdentities'] = ['bob'];
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
-            });
-
-            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
-            mockClientService.revokeIdentity.returns(Promise.resolve());
-
-            component.revokeIdentity({name: 'fred', ref: '1234'});
-
-            tick();
-
-            mockClientService.revokeIdentity.should.have.been.called;
-            mockRemoveIdentity.should.not.have.been.called;
             mockLoadAllIdentities.should.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;

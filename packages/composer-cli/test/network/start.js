@@ -21,6 +21,8 @@ const Start = require('../../lib/cmds/network/lib/start.js');
 const StartCmd = require('../../lib/cmds/network/startCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const IdCard = require('composer-common').IdCard;
+const ora = require('ora');
+
 require('chai').should();
 
 const chai = require('chai');
@@ -50,7 +52,8 @@ describe('composer start network CLI unit tests', function () {
         mockAdminConnection.createProfile.resolves();
         mockAdminConnection.connect.resolves();
         mockAdminConnection.start.resolves();
-        mockAdminConnection.getCard.resolves(testCard);
+        mockAdminConnection.update.resolves();
+        mockAdminConnection.exportCard.resolves(testCard);
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
@@ -257,6 +260,96 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
+        it('Good path, all parms correctly specified. with the certificate', function () {
+
+            let argv = {card:'cardname'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,networkAdmin: 'admin'
+                                   ,networkAdminCertificateFile:'certificate-file'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns('asdasdasd');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                            sinon.assert.calledOnce(mockAdminConnection.start);
+
+
+                        });
+        });
+        it('Good path, all parms correctly specified. File output set for the card', function () {
+
+            let argv = {card:'cardname'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,networkAdmin: 'admin'
+                                   ,networkAdminEnrollSecret:'true'
+                                ,file:'mycardfile'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                            sinon.assert.calledOnce(mockAdminConnection.start);
+                            sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,sinon.match( {
+                                bootstrapTransactions: [
+                                    {
+                                        $class: 'org.hyperledger.composer.system.AddParticipant',
+                                        resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
+                                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                                        timestamp: sinon.match.any,
+                                        transactionId: sinon.match.any
+                                    }, {
+                                        $class: 'org.hyperledger.composer.system.IssueIdentity',
+                                        identityName: 'admin',
+                                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                                        timestamp: sinon.match.any,
+                                        transactionId: sinon.match.any
+                                    }
+
+                                ]}));
+                        });
+        });
+        it('Good path, all parms correctly specified - but with update flag set.', function () {
+
+            let argv = {card:'cardname'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,networkAdmin: 'admin'
+                                   ,networkAdminEnrollSecret:'true'
+            };
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return Start.handler(argv,true)
+                  .then ((result) => {
+                      sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                      sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                      sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                      sinon.assert.calledOnce(mockAdminConnection.update);
+                      sinon.assert.calledWith(mockAdminConnection.update, businessNetworkDefinition);
+
+                  });
+        });
+
         it('Good path, all parms correctly specified, including optional logLevel.', function () {
 
             let argv = {card:'cardname'
@@ -449,6 +542,44 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
+        it('Should report correct error if connect fails', () => {
+            let argv = {card:'cardname'
+            ,archiveFile: 'testArchiveFile.zip'
+
+            ,networkAdmin: ['admin1']
+            ,networkAdminEnrollSecret: [true]
+            ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.rejects(new Error('some error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/some error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Should report correct error if export card fails', () => {
+            let argv = {card:'cardname'
+            ,archiveFile: 'testArchiveFile.zip'
+
+            ,networkAdmin: ['admin1']
+            ,networkAdminEnrollSecret: [true]
+            ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.resolves();
+            mockAdminConnection.exportCard.rejects(new Error('export error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/export error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+
     });
 
     describe('Deploy getArchiveFileContents() method tests', function () {
@@ -475,6 +606,19 @@ describe('composer start network CLI unit tests', function () {
             let testArchiveFile = 'testfile.zip';
             (() => {Start.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
 
+        });
+        it('Unexpected errror', function () {
+
+            let argv = {card:'cardname'
+                                               ,archiveFile: 'testArchiveFile.zip'
+                                               ,networkAdmin: 'admin'
+                                               ,networkAdminCertificateFile:'certificate-file'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').throws(new Error('computer says no'));
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return Start.handler(argv).should.be.rejectedWith(/computer says no/);
         });
 
     });

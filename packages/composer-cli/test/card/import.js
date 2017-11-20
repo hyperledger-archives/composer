@@ -29,7 +29,8 @@ chai.use(require('chai-as-promised'));
 describe('composer card import CLI', function() {
     const sandbox = sinon.sandbox.create();
     const cardFileName = '/TestCard.card';
-    let cardBuffer;
+    let testCard;
+    let testCardBuffer;
     let adminConnectionStub;
     let consoleLogSpy;
 
@@ -38,10 +39,10 @@ describe('composer card import CLI', function() {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(adminConnectionStub);
         consoleLogSpy = sandbox.spy(console, 'log');
         sandbox.stub(process, 'exit');
-
-        const testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
+        adminConnectionStub.hasCard.resolves(true);
+        testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         return testCard.toArchive({ type:'nodebuffer' }).then(buffer => {
-            cardBuffer = buffer;
+            testCardBuffer = buffer;
         });
     });
 
@@ -50,11 +51,12 @@ describe('composer card import CLI', function() {
     });
 
     it('should import valid card file with default name', function() {
-        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(cardBuffer);
+        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const args = {
             file: cardFileName
         };
         adminConnectionStub.importCard.resolves();
+        adminConnectionStub.hasCard.resolves(false);
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
             sinon.assert.calledWith(adminConnectionStub.importCard, sinon.match.string, sinon.match.instanceOf(IdCard));
@@ -62,13 +64,14 @@ describe('composer card import CLI', function() {
     });
 
     it('should import valid card file with specified name', function() {
-        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(cardBuffer);
+        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const cardName = 'CONGA_CARD';
         const args = {
             file: cardFileName,
             name: cardName
         };
-        adminConnectionStub.importCard.resolves(args.name);
+        adminConnectionStub.importCard.resolves();
+        adminConnectionStub.hasCard.resolves(false);
         return ImportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.importCard);
             sinon.assert.calledWith(adminConnectionStub.importCard, cardName, sinon.match.instanceOf(IdCard));
@@ -83,6 +86,16 @@ describe('composer card import CLI', function() {
         };
         const expectedError = path.resolve(args.file);
         return ImportCmd.handler(args).should.be.rejectedWith(expectedError);
+    });
+
+    it('should reject card if already imported', function() {
+        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
+        const args = {
+            name: 'ALREADY_IMPORTED',
+            file: cardFileName
+        };
+        adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(true);
+        return ImportCmd.handler(args).should.be.rejectedWith(/already exists/);
     });
 
 });

@@ -36,20 +36,14 @@ class Request {
     static handler(argv) {
         let adminConnection = cmdUtil.createAdminConnection();
         let actualLocation = argv.path ? path.resolve(argv.path) : path.join(os.homedir(), '/.identityCredentials');
-        let enrollId;
-        return adminConnection.getCard(argv.card)
-            .then((card)=>{
-                let profileName = card.getConnectionProfile().name;
-                enrollId = card.getUserName();
-                let enrollSecret = card.getEnrollmentCredentials().secret;
-                return adminConnection.requestIdentity(profileName, enrollId, enrollSecret);
-            })
+
+        return adminConnection.requestIdentity(argv.card, argv.user, argv.enrollSecret)
             .then((result) => {
                 mkdirp.sync(actualLocation);
-                fs.writeFileSync(path.join(actualLocation, enrollId + '-pub.pem'), result.certificate);
-                fs.writeFileSync(path.join(actualLocation, enrollId + '-priv.pem'), result.key);
+                fs.writeFileSync(path.join(actualLocation, result.enrollId + '-pub.pem'), result.certificate);
+                fs.writeFileSync(path.join(actualLocation, result.enrollId + '-priv.pem'), result.key);
                 fs.writeFileSync(path.join(actualLocation, result.caName + '-root.pem'), result.rootCertificate);
-                console.log(`'${enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
+                cmdUtil.log(`'${result.enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
             });
     }
 }

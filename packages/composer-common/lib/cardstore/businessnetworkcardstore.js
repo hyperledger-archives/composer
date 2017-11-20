@@ -36,21 +36,30 @@ class BusinessNetworkCardStore {
      * Gets a card from the store.
      * @abstract
      * @param {String} cardName The name of the card to get
-     * @return {Promise} A promise that is resolved with an IdCard.
+     * @return {Promise} A promise that is resolved with an IdCard, or rejected if the card does not exist.
      */
     get(cardName) {
         return Promise.reject(new Error('Abstract function called'));
     }
 
     /**
-     * Puts a card in the store. It is an error to put a card name that already exists
-     * in the store.
+     * Puts a card in the store. If the named card already exists in the store, it will be replaced.
      * @abstract
      * @param {String} cardName The name of the card to save
      * @param {IdCard} card The card
      * @return {Promise} A promise that resolves once the data is written
      */
     put(cardName, card) {
+        return Promise.reject(new Error('Abstract function called'));
+    }
+
+    /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName){
         return Promise.reject(new Error('Abstract function called'));
     }
 
@@ -67,8 +76,8 @@ class BusinessNetworkCardStore {
     /**
      * Delete a specific card from the store.
      * @abstract
-     * @param {String} cardName The name of the card to delete
-     * @return {Promise} A promise that resolves when the card is deleted.
+     * @param {String} cardName The name of the card to delete.
+     * @return {Promise} A promise that resolves to true if the card existed; otherwise false.
      */
     delete(cardName) {
         return Promise.reject(new Error('Abstract function called'));

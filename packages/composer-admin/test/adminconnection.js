@@ -25,6 +25,7 @@ const Factory = require('composer-common').Factory;
 const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdCard = require('composer-common').IdCard;
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const ModelManager = require('composer-common').ModelManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -37,61 +38,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-
-/**
- * Stub card store implementation.
- */
-class StubCardStore extends BusinessNetworkCardStore {
-    /**
-     * Constructor.
-     */
-    constructor() {
-        super();
-        this.cards = new Map();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    get(cardName) {
-        return Promise.resolve().then(() => {
-            return this.cards.get(cardName);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    put(cardName, card) {
-        return Promise.resolve().then(() => {
-            if (this.cards.has(cardName)) {
-                throw new Error('Card already exists: ' + cardName);
-            }
-            this.cards.set(cardName, card);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getAll() {
-        return Promise.resolve().then(() => {
-            return this.cards;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    delete(cardName) {
-        return Promise.resolve().then(() => {
-            if (!this.cards.delete(cardName)) {
-                throw new Error('Card not found: ' + cardName);
-            }
-        });
-    }
-
-}
 
 describe('AdminConnection', () => {
     const testProfileName = 'TEST_PROFILE';
@@ -141,7 +87,7 @@ describe('AdminConnection', () => {
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        cardStore = new StubCardStore();
+        cardStore = new MemoryCardStore();
         const adminConnectionOptions = {
             cardStore: cardStore
         };
@@ -378,12 +324,12 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.start(businessNetworkDefinition)
+            return adminConnection.start(businessNetworkDefinition, {card: mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard});
             });
         });
 
@@ -392,12 +338,12 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.start(businessNetworkDefinition, {opt: 1})
+            return adminConnection.start(businessNetworkDefinition, {card: mockAdminIdCard,opt: 1})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1});
+                sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card: mockAdminIdCard,opt: 1});
                 sinon.assert.calledOnce(mockConnection.start);
-                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {opt: 1});
+                sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {card: mockAdminIdCard, opt: 1});
             });
         });
 
@@ -436,7 +382,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.deploy(businessNetworkDefinition)
+            return adminConnection.deploy(businessNetworkDefinition,{card:mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card:mockAdminIdCard});
@@ -450,7 +396,7 @@ describe('AdminConnection', () => {
             adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({ start: 'json' });
-            return adminConnection.deploy(businessNetworkDefinition, {opt: 1})
+            return adminConnection.deploy(businessNetworkDefinition, {opt: 1,card:mockAdminIdCard})
             .then(() => {
                 sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                 sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {opt: 1,card:mockAdminIdCard});
@@ -657,24 +603,59 @@ describe('AdminConnection', () => {
     });
 
     describe('#requestIdentity', () => {
-        it('should be able to request an identity', () => {
-            mockConnectionManager.importIdentity = sinon.stub();
+        beforeEach(()=>{
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.requestIdentity(testProfileName, 'id', 'secret')
+            let cardStub = sinon.createStubInstance(IdCard);
+            let cp = config;
+            cp.name=testProfileName;
+            cardStub.getConnectionProfile.returns(cp);
+            cardStub.getUserName.returns('fred');
+            cardStub.getBusinessNetworkName.returns('network');
+            cardStub.getCredentials.returns({});
+            cardStub.getEnrollmentCredentials.returns({secret:'password'});
+            cardStore.put('testCardname',cardStub);
+        });
+
+        it('should be able to request an identity', () => {
+            mockConnectionManager.requestIdentity.resolves({
+                certificate: 'a',
+                key: 'b',
+                rootCertificate: 'c',
+                caName: 'caName',
+                enrollId : 'fred'
+            });
+
+
+            return adminConnection.requestIdentity('testCardname', 'id', 'secret')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
                     sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'id', 'secret');
                 });
         });
 
+        it('should be able to request an identity with id and secret from the card', () => {
+            mockConnectionManager.requestIdentity.resolves({
+                certificate: 'a',
+                key: 'b',
+                rootCertificate: 'c',
+                caName: 'caName',
+                enrollId : 'fred'
+            });
+
+            return adminConnection.requestIdentity('testCardname')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'fred', 'password');
+                });
+        });
+
         it('should throw an error if import fails', () => {
             mockConnectionManager.requestIdentity = sinon.stub();
             mockConnectionManager.requestIdentity.rejects(new Error('some error'));
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
+
             return adminConnection.requestIdentity(testProfileName, 'anid', 'acerttosign', 'akey')
-                .should.be.rejectedWith(/some error/);
+                .should.be.rejectedWith(/failed to request identity/);
         });
 
 
@@ -1005,19 +986,6 @@ describe('AdminConnection', () => {
             });
         });
 
-        describe('#getCard', ()=>{
-            it('should return valid card if one exists', ()=>{
-                const cardName = 'conga-card';
-                return cardStore.put(cardName, peerAdminCard).then(() => {
-                    return adminConnection.getCard('conga-card');
-                }).then((result) => {
-                    result.should.be.instanceOf(IdCard);
-                    result.getUserName().should.deep.equal('PeerAdmin');
-                });
-            });
-
-        });
-
         describe('#getAllCards', function() {
             it('should return empty map when card store contains no cards', function() {
                 return adminConnection.getAllCards().should.eventually.be.instanceOf(Map).that.is.empty;
@@ -1036,12 +1004,19 @@ describe('AdminConnection', () => {
         });
 
         describe('#deleteCard', function() {
-            it('should reject for non-existent card', function() {
+            it('should return false for non-existent card', function() {
                 const cardName = 'conga-card';
-                return adminConnection.deleteCard(cardName).should.be.rejectedWith(cardName);
+                return adminConnection.deleteCard(cardName).should.become(false);
             });
 
-            it('should succeed for an existing card', function() {
+            it('should return true for existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.deleteCard(cardName);
+                }).should.become(true);
+            });
+
+            it('should remove existing card', function() {
                 const cardName = 'conga-card';
                 return cardStore.put(cardName, peerAdminCard).then(() => {
                     return adminConnection.deleteCard(cardName);
@@ -1050,6 +1025,21 @@ describe('AdminConnection', () => {
                 }).then(cardMap => {
                     cardMap.size.should.equal(0);
                 });
+            });
+        });
+
+
+        describe('#hasCard', function() {
+            it('should return false for non-existent card', function() {
+                const cardName = 'conga-card';
+                return adminConnection.hasCard(cardName).should.become(false);
+            });
+
+            it('should return true for existing card', function() {
+                const cardName = 'conga-card';
+                return cardStore.put(cardName, peerAdminCard).then(() => {
+                    return adminConnection.hasCard(cardName);
+                }).should.become(true);
             });
         });
 

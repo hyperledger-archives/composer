@@ -33,6 +33,7 @@ class BusinessNetworkCardStore {
    + String getDefaultCardName(IdCard) 
    + Promise get(String) 
    + Promise put(String,IdCard) 
+   + Promise has(String) 
    + Promise getAll() 
    + Promise delete(String) 
 }
@@ -55,6 +56,7 @@ class FileWallet extends Wallet {
    + Promise remove(string) 
 }
 class IdCard {
+   + void constructor(Object,Object) 
    + String getUserName() 
    + String getDescription() 
    + String getBusinessNetworkName() 

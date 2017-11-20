@@ -46,7 +46,7 @@ describe('composer reset network CLI unit tests', function () {
         mockAdminConnection.undeploy.resolves();
         mockIdCard = sinon.createStubInstance(IdCard);
         mockIdCard.getBusinessNetworkName.returns('penguin-network');
-        mockAdminConnection.getCard.resolves(mockIdCard);
+        mockAdminConnection.exportCard.resolves(mockIdCard);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
@@ -96,6 +96,28 @@ describe('composer reset network CLI unit tests', function () {
             return Reset.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
         });
+
+        it('Should report correct error if connect fails', () => {
+            let argv = {card:'cardname'};
+            mockAdminConnection.connect.rejects(new Error('some error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Reset.handler(argv).should.eventually.be.rejectedWith(/some error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Should report correct error if export card fails', () => {
+            let argv = {card:'cardname'};
+            mockAdminConnection.connect.resolves();
+            mockAdminConnection.exportCard.rejects(new Error('export error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Reset.handler(argv).should.eventually.be.rejectedWith(/export error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
     });
 
 });

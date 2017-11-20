@@ -16,7 +16,8 @@
 
 const cmdUtil = require('../../utils/cmdutils');
 const Create = require('../../card/lib/create');
-
+const chalk = require('chalk');
+const ora = require('ora');
 /**
  * <p>
  * Composer "identity issue" command
@@ -38,11 +39,13 @@ class IssueCard {
         let newUserId = argv.newUserId;
         let participantId = argv.participantId;
         let issuer = !!argv.issuer;
+        let spinner;
 
         return Promise.resolve()
             .then(() => {
-
-                return cmdUtil.createAdminConnection().getCard(cardName);
+                cmdUtil.log(chalk.blue.bold('Issue identity and create Network Card for: ')+newUserId);
+                cmdUtil.log('');
+                return cmdUtil.createAdminConnection().exportCard(cardName);
             })
             .then((result) =>{
                 issuingCard = result;
@@ -52,6 +55,7 @@ class IssueCard {
             .then(() => {
                 let issueOptions = cmdUtil.parseOptions(argv);
                 issueOptions.issuer = issuer;
+                spinner = ora('Issuing identity. This may take a few seconds...').start();
                 return businessNetworkConnection.issueIdentity(participantId, newUserId, issueOptions);
             })
             .then((result) => {
@@ -64,6 +68,17 @@ class IssueCard {
 
                 // re-use the logic in the create command to create the id card
                 return Create.createCard(metadata,issuingCard.getConnectionProfile(),argv);
+            })
+            .then((fileName)=>{
+                spinner.succeed();
+                cmdUtil.log(chalk.blue.bold('\nSuccessfully created business network card file to '));
+                cmdUtil.log(chalk.blue('\tOutput file: ')+fileName);
+            })
+            .catch((error) => {
+                if (spinner){
+                    spinner.fail();
+                }
+                throw error;
             });
     }
 

@@ -301,42 +301,50 @@ class BusinessNetworkConnector extends Connector {
                     // - will have a single string objectId if a simple query on the identifier
                     // - will have an object if identifier is involved with more complex query
                     let objectId = filter.where[identifierField];
-                    if (doResolve) {
-                        if (typeof objectId === 'undefined'|| objectId === null) {
-                            throw new Error('Unable to resolve: the filter field value is not specified');
-                        }
-                        // ensure only support resolving via the id field
-                        if ( nKeys !== 1 ) {
-                            throw new Error('Unable to resolve: only one id field is supported');
-                        }
 
-                        return registry.resolve(objectId)
+                    if (objectId && typeof objectId === 'string') {
+                        if(doResolve){
+                            return registry.resolve(objectId)
                             .then((result) => {
                                 debug('registry.resolve result:', result);
-                                return [ result ];
+                                return [result];
                             });
-
-                    } else if (objectId && typeof objectId === 'string') {
-                        return registry.get(objectId)
-                            .then((result) => {
-                                debug('registry.get result:', result);
-                                return [ this.serializer.toJSON(result) ];
-                            });
+                        } else{
+                            return registry.get(objectId)
+                                .then((result) => {
+                                    debug('registry.get result:', result);
+                                    return [ this.serializer.toJSON(result) ];
+                                });
+                        }
                     } else {
                         // perform filter query when id is not the first field
                         const queryString = FilterParser.parseFilter(filter, composerModelName);
                         const query = networkConnection.buildQuery(queryString);
+                        if(typeof query === 'undefined'){
+                            throw Error('Invalid property name specified in the filter');
+                        }
                         return networkConnection.query(query, {})
-                        .then((result) => {
-                            debug('networkConnection.query result:', result);
-                            return result.map((res) =>{
-                                return this.serializer.toJSON(res);
-                            });
+                        .then((results) => {
+                            debug('networkConnection.query result:', results);
+                            if(doResolve){
+                                let ress = [];
+                                for( let i=0; i < results.length; i++){
+                                    let id = results[i][identifierField];
+                                    let result = registry.resolve(id);
+                                    ress.push(result);
+                                }
+                                return Promise.all(ress);
+                            }else{
+
+                                return results.map((res) =>{
+                                    return this.serializer.toJSON(res);
+                                });
+                            }
                         });
                     }
                 } else if (doResolve) {
                     debug('No `where` filter, about to perform resolveAll');
-                    // get all unresolved objects
+                    // get all resolved objects
                     return registry.resolveAll()
                         .then((result) => {
                             debug('Got Result:', result);

@@ -40,7 +40,7 @@ class Undeploy {
         return adminConnection.connect(cardName)
             .then(() => {
                 // nothing is returned from connect
-                return adminConnection.getCard(cardName);
+                return adminConnection.exportCard(cardName);
             })
             .then((card)=>{
                 spinner = ora('Undeploying business network definition. This may take some seconds...').start();
@@ -49,7 +49,9 @@ class Undeploy {
                 spinner.succeed();
                 return result;
             }).catch((error) => {
-                spinner.fail();
+                if (spinner) {
+                    spinner.fail();
+                }
                 throw error;
             });
     }

@@ -18,8 +18,15 @@ const Delete = require ('./lib/delete.js');
 
 module.exports.command = 'delete [options]';
 module.exports.describe = 'Delete a business network card';
-module.exports.builder = {
-    name: { alias: 'n', required: true, describe: 'The name of the card to delete', type: 'string' }
+module.exports.builder = (yargs) => {
+    yargs.options({
+        name: { alias: 'n', required: true, describe: 'The name of the card to delete', type: 'string' }
+    });
+
+    yargs.group(['n'],'Card options');
+    yargs.requiresArg(['n']);
+
+    return yargs;
 };
 
 module.exports.handler = (argv) => {

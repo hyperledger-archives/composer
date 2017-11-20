@@ -21,7 +21,7 @@ module.exports.describe = 'Bind an existing identity to a participant in a parti
 module.exports.builder = {
     card: {alias: 'c', required: true, describe: 'Name of the network card to use', type: 'string'},
     participantId: { alias: 'a', required: true, describe: 'The particpant to issue the new identity to', type: 'string' },
-    certificateFile: { alias: 'c', required: true, describe: 'File containing the certificate', type: 'string' }
+    certificateFile: { alias: 'e', required: true, describe: 'File containing the certificate', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

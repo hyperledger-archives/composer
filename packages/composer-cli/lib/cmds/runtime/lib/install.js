@@ -48,12 +48,12 @@ class Install {
             return adminConnection.install(argv.businessNetworkName, installOptions);
         }).then((result) => {
             spinner.succeed();
-            console.log();
+            cmdUtil.log();
 
             return result;
         }).catch((error) => {
             spinner.fail();
-            console.log();
+            cmdUtil.log();
 
             throw error;
         });

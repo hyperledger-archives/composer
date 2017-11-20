@@ -25,13 +25,14 @@ export class SampleBusinessNetworkService {
     }
 
     public getSampleList(): Promise<any> {
-        return this.http.get(PLAYGROUND_API + '/api/getSampleList')
+        const URL = PLAYGROUND_API + '/api/getSampleList';
+        return this.http.get(URL)
             .toPromise()
             .then((response) => {
                 return response.json();
             })
             .catch((error) => {
-                throw(error);
+                throw('Error connecting to: ' + URL);
             });
     }
 

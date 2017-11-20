@@ -18,6 +18,7 @@ const Connection = require('composer-common').Connection;
 const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
 const HLFUtil = require('./hlfutil');
+const HLFTxEventHandler = require('./hlftxeventhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
@@ -103,6 +104,7 @@ class HLFConnection extends Connection {
         this.ccEvents = [];
         this.caClient = caClient;
         this.initialized = false;
+        this.commitTimeout = this.connectOptions.timeout * 1000;
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
@@ -340,13 +342,16 @@ class HLFConnection extends Connection {
             .then(() => {
                 // Update the chaincode source to have the runtime version in it.
                 // Also provide a default poolSize of 8 if not specified in install options.
+                // Also provide a default gcInterval of 5 (seconds) if not specified in install options.
                 const poolSize = installOptions && installOptions.poolSize ? installOptions.poolSize * 1 : 8;
+                const gcInterval = installOptions && installOptions.gcInterval ? installOptions.gcInterval * 1 : 5;
                 let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'constants.go');
                 let targetFileContents = `
                 package main
                 // The version for this chaincode.
                 const version = "${runtimePackageJSON.version}"
                 const PoolSize = ${poolSize}
+                const GCInterval = ${gcInterval}
                 `;
                 return this.fs.outputFile(targetFilePath, targetFileContents);
 
@@ -370,22 +375,27 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
-                if (installOptions && installOptions.ignoreCCInstalled) {
-                    let errorIgnored = this._validateResponses(results[0], false, /chaincode .+ exists/);
-                    LOG.debug(method, 'chaincode installed, or already installed');
+                const CCAlreadyInstalledPattern = /chaincode .+ exists/;
+                let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
-                    // if the error was ignored then no chaincode was installed
-                    return !errorIgnored;
-                } else {
-                    this._validateResponses(results[0], false);
-                    LOG.debug(method, 'chaincode installed');
-                    return true;
+                // is the composer runtime already installed on all the peers ?
+                let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
+                if (ignoredErrors === results[0].length && !calledFromDeploy) {
+                    const errorMsg = 'The Composer runtime is already installed on all the peers';
+                    throw new Error(errorMsg);
                 }
-            })
-            .then((chaincodeInstalled) => {
+
+                // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
+                if ((validResponses.length + ignoredErrors) !== results[0].length) {
+                    const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
+                    throw new Error(errorMsg);
+                }
+                LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
+
+                // return a boolean to indicate if any composer runtime was installed.
+                const chaincodeInstalled = validResponses.length !== 0;
                 LOG.exit(method, chaincodeInstalled);
                 return chaincodeInstalled;
-
             })
             .catch((error) => {
                 const newError = new Error('Error trying install composer runtime. ' + error);
@@ -433,6 +443,7 @@ class HLFConnection extends Connection {
         }
 
         let finalTxId;
+        let eventHandler;
 
         // initialize the channel ready for instantiation
         LOG.debug(method, 'loading the channel configuration');
@@ -473,26 +484,29 @@ class HLFConnection extends Connection {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from instantiating the composer runtime chaincode`, results);
                 let proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+
+                eventHandler = new HLFTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
 
             })
             .then((response) => {
-
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${finalTxId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
 
             })
             .then(() => {
@@ -533,10 +547,10 @@ class HLFConnection extends Connection {
 
         LOG.debug(method, 'installing composer runtime chaincode');
         let chaincodeInstalled;
-        return this.install(securityContext, businessNetworkIdentifier, {ignoreCCInstalled: true})
+        return this.install(securityContext, businessNetworkIdentifier, {calledFromDeploy: true})
             .then((chaincodeInstalled_) => {
-                // check to see if the chaincode is already instantiated
                 chaincodeInstalled = chaincodeInstalled_;
+                // check to see if the chaincode is already instantiated
                 return this.channel.queryInstantiatedChaincodes();
             })
             .then((queryResults) => {
@@ -582,15 +596,20 @@ class HLFConnection extends Connection {
             throw new Error('No results were returned from the request');
         }
 
-        let errorsIgnored = false;
+        let validResponses = [];
+        let invalidResponseMsgs = [];
+        let ignoredErrors = 0;
+
         responses.forEach((responseContent) => {
             if (responseContent instanceof Error) {
-                // check to see if we should ignore the error, this also means we cannot verify the proposal
-                // or check the proposals across peers
-                if (!pattern || !pattern.test(responseContent.message)) {
-                    throw responseContent;
+                // check to see if we should ignore the error
+                if (pattern && pattern.test(responseContent.message)) {
+                    ignoredErrors++;
+                } else {
+                    const warning = `Response from attempted peer comms was an error: ${responseContent}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
                 }
-                errorsIgnored = true;
             } else {
 
                 // not an error, if it is from a proposal, verify the response
@@ -598,23 +617,37 @@ class HLFConnection extends Connection {
                     // the node-sdk doesn't provide any external utilities from parsing the responseContent.
                     // there are internal ones which may do what is needed or we would have to decode the
                     // protobufs ourselves but it should really be the node sdk doing this.
-                    LOG.warn('Response from peer was not valid');
+                    const warning = `Proposal response from peer failed verification. ${responseContent.response}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
+                } else if (responseContent.response.status !== 200) {
+                    const warning = `Unexpected response of ${responseContent.response.status}. Payload was: ${responseContent.response.payload}`;
+                    LOG.warn(warning);
+                    invalidResponseMsgs.push(warning);
+                } else {
+                    validResponses.push(responseContent);
                 }
-                if (responseContent.response.status !== 200) {
-                    throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
-                }
+
             }
         });
+        if (validResponses.length === 0 && ignoredErrors < responses.length) {
+            let errorMsg = 'No valid responses from any peers.\n';
+            invalidResponseMsgs.forEach((invalidResponse) => {
+                errorMsg += invalidResponse;
+                errorMsg += '\n';
+            });
+            throw new Error(errorMsg);
+        }
 
-        // if it was a proposal and all the responses were good, check that they compare
+        // if it was a proposal and some of the  responses were good, check that they compare
         // but we can't reject it as we don't know if it would pass the endorsement policy
         // and if we did this would allow a malicious peer to stop transactions so we
-        // issue a warning so that it get's logged, but we don't know which peer it was
-        if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
+        // issue a warning so that it get's logged, but we don't know which peer(s) it was
+        if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
             LOG.warn('Peers do not agree, Read Write sets differ');
         }
-        LOG.exit(method, errorsIgnored);
-        return errorsIgnored;
+        LOG.exit(method, ignoredErrors);
+        return {ignoredErrors, validResponses};
     }
 
     /**
@@ -806,6 +839,7 @@ class HLFConnection extends Connection {
         } else {
             txId = this.client.newTransactionID();
         }
+        let eventHandler;
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
         LOG.debug(method, 'loading channel configuration');
@@ -826,27 +860,29 @@ class HLFConnection extends Connection {
                 // Validate the endorsement results.
                 LOG.debug(method, `Received ${results.length} results(s) from invoking the composer runtime chaincode`, results);
                 const proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderers.
                 const proposal = results[1];
                 const header = results[2];
 
+                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
             })
             .then((response) => {
                 // If the transaction was successful, wait for it to be committed.
-                // TODO: Should only listen for the events if SUCCESS is returned
                 LOG.debug(method, 'Received response from orderer', response);
 
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
             })
             .then(() => {
                 LOG.exit(method);
@@ -975,42 +1011,6 @@ class HLFConnection extends Connection {
 
     }
 
-  /**
-     * wait for events from the peers associated with the provided transaction id.
-     * @param {string} txObj the transaction id to listen for events on
-     * @param {number} waitTime the time to wait in seconds for an event response
-     * @returns {Promise} A promise which resolves when all the events are received or rejected
-     * if an event is not received within the given timeout period
-     * @memberOf HLFConnection
-     */
-    _waitForEvents(txObj, waitTime) {
-        const txId = txObj.getTransactionID().toString();
-        const method = '_waitForEvents';
-        LOG.entry(method, txId, waitTime);
-        let eventPromises = [];
-        this.eventHubs.forEach((eh) => {
-            let txPromise = new Promise((resolve, reject) => {
-                const handle = setTimeout(() => {
-                    reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, waitTime * 1000);
-                eh.registerTxEvent(txId, (tx, code) => {
-                    clearTimeout(handle);
-                    eh.unregisterTxEvent(txId);
-                    if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}' with code ${code}`));
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-            eventPromises.push(txPromise);
-        });
-        return Promise.all(eventPromises)
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
-
     /**
      * return the logged in user
      * @returns {User} the logged in user
@@ -1036,6 +1036,7 @@ class HLFConnection extends Connection {
         }
 
         let txId;
+        let eventHandler;
         // check runtime versions to ensure only the micro version has changed, not minor or major.
         return this._checkRuntimeVersions(securityContext)
             .then((results) => {
@@ -1062,13 +1063,15 @@ class HLFConnection extends Connection {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
                 let proposalResponses = results[0];
-                this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validateResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
+                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+                eventHandler.startListening();
                 return this.channel.sendTransaction({
-                    proposalResponses: proposalResponses,
+                    proposalResponses: validResponses,
                     proposal: proposal,
                     header: header
                 });
@@ -1079,9 +1082,10 @@ class HLFConnection extends Connection {
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
                 if (response.status !== 'SUCCESS') {
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    eventHandler.cancelListening();
+                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.timeout);
+                return eventHandler.waitForEvents();
 
             })
             .then(() => {

@@ -143,7 +143,81 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     periodMultiplier: 6
                 }
             }
-        }];
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_5',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'E',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 5000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_5',
+                maturity: '2016-02-27T21:03:52.000Z',
+                parValue: 5000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_6',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'F',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 6000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_6',
+                maturity: '2015-02-27T21:03:52.000Z',
+                parValue: 6000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_7',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'A',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 60000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_3',
+                owners: ['resource:org.acme.bond.Issuer#ISSUER_1', 'resource:org.acme.bond.Issuer#ISSUER_2'],
+                maturity: '2010-02-27T21:03:52.000Z',
+                parValue: 60000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        }
+        ];
 
         let app;
         let businessNetworkConnection;
@@ -190,7 +264,10 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     serializer.fromJSON(assetData[0]),
                     serializer.fromJSON(assetData[1]),
                     serializer.fromJSON(assetData[2]),
-                    serializer.fromJSON(assetData[3])
+                    serializer.fromJSON(assetData[3]),
+                    serializer.fromJSON(assetData[4]),
+                    serializer.fromJSON(assetData[5]),
+                    serializer.fromJSON(assetData[6])
                 ]);
             })
             .then(() => {
@@ -540,7 +617,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -553,7 +632,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[1],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -579,7 +660,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -605,7 +688,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -647,30 +732,70 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe('Filter include:resolve', () => {
 
-            xit('should return a single fully resolved Resource', () => {
+            it('should return a single fully resolved Resource', () => {
                 return chai.request(app)
                 .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1"}, "include":"resolve"}`)
                 .then((res) => {
                     res.should.be.json;
                     res.should.have.status(200);
-                    // TODO : Assert fully resolved (includes Issuer)
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].bond.issuer.should.deep.equal(participants[0]);
                 });
             });
 
-            xit('should return multiple fully resolved Resources', () => {
+            it('should return a single fully resolved Resource with both a single relation and multiple relationships', () => {
                 return chai.request(app)
-                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}}, "include":"resolve"}`)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_7"}, "include":"resolve"}`)
                 .then((res) => {
                     res.should.be.json;
                     res.should.have.status(200);
-                    // TODO : Assert all fully resolved (includes Issuer)
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].bond.issuer.should.deep.equal(participants[2]);
+                    res.body[0].bond.owners.should.have.length(2);
+                    res.body[0].bond.owners[0].should.deep.equal(participants[0]);
+                    res.body[0].bond.owners[1].should.deep.equal(participants[1]);
                 });
             });
 
-            xit('should handle missing reference in resolve process of single Resource', () => {
+            it('should return multiple fully resolved Resources', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(3);
+                    res.body[0].bond.issuer.should.deep.equal(participants[0]);
+                    res.body[1].bond.issuer.should.deep.equal(participants[1]);
+                    res.body[2].bond.issuer.should.deep.equal(participants[2]);
+                });
             });
 
-            xit('should handle missing reference in resolve process of multiple Resources', () => {
+            it('should return the missing reference as a string value in resolve process of single Resource', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_5"}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].should.deep.equal(assetData[4]);
+                });
+            });
+
+            it('should return missing references with string values as they are not resolved for multiple Resources', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_5", "ISIN_6"]}}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(2);
+                    res.body[0].should.deep.equal(assetData[4]);
+                    res.body[1].should.deep.equal(assetData[5]);
+                });
             });
         });
 

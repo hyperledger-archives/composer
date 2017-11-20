@@ -117,7 +117,7 @@ class AdminConnection {
     }
 
     /**
-     * Import a business network card.
+     * Import a business network card. If a card of this name exists, it is replaced.
      * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
      * @return {Promise} Resolved when the card is imported
@@ -139,15 +139,6 @@ class AdminConnection {
                     return; // use secret
                 }
             });
-    }
-
-    /**
-     * Get a specific Business Network cards
-     * @param {String} cardName of the card to get
-     * @return {Promise} promise resolved with a business network card
-     */
-    getCard(cardName) {
-        return this.cardStore.get(cardName);
     }
 
     /** Exports an network card.
@@ -199,6 +190,15 @@ class AdminConnection {
      */
     deleteCard(name) {
         return this.cardStore.delete(name);
+    }
+
+    /**
+     * Has a existing card.
+     * @param {String} name Name of the card to check.
+     * @returns {Promise} Resolves with true if the card with the name exists, resolved with false if not
+     */
+    hasCard(name) {
+        return this.cardStore.has(name);
     }
 
     /**
@@ -461,6 +461,7 @@ class AdminConnection {
      * @private
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
      * @param {Object} [startOptions] The options for starting the business network.
+     * @param {Object} [startOptions.card] The card to be used as the NetworkAdmin
      * @return {Promise} A promise that will be fufilled with the JSON for the start transaction.
      */
     _buildStartTransaction(businessNetworkDefinition, startOptions = {}) {
@@ -473,11 +474,13 @@ class AdminConnection {
         return Promise.resolve()
             .then(()=>{
 
-                if (startOptions.card){
-                    return startOptions.card.getCredentials();
-                } else {
+                if (!startOptions.card){
+                    LOG.entry(method,'Should be using card based approach');
+                    // todo in the future throw new Error('A card to use for the NetworkAdmin must be given');
                     return this._getCurrentIdentity();
                 }
+                return startOptions.card.getCredentials();
+
             })
             .then((identity) => {
 
@@ -552,10 +555,11 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
      * @param {Object} [startOptions] connector specific start options
+     *                  startOptions.card the card to use for the NetworkAdmin
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    start(businessNetworkDefinition, startOptions = {}) {
+    start(businessNetworkDefinition, startOptions ) {
         const method = 'start';
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
@@ -563,10 +567,8 @@ class AdminConnection {
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
-
                 // Now we can start the business network.
                 return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
-
             })
             .then(() => {
                 LOG.exit(method);
@@ -589,15 +591,14 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
      * @param {Object} deployOptions connector specific deployment options
+     *                deployOptions.card the card to use for the NetworkAdmin
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    deploy(businessNetworkDefinition, deployOptions = {}) {
+    deploy(businessNetworkDefinition, deployOptions ) {
         const method = 'deploy';
         LOG.entry(method, businessNetworkDefinition, deployOptions);
         Util.securityCheck(this.securityContext);
-
-        deployOptions.card = this.securityContext.card;
 
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
@@ -928,22 +929,33 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      *
-     * @param {string} connectionProfile Name of the connection profile
-     * @param {string} enrollmentID The ID to enroll
-     * @param {string} enrollmentSecret The secret for the ID
+     * @param {string} cardName Name of the card to use
+     * @param {string} [enrollmentID] The ID to enroll
+     * @param {string} [enrollmentSecret] The secret for the ID
      * @returns {Promise} A promise which is resolved when the identity is imported
+     * @deprecated
      * @private
      */
-    requestIdentity(connectionProfile, enrollmentID, enrollmentSecret) {
-        let savedConnectionManager;
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
-            .then((connectionManager) => {
-                savedConnectionManager = connectionManager;
-                return this.getProfile(connectionProfile);
-            })
-            .then((profileData) => {
-                return savedConnectionManager.requestIdentity(connectionProfile, profileData, enrollmentID, enrollmentSecret);
-            })
+    requestIdentity(cardName, enrollmentID, enrollmentSecret) {
+        let connectionProfileData;
+        let card;
+        return this.cardStore.get(cardName)
+          .then((result)=>{
+              card = result;
+              connectionProfileData = card.getConnectionProfile();
+              return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+          })
+          .then((connectionManager) => {
+
+              enrollmentID = enrollmentID || card.getUserName();
+              enrollmentSecret = enrollmentSecret || card.getEnrollmentCredentials().secret;
+
+              // the connection profile is unused later but passing to keep code happy
+              return connectionManager.requestIdentity(connectionProfileData.name, connectionProfileData, enrollmentID, enrollmentSecret);
+          }).then((result)=>{
+              result.enrollId = enrollmentID;
+              return result;
+          })
             .catch((error) => {
                 throw new Error('failed to request identity. ' + error.message);
             });

@@ -182,6 +182,27 @@ export class IdentityComponent implements OnInit {
     }
 
     removeIdentity(cardRef: string): Promise<void> {
+      let userID = this.identityCards.get(cardRef).getUserName();
+      return this.identityCardService.deleteIdentityCard(cardRef)
+          .then(() => {
+              return this.loadAllIdentities();
+          })
+          .then(() => {
+              // Send alert
+              this.alertService.busyStatus$.next(null);
+              this.alertService.successStatus$.next({
+                  title: 'Removal Successful',
+                  text: userID + ' was successfully removed.',
+                  icon: '#icon-bin_icon'
+              });
+          })
+          .catch((error) => {
+              this.alertService.busyStatus$.next(null);
+              this.alertService.errorStatus$.next(error);
+          });
+    }
+
+    openRemoveModal(cardRef: string): Promise<void> {
 
         let userID = this.identityCards.get(cardRef).getUserName();
 
@@ -201,23 +222,7 @@ export class IdentityComponent implements OnInit {
                         title: 'Removing ID',
                         text: 'Removing identity ' + userID + ' from your wallet'
                     });
-
-                    return this.identityCardService.deleteIdentityCard(cardRef)
-                        .then(() => {
-                            return this.loadAllIdentities();
-                        })
-                        .then(() => {
-                            // Send alert
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.successStatus$.next({
-                                title: 'Removal Successful',
-                                text: userID + ' was successfully removed.',
-                                icon: '#icon-bin_icon'
-                            });
-                        })
-                        .catch((error) => {
-                            this.alertService.errorStatus$.next(error);
-                        });
+                    return this.removeIdentity(cardRef);
                 }
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal

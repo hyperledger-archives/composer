@@ -15,7 +15,7 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
-
+const chalk = require('chalk');
 /**
  * Composer "card delete" command
  * @private
@@ -27,8 +27,12 @@ class Delete {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
-        return cmdUtil.createAdminConnection().deleteCard(args.name).then(() => {
-            console.log('Deleted Business Network Card: ' + args.name);
+        return cmdUtil.createAdminConnection().deleteCard(args.name).then((cardExisted) => {
+            if (cardExisted) {
+                cmdUtil.log(chalk.bold.blue('Deleted Business Network Card: ') + args.name);
+            } else {
+                cmdUtil.log(chalk.bold.blue('Card not found: ') + args.name);
+            }
         });
     }
 

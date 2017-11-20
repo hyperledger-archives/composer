@@ -49,11 +49,11 @@ class Deploy {
         let filename;
 
 
-        console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
+        cmdUtil.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
         adminConnection = cmdUtil.createAdminConnection();
         // Read archive file contents
-        return adminConnection.getCard(cardName)
+        return adminConnection.exportCard(cardName)
         .then(()=>{
 
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
@@ -63,10 +63,10 @@ class Deploy {
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log(chalk.blue.bold('Business network definition:'));
-            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
-            console.log();
+            cmdUtil.log(chalk.blue.bold('Business network definition:'));
+            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            cmdUtil.log();
 
             // if we are performing an update we have to actually connect to the network
             // we want to update!
@@ -76,7 +76,7 @@ class Deploy {
         })
         .then(() => {
             // need to get the card now for later use
-            return adminConnection.getCard(cardName);
+            return adminConnection.exportCard(cardName);
         })
         .then((_card)=>{
             card = _card;
@@ -137,14 +137,14 @@ class Deploy {
             return result;
         }).then((result)=>{
             spinner.succeed();
-            console.log('Successfully created business network card to '+filename);
+            cmdUtil.log('Successfully created business network card to '+filename);
             return result;
         })
         .catch((error) => {
             if (spinner) {
                 spinner.fail();
             }
-            console.log();
+            cmdUtil.log();
 
             throw error;
         });

@@ -30,6 +30,18 @@ const LOG = Logger.getLog('CmdUtil');
  */
 class CmdUtil {
 
+
+    /** Simple log method to output to the console
+     * Used to put a single console.log() here, so eslinting is easier.
+     * And if this needs to written to a file at some point it is also eaiser
+     */
+    static log(){
+        Array.from(arguments).forEach((s)=>{
+            console.log(s);
+        });
+
+    }
+
     /**
      * Parse connector specific options.
      * @static
@@ -47,7 +59,7 @@ class CmdUtil {
             if (fs.existsSync(argv.optionsFile)) {
                 mergedOptions = JSON.parse(fs.readFileSync(argv.optionsFile));
             } else {
-                console.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
+                CmdUtil.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
             }
         }
 

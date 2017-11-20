@@ -7,20 +7,21 @@ ENV NPM_CONFIG_LOGLEVEL warn
 ARG VERSION=latest
 
 # Need to install extra dependencies for native modules.
-RUN apk add --no-cache make gcc g++ python git libc6-compat && \
-    npm install --unsafe-perm --production -g pm2 composer-playground@${VERSION} && \
-    npm cache clean --force && \
+RUN deluser --remove-home node && \
+    addgroup -g 1000 composer && \
+    adduser -u 1000 -G composer -s /bin/sh -D composer && \
+    apk add --no-cache make gcc g++ python git libc6-compat && \
+    su -c "npm config set prefix '/home/composer/.npm-global'" - composer && \
+    su -c "npm install --production -g pm2 composer-playground@${VERSION}" - composer && \
+    su -c "npm cache clean --force" - composer && \
+    rm -rf /home/composer/.config /home/composer/.node-gyp /home/composer/.npm && \
     apk del make gcc g++ python git
-
-# Remove yarn
-RUN rm -r /opt/yarn && \
-    rm /usr/local/bin/yarn /usr/local/bin/yarnpkg
-
-# Create the composer user ID.
-RUN adduser -S composer
 
 # Run as the composer user ID.
 USER composer
+
+# Add global composer modules to the path.
+ENV PATH /home/composer/.npm-global/bin:$PATH
 
 # Run in the composer users home directory.
 WORKDIR /home/composer
