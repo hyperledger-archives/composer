@@ -379,6 +379,13 @@ class AccessController {
         const method = 'matchPredicate';
         LOG.entry(method, resource, participant, transaction, aclRule);
 
+        // shortcut evaluation if simple boolean predicate
+        if (aclRule.getPredicate().getExpression() === 'true') {
+            return Promise.resolve(true);
+        } else if (aclRule.getPredicate().getExpression() === 'false') {
+            return Promise.resolve(false);
+        }
+
         // We want to permit access to related assets and participants, so prepare the resources.
         const compiledAclBundle = this.context.getCompiledAclBundle();
         const resolver = this.context.getResolver();
