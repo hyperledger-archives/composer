@@ -43,9 +43,6 @@ export class ConnectionProfileComponent {
             requestURL: {
                 required: 'Every Peer Request URL is required.'
             },
-            eventURL: {
-                required: 'Every Peer Event URL is required.'
-            },
             cert: {}
         },
         orderers: {
@@ -230,14 +227,14 @@ export class ConnectionProfileComponent {
                 if (this.connectionProfileData.profile.peers[peer].hostnameOverride) {
                     peerFormGroup = this.fb.group({
                         requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
-                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
+                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL],
                         cert: [this.connectionProfileData.profile.peers[peer].cert],
                         hostnameOverride: [this.connectionProfileData.profile.peers[peer].hostnameOverride]
                     });
                 } else {
                     peerFormGroup = this.fb.group({
                         requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
-                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
+                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL],
                         cert: [this.connectionProfileData.profile.peers[peer].cert]
                     });
                 }
@@ -247,7 +244,7 @@ export class ConnectionProfileComponent {
         } else {
             someList.push(this.fb.group({
                 requestURL: ['grpc://localhost:7051', Validators.required],
-                eventURL: ['grpc://localhost:7053', Validators.required],
+                eventURL: ['grpc://localhost:7053'],
                 cert: ['']
             }));
             return someList;
@@ -258,7 +255,7 @@ export class ConnectionProfileComponent {
         const control = <FormArray> this.v1Form.controls['peers'];
         control.push(this.fb.group({
             requestURL: ['grpc://localhost:7051', Validators.required],
-            eventURL: ['grpc://localhost:7053', Validators.required],
+            eventURL: ['grpc://localhost:7053'],
             cert: ['']
         }));
     }
