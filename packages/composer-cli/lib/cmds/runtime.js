@@ -18,7 +18,11 @@ exports.command = 'runtime <subcommand>';
 exports.desc = 'Composer runtime command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('runtime');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer runtime --help"    or   "composer --help"');
+   })
+   .commandDir('runtime');
 };
 exports.handler = function (argv) {
 

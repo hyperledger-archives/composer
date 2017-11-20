@@ -18,6 +18,10 @@ exports.command = 'participant <subcommand>';
 exports.desc = 'Composer participant command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('participant');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer participant --help"    or   "composer --help"');
+   })
+   .commandDir('participant');
 };
 exports.handler = function (argv) {};

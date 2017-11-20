@@ -18,6 +18,10 @@ exports.command = 'card <subcommand>';
 exports.desc = 'Command for managing business network cards';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('card');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer card --help"    or   "composer --help"');
+   })
+   .commandDir('card');
 };
 exports.handler = function (argv) {};

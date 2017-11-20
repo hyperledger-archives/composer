@@ -18,6 +18,10 @@ exports.command = 'archive <subcommand>';
 exports.desc = 'Composer archive command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('archive');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer archive --help"    or   "composer --help"');
+   })
+   .commandDir('archive');
 };
 exports.handler = function (argv) {};

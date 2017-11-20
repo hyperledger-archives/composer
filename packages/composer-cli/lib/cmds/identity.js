@@ -18,6 +18,10 @@ exports.command = 'identity <subcommand>';
 exports.desc = 'Composer identity command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('identity');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer identity --help"    or   "composer --help"');
+   })
+   .commandDir('identity');
 };
 exports.handler = function (argv) {};

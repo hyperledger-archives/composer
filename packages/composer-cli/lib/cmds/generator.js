@@ -18,6 +18,10 @@ exports.command = 'generator <subcommand>';
 exports.desc = 'Composer generator command to convert a Business Network Definition to code';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('generator');
+    return yargs.demand(1)
+   .fail(() => {
+       console.log('Incorrect command. For a list of commands, please enter:   "composer generator --help"    or   "composer --help"');
+   })
+   .commandDir('generator');
 };
 exports.handler = function (argv) {};
