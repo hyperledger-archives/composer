@@ -294,7 +294,7 @@ You must install a copy of the {{site.data.conrefs.composer_full}} runtime for e
 
 In this step, you will start the blockchain business network. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode instantiate operation.
 
-- Run the `composer network start` command to start the blockchain business network:
+Run the `composer network start` command to start the blockchain business network:
 
     composer network start -c PeerAdmin@fabric-network -a tutorial-network.bna -A admin -S adminpw
 
