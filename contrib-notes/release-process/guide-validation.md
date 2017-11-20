@@ -9,8 +9,8 @@ Follow the 'Getting Started' processes:
  - [Dev Tools](https://hyperledger.github.io/composer/installing/development-tools.html)
 
 Follow the provided tutorials:
- - [Playground](https://hyperledger.github.io/composer/tutorials/playground-guide.html)
- - [Developer](https://hyperledger.github.io/composer/tutorials/developer-guide.html)
+ - [Playground](https://hyperledger.github.io/composer/tutorials/playground-tutorial.html)
+ - [Developer](https://hyperledger.github.io/composer/tutorials/developer-tutorial.html)
 
 
 ### Documentation
