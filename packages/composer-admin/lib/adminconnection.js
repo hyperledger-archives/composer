@@ -551,6 +551,30 @@ class AdminConnection {
                 return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
             })
             .then(() => {
+                let connectionProfile = this.securityContext.card.getConnectionProfile();
+
+                // loop over the network admins, and put cards for each into
+                // a map, indexed by the userName
+                let createdCards = new Map();
+                networkAdmins.forEach( (networkAdmin) =>{
+
+                    let metadata= {
+                        version : 1,
+                        userName : networkAdmin.userName,
+                        businessNetwork : businessNetworkDefinition.getName()
+                    };
+
+                    let newCard;
+                    if (networkAdmin.secret){
+                        metadata.enrollmentSecret = networkAdmin.secret;
+                        newCard = new IdCard(metadata,connectionProfile);
+                    } else {
+                        newCard = new IdCard(metadata,connectionProfile);
+                        newCard.setCredentials({ certificate : networkAdmin.certificate });
+                    }
+                    createdCards.set(networkAdmin.userName,newCard);
+
+                });
                 LOG.exit(method);
             });
     }
