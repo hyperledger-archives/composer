@@ -29,7 +29,7 @@ chai.use(require('chai-subset'));
 describe('Asset system tests', function() {
 
     this.retries(TestUtil.retries());
-
+    let cardstore;
     let bnID;
     beforeEach(() => {
         return TestUtil.resetBusinessNetwork(cardstore,bnID, 0);
@@ -37,7 +37,7 @@ describe('Asset system tests', function() {
 
     let businessNetworkDefinition;
     let client;
-    let cardstore;
+
 
     before(function () {
         // In this systest we are intentionally not fully specifying the model file with a fileName, but supplying "UNKNOWN"
@@ -47,6 +47,7 @@ describe('Asset system tests', function() {
         businessNetworkDefinition = new BusinessNetworkDefinition('systest-assets@0.0.1', 'The network for the asset system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
+
         });
 
         bnID = businessNetworkDefinition.getName();

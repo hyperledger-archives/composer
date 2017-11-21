@@ -769,7 +769,9 @@ describe('Historian', function() {
                     });
             });
     });
-
+    after(function () {
+        return TestUtil.undeploy();
+    });
     beforeEach(() => { });
 
     afterEach(() => {

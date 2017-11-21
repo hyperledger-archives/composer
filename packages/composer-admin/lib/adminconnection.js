@@ -554,7 +554,7 @@ class AdminConnection {
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed - with a MAP of cards key is name
      */
-    start (businessNetworkDefinition, startOptions) {
+    start(businessNetworkDefinition, startOptions) {
         const method = 'start';
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
@@ -566,6 +566,7 @@ class AdminConnection {
                 return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
             })
             .then(() => {
+
                 let connectionProfile = this.securityContext.card.getConnectionProfile();
 
                 // loop over the network admins, and put cards for each into

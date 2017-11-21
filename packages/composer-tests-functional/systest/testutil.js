@@ -25,7 +25,7 @@ const path = require('path');
 const sleep = require('sleep-promise');
 const IdCard = require('composer-common').IdCard;
 let client;
-let adminidCard;
+let currentCp;
 let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
@@ -60,8 +60,8 @@ class TestUtil {
      * @return {boolean} True if running in embedded mode, false if not.
      */
     static isEmbedded() {
-        // return true;
-        return process.env.npm_lifecycle_event === 'systest:embedded';
+        return true;
+    //    return process.env.npm_lifecycle_event === 'systest:embedded';
     }
 
     /**
@@ -421,7 +421,8 @@ class TestUtil {
                     enrollmentSecret: enrollmentSecret,
                     businessNetwork : network
                 };
-                let idCard = new IdCard(metadata,adminidCard.getConnectionProfile());
+
+                let idCard = new IdCard(metadata,currentCp);
                 let adminConnection = new AdminConnection({cardStore});
                 return adminConnection.connect('admincard')
                 .then( ()=>{
@@ -567,7 +568,7 @@ class TestUtil {
         } else if (!forceDeploy) {
             let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
-
+            currentCp = {type : 'embedded',name:'defaultProfile'};
             let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
 
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
@@ -580,17 +581,22 @@ class TestUtil {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
+                    console.log('deploying new '+businessNetworkDefinition.getName());
                     return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(()=>{
-                    adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() }, { name: 'defaultProfile', type: 'embedded' });
+                    // return adminConnection.deleteCard('admincard');
+                })
+                .then(()=>{
+
+                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() }, { name: 'defaultProfile', type: 'embedded' });
                     return adminConnection.importCard('admincard', adminidCard);
                 })
                 .then(() => {
                     return adminConnection.disconnect();
                 }).then(()=>{
                     return cardStore;
-                }).catch((error)=>{console.log(error);});
+                });
         } else if (forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network.
@@ -613,6 +619,7 @@ class TestUtil {
      */
     static undeploy(businessNetworkDefinition) {
         if (!TestUtil.isHyperledgerFabricV1()) {
+            client=null;
             return Promise.resolve();
         }
         return docker.listContainers()

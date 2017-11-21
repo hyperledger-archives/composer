@@ -14,7 +14,7 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test": "exit 0",
-    "systest:embedded": "mocha -t 0 systest/assets",
+    "systest:embedded": "mocha -t 0 systest",
     "systest:hlf": "mocha -t 0 systest",
     "systest:hlfv1": "mocha -t 0 systest",
     "systest:hlfv1_tls": "mocha -t 0 systest",
