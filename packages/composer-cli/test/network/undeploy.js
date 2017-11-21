@@ -40,7 +40,7 @@ describe('composer undeploy network CLI unit tests', function () {
         sandbox = sinon.sandbox.create();
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
         mockIdCard = sinon.createStubInstance(IdCard);

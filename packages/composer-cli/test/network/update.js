@@ -42,7 +42,7 @@ describe('composer update network CLI unit tests', function () {
         sandbox = sinon.sandbox.create();
         testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
         mockAdminConnection.exportCard.resolves(testCard);

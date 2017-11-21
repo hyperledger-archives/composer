@@ -218,7 +218,7 @@ class ConnectorServer {
     connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
         const method = 'connectionManagerRemoveIdentity';
         LOG.entry(method, connectionProfile, id);
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
             .then((connectionManager) => {
                 return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
             })

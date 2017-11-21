@@ -125,8 +125,9 @@ export class SampleBusinessNetworkService {
             .then((createdCards: Map<string, IdCard>) => {
                 let card = createdCards.get(networkId);
 
-                this.adminService.importCard(cardName, card);
-
+                return this.adminService.importCard(cardName, card);
+            })
+            .then(() => {
                 this.alertService.busyStatus$.next(null);
             })
             .catch((error) => {

@@ -49,7 +49,7 @@ describe('composer deploy network CLI unit tests', function () {
         businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
         testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.deploy.resolves();
         mockAdminConnection.install.resolves();

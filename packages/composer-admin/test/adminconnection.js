@@ -240,6 +240,25 @@ describe('AdminConnection', () => {
     });
 
     describe('#start', () => {
+        it('should be able to start a business network definition with no network admins', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
+            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
+            return adminConnection.start(businessNetworkDefinition, {
+
+            })
+                .then(() => {
+                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
+                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
+
+                    });
+                    sinon.assert.calledOnce(mockConnection.start);
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
+
+                    });
+                });
+        });
 
         it('should be able to start a business network definition', () => {
             adminConnection.connection = mockConnection;
@@ -889,6 +908,35 @@ describe('AdminConnection', () => {
 
         it('should throw error if no start options', () => {
             return adminConnection._buildStartTransaction(businessNetworkDefinition).should.eventually.be.rejectedWith('No network administrators or bootstrap transactions are specified');
+        });
+
+        it('should handle no networkadmins', () => {
+            const bootstrapTransactions = [
+                {
+                    $class : 'org.hyperledger.composer.system.AddParticipant',
+                    resources : [
+                        {
+                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
+
+                            participantId : 'dave'
+                        }
+                    ],
+                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.BindIdentity',
+                    certificate : 'daves cert',
+                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
+                }
+            ];
+
+            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
+                bootstrapTransactions
+            });
         });
 
         it('should throw error if network admins and bootstrap transactions specified', () => {

@@ -402,6 +402,7 @@ class TestUtil {
 
     /**
      * Get a configured and connected instance of BusinessNetworkConnection.
+     * @param {Object} cardStore  to use to create this connection
      * @param {string} network - the identifier of the network to connect to.
      * @param {string} [enrollmentID] - the optional enrollment ID to use.
      * @param {string} [enrollmentSecret] - the optional enrollment secret to use.
@@ -640,6 +641,7 @@ class TestUtil {
 
     /**
      * Reset the business network to its initial state.
+     * @param {object} cardStore to use to connect and reset
      * @param {String} identifier, business network identifier to reset
      * @param {int} retryCount, current retry number
      * @return {Promise} - a promise that will be resolved when complete.

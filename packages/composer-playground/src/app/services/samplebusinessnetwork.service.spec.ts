@@ -171,6 +171,7 @@ describe('SampleBusinessNetworkService', () => {
 
             adminMock.connect.returns(Promise.resolve());
             adminMock.install.returns(Promise.resolve());
+            adminMock.importCard.returns(Promise.resolve());
 
             adminMock.hasCard.returns(Promise.resolve(false));
 

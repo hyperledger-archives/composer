@@ -357,7 +357,7 @@ describe('ConnectorServer', () => {
     describe('#connectionManagerRemoveIdentity', () => {
 
         it('should remove an identity', () => {
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.removeIdentity.resolves(true);
             const cb = sinon.stub();
             return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
@@ -370,7 +370,7 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle errors removing an identity', () => {
-            mockConnectionProfileManager.getConnectionManager.withArgs(connectionProfile).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
             mockConnectionManager.removeIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
             return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
