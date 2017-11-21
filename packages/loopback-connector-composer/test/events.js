@@ -15,7 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
@@ -27,7 +27,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
+
 
 describe('Event unit tests', () => {
 
@@ -38,25 +38,35 @@ describe('Event unit tests', () => {
     let idCard;
 
     before(() => {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
+        const cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({ cardStore });
+        let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+        const deployCardName = 'deployer-card';
+
+        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+        let businessNetworkDefinition;
+
+        return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
+        .then(() => {
+            return adminConnection.connect(deployCardName);
         })
-            .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
-            })
-            .then(() => {
-                return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
-            })
-            .then((businessNetworkDefinition) => {
-                factory = businessNetworkDefinition.getFactory();
-                return adminConnection.deploy(businessNetworkDefinition);
-            })
-            .then(() => {
-                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
-                return adminConnection.importCard('admin@bond-network', idCard);
-            })
+        .then(() => {
+            return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
+        })
+        .then((result) => {
+            businessNetworkDefinition = result;
+            factory =businessNetworkDefinition.getFactory();
+            return adminConnection.install(businessNetworkDefinition.getName());
+        })
+        .then(()=>{
+            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
+        })
+        .then(() => {
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            return adminConnection.importCard('admin@bond-network', idCard);
+        })
+
+
             .then(() => {
                 app = loopback();
                 const connectorSettings = {
@@ -64,7 +74,7 @@ describe('Event unit tests', () => {
                     connector: connector,
                     card: 'admin@bond-network',
                     namespaces: true,
-                    fs: bfs_fs
+                    cardStore
                 };
                 dataSource = app.loopback.createDataSource('composer', connectorSettings);
                 return new Promise((resolve, reject) => {
@@ -104,8 +114,8 @@ describe('Event unit tests', () => {
                         public: true
                     });
                 });
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
+                return businessNetworkConnection.connect('admin@bond-network');
             });
     });
 

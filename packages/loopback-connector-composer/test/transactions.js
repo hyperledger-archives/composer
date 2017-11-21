@@ -15,7 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
@@ -26,7 +26,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
 
 ['always', 'never'].forEach((namespaces) => {
 
@@ -133,25 +132,34 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let idCard;
 
         before(() => {
-            BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            adminConnection = new AdminConnection({ fs: bfs_fs });
-            return adminConnection.createProfile('defaultProfile', {
-                type : 'embedded'
-            })
+            const cardStore = new MemoryCardStore();
+            adminConnection = new AdminConnection({ cardStore });
+            let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+            const deployCardName = 'deployer-card';
+
+            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+            let businessNetworkDefinition;
+
+            return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
             .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connect(deployCardName);
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
             })
-            .then((businessNetworkDefinition) => {
+            .then((result) => {
+                businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.deploy(businessNetworkDefinition);
+                return adminConnection.install(businessNetworkDefinition.getName());
+            })
+            .then(()=>{
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
                 return adminConnection.importCard('admin@bond-network', idCard);
             })
+
             .then(() => {
                 app = loopback();
                 const connectorSettings = {
@@ -159,7 +167,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     connector: connector,
                     card: 'admin@bond-network',
                     namespaces: namespaces,
-                    fs: bfs_fs
+                    cardStore
                 };
                 dataSource = app.loopback.createDataSource('composer', connectorSettings);
                 return new Promise((resolve, reject) => {
@@ -199,8 +207,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                         public: true
                     });
                 });
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
+                return businessNetworkConnection.connect('admin@bond-network');
             })
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
@@ -215,7 +223,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         });
 
         beforeEach(() => {
-            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l','bond-network')
+            return adminConnection.connect('admin@bond-network')
             .then( ()=>{
                 return adminConnection.reset('bond-network');
             })
