@@ -16,7 +16,6 @@
 
 const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
-const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
@@ -37,7 +36,7 @@ describe('AssetDeclaration', () => {
         mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
         mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
         mockModelManager.getSystemTypes.returns([mockSystemAsset]);
-        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockClassDeclaration = sinon.createStubInstance(AssetDeclaration);
         mockModelManager.getType.returns(mockClassDeclaration);
         mockClassDeclaration.getProperties.returns([]);
     });
@@ -140,22 +139,6 @@ describe('AssetDeclaration', () => {
                 err.message.should.match(/Asset is a reserved type name./);
             }
         });
-    });
-
-    describe('#getSuperType', () => {
-
-        it('should return the fully qualified super type', () => {
-            let asset = loadLastAssetDeclaration('test/data/parser/assetdeclaration.json.cto');
-            asset.getSuperType().should.equal('com.hyperledger.testing.BaseAsset');
-        });
-
-        it('should throw when the super type is missing', () => {
-            let asset = loadAssetDeclaration('test/data/parser/assetdeclaration.missingsuper.cto');
-            (() => {
-                asset.getSuperType();
-            }).should.throw(/Could not find super type/);
-        });
-
     });
 
     describe('#getProperty', () => {

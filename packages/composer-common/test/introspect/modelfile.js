@@ -15,7 +15,6 @@
 'use strict';
 
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
-const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
@@ -37,24 +36,11 @@ describe('ModelFile', () => {
 
     const carLeaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
 
-    let mockModelManager;
-    let mockClassDeclaration;
-    let mockSystemModelFile;
-    let mockSystemAsset;
+    let modelManager;
     let sandbox;
 
     beforeEach(() => {
-        mockSystemModelFile = sinon.createStubInstance(ModelFile);
-        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
-        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
-        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
-        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
-        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
-        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-        mockModelManager.getType.returns(mockClassDeclaration);
-        mockClassDeclaration.getProperties.returns([]);
+        modelManager = new ModelManager();
         sandbox = sinon.sandbox.create();
     });
 
@@ -66,19 +52,19 @@ describe('ModelFile', () => {
 
         it('should throw when null definitions provided', () => {
             (() => {
-                new ModelFile(mockModelManager, null);
+                new ModelFile(modelManager, null);
             }).should.throw(/as a string as input/);
         });
 
         it('should throw when invalid definitions provided', () => {
             (() => {
-                new ModelFile(mockModelManager, [{}]);
+                new ModelFile(modelManager, [{}]);
             }).should.throw(/as a string as input/);
         });
 
         it('should throw when invalid filename provided', () => {
             (() => {
-                new ModelFile(mockModelManager, 'fake', {});
+                new ModelFile(modelManager, 'fake', {});
             }).should.throw(/filename as a string/);
         });
 
@@ -88,7 +74,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake definitions');
+            let mf = new ModelFile(modelManager, 'fake definitions');
             mf.ast.should.equal(ast);
             mf.namespace.should.equal('org.acme');
         });
@@ -101,7 +87,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake definitions');
+            let mf = new ModelFile(modelManager, 'fake definitions');
             mf.imports.should.deep.equal(imports);
         });
 
@@ -115,20 +101,20 @@ describe('ModelFile', () => {
                 }
             });
             (() => {
-                new ModelFile(mockModelManager, 'fake definitions');
+                new ModelFile(modelManager, 'fake definitions');
             }).should.throw(ParseException, /Line 99 column 99/);
         });
 
         it('should handle any other parsing exception', () => {
             sandbox.stub(parser, 'parse').throws(new Error('fake error'));
             (() => {
-                new ModelFile(mockModelManager, 'fake definitions');
+                new ModelFile(modelManager, 'fake definitions');
             }).should.throw(/fake error/);
             let error = new Error('fake error 2');
             error.location = {};
             parser.parse.throws(error);
             (() => {
-                new ModelFile(mockModelManager, 'fake definitions');
+                new ModelFile(modelManager, 'fake definitions');
             }).should.throw(/fake error 2/);
         });
 
@@ -141,7 +127,7 @@ describe('ModelFile', () => {
             };
             sandbox.stub(parser, 'parse').returns(ast);
             (() => {
-                new ModelFile(mockModelManager, 'fake definitions');
+                new ModelFile(modelManager, 'fake definitions');
             }).should.throw(/BlahType/);
         });
 
@@ -150,7 +136,7 @@ describe('ModelFile', () => {
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let mf = new ModelFile(mockModelManager, carLeaseModel);
+            let mf = new ModelFile(modelManager, carLeaseModel);
             let visitor = {
                 visit: sinon.stub()
             };
@@ -170,7 +156,7 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             (() => {
                 modelFile.validate();
             }).should.throw(IllegalModelException, /org.acme.ext/);
@@ -183,7 +169,7 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             (() => {
                 modelFile.validate();
             }).should.throw(IllegalModelException, /org.acme.ext/);
@@ -201,9 +187,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => {
                 modelFile2.validate();
             }).should.throw(IllegalModelException, /MyAsset3/);
@@ -221,9 +207,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => modelFile2.validate()).should.not.throw();
         });
 
@@ -239,9 +225,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => modelFile2.validate()).should.not.throw();
         });
 
@@ -250,7 +236,7 @@ describe('ModelFile', () => {
     describe('#getDefinitions', () => {
 
         it('should return the definitions for the model', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             modelFile.getDefinitions().should.equal(carLeaseModel);
         });
 
@@ -259,7 +245,7 @@ describe('ModelFile', () => {
     describe('#getName', () => {
 
         it('should return the name of the model', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel, 'car lease');
+            let modelFile = new ModelFile(modelManager, carLeaseModel, 'car lease');
             modelFile.getName().should.equal('car lease');
         });
 
@@ -273,7 +259,7 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             modelFile.isImportedType('Fred').should.be.false;
         });
 
@@ -283,7 +269,7 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             modelFile.isImportedType('MyAsset').should.be.false;
         });
 
@@ -294,7 +280,7 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             modelFile.isImportedType('MyAsset2').should.be.true;
         });
 
@@ -310,9 +296,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             modelFile2.isImportedType('MyAsset2').should.be.true;
         });
 
@@ -328,9 +314,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             modelFile2.isImportedType('MyAsset3').should.be.false;
         });
 
@@ -346,9 +332,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             modelFile2.isImportedType('MyAsset3').should.be.false;
         });
 
@@ -359,7 +345,7 @@ describe('ModelFile', () => {
         it('should find the fully qualified name of a type in the system namespace', () => {
             const model = `
             namespace org.acme`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             modelFile.resolveImport('Asset').should.equal('org.hyperledger.composer.system.Asset');
         });
 
@@ -367,7 +353,7 @@ describe('ModelFile', () => {
             const model = `
             namespace org.acme
             import org.doge.Coin`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             modelFile.resolveImport('Coin').should.equal('org.doge.Coin');
         });
 
@@ -383,9 +369,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             modelFile2.resolveImport('MyAsset2').should.equal('org.acme.ext.MyAsset2');
         });
 
@@ -393,7 +379,7 @@ describe('ModelFile', () => {
             const model = `
             namespace org.acme
             import org.doge.Wow`;
-            let modelFile = new ModelFile(mockModelManager, model);
+            let modelFile = new ModelFile(modelManager, model);
             (() => {
                 modelFile.resolveImport('Coin');
             }).should.throw(/Coin/);
@@ -411,9 +397,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => {
                 modelFile2.resolveImport('Coin');
             }).should.throw(/Coin/);
@@ -431,9 +417,9 @@ describe('ModelFile', () => {
             asset MyAsset identified by assetId {
                 o String assetId
             }`;
-            let modelFile1 = new ModelFile(mockModelManager, model1);
-            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile1 = new ModelFile(modelManager, model1);
+            modelManager.addModelFile(modelFile1);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => {
                 modelFile2.resolveImport('Coin');
             }).should.throw(/Coin/);
@@ -448,7 +434,7 @@ describe('ModelFile', () => {
                 --> DontExist relationship
             }`;
 
-            let modelFile2 = new ModelFile(mockModelManager, model2);
+            let modelFile2 = new ModelFile(modelManager, model2);
             (() => {
                 modelFile2.validate();
             }).should.throw(/DontExist/);
@@ -492,7 +478,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake definitions');
+            let mf = new ModelFile(modelManager, 'fake definitions');
             mf.getType('String').should.equal('String');
         });
 
@@ -502,7 +488,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake');
+            let mf = new ModelFile(modelManager, 'fake');
             mf.isImportedType = () => { return true; };
             mf.resolveImport = () => { return 'org.acme'; };
             should.not.exist(mf.getType('TNTAsset'));
@@ -512,13 +498,13 @@ describe('ModelFile', () => {
     describe('#getAssetDeclaration', () => {
 
         it('should return the specified asset declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let asset = modelFile.getAssetDeclaration('Vehicle');
             asset.should.be.an.instanceOf(AssetDeclaration);
         });
 
         it('should return null if it cannot find the specified asset declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let asset = modelFile.getAssetDeclaration('Blobby');
             should.equal(asset, null);
         });
@@ -528,13 +514,13 @@ describe('ModelFile', () => {
     describe('#getParticipantDeclaration', () => {
 
         it('should return the specified Participant declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let participant = modelFile.getParticipantDeclaration('Regulator');
             participant.should.be.an.instanceOf(ParticipantDeclaration);
         });
 
         it('should return null if it cannot find the specified Participant declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let participant = modelFile.getParticipantDeclaration('Blobby');
             should.equal(participant, null);
         });
@@ -544,13 +530,13 @@ describe('ModelFile', () => {
     describe('#getTransactionDeclaration', () => {
 
         it('should return the specified Transaction declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let transaction = modelFile.getTransactionDeclaration('VehicleCreated');
             transaction.should.be.an.instanceOf(TransactionDeclaration);
         });
 
         it('should return null if it cannot find the specified Transaction declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let transaction = modelFile.getTransactionDeclaration('Blobby');
             should.equal(transaction, null);
         });
@@ -560,13 +546,13 @@ describe('ModelFile', () => {
     describe('#getEventDeclaration', () => {
 
         it('should return the specified Event declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let event = modelFile.getEventDeclaration('TestEvent');
             event.should.be.an.instanceOf(EventDeclaration);
         });
 
         it('should return null if it cannot find the specified Event declaration', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let transaction = modelFile.getEventDeclaration('Blobby');
             should.equal(transaction, null);
         });
@@ -576,19 +562,19 @@ describe('ModelFile', () => {
     describe('#getEventDeclarations', () => {
 
         it('should return the expected number of Event declarations with system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let events = modelFile.getEventDeclarations();
             events.length.should.equal(1);
         });
 
         it('should return the expected number of Event declarations with system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let events = modelFile.getEventDeclarations(true);
             events.length.should.equal(1);
         });
 
         it('should return the expected number of Event declarations without system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let events = modelFile.getEventDeclarations(false);
             events.length.should.equal(1);
             let i;
@@ -601,7 +587,7 @@ describe('ModelFile', () => {
     describe('#getEnumDeclarations', () => {
 
         it('should return the expected number of Enum declarations with system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let decls = modelFile.getEnumDeclarations();
             decls.should.all.be.an.instanceOf(EnumDeclaration);
             decls.length.should.equal(1);
@@ -609,14 +595,14 @@ describe('ModelFile', () => {
         });
 
         it('should return the expected number of Enum declarations with system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let decls = modelFile.getEnumDeclarations(true);
             decls.should.all.be.an.instanceOf(EnumDeclaration);
             decls.length.should.equal(1);
         });
 
         it('should return the expected number of Enum declarations without system types', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let modelFile = new ModelFile(modelManager, carLeaseModel);
             let decls = modelFile.getEnumDeclarations(false);
             decls.should.all.be.an.instanceOf(EnumDeclaration);
             decls.length.should.equal(1);
@@ -635,7 +621,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake');
+            let mf = new ModelFile(modelManager, 'fake');
             mf.isImportedType = () => { return false; };
             mf.isLocalType = () => { return false; };
             should.not.exist(mf.getFullyQualifiedTypeName('TNTAsset'));
@@ -647,7 +633,7 @@ describe('ModelFile', () => {
                 body: [ ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let modelFile = new ModelFile(mockModelManager, 'something');
+            let modelFile = new ModelFile(modelManager, 'something');
 
             modelFile.getFullyQualifiedTypeName('String').should.equal('String');
         });
