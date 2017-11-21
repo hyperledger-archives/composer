@@ -32,11 +32,12 @@ describe('Asset system tests', function() {
 
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardstore,bnID, 0);
     });
 
     let businessNetworkDefinition;
     let client;
+    let cardstore;
 
     before(function () {
         // In this systest we are intentionally not fully specifying the model file with a fileName, but supplying "UNKNOWN"
@@ -51,8 +52,9 @@ describe('Asset system tests', function() {
         bnID = businessNetworkDefinition.getName();
 
         return TestUtil.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-assets')
+            .then((_cardstore) => {
+                cardstore = _cardstore;
+                return TestUtil.getClient(cardstore,'systest-assets')
                     .then((result) => {
                         client = result;
                     });
@@ -168,6 +170,9 @@ describe('Asset system tests', function() {
         return client
             .getAllAssetRegistries()
             .then(function (assetRegistries) {
+                console.log('-----');
+                console.log(assetRegistries);
+                console.log('-----');
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
                     {'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'},

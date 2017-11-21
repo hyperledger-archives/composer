@@ -476,6 +476,7 @@ class AdminConnection {
         const factory = businessNetworkDefinition.getFactory();
         const serializer = businessNetworkDefinition.getSerializer();
 
+        if (!networkAdmins){return [];}
         // Convert the network administrators into add participant transactions.
         const addParticipantTransactions = networkAdmins.map((networkAdmin) => {
             if (!networkAdmin.userName) {
@@ -570,6 +571,7 @@ class AdminConnection {
                 // loop over the network admins, and put cards for each into
                 // a map, indexed by the userName
                 let createdCards = new Map();
+<<<<<<< HEAD
                 networkAdmins.forEach((networkAdmin) => {
 
                     let metadata = {
@@ -589,6 +591,29 @@ class AdminConnection {
                     createdCards.set(networkAdmin.userName, newCard);
 
                 });
+=======
+                if (networkAdmins){
+                    networkAdmins.forEach( (networkAdmin) =>{
+
+                        let metadata= {
+                            version : 1,
+                            userName : networkAdmin.userName,
+                            businessNetwork : businessNetworkDefinition.getName()
+                        };
+
+                        let newCard;
+                        if (networkAdmin.secret){
+                            metadata.enrollmentSecret = networkAdmin.secret;
+                            newCard = new IdCard(metadata,connectionProfile);
+                        } else {
+                            newCard = new IdCard(metadata,connectionProfile);
+                            newCard.setCredentials({ certificate : networkAdmin.certificate });
+                        }
+                        createdCards.set(networkAdmin.userName,newCard);
+
+                    });
+                }
+>>>>>>> start of systest conversion to cards
                 LOG.exit(method);
                 return createdCards;
             });

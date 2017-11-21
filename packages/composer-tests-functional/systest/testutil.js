@@ -13,7 +13,7 @@
  */
 
 'use strict';
-
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
@@ -23,8 +23,9 @@ const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-
+const IdCard = require('composer-common').IdCard;
 let client;
+let adminidCard;
 let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
@@ -181,10 +182,10 @@ class TestUtil {
 
                 // Create all necessary configuration for the embedded runtime.
                 } else if (TestUtil.isEmbedded()) {
-                    console.log('Calling AdminConnection.createProfile() ...');
-                    return adminConnection.createProfile('composer-systests', {
-                        type: 'embedded'
-                    });
+                    console.log('Used to call  AdminConnection.createProfile() ...');
+                    // return adminConnection.createProfile('composer-systests', {
+                    //     type: 'embedded'
+                    // });
 
                 // Create all necessary configuration for the embedded runtime hosted via the connector server.
                 } else if (TestUtil.isProxy()) {
@@ -407,21 +408,42 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved with a configured and
      * connected instance of {@link BusinessNetworkConnection}.
      */
-    static getClient(network, enrollmentID, enrollmentSecret) {
+    static getClient(cardStore,network, enrollmentID, enrollmentSecret) {
         network = network || 'common-network';
+        let cardName = 'admincard';
         let thisClient;
         return Promise.resolve()
         .then(() => {
             if (enrollmentID) {
-                thisClient = new BusinessNetworkConnection();
-                process.on('exit', () => {
-                    thisClient.disconnect();
+                let metadata= {
+                    userName : enrollmentID,
+                    version : 1,
+                    enrollmentSecret: enrollmentSecret,
+                    businessNetwork : network
+                };
+                let idCard = new IdCard(metadata,adminidCard.getConnectionProfile());
+                let adminConnection = new AdminConnection({cardStore});
+                return adminConnection.connect('admincard')
+                .then( ()=>{
+                    return adminConnection.importCard(enrollmentID+'card',idCard);
+                })
+                .then( ()=>{
+                    thisClient = new BusinessNetworkConnection({cardStore});
+                    process.on('exit', () => {
+                        thisClient.disconnect();
+                    });
+                })
+                .then(()=>{
+                    // return thisClient.connect(enrollmentID+'card');
+                    cardName = enrollmentID+'card';
+                    return adminConnection.disconnect();
                 });
+
             } else if (client) {
                 thisClient = client;
                 return client.disconnect();
             } else {
-                thisClient = client = new BusinessNetworkConnection();
+                thisClient = client = new BusinessNetworkConnection({cardStore});
                 return;
             }
         })
@@ -435,7 +457,8 @@ class TestUtil {
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                 return thisClient.connectWithDetails('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
-                return thisClient.connectWithDetails('composer-systests', network, enrollmentID, enrollmentSecret);
+                console.log('connecting with '+cardName);
+                return thisClient.connect(cardName);
             }
         })
         .then(() => {
@@ -450,7 +473,8 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when complete.
      */
     static deploy(businessNetworkDefinition, forceDeploy_) {
-        const adminConnection = new AdminConnection();
+        let cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({cardStore});
         forceDeploy = forceDeploy_;
         const bootstrapTransactions = [
             {
@@ -541,18 +565,32 @@ class TestUtil {
                     return adminConnection.disconnect();
                 });
         } else if (!forceDeploy) {
+            let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+            const deployCardName = 'deployer-card';
+
+            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
-            // Connect, install the runtime and start the network.
-            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
+                .then(()=>{
+                // Connect, install the runtime and start the network.
+                    return adminConnection.connect(deployCardName);
+                })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
+                .then(()=>{
+                    adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() }, { name: 'defaultProfile', type: 'embedded' });
+                    return adminConnection.importCard('admincard', adminidCard);
+                })
                 .then(() => {
                     return adminConnection.disconnect();
-                });
+                }).then(()=>{
+                    return cardStore;
+                }).catch((error)=>{console.log(error);});
         } else if (forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network.
@@ -599,14 +637,14 @@ class TestUtil {
      * @param {int} retryCount, current retry number
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static resetBusinessNetwork(identifier, retryCount) {
+    static resetBusinessNetwork(cardStore,identifier, retryCount) {
         if (!client) {
             return Promise.resolve();
         }
 
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy){
-            const adminConnection = new AdminConnection();
-            return adminConnection.connectWithDetails('composer-systests-org1', 'admin', 'NOTNEEDED', identifier)
+            const adminConnection = new AdminConnection({cardStore});
+            return adminConnection.connect('admincard')
             .then(() => {
                 return adminConnection.reset(identifier);
             })
@@ -638,8 +676,10 @@ class TestUtil {
             });
         } else {
 
-            const adminConnection = new AdminConnection();
-            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l',identifier)
+            const adminConnection = new AdminConnection({cardStore});
+
+            return adminConnection.connect('admincard')
+
             .then(() => {
                 return adminConnection.reset(identifier);
             })
