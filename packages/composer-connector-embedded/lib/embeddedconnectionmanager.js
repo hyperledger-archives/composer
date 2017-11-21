@@ -113,7 +113,7 @@ class EmbeddedConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Remove an identity from a profile wallet.
+     * Remove an identity from the profile wallet.
      * @param {string} connectionProfile The name of the connection profile
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
@@ -121,22 +121,14 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * or rejects with an error.
      */
     removeIdentity(connectionProfile, connectionOptions, id) {
-        let identities;
-        let exists;
-        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
-            .then((identities_) => {
-                identities = identities_;
-                return identities.exists(id);
-            })
-            .then((exists_) => {
-                exists = exists_;
-                if (exists) {
-                    return identities.remove(id);
-                }
-            })
-            .then(() => {
-                return exists;
-            });
+
+        // The embedded connector uses the identities collection as the ca registry as well which
+        // effectively means that remove identity cannot have an implementation. For example it would
+        // remove an entry that has been created by issueIdentity when you import a card with a secret
+        // for the same identity and thus effectively removes the existence of the identity.
+        // This problem was shown when running the multiuser rest tests.
+        // So just do nothing for now.
+        return Promise.resolve(false);
     }
 
    /**

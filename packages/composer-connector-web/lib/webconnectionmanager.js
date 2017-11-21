@@ -121,22 +121,13 @@ class WebConnectionManager extends ConnectionManager {
      * or rejects with an error.
      */
     removeIdentity(connectionProfile, connectionOptions, id) {
-        let identities;
-        let exists;
-        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
-            .then((identities_) => {
-                identities = identities_;
-                return identities.exists(id);
-            })
-            .then((exists_) => {
-                exists = exists_;
-                if (exists) {
-                    return identities.remove(id);
-                }
-            })
-            .then(() => {
-                return exists;
-            });
+
+        // The web connector, uses the identities collection as the ca registry as well which
+        // effectively means that remove identity cannot have an implementation. For example it would
+        // remove an entry that has been created by issueIdentity when you import a card with a secret
+        // for the same identity and thus effectively removes the existence of the identity.
+        // So just do nothing for now.
+        return Promise.resolve(false);
     }
 
     /**

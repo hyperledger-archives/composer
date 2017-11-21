@@ -152,7 +152,6 @@ class EmbeddedConnection extends Connection {
      * object representing the logged in participant, or rejected with a login error.
      */
     login(enrollmentID, enrollmentSecret) {
-        console.log('in login');
         if (!this.businessNetworkIdentifier) {
             return this.testIdentity(enrollmentID, enrollmentSecret)
                 .then((identity) => {
@@ -230,6 +229,7 @@ class EmbeddedConnection extends Connection {
         return Promise.resolve();
     }
 
+
     /**
      * Test ("ping") the connection to the business network.
      * @param {SecurityContext} securityContext The participant's security context.
@@ -237,7 +237,6 @@ class EmbeddedConnection extends Connection {
      * business network has been tested, or rejected with an error.
      */
     ping(securityContext) {
-        console.log('in ping');
         return this.queryChainCode(securityContext, 'ping', [])
             .then((buffer) => {
                 return JSON.parse(buffer.toString());
