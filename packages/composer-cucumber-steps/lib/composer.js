@@ -114,7 +114,6 @@ class Composer {
      * error.
      */
     deploy (businessNetworkDefinitionPath) {
-        let card;
         return this.loadBusinessNetworkDefinition(businessNetworkDefinitionPath)
             .then((businessNetworkDefinition) => {
                 this.businessNetworkDefinition = businessNetworkDefinition;
@@ -122,21 +121,25 @@ class Composer {
                 this.introspector = this.businessNetworkDefinition.getIntrospector();
                 this.serializer = this.businessNetworkDefinition.getSerializer();
 
-                card = this.createBusinessNetworkCard(this.businessNetworkDefinition.getName(), 'networkAdmin');
-                return this.adminConnection.importCard('networkAdmin', card);
+                return this.adminConnection.install(this.businessNetworkDefinition.getName());
             })
             .then(() => {
-                return this.adminConnection.deploy(this.businessNetworkDefinition);
+                return this.adminConnection.start(this.businessNetworkDefinition, {
+                    networkAdmins : [{
+                        userName : 'admin',
+                        secret : 'adminpw'
+                    }]
+                });
+            })
+            .then((createdCards) => {
+                let card = createdCards.get('admin');
+                return this.adminConnection.importCard('networkAdmin', card);
             })
             .then(() => {
                 return this.createBusinessNetworkConnection('networkAdmin');
             })
             .then((businessNetworkConnection) => {
                 this.businessNetworkConnection = businessNetworkConnection;
-            })
-            .catch((error) => {
-                console.log('BOB', error);
-                throw error;
             });
     }
 
@@ -643,17 +646,17 @@ class Composer {
      */
     convertValueToType (value, type) {
         switch (type) {
-            case 'Boolean':
-                return new Boolean(value).valueOf();
-            case 'DateTime':
-                return new Date(value);
-            case 'Double':
-                return Number.parseFloat(value);
-            case 'Integer':
-            case 'Long':
-                return Number.parseInt(value);
-            default:
-                return value;
+        case 'Boolean':
+            return new Boolean(value).valueOf();
+        case 'DateTime':
+            return new Date(value);
+        case 'Double':
+            return Number.parseFloat(value);
+        case 'Integer':
+        case 'Long':
+            return Number.parseInt(value);
+        default:
+            return value;
         }
     }
 
