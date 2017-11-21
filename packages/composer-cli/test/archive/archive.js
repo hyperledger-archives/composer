@@ -39,6 +39,7 @@ describe('composer archive cmd launcher unit tests', function () {
         sandbox.stub(yargs, 'options').returns(yargs);
         sandbox.stub(yargs, 'usage').returns(yargs);
         sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {

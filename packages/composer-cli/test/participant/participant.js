@@ -34,7 +34,7 @@ describe('composer participant cmd launcher unit tests', function () {
         sandbox.stub(yargs, 'commandDir').returns(yargs);
         sandbox.stub(yargs, 'help').returns(yargs);
         sandbox.stub(yargs, 'example').returns(yargs);
-        sandbox.stub(yargs, 'demand').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
         sandbox.stub(yargs, 'wrap').returns(yargs);
         sandbox.stub(yargs, 'strict').returns(yargs);
         sandbox.stub(yargs, 'epilogue').returns(yargs);
