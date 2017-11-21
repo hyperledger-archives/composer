@@ -25,6 +25,29 @@ let _logger = null;
 // Set of instances of this logger class that acts as a proxy to the core logger
 let _clInstances = {};
 
+// Settins for log levels
+const LOG_LEVEL_ALL = 6;
+const LOG_LEVEL_DEBUG = 5;
+const LOG_LEVEL_VERBOSE = 4;
+const LOG_LEVEL_INFO = 3;
+const LOG_LEVEL_WARN = 2;
+const LOG_LEVEL_ERROR = 1;
+const LOG_LEVEL_NONE = 0;
+
+// Mapping between strings and log levels.
+const _logLevelAsString = {
+    all: LOG_LEVEL_ALL,
+    debug: LOG_LEVEL_DEBUG,
+    verbose: LOG_LEVEL_VERBOSE,
+    info: LOG_LEVEL_INFO,
+    warn: LOG_LEVEL_WARN,
+    error: LOG_LEVEL_ERROR,
+    none: LOG_LEVEL_NONE
+};
+
+// Current log level
+let _logLevel = LOG_LEVEL_ALL;
+
 /**
  * @description Class that provides the API to enable parts of the *Composer*
  * library to diagnostic messages.
@@ -61,6 +84,18 @@ let _clInstances = {};
  * @memberof module:composer-common
  */
 class Logger {
+
+    /**
+     * Set the new log level.
+     * @param {string} logLevel The new log level.
+     */
+    static setLogLevel(logLevel) {
+        const newLogLevel = _logLevelAsString[logLevel];
+        if (newLogLevel === undefined) {
+            throw new Error(`Unrecognized log level ${logLevel}`);
+        }
+        _logLevel = newLogLevel;
+    }
 
     /**
      * Constructor *THIS SHOULD ONLY BE CALLED INTERNALLY*
@@ -167,7 +202,14 @@ class Logger {
      * @private
      */
     debug(method, msg, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_DEBUG) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.unshift('debug');
         this.intlog.apply(this, args);
     }
@@ -182,7 +224,14 @@ class Logger {
      * @private
      */
     warn(method, msg, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_WARN) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.unshift('warn');
         this.intlog.apply(this, args);
     }
@@ -197,7 +246,14 @@ class Logger {
      * @private
      */
     info(method, msg, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_INFO) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.unshift('info');
         this.intlog.apply(this, args);
     }
@@ -212,7 +268,14 @@ class Logger {
      * @private
      */
     verbose(method,msg, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_VERBOSE) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.unshift('verbose');
         this.intlog.apply(this, args);
     }
@@ -227,7 +290,14 @@ class Logger {
      * @private
      */
     error(method, msg,data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_ERROR) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.unshift('error');
         this.intlog.apply(this, args);
     }
@@ -241,7 +311,14 @@ class Logger {
      * @private
      */
     entry(method, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_DEBUG) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.shift();
         args.unshift('debug', method, '>');
         this.intlog.apply(this, args);
@@ -255,7 +332,14 @@ class Logger {
      * @private
      */
     exit(method, data) {
-        const args = Array.prototype.slice.call(arguments);
+        if (_logLevel < LOG_LEVEL_DEBUG) {
+            return;
+        }
+        const length = arguments.length;
+        const args = new Array(length);
+        for (let i = 0; i < length; i++) {
+            args[i] = arguments[i];
+        }
         args.shift();
         args.unshift('debug', method, '<');
         this.intlog.apply(this, args);
@@ -477,6 +561,7 @@ class Logger {
         _tree=null;
         _logger=null;
         _clInstances={};
+        _logLevel = LOG_LEVEL_ALL;
     }
 
 }

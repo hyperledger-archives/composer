@@ -83,6 +83,7 @@ class ModelBinding {
      */
     process() {
         this.qualifiedName = this.ast.qualifiedName;
+        this.hasWildcardInQualifiedName = ModelUtil.isRecursiveWildcardName(this.qualifiedName) || ModelUtil.isWildcardName(this.qualifiedName);
         this.instanceId = null;
 
         if(this.ast.instanceId) {
@@ -120,6 +121,15 @@ class ModelBinding {
      */
     getFullyQualifiedName() {
         return this.qualifiedName;
+    }
+
+    /**
+     * Returns true if this ModelBinding has a wildcard in the fully qualified name.
+     *
+     * @return {boolean} true if this ModelBinding has a wildcard in the fully qualified name.
+     */
+    hasWildcard() {
+        return this.hasWildcardInQualifiedName;
     }
 
     /**

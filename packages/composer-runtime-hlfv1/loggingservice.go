@@ -15,22 +15,23 @@
 package main
 
 import (
+	"os"
+	"strings"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
-    "os"
-    "strings"
 )
 
 // enable logging based on either world state or env variable.
 // default to INFO if neither have a value.
-func EnableLogging(stub shim.ChaincodeStubInterface) {
-	level, _ := shim.LogLevel(getLogging(stub))
+func EnableLogging(levelStr string) {
+	level, _ := shim.LogLevel(levelStr)
 	logger.SetLevel(level)
 }
 
 // get the currently defined logging level
-func getLogging(stub shim.ChaincodeStubInterface) (string) {
-	logger.Debug("Entering getLogging", &stub)	
+func GetLogLevel(stub shim.ChaincodeStubInterface) string {
+	logger.Debug("Entering GetLogLevel", &stub)
 	var levelStr string
 	levelBytes, err := stub.GetState("ComposerLogLevel")
 	if err != nil || levelBytes == nil {
@@ -46,13 +47,12 @@ func getLogging(stub shim.ChaincodeStubInterface) (string) {
 }
 
 // explicitly set the logging to a specific level
-func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
+func SetLogLevel(stub shim.ChaincodeStubInterface, levelStr string) {
 	//We could check that the levelStr is valid but
 	//currently if it isn't then I think shim.LogLevel will return a default of loglevel of Error.
 	newLevel := strings.ToUpper(levelStr)
 	stub.PutState("ComposerLogLevel", []byte(newLevel))
-	level, _ := shim.LogLevel(newLevel)
-	logger.SetLevel(level)
+	EnableLogging(newLevel)
 	logger.Warning("Setting loglevel to", newLevel)
 }
 
@@ -102,10 +102,10 @@ func NewLoggingService(vm *duktape.Context, container *Container, stub shim.Chai
 	vm.PushGoFunction(result.logWarning)  // [ global composer theLoggingService logWarning ]
 	vm.PutPropString(-2, "logWarning")    // [ global composer theLoggingService ]
 
-	vm.PushGoFunction(result.getLogLevel)  // [ global composer theLoggingService getLogLevel ]
-	vm.PutPropString(-2, "getLogLevel")    // [ global composer theLoggingService ]
-	vm.PushGoFunction(result.setLogLevel)  // [ global composer theLoggingService setLogLevel ]
-	vm.PutPropString(-2, "setLogLevel")    // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.getLogLevel) // [ global composer theLoggingService getLogLevel ]
+	vm.PutPropString(-2, "getLogLevel")   // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.setLogLevel) // [ global composer theLoggingService setLogLevel ]
+	vm.PutPropString(-2, "setLogLevel")   // [ global composer theLoggingService ]
 
 	// Return the new logging service.
 	return result
@@ -128,6 +128,9 @@ func (loggingService *LoggingService) getLogInserts(vm *duktape.Context) (result
 
 // logCritical writes a critical message to the log.
 func (loggingService *LoggingService) logCritical(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogCritical) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Critical(strings...)
 	return 0
@@ -135,6 +138,9 @@ func (loggingService *LoggingService) logCritical(vm *duktape.Context) (result i
 
 // logDebug writes a debug message to the log.
 func (loggingService *LoggingService) logDebug(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogDebug) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Debug(strings...)
 	return 0
@@ -142,6 +148,9 @@ func (loggingService *LoggingService) logDebug(vm *duktape.Context) (result int)
 
 // logError writes a error message to the log.
 func (loggingService *LoggingService) logError(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogError) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Error(strings...)
 	return 0
@@ -149,6 +158,9 @@ func (loggingService *LoggingService) logError(vm *duktape.Context) (result int)
 
 // logInfo writes a info message to the log.
 func (loggingService *LoggingService) logInfo(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogInfo) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Info(strings...)
 	return 0
@@ -156,6 +168,9 @@ func (loggingService *LoggingService) logInfo(vm *duktape.Context) (result int) 
 
 // logNotice writes a notice message to the log.
 func (loggingService *LoggingService) logNotice(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogNotice) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Notice(strings...)
 	return 0
@@ -163,6 +178,9 @@ func (loggingService *LoggingService) logNotice(vm *duktape.Context) (result int
 
 // logWarning writes a warning message to the log.
 func (loggingService *LoggingService) logWarning(vm *duktape.Context) (result int) {
+	if !logger.IsEnabledFor(shim.LogWarning) {
+		return 0
+	}
 	strings := loggingService.getLogInserts(vm)
 	logger.Warning(strings...)
 	return 0
@@ -170,7 +188,7 @@ func (loggingService *LoggingService) logWarning(vm *duktape.Context) (result in
 
 // getLogLevel returns the current log level of the runtime.
 func (loggingService *LoggingService) getLogLevel(vm *duktape.Context) (result int) {
-	loglevel := getLogging(loggingService.Stub);
+	loglevel := GetLogLevel(loggingService.Stub)
 	vm.PushString(loglevel)
 	return 1
 }
@@ -178,6 +196,6 @@ func (loggingService *LoggingService) getLogLevel(vm *duktape.Context) (result i
 // setLogLevel sets the log level for the runtime.
 func (loggingService *LoggingService) setLogLevel(vm *duktape.Context) (result int) {
 	newLevel := vm.ToString(0)
-	SetLogging(loggingService.Stub, newLevel)
+	SetLogLevel(loggingService.Stub, newLevel)
 	return 0
 }
