@@ -60,8 +60,7 @@ class TestUtil {
      * @return {boolean} True if running in embedded mode, false if not.
      */
     static isEmbedded() {
-        return true;
-    //    return process.env.npm_lifecycle_event === 'systest:embedded';
+        return process.env.npm_lifecycle_event === 'systest:embedded';
     }
 
     /**
@@ -172,13 +171,11 @@ class TestUtil {
 
                 // Create all necessary configuration for the web runtime.
                 if (TestUtil.isWeb()) {
-                    const BrowserFS = require('browserfs');
-                    BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
+                    // const BrowserFS = require('browserfs');
+                    // BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
                     ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
-                    console.log('Calling AdminConnection.createProfile() ...');
-                    return adminConnection.createProfile('composer-systests', {
-                        type: 'web'
-                    });
+                    // console.log('Calling AdminConnection.createProfile() ...');
+                    console.log('Used to call  AdminConnection.createProfile() ...');
 
                 // Create all necessary configuration for the embedded runtime.
                 } else if (TestUtil.isEmbedded()) {
@@ -459,7 +456,7 @@ class TestUtil {
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                 return thisClient.connectWithDetails('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
-                console.log('connecting with '+cardName);
+                console.log('Connecting with '+cardName);
                 return thisClient.connect(cardName);
             }
         })
@@ -475,6 +472,9 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when complete.
      */
     static deploy(businessNetworkDefinition, forceDeploy_) {
+        // do not believe there is any code left doing forceDeploy_
+        if (forceDeploy_){ throw new Error('this should not be deploying');}
+
         let cardStore = new MemoryCardStore();
         const adminConnection = new AdminConnection({cardStore});
         forceDeploy = forceDeploy_;
@@ -570,7 +570,17 @@ class TestUtil {
             let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
             currentCp = {type : 'embedded',name:'defaultProfile'};
-            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+            let connectionprofile;
+
+            if (TestUtil.isEmbedded()){
+                connectionprofile =  {type : 'embedded', name:'defaultProfile'};
+            } else if (TestUtil.isWeb()){
+                connectionprofile =  {type : 'web', name:'defaultProfile'};
+            } else {
+                throw new Error('Unknown connector type');
+            }
+            currentCp = connectionprofile;
+            let idCard_PeerAdmin = new IdCard(metadata,connectionprofile);
 
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
@@ -586,11 +596,8 @@ class TestUtil {
                     return adminConnection.start(businessNetworkDefinition, { bootstrapTransactions });
                 })
                 .then(()=>{
-                    // return adminConnection.deleteCard('admincard');
-                })
-                .then(()=>{
 
-                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() }, { name: 'defaultProfile', type: 'embedded' });
+                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() },connectionprofile);
                     return adminConnection.importCard('admincard', adminidCard);
                 })
                 .then(() => {
@@ -686,9 +693,7 @@ class TestUtil {
         } else {
 
             const adminConnection = new AdminConnection({cardStore});
-
             return adminConnection.connect('admincard')
-
             .then(() => {
                 return adminConnection.reset(identifier);
             })
