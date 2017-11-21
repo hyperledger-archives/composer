@@ -60,7 +60,7 @@ describe('AclFile', () => {
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
             const ast = {
-                rules: [ {id: {name: 'fake'}, noun: 'org.acme', verbs: 'UPDATE', participant: 'EVERYONE', action: 'ALLOW'} ]
+                rules: [ {id: {name: 'fake'}, noun: {qualifiedName: 'org.acme.*'}, verbs: 'UPDATE', participant: 'ANY', action: 'ALLOW'} ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new AclFile( 'test', modelManager, 'fake definitions');
