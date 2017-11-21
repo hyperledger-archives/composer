@@ -18,8 +18,6 @@ import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
 import "time"
 
-
-
 // Chaincode is the chaincode class. It is an implementation of the
 // Chaincode interface.
 type Chaincode struct {
@@ -41,10 +39,13 @@ func NewChaincode() (result *Chaincode) {
 func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.Response) {
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
-	EnableLogging(stub)
+	logLevel := GetLogLevel(stub)
+	EnableLogging(logLevel)
 
-	start := time.Now()	
-	defer func() { logger.Debug("@perf Chaincode.Init total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+	start := time.Now()
+	defer func() {
+		logger.Debug("@perf Chaincode.Init total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start))
+	}()
 
 	logger.Debug("Entering Chaincode.Init", &stub)
 	defer func() {
@@ -58,7 +59,7 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	// Execute the init function.
 	function, arguments := stub.GetFunctionAndParameters()
 
-	payload, err := composer.Init(stub, function, arguments)
+	payload, err := composer.Init(stub, function, arguments, logLevel)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -70,10 +71,13 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response pb.Response) {
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
-	EnableLogging(stub)
+	logLevel := GetLogLevel(stub)
+	EnableLogging(logLevel)
 
-	start := time.Now()	
-	defer func() { logger.Debug("@perf Chaincode.Invoke total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start)) }()
+	start := time.Now()
+	defer func() {
+		logger.Debug("@perf Chaincode.Invoke total duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(start))
+	}()
 
 	logger.Debug("Entering Chaincode.Invoke", &stub)
 	defer func() {
@@ -84,12 +88,12 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 	increment := time.Now()
 	composer := chaincode.ComposerPool.Get()
 	logger.Debug("@perf Chaincode.Invoke ComposerPool.Get() duration for txnId [", stub.GetTxID(), "] : ", time.Now().Sub(increment))
-	increment = time.Now();
+	increment = time.Now()
 	defer chaincode.ComposerPool.Put(composer)
 
 	// Execute the invoke function.
 	function, arguments := stub.GetFunctionAndParameters()
-	payload, err := composer.Invoke(stub, function, arguments)
+	payload, err := composer.Invoke(stub, function, arguments, logLevel)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
