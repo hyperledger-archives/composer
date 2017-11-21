@@ -440,7 +440,7 @@ Calling an api after disconnect and before connect will give an error.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Resolved when the card is imported</p>
+<p><code>Promise</code> - Resolved when the card is imported, resolves to true if updated, false if added.</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -516,7 +516,7 @@ Calling an api after disconnect and before connect will give an error.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Resolves if an existing card was deleted; rejected otherwise.</p>
+<p><code>Promise</code> - Resolves true if deleted, false if not deleted, is rejected if an error occurs.</p>
 
 <h3 id="parameters">Parameters</h3>
 
