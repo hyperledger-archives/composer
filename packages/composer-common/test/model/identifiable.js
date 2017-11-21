@@ -21,11 +21,17 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
 
-describe    ('Identifiable', function () {
+describe('Identifiable', function () {
 
     let modelManager;
+    let classDecl;
     before(function () {
         modelManager = new ModelManager();
+        modelManager.addModelFile(`namespace com.composer
+        participant Farmer identified by farmerId {
+            o String farmerId
+        }`);
+        classDecl = modelManager.getType('com.composer.Farmer');
     });
 
     beforeEach(function () {
@@ -36,18 +42,14 @@ describe    ('Identifiable', function () {
 
     describe('#toString', function() {
         it('should be able to call toString', function () {
-            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
-            id.toString().should.equal('Identifiable {id=org.acme.Type#123}');
+            const id = new Identifiable(modelManager, classDecl, 'com.composer', 'Farmer', '123' );
+            id.toString().should.equal('Identifiable {id=com.composer.Farmer#123}');
         });
     });
 
     describe('#setIdentifier', () => {
         it('should be able to set identifier', function () {
-            modelManager.addModelFile(`namespace com.composer
-            participant Farmer identified by farmerId {
-                o String farmerId
-            }`);
-            let id = new Identifiable(modelManager, 'com.composer', 'Farmer', '123' );
+            let id = new Identifiable(modelManager, modelManager.getType('com.composer.Farmer'), 'com.composer', 'Farmer', '123' );
             id.setIdentifier('321');
             id.getIdentifier().should.equal('321');
         });
@@ -55,7 +57,7 @@ describe    ('Identifiable', function () {
 
     describe('#accept', () => {
         it('should be able to accept visitor', function () {
-            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            const id = new Identifiable(modelManager, classDecl, 'com.composer', 'Farmer', '123' );
             const visitor = {visit: function(obj,parameters){}};
             const spy = sinon.spy(visitor, 'visit');
             id.accept(visitor, {});
@@ -65,7 +67,7 @@ describe    ('Identifiable', function () {
 
     describe('#toJSON', () => {
         it('should throw is toJSON is called', function () {
-            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            const id = new Identifiable(modelManager, classDecl, 'com.composer', 'Farmer', '123' );
             (function () {
                 id.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
@@ -74,14 +76,14 @@ describe    ('Identifiable', function () {
 
     describe('#isRelationship', () => {
         it('should be false', () => {
-            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            const id = new Identifiable(modelManager, classDecl, 'com.composer', 'Farmer', '123' );
             id.isRelationship().should.be.false;
         });
     });
 
     describe('#isResource', () => {
         it('should be false', () => {
-            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            const id = new Identifiable(modelManager, classDecl, 'com.composer', 'Farmer', '123' );
             id.isResource().should.be.false;
         });
     });

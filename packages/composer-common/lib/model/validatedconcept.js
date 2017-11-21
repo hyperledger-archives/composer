@@ -44,13 +44,14 @@ class ValidatedConcept extends Concept {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @param {ResourceValidator} resourceValidator - The validator to use for this instance
      * @private
      */
-    constructor(modelManager, ns, type, resourceValidator) {
-        super(modelManager, ns, type);
+    constructor(modelManager, classDeclaration, ns, type, resourceValidator) {
+        super(modelManager, classDeclaration, ns, type);
         this.$validator = resourceValidator;
     }
 

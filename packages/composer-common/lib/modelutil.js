@@ -73,12 +73,17 @@ class ModelUtil {
      * @private
      */
     static isMatchingType(type, fqn) {
+
+        // Instance of type before any complex string operations.
+        if (type.instanceOf(fqn)) {
+            // matching type or subtype
+            return true;
+        }
+
         let ns = ModelUtil.getNamespace(fqn);
         let typeNS = type.getNamespace();
 
-        if (type.instanceOf(fqn)) {
-            // matching type or subtype
-        } else if (ModelUtil.isWildcardName(fqn) && typeNS === ns) {
+        if (ModelUtil.isWildcardName(fqn) && typeNS === ns) {
             // matching namespace
         } else if (ModelUtil.isRecursiveWildcardName(fqn) && (typeNS + '.').startsWith(ns + '.')) {
             // matching recursive namespace

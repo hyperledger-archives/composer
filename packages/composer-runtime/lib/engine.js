@@ -75,7 +75,6 @@ class Engine {
             }
         };
         Logger.setFunctionalLogger(loggingProxy);
-        Logger._envDebug = 'composer:*';
     }
 
     /**
