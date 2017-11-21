@@ -25,6 +25,7 @@ const sinon = require('sinon');
 describe('CallbackRelationship', () => {
 
     let modelManager;
+    let classDecl;
     let factory;
     let relationship;
     let cb;
@@ -51,9 +52,10 @@ describe('CallbackRelationship', () => {
             --> SampleParticipant owner
             --> SampleParticipant[] owners
         }`);
+        classDecl = modelManager.getType('org.acme.sample.SampleAsset');
         factory = new Factory(modelManager);
         cb = sinon.stub();
-        relationship = new CallbackRelationship(new Relationship(modelManager, 'org.acme.sample', 'SampleAsset', 'ASSET_1'), cb);
+        relationship = new CallbackRelationship(new Relationship(modelManager, classDecl, 'org.acme.sample', 'SampleAsset', 'ASSET_1'), cb);
     });
 
     describe('#constructor', () => {

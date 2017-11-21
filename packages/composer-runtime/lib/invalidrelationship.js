@@ -34,7 +34,7 @@ class InvalidRelationship extends Relationship {
      * @param {Error} error The error to throw when the relationship is accessed.
      */
     constructor(relationship, error) {
-        super(relationship.getModelManager(), relationship.getNamespace(), relationship.getType(), relationship.getIdentifier());
+        super(relationship.getModelManager(), relationship.getClassDeclaration(), relationship.getNamespace(), relationship.getType(), relationship.getIdentifier());
         const method = 'constructor';
         LOG.entry(method, relationship, error);
         const classDeclaration = this.getClassDeclaration();

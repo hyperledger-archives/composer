@@ -16,7 +16,6 @@
 
 const ModelManager = require('../../lib/modelmanager');
 const Resource = require('../../lib/model/resource');
-const sinon = require('sinon');
 
 const chai = require('chai');
 chai.should();
@@ -35,6 +34,7 @@ describe('Resource', function () {
   `;
 
     let modelManager = null;
+    let classDecl = null;
 
     before(function () {
         modelManager = new ModelManager();
@@ -42,6 +42,7 @@ describe('Resource', function () {
 
     beforeEach(function () {
         modelManager.addModelFile(levelOneModel);
+        classDecl = modelManager.getType('org.acme.l1.Person');
     });
 
     afterEach(function () {
@@ -49,22 +50,9 @@ describe('Resource', function () {
     });
 
     describe('#getClassDeclaration', function() {
-        it('should throw with no ModelFile', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
-            const stub = sinon.stub(modelManager, 'getModelFile', function(){return null;});
-            (function () {
-                resource.getClassDeclaration();
-            }).should.throw(/No model for namespace org.acme.l1 is registered with the ModelManager/);
-            stub.restore();
-        });
-        it('should throw with no type', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
-            const modelFile = modelManager.getModelFile('org.acme.l1');
-            const stub = sinon.stub(modelFile, 'getType', function(type){return null;});
-            (function () {
-                resource.getClassDeclaration();
-            }).should.throw(/The namespace org.acme.l1 does not contain the type Person/);
-            stub.restore();
+        it('should return the class declaraction', function () {
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
+            resource.getClassDeclaration().should.equal(classDecl);
         });
     });
 

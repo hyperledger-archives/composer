@@ -30,16 +30,12 @@ const sinon = require('sinon');
 
 describe('ClassDeclaration', () => {
 
-    let mockModelManager;
-    let mockModelFile;
-    let mockSystemAsset;
+    let modelManager;
+    let modelFile;
 
     beforeEach(() => {
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
-        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
-        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
-        mockModelFile = sinon.createStubInstance(ModelFile);
+        modelManager = new ModelManager();
+        modelFile = new ModelFile(modelManager, 'namespace com.hyperledger.testing', 'org.acme.cto');
     });
 
     /**
@@ -59,7 +55,7 @@ describe('ClassDeclaration', () => {
     };
 
     const loadModelFile = (modelFileName) => {
-        return loadModelFiles([modelFileName], mockModelManager)[0];
+        return loadModelFiles([modelFileName], modelManager)[0];
     };
 
     const loadLastDeclaration = (modelFileName, type) => {
@@ -78,13 +74,13 @@ describe('ClassDeclaration', () => {
 
         it('should throw if ast not specified', () => {
             (() => {
-                new ClassDeclaration(mockModelFile, null);
+                new ClassDeclaration(modelFile, null);
             }).should.throw(/required/);
         });
 
         it('should throw if ast contains invalid type', () => {
             (() => {
-                new ClassDeclaration(mockModelFile, {
+                new ClassDeclaration(modelFile, {
                     id: {
                         name: 'suchName'
                     },
@@ -155,7 +151,7 @@ describe('ClassDeclaration', () => {
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -177,7 +173,7 @@ describe('ClassDeclaration', () => {
     describe('#getModelFile', () => {
 
         it('should return the model file', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -186,7 +182,7 @@ describe('ClassDeclaration', () => {
                     ]
                 }
             });
-            clz.getModelFile().should.equal(mockModelFile);
+            clz.getModelFile().should.equal(modelFile);
         });
 
     });
@@ -194,7 +190,7 @@ describe('ClassDeclaration', () => {
     describe('#getName', () => {
 
         it('should return the class name', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -204,7 +200,7 @@ describe('ClassDeclaration', () => {
                 }
             });
             clz.getName().should.equal('suchName');
-            clz.toString().should.equal('ClassDeclaration {id=undefined.suchName enum=false abstract=false}');
+            clz.toString().should.equal('ClassDeclaration {id=com.hyperledger.testing.suchName enum=false abstract=false}');
         });
 
     });
@@ -212,8 +208,7 @@ describe('ClassDeclaration', () => {
     describe('#getFullyQualifiedName', () => {
 
         it('should return the fully qualified name if function is in a namespace', () => {
-            mockModelFile.getNamespace.returns('com.hyperledger.testing');
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
