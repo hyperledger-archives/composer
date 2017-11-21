@@ -28,7 +28,9 @@ const parser = require('../../lib/introspect/parser');
 const fs = require('fs');
 const path = require('path');
 
-const should = require('chai').should();
+const chai = require('chai');
+const should = chai.should();
+chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('ModelFile', () => {
@@ -452,6 +454,33 @@ describe('ModelFile', () => {
             }).should.throw(/DontExist/);
         });
 
+
+    });
+
+    describe('#isDefined', () => {
+
+        let modelManager;
+        let modelFile;
+
+        before(() => {
+            modelManager = new ModelManager();
+            modelFile = modelManager.addModelFile(`namespace org.acme
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`);
+        });
+
+        it('should return true for a primitive type', () => {
+            modelFile.isDefined('String').should.be.true;
+        });
+
+        it('should return true for a local type', () => {
+            modelFile.isDefined('MyAsset').should.be.true;
+        });
+
+        it('should return false for a local type that does not exist', () => {
+            modelFile.isDefined('NoAsset').should.be.false;
+        });
 
     });
 

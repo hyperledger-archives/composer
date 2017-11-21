@@ -36,14 +36,15 @@ class ValidatedResource extends Resource {
      * retrieve instances from {@link Factory}</strong>
      * </p>
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @param {string} id - The identifier of this instance.
      * @param {ResourceValidator} resourceValidator - The validator to use for this instance
      * @private
      */
-    constructor(modelManager, ns, type, id,resourceValidator) {
-        super(modelManager, ns, type, id);
+    constructor(modelManager, classDeclaration, ns, type, id, resourceValidator) {
+        super(modelManager, classDeclaration, ns, type, id);
         this.$validator = resourceValidator;
     }
 
