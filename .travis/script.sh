@@ -49,7 +49,7 @@ if [ "${DOCS}" != "" ]; then
 elif [ "${FVTEST}" != "" ]; then
 
     # Run the fv tests.
-    ${DIR}/packages/composer-tests-functional/scripts/run-system-tests.sh 
+    ${DIR}/packages/composer-tests-functional/scripts/run-fv-tests.sh 
     # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
 
 # Are we running playground e2e tests?

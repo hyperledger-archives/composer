@@ -381,8 +381,10 @@ class AccessController {
 
         // shortcut evaluation if simple boolean predicate
         if (aclRule.getPredicate().getExpression() === 'true') {
+            LOG.exit(method, true);
             return Promise.resolve(true);
         } else if (aclRule.getPredicate().getExpression() === 'false') {
+            LOG.exit(method, false);
             return Promise.resolve(false);
         }
 
