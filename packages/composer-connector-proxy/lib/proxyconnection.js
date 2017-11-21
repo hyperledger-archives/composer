@@ -200,12 +200,14 @@ class ProxyConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @param {Object} options options to pass to invoking chaincode
+     * @param {Object} options.transactionId Transaction Id to use.
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode(securityContext, functionName, args, options) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionInvokeChainCode', this.connectionID, securityContext.securityContextID, functionName, args, (error) => {
+            this.socket.emit('/api/connectionInvokeChainCode', this.connectionID, securityContext.securityContextID, functionName, args, options, (error) => {
                 if (error) {
                     return reject(ProxyUtil.inflaterr(error));
                 }

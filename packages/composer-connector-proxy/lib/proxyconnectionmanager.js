@@ -99,7 +99,7 @@ class ProxyConnectionManager extends ConnectionManager {
      */
     importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, connectionProfile, connectionOptions, id, certificate, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, certificate);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
@@ -113,6 +113,31 @@ class ProxyConnectionManager extends ConnectionManager {
                 });
             });
     }
+
+    /**
+     * Remove an identity from a profile wallet.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @returns {Promise} a promise
+     */
+    removeIdentity(connectionProfile, connectionOptions, id) {
+        const method = 'importIdentity';
+        LOG.entry(method, connectionProfile, connectionOptions, id);
+        return this.ensureConnected()
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, id, (error) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+                        LOG.exit(method);
+                        resolve();
+                    });
+                });
+            });
+    }
+
 
     /**
      * Obtain the credentials associated with a given identity.

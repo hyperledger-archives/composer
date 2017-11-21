@@ -18,7 +18,9 @@ const composerUtil = require('composer-common').Util;
 const Logger = require('composer-common').Logger;
 const util = require('util');
 const fs = require('fs');
+const fsextra = require('fs-extra');
 const path = require('path');
+const thenifyAll = require('thenify-all');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -350,15 +352,15 @@ class HLFConnectionManager extends ConnectionManager {
 
         // Validate all the arguments.
         if (!connectionProfile || typeof connectionProfile !== 'string') {
-            throw new Error('connectionProfile not specified or not a string');
+            return Promise.reject(Error('connectionProfile not specified or not a string'));
         } else if (!connectionOptions || typeof connectionOptions !== 'object') {
-            throw new Error('connectionOptions not specified or not an object');
+            return Promise.reject(Error('connectionOptions not specified or not an object'));
         } else if (!enrollmentID) {
-            throw new Error('enrollmentID not specified');
+            return Promise.reject(new Error('enrollmentID not specified'));
         } else if (!enrollmentSecret) {
-            throw new Error('enrollmentSecret not specified');
+            return Promise.reject(new Error('enrollmentSecret not specified'));
         } else if (!connectionOptions.ca) {
-            throw new Error('No ca defined in connection profile');
+            return Promise.reject(new Error('No ca defined in connection profile'));
         }
 
         // Submit the enrollment request to Fabric CA.
@@ -398,26 +400,30 @@ class HLFConnectionManager extends ConnectionManager {
      */
     importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, connectionProfile, connectionOptions, id, publicCert, privateKey);
+        LOG.entry(method, connectionProfile, connectionOptions, id, publicCert);
 
         // validate arguments
         if (!connectionProfile || typeof connectionProfile !== 'string') {
-            throw new Error('connectionProfile not specified or not a string');
+            return Promise.reject(Error('connectionProfile not specified or not a string'));
         } else if (!connectionOptions || typeof connectionOptions !== 'object') {
-            throw new Error('connectionOptions not specified or not an object');
+            return Promise.reject(new Error('connectionOptions not specified or not an object'));
         } else if (!id || typeof id !== 'string') {
-            throw new Error('id not specified or not a string');
+            return Promise.reject(new Error('id not specified or not a string'));
         } else if (!publicCert || typeof publicCert !== 'string') {
-            throw new Error('publicCert not specified or not a string');
+            return Promise.reject(new Error('publicCert not specified or not a string'));
         } else if (!privateKey || typeof privateKey !== 'string') {
-            throw new Error('privateKey not specified or not a string');
+            return Promise.reject(new Error('privateKey not specified or not a string'));
         }
 
         //default the optional wallet
         let wallet = connectionOptions.wallet || Wallet.getWallet();
 
         // validate the profile
-        this.validateProfileDefinition(connectionOptions, wallet);
+        try {
+            this.validateProfileDefinition(connectionOptions, wallet);
+        } catch(error) {
+            return Promise.reject(error);
+        }
 
         let mspID = connectionOptions.mspID;
         const client = HLFConnectionManager.createClient();
@@ -455,17 +461,20 @@ class HLFConnectionManager extends ConnectionManager {
 
         // Validate all the arguments.
         if (!connectionProfile) {
-            throw new Error('connectionProfile not specified');
+            return Promise.reject(new Error('connectionProfile not specified'));
         } else if (!connectOptions) {
-            throw new Error('connectOptions not specified');
+            return Promise.reject(new Error('connectOptions not specified'));
         }
 
         //default the optional wallet
         let wallet = connectOptions.wallet || Wallet.getWallet();
 
         // validate the profile
-        this.validateProfileDefinition(connectOptions, wallet);
-
+        try {
+            this.validateProfileDefinition(connectOptions, wallet);
+        } catch(error) {
+            return Promise.reject(error);
+        }
 
         // Default the optional connection options.
         if (!connectOptions.timeout) {
@@ -497,15 +506,19 @@ class HLFConnectionManager extends ConnectionManager {
         // Parse all of the peers.
         let peers = [];
         let eventHubDefs = [];
-        connectOptions.peers.forEach((peer) => {
-            HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, peers, eventHubDefs);
-        });
+        try {
+            connectOptions.peers.forEach((peer) => {
+                HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, peers, eventHubDefs);
+            });
+        } catch(error) {
+            return Promise.reject(error);
+        }
 
         // Check for at least one peer and at least one event hub.
         if (peers.length === 0) {
-            throw new Error('You must specify at least one peer with a valid requestURL for submitting transactions');
+            return Promise.reject(new Error('You must specify at least one peer with a valid requestURL for submitting transactions'));
         } else if (eventHubDefs.length === 0) {
-            throw new Error('You must specify at least one peer with a valid eventURL for receiving events');
+            return Promise.reject(new Error('You must specify at least one peer with a valid eventURL for receiving events'));
         }
 
         // Load all of the peers into the client.
@@ -559,6 +572,78 @@ class HLFConnectionManager extends ConnectionManager {
                 }
                 LOG.exit(method, result);
                 return result;
+            });
+    }
+
+    /**
+     * Remove any cached credentials associated with a given identity.
+     * @param {String} connectionProfileName Name of the connection profile.
+     * @param {Object} connectionOptions connection options loaded from the profile.
+     * @param {String} id Name of the identity.
+     * @returns {Promise} a promise which resolves when the identity is imported
+     */
+    removeIdentity(connectionProfileName, connectionOptions, id) {
+        if (!connectionProfileName || typeof connectionProfileName !== 'string') {
+            return Promise.reject(Error('connectionProfileName not specified or not a string'));
+        } else if (!connectionOptions || typeof connectionOptions !== 'object') {
+            return Promise.reject(Error('connectionOptions not specified or not an object'));
+        } else if (!id || typeof id !== 'string') {
+            return Promise.reject(new Error('id not specified or not a string'));
+        }
+
+        // if it's a wallet then we can use the wallet implementation to remove by id
+        if (connectionOptions.wallet) {
+            let exists;
+            return connectionOptions.wallet.contains(id)
+                .then((exists_) => {
+                    exists = exists_;
+                    if (exists) {
+                        return connectionOptions.wallet.remove(id);
+                    }
+                })
+                .then(() => {
+                    return exists;
+                });
+        }
+
+        // it's using a file system based on the card name, as the KeyValueStore of the fabric SDK only supports
+        // get and set and luckily we isolate the information based on the card name we can just forceably delete the directory.
+        // we cannot support doing this for connection profiles that use keyValStore and no cardname provided.
+        if (connectionOptions.cardName) {
+            let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', connectionOptions.cardName);
+            let exists;
+
+            return HLFConnectionManager._exists(storePath)
+                .then((exists_) => {
+                    exists = exists_;
+                    if (exists) {
+                        const thenifyFSExtra = thenifyAll(fsextra);
+                        return thenifyFSExtra.remove(storePath);
+                    }
+                })
+                .then(() => {
+                    return exists;
+                });
+
+
+        } else {
+            return Promise.reject(new Error('Unable to remove identity as no card name provided'));
+        }
+    }
+
+    /**
+     * Determine if a path exists.
+     * @param {string} storePath the path to check
+     * @return {promise} resolves to true if it exists or false otherwise.
+     */
+    static _exists(storePath) {
+        const thenifyFS = thenifyAll(fs);
+        return thenifyFS.stat(storePath)
+            .then(() => {
+                return true;
+            })
+            .catch(() => {
+                return false;
             });
     }
 }

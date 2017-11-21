@@ -87,7 +87,7 @@ describe('ConnectionManager', () => {
 
     describe('#importIdentity', () => {
 
-        it('should call _connect and handle no error', () => {
+        it('should call _importIdentity and handle no error', () => {
             sinon.stub(connectionManager, '_importIdentity').yields(null);
             return connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
                 .then(() => {
@@ -95,7 +95,7 @@ describe('ConnectionManager', () => {
                 });
         });
 
-        it('should call _connect and handle an error', () => {
+        it('should call _importIdentity and handle an error', () => {
             sinon.stub(connectionManager, '_importIdentity').yields(new Error('error'));
             return connectionManager.importIdentity('profile', { connect: 'options' }, 'bob1', 'public key', 'private key')
                 .should.be.rejectedWith(/error/)
@@ -116,9 +116,41 @@ describe('ConnectionManager', () => {
 
     });
 
+    describe('#removeIdentity', () => {
+
+        it('should call _removeIdentity and handle no error', () => {
+            sinon.stub(connectionManager, '_removeIdentity').yields();
+            return connectionManager.removeIdentity('profile', { connect: 'options' }, 'bob1')
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._removeIdentity, 'profile', { connect: 'options' }, 'bob1');
+                });
+        });
+
+        it('should call _removeIdentity and handle an error', () => {
+            sinon.stub(connectionManager, '_removeIdentity').yields(new Error('error'));
+            return connectionManager.removeIdentity('profile', { connect: 'options' }, 'bob1')
+                .should.be.rejectedWith(/error/)
+                .then(() => {
+                    sinon.assert.calledWith(connectionManager._removeIdentity, 'profile', { connect: 'options' }, 'bob1');
+                });
+        });
+
+    });
+
+    describe('#_removeIdentity', () => {
+
+        it('should throw as abstract', () => {
+            (() => {
+                connectionManager._removeIdentity('profile', { connect: 'options' }, 'bob1');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+
     describe('#requestIdentity', () => {
 
-        it('should call _connect and handle no error', () => {
+        it('should call _requestIdentity and handle no error', () => {
             sinon.stub(connectionManager, '_requestIdentity').yields(null, { caName: 'ca1', key: 'suchkey' });
             return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
                     .then((result) => {
@@ -127,7 +159,7 @@ describe('ConnectionManager', () => {
                     });
         });
 
-        it('should call _connect and handle an error', () => {
+        it('should call _requestIdentity and handle an error', () => {
             sinon.stub(connectionManager, '_requestIdentity').yields(new Error('error'));
             return connectionManager.requestIdentity('profile', { connect: 'options' }, 'bob1', 'secret')
                     .should.be.rejectedWith(/error/)
