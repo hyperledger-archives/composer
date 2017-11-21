@@ -668,16 +668,33 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitArrayCombinationOperator({
                 type: 'BinaryExpression',
                 operator: 'AND',
+
                 left: {
-                    type: 'Literal',
-                    value: true
+                    type: 'BinaryExpression',
+                    operator: '<',
+                    left: {
+                        type: 'Identifier',
+                        name: 'someProp'
+                    },
+                    right: {
+                        type: 'Literal',
+                        value: 'foo'
+                    }
                 },
                 right: {
-                    type: 'Literal',
-                    value: false
+                    type: 'BinaryExpression',
+                    operator: '==',
+                    left: {
+                        type: 'Identifier',
+                        name: 'anotherProp'
+                    },
+                    right: {
+                        type: 'Literal',
+                        value: 'bar'
+                    }
                 }
             });
-            result.should.deep.equal({ $and: [ true, false ] });
+            result.should.deep.equal({someProp:{$lt: 'foo'}, anotherProp: {$eq: 'bar'}});
         });
 
         it('should compile an OR expression', () => {

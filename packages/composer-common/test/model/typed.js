@@ -22,6 +22,9 @@ require('chai').should();
 describe('Typed', () => {
 
     let modelManager;
+    let baseAssetClassDecl;
+    let baseAsset2ClassDecl;
+    let asset2ClassDecl;
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -31,6 +34,8 @@ describe('Typed', () => {
         }
         abstract asset BaseAsset2 extends BaseAsset {
         }`);
+        baseAssetClassDecl = modelManager.getType('org.acme.base.BaseAsset');
+        baseAsset2ClassDecl = modelManager.getType('org.acme.base.BaseAsset2');
         modelManager.addModelFile(`
         namespace org.acme.ext
         import org.acme.base.BaseAsset2
@@ -39,27 +44,28 @@ describe('Typed', () => {
         }
         asset Asset2 extends MyAsset {
         }`);
+        asset2ClassDecl = modelManager.getType('org.acme.ext.Asset2');
     });
 
     describe('#instanceOf', () => {
 
         it('should return true for a matching type', () => {
-            let typed = new Typed(modelManager, 'org.acme.base', 'BaseAsset');
+            let typed = new Typed(modelManager, baseAssetClassDecl, 'org.acme.base', 'BaseAsset');
             typed.instanceOf('org.acme.base.BaseAsset').should.be.true;
         });
 
         it('should return true for a matching super type', () => {
-            let typed = new Typed(modelManager, 'org.acme.base', 'BaseAsset2');
+            let typed = new Typed(modelManager, baseAsset2ClassDecl, 'org.acme.base', 'BaseAsset2');
             typed.instanceOf('org.acme.base.BaseAsset').should.be.true;
         });
 
         it('should return false for a non-matching sub type', () => {
-            let typed = new Typed(modelManager, 'org.acme.base', 'BaseAsset');
+            let typed = new Typed(modelManager, baseAssetClassDecl, 'org.acme.base', 'BaseAsset');
             typed.instanceOf('org.acme.base.BaseAsset2').should.be.false;
         });
 
         it('should return true for a matching nested super type', () => {
-            let typed = new Typed(modelManager, 'org.acme.ext', 'Asset2');
+            let typed = new Typed(modelManager, asset2ClassDecl, 'org.acme.ext', 'Asset2');
             typed.instanceOf('org.acme.base.BaseAsset').should.be.true;
         });
 
@@ -86,7 +92,8 @@ describe('Typed', () => {
                     o String assetId
                     o ${defaultValueType} value default=${JSON.stringify(defaultValue)}
                 }`);
-                const typed = new Typed(modelManager, 'org.acme.defaults', 'DefaultAsset');
+                const classDecl = modelManager.getType('org.acme.defaults.DefaultAsset');
+                const typed = new Typed(modelManager, classDecl, 'org.acme.defaults', 'DefaultAsset');
                 typed.assignFieldDefaults();
                 if (typed.value instanceof Date) {
                     typed.value.toISOString().should.equal(defaultValue);

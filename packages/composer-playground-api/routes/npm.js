@@ -15,7 +15,14 @@
 'use strict';
 
 const RegClient = require('npm-registry-client');
-const client = new RegClient();
+const npmClientConfig = {
+    retry : {
+        count : 1,
+        minTimeout : 2000,
+        maxTimeout : 5000
+    }
+};
+const client = new RegClient(npmClientConfig);
 const semver = require('semver');
 const tar = require('tar');
 const url = require('url');
@@ -29,7 +36,7 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('NPM');
 
-const sampleList = [{name:'basic-sample-network'}];
+const sampleList = [{name : 'basic-sample-network'}];
 const fs = require('fs');
 
 let router = null;

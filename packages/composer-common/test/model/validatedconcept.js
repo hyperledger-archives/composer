@@ -22,7 +22,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
 
-describe('Validatedoncept', function () {
+describe('ValidatedConcept', function () {
 
     const levelOneModel = `namespace org.acme.l1
   concept Person {
@@ -36,6 +36,7 @@ describe('Validatedoncept', function () {
   `;
 
     let modelManager = null;
+    let classDecl = null;
     let mockResourceValidator;
 
     before(function () {
@@ -44,6 +45,7 @@ describe('Validatedoncept', function () {
 
     beforeEach(function () {
         modelManager.addModelFile(levelOneModel);
+        classDecl = modelManager.getType('org.acme.l1.Person');
         mockResourceValidator = sinon.createStubInstance(ResourceValidator);
         mockResourceValidator.visit.returns(null);
 
@@ -54,49 +56,45 @@ describe('Validatedoncept', function () {
     });
 
     describe('#getClassDeclaration', function() {
-        it('should throw with no ModelFile', function () {
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
-            const stub = sinon.stub(modelManager, 'getModelFile', function(){return null;});
-            (function () {
-                resource.getClassDeclaration();
-            }).should.throw(/No model for namespace org.acme.l1 is registered with the ModelManager/);
-            stub.restore();
+        it('should return the class declaraction', function () {
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            resource.getClassDeclaration().should.equal(classDecl);
         });
     });
 
     describe('#setPropertyValue', () => {
         it (' should accept valid property - value', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             resource.setPropertyValue('name','Fred Bloggs');
         });
         it (' should throw error for invalid property name', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             ( () => {
                 resource.setPropertyValue('namenamename','Fred Bloggs');
             }).should.throw(/Trying to set field namenamename which is not declared in the model/);
         });
         it (' should throw error for array', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             ( () => {
                 resource.addArrayValue('name',['Fred','Bloggs']);
             }).should.throw(/Trying to add array item name which is not declared as an array in the model/);
         });
         it (' correct path for adding an array', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             resource.addArrayValue('arrayName',['Fred','Bloggs']);
         });
         it (' should throw error for invalid property name', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             (()=>{
                 resource.addArrayValue('invalid','Fred');
             }).should.throw(/Trying to set field invalid which is not declared in the model/);
         });
         it (' validate', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             resource.validate();
         });
         it (' add two elements separately to an array property', function (){
-            const resource = new ValidatedConcept(modelManager, 'org.acme.l1', 'Person' ,mockResourceValidator);
+            const resource = new ValidatedConcept(modelManager, classDecl, 'org.acme.l1', 'Person' ,mockResourceValidator);
             resource.addArrayValue('arrayName','Fred');
             resource.addArrayValue('arrayName','Bloggs');
         });
