@@ -164,7 +164,7 @@ class ConnectorServer {
      */
     connectionManagerImportIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
-        LOG.entry(method, connectionProfile, id, certificate, privateKey);
+        LOG.entry(method, connectionProfile, id, certificate);
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
@@ -179,6 +179,33 @@ class ConnectorServer {
                 LOG.exit(method, null);
             });
     }
+
+    /**
+     * Handle a request from the client to remove an identity.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
+        const method = 'connectionManagerRemoveIdentity';
+        LOG.entry(method, connectionProfile, id);
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
+            })
+            .then((deleted) => {
+                callback(deleted);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
 
     /**
      * Obtain the credentials associated with a given identity.
@@ -603,10 +630,12 @@ class ConnectorServer {
      * @param {string} securityContextID The security context ID.
      * @param {string} functionName The runtime function to call.
      * @param {string[]} args The arguments to pass to the runtime function.
+     * @param {Object} options options to pass to invoking chaincode
+     * @param {Object} options.transactionId Transaction Id to use.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, callback) {
+    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, options, callback) {
         const method = 'connectionInvokeChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
@@ -625,7 +654,7 @@ class ConnectorServer {
             LOG.exit(method, null);
             return Promise.resolve();
         }
-        return connection.invokeChainCode(securityContext, functionName, args)
+        return connection.invokeChainCode(securityContext, functionName, args, options)
             .then(() => {
                 callback(null);
                 LOG.exit(method);

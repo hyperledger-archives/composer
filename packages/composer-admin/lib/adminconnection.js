@@ -120,28 +120,42 @@ class AdminConnection {
      * Import a business network card. If a card of this name exists, it is replaced.
      * @param {String} name Name by which this card should be referred
      * @param {IdCard} card The card to import
-     * @return {Promise} Resolved when the card is imported
+     * @return {Promise} Resolved when the card is imported, resolves to true if updated, false if added.
      */
     importCard(name, card) {
-        let connectionProfileData;
-        return this.cardStore.put(name, card)
-            .then(() => {
-                connectionProfileData = card.getConnectionProfile();
-                connectionProfileData.cardName=name;
-                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+        let connectionProfileData = card.getConnectionProfile();
+        let connectionManager;
+        connectionProfileData.cardName = name;
+        let updated = false;
+        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+            .then((connectionManager_) => {
+                connectionManager = connectionManager_;
+                return this.cardStore.has(name);
             })
-            .then((connectionManager)=>{
+            .then((exists) => {
+                updated = exists;
+                if (exists) {
+                    return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+                }
+            })
+            .then(() => {
+                return this.cardStore.put(name, card);
+            })
+            .then(() => {
+                // if we have a certificate and privateKey we should ask the connection manager to import
                 let certificate = card.getCredentials().certificate;
                 let privateKey = card.getCredentials().privateKey;
                 if (certificate && privateKey){
-                    return connectionManager.importIdentity(connectionProfileData.name,connectionProfileData, card.getUserName(), certificate, privateKey);
-                } else {
-                    return; // use secret
+                    return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
                 }
+            })
+            .then(() => {
+                return updated;
             });
     }
 
-    /** Exports an network card.
+    /**
+     * Exports an network card.
      * Should the card not actually contain the certificates in the card, a exportIdentity will be
      * performed to get the details of the cards
      * @param {String} cardName The name of the card that needs to be exported
@@ -184,12 +198,52 @@ class AdminConnection {
     }
 
     /**
+     * Delete a card which is known to exist
+     * @param {String} name Name of the card to delete.
+     * @returns {Promise} Resolves with true if the existing card was deleted; rejected otherwise.
+     * @private
+     */
+    _deleteCard(name) {
+        let connectionManager;
+        let connectionProfileData;
+        let cardUserName;
+        let deleted;
+
+        return this.cardStore.get(name)
+        .then((card) => {
+            connectionProfileData = card.getConnectionProfile();
+            cardUserName = card.getUserName();
+            connectionProfileData.cardName = name;
+            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+        })
+        .then((connectionManager_) => {
+            connectionManager = connectionManager_;
+            return this.cardStore.delete(name);
+        })
+        .then((deleted_) => {
+            deleted = deleted_;
+            return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, cardUserName);
+        })
+        .then(() => {
+            return deleted;
+        });
+
+    }
+
+
+    /**
      * Delete an existing card.
      * @param {String} name Name of the card to delete.
-     * @returns {Promise} Resolves if an existing card was deleted; rejected otherwise.
+     * @returns {Promise} Resolves true if deleted, false if not deleted, is rejected if an error occurs.
      */
     deleteCard(name) {
-        return this.cardStore.delete(name);
+        return this.cardStore.has(name)
+            .then((exists) => {
+                if (exists) {
+                    return this._deleteCard(name);
+                }
+                return false;
+            });
     }
 
     /**
@@ -984,6 +1038,7 @@ class AdminConnection {
                 throw error;
             });
     }
+
 }
 
 module.exports = AdminConnection;

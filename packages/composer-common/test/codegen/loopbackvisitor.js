@@ -544,6 +544,7 @@ describe('LoopbackVisitor', () => {
                     transaction MyTransaction{
                     }
                     `);
+                    modelFile.validate();
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
                     schemas.should.deep.equal([{
                         acls: [],
@@ -601,6 +602,7 @@ describe('LoopbackVisitor', () => {
 
                     }
                     `);
+                    modelFile.validate();
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
                     schemas.should.deep.equal([{
                         acls: [],
@@ -699,6 +701,7 @@ describe('LoopbackVisitor', () => {
                         o String theValue
                     }
                     `);
+                    modelFile.validate();
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
                     schemas.should.deep.equal([{
                         acls: [],

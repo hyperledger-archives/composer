@@ -30,6 +30,7 @@ const path = require('path');
 const Peer = require('fabric-client/lib/Peer');
 const User = require('fabric-client/lib/User');
 const Wallet = require('composer-common').Wallet;
+const fsextra = require('fs-extra');
 
 const chai = require('chai');
 chai.should();
@@ -552,50 +553,43 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should throw if connectionProfile not specified', () => {
-            (() => {
-                connectionManager.connect(null, 'org-acme-biznet', connectOptions);
-            }).should.throw(/connectionProfile not specified/);
+            return connectionManager.connect(null, 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/connectionProfile not specified/);
         });
 
         it('should throw if connectOptions not specified', () => {
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', null);
-            }).should.throw(/connectOptions not specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', null)
+                .should.be.rejectedWith(/connectOptions not specified/);
         });
 
         it('should throw if msp id is not specified', () => {
             delete connectOptions.mspID;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No msp id defined/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/No msp id defined/);
         });
 
         it('should throw if orderers are not specified', () => {
             delete connectOptions.orderers;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/orderers array has not been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/orderers array has not been specified/);
         });
 
         it('should throw if orderers is an empty array', () => {
             connectOptions.orderers = [];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No orderer URLs have been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/No orderer URLs have been specified/);
         });
 
         it('should throw if peers are not specified', () => {
             delete connectOptions.peers;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/peers array has not been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/peers array has not been specified/);
         });
 
         it('should throw if peers is an empty array', () => {
             connectOptions.peers = [];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No peer URLs have been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/No peer URLs have been specified/);
         });
 
         it('should throw if peer configuration not correct', () => {
@@ -603,9 +597,8 @@ describe('HLFConnectionManager', () => {
                 rurl: 'grpc://localhost:7051',
                 eURL: 'grpc://localhost:7053'
             }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw('peer incorrectly defined');
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith('peer incorrectly defined');
         });
 
         it('should permit one peer with a requestURL and one peer with an eventURL', () => {
@@ -623,9 +616,8 @@ describe('HLFConnectionManager', () => {
             }, {
                 eventURL: 'grpc://localhost:8053'
             }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/You must specify at least one peer with a valid requestURL for submitting transactions/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/You must specify at least one peer with a valid requestURL for submitting transactions/);
         });
 
         it('should throw if no peers with an eventURL are specified', () => {
@@ -634,51 +626,42 @@ describe('HLFConnectionManager', () => {
             }, {
                 requestURL: 'grpc://localhost:8051'
             }];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/You must specify at least one peer with a valid eventURL for receiving events/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/You must specify at least one peer with a valid eventURL for receiving events/);
         });
 
         it('should throw if ca is not specified', () => {
             delete connectOptions.ca;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/The certificate authority URL has not been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/The certificate authority URL has not been specified/);
         });
 
         it('should throw if none of keyValStore, wallet and cardName are specified', () => {
             delete connectOptions.keyValStore;
             delete connectOptions.wallet;
             delete connectOptions.cardName;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No key value store directory, wallet or card name has been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/No key value store directory, wallet or card name has been specified/);
         });
 
         it('should not throw if keyValStore specified but wallet and cardName are not', () => {
             delete connectOptions.wallet;
             delete connectOptions.cardName;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.not.throw();
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
         });
 
         it('should not throw if wallet specified but keyValStore and cardName are not', () => {
             connectOptions.wallet = mockWallet;
             delete connectOptions.keyValStore;
             delete connectOptions.cardName;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.not.throw();
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
         });
 
         it('should not throw if cardName specified but keyValStore and wallet are not', () => {
             delete connectOptions.wallet;
             delete connectOptions.keyValStore;
             connectOptions.cardName = 'CONGA_CARD';
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.not.throw();
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
         });
 
         it('should use cardName to build keyValStore path if cardName and keyValStore specified but wallet is not', () => {
@@ -698,9 +681,8 @@ describe('HLFConnectionManager', () => {
 
         it('should throw if channel is not specified', () => {
             delete connectOptions.channel;
-            (() => {
-                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-            }).should.throw(/No channel has been specified/);
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .should.be.rejectedWith(/No channel has been specified/);
         });
 
         it('should create a new connection with a business network identifier', () => {
@@ -1037,79 +1019,67 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should throw if connectionProfile not specified', () => {
-            (() => {
-                connectionManager.importIdentity();
-            }).should.throw(/connectionProfile not specified or not a string/);
+            return connectionManager.importIdentity()
+                .should.be.rejectedWith(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionProfile not a string', () => {
-            (() => {
-                connectionManager.importIdentity([]);
-            }).should.throw(/connectionProfile not specified or not a string/);
+            return connectionManager.importIdentity([])
+                .should.be.rejectedWith(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionOptions not specified', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1');
-            }).should.throw(/connectionOptions not specified or not an object/);
+            return connectionManager.importIdentity('connprof1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if connectionOptions not an object', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', 'hlfabric1');
-            }).should.throw(/connectionOptions not specified or not an object/);
+            return connectionManager.importIdentity('connprof1', 'hlfabric1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if id not specified', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile);
-            }).should.throw(/id not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile)
+                .should.be.rejectedWith(/id not specified or not a string/);
         });
 
         it('should throw if id not a string', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, []);
-            }).should.throw(/id not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile, [])
+                .should.be.rejectedWith(/id not specified or not a string/);
         });
 
         it('should throw if publicCert not specified', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid');
-            }).should.throw(/publicCert not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid')
+                .should.be.rejectedWith(/publicCert not specified or not a string/);
         });
 
         it('should throw if publicCert not a string', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid', []);
-            }).should.throw(/publicCert not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid', [])
+                .should.be.rejectedWith(/publicCert not specified or not a string/);
         });
 
         it('should throw if key not specified', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert');
-            }).should.throw(/privateKey not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert')
+                .should.be.rejectedWith(/privateKey not specified or not a string/);
         });
 
         it('should throw if key not a string', () => {
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 5);
-            }).should.throw(/privateKey not specified or not a string/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 5)
+                .should.be.rejectedWith(/privateKey not specified or not a string/);
         });
 
         it('should throw if msp id is not specified', () => {
             delete profile.mspID;
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
-            }).should.throw(/No msp id defined/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
+                .should.be.rejectedWith(/No msp id defined/);
         });
 
         it('should throw if none of keyValStore, wallet and cardName are specified', () => {
             delete profile.keyValStore;
             delete profile.wallet;
             delete profile.cardName;
-            (() => {
-                connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey');
-            }).should.throw(/No key value store directory, wallet or card name has been specified/);
+            return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
+                .should.be.rejectedWith(/No key value store directory, wallet or card name has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {
@@ -1186,46 +1156,39 @@ describe('HLFConnectionManager', () => {
 
 
         it('should throw if connectionProfile not specified', () => {
-            (() => {
-                connectionManager.requestIdentity();
-            }).should.throw(/connectionProfile not specified or not a string/);
+            return connectionManager.requestIdentity()
+                .should.be.rejectedWith(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionProfile not a string', () => {
-            (() => {
-                connectionManager.requestIdentity([]);
-            }).should.throw(/connectionProfile not specified or not a string/);
+            return connectionManager.requestIdentity([])
+                .should.be.rejectedWith(/connectionProfile not specified or not a string/);
         });
 
         it('should throw if connectionOptions not specified', () => {
-            (() => {
-                connectionManager.requestIdentity('connprof1');
-            }).should.throw(/connectionOptions not specified or not an object/);
+            return connectionManager.requestIdentity('connprof1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if connectionOptions not an object', () => {
-            (() => {
-                connectionManager.requestIdentity('connprof1', 'hlfabric1');
-            }).should.throw(/connectionOptions not specified or not an object/);
+            return connectionManager.requestIdentity('connprof1', 'hlfabric1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
         });
 
         it('should throw if enrollmentid not specified', () => {
-            (() => {
-                connectionManager.requestIdentity('connprof1', profile);
-            }).should.throw(/enrollmentID not specified/);
+            return connectionManager.requestIdentity('connprof1', profile)
+                .should.be.rejectedWith(/enrollmentID not specified/);
         });
 
         it('should throw if enrollmentid not specified', () => {
-            (() => {
-                connectionManager.requestIdentity('connprof1', profile, 'id');
-            }).should.throw(/enrollmentSecret not specified/);
+            return connectionManager.requestIdentity('connprof1', profile, 'id')
+                .should.be.rejectedWith(/enrollmentSecret not specified/);
         });
 
         it('should throw if ca is not specified', () => {
             delete profile.ca;
-            (() => {
-                connectionManager.requestIdentity('connprof1', profile, 'id', 'secret');
-            }).should.throw(/No ca defined/);
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
+                .should.be.rejectedWith(/No ca defined/);
         });
 
         it('should handle an error on enroll', () => {
@@ -1297,6 +1260,94 @@ describe('HLFConnectionManager', () => {
             return connectionManager.exportIdentity('connprof1', profile, userId)
                 .should.eventually.be.null;
         });
+    });
+
+    describe('#removeIdentity', () => {
+        beforeEach(() => {
+
+        });
+
+        it('should successfully remove an identity from a wallet', () => {
+            let walletStub = sinon.createStubInstance(Wallet);
+            walletStub.contains.withArgs('anid').resolves(true);
+            return connectionManager.removeIdentity('connprof1', {wallet: walletStub}, 'anid')
+                .then((deleted) => {
+                    sinon.assert.calledOnce(walletStub.remove);
+                    sinon.assert.calledWith(walletStub.remove, 'anid');
+                    deleted.should.be.true;
+                });
+        });
+
+        it('should do nothing if identity isn\'t in wallet', () => {
+            let walletStub = sinon.createStubInstance(Wallet);
+            walletStub.contains.withArgs('anid').resolves(false);
+            return connectionManager.removeIdentity('connprof1', {wallet: walletStub}, 'anid')
+                .then((deleted) => {
+                    sinon.assert.notCalled(walletStub.remove);
+                    deleted.should.be.false;
+                });
+        });
+
+        it('should successfully remove an identity from file system', () => {
+            sandbox.stub(fs, 'stat').yields(null, {});
+            sandbox.stub(fsextra, 'remove').callsArgWith(1, null);
+            sandbox.stub(path, 'join').returns('/mypath/to/stuff');
+            return connectionManager.removeIdentity('connprof1', {cardName: 'theuser'}, 'anid')
+                .then((deleted) => {
+                    //console.log(x);
+                    sinon.assert.calledOnce(fs.stat);
+                    sinon.assert.calledOnce(fsextra.remove);
+                    sinon.assert.calledWith(fsextra.remove, '/mypath/to/stuff');
+                    deleted.should.be.true;
+                });
+        });
+
+        it('should do nothing if identity isn\'t on file system', () => {
+            sandbox.stub(fs, 'stat').yields(new Error('does not exist'), null);
+            sandbox.stub(fsextra, 'remove');
+            return connectionManager.removeIdentity('connprof1', {cardName: 'theUser'}, 'anid')
+                .then((deleted) => {
+                    deleted.should.be.false;
+                    sinon.assert.calledOnce(fs.stat);
+                    sinon.assert.notCalled(fsextra.remove);
+                });
+        });
+
+        it('should throw if no card name or wallet provided', () => {
+            return connectionManager.removeIdentity('connprof1', {cardWallet: 'theUser'}, 'anid')
+                .should.be.rejectedWith(/Unable to remove identity/);
+        });
+
+        it('should throw if connectionProfile not specified', () => {
+            return connectionManager.removeIdentity()
+                .should.be.rejectedWith(/connectionProfileName not specified or not a string/);
+        });
+
+        it('should throw if connectionProfile not a string', () => {
+            return connectionManager.removeIdentity([])
+                .should.be.rejectedWith(/connectionProfileName not specified or not a string/);
+        });
+
+        it('should throw if connectionOptions not specified', () => {
+            return connectionManager.removeIdentity('connprof1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if connectionOptions not an object', () => {
+            return connectionManager.removeIdentity('connprof1', 'hlfabric1')
+                .should.be.rejectedWith(/connectionOptions not specified or not an object/);
+        });
+
+        it('should throw if id not specified', () => {
+            return connectionManager.removeIdentity('connprof1', {})
+                .should.be.rejectedWith(/id not specified or not a string/);
+        });
+
+        it('should throw if id not a string', () => {
+            return connectionManager.removeIdentity('connprof1', {}, [])
+                .should.be.rejectedWith(/id not specified or not a string/);
+        });
+
     });
 
 });

@@ -162,6 +162,38 @@ describe('ProxyConnectionManager', () => {
 
     });
 
+    describe('#removeIdentity', () => {
+
+        beforeEach(() => {
+            mockConnection = sinon.createStubInstance(ProxyConnection);
+            mockConnection.connectionID = connectionID;
+            mockConnection.socket = mockSocket;
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+            connectionManager.connected = true;
+        });
+
+        it('should send a removeIdentity call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func).yields(null);
+            sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
+            return connectionManager.removeIdentity(connectionProfile, connectionOptions, 'bob1')
+                .then(() => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func);
+                    sinon.assert.calledTwice(mockSocket.on);
+                });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, 'bob1', sinon.match.func).yields(serializedError);
+            return connectionManager.removeIdentity(connectionProfile, connectionOptions, 'bob1')
+                .should.be.rejectedWith(TypeError, /such type error/);
+        });
+
+    });
+
+
     describe('#exportIdentity', () => {
         beforeEach(() => {
             mockConnection = sinon.createStubInstance(ProxyConnection);

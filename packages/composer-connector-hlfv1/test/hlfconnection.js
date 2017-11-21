@@ -306,16 +306,14 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_initializeChannel').resolves();
         });
 
-        it('should throw if enrollmentID not specified', () => {
-            (() => {
-                connection.enroll(null, 'adminpw');
-            }).should.throw(/enrollmentID not specified/);
+        it('should reject if enrollmentID not specified', () => {
+            return connection.enroll(null, 'adminpw')
+                .should.be.rejectedWith(/enrollmentID not specified/);
         });
 
-        it('should throw if enrollmentSecret not specified', () => {
-            (() => {
-                connection.enroll('admin', null);
-            }).should.throw(/enrollmentSecret not specified/);
+        it('should reject if enrollmentSecret not specified', () => {
+            return connection.enroll('admin', null)
+                .should.be.rejectedWith(/enrollmentSecret not specified/);
         });
 
         it('should enroll and store the user context using the CA client', () => {
@@ -347,10 +345,9 @@ describe('HLFConnection', () => {
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
         });
 
-        it('should throw if identity not specified', () => {
-            (() => {
-                connection.login(null, 'adminpw');
-            }).should.throw(/identity not specified/);
+        it('should reject if identity not specified', () => {
+            return connection.login(null, 'adminpw')
+                .should.be.rejectedWith(/identity not specified/);
         });
 
         it('should load an already enrolled user from the state store', () => {
@@ -393,13 +390,12 @@ describe('HLFConnection', () => {
             connection._connectToEventHubs();
         });
 
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            (() => {
-                connection.install(mockSecurityContext, null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
+        it('should reject if businessNetworkIdentifier not specified', () => {
+            return connection.install(mockSecurityContext, null)
+                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
         });
 
-        it('should rethrow error if unable to create temp dir', () => {
+        it('should reject error if unable to create temp dir', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').rejects(new Error('some error 1'));
             return connection.install(mockSecurityContext, mockBusinessNetwork)
                 .should.be.rejectedWith(/some error 1/);
@@ -690,15 +686,13 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            (() => {
-                connection.start(mockSecurityContext, null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
+            return connection.start(mockSecurityContext, null)
+                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
         });
 
         it('should throw if startTransaction not specified', () => {
-            (() => {
-                connection.start(mockSecurityContext, 'org-acme-biznet');
-            }).should.throw(/startTransaction not specified/);
+            return connection.start(mockSecurityContext, 'org-acme-biznet')
+            .should.be.rejectedWith(/startTransaction not specified/);
         });
 
         it('should request an event timeout based on connection settings', () => {
@@ -1232,15 +1226,13 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            (() => {
-                connection.deploy(mockSecurityContext, null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
+            return connection.deploy(mockSecurityContext, null)
+                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
         });
 
         it('should throw if deployTransaction not specified', () => {
-            (() => {
-                connection.deploy(mockSecurityContext, 'org-acme-biznet');
-            }).should.throw(/deployTransaction not specified/);
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet')
+                .should.be.rejectedWith(/deployTransaction not specified/);
         });
 
         it('should request an event timeout based on connection settings', () => {
@@ -1828,15 +1820,13 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            (() => {
-                connection.undeploy(mockSecurityContext, null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
+            return connection.undeploy(mockSecurityContext, null)
+                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
         });
 
         it('should throw if businessNetworkIdentifier not same as the connection', () => {
-            (() => {
-                connection.undeploy(mockSecurityContext, 'FunnyNetwork');
-            }).should.throw(/businessNetworkIdentifier does not match the business network identifier for this connection/);
+            return connection.undeploy(mockSecurityContext, 'FunnyNetwork')
+                .should.be.rejectedWith(/businessNetworkIdentifier does not match the business network identifier for this connection/);
         });
 
         it('should invoke the chaincode', () => {
@@ -1872,10 +1862,9 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            (() => {
-                delete connection.businessNetworkIdentifier;
-                connection.upgrade(mockSecurityContext, null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
+            delete connection.businessNetworkIdentifier;
+            return connection.upgrade(mockSecurityContext, null)
+                .should.be.rejectedWith(/No business network/);
         });
 
         it('should upgrade the business network', () => {
@@ -2144,22 +2133,25 @@ describe('HLFConnection', () => {
             connection._connectToEventHubs();
         });
 
+        it('should throw if businessNetworkIdentifier not specified', () => {
+            delete connection.businessNetworkIdentifier;
+            return connection.queryChainCode(mockSecurityContext, null, [])
+                .should.be.rejectedWith(/No business network/);
+        });
+
         it('should throw if functionName not specified', () => {
-            (() => {
-                connection.queryChainCode(mockSecurityContext, null, []);
-            }).should.throw(/functionName not specified/);
+            return connection.queryChainCode(mockSecurityContext, null, [])
+                .should.be.rejectedWith(/functionName not specified/);
         });
 
         it('should throw if args not specified', () => {
-            (() => {
-                connection.queryChainCode(mockSecurityContext, 'myfunc', null);
-            }).should.throw(/args not specified/);
+            return connection.queryChainCode(mockSecurityContext, 'myfunc', null)
+                .should.be.rejectedWith(/args not specified/);
         });
 
         it('should throw if args contains non-string values', () => {
-            (() => {
-                connection.queryChainCode(mockSecurityContext, 'myfunc', [3.142]);
-            }).should.throw(/invalid arg specified: 3.142/);
+            return connection.queryChainCode(mockSecurityContext, 'myfunc', [3.142])
+                .should.be.rejectedWith(/invalid arg specified: 3.142/);
         });
 
         it('should submit a query request to the chaincode', () => {
@@ -2214,22 +2206,25 @@ describe('HLFConnection', () => {
             connection._connectToEventHubs();
         });
 
+        it('should throw if businessNetworkIdentifier not specified', () => {
+            delete connection.businessNetworkIdentifier;
+            return connection.invokeChainCode(mockSecurityContext, null, [])
+                .should.be.rejectedWith(/No business network/);
+        });
+
         it('should throw if functionName not specified', () => {
-            (() => {
-                connection.invokeChainCode(mockSecurityContext, null, []);
-            }).should.throw(/functionName not specified/);
+            return connection.invokeChainCode(mockSecurityContext, null, [])
+                .should.be.rejectedWith(/functionName not specified/);
         });
 
         it('should throw if args not specified', () => {
-            (() => {
-                connection.invokeChainCode(mockSecurityContext, 'myfunc', null);
-            }).should.throw(/args not specified/);
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', null)
+                .should.be.rejectedWith(/args not specified/);
         });
 
         it('should throw if args contains non-string values', () => {
-            (() => {
-                connection.invokeChainCode(mockSecurityContext, 'myfunc', [3.142]);
-            }).should.throw(/invalid arg specified: 3.142/);
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', [3.142])
+                .should.be.rejectedWith(/invalid arg specified: 3.142/);
         });
 
         it('should submit an invoke request to the chaincode', () => {
@@ -2263,7 +2258,7 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should submit an invoke request to the chaincode - with the options giving the txid', () => {
+        it('should submit an invoke request to the chaincode - with the options giving a real txid', () => {
             const proposalResponses = [{
                 response: {
                     status: 200
@@ -2283,6 +2278,7 @@ describe('HLFConnection', () => {
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'],options)
                 .then((result) => {
                     should.equal(result, undefined);
+                    sinon.assert.notCalled(mockClient.newTransactionID);
                     sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
                     sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
                         chaincodeId: 'org-acme-biznet',
@@ -2295,6 +2291,39 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should submit an invoke request to the chaincode - with the options giving a data only txid', () => {
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            let options = {transactionId : {_nonce: '1234', _transaction_id: '5678'}};
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields('5678', 'VALID');
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'],options)
+                .then((result) => {
+                    should.equal(result, undefined);
+                    mockTransactionID.should.deep.equal({_nonce: '1234', _transaction_id: '5678'});
+                    sinon.assert.calledOnce(mockClient.newTransactionID);
+                    sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+                    sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
+                        chaincodeId: 'org-acme-biznet',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        txId: mockTransactionID,
+                        fcn: 'myfunc',
+                        args: ['arg1', 'arg2']
+                    });
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
 
         it('should throw if transaction proposals were not valid', () => {
             const proposalResponses = [];
@@ -2401,15 +2430,14 @@ describe('HLFConnection', () => {
 
 
         it('should throw error if no user is specified', () => {
-            (() => {
-                connection.createIdentity(mockSecurityContext, '');
-            }).should.throw(/userID not specified/);
-            (() => {
-                connection.createIdentity(mockSecurityContext);
-            }).should.throw(/userID not specified/);
-            (() => {
-                connection.createIdentity(mockSecurityContext, null);
-            }).should.throw(/userID not specified/);
+            return connection.createIdentity(mockSecurityContext, '')
+                .should.be.rejectedWith(/userID not specified/)
+                .then(() => {
+                    return connection.createIdentity(mockSecurityContext).should.be.rejectedWith(/userID not specified/);
+                })
+                .then(() => {
+                    return connection.createIdentity(mockSecurityContext, null).should.be.rejectedWith(/userID not specified/);
+                });
         });
 
         it('should issue a request to register a user', () => {

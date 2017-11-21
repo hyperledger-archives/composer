@@ -111,7 +111,6 @@ describe('ProxyConnection', () => {
 
     });
 
-
     describe('#start', () => {
 
         it('should send a start call to the connector server', () => {
@@ -131,7 +130,6 @@ describe('ProxyConnection', () => {
 
     });
 
-
     describe('#deploy', () => {
 
         it('should send a deploy call to the connector server', () => {
@@ -150,8 +148,6 @@ describe('ProxyConnection', () => {
         });
 
     });
-
-
 
     describe('#undeploy', () => {
 
@@ -221,17 +217,17 @@ describe('ProxyConnection', () => {
         const args = [ 'arg1', 'arg2', 'arg3' ];
 
         it('should send a invokeChainCode call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.func).yields(null);
-            return connection.invokeChainCode(mockSecurityContext, functionName, args)
+            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.any, sinon.match.func).yields(null);
+            return connection.invokeChainCode(mockSecurityContext, functionName, args, {})
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, {}, sinon.match.func);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.func).yields(serializedError);
-            return connection.invokeChainCode(mockSecurityContext, functionName, args)
+            mockSocket.emit.withArgs('/api/connectionInvokeChainCode', connectionID, securityContextID, functionName, args, sinon.match.any, sinon.match.func).yields(serializedError);
+            return connection.invokeChainCode(mockSecurityContext, functionName, args, {})
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 

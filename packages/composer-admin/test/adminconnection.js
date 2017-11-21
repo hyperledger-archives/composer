@@ -931,6 +931,7 @@ describe('AdminConnection', () => {
     describe('Business Network Cards', function() {
         let peerAdminCard;
         let userCard;
+        const connection = config;
 
         beforeEach(function() {
             const peerAdminMetadata = {
@@ -941,7 +942,6 @@ describe('AdminConnection', () => {
                 userName: 'user',
                 businessNetwork: 'penguin-network'
             };
-            const connection = config;
             connection.card='user@penguin-network';
             connection.name='connectionName';
             peerAdminCard = new IdCard(peerAdminMetadata, connection);
@@ -953,15 +953,35 @@ describe('AdminConnection', () => {
 
             beforeEach(()=>{
                 mockConnectionManager.importIdentity.resolves();
+                mockConnectionManager.removeIdentity.resolves();
                 sinon.spy(userCard,'getCredentials');
             });
 
-            it('should import card to card store', function() {
+            it('should import a new card to card store', function() {
                 const cardName = 'conga';
-                return adminConnection.importCard(cardName, userCard).then(() => {
+                sandbox.stub(cardStore, 'has').returns(false);
+                return adminConnection.importCard(cardName, userCard)
+                .then((updated) => {
+                    updated.should.be.false;
+                    sinon.assert.notCalled(mockConnectionManager.removeIdentity);
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
                 });
             });
+
+            it('should update a card to card store', function() {
+                const cardName = 'conga';
+                let expectedConnection = Object.assign({}, connection);
+                expectedConnection.cardName = cardName;
+                sandbox.stub(cardStore, 'has').returns(true);
+                return adminConnection.importCard(cardName, userCard)
+                .then((updated) => {
+                    sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', expectedConnection, 'user');
+                    updated.should.be.true;
+                    return cardStore.get(cardName).should.eventually.deep.equal(userCard);
+                });
+            });
+
 
             it('should not import identity if card does not contain credentials', function() {
                 const cardName = 'conga';
