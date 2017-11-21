@@ -16,7 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const boot = require('loopback-boot');
-const BrowserFS = require('browserfs/dist/node/index');
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const composerDiscovery = require('../../../server/boot/composer-discovery');
 const IdCard = require('composer-common').IdCard;
@@ -28,7 +28,7 @@ require('chai').should();
 const sinon = require('sinon');
 
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
+
 
 describe('composer-discovery boot script', () => {
 
@@ -36,21 +36,29 @@ describe('composer-discovery boot script', () => {
     let app;
     let sandbox;
     let idCard;
-
+    let cardStore;
     before(() => {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
-        })
+        cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({ cardStore });
+        let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+        const deployCardName = 'deployer-card';
+
+        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+        let businessNetworkDefinition;
+
+        return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
         .then(() => {
-            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connect(deployCardName);
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
-        .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition);
+        .then((result) => {
+            businessNetworkDefinition = result;
+            return adminConnection.install(businessNetworkDefinition.getName());
+        })
+        .then(()=>{
+            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
@@ -62,7 +70,7 @@ describe('composer-discovery boot script', () => {
         sandbox = sinon.sandbox.create();
         composerConfig = {
             card: 'admin@bond-network',
-            fs: bfs_fs
+            cardStore
         };
         app = loopback();
         app.set('composer', composerConfig);

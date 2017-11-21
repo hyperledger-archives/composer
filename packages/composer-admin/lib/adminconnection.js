@@ -20,7 +20,7 @@ const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const Logger = require('composer-common').Logger;
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
-
+const IdCard = require('composer-common').IdCard;
 const LOG = Logger.getLog('AdminConnection');
 
 /**
@@ -409,10 +409,9 @@ class AdminConnection {
                 const classDeclaration = startTransaction.getClassDeclaration();
                 startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
 
-
-                if (!startOptions.networkAdmins || !startOptions.networkAdmins.length>0){
-                    throw new Error('No network administrators are specified');
-                }
+                // if (!startOptions.networkAdmins || !startOptions.networkAdmins.length>0){
+                //     throw new Error('No network administrators are specified');
+                // }
                 let bootstrapTransactions = this._buildNetworkAdminTransactions(businessNetworkDefinition,startOptions.networkAdmins);
 
                 // Merge the start options and bootstrap transactions.
@@ -535,15 +534,16 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
      * @param {Object} [startOptions] connector specific start options
-     *                  startOptions.card the card to use for the NetworkAdmin
+    *                  NetworkAdmins:   [ { name, certificate } , { name, secret }]
+     *
      * @return {Promise} A promise that will be fufilled when the business network has been
-     * deployed.
+     * deployed - with a MAP of cards key is name
      */
     start(businessNetworkDefinition, startOptions ) {
         const method = 'start';
         LOG.entry(method, businessNetworkDefinition, startOptions);
         Util.securityCheck(this.securityContext);
-
+        let networkAdmins = startOptions.networkAdmins;
         // Build the start transaction.
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
@@ -576,6 +576,7 @@ class AdminConnection {
 
                 });
                 LOG.exit(method);
+                return createdCards;
             });
     }
 

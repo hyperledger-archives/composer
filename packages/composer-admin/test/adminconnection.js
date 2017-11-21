@@ -607,27 +607,10 @@ describe('AdminConnection', () => {
 
         const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
         const identityName = 'admin';
-        let userCard;
 
         beforeEach(() => {
-            const userMetadata = {
-                userName : 'user',
-                businessNetwork : 'penguin-network'
-            };
-            const connection = config;
-            connection.card = 'user@penguin-network';
-            connection.name = 'connectionName';
-            userCard = new IdCard(userMetadata, connection);
-            userCard.setCredentials({certificate : 'such cert', privateKey : 'such private'});
-
-            mockSecurityContext.card = userCard;
             mockSecurityContext.getUser.returns(identityName);
             sandbox.stub(uuid, 'v4').returns('47bc3a67-5599-4460-9745-6a291df4f879');
-        });
-
-        it('should not build the start transaction if no network admins', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, { bootstrapTransactions: []  })
-                .should.be.rejectedWith(/No network administrators are specified/);
         });
 
         it('should build the start transaction if no bootstrap transactions specified', () => {
@@ -681,11 +664,6 @@ describe('AdminConnection', () => {
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
                 });
-        });
-
-        it('should throw error if no card specified', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition)
-                .should.be.rejectedWith('A card to use for the NetworkAdmin must be given in the start options');
         });
 
         it('should build the start transaction if empty bootstrap transactions specified', () => {

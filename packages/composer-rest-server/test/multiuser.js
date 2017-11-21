@@ -28,6 +28,7 @@ const should = chai.should();
 chai.use(require('chai-http'));
 
 
+
 describe('Multiple user REST API unit tests', () => {
 
     const participantData = [{
@@ -118,11 +119,12 @@ describe('Multiple user REST API unit tests', () => {
                     }
                 }
             });
-
             return server({
                 card: 'admin@bond-network',
                 cardStore,
-                namespaces: 'never'
+                namespaces: 'never',
+                authentication: true,
+                multiuser: true
             });
         })
         .then((result) => {

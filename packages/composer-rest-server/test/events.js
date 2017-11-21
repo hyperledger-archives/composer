@@ -71,7 +71,7 @@ describe('Event REST API unit tests', () => {
             });
         })
         .then((result) => {
-            // app = result.app;
+            httpServer = result.server;
             businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
             return businessNetworkConnection.connect('admin@bond-network');
         });
