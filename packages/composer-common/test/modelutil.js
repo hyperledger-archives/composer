@@ -14,7 +14,6 @@
 
 'use strict';
 
-const ClassDeclaration = require('../lib/introspect/classdeclaration');
 const ModelFile = require('../lib/introspect/modelfile');
 const Property = require('../lib/introspect/property');
 const Typed = require('../lib/model/identifiable');
@@ -109,22 +108,18 @@ describe('ModelUtil', function () {
 
     describe('#isMatchingType', () => {
 
-        let mockModelManager;
-        let mockModelFile;
-        let mockClassDeclaration;
+        let modelManager;
+        let classDecl;
         let type;
 
         beforeEach(() => {
-            mockModelManager = sinon.createStubInstance(ModelManager);
-            mockModelFile = sinon.createStubInstance(ModelFile);
-            mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-
-            mockModelManager.getModelFile.returns(mockModelFile);
-            mockModelFile.getType.returns(mockClassDeclaration);
-            mockClassDeclaration.getFullyQualifiedName.returns('org.acme.baz.Foo');
-            mockClassDeclaration.getAllSuperTypeDeclarations.returns([]);
-
-            type = new Typed(mockModelManager, 'org.acme.baz', 'Foo' );
+            modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme.baz
+            asset Foo identified by fooId {
+                o String fooId
+            }`);
+            classDecl = modelManager.getType('org.acme.baz.Foo');
+            type = new Typed(modelManager, classDecl, 'org.acme.baz', 'Foo' );
         });
 
         it('should return true for an exact match', () => {

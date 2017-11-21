@@ -5,7 +5,7 @@ matrix:
     include:
         - {}
         - env: DOCS=full FC_TASK=docs
-        - env: SYSTEST=embedded,proxy,web FC_TASK=systest
+        - env: FVTEST=embedded,proxy,web FC_TASK=systest
 #        - env: SYSTEST=hlfv1_tls FC_TASK=systest
         - env: FVTEST=hlfv1-1_tls FC_TASK=systest
         - env: FVTEST=hlfv1-2_tls FC_TASK=systest

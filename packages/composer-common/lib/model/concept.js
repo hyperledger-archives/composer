@@ -44,12 +44,13 @@ class Concept extends Typed {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @private
      */
-    constructor(modelManager, ns, type) {
-        super(modelManager, ns, type);
+    constructor(modelManager, classDeclaration, ns, type) {
+        super(modelManager, classDeclaration, ns, type);
     }
 
 
