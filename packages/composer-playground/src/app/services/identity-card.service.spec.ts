@@ -221,6 +221,26 @@ describe('IdentityCardService', () => {
             result.get('test').getUserName().should.equal('penguin');
             loadIdentityCardsSpy.should.not.have.been.called;
         })));
+
+        it('should reload and get identity cards', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
+            let loadIdentityCardsSpy = sinon.stub(service, 'loadIdentityCards').returns(Promise.resolve());
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            mockIdCard.getUserName.returns('penguin');
+            let mockCardMap = new Map<string, IdCard>();
+            mockCardMap.set('test', mockIdCard);
+            service['idCards'] = mockCardMap;
+
+            let result;
+            service.getIdentityCards(true).then((idCards) => {
+                result = idCards;
+            });
+
+            tick();
+
+            result.size.should.equal(1);
+            result.get('test').getUserName().should.equal('penguin');
+            loadIdentityCardsSpy.should.have.been.called;
+        })));
     });
 
     describe('#addInitialIdentityCards', () => {

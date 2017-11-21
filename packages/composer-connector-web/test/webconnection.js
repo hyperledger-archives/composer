@@ -236,18 +236,10 @@ describe('WebConnection', () => {
 
 
     describe('#undeploy', () => {
-        let mockDataService;
-
-        beforeEach(() => {
-            connection.dataService = mockDataService = sinon.createStubInstance(DataService);
-        });
-
-
         it('should remove the business network', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            mockDataService.destroy = sinon.stub().resolves();
             WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
             return connection.undeploy(mockSecurityContext, 'org.acme.Business')
                 .then(() => {

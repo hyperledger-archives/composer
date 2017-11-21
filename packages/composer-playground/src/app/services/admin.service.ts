@@ -95,9 +95,8 @@ export class AdminService {
         return this.getAdminConnection().install(businessNetworkDefinitionName);
     }
 
-    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<void> {
-        // Cast to <any> as TypeScript does not know about default parameters :-(
-        return (<any> this.getAdminConnection()).start(businessNetworkDefinition, startOptions);
+    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<Map<string, IdCard>> {
+        return this.getAdminConnection().start(businessNetworkDefinition, startOptions);
     }
 
     public undeploy(businessNetworkDefinitionName: string): Promise<void> {
@@ -118,6 +117,10 @@ export class AdminService {
 
     public deleteCard(cardName): Promise<void> {
         return this.getAdminConnection().deleteCard(cardName);
+    }
+
+    public hasCard(cardName): Promise<boolean> {
+        return this.getAdminConnection().hasCard(cardName);
     }
 
     generateDefaultBusinessNetwork(name: string, description: string): BusinessNetworkDefinition {

@@ -58,88 +58,43 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    generateAddParticpantTransaction(identityName: string, businessNetworkDefinition: BusinessNetworkDefinition): string {
-        const factory = businessNetworkDefinition.getFactory();
-        const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
-        const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
-        const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
-        Object.assign(addParticipantTransaction, {
-            resources: [participant],
-            targetRegistry
-        });
-
-        return addParticipantTransaction;
-    }
-
-    generateBootstrapTransactions(businessNetworkDefinition: BusinessNetworkDefinition, identityName: string, credentials): Object[] {
-        const factory = businessNetworkDefinition.getFactory();
-        const serializer = businessNetworkDefinition.getSerializer();
-
-        const addParticipantTransaction = this.generateAddParticpantTransaction(identityName, businessNetworkDefinition);
-
-        let identityTransaction;
-
-        if (!credentials) {
-            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
-            Object.assign(identityTransaction, {
-                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
-                identityName
-            });
-        } else {
-            let certificate = credentials.certificate;
-
-            identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
-            Object.assign(identityTransaction, {
-                participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
-                certificate
-            });
-        }
-
-        const result = [
-            addParticipantTransaction,
-            identityTransaction
-        ].map((bootstrapTransaction) => {
-            return serializer.toJSON(bootstrapTransaction);
-        });
-        return result;
-    }
-
-    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, cardName: string, networkName: string, networkDescription: string, networkId: string, networkSecret: string, credentials): Promise<string> {
+    public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, cardName: string, networkName: string, networkDescription: string, networkId: string, networkSecret: string, credentials): Promise<void> {
         let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
         packageJson.name = networkName;
         packageJson.description = networkDescription;
 
-        let newCardRef: string;
         let channelAdminCardRef: string;
         let channelAdminCard: IdCard;
         let peerAdminCardRef: string = this.identityCardService.getCurrentCardRef();
-        let peerAdminCard: IdCard = this.identityCardService.getIdentityCard(peerAdminCardRef);
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
 
+        networkId = networkId || 'admin';
+
+        let networkAdmin = {
+            userName: networkId
+        };
+
+        if (credentials) {
+            networkAdmin['certificate'] = credentials.certificate;
+        } else if (networkSecret) {
+            networkAdmin['secret'] = networkSecret;
+        } else {
+            networkAdmin['secret'] = 'adminpw';
+        }
+
+        cardName = cardName || networkId + '@' + networkName;
+
         return Promise.resolve()
             .then(() => {
-                if (networkSecret) {
-                    return this.identityCardService.createIdentityCard(networkId, cardName, newNetwork.getName(), networkSecret, peerAdminCard.getConnectionProfile())
-                        .then((idCardRef: string) => {
-                            newCardRef = idCardRef;
-                        });
-                } else if (credentials) {
-                    return this.identityCardService.createIdentityCard(networkId, cardName, newNetwork.getName(), null, peerAdminCard.getConnectionProfile(), credentials)
-                        .then((idCardRef: string) => {
-                            newCardRef = idCardRef;
-                        });
-                } else {
-                    networkId = 'admin';
-                    return this.identityCardService.createIdentityCard(networkId, cardName, newNetwork.getName(), 'adminpw', peerAdminCard.getConnectionProfile())
-                        .then((idCardRef: string) => {
-                            newCardRef = idCardRef;
-                        });
-                }
+                return this.adminService.hasCard(cardName);
             })
-            .then(() => {
+            .then((cardExists) => {
+                if (cardExists) {
+                    throw new Error('Card already exists: ' + cardName);
+                }
+
                 let card = this.identityCardService.getIdentityCard(peerAdminCardRef);
-                console.log('peerCard', card);
                 return this.adminService.connect(peerAdminCardRef, card, true);
             })
             .then(() => {
@@ -163,30 +118,20 @@ export class SampleBusinessNetworkService {
                     force: true
                 });
 
-                const bootstrapTransactions = this.generateBootstrapTransactions(businessNetworkDefinition, networkId, credentials);
-
-                return this.adminService.start(newNetwork, {bootstrapTransactions, card : channelAdminCard});
+                return this.adminService.start(newNetwork, {
+                    networkAdmins: [networkAdmin]
+                });
             })
-            .then(() => {
+            .then((createdCards: Map<string, IdCard>) => {
+                let card = createdCards.get(networkId);
+
+                this.adminService.importCard(cardName, card);
+
                 this.alertService.busyStatus$.next(null);
-                return newCardRef;
             })
             .catch((error) => {
-                if (newCardRef && !error.message.includes('already exists')) {
-                    return this.identityCardService.deleteIdentityCard(newCardRef)
-                        .then(() => {
-                            this.alertService.busyStatus$.next(null);
-                            return Promise.reject(error);
-                        })
-                        .catch(() => {
-                            // Ignore error from deleting
-                            this.alertService.busyStatus$.next(null);
-                            return Promise.reject(error);
-                        });
-                } else {
-                    this.alertService.busyStatus$.next(null);
-                    throw error;
-                }
+                this.alertService.busyStatus$.next(null);
+                throw error;
             });
     }
 

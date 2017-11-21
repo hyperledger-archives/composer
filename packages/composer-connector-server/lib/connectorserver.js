@@ -90,6 +90,27 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to has a busines network card.
+     * @param {string} cardName The name of the card.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    businessNetworkCardStoreHas (cardName, callback) {
+        const method = 'businessNetworkCardStoreHas';
+        LOG.entry(method, cardName);
+        return this.businessNetworkCardStore.has(cardName)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
      * Handle a request from the client to get a busines network card.
      * @param {string} cardName The name of the card.
      * @param {object} cardProperties The card.

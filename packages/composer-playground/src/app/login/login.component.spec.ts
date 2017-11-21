@@ -223,7 +223,7 @@ describe(`LoginComponent`, () => {
     });
 
     describe('loadIdentityCards', () => {
-        it('should load identity cards and sort the profiles', fakeAsync(() => {
+        it('should load identity cards and sort the profiles force reload', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('card1');
             mockIdCard1.getConnectionProfile.returns({name: 'myProfile1'});
@@ -256,12 +256,13 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef4']);
             let sortCards = sinon.stub(component, 'sortIdCards');
 
-            component.loadIdentityCards();
+            component.loadIdentityCards(true);
 
             tick();
 
             sortCards.should.have.been.called;
 
+            mockIdentityCardService.getIdentityCards.should.have.been.calledWith(true);
             component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2']);
             component['connectionProfileNames'].size.should.equal(4);
             component['connectionProfileNames'].get('xxx-myProfile1').should.equal('myProfile1');
@@ -766,7 +767,7 @@ describe(`LoginComponent`, () => {
             mockSampleBusinessNetworkService.getSampleList.should.have.been.called;
             mockSampleBusinessNetworkService.getChosenSample.should.have.been.calledWith({name: 'mySample'});
             mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network');
-            changeIdentityStub.should.have.been.calledWith('myNewCardRef');
+            changeIdentityStub.should.have.been.calledWith('playgroundSample@basic-sample-network');
         }));
     });
 });

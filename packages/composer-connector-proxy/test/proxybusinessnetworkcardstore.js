@@ -127,7 +127,7 @@ describe('ProxyBusinessNetworkCardStore', () => {
             businessNetworkCardStore.connected = true;
         });
 
-        it('should send a load call to the connector server', () => {
+        it('should send a get call to the connector server', () => {
             mockSocket.emit.withArgs('/api/businessNetworkCardStoreGet', cardName, sinon.match.func).yields(null, card);
             return businessNetworkCardStore.get(cardName)
                 .then((result) => {
@@ -141,6 +141,32 @@ describe('ProxyBusinessNetworkCardStore', () => {
         it('should handle an error from the connector server', () => {
             mockSocket.emit.withArgs('/api/businessNetworkCardStoreGet', cardName, sinon.match.func).yields(serializedError);
             return businessNetworkCardStore.get(cardName)
+                .should.be.rejectedWith(TypeError, /such type error/);
+        });
+    });
+
+    describe('#has', () => {
+        beforeEach(() => {
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            businessNetworkCardStore = new ProxyBusinessNetworkCardStore();
+            businessNetworkCardStore.connected = true;
+        });
+
+        it('should send a has call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreHas', cardName, sinon.match.func).yields(null, true);
+            return businessNetworkCardStore.has(cardName)
+                .then((result) => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/businessNetworkCardStoreHas', cardName, sinon.match.func);
+                    sinon.assert.calledTwice(mockSocket.on);
+                    result.should.equal(true);
+                });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/businessNetworkCardStoreHas', cardName, sinon.match.func).yields(serializedError);
+            return businessNetworkCardStore.has(cardName)
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 

@@ -57,6 +57,28 @@ describe('BrowserBusinessNetworkCardStore', () => {
 
     });
 
+    describe('has', () => {
+        it('should return true if the card exists', (done) => {
+            let idCardThree = new IdCard({userName: 'banana'}, {name: 'profileThree'});
+            return businessNetworkCardStore.put('banana', idCardThree)
+                .then(() => {
+                    return businessNetworkCardStore.has('banana');
+                })
+                .then((result) => {
+                    result.should.equal(true);
+                    done();
+                });
+        });
+
+        it('should return false if the card does not exists', (done) => {
+            return businessNetworkCardStore.has('banana')
+                .then((result) => {
+                    result.should.equal(false);
+                    done();
+                });
+        });
+    });
+
     describe('#getAll', () => {
         it('should get all business network cards', (done) => {
             window['localStorage'].setItem('not-card', JSON.stringify({name: 'not-card'}));
@@ -98,4 +120,5 @@ describe('BrowserBusinessNetworkCardStore', () => {
                 });
         });
     });
-});
+})
+;

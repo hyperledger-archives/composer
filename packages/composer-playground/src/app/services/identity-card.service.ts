@@ -97,7 +97,12 @@ export class IdentityCardService {
             });
     }
 
-    public getIdentityCards(): Promise<Map<string, IdCard>> {
+    public getIdentityCards(reload: boolean = false): Promise<Map<string, IdCard>> {
+        if (reload) {
+            return this.loadIdentityCards().then(() => {
+                return this.idCards;
+            });
+        }
         return Promise.resolve(this.idCards);
     }
 

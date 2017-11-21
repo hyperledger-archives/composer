@@ -99,6 +99,30 @@ class ProxyBusinessNetworkCardStore extends BusinessNetworkCardStore {
     }
 
     /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName) {
+        const method = 'has';
+        LOG.entry(method, cardName);
+        return this.ensureConnected()
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    this.socket.emit('/api/businessNetworkCardStoreHas', cardName, (error, result) => {
+                        if (error) {
+                            return reject(ProxyUtil.inflaterr(error));
+                        }
+
+                        LOG.exit(method, result);
+                        resolve(result);
+                    });
+                });
+            });
+    }
+
+    /**
      * Puts a card in the store. It is an error to put a card name that already exists
      * in the store.
      * @param {String} cardName The name of the card to save

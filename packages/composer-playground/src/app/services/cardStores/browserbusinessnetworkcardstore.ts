@@ -47,6 +47,20 @@ export class BrowserBusinessNetworkCardStore extends BusinessNetworkCardStore {
     }
 
     /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName) {
+        return this.get(cardName).then(() => {
+            return true;
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Gets all cards from the store.
      * @return {Promise} A promise that is resolved with a {@link Map} where
      * the keys are identity card names and the values are {@link IdCard} objects.

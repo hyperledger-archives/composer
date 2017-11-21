@@ -58,6 +58,23 @@ export class PlaygroundBusinessNetworkCardStore extends BusinessNetworkCardStore
     }
 
     /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName) {
+        return this.browserBusinessNetworkCardStore.has(cardName)
+            .then((hasCard) => {
+                if (hasCard) {
+                    return true;
+                }
+                // No - try loading it from the connector server instead.
+                return this.proxyBusinessNetworkCardStore.has(cardName);
+            });
+    }
+
+    /**
      * Gets all cards from the store.
      * @return {Promise} A promise that is resolved with a {@link Map} where
      * the keys are identity card names and the values are {@link IdCard} objects.

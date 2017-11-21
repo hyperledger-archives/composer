@@ -87,6 +87,7 @@ class PouchDBDataService extends DataService {
     destroy() {
         const method = 'destroy';
         LOG.entry(method);
+        console.log('SIMON THIS DEF GETS CALLED', this.db);
         return this.db.destroy()
             .then(() => {
                 LOG.exit(method);

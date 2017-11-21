@@ -59,8 +59,8 @@ export class LoginComponent implements OnInit {
             });
     }
 
-    loadIdentityCards(): Promise<void> {
-        return this.identityCardService.getIdentityCards().then((cards) => {
+    loadIdentityCards(reload: boolean = false): Promise<void> {
+        return this.identityCardService.getIdentityCards(reload).then((cards) => {
             this.indestructibleCards = this.identityCardService.getIndestructibleIdentityCards();
             this.idCards = cards;
             this.connectionProfileNames = new Map<string, string>();
@@ -159,12 +159,12 @@ export class LoginComponent implements OnInit {
             .then((businessNetworkDefinition) => {
                 return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network', null, null, null);
             })
-            .then((cardRef: string) => {
+            .then(() => {
                 this.alertService.busyStatus$.next({
                     title: 'Connecting to network',
                     force: true
                 });
-                return this.changeIdentity(cardRef);
+                return this.changeIdentity('playgroundSample@basic-sample-network');
             });
     }
 
@@ -229,7 +229,7 @@ export class LoginComponent implements OnInit {
         this.showSubScreen = false;
         this.showDeployNetwork = false;
 
-        return this.loadIdentityCards();
+        return this.loadIdentityCards(true);
     }
 
     importIdentity() {

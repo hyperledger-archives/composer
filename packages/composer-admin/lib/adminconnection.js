@@ -944,31 +944,6 @@ class AdminConnection {
                 throw new Error('failed to request identity. ' + error.message);
             });
     }
-
-   /**
-     * Obtain the credentials associated with a given identity.
-     * @param {String} connectionProfileName Name of the connection profile.
-     * @param {String} id Name of the identity.
-     * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
-     * @private
-     */
-    exportIdentity(connectionProfileName, id) {
-        let savedConnectionManager;
-        return this.connectionProfileManager.getConnectionManager(connectionProfileName)
-            .then((connectionManager) => {
-                savedConnectionManager = connectionManager;
-                return this.getProfile(connectionProfileName);
-            })
-            .then((profileData) => {
-                return savedConnectionManager.exportIdentity(connectionProfileName, profileData, id);
-            })
-            .catch((cause) => {
-                const error = new Error(`Failed to obtain credentials for ${id}: ${cause.message}`);
-                error.cause = cause;
-                throw error;
-            });
-    }
-
 }
 
 module.exports = AdminConnection;

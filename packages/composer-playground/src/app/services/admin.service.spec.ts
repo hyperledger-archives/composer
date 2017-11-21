@@ -391,6 +391,20 @@ describe('AdminService', () => {
         })));
     });
 
+    describe('hasCard', () => {
+        it('should has a card', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+
+            adminConnectionMock.hasCard.returns(Promise.resolve());
+
+            service.hasCard('myCard');
+
+            tick();
+
+            adminConnectionMock.hasCard.should.have.been.calledWith('myCard');
+        })));
+    });
+
     describe('undeploy', () => {
         it('should undeploy the businessNetwork', inject([AdminService], (service: AdminService) => {
             let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);

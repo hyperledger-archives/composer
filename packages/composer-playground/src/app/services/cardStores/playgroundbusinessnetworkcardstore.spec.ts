@@ -53,6 +53,38 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
         });
     });
 
+    describe('#has', () => {
+        it('should return true if browser has card', (done) => {
+            mockBrowserBusinessNetworkCardStore.has.withArgs('web-card').resolves(true);
+            mockBrowserBusinessNetworkCardStore.has.rejects(new Error('such error'));
+            return businessNetworkCardStore.has('web-card')
+                .then((result) => {
+                    result.should.deep.equal(true);
+                    done();
+                });
+        });
+
+        it('should check if it exists in the proxy card store if not in browser', (done) => {
+            mockBrowserBusinessNetworkCardStore.has.withArgs('myCard').resolves(true);
+            mockProxyBusinessNetworkCardStore.has.resolves(true);
+            return businessNetworkCardStore.has('myCard')
+                .then((result) => {
+                    result.should.deep.equal(true);
+                    done();
+                });
+        });
+
+        it('should return false if not in either store', (done) => {
+            mockBrowserBusinessNetworkCardStore.has.withArgs('myCard').resolves(false);
+            mockProxyBusinessNetworkCardStore.has.resolves(false);
+            return businessNetworkCardStore.has('myCard')
+                .then((result) => {
+                    result.should.deep.equal(false);
+                    done();
+                });
+        });
+    });
+
     describe('#put', () => {
         it('should save web cards to the browser card store', (done) => {
             let idCardOne = new IdCard({userName: 'banana'}, {type: 'web', name: 'webProfile'});

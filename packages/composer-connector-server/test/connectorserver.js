@@ -107,6 +107,7 @@ describe('ConnectorServer', () => {
             });
             functions.sort().should.deep.equal([
                 '/api/businessNetworkCardStoreGet',
+                '/api/businessNetworkCardStoreHas',
                 '/api/businessNetworkCardStoreGetAll',
                 '/api/businessNetworkCardStorePut',
                 '/api/businessNetworkCardStoreDelete',
@@ -160,10 +161,37 @@ describe('ConnectorServer', () => {
                 });
         });
 
-        it('should handle errors loading a card', () => {
+        it('should handle errors getting a card', () => {
             mockBusinessNetworkCardStore.get.withArgs(cardName).rejects(new Error('such error'));
             const cb = sinon.stub();
             return connectorServer.businessNetworkCardStoreGet(cardName, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.equal('such error');
+                    serializedError.stack.should.be.a('string');
+                });
+        });
+    });
+
+    describe('#businessNetworkCardStoreHas', () => {
+        it('should has a business network card', () => {
+            mockBusinessNetworkCardStore.has.withArgs(cardName).resolves(false);
+            const cb = sinon.stub();
+            return connectorServer.businessNetworkCardStoreHas(cardName, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockBusinessNetworkCardStore.has);
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.has, cardName);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, false);
+                });
+        });
+
+        it('should handle errors has a card', () => {
+            mockBusinessNetworkCardStore.has.withArgs(cardName).rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return connectorServer.businessNetworkCardStoreHas(cardName, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];

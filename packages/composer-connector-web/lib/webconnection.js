@@ -204,7 +204,8 @@ class WebConnection extends Connection {
      */
     undeploy (securityContext, businessNetworkIdentifier) {
         WebConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-        return this.dataService.destroy();
+        const dataServiceBusinessNetwork = new WebDataService(businessNetworkIdentifier, true);
+        return dataServiceBusinessNetwork.destroy();
     }
 
     /**
