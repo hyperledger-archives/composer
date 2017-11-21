@@ -15,17 +15,16 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
-const testUtil = require('./testutil');
+
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
-
-const bfs_fs = BrowserFS.BFSRequire('fs');
 
 
 
@@ -215,31 +214,51 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         let app;
         let businessNetworkConnection;
-        let businessNetworkDefinition;
+        let idCard;
         let assetRegistry;
         let participantRegistry;
         let serializer;
 
-        let adminConnection;
 
-        beforeEach(() => {
-            BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            adminConnection = new AdminConnection({ fs: bfs_fs });
-            return testUtil.startAndConnect(adminConnection)
-            .then( (result)=>{
+
+        before(() => {
+            const cardStore = new MemoryCardStore();
+            const adminConnection = new AdminConnection({ cardStore });
+            let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+            const deployCardName = 'deployer-card';
+
+            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+            let businessNetworkDefinition;
+
+            return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
+            .then(() => {
+                return adminConnection.connect(deployCardName);
+            })
+            .then(() => {
+                return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
+            })
+            .then((result) => {
                 businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
+                return adminConnection.install(businessNetworkDefinition.getName());
+            })
+            .then(()=>{
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
+            })
+            .then(() => {
+                idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                return adminConnection.importCard('admin@bond-network', idCard);
             })
             .then(() => {
                 return server({
                     card: 'admin@bond-network',
-                    fs: bfs_fs,
-                    namespaces: namespaces
+                    cardStore,
+                    namespaces: 'never'
                 });
             })
             .then((result) => {
                 app = result.app;
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
+                businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
 
                 return businessNetworkConnection.connect('admin@bond-network');
             })
@@ -280,15 +299,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             });
         });
 
-        afterEach( ()=>{
-            return adminConnection.connect('admin@bond-network')
-            .then( ()=>{
-                adminConnection.undeploy();
-            })
-            .then(()=>{
-                adminConnection.disconnect();
-            });
-        });
+
 
         describe(`GET / namespaces[${namespaces}]`, () => {
 

@@ -32,6 +32,7 @@ function createDataSource(app, composer) {
         name: 'composer',
         connector: connector,
         card: composer.card,
+        cardStore: composer.cardStore,
         namespaces: composer.namespaces,
         multiuser: composer.multiuser,
         fs: composer.fs,

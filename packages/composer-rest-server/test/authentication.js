@@ -15,7 +15,8 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
@@ -26,7 +27,6 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
 
 describe('Authentication REST API unit tests', () => {
 

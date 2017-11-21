@@ -43,9 +43,6 @@ class EmbeddedConnectionManager extends ConnectionManager {
         this.dataService = new EmbeddedDataService(null, true);
     }
 
-    cleanUp(){
-        return this.dataService.deleteCollection(IDENTITY_COLLECTION_ID);
-    }
     /**
      * Import an identity into a profile wallet or keystore.
      * @param {string} connectionProfile The name of the connection profile
