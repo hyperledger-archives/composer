@@ -15,7 +15,6 @@
 'use strict';
 
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
-const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
@@ -25,29 +24,15 @@ const sinon = require('sinon');
 
 describe('ParticipantDeclaration', () => {
 
-    let mockModelManager;
-    let mockClassDeclaration;
-    let mockSystemParticipant;
-    let sandbox;
+    let modelManager;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        mockModelManager =  sinon.createStubInstance(ModelManager);
-        mockSystemParticipant = sinon.createStubInstance(ParticipantDeclaration);
-        mockSystemParticipant.getFullyQualifiedName.returns('org.hyperledger.composer.system.Participant');
-        mockModelManager.getSystemTypes.returns([mockSystemParticipant]);
-        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-        mockModelManager.getType.returns(mockClassDeclaration);
-        mockClassDeclaration.getProperties.returns([]);
-    });
-
-    afterEach(() => {
-        sandbox.restore();
+        modelManager = new ModelManager();
     });
 
     let loadParticipantDeclaration = (modelFileName) => {
         let modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-        let modelFile = new ModelFile(mockModelManager, modelDefinitions);
+        let modelFile = new ModelFile(modelManager, modelDefinitions);
         let assets = modelFile.getParticipantDeclarations();
         assets.should.have.lengthOf(1);
 
