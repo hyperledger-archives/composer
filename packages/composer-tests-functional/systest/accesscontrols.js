@@ -70,10 +70,11 @@ describe('Access control system tests', function() {
 
 
         bnID = businessNetworkDefinition.getName();
-
+        console.log('calling deploy');
         return TestUtil.deploy(businessNetworkDefinition)
             .then((_cardStore) => {
                 cardStore = _cardStore;
+                console.log('card store in uses is '+cardStore);
                 return TestUtil.getClient(cardStore,'systest-accesscontrols')
                     .then((result) => {
                         client = result;

@@ -29,7 +29,7 @@ let currentCp;
 let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
-
+let cardStore;
 /**
  * Trick browserify by making the ID parameter to require dynamic.
  * @param {string} id The module ID.
@@ -164,7 +164,8 @@ class TestUtil {
      * connected instance of BusinessNetworkConnection.
      */
     static setUp() {
-        const adminConnection = new AdminConnection();
+        cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({cardStore});
         forceDeploy = false;
         return TestUtil.waitForPorts()
             .then(() => {
@@ -189,15 +190,15 @@ class TestUtil {
                     // A whole bunch of dynamic requires to trick browserify.
                     const ConnectorServer = dynamicRequire('composer-connector-server');
                     const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
-                    const FSConnectionProfileStore = dynamicRequire('composer-common').FSConnectionProfileStore;
-                    const fs = dynamicRequire('fs');
+                    // const FSConnectionProfileStore = dynamicRequire('composer-common').FSConnectionProfileStore;
+                    // const fs = dynamicRequire('fs');
                     const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
                     const socketIO = dynamicRequire('socket.io');
                     // We are using the embedded connector, but we configure it to route through the
                     // proxy connector and connector server.
-                    const connectionProfileStore = new FSConnectionProfileStore(fs);
+                    // const connectionProfileStore = new FSConnectionProfileStore(fs);
                     ConnectionProfileManager.registerConnectionManager('embedded', ProxyConnectionManager);
-                    const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
+                    const connectionProfileManager = new ConnectionProfileManager();
                     // Since we're a single process, we have to force the embedded connection manager into
                     // the connection profile manager that the connector server is using.
                     const connectionManager = new EmbeddedConnectionManager(connectionProfileManager);
@@ -207,27 +208,28 @@ class TestUtil {
                     const io = socketIO(15699);
                     io.on('connect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
-                        new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
+                        new ConnectorServer(cardStore, connectionProfileManager, socket);
                     });
                     io.on('disconnect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
                     });
                     console.log('Calling AdminConnection.createProfile() ...');
-                    return adminConnection.createProfile('composer-systests', {
-                        type: 'embedded'
-                    });
+                    return ;
 
                 // Create all necessary configuration for Hyperledger Fabric v1.0.
                 } else if (TestUtil.isHyperledgerFabricV1()) {
+
                     const keyValStoreOrg1 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org1');
                     mkdirp.sync(keyValStoreOrg1);
                     const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
                     mkdirp.sync(keyValStoreOrg2);
                     let connectionProfileOrg1, connectionProfileOrg2;
+                    let connectionProfileOrg1Solo, connectionProfileOrg2Solo;
                     if (process.env.FVTEST.match('tls$')) {
                         console.log('setting up TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
                             type: 'hlfv1',
+                            name: 'hlfv1org1',
                             orderers: [
                                 {
                                     url: 'grpcs://localhost:7050',
@@ -259,6 +261,7 @@ class TestUtil {
                         };
                         connectionProfileOrg2 = {
                             type: 'hlfv1',
+                            name: 'hlfv1org2',
                             orderers: [
                                 {
                                     url: 'grpcs://localhost:7050',
@@ -292,6 +295,7 @@ class TestUtil {
                         console.log('setting up Non-TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
                             type: 'hlfv1',
+                            name: 'hlfv1org1',
                             orderers: [
                                 'grpc://localhost:7050'
                             ],
@@ -315,6 +319,7 @@ class TestUtil {
                         };
                         connectionProfileOrg2 = {
                             type: 'hlfv1',
+                            name: 'hlfv1org2',
                             orderers: [
                                 'grpc://localhost:7050'
                             ],
@@ -337,32 +342,21 @@ class TestUtil {
                             keyValStore: keyValStoreOrg2
                         };
                     }
+                    connectionProfileOrg1Solo = Object.assign({}, connectionProfileOrg1);
+                    connectionProfileOrg1Solo.peers.pop();
+                    connectionProfileOrg2Solo = Object.assign({}, connectionProfileOrg2);
+                    connectionProfileOrg2Solo.peers.pop();
+
+                    //
+                    currentCp = connectionProfileOrg1Solo;
+
                     if (process.env.COMPOSER_TIMEOUT_SECS) {
                         connectionProfileOrg1.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
                         connectionProfileOrg2.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
                         console.log('COMPOSER_TIMEOUT_SECS set, using: ', connectionProfileOrg1.timeout, connectionProfileOrg2.timeout);
                     }
                     console.log('Calling AdminConnection.createProfile() ...');
-                    return adminConnection.createProfile('composer-systests-org1', connectionProfileOrg1)
-                        .then(() => {
-                            return adminConnection.createProfile('composer-systests-org2', connectionProfileOrg2);
-                        })
-                        .then(() => {
-                            connectionProfileOrg1.peers.pop();
-                            return adminConnection.createProfile('composer-systests-org1-solo', connectionProfileOrg1);
-                        })
-                        .then(() => {
-                            connectionProfileOrg2.peers.pop();
-                            return adminConnection.createProfile('composer-systests-org2-solo', connectionProfileOrg2);
-                        });
-                } else {
-                    throw new Error('I do not know what kind of tests you want me to run!');
-                }
 
-            })
-            .then(() => {
-                console.log('Called AdminConnection.createProfile()');
-                if (TestUtil.isHyperledgerFabricV1()) {
                     let fs = dynamicRequire('fs');
                     console.log('Calling AdminConnection.importIdentity() ...');
                     const admins = [
@@ -372,19 +366,45 @@ class TestUtil {
                     return admins.reduce((promise, admin) => {
                         const org = admin.org;
                         const keyFile = admin.keyFile;
+
+                        let cardsolo;
                         return promise.then(() => {
                             let keyPath = path.join(__dirname, `../hlfv1/crypto-config/peerOrganizations/${org}.example.com/users/Admin@${org}.example.com/msp/keystore/${keyFile}`);
                             let certPath = path.join(__dirname, `../hlfv1/crypto-config/peerOrganizations/${org}.example.com/users/Admin@${org}.example.com/msp/signcerts/Admin@${org}.example.com-cert.pem`);
                             let signerCert = fs.readFileSync(certPath).toString();
                             let key = fs.readFileSync(keyPath).toString();
-                            return adminConnection.importIdentity(`composer-systests-${org}`, 'PeerAdmin', signerCert, key);
+
+                            let metadata = { version:1,
+                                userName: 'PeerAdmin',
+                                roles: ['PeerAdmin', 'ChannelAdmin'] };
+                            // form up a IDCard
+                            let card;
+                            if (org==='org1'){
+                                card = new IdCard(metadata,connectionProfileOrg1);
+                                cardsolo = new IdCard(metadata,connectionProfileOrg1Solo);
+                            }    else {
+                                card = new IdCard(metadata,connectionProfileOrg2);
+                                cardsolo = new IdCard(metadata,connectionProfileOrg2Solo);
+                            }
+                            card.setCredentials({certificate:signerCert,privateKey:key});
+                            cardsolo.setCredentials({certificate:signerCert,privateKey:key});
+                            return adminConnection.importCard(`composer-systests-${org}-PeerAdmin`, card)
+                            .then(()=>{
+                                return adminConnection.importCard(`composer-systests-${org}-solo-PeerAdmin`, cardsolo);
+                            });
+                            // return adminConnection.importIdentity(`composer-systests-${org}`, 'PeerAdmin', signerCert, key);
                         });
                     }, Promise.resolve())
                         .then(() => {
                             console.log('Called AdminConnection.importIdentity() ...');
                         });
+
+                } else {
+                    throw new Error('I do not know what kind of tests you want me to run!');
                 }
+
             });
+
     }
 
     /**
@@ -452,9 +472,10 @@ class TestUtil {
             enrollmentSecret = enrollmentSecret || password;
             // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-                return thisClient.connectWithDetails('composer-systests-org1', network, enrollmentID, enrollmentSecret);
+                return thisClient.connect(cardName);
+                // return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
-                return thisClient.connectWithDetails('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
+                return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
                 console.log('Connecting with '+cardName);
                 return thisClient.connect(cardName);
@@ -475,7 +496,9 @@ class TestUtil {
         // do not believe there is any code left doing forceDeploy_
         if (forceDeploy_){ throw new Error('this should not be deploying');}
 
-        let cardStore = new MemoryCardStore();
+        if (!cardStore) {
+            cardStore = new MemoryCardStore();
+        }
         const adminConnection = new AdminConnection({cardStore});
         forceDeploy = forceDeploy_;
         const bootstrapTransactions = [
@@ -500,7 +523,7 @@ class TestUtil {
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
-                    return adminConnection.connectWithDetails('composer-systests-org1-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connect('composer-systests-org1-solo-PeerAdmin');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -510,7 +533,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
-                    return adminConnection.connectWithDetails('composer-systests-org2-solo', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connect('composer-systests-org2-solo-PeerAdmin');
                 })
                 .then(() => {
                     return adminConnection.install(businessNetworkDefinition.getName());
@@ -520,7 +543,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and start the network on the peers for org1 and org2.
-                    return adminConnection.connectWithDetails('composer-systests-org1', 'PeerAdmin', 'NOTNEEDED');
+                    return adminConnection.connect('composer-systests-org1-PeerAdmin');
                 })
                 .then(() => {
                     return adminConnection.start(businessNetworkDefinition, {
@@ -553,8 +576,14 @@ class TestUtil {
                         }
                     });
                 })
+                .then(()=>{
+                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() },currentCp);
+                    return adminConnection.importCard('admincard', adminidCard);
+                })
                 .then(() => {
                     return adminConnection.disconnect();
+                }).then(()=>{
+                    return cardStore;
                 });
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
@@ -572,7 +601,7 @@ class TestUtil {
             currentCp = {type : 'embedded',name:'defaultProfile'};
             let connectionprofile;
 
-            if (TestUtil.isEmbedded()){
+            if (TestUtil.isEmbedded() || TestUtil.isProxy()){
                 connectionprofile =  {type : 'embedded', name:'defaultProfile'};
             } else if (TestUtil.isWeb()){
                 connectionprofile =  {type : 'web', name:'defaultProfile'};
@@ -675,7 +704,7 @@ class TestUtil {
                 }
             });
         } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){
-            const adminConnection = new AdminConnection();
+            const adminConnection = new AdminConnection({cardStore});
             return adminConnection.connectWithDetails('composer-systests-org1-solo', 'admin', 'NOTNEEDED', identifier)
             .then(() => {
                 return adminConnection.reset(identifier);
