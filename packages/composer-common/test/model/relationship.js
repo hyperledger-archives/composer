@@ -16,7 +16,6 @@
 
 const ModelManager = require('../../lib/modelmanager');
 const Relationship = require('../../lib/model/relationship');
-const sinon = require('sinon');
 
 const chai = require('chai');
 chai.should();
@@ -35,6 +34,7 @@ describe('Relationship', function () {
   `;
 
     let modelManager = null;
+    let classDecl = null;
 
     before(function () {
         modelManager = new ModelManager();
@@ -42,6 +42,7 @@ describe('Relationship', function () {
 
     beforeEach(function () {
         modelManager.addModelFile(levelOneModel);
+        classDecl = modelManager.getType('org.acme.l1.Person');
     });
 
     afterEach(function () {
@@ -49,28 +50,15 @@ describe('Relationship', function () {
     });
 
     describe('#getClassDeclaration', function() {
-        it('should throw with no ModelFile', function () {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
-            const stub = sinon.stub(modelManager, 'getModelFile', function(){return null;});
-            (function () {
-                relationship.getClassDeclaration();
-            }).should.throw(/No model for namespace org.acme.l1 is registered with the ModelManager/);
-            stub.restore();
-        });
-        it('should throw with no type', function () {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
-            const modelFile = modelManager.getModelFile('org.acme.l1');
-            const stub = sinon.stub(modelFile, 'getType', function(type){return null;});
-            (function () {
-                relationship.getClassDeclaration();
-            }).should.throw(/The namespace org.acme.l1 does not contain the type Person/);
-            stub.restore();
+        it('should return the class declaraction', function () {
+            const resource = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
+            resource.getClassDeclaration().should.equal(classDecl);
         });
     });
 
     describe('#toJSON', () => {
         it('should throw is toJSON is called', function () {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             (function () {
                 relationship.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
@@ -79,27 +67,27 @@ describe('Relationship', function () {
 
     describe('#isRelationship', () => {
         it('should be true', () => {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             relationship.isRelationship().should.be.true;
         });
     });
 
     describe('#isResource', () => {
         it('should be false', () => {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             relationship.isResource().should.be.false;
         });
     });
 
     describe('#uri serialization', function() {
         it('check that relationships can be serialized to URI', function() {
-            const rel = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            const rel = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             rel.toURI().should.equal('resource:org.acme.l1.Person#123');
         });
 
         it('check that unicode relationships can be serialized to URI', function() {
             let Omega = '\u03A9';
-            const rel = new Relationship(modelManager, 'org.acme.l1', 'Person', Omega );
+            const rel = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', Omega );
             rel.toURI().should.equal('resource:org.acme.l1.Person#%CE%A9');
         });
 
@@ -142,13 +130,13 @@ describe('Relationship', function () {
         it('check invalid name space gets error', function() {
             (function () {
                 Relationship.fromURI(modelManager, '123', 'org.acme.empty', 'Person' );
-            }).should.throw(/Cannot create relationship as namespace org.acme.empty is not known/);
+            }).should.throw(/Namespace is not defined for type org.acme.empty/);
         });
 
         it('check that relationships can be created from a URI', function() {
             (function () {
                 Relationship.fromURI(modelManager, 'resource:org.acme.l1.Unkown#123' );
-            }).should.throw(/Cannot instantiate Type Unkown in namespace org.acme.l1/);
+            }).should.throw(/Type Unkown is not defined in namespace org.acme.l1/);
         });
 
         it('should error on invalid URI scheme', function() {
@@ -184,7 +172,7 @@ describe('Relationship', function () {
 
     describe('#toString', function() {
         it('should include the ID', function() {
-            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             relationship.toString().should.include('123');
         });
     });

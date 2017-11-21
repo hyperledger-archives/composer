@@ -113,10 +113,10 @@ class Factory {
 
         let newObj = null;
         if(options.disableValidation) {
-            newObj = new Resource(this.modelManager, ns, type, id);
+            newObj = new Resource(this.modelManager, classDecl, ns, type, id);
         }
         else {
-            newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
+            newObj = new ValidatedResource(this.modelManager, classDecl, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
         this.initializeNewObject(newObj, classDecl, options);
@@ -162,10 +162,10 @@ class Factory {
         let newObj = null;
         options = options || {};
         if(options.disableValidation) {
-            newObj = new Concept(this.modelManager,ns,type);
+            newObj = new Concept(this.modelManager, classDecl, ns, type);
         }
         else {
-            newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
+            newObj = new ValidatedConcept(this.modelManager, classDecl, ns, type, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
         this.initializeNewObject(newObj, classDecl, options);
@@ -190,9 +190,8 @@ class Factory {
     newRelationship(ns, type, id) {
         // Load the type declaration to force an error if it doesn't exist
         const fqn = ModelUtil.getFullyQualifiedName(ns, type);
-        this.modelManager.getType(fqn);
-
-        return new Relationship(this.modelManager, ns, type, id);
+        const classDecl = this.modelManager.getType(fqn);
+        return new Relationship(this.modelManager, classDecl, ns, type, id);
     }
 
     /**

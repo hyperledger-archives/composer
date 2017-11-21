@@ -41,7 +41,7 @@ class CallbackRelationship extends Relationship {
      * @param {relationshipCallback} callback The callback to call when a property is accessed.
      */
     constructor(relationship, callback) {
-        super(relationship.getModelManager(), relationship.getNamespace(), relationship.getType(), relationship.getIdentifier());
+        super(relationship.getModelManager(), relationship.getClassDeclaration(), relationship.getNamespace(), relationship.getType(), relationship.getIdentifier());
         const method = 'constructor';
         LOG.entry(method, relationship, callback);
         const classDeclaration = this.getClassDeclaration();

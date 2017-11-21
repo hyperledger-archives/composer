@@ -15,12 +15,13 @@
 'use strict';
 
 const Decorated = require('./decorated');
-const Field = require('./field');
 const EnumValueDeclaration = require('./enumvaluedeclaration');
-const RelationshipDeclaration = require('./relationshipdeclaration');
-const IllegalModelException = require('./illegalmodelexception');
+const Field = require('./field');
 const Globalize = require('../globalize');
+const IllegalModelException = require('./illegalmodelexception');
 const Introspector = require('./introspector');
+const ModelUtil = require('../modelutil');
+const RelationshipDeclaration = require('./relationshipdeclaration');
 
 /**
  * ClassDeclaration defines the structure (model/schema) of composite data.
@@ -52,6 +53,7 @@ class ClassDeclaration extends Decorated {
         }
         this.modelFile = modelFile;
         this.process();
+        this.fqn = ModelUtil.getFullyQualifiedName(modelFile.getNamespace(), this.name);
     }
 
     /**
@@ -349,7 +351,7 @@ class ClassDeclaration extends Decorated {
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.getNamespace() + '.' + this.name;
+        return this.fqn;
     }
 
     /**
