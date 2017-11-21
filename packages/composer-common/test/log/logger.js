@@ -44,6 +44,16 @@ describe('Logger', () => {
         Logger.reset();
     });
 
+    describe('#setLogLevel', () => {
+
+        it('should fail for an unrecognized log level', () => {
+            (() => {
+                Logger.setLogLevel('BLAH');
+            }).should.throw(/Unrecognized log level BLAH/);
+        });
+
+    });
+
     ['info', 'debug', 'warn', 'error', 'verbose'].forEach((logLevel) => {
 
         describe(`#${logLevel}`, () => {
@@ -84,6 +94,25 @@ describe('Logger', () => {
                 }]);
             });
 
+            it('should not log the message to the functional logger if the log level is lower', () => {
+                const useLogLevels = {
+                    error: 'none',
+                    warn: 'error',
+                    info: 'warn',
+                    verbose: 'info',
+                    debug: 'verbose'
+                };
+                const useLogLevel = useLogLevels[logLevel];
+                Logger.setLogLevel(useLogLevel);
+                const functionalLogger = {
+                    log: sinon.stub()
+                };
+                Logger.setFunctionalLogger(functionalLogger);
+                const logger = Logger.getLog('ScriptManager');
+                logger[logLevel]('Method', 'Message');
+                sinon.assert.notCalled(functionalLogger.log);
+            });
+
         });
 
     });
@@ -101,6 +130,17 @@ describe('Logger', () => {
             sinon.assert.calledWith(functionalLogger.log, 'debug', sinon.match(/ScriptManager.*Method\(\)/), '>', ['Message', 'Data']);
         });
 
+        it('should not log the message to the functional logger if the log level is lower', () => {
+            Logger.setLogLevel('none');
+            const functionalLogger = {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(functionalLogger);
+            const logger = Logger.getLog('ScriptManager');
+            logger.entry('Method', 'Message', 'Data');
+            sinon.assert.notCalled(functionalLogger.log);
+        });
+
     });
 
     describe('#exit', () => {
@@ -114,6 +154,17 @@ describe('Logger', () => {
             logger.exit('Method', 'Message', 'Data');
             sinon.assert.calledOnce(functionalLogger.log);
             sinon.assert.calledWith(functionalLogger.log, 'debug', sinon.match(/ScriptManager.*Method\(\)/), '<', ['Message', 'Data']);
+        });
+
+        it('should not log the message to the functional logger if the log level is lower', () => {
+            Logger.setLogLevel('none');
+            const functionalLogger = {
+                log: sinon.stub()
+            };
+            Logger.setFunctionalLogger(functionalLogger);
+            const logger = Logger.getLog('ScriptManager');
+            logger.exit('Method', 'Message', 'Data');
+            sinon.assert.notCalled(functionalLogger.log);
         });
 
     });

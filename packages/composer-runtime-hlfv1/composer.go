@@ -138,7 +138,7 @@ func (composer *Composer) createJavaScript() {
 
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
 // Init can read from and write to the world state.
-func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
+func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string, arguments []string, logLevel string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Init", &stub, function, arguments)
 
 	start := time.Now()
@@ -157,7 +157,17 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 		vm.Lock()
 		defer vm.Unlock()
 
+		// The container needs the stub.
 		composer.Container.setStub(stub)
+
+		// Set the log level.
+		vm.PushGlobalObject()            // [ global ]
+		vm.GetPropString(-1, "composer") // [ global composer ]
+		vm.GetPropString(-1, "Logger")   // [ global composer Logger ]
+		vm.PushString("setLogLevel")     // [ global composer Logger setLogLevel ]
+		vm.PushString(logLevel)          // [ global composer Logger setLogLevel logLevel ]
+		vm.PcallProp(-3, 1)              // [ global composer Logger result ]
+		vm.PopN(4)
 
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)
@@ -178,7 +188,7 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
 // Invoke can read from and write to the world state.
-func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
+func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function string, arguments []string, logLevel string) (result []byte, err error) {
 	logger.Debug("Entering Composer.Invoke", &stub, function, arguments)
 
 	start := time.Now()
@@ -197,7 +207,17 @@ func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function stri
 		vm.Lock()
 		defer vm.Unlock()
 
+		// The container needs the stub.
 		composer.Container.setStub(stub)
+
+		// Set the log level.
+		vm.PushGlobalObject()            // [ global ]
+		vm.GetPropString(-1, "composer") // [ global composer ]
+		vm.GetPropString(-1, "Logger")   // [ global composer Logger ]
+		vm.PushString("setLogLevel")     // [ global composer Logger setLogLevel ]
+		vm.PushString(logLevel)          // [ global composer Logger setLogLevel logLevel ]
+		vm.PcallProp(-3, 1)              // [ global composer Logger result ]
+		vm.PopN(4)
 
 		// Create all required objects.
 		context := NewContext(composer.VM, composer.Engine, stub)
