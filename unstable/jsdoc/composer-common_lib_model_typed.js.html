@@ -250,9 +250,20 @@ class Typed {
      * qualified type name, false otherwise.
      */
     instanceOf(fqt) {
+        // Check to see if this is an exact instance of the specified type.
         const classDeclaration = this.getClassDeclaration();
-        return classDeclaration.getFullyQualifiedName() === fqt ||
-            classDeclaration.getAllSuperTypeDeclarations().some(declaration => declaration.getFullyQualifiedName() === fqt);
+        if (classDeclaration.getFullyQualifiedName() === fqt) {
+            return true;
+        }
+        // Now walk the class hierachy looking to see if it's an instance of the specified type.
+        let superTypeDeclaration = classDeclaration.getSuperTypeDeclaration();
+        while (superTypeDeclaration) {
+            if (superTypeDeclaration.getFullyQualifiedName() === fqt) {
+                return true;
+            }
+            superTypeDeclaration = superTypeDeclaration.getSuperTypeDeclaration();
+        }
+        return false;
     }
 
     /**

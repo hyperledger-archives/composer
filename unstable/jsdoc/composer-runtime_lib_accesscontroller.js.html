@@ -245,16 +245,16 @@ class AccessController {
         const method = 'matchRule';
         LOG.entry(method, resource, access, participant, transaction, aclRule);
 
-        // Is the ACL rule relevant to the specified noun?
-        if (!this.matchNoun(resource, aclRule)) {
-            LOG.debug(method, 'Noun does not match');
+        // Is the ACL rule relevant to the specified verb?
+        if (!this.matchVerb(access, aclRule)) {
+            LOG.debug(method, 'Verb does not match');
             LOG.exit(method, false);
             return false;
         }
 
-        // Is the ACL rule relevant to the specified verb?
-        if (!this.matchVerb(access, aclRule)) {
-            LOG.debug(method, 'Verb does not match');
+        // Is the ACL rule relevant to the specified noun?
+        if (!this.matchNoun(resource, aclRule)) {
+            LOG.debug(method, 'Noun does not match');
             LOG.exit(method, false);
             return false;
         }
