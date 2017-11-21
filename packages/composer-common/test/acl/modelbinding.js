@@ -193,4 +193,26 @@ describe('ModelBinding', () => {
 
     });
 
+    describe('#hasWildcard', () => {
+
+        it('should return true for a recursive namespace binding', () => {
+            modelBinding = new ModelBinding( aclRule, namespaceAst );
+            modelBinding.validate();
+            modelBinding.hasWildcard().should.be.true;
+        });
+
+        it('should return true for a recursive namespace binding', () => {
+            modelBinding = new ModelBinding( aclRule, recursiveNamespaceAst );
+            modelBinding.validate();
+            modelBinding.hasWildcard().should.be.true;
+        });
+
+        it('should return false for a class binding', () => {
+            modelBinding = new ModelBinding( aclRule, classAst );
+            modelBinding.validate();
+            modelBinding.hasWildcard().should.be.false;
+        });
+
+    });
+
 });
