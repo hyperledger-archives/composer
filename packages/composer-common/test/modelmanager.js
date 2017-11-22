@@ -42,7 +42,7 @@ describe('ModelManager', () => {
     let sandbox;
 
     beforeEach(() => {
-
+        sandbox = sinon.sandbox.create();
         modelManager = new ModelManager();
         mockSystemModelFile = sinon.createStubInstance(ModelFile);
         mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
@@ -50,7 +50,9 @@ describe('ModelManager', () => {
         mockSystemModelFile.isSystemModelFile.returns(true);
     });
 
-
+    afterEach(() => {
+        sandbox.restore();
+    });
 
     describe('#accept', () => {
 
@@ -104,13 +106,6 @@ describe('ModelManager', () => {
     });
 
     describe('#addModelFile', () => {
-        beforeEach(()=>{
-            sandbox=sinon.sandbox.create();
-        });
-
-        afterEach(()=>{
-            sandbox.restore();
-        });
 
         it('should add a model file from a string', () => {
             let res = modelManager.addModelFile(modelBase);
@@ -167,13 +162,7 @@ describe('ModelManager', () => {
     });
 
     describe('#addModelFiles', () => {
-        beforeEach(()=>{
-            sandbox=sinon.sandbox.create();
-        });
 
-        afterEach(()=>{
-            sandbox.restore();
-        });
         it('should add model files from strings', () => {
             farm2fork.should.not.be.null;
 
@@ -283,6 +272,34 @@ describe('ModelManager', () => {
             (() => {
                 modelManager.addModelFiles([mf1]);
             }).should.throw(/namespace already exists/);
+        });
+
+        it('should return the error message for an invalid model file', () => {
+            const mf1 = `namespace org.acme1
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            const mf2 = `namespace org.acme2
+            asset MyAsset identified /* by */ assetId {
+                o String assetId
+            }`;
+            (() => {
+                modelManager.addModelFiles([mf1, mf2]);
+            }).should.throw(/Expected.* Line 2 column 27/);
+        });
+
+        it('should return the error message for an invalid model file with a file name', () => {
+            const mf1 = `namespace org.acme1
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            const mf2 = `namespace org.acme2
+            asset MyAsset identified /* by */ assetId {
+                o String assetId
+            }`;
+            (() => {
+                modelManager.addModelFiles([mf1, mf2], ['mf1.cto', 'mf2.cto']);
+            }).should.throw(/Expected.* File mf2.cto line 2 column 27/);
         });
 
     });

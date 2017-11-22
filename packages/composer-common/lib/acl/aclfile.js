@@ -49,7 +49,7 @@ class AclFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException(err.message, err.location);
+                throw new ParseException(err.message, err.location, id);
             }
             else {
                 throw err;

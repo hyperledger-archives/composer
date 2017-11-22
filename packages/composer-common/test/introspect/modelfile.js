@@ -105,6 +105,20 @@ describe('ModelFile', () => {
             }).should.throw(ParseException, /Line 99 column 99/);
         });
 
+        it('should handle a normal parsing exception with a file name', () => {
+            sandbox.stub(parser, 'parse').throws({
+                location: {
+                    start: {
+                        line: 99,
+                        column: 99
+                    }
+                }
+            });
+            (() => {
+                new ModelFile(modelManager, 'fake definitions', 'mf1.cto');
+            }).should.throw(ParseException, /File mf1.cto line 99 column 99/);
+        });
+
         it('should handle any other parsing exception', () => {
             sandbox.stub(parser, 'parse').throws(new Error('fake error'));
             (() => {

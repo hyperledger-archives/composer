@@ -67,7 +67,7 @@ class ModelFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException(err.message, err.location);
+                throw new ParseException(err.message, err.location, fileName);
             }
             else {
                 throw err;

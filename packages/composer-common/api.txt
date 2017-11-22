@@ -80,7 +80,7 @@ class Introspector {
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
 class ParseException extends BaseFileException {
-   + void constructor(string,string) 
+   + void constructor(string,string,string) 
 }
 class ConsoleLogger {
    + string format(string,string,undefined) 
