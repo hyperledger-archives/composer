@@ -35,7 +35,7 @@ Otherwise the identity registry will be empty and you will not see any results.
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
   let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'admin', 'adminpw')
+  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
       .then(() => {
           return businessNetworkConnection.getIdentityRegistry();
       })
@@ -55,6 +55,4 @@ Otherwise the identity registry will be empty and you will not see any results.
   ```
   * Command line
 
-  ```bash
-  composer identity list -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw
-  ```
+        composer identity list -c admin@digitalPropertyNetwork

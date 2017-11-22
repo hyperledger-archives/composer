@@ -12,13 +12,11 @@ excerpt: How to deploy a business network
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (.bna) file. The `composer archive create` command is used to create a business network archive file from a business network definition folder on disk.
 
-Once the business network archive file has been created it can be deployed to a runtime using the [`composer network deploy`](../reference/composer.network.deploy.html) command using a suitable [Connection Profile](../reference/connectionprofile.html).
+Once the business network archive file has been created it can be deployed to a runtime using the [`composer runtime install`](../reference/composer.runtime.install.html) command followed by a [`composer network start`](../reference/composer.network.start.html) command.
 
 For example:
 
-    composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna
-    -i <Your EnrollmentID> -s <Your EnrollmentSecret>
-    -A admin -S
+    composer runtime install -n tutorial-network -c PeerAdmin@fabric-network
 
 To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
 
@@ -26,8 +24,7 @@ To update the business network definition for an already deployed business netwo
 
 In {{site.data.conrefs.hlf_full}} v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install {{site.data.conrefs.hlf_full}} chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.
 
-To make that identity and its certificates available, your must import the identity into the credential store used by {{site.data.conrefs.composer_full}}. To import the identity, use the [`composer identity import`](../reference/composer.card.import.html) command. When importing an identity, you do not assign it a secret, however the [`composer network deploy`](../reference/composer.network.deploy.html) command requires a secret. If you are using an imported identity, you can enter any value for the secret, and it will be ignored.
-
+To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
 {{site.data.conrefs.composer_full}} provides a sample {{site.data.conrefs.hlf_full}} v1.0 network. The peer administrator for this network is called `PeerAdmin`, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other {{site.data.conrefs.hlf_full}} v1.0 networks.
 
 ## Business network administrators
@@ -38,7 +35,7 @@ A business network administrator is a participant who is responsible for configu
 
 A built-in participant type, `org.hyperledger.composer.system.NetworkAdmin`, representing a business network administrator is provided by {{site.data.conrefs.composer_full}}. This built-in participant type does not have any special permissions; they are still subject to the access control rules specified in the business network definition. For this reason, it is recommended that you start with the following sample access control rules that grant business network administrators full access to a business network:
 
-```json
+```
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
@@ -54,25 +51,17 @@ rule NetworkAdminSystem {
     resource: "org.hyperledger.composer.system.**"
     action: ALLOW
 }
-  ```
+```
 
 By default, {{site.data.conrefs.composer_full}} will automatically create a single business network administrator participant during deployment. The identity that is used for deploying the business network will also be bound to that business network administrator participant, so that identity can be used to interact with the business network after deployment.
 
 {{site.data.conrefs.hlf_full}} peer administrators may not have permission to issue new identities using the {{site.data.conrefs.hlf_full}} Certificate Authority (CA). This may restrict the ability of the business network administrator to on-board other participants from their organisation. For this reason, it may be preferable to create a business network administrator that does have permission to issue new identities using the {{site.data.conrefs.hlf_full}} Certificate Authority (CA).
 
-You can use additional options to the [`composer network deploy`](../reference/composer.network.deploy.html) command to specify the business network administrators that should be created during the deployment of the business network.
+You can use additional options to the [`composer network start`](../reference/composer.network.start.html) command to specify the business network administrators that should be created during the deployment of the business network.
 
 If the business network administrator has an enrollment ID and enrollment secret, you can use the `-A` (business network administrator) and `-S` (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing `admin` enrollment ID:
 
-    composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -S
-
-If the business network administrator already has a certificate, you can use the `-A` (business network administrator) and `-C` (business network administrator certificate file) flags. For example, the following command will create a business network administrator for the specified certificate file:
-
-    composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -C /path/to/admin.pem
-
-You can also create multiple business network administrators by repeating the options. For example, the following command will create a business network administrator for all three of the specified certificate files:
-
-    composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin1 -C /path/to/admin1.pem -A admin2 -C /path/to/admin2.pem -A admin3 -C /path/to/admin3.pem
+    composer network start -c PeerAdmin@fabric-network -A admin -S
 
 ## Deploying business networks using Playground locally
 
