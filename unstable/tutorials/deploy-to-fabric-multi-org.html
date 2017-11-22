@@ -290,7 +290,7 @@ ga('send', 'pageview');
 <p>Clone the following GitHub repository:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
 </code></pre></div>
-<p>Follow the <a href="http://hyperledger-fabric.readthedocs.io/en/release/build_network.html">Building Your First Network tutorial</a>.</p>
+<p>Follow the <a href="http://hyperledger-fabric.readthedocs.io/en/release/build_network.html">Building Your First Network tutorial</a>, ensuring that you use the GitHub repository cloned in the previous step. You must not clone and use the Hyperledger Fabric version of the GitHub repository as it is currently missing changes that are required for this tutorial.</p>
 
 <h2 class='everybody'>Step One: Starting a Hyperledger Fabric network</h2>
 
@@ -300,7 +300,7 @@ ga('send', 'pageview');
 
 <p>You can now start the BYFN network. You must specify additional flags that are not specified in the Building Your First Network tutorial. This is because we want to use CouchDB as the world state database, and we want to start a Certificate Authority (CA) for each organization.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">./byfn.sh -m generate
-./byfn.sh -m up -s couchdb -f docker-compose-e2e.yaml
+./byfn.sh -m up -s couchdb -a
 </code></pre></div>
 <p>If the command works successfully, the BYFN network is started, and you will see the following output:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">========= All GOOD, BYFN execution completed ===========
@@ -770,8 +770,6 @@ composer card delete -n PeerAdmin@fabric-network
 <p>Run the <code>composer network start</code> command to start the business network. Only <code>Org1</code> needs to perform this operation. This command uses the <code>endorsement-policy.json</code> file created in step thirteen, and the <code>admin-pub.pem</code> files created by both Alice and Bob in step fifteen and step sixteen, so you must ensure that all of these files are accessible to this command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@byfn-network-org1 -a tutorial-network@0.0.1.bna -o endorsementPolicyFile=endorsement-policy.json -A alice -C alice/admin-pub.pem -A bob -C bob/admin-pub.pem
 </code></pre></div>
-<h3 class='warning'>Warning! This command currently throws an error with the text "Path must be a string". This error can be safely ignored. We are working on fixing this issue!</h3>
-
 <p>Once this command completes, the business network will have been started. Both Alice and Bob will be able to access the business network, start to set up the business network, and onboard other participants from their respective organizations. However, both Alice and Bob must create new business network cards with the certificates that they created in the previous steps so that they can access the business network.</p>
 
 <h2 class='alice'>Step Eighteen: Creating a business network card to access the business network as Org1</h2>
