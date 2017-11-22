@@ -21,6 +21,7 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
+import { Config } from './services/config/configStructure.service';
 import { FileService } from './services/file.service';
 
 import { IdCard } from 'composer-common';
@@ -154,6 +155,7 @@ describe('AppComponent', () => {
     let mockLocalStorageService;
     let mockAboutService;
     let mockConfigService;
+    let mockConfig;
     let mockAdminConnection;
     let mockFileService;
 
@@ -181,6 +183,9 @@ describe('AppComponent', () => {
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
         mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfig = sinon.createStubInstance(Config);
+        mockConfig.setToDefault();
+        mockConfigService.getConfig.returns(mockConfig);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
 
         mockAlertService = new MockAlertService();
@@ -423,6 +428,57 @@ describe('AppComponent', () => {
 
             checkVersionStub.should.have.been.called;
         }));
+
+        it('should set the config using get config if config is loaded', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+
+            mockConfigService.getConfig.returns(myConfig);
+
+            let myTitleSpy = sinon.spy(component, 'setTitle');
+
+            updateComponent();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+            myTitleSpy.should.have.been.called;
+        }));
+
+        it('should set the config using load config if getConfig fails', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+
+            mockConfigService.getConfig.throws(new Error('error'));
+            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+            let myTitleSpy = sinon.spy(component, 'setTitle');
+
+            updateComponent();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+            myTitleSpy.should.have.been.called;
+        }));
     });
 
     describe('RouterLink', () => {
@@ -541,15 +597,12 @@ describe('AppComponent', () => {
         it('should initialise playground and set use locally to true, and not set analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(false);
-            mockConfigService.getConfig.returns(null);
+            mockConfigService.getConfig.returns(new Config());
             activatedRoute.testParams = {};
 
             updateComponent();
 
             tick();
-
-            // update now got info back about if local or not
-            updateComponent();
 
             mockInitializationService.initialize.should.have.been.called;
             component['submitAnalytics'].should.equal(false);
@@ -560,16 +613,15 @@ describe('AppComponent', () => {
         it('should initialise playground and set use locally to false and use analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(true);
-            mockConfigService.getConfig.returns({analyticsID: 'myID'});
+            let myConfig = new Config();
+            myConfig.analyticsID = 'myID';
+            mockConfigService.getConfig.returns(myConfig);
 
             activatedRoute.testParams = {};
 
             updateComponent();
 
             tick();
-
-            // update now got info back about if local or not
-            updateComponent();
 
             mockInitializationService.initialize.should.have.been.called;
 
@@ -1064,13 +1116,13 @@ describe('AppComponent', () => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-
         }));
 
         it('should log the user out', fakeAsync(() => {
             mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             routerStub.navigate.returns(Promise.resolve(true));
             activatedRoute.testParams = {};
+            mockConfigService.getConfig.returns(mockConfig);
             updateComponent();
 
             component.logout();
@@ -1082,11 +1134,82 @@ describe('AppComponent', () => {
             mockFileService.deleteAllFiles.should.have.been.called;
             routerStub.navigate.should.have.been.calledWith(['/login']);
         }));
+
+        it('should set the config using get config if config is loaded', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            routerStub.navigate.returns(Promise.resolve(true));
+            activatedRoute.testParams = {};
+            mockConfigService.getConfig.returns(myConfig);
+
+            updateComponent();
+
+            component.logout();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+        }));
+
+        it('should set the config using load config if getConfig fails', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            routerStub.navigate.returns(Promise.resolve(true));
+            activatedRoute.testParams = {};
+            mockConfigService.getConfig.throws(new Error('error'));
+            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+            updateComponent();
+
+            component.logout();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+        }));
     });
 
     describe('onToggle', () => {
 
+        let mockOnBusy;
+        let mockOnError;
+        let mockOnTransactionEvent;
+        let mockQueryParamsUpdated;
+
+        beforeEach(async(() => {
+            mockOnBusy = sinon.stub(component, 'onBusyStatus');
+            mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
+            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
+
+        }));
+
         it('should set toggle down on true event', () => {
+            updateComponent();
             component['dropListActive'] = false;
 
             component['onToggle'](true);
@@ -1095,6 +1218,7 @@ describe('AppComponent', () => {
         });
 
         it('should set toggle up on false event', () => {
+            updateComponent();
             component['dropListActive'] = true;
 
             component['onToggle'](false);
