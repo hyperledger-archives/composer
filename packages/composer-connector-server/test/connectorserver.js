@@ -365,7 +365,7 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
                     sinon.assert.calledWith(mockConnectionManager.removeIdentity, connectionProfile, connectionOptions, 'bob1');
                     sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, true);
+                    sinon.assert.calledWith(cb, null, true);
                 });
         });
 
