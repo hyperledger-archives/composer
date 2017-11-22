@@ -17,7 +17,7 @@
                     <div class="create-route" *ngIf="connectionProfileRefs.length>=2">
                         <p>Create a business network card for a Blockchain you already use with Composer:</p>
                         <div class="file-types-list">
-                            <div class="file-types-list-item" *ngFor="let profileRef of connectionProfileRefs | slice:1; let i=index">
+                            <div class="file-types-list-item" *ngFor="let profileRef of connectionProfileRefs | slice:0: connectionProfileRefs.length-1; let i=index">
                                     <input type="radio" id="{{ i }}" name="file-type"
                                         (change)="setConnectionProfile(profileRef)"/>
                                     <label class="radio-label" for="{{ i }}"><h3>{{connectionProfileNames.get(profileRef)}}</h3></label>
