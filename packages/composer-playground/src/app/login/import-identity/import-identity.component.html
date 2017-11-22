@@ -1,42 +1,52 @@
 <section class="import-identity" fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
-     (fileDragDropFileRejected)="fileRejected($event)"
-     (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
-     [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
-  <header class="drawer-header">
-    <h1>Import Business Network Card</h1>
-    <p>Drop a Composer Business Network (.card file) here to add it to My Business Networks:</p>
+         (fileDragDropFileRejected)="fileRejected($event)"
+         (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
+         [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
+    <header class="drawer-header">
+        <h1>Import Business Network Card</h1>
+        <p>Drop a Composer Business Network (.card file) here to add it to My Business Networks:</p>
 
-    <button class="icon modal-exit" (click)="activeDrawer.dismiss();">
-      <svg class="ibm-icon" aria-hidden="true">
-       <use xlink:href="#icon-close_new"></use>
-      </svg>
-    </button>
-  </header>
-  <section class="drawer-body">
-    <div class="import-card" *ngIf="!identityCard">
-      <file-importer (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)" [expandInput]="expandInput"
-                     [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-Card_Upload'" [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes"></file-importer>
-    </div>
-
-    <div class="current-card" *ngIf="identityCard">
-      <identity-card [identity]="identityCard" [preview]="true" [showDismissIcon]="true"
-                     (onDismiss)="removeFile()">
-      </identity-card>
-    </div>
-  </section>
-  <footer class="drawer-footer">
-    <button type="button" class="secondary" (click)="activeDrawer.dismiss();">
-      <span>Cancel</span>
-    </button>
-    <button type="button" class="primary" (click)="import();" [disabled]="!identityCard">
-      <span *ngIf="!importInProgress">Import</span>
-      <div *ngIf="importInProgress" class="ibm-spinner-indeterminate small loop">
-        <div class="loader">
-          <svg class="circular" viewBox="25 25 50 50">
-            <circle class="circle-path" cx="50" cy="50" r="20"/>
-          </svg>
+        <button class="icon modal-exit" (click)="activeDrawer.dismiss();">
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-close_new"></use>
+            </svg>
+        </button>
+    </header>
+    <section class="drawer-body">
+        <div class="import-card" *ngIf="!identityCard">
+            <file-importer (fileAccepted)="fileAccepted($event)" (fileRejected)="fileRejected($event)"
+                           [expandInput]="expandInput"
+                           [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-Card_Upload'"
+                           [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes"></file-importer>
         </div>
-      </div>
-    </button>
-  </footer>
+
+        <div class="current-card" *ngIf="identityCard">
+            <identity-card [identity]="identityCard" [preview]="true" [showDismissIcon]="true"
+                           (onDismiss)="removeFile()">
+            </identity-card>
+        </div>
+        <div class="card-name" *ngIf="identityCard">
+            <label for="cardName"><h3>Give the imported card a name</h3></label>
+            <input id="cardName" [ngClass]="{'error-underline': !cardNameValid}" type="text"
+                   [ngModel]="cardName"
+                   (ngModelChange)="setCardName($event)"
+                   placeholder="eg. admin@{{identityCard.getBusinessNetworkName()}}">
+            <div *ngIf="!cardNameValid" class="error-message">The card name must be unique</div>
+        </div>
+    </section>
+    <footer class="drawer-footer">
+        <button type="button" class="secondary" (click)="activeDrawer.dismiss();">
+            <span>Cancel</span>
+        </button>
+        <button type="button" class="primary" (click)="import();" [disabled]="!identityCard || !cardNameValid">
+            <span *ngIf="!importInProgress">Import</span>
+            <div *ngIf="importInProgress" class="ibm-spinner-indeterminate small loop">
+                <div class="loader">
+                    <svg class="circular" viewBox="25 25 50 50">
+                        <circle class="circle-path" cx="50" cy="50" r="20"/>
+                    </svg>
+                </div>
+            </div>
+        </button>
+    </footer>
 </section>

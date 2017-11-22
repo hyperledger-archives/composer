@@ -32,7 +32,7 @@ Feature: Event steps
 
     Scenario: should fail when I try to use a non-existent identity
         When I use the identity alice1
-        Then I should get an error matching /no such identity for .*/
+        Then I should get an error matching /no such card for .*/
 
     Scenario: should fail when I issue to a duplicate identity
         Given I have issued the participant org.acme.sample.SampleParticipant#1 with the identity alice1

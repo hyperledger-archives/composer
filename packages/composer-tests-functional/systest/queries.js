@@ -38,7 +38,7 @@ describe('Query system tests', function() {
     let participantsAsResources;
     let transactionsAsResources;
     let serializer;
-
+    let cardStore;
     /**
      * Generate the common part of the resource.
      * @param {Number} i The index.
@@ -211,9 +211,10 @@ describe('Query system tests', function() {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        return TestUtil.deploy(businessNetworkDefinition, true)
-            .then(() => {
-                return TestUtil.getClient('systest-queries')
+        return TestUtil.deploy(businessNetworkDefinition)
+            .then((_cardStore) => {
+                cardStore = _cardStore;
+                return TestUtil.getClient(cardStore,'systest-queries')
                     .then((result) => {
                         client = result;
                     });

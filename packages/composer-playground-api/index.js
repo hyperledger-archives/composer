@@ -17,7 +17,7 @@
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('composer-connector-server');
 const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const http = require('http');
 const socketIO = require('socket.io');
 const Logger = require('composer-common').Logger;
@@ -41,8 +41,8 @@ function createServer (port, testMode) {
 
     npmRoute(app, testMode);
 
-    const connectionProfileStore = new FSConnectionProfileStore(fs);
-    const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
+    const businessNetworkCardStore = new FileSystemCardStore(fs);
+    const connectionProfileManager = new ConnectionProfileManager();
 
     // Create the Express server.
     const server = http.createServer(app);
@@ -51,7 +51,7 @@ function createServer (port, testMode) {
     const io = socketIO(server);
     io.on('connect', (socket) => {
         LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
-        new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
+        new ConnectorServer(businessNetworkCardStore, connectionProfileManager, socket);
     });
     io.on('disconnect', (socket) => {
         LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);

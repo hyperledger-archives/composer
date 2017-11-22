@@ -10,8 +10,6 @@ import { VersionCheckComponent } from './version-check.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
 
-import { IdentityCardStorageService } from '../services/identity-card-storage.service';
-
 import * as sinon from 'sinon';
 
 describe('VersionCheckComponent', () => {
@@ -32,15 +30,13 @@ describe('VersionCheckComponent', () => {
 
     beforeEach(async(() => {
         localStorageServiceMock = sinon.createStubInstance(LocalStorageService);
-        identityCardStorageServiceMock = sinon.createStubInstance(IdentityCardStorageService);
 
         TestBed.configureTestingModule({
             declarations: [VersionCheckComponent],
             providers: [
                 {provide: NgbActiveModal, useValue: ngbActiveModalMock},
                 {provide: NgZone, useValue: new NgZone({})},
-                {provide: LocalStorageService, useValue: localStorageServiceMock},
-                {provide: IdentityCardStorageService, useValue: identityCardStorageServiceMock}
+                {provide: LocalStorageService, useValue: localStorageServiceMock}
             ]
         }).compileComponents();
     }));
@@ -65,12 +61,10 @@ describe('VersionCheckComponent', () => {
     it('should clear all local storage', () => {
         let runOutsideAngularStub = sinon.stub(fixture.ngZone, 'runOutsideAngular');
         localStorageServiceMock.clearAll.returns(true);
-        identityCardStorageServiceMock.clearAll.returns(true);
 
         component.clearLocalStorage();
 
         localStorageServiceMock.clearAll.should.have.been.called;
-        identityCardStorageServiceMock.clearAll.should.have.been.called;
         runOutsideAngularStub.should.have.been.called;
     });
 

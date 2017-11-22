@@ -70,7 +70,8 @@ export class ConnectionProfileComponent {
         }
     };
 
-    @Input() set connectionProfile(connectionProfile: any) {
+    @Input()
+    set connectionProfile(connectionProfile: any) {
         this.connectionProfileData = connectionProfile;
         if (this.connectionProfileData) {
             this.startEditing();
@@ -330,28 +331,16 @@ export class ConnectionProfileComponent {
 
             // Need to set this as user doesn't input profile type
             connectionProfile.type = this.connectionProfileData.profile.type;
-            this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
 
-                // Need to set the profile back to its original form
-                let profileToSet = {
-                    name: connectionProfile.name,
-                    profile: connectionProfile,
-                    default: false
-                };
+            // Need to set the profile back to its original form
+            let profileToSet = {
+                name: connectionProfile.name,
+                profile: connectionProfile,
+                default: false
+            };
 
-                return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
-                    let profiles = Object.keys(connectionProfiles).sort();
-                    profiles.forEach((profile) => {
-                        if (profileToSet.name !== connectionProfiles[profile].name && connectionProfiles[profile].name === this.connectionProfileData.name) {
-                            return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
-                        }
-                    });
-                }).then(() => {
-                    this.connectionProfileData = profileToSet;
-                    this.profileUpdated.emit({updated: true, connectionProfile: this.connectionProfileData});
-                });
-
-            });
+            this.connectionProfileData = profileToSet;
+            this.profileUpdated.emit({updated: true, connectionProfile: this.connectionProfileData});
         }
     }
 

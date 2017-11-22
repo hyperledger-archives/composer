@@ -25,6 +25,7 @@ process.setMaxListeners(Infinity);
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const fs = require('fs');
 let client;
+let cardStore;
 let bnID;
 let createAsset = (assetId) => {
     let factory = client.getBusinessNetwork().getFactory();
@@ -140,7 +141,7 @@ describe('Historian', function() {
     this.retries(TestUtil.retries());
 
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     describe('CRUD Asset', () => {
@@ -536,7 +537,7 @@ describe('Historian', function() {
         let aliceCar, bobCar;
 
         before(() => {
-            return TestUtil.getClient()
+            return TestUtil.getClient(cardStore)
                 .then((result) => {
                     client = result;
                 });
@@ -582,21 +583,21 @@ describe('Historian', function() {
                     return client.issueIdentity(alice, aliceIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient('common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     aliceClient = result;
                     return client.issueIdentity(bob, bobIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient('common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     bobClient = result;
                     return client.issueIdentity(charlie, charlieIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient('common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     charlieClient = result;
@@ -760,18 +761,21 @@ describe('Historian', function() {
     before(function () {
         // need factor this deployCommon out shortly.
         return deployCommon()
-            .then(() => {
-                return TestUtil.getClient()
+            .then((_cardStore) => {
+                cardStore = _cardStore;
+                return TestUtil.getClient(cardStore)
                     .then((result) => {
                         client = result;
                     });
             });
     });
-
+    after(function () {
+        return TestUtil.undeploy();
+    });
     beforeEach(() => { });
 
     afterEach(() => {
-        return TestUtil.getClient()
+        return TestUtil.getClient(cardStore)
             .then((result) => {
                 client = result;
             });

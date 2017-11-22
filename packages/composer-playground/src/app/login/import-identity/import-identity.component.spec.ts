@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 import { ImportIdentityComponent } from './import-identity.component';
+import { IdentityCardService } from '../../services/identity-card.service';
 
 import { ActiveDrawer, DrawerService } from '../../common/drawer';
 import { Logger, IdCard } from 'composer-common';
@@ -76,10 +77,12 @@ describe('ImportIdentityComponent', () => {
     let mockDragDropComponent;
     let mockActiveDrawer;
     let mockDrawerService;
+    let mockIdentityCardService;
 
     beforeEach(() => {
         mockActiveDrawer = sinon.createStubInstance(ActiveDrawer);
         mockDrawerService = sinon.createStubInstance(DrawerService);
+        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
@@ -91,7 +94,8 @@ describe('ImportIdentityComponent', () => {
             ],
             providers: [
                 {provide: ActiveDrawer, useValue: mockActiveDrawer},
-                {provide: DrawerService, useValue: mockDrawerService}]
+                {provide: DrawerService, useValue: mockDrawerService},
+                {provide: IdentityCardService, useValue: mockIdentityCardService}]
         });
 
         mockDrawerService.open.returns({componentInstance: {}});
@@ -210,21 +214,80 @@ describe('ImportIdentityComponent', () => {
     });
 
     describe('import', () => {
-        it('should close the drawer with imported identity card', () => {
+        it('should close the drawer with imported identity card', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.resolve('myCardRef'));
+
             let mockIdCard = sinon.createStubInstance(IdCard);
             component['identityCard'] = mockIdCard;
+            component['cardName'] = 'myCardName';
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.primary'));
             button.nativeElement.click();
 
-            mockActiveDrawer.close.should.have.been.calledWith(mockIdCard);
-        });
+            tick();
+
+            mockIdentityCardService.addIdentityCard.should.have.been.calledWith(mockIdCard, 'myCardName');
+            mockActiveDrawer.close.should.have.been.calledWith('myCardRef');
+        }));
+
+        it('should handle error with card name', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'Card already exists: bob'}));
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            component['identityCard'] = mockIdCard;
+            component['cardName'] = 'myCardName';
+
+            fixture.detectChanges();
+            let button = fixture.debugElement.query(By.css('button.primary'));
+            button.nativeElement.click();
+
+            tick();
+
+            mockIdentityCardService.addIdentityCard.should.have.been.calledWith(mockIdCard, 'myCardName');
+            mockActiveDrawer.dismiss.should.not.have.been.called;
+            component['cardNameValid'].should.equal(false);
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'some error'}));
+
+            let mockIdCard = sinon.createStubInstance(IdCard);
+            component['identityCard'] = mockIdCard;
+            component['cardName'] = 'myCardName';
+
+            fixture.detectChanges();
+            let button = fixture.debugElement.query(By.css('button.primary'));
+            button.nativeElement.click();
+
+            tick();
+
+            mockIdentityCardService.addIdentityCard.should.have.been.calledWith(mockIdCard, 'myCardName');
+            mockActiveDrawer.dismiss.should.have.been.calledWith({message: 'some error'});
+        }));
 
         it('should not be possible to import without identity card', () => {
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.primary'));
             button.nativeElement.disabled.should.be.true;
+        });
+    });
+
+    describe('setCardName', () => {
+        it('should set the card name and cardNameValid to true', () => {
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(true);
+        });
+
+        it('should not set the card name if it hasn\'t changed and not update cardNameValid', () => {
+            component['cardNameValid'] = false;
+            component['cardName'] = 'myCardName';
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(false);
         });
     });
 });

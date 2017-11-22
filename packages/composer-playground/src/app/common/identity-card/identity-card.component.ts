@@ -16,6 +16,9 @@ export class IdentityCardComponent {
     identity: IdCard;
 
     @Input()
+    cardRef: string;
+
+    @Input()
     preview: boolean = false;
 
     @Input()

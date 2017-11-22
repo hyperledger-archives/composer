@@ -127,7 +127,7 @@ export abstract class ImportComponent implements OnInit {
             }
         };
         let permissions =
-`rule NetworkAdminUser {
+            `rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
     operation: ALL
@@ -163,8 +163,6 @@ rule NetworkAdminSystem {
     addEmptyNetworkOption(networks: any[]): any[] {
         let newOrder = [];
         newOrder.push(this.EMPTY_BIZNET);
-
-        console.log('>>', networks);
         for (let i = 0; i < networks.length; i++) {
             newOrder.push(networks[i]);
         }
@@ -172,18 +170,18 @@ rule NetworkAdminSystem {
     }
 
     updateBusinessNetworkNameAndDesc(network) {
-      let nameEl = this.networkName;
-      let descEl = this.networkDescription;
-      let name = network.name;
-      let desc = (typeof network.description === 'undefined') ? '' : network.description;
-      if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
-        this.networkName = name;
-        this.lastName = name;
-      }
-      if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
-        this.networkDescription = desc;
-        this.lastDesc = desc;
-      }
+        let nameEl = this.networkName;
+        let descEl = this.networkDescription;
+        let name = network.name;
+        let desc = (typeof network.description === 'undefined') ? '' : network.description;
+        if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
+            this.networkName = name;
+            this.lastName = name;
+        }
+        if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
+            this.networkDescription = desc;
+            this.lastDesc = desc;
+        }
     }
 
     private fileDetected() {

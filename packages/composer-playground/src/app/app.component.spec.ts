@@ -12,7 +12,6 @@ import { Directive, Input, Injectable } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ClientService } from './services/client.service';
 import { InitializationService } from './services/initialization.service';
-import { IdentityService } from './services/identity.service';
 import { IdentityCardService } from './services/identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AlertService } from './basic-modals/alert.service';
@@ -151,7 +150,6 @@ describe('AppComponent', () => {
     let mockAdminService;
     let mockBusinessNetworkConnection;
     let mockIdCard;
-    let mockIdentityService;
     let mockIdentityCardService;
     let mockLocalStorageService;
     let mockAboutService;
@@ -178,7 +176,6 @@ describe('AppComponent', () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockIdCard = sinon.createStubInstance(IdCard);
         mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
-        mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
@@ -203,7 +200,6 @@ describe('AppComponent', () => {
                 {provide: ActivatedRoute, useValue: activatedRoute},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
-                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
                 {provide: AboutService, useValue: mockAboutService},
@@ -1072,6 +1068,7 @@ describe('AppComponent', () => {
         }));
 
         it('should log the user out', fakeAsync(() => {
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             routerStub.navigate.returns(Promise.resolve(true));
             activatedRoute.testParams = {};
             updateComponent();
@@ -1080,9 +1077,9 @@ describe('AppComponent', () => {
 
             tick();
 
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith(null);
             mockClientService.disconnect.should.have.been.called;
             mockFileService.deleteAllFiles.should.have.been.called;
-            mockIdentityService.setLoggedIn.should.have.been.calledWith(false);
             routerStub.navigate.should.have.been.calledWith(['/login']);
         }));
     });

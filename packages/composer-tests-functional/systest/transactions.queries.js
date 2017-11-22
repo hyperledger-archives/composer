@@ -37,6 +37,7 @@ describe('Transaction (query specific) system tests', function() {
     let participantsAsResources;
     let factory;
     let serializer;
+    let cardStore;
 
     /**
      * Generate the common part of the resource.
@@ -117,9 +118,10 @@ describe('Transaction (query specific) system tests', function() {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        return TestUtil.deploy(businessNetworkDefinition, true)
-            .then(() => {
-                return TestUtil.getClient('systest-transactions-queries')
+        return TestUtil.deploy(businessNetworkDefinition)
+            .then((_cardStore) => {
+                cardStore = _cardStore;
+                return TestUtil.getClient(cardStore,'systest-transactions-queries')
                     .then((result) => {
                         client = result;
                     });

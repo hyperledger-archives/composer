@@ -32,7 +32,7 @@
                     <div class="drop-select-item flex-container flex">
                         <div ngbDropdown class="d-inline-block" (openChange)="onToggle($event)">
                             <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>
-                                <span title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
+                                <span title="{{ identityCardService.getCurrentIdentityCard().getUserName() }}">{{ identityCardService.getCurrentIdentityCard().getUserName() }}</span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                 <button id="content" class="dropdown-item action" [routerLink]="['identity']">

@@ -27,10 +27,10 @@ chai.use(require('chai-as-promised'));
 describe('HTTP POST system tests', function() {
 
     this.retries(TestUtil.retries());
-
+    let cardStore;
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
     let businessNetworkDefinition;
     let client;
@@ -52,8 +52,9 @@ describe('HTTP POST system tests', function() {
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
         return TestUtil.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-post')
+            .then((_cardStore) => {
+                cardStore = _cardStore;
+                return TestUtil.getClient(cardStore,'systest-post')
                     .then((result) => {
                         client = result;
                     });

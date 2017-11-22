@@ -29,14 +29,15 @@ chai.use(require('chai-subset'));
 describe('Asset system tests', function() {
 
     this.retries(TestUtil.retries());
-
+    let cardstore;
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardstore,bnID, 0);
     });
 
     let businessNetworkDefinition;
     let client;
+
 
     before(function () {
         // In this systest we are intentionally not fully specifying the model file with a fileName, but supplying "UNKNOWN"
@@ -46,13 +47,15 @@ describe('Asset system tests', function() {
         businessNetworkDefinition = new BusinessNetworkDefinition('systest-assets@0.0.1', 'The network for the asset system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
+
         });
 
         bnID = businessNetworkDefinition.getName();
 
         return TestUtil.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-assets')
+            .then((_cardstore) => {
+                cardstore = _cardstore;
+                return TestUtil.getClient(cardstore,'systest-assets')
                     .then((result) => {
                         client = result;
                     });
@@ -168,6 +171,9 @@ describe('Asset system tests', function() {
         return client
             .getAllAssetRegistries()
             .then(function (assetRegistries) {
+                console.log('-----');
+                console.log(assetRegistries);
+                console.log('-----');
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
                     {'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'},

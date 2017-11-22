@@ -44,7 +44,7 @@ describe('WebContext', () => {
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
-        mockWebContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
+        mockWebContainer.getName.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
         mockSerializer = sinon.createStubInstance(Serializer);

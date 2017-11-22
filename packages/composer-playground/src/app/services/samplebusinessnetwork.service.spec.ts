@@ -8,7 +8,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { IdentityCardService } from './identity-card.service';
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
-import { BusinessNetworkDefinition, AclFile, Serializer, Factory, ModelManager } from 'composer-common';
+import { BusinessNetworkDefinition, AclFile, Serializer, Factory, ModelManager, IdCard } from 'composer-common';
 import { FileService } from './file.service';
 
 import {
@@ -158,88 +158,49 @@ describe('SampleBusinessNetworkService', () => {
         })));
     });
 
-    describe('generateBootstrapTransactions', () => {
-        const sanitize = (result) => {
-            result.forEach((tx) => {
-                delete tx.timestamp;
-                delete tx.transactionId;
-                return tx;
-            });
-        };
-
-        it('should generate bootstrap transactions for user default', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            const bootstrapTransactions = service.generateBootstrapTransactions(businessNetworkMock, 'doggoship1', null);
-            sanitize(bootstrapTransactions);
-            bootstrapTransactions.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'doggoship1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.IssueIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#doggoship1',
-                    identityName: 'doggoship1'
-                }
-            ]);
-        })));
-
-        it('should generate bootstrap transactions for non-default ', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            const bootstrapTransactions = service.generateBootstrapTransactions(businessNetworkMock, 'doggoship1', {certificate: 'myCert'});
-            sanitize(bootstrapTransactions);
-
-            bootstrapTransactions.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'doggoship1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.BindIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#doggoship1',
-                    certificate: 'myCert'
-                }
-            ]);
-        })));
-    });
-
     describe('deployBusinessNetwork', () => {
-        it('should deploy the business network definition with default user', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
+        let peerCard;
+        let channelCard;
+        let metaData;
+        let buildStub;
+
+        beforeEach(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            metaData = {getPackageJson: sinon.stub().returns({})};
             businessNetworkMock.getMetadata.returns(metaData);
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-            adminMock.connectWithoutNetwork.returns(Promise.resolve());
+            buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
+
+            adminMock.connect.returns(Promise.resolve());
             adminMock.install.returns(Promise.resolve());
-            adminMock.start.returns(Promise.resolve());
+            adminMock.importCard.returns(Promise.resolve());
 
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
-            });
-
-            identityCardMock.getQualifiedProfileName.returns('1234');
-
-            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns('4321');
-
-            identityCardMock.setCurrentIdentityCard.returns(Promise.resolve());
-
-            identityCardMock.createIdentityCard.returns(Promise.resolve('newCardRef'));
+            adminMock.hasCard.returns(Promise.resolve(false));
 
             clientMock.refresh.returns(Promise.resolve());
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', null, null, null).then((cardRef) => {
-                cardRef.should.equal('newCardRef');
-            });
+            identityCardMock.getCurrentCardRef.returns('peerRef');
+
+            identityCardMock.getQualifiedProfileName.returns('1234');
+
+            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns(['channelRef']);
+
+            peerCard = new IdCard({userName: 'peer'}, {type: 'web', name: 'myProfile'});
+            identityCardMock.getIdentityCard.withArgs('peerRef').returns(peerCard);
+
+            channelCard = new IdCard({userName: 'channel'}, {type: 'web', name: 'myProfile'});
+            identityCardMock.getIdentityCard.withArgs('channelRef').returns(channelCard);
+        }));
+
+        it('should deploy the business network definition with default user', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            let createdCardMap = new Map<string, IdCard>();
+            let createdCard = new IdCard({
+                userName: 'admin',
+                secret: 'adminpw',
+                businessNetwork: 'myNetwork'
+            }, {name: 'myProfile', type: 'hlfv1'});
+            createdCardMap.set('admin', createdCard);
+            adminMock.start.returns(Promise.resolve(createdCardMap));
+
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', null, null, null);
 
             tick();
 
@@ -247,48 +208,35 @@ describe('SampleBusinessNetworkService', () => {
 
             buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
-            identityCardMock.getCurrentIdentityCard.should.have.been.called;
 
-            adminMock.connectWithoutNetwork.should.have.been.calledTwice;
-            adminMock.connectWithoutNetwork.should.have.been.calledWith(true);
+            adminMock.connect.should.have.been.calledTwice;
+            adminMock.connect.firstCall.should.have.been.calledWith('peerRef', peerCard, true);
+            adminMock.connect.secondCall.should.have.been.calledWith('channelRef', channelCard, true);
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, sinon.match.object);
-
-            identityCardMock.createIdentityCard.should.have.been.calledWith('admin', 'myNetwork', 'adminpw', {name: 'myProfile'});
+            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+                networkAdmins: [{
+                    userName: 'admin',
+                    secret: 'adminpw'
+                }]
+            });
+            adminMock.importCard.should.have.been.calledWith('myCardName', createdCard);
 
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 
         it('should deploy the business network definition with id and secret', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-            adminMock.connectWithoutNetwork.returns(Promise.resolve());
-            adminMock.install.returns(Promise.resolve());
-            adminMock.start.returns(Promise.resolve());
+            let createdCardMap = new Map<string, IdCard>();
+            let createdCard = new IdCard({
+                userName: 'myUserId',
+                secret: 'adminpw',
+                businessNetwork: 'myNetwork'
+            }, {name: 'myProfile', type: 'hlfv1'});
+            createdCardMap.set('myUserId', createdCard);
+            adminMock.start.returns(Promise.resolve(createdCardMap));
 
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
-            });
-
-            identityCardMock.getQualifiedProfileName.returns('1234');
-
-            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns('4321');
-
-            identityCardMock.setCurrentIdentityCard.returns(Promise.resolve());
-
-            identityCardMock.createIdentityCard.returns(Promise.resolve('newCardRef'));
-
-            adminMock.exportIdentity.returns(Promise.resolve({certificate: 'myCredentials'}));
-
-            clientMock.refresh.returns(Promise.resolve());
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null).then((cardRef) => {
-                cardRef.should.equal('newCardRef');
-            });
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null);
 
             tick();
 
@@ -296,50 +244,43 @@ describe('SampleBusinessNetworkService', () => {
 
             buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
-            identityCardMock.getCurrentIdentityCard.should.have.been.called;
 
-            adminMock.connectWithoutNetwork.callCount.should.equal(4);
-            adminMock.connectWithoutNetwork.should.have.been.calledWith(true);
+            adminMock.connect.should.have.been.calledTwice;
+            adminMock.connect.firstCall.should.have.been.calledWith('peerRef', peerCard, true);
+            adminMock.connect.secondCall.should.have.been.calledWith('channelRef', channelCard, true);
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, sinon.match.object);
+            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+                networkAdmins: [{
+                    userName: 'myUserId',
+                    secret: 'mySecret'
+                }]
+            });
 
-            identityCardMock.createIdentityCard.should.have.been.calledWith('myUserId', 'myNetwork', 'mySecret', {name: 'myProfile'});
-
-            adminMock.exportIdentity.should.have.been.calledWith('1234', 'myUserId');
+            adminMock.importCard.should.have.been.calledWith('myCardName', createdCard);
 
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 
         it('should deploy the business network definition with credentials', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-            adminMock.connectWithoutNetwork.returns(Promise.resolve());
-            adminMock.install.returns(Promise.resolve());
-            adminMock.start.returns(Promise.resolve());
+            let createdCardMap = new Map<string, IdCard>();
+            let createdCard = new IdCard({
+                userName: 'myUserId',
+                businessNetwork: 'myNetwork'
+            }, {name: 'myProfile', type: 'hlfv1'});
 
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
+            createdCard.setCredentials({
+                certificate: 'myCert',
+                privatekey: 'myKey'
             });
 
-            identityCardMock.getQualifiedProfileName.returns('1234');
+            createdCardMap.set('myUserId', createdCard);
+            adminMock.start.returns(Promise.resolve(createdCardMap));
 
-            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns('4321');
-
-            identityCardMock.setCurrentIdentityCard.returns(Promise.resolve());
-
-            identityCardMock.createIdentityCard.returns(Promise.resolve('newCardRef'));
-
-            clientMock.refresh.returns(Promise.resolve());
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', 'myUserId', null, {
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', null, {
                 certificate: 'myCert',
                 key: 'myKey'
-            }).then((cardRef) => {
-                cardRef.should.equal('newCardRef');
             });
 
             tick();
@@ -348,42 +289,35 @@ describe('SampleBusinessNetworkService', () => {
 
             buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
-            identityCardMock.getCurrentIdentityCard.should.have.been.called;
 
-            adminMock.connectWithoutNetwork.should.have.been.calledTwice;
-            adminMock.connectWithoutNetwork.should.have.been.calledWith(true);
+            adminMock.connect.should.have.been.calledTwice;
+            adminMock.connect.firstCall.should.have.been.calledWith('peerRef', peerCard, true);
+            adminMock.connect.secondCall.should.have.been.calledWith('channelRef', channelCard, true);
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, sinon.match.object);
-
-            identityCardMock.createIdentityCard.should.have.been.calledWith('myUserId', 'myNetwork', null, {name: 'myProfile'}, {
-                certificate: 'myCert',
-                key: 'myKey'
+            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+                networkAdmins: [{
+                    userName: 'myUserId',
+                    certificate: 'myCert'
+                }]
             });
+
+            adminMock.importCard.should.have.been.calledWith('myCardName', createdCard);
 
             alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 
-        it('should handle error when no card created', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
+        it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            adminMock.install.returns(Promise.reject('some error'));
 
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub()});
-
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-            });
-
-            adminMock.connectWithoutNetwork.returns(Promise.reject('some error'));
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', null, null, null)
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', null, null, null)
                 .then(() => {
                     throw('should not get here');
                 })
                 .catch((error) => {
                     alertMock.busyStatus$.next.should.have.been.calledWith(null);
-                    error.should.equal('some error');
+                    error.should.deep.equal('some error');
                 });
 
             tick();
@@ -391,123 +325,34 @@ describe('SampleBusinessNetworkService', () => {
             metaData.getPackageJson.should.have.been.called;
 
             buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
-            adminMock.connectWithoutNetwork.should.have.been.calledWith(true);
         })));
 
-        it('should handle error when card created', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-            adminMock.connectWithoutNetwork.returns(Promise.resolve());
-            adminMock.install.returns(Promise.resolve());
-            adminMock.start.returns(Promise.resolve());
+        it('should throw error if card exists', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            adminMock.hasCard.returns(Promise.resolve(true));
 
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
-            });
-
-            identityCardMock.getQualifiedProfileName.returns('1234');
-
-            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns('4321');
-
-            identityCardMock.setCurrentIdentityCard.returns(Promise.resolve());
-
-            identityCardMock.createIdentityCard.returns(Promise.resolve('newCardRef'));
-
-            adminMock.exportIdentity.returns(Promise.reject('some error'));
-
-            identityCardMock.deleteIdentityCard.returns(Promise.resolve());
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null).then((cardRef) => {
-                throw new Error('should not get here');
-            })
-                .catch((error) => {
-                    error.should.equal('some error');
-                });
-
-            tick();
-
-            identityCardMock.createIdentityCard.should.have.been.calledWith('myUserId', 'myNetwork', 'mySecret', {name: 'myProfile'});
-
-            adminMock.exportIdentity.should.have.been.calledWith('1234', 'myUserId');
-
-            alertMock.busyStatus$.next.should.have.been.calledWith(null);
-
-            identityCardMock.deleteIdentityCard.should.have.been.calledWith('newCardRef');
-        })));
-
-        it('should handle error when card created with delete problem', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-            adminMock.connectWithoutNetwork.returns(Promise.resolve());
-            adminMock.install.returns(Promise.resolve());
-            adminMock.start.returns(Promise.resolve());
-
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns(['PeerAdmin']),
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
-            });
-
-            identityCardMock.getQualifiedProfileName.returns('1234');
-
-            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns('4321');
-
-            identityCardMock.setCurrentIdentityCard.returns(Promise.resolve());
-
-            identityCardMock.createIdentityCard.returns(Promise.resolve('newCardRef'));
-
-            adminMock.exportIdentity.returns(Promise.reject('some error'));
-
-            identityCardMock.deleteIdentityCard.returns(Promise.reject('another error'));
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null).then((cardRef) => {
-                throw new Error('should not get here');
-            })
-                .catch((error) => {
-                    error.should.equal('some error');
-                });
-
-            tick();
-
-            identityCardMock.createIdentityCard.should.have.been.calledWith('myUserId', 'myNetwork', 'mySecret', {name: 'myProfile'});
-
-            adminMock.exportIdentity.should.have.been.calledWith('1234', 'myUserId');
-
-            alertMock.busyStatus$.next.should.have.been.calledWith(null);
-
-            identityCardMock.deleteIdentityCard.should.have.been.calledWith('newCardRef');
-        })));
-
-        it('should fail if doesn\'t have the current identity set to one with peerAdmin pole', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let metaData = {getPackageJson: sinon.stub().returns({})};
-
-            businessNetworkMock.getMetadata.returns(metaData);
-
-            let buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub()});
-
-            identityCardMock.getCurrentIdentityCard.returns({
-                getRoles: sinon.stub().returns([]),
-            });
-
-            service.deployBusinessNetwork(businessNetworkMock, 'myNetwork', 'myDescription', null, null, null)
-                .then(() => {
-                    throw('should not get here');
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null)
+                .then((cardRef) => {
+                    throw new Error('should not get here');
                 })
                 .catch((error) => {
-                    error.should.equal('The current identity does not have the role PeerAdmin, this role is required to install the business network');
+                    error.message.should.equal('Card already exists: myCardName');
                 });
 
             tick();
 
-            metaData.getPackageJson.should.have.been.called;
-            buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
-            adminMock.connectWithoutNetwork.should.not.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
     });
 
     describe('updateBusinessNetwork', () => {
+        let idCard;
+
+        beforeEach(() => {
+            idCard = new IdCard({userName: 'banana'}, {type: 'web', name: 'myProfile'});
+            identityCardMock.getCurrentIdentityCard.returns(idCard);
+            identityCardMock.getCurrentCardRef.returns('myCardRef');
+        });
+
         it('should update the business network definition', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             adminMock.update.returns(Promise.resolve());
             adminMock.connect.returns(Promise.resolve());
@@ -529,7 +374,7 @@ describe('SampleBusinessNetworkService', () => {
 
             buildStub.should.have.been.called;
 
-            adminMock.connect.should.have.been.calledWith('myNetwork', true);
+            adminMock.connect.should.have.been.calledWith('myCardRef', idCard, true);
             adminMock.update.should.have.been.called;
             clientMock.refresh.should.have.been.called;
             adminMock.reset.should.have.been.calledWith('newname');
@@ -560,7 +405,7 @@ describe('SampleBusinessNetworkService', () => {
 
             buildStub.should.have.been.called;
 
-            adminMock.connect.should.have.been.calledWith('myNetwork', true);
+            adminMock.connect.should.have.been.calledWith('myCardRef', idCard, true);
             adminMock.update.should.have.been.called;
         })));
     });

@@ -81,6 +81,9 @@
             .user-name {
                 font-weight: 600;
                 margin: $space-medium 0 $space-smedium 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
             }
 
             .image-placeholder {
@@ -153,13 +156,14 @@
             }
         }
 
-        .connection-profile-details, .business-network-details {
+        .connection-profile-details, .business-network-details, .user-name-details {
             padding-top: $space-medium;
             border-top: 1px solid $fourth-highlight;
 
             p {
                 text-overflow: ellipsis;
                 overflow: hidden;
+                white-space: nowrap;
 
                 &.none {
                     color: $fifth-highlight;

@@ -379,9 +379,6 @@ describe('ConnectionProfileComponent', () => {
                 timeout: 300
             };
 
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
-
             component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
 
             component['v1Form'] = component['fb'].group({
@@ -408,8 +405,6 @@ describe('ConnectionProfileComponent', () => {
 
             component.onSubmit(null);
             tick();
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('new v1 Profile', profileOne);
-            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v1 Profile');
         }));
 
         it('should throw error on unknown profile type', fakeAsync(() => {
@@ -423,9 +418,6 @@ describe('ConnectionProfileComponent', () => {
                 peerURL: 'grpc://localhost:7051',
                 type: 'hlf'
             };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne]));
 
             component['connectionProfileData'] = {name: 'unknown profile', profile: {type: 'unknown type'}};
 

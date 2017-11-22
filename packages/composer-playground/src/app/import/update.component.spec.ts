@@ -9,7 +9,6 @@ import { By } from '@angular/platform-browser';
 
 import { ImportComponent } from './import.component';
 
-import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -85,7 +84,6 @@ describe('UpdateComponent', () => {
     let mockDragDropComponent;
 
     let mockBusinessNetworkService;
-    let mockAdminService;
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
@@ -97,7 +95,6 @@ describe('UpdateComponent', () => {
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
-        mockAdminService = sinon.createStubInstance(AdminService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
@@ -120,7 +117,6 @@ describe('UpdateComponent', () => {
             declarations: [UpdateComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
-                {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: NgbModal, useValue: mockNgbModal},
@@ -147,7 +143,6 @@ describe('UpdateComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });
 

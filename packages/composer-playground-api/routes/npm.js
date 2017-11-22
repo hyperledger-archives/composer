@@ -138,9 +138,9 @@ module.exports = (app, testMode) => {
 
                 // Remove any prelease versions.
                 // TODO: For prelease/unstable Composer versions, we might want to include these.
-                .filter((version) => {
-                    return semver.prerelease(version) === null;
-                })
+                // .filter((version) => {
+                //     return semver.prerelease(version) === null;
+                // })
 
                 // Validate that the package.json includes a "engines" stanza that includes a
                 // "composer" property, with a semantic version range of supported Composer versions.

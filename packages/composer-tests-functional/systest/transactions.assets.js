@@ -29,10 +29,10 @@ chai.use(require('chai-as-promised'));
 describe('Transaction (asset specific) system tests', function() {
 
     this.retries(TestUtil.retries());
-
+    let cardStore;
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
     let businessNetworkDefinition;
     let client;
@@ -54,8 +54,9 @@ describe('Transaction (asset specific) system tests', function() {
         });
         bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-transactions-assets')
+            .then((_cardStore) => {
+                cardStore =_cardStore;
+                return TestUtil.getClient(cardStore,'systest-transactions-assets')
                     .then((result) => {
                         client = result;
                     });

@@ -29,13 +29,14 @@ chai.use(require('chai-subset'));
 describe('Event system tests', function() {
 
     this.retries(TestUtil.retries());
-
+    let cardStore;
     let bnID;
     beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(bnID, 0);
+        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
     let businessNetworkDefinition;
     let client;
+
 
     before(function () {
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying no value in model creation
@@ -56,8 +57,9 @@ describe('Event system tests', function() {
 
         bnID = businessNetworkDefinition.getName();
         return TestUtil.deploy(businessNetworkDefinition)
-            .then(() => {
-                return TestUtil.getClient('systest-events')
+            .then((_cardStore) => {
+                cardStore=_cardStore;
+                return TestUtil.getClient(cardStore,'systest-events')
                     .then((result) => {
                         client = result;
                     });
