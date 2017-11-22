@@ -38,7 +38,7 @@ participant Person identified by personId {
     ```javascript
     const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
     let businessNetworkConnection = new BusinessNetworkConnection();
-    return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'maeid1', 'RJJmlOpvNVRV')
+    return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
         .then(() => {
             return businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork');
         })
@@ -60,6 +60,4 @@ participant Person identified by personId {
 
   * Command line
 
-    ```bash
-    composer participant add -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
-    ```
+        composer participant add -c admin@network -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
