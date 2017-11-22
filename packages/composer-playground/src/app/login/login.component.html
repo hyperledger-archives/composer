@@ -16,7 +16,7 @@
         </span>
         <div class="identities">
             <identity-card *ngIf="configService.isWebOnly() && connectionProfileRef === 'web-$default' && idCards.size === indestructibleCards.length"
-                           (onDeploySample)="deploySample(connectionProfileRef)">
+                           (onDeploySample)="deploySample(connectionProfileRef)" [showSpecial]="true">
             </identity-card>
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"

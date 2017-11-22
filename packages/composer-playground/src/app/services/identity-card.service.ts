@@ -174,23 +174,8 @@ export class IdentityCardService {
             return Promise.reject(new Error('Identity card does not exist'));
         }
 
-        let deletePromise: Promise<void>;
-        let idCard = this.getIdentityCard(cardRef);
-
-        if (idCard.getConnectionProfile().type === 'web' && idCard.getBusinessNetworkName()) {
-            deletePromise = this.adminService.connect(cardRef, idCard, true)
-                .then(() => {
-                    return this.adminService.undeploy(idCard.getBusinessNetworkName());
-                });
-        } else {
-            deletePromise = Promise.resolve();
-        }
-
-        return deletePromise
-            .then(() => {
-                this.idCards.delete(cardRef);
-                return this.adminService.deleteCard(cardRef);
-            });
+        this.idCards.delete(cardRef);
+        return this.adminService.deleteCard(cardRef);
     }
 
     public setCurrentIdentityCard(cardRef): Promise<IdCard | void> {
