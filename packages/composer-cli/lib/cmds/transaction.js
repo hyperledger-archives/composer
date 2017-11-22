@@ -17,7 +17,8 @@
 exports.command = 'transaction <subcommand>';
 exports.desc = 'Composer transaction command';
 exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('transaction');
+   // apply commands in subdirectories, throws an error if an incorrect command is entered
+    return yargs.demandCommand(1, 'Incorrect command. Please see the list of commands above, or enter "composer transaction --help".')
+   .commandDir('transaction');
 };
 exports.handler = function (argv) {};

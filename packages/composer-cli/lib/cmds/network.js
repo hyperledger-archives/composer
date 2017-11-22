@@ -17,8 +17,9 @@
 exports.command = 'network <subcommand>';
 exports.desc = 'Composer network command';
 exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('network');
+    // apply commands in subdirectories, throws an error if an incorrect command is entered
+    return yargs.demandCommand(1, 'Incorrect command. Please see the list of commands above, or enter "composer network --help".')
+        .commandDir('network');
 };
 exports.handler = function (argv) {
 
