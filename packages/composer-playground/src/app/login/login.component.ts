@@ -15,6 +15,7 @@ import { IdCard } from 'composer-common';
 
 import { saveAs } from 'file-saver';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { AdminService } from '../services/admin.service';
 
 @Component({
     selector: 'app-login',
@@ -46,7 +47,8 @@ export class LoginComponent implements OnInit {
                 private drawerService: DrawerService,
                 private alertService: AlertService,
                 private configService: ConfigService,
-                private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+                private sampleBusinessNetworkService: SampleBusinessNetworkService,
+                private adminService: AdminService) {
 
     }
 
@@ -96,7 +98,6 @@ export class LoginComponent implements OnInit {
                 cardRefs.sort(this.sortIdCards.bind(this));
             });
 
-            this.idCardRefs = newCardRefs;
             // sort connection profile names and make sure there is always
             // a web connection profile at the start, even when there are
             // no identity cards
@@ -118,6 +119,7 @@ export class LoginComponent implements OnInit {
             });
             unsortedConnectionProfiles.push('web-$default');
             this.connectionProfileRefs = unsortedConnectionProfiles;
+            this.idCardRefs = newCardRefs;
 
         }).catch((error) => {
             this.alertService.errorStatus$.next(error);
@@ -158,6 +160,9 @@ export class LoginComponent implements OnInit {
             })
             .then((businessNetworkDefinition) => {
                 return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network', null, null, null);
+            })
+            .then(() => {
+                return this.loadIdentityCards(true);
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
@@ -265,7 +270,8 @@ export class LoginComponent implements OnInit {
     }
 
     removeIdentity(cardRef): void {
-        let userId: string = this.idCards.get(cardRef).getUserName();
+        let card = this.idCards.get(cardRef);
+        let userId: string = card.getUserName();
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
         confirmModalRef.componentInstance.fileName = userId;
@@ -277,15 +283,28 @@ export class LoginComponent implements OnInit {
         confirmModalRef.result
             .then((result) => {
                 if (result) {
-                    this.identityCardService.deleteIdentityCard(cardRef)
-                        .then(() => {
-                            this.alertService.successStatus$.next({
-                                title: 'ID Card Removed',
-                                text: 'The ID card was successfully removed from My Wallet.',
-                                icon: '#icon-bin_icon'
+                    let deletePromise: Promise<void>;
+                    if (card.getConnectionProfile().type === 'web') {
+                        deletePromise = this.adminService.connect(cardRef, card, true)
+                            .then(() => {
+                                return this.adminService.undeploy(card.getBusinessNetworkName());
                             });
+                    } else {
+                        deletePromise = Promise.resolve();
+                    }
 
-                            return this.loadIdentityCards();
+                    return deletePromise
+                        .then(() => {
+                            return this.identityCardService.deleteIdentityCard(cardRef)
+                                .then(() => {
+                                    this.alertService.successStatus$.next({
+                                        title: 'ID Card Removed',
+                                        text: 'The ID card was successfully removed from My Wallet.',
+                                        icon: '#icon-bin_icon'
+                                    });
+
+                                    return this.loadIdentityCards();
+                                });
                         })
                         .catch((error) => {
                             this.alertService.errorStatus$.next(error);

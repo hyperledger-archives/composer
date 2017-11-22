@@ -111,7 +111,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
-                        endorsementPolicy: optionsObject.endorsementPolicy,  networkAdmins: [{ secret: 'true', userName: 'admin' }]
+                        endorsementPolicy: optionsObject.endorsementPolicy,  networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
                     });
             });
         });
@@ -137,7 +137,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                    {                       endorsementPolicyFile: '/path/to/some/file.json', networkAdmins: [{ secret: 'true', userName: 'admin' }]
+                    {                       endorsementPolicyFile: '/path/to/some/file.json', networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
 
                     });
             });
@@ -168,7 +168,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
-                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING, networkAdmins: [{ secret: 'true', userName: 'admin' }]
+                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING, networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
                     });
             });
         });
@@ -196,7 +196,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                {    networkAdmins: [{ secret: 'true', userName: 'admin' }]}  );
+                {    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]}  );
             });
         });
 
@@ -248,7 +248,7 @@ describe('composer start network CLI unit tests', function () {
                             sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                             sinon.assert.calledOnce(mockAdminConnection.start);
                             sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                               { networkAdmins: [{ file: 'mycardfile', secret: 'true', userName: 'admin' }] } );
+                               { networkAdmins: [{ file: 'mycardfile', enrollmentSecret : 'true', userName: 'admin' }] } );
                         }       );
         });
 
@@ -274,7 +274,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,{ networkAdmins: [{ secret: 'true', userName: 'admin' }],logLevel: 'DEBUG' });
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,{ networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }],logLevel: 'DEBUG' });
             });
         });
 
@@ -300,7 +300,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,  {
-                    networkAdmins: [{ secret: 'true', userName: 'admin' }]
+                    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
                 });
             });
         });

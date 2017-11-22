@@ -91,5 +91,6 @@ Query string - add the `access_token` query string parameter to all HTTP or REST
 
 HTTP header - add the `X-Access-Token` header to all HTTP or REST requests:
 
-    curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping
-=======
+```
+curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping
+```
