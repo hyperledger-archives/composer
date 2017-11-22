@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit {
                     return 1;
                 }
             });
-            unsortedConnectionProfiles.unshift('web-$default');
+            unsortedConnectionProfiles.push('web-$default');
             this.connectionProfileRefs = unsortedConnectionProfiles;
 
         }).catch((error) => {
