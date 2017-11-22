@@ -159,41 +159,41 @@ class IdentityManager extends TransactionHandler {
                 // Check to see if the identity exists.
                 identityRegistry = identityRegistry_;
                 identifier = this.identityService.getIdentifier();
-                identityName = this.identityService.getName();
-                return identityRegistry.exists(identifier);
-
+                return identityRegistry.get(identifier)
+                .catch(() => {
+                    return null;
+                });
             })
-            .then((exists) => {
+            .then((identity) => {
 
                 // If it doesn't exist, then try again with the temporary identifier, which is hash(name, issuer).
-                if (!exists) {
+                if (!identity) {
                     const sha256 = createHash('sha256');
                     const name = this.identityService.getName();
                     const issuer = this.identityService.getIssuer();
                     sha256.update(name, 'utf8');
                     sha256.update(issuer, 'utf8');
                     identifier = sha256.digest('hex');
-                    return identityRegistry.exists(identifier);
+                    return identityRegistry.get(identifier)
+                    .catch(() => {
+                        return null;
+                    });
                 } else {
-                    return exists;
+                    return identity;
                 }
-
             })
-            .then((exists) => {
+            .then((identity) => {
 
                 // If it still doesn't exist, throw!
-                if (!exists) {
-                    const error = new Error('The current identity has not been registered: '+identityName);
-                    error.identityName=identityName;
+                if (!identity) {
+                    identityName = this.identityService.getName();
+                    const error = new Error('The current identity has not been registered: ' + identityName);
+                    error.identityName = identityName;
                     LOG.error(method, error);
                     throw error;
                 }
 
-                // Get the identity.
-                return identityRegistry.get(identifier);
-
-            })
-            .then((identity) => {
+                // Return the identity.
                 LOG.exit(method, identity);
                 return identity;
             });
