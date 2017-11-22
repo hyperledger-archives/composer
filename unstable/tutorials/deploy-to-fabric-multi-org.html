@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Deploying to a multi-organization Hyperledger Fabric | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Deploying to a multi-organization Hyperledger Fabric</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html"><b>Introduction</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html"><b>Installing</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html"><b>Developing Applications</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p></li>
+<li><p><a href="../reference/reference-index.html"><b>Reference</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p></li>
+<li><p><a href="../api/api-doc-index.html"><b>API Reference</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../api/allData.html">API Class Index</a></li>
+<li><a href="../api/admin-adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api/client-assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api/client-businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api/client-historian.html">Historian (Client API)</a></li>
+<li><a href="../api/client-identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api/client-participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api/client-query.html">Query (Client API)</a></li>
+<li><a href="../api/client-registry.html">Registry (Client API)</a></li>
+<li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
+<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
+<li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
+<li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
+<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api/common-resource.html">Resource (Common API)</a></li>
+<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
+<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
+<li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-typed.html">Typed (Common API)</a></li>
+<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
+<li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
+<li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
+<li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
+<li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
+<li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
+<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
+<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
+<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="deploying-a-hyperledger-composer-blockchain-business-network-to-hyperledger-fabric-multiple-organizations">Deploying a Hyperledger Composer blockchain business network to Hyperledger Fabric (multiple organizations)</h1>
+
+<p>This tutorial will demonstrate the steps that administrators in multiple organization scenarios must take to deploy a blockchain business network to an instance of Hyperledger Fabric, including how to generate the Hyperledger Composer configuration.</p>
+
+<p>It is recommended that you first follow the previous tutorial that demonstrates how to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organization, as it will explain some of the concepts in more detail.</p>
+
+<p>This tutorial will cover how to deploy a blockchain business network to a Hyperledger Fabric network that spans two organizations, <code>Org1</code> and <code>Org2</code>. The tutorial is presented with different types of steps depending on which organization should follow the step.</p>
+
+<p>The first kind of step is for both organizations to follow:</p>
+
+<h2 class='everybody'>Example Step: A step for Org1 and Org2 to follow</h2>
+
+<p>The organization <code>Org1</code> is represented by Alice, the Green Conga Block:</p>
+
+<h2 class='alice'>Example Step: A step for Org1 to follow</h2>
+
+<p>The organization <code>Org2</code> is represented by Bob, the Violet Conga Block:</p>
+
+<h2 class='bob'>Example Step: A step for Org2 to follow</h2>
+
+<p>You can follow these steps by yourself, or pair with a friend or colleague and follow the steps together.</p>
+
+<p>Let&#39;s get started!</p>
+
+<h2 class='everybody'>Prerequisites</h2>
+
+<p>If you have installed the development environment, you will need to first stop the Hyperledger Fabric provided by the development environment:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+./stopFabric.sh
+./teardownFabric.sh
+</code></pre></div>
+<p>Clone the following GitHub repository:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
+</code></pre></div>
+<p>Follow the <a href="http://hyperledger-fabric.readthedocs.io/en/release/build_network.html">Building Your First Network tutorial</a>.</p>
+
+<h2 class='everybody'>Step One: Starting a Hyperledger Fabric network</h2>
+
+<p>In order to follow this tutorial, you must start a Hyperledger Fabric network.</p>
+
+<p>This tutorial will assume that you use the Hyperledger Fabric network provided in the Hyperledger Fabric <a href="http://hyperledger-fabric.readthedocs.io/en/release/build_network.html">Building Your First Network tutorial</a>. We will refer to this Hyperledger Fabric network as the BYFN (Building Your First Network) network.</p>
+
+<p>You can now start the BYFN network. You must specify additional flags that are not specified in the Building Your First Network tutorial. This is because we want to use CouchDB as the world state database, and we want to start a Certificate Authority (CA) for each organization.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">./byfn.sh -m generate
+./byfn.sh -m up -s couchdb -f docker-compose-e2e.yaml
+</code></pre></div>
+<p>If the command works successfully, the BYFN network is started, and you will see the following output:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">========= All GOOD, BYFN execution completed ===========
+
+
+_____   _   _   ____   
+| ____| | \ | | |  _ \  
+|  _|   |  \| | | | | |
+| |___  | |\  | | |_| |
+|_____| |_| \_| |____/
+</code></pre></div>
+<p>Next, delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -n PeerAdmin@byfn-network-org1-only
+composer card delete -n PeerAdmin@byfn-network-org1
+composer card delete -n PeerAdmin@byfn-network-org2-only
+composer card delete -n PeerAdmin@byfn-network-org2
+composer card delete -n alice@tutorial-network
+composer card delete -n bob@tutorial-network
+composer card delete -n admin@tutorial-network
+composer card delete -n PeerAdmin@fabric-network
+</code></pre></div>
+<h2 class='everybody'>Step Two: Exploring the Hyperledger Fabric network</h2>
+
+<p>This step will explore the BFYN network configuration and components. The configuration details are required to complete the subsequent steps.</p>
+
+<h4 id="organizations">Organizations</h4>
+
+<p>The BYFN network is made up of two organizations: <code>Org1</code> and <code>Org2</code>. The organization <code>Org1</code> uses the domain name <code>org1.example.com</code>. The Membership Services Provider (MSP) for <code>Org1</code> is called <code>Org1MSP</code>. The organization <code>Org2</code> uses the domain name <code>org2.example.com</code>. The MSP for <code>Org2</code> is called <code>Org2MSP</code>. In this tutorial, you will deploy a blockchain business network that both of the organizations <code>Org1</code> and <code>Org2</code> can interact with.</p>
+
+<h4 id="network-components">Network components</h4>
+
+<p>The Hyperledger Fabric network is made up of several components:</p>
+
+<ul>
+<li>Two peer nodes for <code>Org1</code>, named <code>peer0.org1.example.com</code> and <code>peer1.org1.example.com</code>.
+
+<ul>
+<li>The request port for <code>peer0</code> is 7051.</li>
+<li>The event hub port for <code>peer0</code> is 7053.</li>
+<li>The request port for <code>peer1</code> is 8051.</li>
+<li>The event hub port for <code>peer1</code> is 8053.</li>
+</ul></li>
+<li>A single CA (Certificate Authority) for <code>Org1</code>, named <code>ca.org1.example.com</code>.
+
+<ul>
+<li>The CA port is 7054.</li>
+</ul></li>
+<li>Two peer nodes for <code>Org2</code>, named <code>peer0.org2.example.com</code> and <code>peer1.org2.example.com</code>.
+
+<ul>
+<li>The request port for <code>peer0</code> is 9051.</li>
+<li>The event hub port for <code>peer0</code> is 9053.</li>
+<li>The request port for <code>peer1</code> is 10051.</li>
+<li>The event hub port for <code>peer1</code> is 10053.</li>
+</ul></li>
+<li>A single CA (Certificate Authority) for <code>Org2</code>, named <code>ca.org2.example.com</code>.
+
+<ul>
+<li>The CA port is 8054.</li>
+</ul></li>
+<li>A single orderer node, named <code>orderer.example.com</code>.
+
+<ul>
+<li>The orderer port is 7050.</li>
+</ul></li>
+</ul>
+
+<p>These components are running inside Docker containers. When running Hyperledger Composer within a Docker container, the names above (for example, <code>peer0.org1.example.com</code>) can be used to interact with the Hyperledger Fabric network.</p>
+
+<p>This tutorial will run Hyperledger Composer commands on the Docker host machine, rather than from inside the Docker network. This means that the Hyperledger Composer commands must interact with the Hyperledger Fabric network using <code>localhost</code> as the host name and the exposed container ports.</p>
+
+<p>All of the network components are secured using TLS to encrypt communications. You will need the Certificate Authority (CA) certificates for all of the network components in order to connect to those network components. The CA certificates can be found in the directory containing the byfn.sh script.</p>
+
+<p>CA certificate for the orderer node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+</code></pre></div>
+<p>CA certificate for <code>Org1</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+</code></pre></div>
+<p>CA certificate for <code>Org2</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+</code></pre></div>
+<p>You will use these files later on to interact with the Hyperledger Fabric network.</p>
+
+<h4 id="users">Users</h4>
+
+<p>The organization <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator.</p>
+
+<p>The user <code>Admin@org1.example.com</code> has a set of certificates and private key files stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+</code></pre></div>
+<p>The organization <code>Org2</code> is configured with a user named <code>Admin@org2.example.com</code>. This user is an administrator.</p>
+
+<p>The user <code>Admin@org2.example.com</code> has a set of certificates and private key files stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+</code></pre></div>
+<p>You will use some of these files later on to interact with the Hyperledger Fabric network.</p>
+
+<p>In addition to the administrator, the CAs (Certificate Authorities) for <code>Org1</code> and <code>Org2</code> have been configured with a default user. This default user has an enrolment ID of <code>admin</code> and an enrolment secret of <code>adminpw</code>. However, this user does not have permission to deploy a blockchain business network.</p>
+
+<h4 id="channel">Channel</h4>
+
+<p>A channel named <code>mychannel</code> has been created. All four peer nodes - <code>peer0.org1.example.com</code>, <code>peer1.org1.example.com</code>, <code>peer0.org2.example.com</code>, and <code>peer1.org2.example.com</code> have been joined to this channel.</p>
+
+<h2 class='alice'>Step Three: Building connection profiles for Org1</h2>
+
+<p><code>Org1</code> requires two connection profiles. One connection profile will contain just the peer nodes that belong to <code>Org1</code>, and the other connection profile will contain the peer nodes that belong to <code>Org1</code> and <code>Org2</code>.</p>
+
+<p>Create a connection profile file called <code>connection-org1-only.json</code> with the following contents and save it to disk. This connection profile will contain just the peer nodes that belong to <code>Org1</code>. You will use this file in later steps, so remember where you place it!</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "byfn-network-org1-only",
+    "type": "hlfv1",
+    "mspID": "Org1MSP",
+    "peers": [
+        {
+            "requestURL": "grpcs://localhost:7051",
+            "eventURL": "grpcs://localhost:7053",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org1.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:8051",
+            "eventURL": "grpcs://localhost:8053",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org1.example.com"
+        }
+    ],
+    "ca": {
+        "url": "https://localhost:7054",
+        "name": "ca-org1",
+        "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+        "hostnameOverride": "ca.org1.example.com"
+    },
+    "orderers": [
+        {
+            "url" : "grpcs://localhost:7050",
+            "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
+            "hostnameOverride": "orderer.example.com"
+        }
+    ],
+    "channel": "mychannel",
+    "timeout": 300
+}
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG1_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org1</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORDERER_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the orderer node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+</code></pre></div>
+<p>Create another connection profile file called <code>connection-org1.json</code> with the following contents and save it to disk.  This connection profile will contain the peer nodes that belong to <code>Org1</code> and <code>Org2</code>. You will use this file in later steps, so remember where you place it!</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "byfn-network-org1",
+    "type": "hlfv1",
+    "mspID": "Org1MSP",
+    "peers": [
+        {
+            "requestURL": "grpcs://localhost:7051",
+            "eventURL": "grpcs://localhost:7053",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org1.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:8051",
+            "eventURL": "grpcs://localhost:8053",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org1.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:9051",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org2.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:10051",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org2.example.com"
+        }
+    ],
+    "ca": {
+        "url": "https://localhost:7054",
+        "name": "ca-org1",
+        "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+        "hostnameOverride": "ca.org1.example.com"
+    },
+    "orderers": [
+        {
+            "url" : "grpcs://localhost:7050",
+            "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
+            "hostnameOverride": "orderer.example.com"
+        }
+    ],
+    "channel": "mychannel",
+    "timeout": 300
+}
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG1_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org1</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG2_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org2</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORDERER_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the orderer node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+</code></pre></div>
+<p>Note that where this connection profile contains details of the peer nodes for <code>Org2</code>, it only includes the request port and does not contain the event hub port. This is because one organization cannot access another organizations event hub port.</p>
+
+<h2 class='bob'>Step Four: Building connection profiles for Org2</h2>
+
+<p><code>Org2</code> requires two connection profiles. One connection profile will contain just the peer nodes that belong to <code>Org2</code>, and the other connection profile will contain the peer nodes that belong to <code>Org2</code> and <code>Org1</code>.</p>
+
+<p>Create a connection profile file called <code>connection-org2-only.json</code> with the following contents and save it to disk. This connection profile will contain just the peer nodes that belong to <code>Org2</code>. You will use this file in later steps, so remember where you place it!</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "byfn-network-org2-only",
+    "type": "hlfv1",
+    "mspID": "Org2MSP",
+    "peers": [
+        {
+            "requestURL": "grpcs://localhost:9051",
+            "eventURL": "grpcs://localhost:9053",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org2.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:10051",
+            "eventURL": "grpcs://localhost:10053",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org2.example.com"
+        }
+    ],
+    "ca": {
+        "url": "https://localhost:8054",
+        "name": "ca-org2",
+        "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+        "hostnameOverride": "ca.org2.example.com"
+    },
+    "orderers": [
+        {
+            "url" : "grpcs://localhost:7050",
+            "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
+            "hostnameOverride": "orderer.example.com"
+        }
+    ],
+    "channel": "mychannel",
+    "timeout": 300
+}
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG2_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org2</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORDERER_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the orderer node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+</code></pre></div>
+<p>Create another connection profile file called <code>connection-org2.json</code> with the following contents and save it to disk.  This connection profile will contain the peer nodes that belong to <code>Org2</code> and <code>Org1</code>. You will use this file in later steps, so remember where you place it!</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "byfn-network-org2",
+    "type": "hlfv1",
+    "mspID": "Org2MSP",
+    "peers": [
+        {
+            "requestURL": "grpcs://localhost:9051",
+            "eventURL": "grpcs://localhost:9053",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org2.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:10051",
+            "eventURL": "grpcs://localhost:10053",
+            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org2.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:7051",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer0.org1.example.com"
+        },
+        {
+            "requestURL": "grpcs://localhost:8051",
+            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
+            "hostnameOverride": "peer1.org1.example.com"
+        }
+    ],
+    "ca": {
+        "url": "https://localhost:8054",
+        "name": "ca-org2",
+        "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
+        "hostnameOverride": "ca.org2.example.com"
+    },
+    "orderers": [
+        {
+            "url" : "grpcs://localhost:7050",
+            "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
+            "hostnameOverride": "orderer.example.com"
+        }
+    ],
+    "channel": "mychannel",
+    "timeout": 300
+}
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG2_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org2</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORG1_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the peer nodes for <code>Org1</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+</code></pre></div>
+<p>Replace all instances of the text <code>INSERT_ORDERER_CA_CERT_FILE_PATH</code> with the fully qualified path to the file containing the CA certificate for the orderer node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+</code></pre></div>
+<p>Note that where this connection profile contains details of the peer nodes for <code>Org1</code>, it only includes the request port and does not contain the event hub port. This is because one organization cannot access another organizations event hub port.</p>
+
+<h2 class='alice'>Step Five: Locating the certificate and private key for the Hyperledger Fabric administrator for Org1</h2>
+
+<p>The administrator for our Hyperledger Fabric network is a user called <code>Admin@org1.example.com</code>. The certificates and private key files for this user are stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+</code></pre></div>
+<p>You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the <code>signcerts</code> subdirectory and is named <code>Admin@org1.example.com-cert.pem</code>.</p>
+
+<p>Next, you must locate the private key file for this user. The private key is used to sign transactions as this identity. The private key file can be found in the <code>keystore</code> subdirectory. The name of the private key file is a long hexadecimal string, with a suffix of <code>_sk</code>, for example <code>78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk</code>. The name will change every time the configuration is generated.</p>
+
+<p>Remember the path to both of these files, or copy them into the same directory as the connection profile file <code>connection-org1.json</code> that you created in step three. You will need these files in the next steps.</p>
+
+<h2 class='bob'>Step Six: Locating the certificate and private key for the Hyperledger Fabric administrator for Org2</h2>
+
+<p>The administrator for our Hyperledger Fabric network is a user called <code>Admin@org2.example.com</code>. The certificates and private key files for this user are stored in the directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+</code></pre></div>
+<p>You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the <code>signcerts</code> subdirectory and is named <code>Admin@org2.example.com-cert.pem</code>.</p>
+
+<p>Next, you must locate the private key file for this user. The private key is used to sign transactions as this identity. The private key file can be found in the <code>keystore</code> subdirectory. The name of the private key file is a long hexadecimal string, with a suffix of <code>_sk</code>, for example <code>d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk</code>. The name will change every time the configuration is generated.</p>
+
+<p>Remember the path to both of these files, or copy them into the same directory as the connection profile file <code>connection-org2.json</code> that you created in step four. You will need these files in the next steps.</p>
+
+<h2 class='alice'>Step Seven: Creating business network cards for the Hyperledger Fabric administrator for Org1</h2>
+
+<p>In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the Hyperledger Fabric network.</p>
+
+<p>Run the <code>composer card create</code> command to create a business network card using the connection profile that just contains the peers for <code>Org1</code>. You must specify the path to all three files that you either created or located in the previous steps: (note: the <em>sk</em> file will differ.)</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org1-only.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org1-only.card</code> will have been written to the current directory.</p>
+
+<p>Run the <code>composer card create</code> command to create a business network card using the connection profile that contains the peers for <code>Org1</code> and <code>Org2</code>. You must specify the path to all three files that you either created or located in the previous steps:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org1.card</code> will have been written to the current directory.</p>
+
+<h2 class='bob'>Step Eight: Creating business network cards for the Hyperledger Fabric administrator for Org2</h2>
+
+<p>In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the Hyperledger Fabric network.</p>
+
+<p>Run the <code>composer card create</code> command to create a business network card using the connection profile that just contains the peers for <code>Org2</code>. You must specify the path to all three files that you either created or located in the previous steps:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org2-only.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org2-only.card</code> will have been written to the current directory.</p>
+
+<p>Run the <code>composer card create</code> command to create a business network card using the connection profile that contains the peers for <code>Org2</code> and <code>Org1</code>. You must specify the path to all three files that you either created or located in the previous steps:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
+</code></pre></div>
+<p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org2.card</code> will have been written to the current directory.</p>
+
+<h2 class='alice'>Step Nine: Importing the business network cards for the Hyperledger Fabric administrator for Org1</h2>
+
+<p>Run the <code>composer card import</code> command to import the business network card that just contains the peers for <code>Org1</code> into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1-only.card
+</code></pre></div>
+<p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org1-only</code> will have been imported into the wallet.</p>
+
+<p>Run the <code>composer card import</code> command to import the business network card that contains the peers for <code>Org1</code> and <code>Org2</code> into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1.card
+</code></pre></div>
+<p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org1</code> will have been imported into the wallet.</p>
+
+<h2 class='bob'>Step Ten: Importing the business network cards for the Hyperledger Fabric administrator for Org2</h2>
+
+<p>Run the <code>composer card import</code> command to import the business network card that just contains the peers for <code>Org2</code> into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2-only.card
+</code></pre></div>
+<p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2-only</code> will have been imported into the wallet.</p>
+
+<p>Run the <code>composer card import</code> command to import the business network card that contains the peers for <code>Org2</code> and <code>Org1</code> into the wallet:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2.card
+</code></pre></div>
+<p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2</code> will have been imported into the wallet.</p>
+
+<h2 class='alice'>Step Eleven: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org1</h2>
+
+<p>Run the <code>composer runtime install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes for <code>Org1</code> that you specified in the connection profile file you created in step three:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -c PeerAdmin@byfn-network-org1-only -n tutorial-network
+</code></pre></div>
+<h2 class='bob'>Step Twelve: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org2</h2>
+
+<p>Run the <code>composer runtime install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes for <code>Org2</code> that you specified in the connection profile file you created in step four:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -c PeerAdmin@byfn-network-org2-only -n tutorial-network
+</code></pre></div>
+<h2 class='everybody'>Step Thirteen: Defining the endorsement policy for the business network</h2>
+
+<p>A running business network has an endorsement policy, which defines the rules around which organizations must endorse transactions before they can be committed to the blockchain. By default, a business network is deployed with an endorsement policy that states that only one organization has to endorse a transaction before it can be committed to the blockchain.</p>
+
+<p>In real world blockchain business networks, multiple organizations will want to ensure that they endorse transactions before they can be committed to the blockchain, and so the default endorsement policy is not suitable. Instead, you can specify a custom endorsement policy when you start a business network.</p>
+
+<p>You can find more information on endorsement policies in the Hyperledger Fabric documentation, in <a href="https://hyperledger-fabric.readthedocs.io/en/release/endorsement-policies.html">Endorsement policies</a>.</p>
+
+<blockquote>
+<p>Please note that the endorsement policies used for a business network must be in the JSON format used by the Hyperledger Fabric Node.js SDK. This is a different format to the simple endorsement policy format used by the Hyperledger Fabric CLI, which you will see in the Hyperledger Fabric documentation.</p>
+</blockquote>
+
+<p>Create an endorsement policy file called <code>endorsement-policy.json</code> with the following contents and save it to disk. You will use this file in later steps, so remember where you place it!</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "identities": [
+        {
+            "role": {
+                "name": "member",
+                "mspId": "Org1MSP"
+            }
+        },
+        {
+            "role": {
+                "name": "member",
+                "mspId": "Org2MSP"
+            }
+        }
+    ],
+    "policy": {
+        "2-of": [
+            {
+                "signed-by": 0
+            },
+            {
+                "signed-by": 1
+            }
+        ]
+    }
+}
+</code></pre></div>
+<p>The endorsement policy you have just created states that both <code>Org1</code> and <code>Org2</code> must endorse transactions in the business network before they can be committed to the blockchain. If <code>Org1</code> or <code>Org2</code> do not endorse transactions, or disagree on the result of a transaction, then the transaction will be rejected by the business network.</p>
+
+<h2 class='everybody'>Step Fourteen: Understanding and selecting the business network administrators</h2>
+
+<p>When a business network is started, the business network must be configured with a set of initial participants. These participants will be responsible for bootstrapping the business network and onboarding other participants into the business network. In Hyperledger Composer, we call these initial participants the business network administrators.</p>
+
+<p>In our business network, the organizations <code>Org1</code> and <code>Org2</code> have equal rights. Each organization will provide a business network administrator for the business network, and those business network administrators will onboard the other participants in their organizations. The business network administrator for <code>Org1</code> will be Alice, and the business network administrator for <code>Org2</code> will be Bob.</p>
+
+<p>When the business network is started, the certificates (the public part of the identity) for all of the business network administrators must be passed to the organization performing the commands to start the business network. After the business network has been started, all of the business network administrators can use their identities to interact with the business network.</p>
+
+<p>You can find more information on business network administrators in <a href="../business-network/bnd-deploy.html">Deploying Business Networks</a>.</p>
+
+<h2 class='alice'>Step Fifteen: Retrieving business network administrator certificates for Org1</h2>
+
+<p>Run the <code>composer identity request</code> command to retrieve certificates for Alice to use as the business network administrator for <code>Org1</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity request -c PeerAdmin@byfn-network-org1-only -u admin -s adminpw -d alice
+</code></pre></div>
+<p>The <code>-u admin</code> and the <code>-s adminpw</code> options to this command correspond to the default user registered with the Hyperledger Fabric CA (Certificate Authority).</p>
+
+<p>The certficates will be placed into a directory called <code>alice</code> in the current working directory. There are three certificate files created, but only two are important. These are <code>admin-pub.pem</code>, the certificate (including the public key), and <code>admin-priv.pem</code>, the private key. Only the <code>admin-pub.pem</code> file is suitable for sharing with other organizations. The <code>admin-priv.pem</code> file must be kept secret as it can be used to sign transactions on behalf of the issuing organization.</p>
+
+<h2 class='bob'>Step Sixteen: Retrieving business network administrator certificates for Org2</h2>
+
+<p>Run the <code>composer identity request</code> command to retrieve certificates for Bob to use as the business network administrator for <code>Org2</code>:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity request -c PeerAdmin@byfn-network-org2-only -u admin -s adminpw -d bob
+</code></pre></div>
+<p>The <code>-u admin</code> and the <code>-s adminpw</code> options to this command correspond to the default user registered with the Hyperledger Fabric CA (Certificate Authority).</p>
+
+<p>The certficates will be placed into a directory called <code>bob</code> in the current working directory. There are three certificate files created, but only two are important. These are <code>admin-pub.pem</code>, the certificate (including the public key), and <code>admin-priv.pem</code>, the private key. Only the <code>admin-pub.pem</code> file is suitable for sharing with other organizations. The <code>admin-priv.pem</code> file must be kept secret as it can be used to sign transactions on behalf of the issuing organization.</p>
+
+<h2 class='alice'>Step Seventeen: Starting the business network</h2>
+
+<p>Run the <code>composer network start</code> command to start the business network. Only <code>Org1</code> needs to perform this operation. This command uses the <code>endorsement-policy.json</code> file created in step thirteen, and the <code>admin-pub.pem</code> files created by both Alice and Bob in step fifteen and step sixteen, so you must ensure that all of these files are accessible to this command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@byfn-network-org1 -a tutorial-network@0.0.1.bna -o endorsementPolicyFile=endorsement-policy.json -A alice -C alice/admin-pub.pem -A bob -C bob/admin-pub.pem
+</code></pre></div>
+<h3 class='warning'>Warning! This command currently throws an error with the text "Path must be a string". This error can be safely ignored. We are working on fixing this issue!</h3>
+
+<p>Once this command completes, the business network will have been started. Both Alice and Bob will be able to access the business network, start to set up the business network, and onboard other participants from their respective organizations. However, both Alice and Bob must create new business network cards with the certificates that they created in the previous steps so that they can access the business network.</p>
+
+<h2 class='alice'>Step Eighteen: Creating a business network card to access the business network as Org1</h2>
+
+<p>Run the <code>composer card create</code> command to create a business network card that Alice, the business network administrator for <code>Org1</code>, can use to access the business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org1.json -u alice -n tutorial-network -c alice/admin-pub.pem -k alice/admin-priv.pem
+</code></pre></div>
+<p>Run the <code>composer card import</code> command to import the business network card that you just created:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f alice@tutorial-network.card
+</code></pre></div>
+<p>Run the <code>composer network ping</code> command to test the connection to the blockchain business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c alice@tutorial-network
+</code></pre></div>
+<p>If the command completes successfully, then you should see the fully qualified participant identifier <code>org.hyperledger.composer.system.NetworkAdmin#alice</code> in the output from the command. You can now use this business network card to interact with the blockchain business network and onboard other participants in your organization.</p>
+
+<h2 class='bob'>Step Nineteen: Creating a business network card to access the business network as Org2</h2>
+
+<p>Run the <code>composer card create</code> command to create a business network card that Bob, the business network administrator for <code>Org2</code>, can use to access the business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org2.json -u bob -n tutorial-network -c bob/admin-pub.pem -k bob/admin-priv.pem
+</code></pre></div>
+<p>Run the <code>composer card import</code> command to import the business network card that you just created:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f bob@tutorial-network.card
+</code></pre></div>
+<p>Run the <code>composer network ping</code> command to test the connection to the blockchain business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c bob@tutorial-network
+</code></pre></div>
+<p>If the command completes successfully, then you should see the fully qualified participant identifier <code>org.hyperledger.composer.system.NetworkAdmin#bob</code> in the output from the command. You can now use this business network card to interact with the blockchain business network and onboard other participants in your organization.</p>
+
+<h2 class='everybody'>Conclusion</h2>
+
+<p>In this tutorial you have seen how to configure Hyperledger Composer with all of the information required to connect to a Hyperledger Fabric network that spans multiple organizations, and how to deploy a blockchain business network that spans all of the organizations in that Hyperledger Fabric network.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

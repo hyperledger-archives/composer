@@ -117,7 +117,8 @@ ga('send', 'pageview');
 <li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 <li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
-<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -161,7 +162,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
@@ -284,7 +285,7 @@ participant Person identified by personId {
 </ul>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-<span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'hlfv1'</span><span class="p">,</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'maeid1'</span><span class="p">,</span> <span class="s1">'RJJmlOpvNVRV'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@digitalPropertyNetwork'</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">);</span>
     <span class="p">})</span>
@@ -307,7 +308,7 @@ participant Person identified by personId {
 
 <ul>
 <li><p>Command line</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer participant add <span class="nt">-p</span> hlfv1 <span class="nt">-n</span> <span class="s1">'digitalproperty-network'</span> <span class="nt">-i</span> admin <span class="nt">-s</span> adminpw <span class="nt">-d</span> <span class="s1">'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'</span>
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@network -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
 </code></pre></div></li>
 </ul>
 

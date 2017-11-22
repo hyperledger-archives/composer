@@ -117,7 +117,8 @@ ga('send', 'pageview');
 <li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 <li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
-<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -161,7 +162,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
@@ -353,33 +354,12 @@ ga('send', 'pageview');
 
 <h1 id="how-to-find-out-which-chaincode-container-has-the-deployed-network">How to find out which chaincode container has the deployed network?</h1>
 
-<p>Each Business Network is deployed to it&#39;s own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened. <code>docker logs &lt;containerid&gt;</code> will show the logs but you need to know the container id.</p>
+<p>Each Business Network is deployed to it&#39;s own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened.</p>
 
-<p>Firstly list the docker processes and look for the image name; this command will do this for you in one step</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">docker ps | cut <span class="nt">-b</span> 1-13,21-93
-CONTAINER ID IMAGE                                                                    
-f71e2a630d6a dev-vp0-9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7
-bb5db2ca4e6a hyperledger/fabric-peer                                                  
-3ec0e41c4898 hyperledger/fabric-membersrvc     
+<p>To identify which Docker container has the deployed network run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker ps
 </code></pre></div>
-<p>The hex value after the dev-vp0 is the &#39;chaincodeid&#39;. If you look in the connection profiles directory you&#39;ll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cat</span> ~/.composer-connection-profiles/defaultProfile/connection.json
-<span class="o">{</span>
-    <span class="s2">"type"</span>: <span class="s2">"hlf"</span>,
-    <span class="s2">"membershipServicesURL"</span>: <span class="s2">"grpc://localhost:7054"</span>,
-    <span class="s2">"peerURL"</span>: <span class="s2">"grpc://localhost:7051"</span>,
-    <span class="s2">"eventHubURL"</span>: <span class="s2">"grpc://localhost:7053"</span>,
-    <span class="s2">"keyValStore"</span>: <span class="s2">"/home/matthew/.composer-credentials"</span>,
-    <span class="s2">"deployWaitTime"</span>: <span class="s2">"300"</span>,
-    <span class="s2">"invokeWaitTime"</span>: <span class="s2">"100"</span>,
-    <span class="s2">"networks"</span>: <span class="o">{</span>
-        <span class="s2">"digitalproperty-network"</span>: <span class="s2">"e3ec656109284b63d5b7b1925454c9904e6c9c82b2053ed190d2f199e0fb0dad"</span>,
-        <span class="s2">"carauction-network"</span>: <span class="s2">"9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7"</span>
-    <span class="o">}</span>
-<span class="o">}</span><span class="p">;</span>
-</code></pre></div>
-<p>By inspection, the ids match for the carauction-network therefore we know now which chaincode container is which.
---&gt;</p>
+<p>The Docker container name should include the name of the deployed network.</p>
 
             
           </section>

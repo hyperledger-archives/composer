@@ -117,7 +117,8 @@ ga('send', 'pageview');
 <li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 <li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
-<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -161,7 +162,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
@@ -259,12 +260,10 @@ ga('send', 'pageview');
 
 <p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (.bna) file. The <code>composer archive create</code> command is used to create a business network archive file from a business network definition folder on disk.</p>
 
-<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a>.</p>
+<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.runtime.install.html"><code>composer runtime install</code></a> command followed by a <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna
--i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
--A admin -S
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n tutorial-network -c PeerAdmin@fabric-network
 </code></pre></div>
 <p>To update the business network definition for an already deployed business network use the <a href="../reference/composer.network.update.html"><code>composer network update</code></a> CLI command.</p>
 
@@ -272,9 +271,8 @@ ga('send', 'pageview');
 
 <p>In Hyperledger Fabric v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install Hyperledger Fabric chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.</p>
 
-<p>To make that identity and its certificates available, your must import the identity into the credential store used by Hyperledger Composer. To import the identity, use the <a href="../reference/composer.card.import.html"><code>composer identity import</code></a> command. When importing an identity, you do not assign it a secret, however the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command requires a secret. If you are using an imported identity, you can enter any value for the secret, and it will be ignored.</p>
-
-<p>Hyperledger Composer provides a sample Hyperledger Fabric v1.0 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric v1.0 networks.</p>
+<p>To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
+Hyperledger Composer provides a sample Hyperledger Fabric v1.0 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric v1.0 networks.</p>
 
 <h2 id="business-network-administrators">Business network administrators</h2>
 
@@ -283,36 +281,30 @@ ga('send', 'pageview');
 <p>A business network administrator is a participant who is responsible for configuring the business network for their organisation after the business network is deployed, and is responsible for on-boarding other participants from their organisation. Because business networks include multiple organisations, there should be multiple business network administrators for any given business network.</p>
 
 <p>A built-in participant type, <code>org.hyperledger.composer.system.NetworkAdmin</code>, representing a business network administrator is provided by Hyperledger Composer. This built-in participant type does not have any special permissions; they are still subject to the access control rules specified in the business network definition. For this reason, it is recommended that you start with the following sample access control rules that grant business network administrators full access to a business network:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">rule</span><span class="w"> </span><span class="err">NetworkAdminUser</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="err">description</span><span class="p">:</span><span class="w"> </span><span class="s2">"Grant business network administrators full access to user resources"</span><span class="w">
-    </span><span class="err">participant</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.NetworkAdmin"</span><span class="w">
-    </span><span class="err">operation</span><span class="p">:</span><span class="w"> </span><span class="err">ALL</span><span class="w">
-    </span><span class="err">resource</span><span class="p">:</span><span class="w"> </span><span class="s2">"**"</span><span class="w">
-    </span><span class="err">action</span><span class="p">:</span><span class="w"> </span><span class="err">ALLOW</span><span class="w">
-</span><span class="p">}</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang="">rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
 
-</span><span class="err">rule</span><span class="w"> </span><span class="err">NetworkAdminSystem</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="err">description</span><span class="p">:</span><span class="w"> </span><span class="s2">"Grant business network administrators full access to system resources"</span><span class="w">
-    </span><span class="err">participant</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.NetworkAdmin"</span><span class="w">
-    </span><span class="err">operation</span><span class="p">:</span><span class="w"> </span><span class="err">ALL</span><span class="w">
-    </span><span class="err">resource</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.hyperledger.composer.system.**"</span><span class="w">
-    </span><span class="err">action</span><span class="p">:</span><span class="w"> </span><span class="err">ALLOW</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+</code></pre></div>
 <p>By default, Hyperledger Composer will automatically create a single business network administrator participant during deployment. The identity that is used for deploying the business network will also be bound to that business network administrator participant, so that identity can be used to interact with the business network after deployment.</p>
 
 <p>Hyperledger Fabric peer administrators may not have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA). This may restrict the ability of the business network administrator to on-board other participants from their organisation. For this reason, it may be preferable to create a business network administrator that does have permission to issue new identities using the Hyperledger Fabric Certificate Authority (CA).</p>
 
-<p>You can use additional options to the <a href="../reference/composer.network.deploy.html"><code>composer network deploy</code></a> command to specify the business network administrators that should be created during the deployment of the business network.</p>
+<p>You can use additional options to the <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command to specify the business network administrators that should be created during the deployment of the business network.</p>
 
 <p>If the business network administrator has an enrollment ID and enrollment secret, you can use the <code>-A</code> (business network administrator) and <code>-S</code> (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing <code>admin</code> enrollment ID:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -S
-</code></pre></div>
-<p>If the business network administrator already has a certificate, you can use the <code>-A</code> (business network administrator) and <code>-C</code> (business network administrator certificate file) flags. For example, the following command will create a business network administrator for the specified certificate file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin -C /path/to/admin.pem
-</code></pre></div>
-<p>You can also create multiple business network administrators by repeating the options. For example, the following command will create a business network administrator for all three of the specified certificate files:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p hlfv1 -a my-network.bna -i PeerAdmin -s randomString -A admin1 -C /path/to/admin1.pem -A admin2 -C /path/to/admin2.pem -A admin3 -C /path/to/admin3.pem
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@fabric-network -A admin -S
 </code></pre></div>
 <h2 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h2>
 

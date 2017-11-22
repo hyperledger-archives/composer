@@ -117,7 +117,8 @@ ga('send', 'pageview');
 <li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 <li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
-<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -161,7 +162,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
@@ -259,11 +260,13 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The REST server can be configured to subscribe to business events that are emitted from a deployed business network, and publish those business events out to client applications. Currently, the REST server supports publishing business events out to client applications over WebSockets. Client applications can use a WebSocket client to subscribe to the business events that are published by the REST server. There are WebSocket clients available for all major programming languages and application types - for example, client side web user interfaces, backend server processes, mobile applications, and integration tools.</p>
+<p>The REST server can be configured to subscribe to events emitted from a deployed business network, and publish those business events for consumption by client applications. Currently, the REST server supports publishing events to client applications over WebSockets.</p>
+
+<p>Client applications can use a WebSocket client to subscribe to the business events that are published by the REST server. There are WebSocket clients available for all major programming languages and application types - for example, client side web user interfaces, backend server processes, mobile applications, and integration tools.</p>
 
 <h2 id="enabling-websockets">Enabling WebSockets</h2>
 
-<p>You can enable WebSockets using the <code>-w</code> argument to the command line:</p>
+<p>You can enable WebSockets using the <code>-w</code> argument on the command line:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c alice1@my-network -w
 </code></pre></div>
 <p>Alternatively, you can enable WebSockets by using the <code>COMPOSER_WEBSOCKETS</code> environment variable:</p>

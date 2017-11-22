@@ -117,7 +117,8 @@ ga('send', 'pageview');
 <li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
 <li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 <li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
-<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/chevron-left.svg" class="caret"></a></p>
 
@@ -161,7 +162,7 @@ ga('send', 'pageview');
 <ul>
 <li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
 <li><a href="../managing/participant-add.html">Adding participants</a></li>
-<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing ID Cards</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
 <li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
 <li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
 <li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
@@ -257,41 +258,72 @@ ga('send', 'pageview');
             
               <h1 id="generating-a-rest-api">Generating a REST API</h1>
 
+<h2 id="installing-the-rest-server">Installing the REST server</h2>
+
+<p>The Hyperledger Composer REST server can be installed either using npm or Docker.</p>
+
+<p>To install with npm, run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-rest-server
+</code></pre></div>
+<p>To install the REST server using Docker see <a href="./deploying-the-rest-server.html">deploying the REST server</a>.</p>
+
 <h2 id="running-the-rest-server">Running the REST server</h2>
 
 <p>Hyperledger Composer includes a standalone Node.js process that exposes a business network as a REST API. The LoopBack framework is used to generate an Open API, described by a Swagger document.</p>
 
 <p>To launch the REST Server simply type:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer-rest-server
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server
 </code></pre></div>
 <p>You will then be asked to enter a few simple details about your business network. An example of consuming a deployed business network is shown below.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">? Enter the name of the business network card to use: admin@basic-sample-network
-? Specify <span class="k">if </span>you want namespaces <span class="k">in </span>the generated REST API: always use namespaces
-? Specify <span class="k">if </span>you want to <span class="nb">enable </span>authentication <span class="k">for </span>the REST API using Passport: No
-? Specify <span class="k">if </span>you want to <span class="nb">enable </span>event publication over WebSockets: Yes
-? Specify <span class="k">if </span>you want to <span class="nb">enable </span>TLS security <span class="k">for </span>the REST API: No
+<div class="highlight"><pre><code class="language-" data-lang="">? Enter the name of the business network card to use: admin@basic-sample-network
+? Specify if you want namespaces in the generated REST API: always use namespaces
+? Specify if you want to enable authentication for the REST API using Passport: No
+? Specify if you want to enable event publication over WebSockets: Yes
+? Specify if you want to enable TLS security for the REST API: No
 
-To restart the REST server using the same options, issue the following <span class="nb">command</span>:
-   composer-rest-server <span class="nt">-c</span> admin@basic-sample-network <span class="nt">-n</span> always <span class="nt">-w</span> <span class="nb">true
+To restart the REST server using the same options, issue the following command:
+   composer-rest-server -c admin@basic-sample-network -n always -w true
 
-</span>Discovering types from business network definition ...
+Discovering types from business network definition ...
 Discovered types from business network definition
-Generating schemas <span class="k">for </span>all types <span class="k">in </span>business network definition ...
-Generated schemas <span class="k">for </span>all types <span class="k">in </span>business network definition
-Adding schemas <span class="k">for </span>all types to Loopback ...
-Added schemas <span class="k">for </span>all types to Loopback
+Generating schemas for all types in business network definition ...
+Generated schemas for all types in business network definition
+Adding schemas for all types to Loopback ...
+Added schemas for all types to Loopback
 Web server listening at: http://localhost:3000
 Browse your REST API at http://localhost:3000/explorer
 </code></pre></div>
-<h2 id="looking-at-the-generated-apis">Looking at the generated APIs</h2>
+<h4 id="the-composer-rest-server-command">The <code>composer-rest-server</code> command</h4>
+
+<p>The <code>composer-rest-server</code> command has a number of options used to define security and authentication:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  -c, --card            The name of the business network card to use  [string]
+  -n, --namespaces      Use namespaces if conflicting types exist  [string] [choices: "always", "required", "never"] [default: "always"]
+  -p, --port            The port to serve the REST API on  [number]
+  -a, --authentication  Enable authentication for the REST API using Passport  [boolean] [default: false]
+  -m, --multiuser       Enable multiple user and identity management using wallets (implies -a)  [boolean] [default: false]
+  -w, --websockets      Enable event publication over WebSockets  [boolean] [default: true]
+  -t, --tls             Enable TLS security for the REST API  [boolean] [default: false]
+  -e, --tlscert         File containing the TLS certificate  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/cert.pem"]
+  -k, --tlskey          File containing the TLS private key  [string] [default: "/usr/local/lib/node_modules/composer-rest-server/key.pem"]
+  -h, --help            Show help  [boolean]
+  -v, --version         Show version number  [boolean]
+</code></pre></div>
+<h4 id="looking-at-the-generated-apis">Looking at the generated APIs</h4>
 
 <p>Launch your browser and go to the URL given (<a href="http://0.0.0.0:3000/explorer">http://0.0.0.0:3000/explorer</a>).  You&#39;ll see a screen similar to this.</p>
 
 <p><img src="../assets/img/tutorials/developer/lb_explorer.png" alt="LoopBack-1"></p>
 
+<h2 id="updating-the-rest-server">Updating the REST server</h2>
+
+<p>After updating a business network definition, the REST server can be updated to generate new APIs reflecting the updates to the business network definition.</p>
+
+<p>To update the REST server, first the REST server must be stopped using <code>ctrl-C</code>. Then the REST server can be restarted using <code>composer-rest-server</code>.</p>
+
 <h1 id="summary">Summary</h1>
 
-<p>Using the Loopback framework on top of the Hyperledger Composer runtime has allowed us to generate a business domain specific REST api based on the deployed business network model!</p>
+<p>Using the Loopback framework on top of the Hyperledger Composer runtime has allowed us to generate a business domain specific REST API based on the deployed business network model!</p>
 
             
           </section>
