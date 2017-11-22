@@ -184,7 +184,7 @@ class Start {
             if (argv.networkAdmin.certificate){
                 admin.certificate = argv.networkAdmin.certificate;
             } else if (argv.networkAdmin.secret){
-                admin.secret = argv.networkAdmin.secret;
+                admin.enrollmentSecret  = argv.networkAdmin.secret;
             } else {
                 throw new Error('Need to have certificate or secret');
             }
@@ -200,7 +200,7 @@ class Start {
             if (argv.networkAdminCertificateFile){
                 admin.certificate = argv.networkAdminCertificateFile;
             } else if (argv.networkAdminSecret){
-                admin.secret = argv.networkAdminSecret;
+                admin.enrollmentSecret  = argv.networkAdminSecret;
             } else {
                 throw new Error('Need to have certificate or secret');
             }

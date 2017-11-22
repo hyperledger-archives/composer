@@ -103,35 +103,10 @@ Will enabled more tracing - this then will use the levels marked as `enabledLeve
 
 # How to find out which chaincode container has the deployed network?
 
-Each Business Network is deployed to it's own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened. `docker logs <containerid>` will show the logs but you need to know the container id.
+Each Business Network is deployed to it's own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened.
 
-Firstly list the docker processes and look for the image name; this command will do this for you in one step
+To identify which Docker container has the deployed network run the following command:
 
-```bash
-docker ps | cut -b 1-13,21-93
-CONTAINER ID IMAGE                                                                    
-f71e2a630d6a dev-vp0-9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7
-bb5db2ca4e6a hyperledger/fabric-peer                                                  
-3ec0e41c4898 hyperledger/fabric-membersrvc     
-```
+    docker ps
 
-The hex value after the dev-vp0 is the 'chaincodeid'. If you look in the connection profiles directory you'll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.
-
-```bash
-cat ~/.composer-connection-profiles/defaultProfile/connection.json
-{
-    "type": "hlf",
-    "membershipServicesURL": "grpc://localhost:7054",
-    "peerURL": "grpc://localhost:7051",
-    "eventHubURL": "grpc://localhost:7053",
-    "keyValStore": "/home/matthew/.composer-credentials",
-    "deployWaitTime": "300",
-    "invokeWaitTime": "100",
-    "networks": {
-        "digitalproperty-network": "e3ec656109284b63d5b7b1925454c9904e6c9c82b2053ed190d2f199e0fb0dad",
-        "carauction-network": "9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7"
-    }
-};
-```
-By inspection, the ids match for the carauction-network therefore we know now which chaincode container is which.
--->
+The Docker container name should include the name of the deployed network.

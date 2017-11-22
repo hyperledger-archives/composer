@@ -13,10 +13,13 @@ const path = require('path');
 
 require('chai').should();
 
-const NS = '<%= namespace%>';
+const namespace = '<%= namespace%>';
 const assetType = 'SampleAsset';
 
-describe('#' + NS, () => {
+describe('#' + namespace, () => {
+    // In-memory card store for testing so cards are not persisted to the file system
+    const cardStore = new MemoryCardStore();
+    let adminConnection;
     let businessNetworkConnection;
 
     before(() => {
@@ -31,7 +34,7 @@ describe('#' + NS, () => {
             privateKey: 'FAKE PRIVATE KEY'
         };
 
-        // Identity used with the admin connection to deploy business networks
+        // PeerAdmin identity used with the admin connection to deploy business networks
         const deployerMetadata = {
             version: 1,
             userName: 'PeerAdmin',
@@ -40,33 +43,43 @@ describe('#' + NS, () => {
         const deployerCard = new IdCard(deployerMetadata, connectionProfile);
         deployerCard.setCredentials(credentials);
 
-        // Identity used to connect to business networks
-        const userMetadata = {
-            version: 1,
-            userName: 'admin',
-            businessNetwork: '<%= appname%>'
-        };
-        const userCard = new IdCard(userMetadata, connectionProfile);
-        userCard.setCredentials(credentials);
-
-        const deployerCardName = 'deployer';
-        const userCardName = 'user';
-
-        // In-memory card store for testing so cards are not persisted to the file system
-        const cardStore = new MemoryCardStore();
-        const adminConnection = new AdminConnection({ cardStore: cardStore });
+        const deployerCardName = 'PeerAdmin';
+        adminConnection = new AdminConnection({ cardStore: cardStore });
 
         return adminConnection.importCard(deployerCardName, deployerCard).then(() => {
-            return adminConnection.importCard(userCardName, userCard);
-        }).then(() => {
             return adminConnection.connect(deployerCardName);
+        });
+    });
+
+    beforeEach(() => {
+        businessNetworkConnection = new BusinessNetworkConnection({ cardStore: cardStore });
+
+        const adminUserName = 'admin';
+        let adminCardName;
+        let businessNetworkDefinition;
+
+        return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..')).then(definition => {
+            businessNetworkDefinition = definition;
+            // Install the Composer runtime for the new business network
+            return adminConnection.install(businessNetworkDefinition.getName());
         }).then(() => {
-            return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
-        }).then(businessNetworkDefinition => {
-            return adminConnection.deploy(businessNetworkDefinition);
+            // Start the business network and configure an network admin identity
+            const startOptions = {
+                networkAdmins: [
+                    {
+                        userName: adminUserName,
+                        enrollmentSecret: 'adminpw'
+                    }
+                ]
+            };
+            return adminConnection.start(businessNetworkDefinition, startOptions);
+        }).then(adminCards => {
+            // Import the network admin identity for us to use
+            adminCardName = `${adminUserName}@${businessNetworkDefinition.getName()}`;
+            return adminConnection.importCard(adminCardName, adminCards.get(adminUserName));
         }).then(() => {
-            businessNetworkConnection = new BusinessNetworkConnection({ cardStore: cardStore });
-            return businessNetworkConnection.connect(userCardName);
+            // Connect to the business network using the network admin identity
+            return businessNetworkConnection.connect(adminCardName);
         });
     });
 
@@ -75,25 +88,25 @@ describe('#' + NS, () => {
             const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
             // Create a user participant
-            const user = factory.newResource(NS, 'User', '<%= appauthor%>');
+            const user = factory.newResource(namespace, 'User', '<%= appauthor%>');
 
             // Create the asset
-            const asset = factory.newResource(NS, assetType, 'ASSET_001');
+            const asset = factory.newResource(namespace, assetType, 'ASSET_001');
             asset.value = 'old-value';
 
             // Create a transaction to change the asset's value property
-            const changeAssetValue = factory.newTransaction(NS, 'ChangeAssetValue');
-            changeAssetValue.relatedAsset = factory.newRelationship(NS, assetType, asset.$identifier);
+            const changeAssetValue = factory.newTransaction(namespace, 'ChangeAssetValue');
+            changeAssetValue.relatedAsset = factory.newRelationship(namespace, assetType, asset.$identifier);
             changeAssetValue.newValue = 'new-value';
 
             let assetRegistry;
 
-            return businessNetworkConnection.getAssetRegistry(NS + '.' + assetType).then(registry => {
+            return businessNetworkConnection.getAssetRegistry(namespace + '.' + assetType).then(registry => {
                 assetRegistry = registry;
                 // Add the asset to the appropriate asset registry
                 return registry.add(asset);
             }).then(() => {
-                return businessNetworkConnection.getParticipantRegistry(NS + '.User');
+                return businessNetworkConnection.getParticipantRegistry(namespace + '.User');
             }).then(userRegistry => {
                 // Add the user to the appropriate participant registry
                 return userRegistry.add(user);
