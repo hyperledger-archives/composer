@@ -305,6 +305,60 @@ class TestUtil {
                             mspID: 'Org2MSP',
                             timeout: '300'
                         };
+                        connectionProfileOrg1Solo = {
+                            type: 'hlfv1',
+                            name: 'hlfv1org1',
+                            orderers: [
+                                {
+                                    url: 'grpcs://localhost:7050',
+                                    hostnameOverride: 'orderer.example.com',
+                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                }
+                            ],
+                            ca: {
+                                url: 'https://localhost:7054',
+                                name: 'ca.org1.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpcs://localhost:7051',
+                                    eventURL: 'grpcs://localhost:7053',
+                                    hostnameOverride: 'peer0.org1.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                                }
+                            ],
+
+                            channel: 'composerchannel',
+                            mspID: 'Org1MSP',
+                            timeout: '300'
+                        };
+                        connectionProfileOrg2Solo = {
+                            type: 'hlfv1',
+                            name: 'hlfv1org2',
+                            orderers: [
+                                {
+                                    url: 'grpcs://localhost:7050',
+                                    hostnameOverride: 'orderer.example.com',
+                                    cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                }
+                            ],
+                            ca: {
+                                url: 'https://localhost:8054',
+                                name: 'ca.org2.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpcs://localhost:8051',
+                                    eventURL: 'grpcs://localhost:8053',
+                                    hostnameOverride: 'peer0.org2.example.com',
+                                    cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                }
+                            ],
+
+                            channel: 'composerchannel',
+                            mspID: 'Org2MSP',
+                            timeout: '300'
+                        };
                     } else {
                         console.log('setting up Non-TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
