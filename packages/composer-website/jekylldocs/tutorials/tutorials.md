@@ -36,4 +36,20 @@ This tutorial presumes that you have some experience using {{site.data.conrefs.c
 
 In this tutorial, we will build on the 'Commodity Trading' developer tutorial, extending it to show the use of queries in {{site.data.conrefs.composer_short}}. This tutorial demonstrates the power of the native {{site.data.conrefs.composer_short}} query language to filter results returned using criteria and to perform operations on result sets, such as updating or removing assets using a transaction function that uses queries.
 
+## Deploying to a single organization {{site.data.conrefs.hlf_full}}
+
+This tutorial presumes that you have experience setting up an instance of {{site.data.conrefs.hlf_full}}.
+
+In this tutorial, {{site.data.conrefs.composer_full}} is configured for a running instance of {{site.data.conrefs.hlf_full}} and a business network is deployed using that configuration.
+
+[**Start the single organization {{site.data.conrefs.hlf_full}} deployment tutorial**](../tutorials/deploy-to-fabric-single-org.html)
+
+## Deploying to a multi-organization {{site.data.conrefs.hlf_full}}
+
+This tutorial presumes that you have experience using {{site.data.conrefs.hlf_full}}.
+
+In this tutorial, two organization administrators configure their instances of {{site.data.conrefs.composer_full}} to interact with the same channel in {{site.data.conrefs.hlf_full}}.
+
+[**Start the multi-organization {{site.data.conrefs.hlf_full}} deployment tutorial**](../tutorials/deploy-to-fabric-multi-org.html)
+
 ---
