@@ -68,28 +68,25 @@ class EngineQueries {
         const accessController = context.getAccessController();
         return context.getCompiledQueryBundle().execute(dataService, identifier, parameters)
             .then((objects) => {
-                return objects.map((object) => {
-                    object = Registry.removeInternalProperties(object);
-                    return serializer.fromJSON(object);
-                }).reduce((resources, resource) => {
-                    return resources.then((resources) => {
-                        return accessController.check(resource, 'READ')
+                objects.forEach((object) => {
+                    Registry.removeInternalProperties(object);
+                });
+                return objects.reduce((promiseChain, object) => {
+                    return promiseChain.then((objects) => {
+                        return accessController.check(serializer.fromJSON(object), 'READ')
                             .then(() => {
-                                resources.push(resource);
-                                return resources;
+                                objects.push(object);
+                                return objects;
                             })
                             .catch((error) => {
-                                return resources;
+                                return objects;
                             });
                     });
                 }, Promise.resolve([]));
             })
-            .then((resources) => {
-                resources = resources.map((resource) => {
-                    return serializer.toJSON(resource);
-                });
-                LOG.exit(method, resources);
-                return resources;
+            .then((objects) => {
+                LOG.exit(method, objects);
+                return objects;
             });
 
     }
