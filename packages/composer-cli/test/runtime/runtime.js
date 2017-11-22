@@ -30,7 +30,7 @@ describe('composer runtime cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
