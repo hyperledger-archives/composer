@@ -53,7 +53,7 @@ and the unique identifier for that identity is 'f1c5b9fe136d7f2d31b927e0dcb74549
     ```javascript
     const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
     let businessNetworkConnection = new BusinessNetworkConnection();
-    return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'admin', 'adminpw')
+    return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
         .then(() => {
             return businessNetworkConnection.revokeIdentity('f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862')
         })
@@ -68,6 +68,4 @@ and the unique identifier for that identity is 'f1c5b9fe136d7f2d31b927e0dcb74549
 
   * Command line
 
-    ```bash
-    composer identity revoke -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862
-    ```
+        composer identity revoke -c admin@digitalPropertyNetwork -u f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862

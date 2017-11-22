@@ -142,7 +142,6 @@ The metadata file should take the following format:
     "businessNetwork": "basic-sample-network",
     "enrollmentId": "UserID",
     "enrollmentSecret": "UserSecret",
-    "image": "images/conga.png",
     "roles": [
 
     ]

@@ -17,13 +17,13 @@ excerpt: "[**Transaction processor functions can be used to call external REST s
 
 ## Scenario
 
-In some cases it is desirable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. This allows the transaction processor functions to off-board complex or expensive computation to a centrally or peer hosted service.
+In some cases it is desirable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. Calling the REST API allows the transaction processor function to off-board complex or expensive computation to a centrally or peer hosted service.
 
 ## Calling an External REST Service
 
 The `post(url,data)` function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the `application/json` content encoding.
 
-Note that the `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and HLF v1.0.
+The `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and {{site.data.conrefs.hlf_full}} v1.0.
 
 ## Handling Results
 
@@ -64,7 +64,7 @@ function handlePost(postTransaction) {
 
 ## Idempotency and Consensus
 
-The result of the REST request should be a pure function (idempotent) to ensure that all peers get the same results with the same inputs. If this restriction is honored then the risk of consensus failure is minimised.
+The result of the REST request should be a pure function (idempotent) to ensure that all peers get the same results with the same inputs. If this restriction is honored then the risk of consensus failure is minimized.
 
 *Each* peer will make a call to the REST service.
 
@@ -74,4 +74,4 @@ HTTP requests from the web browser will need to be CORS compliant. This requires
 
 ## Docker Network Resolution
 
-HTTP request from the HLF chain code container require DNS resolution and network are in place. For example, with the default Docker container one cannot use http://localhost as this does not resolve to the host machine inside the Docker container. The easiest workaround is to use a DNS name that is publicly resolvable.
+HTTP request from the HLF chaincode container require DNS resolution and network are in place. For example, with the default Docker container one cannot use http://localhost as this does not resolve to the host machine inside the Docker container. The easiest workaround is to use a DNS name that is publicly resolvable.

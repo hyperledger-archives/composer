@@ -5,18 +5,20 @@ category: start
 section: integrating
 index-order: 702
 sidebar: sidebars/accordion-toc0.md
-excerpt: The REST server can be [**configured to subscribe to business events**](./publishing-events.html) that are emitted from a deployed business network, and publish those business events out to client applications.
+excerpt: The REST server can be [**configured to subscribe to events**](./publishing-events.html) emitted from a deployed business network, and publish those events to client applications.
 ---
 
 # Publishing events from the REST server
 
 ---
 
-The REST server can be configured to subscribe to business events that are emitted from a deployed business network, and publish those business events out to client applications. Currently, the REST server supports publishing business events out to client applications over WebSockets. Client applications can use a WebSocket client to subscribe to the business events that are published by the REST server. There are WebSocket clients available for all major programming languages and application types - for example, client side web user interfaces, backend server processes, mobile applications, and integration tools.
+The REST server can be configured to subscribe to events emitted from a deployed business network, and publish those business events for consumption by client applications. Currently, the REST server supports publishing events to client applications over WebSockets.
+
+Client applications can use a WebSocket client to subscribe to the business events that are published by the REST server. There are WebSocket clients available for all major programming languages and application types - for example, client side web user interfaces, backend server processes, mobile applications, and integration tools.
 
 ## Enabling WebSockets
 
-You can enable WebSockets using the `-w` argument to the command line:
+You can enable WebSockets using the `-w` argument on the command line:
 
     composer-rest-server -c alice1@my-network -w
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Deploying to Hyperledger Fabric
+title: Deploying to a single organization Hyperledger Fabric
 category: tutorials
 section: tutorials
 index-order: 304
