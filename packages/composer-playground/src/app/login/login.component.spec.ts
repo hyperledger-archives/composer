@@ -263,7 +263,7 @@ describe(`LoginComponent`, () => {
             sortCards.should.have.been.called;
 
             mockIdentityCardService.getIdentityCards.should.have.been.calledWith(true);
-            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2']);
+            component['connectionProfileRefs'].should.deep.equal(['xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2', 'web-$default']);
             component['connectionProfileNames'].size.should.equal(4);
             component['connectionProfileNames'].get('xxx-myProfile1').should.equal('myProfile1');
             component['connectionProfileNames'].get('xxx-myProfile2').should.equal('myProfile2');
@@ -302,7 +302,7 @@ describe(`LoginComponent`, () => {
 
             tick();
 
-            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile']);
+            component['connectionProfileRefs'].should.deep.equal(['xxx-bobProfile', 'web-$default']);
             component['connectionProfileNames'].size.should.equal(1);
             component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
             component['idCardRefs'].size.should.equal(1);
