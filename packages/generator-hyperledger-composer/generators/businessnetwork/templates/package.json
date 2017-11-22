@@ -11,6 +11,7 @@
   "devDependencies": {
     "composer-admin": "latest",
     "composer-client": "latest",
+    "composer-common": "latest",
     "composer-connector-embedded": "latest",
     "chai": "latest",
     "eslint": "latest",
