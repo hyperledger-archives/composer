@@ -46,9 +46,6 @@ module.exports.builder = function (yargs) {
     // enforce the option after these options
     yargs.requiresArg(['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey','roles']);
 
-    // grouping for the card options - moves them away from the standard --version etc.
-    yargs.group(['f','n','p','u','s','c','k','r'],'Card options');
-
     yargs.implies('certificate','privateKey');
     yargs.implies('privateKey','certificate');
 

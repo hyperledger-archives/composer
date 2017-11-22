@@ -549,7 +549,7 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
      * @param {Object} [startOptions] connector specific start options
-     *                  NetworkAdmins:   [ { name, certificate } , { name, enrollmentSecret  }]
+     *                  networkAdmins:   [ { userName, certificate } , { userName, enrollmentSecret  }]
      *
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed - with a MAP of cards key is name

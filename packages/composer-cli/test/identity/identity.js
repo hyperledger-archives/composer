@@ -33,7 +33,6 @@ describe('composer identity cmd launcher unit tests', function () {
         sandbox = sinon.sandbox.create();
         sandbox.stub(yargs, 'usage').returns(yargs);
         sandbox.stub(yargs, 'conflicts').returns(yargs);
-        sandbox.stub(yargs, 'group').returns(yargs);
         sandbox.stub(yargs, 'options').returns(yargs);
         sandbox.stub(yargs, 'requiresArg').returns(yargs);
         sandbox.stub(yargs, 'demandCommand').returns(yargs);
@@ -63,7 +62,6 @@ describe('composer identity cmd launcher unit tests', function () {
         it('should drive the yargs builder fn correctly',()=>{
             issueCommand.builder(yargs);
             sinon.assert.calledOnce(yargs.options);
-            sinon.assert.calledTwice(yargs.group);
         });
 
     });
