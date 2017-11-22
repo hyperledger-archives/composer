@@ -43,7 +43,7 @@ $callout: #FFD640;
     justify-items: start;
     overflow-y: scroll;
     height: 100vh;
-    background-color: #f7f2f0;
+    background-color: $white;
 
     // Scrollbar overrides
     &::-webkit-scrollbar {
@@ -113,10 +113,9 @@ $callout: #FFD640;
         background-color: $white;
         &.hide {
             height: 4rem !important;
-            background-color: #f7f2f0;
+            background-color: $white;
         }
         &:hover {
-          border-right: 0px solid $first-highlight;
           &:after {
               content: " ";
               position: absolute;
@@ -128,7 +127,7 @@ $callout: #FFD640;
         }
         &.active {
           height: auto !important;
-          border-left-color: $black;
+          border-left-color: $first-highlight;
           &:after {
               content: " ";
               position: absolute;
@@ -137,6 +136,10 @@ $callout: #FFD640;
               bottom: 0;
               background-color: $first-highlight;
           }
+        }
+        &.activeBorder {
+          border-right: 3px solid $first-highlight;
+          transition: none;
         }
         a {
           padding-left: 2rem;
@@ -169,9 +172,9 @@ $callout: #FFD640;
 
           li {
             border-bottom: none;
-            border-left: 6px solid $white;
+            border-left: 3px solid $white;
             &:hover {
-              border-left: 6px solid $black;
+              border-left: 3px solid $first-highlight;
               border-right: none;
             }
           }
@@ -182,6 +185,8 @@ $callout: #FFD640;
         float: right;
         width: 13px;
         height: 13px;
+        padding: 10px;
+        margin-top: -10px;
         &.hidden {
           visibility: hidden;
         }
@@ -213,7 +218,7 @@ $callout: #FFD640;
           li {
             border-bottom: none;
             padding: 0;
-            background-color: #f7f2f0 !important;
+            background-color: $white !important;
 
             &:hover {
               border-right: none;
@@ -681,7 +686,7 @@ copy-button {
     font-size: 0.9rem;
     line-height: 30px;
     border-bottom: 2px solid transparent;
-    background-color: #f7f2f0;
+    background-color: $white;
 
     &.opened {
       max-width: 70%;
