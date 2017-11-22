@@ -30,7 +30,7 @@
     "shelljs": "^0.7.5",
     "winston": "^2.2.0",
     "prettyoutput": "^1.1.1",
-    "yargs": "^6.5.0",
+    "yargs": "10.0.3",
     "cli-table" : "latest"
   }
 }
