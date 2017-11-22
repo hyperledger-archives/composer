@@ -122,7 +122,7 @@ describe('composer deploy network CLI unit tests', function () {
                         'identities': [{ role: { mspId: 'Org1MSP', name: 'member' } }],
                         'policy': { '1-of': [{ 'signed-by': 0 }] }
                     },
-                    networkAdmins: [{ file: 'default', secret: 'true', userName: 'admin' }]
+                    networkAdmins: [{ file: 'default', enrollmentSecret : 'true', userName: 'admin' }]
                 });
             });
         });
@@ -154,7 +154,7 @@ describe('composer deploy network CLI unit tests', function () {
 
                     {
                         endorsementPolicyFile: '/path/to/some/file.json',
-                        networkAdmins: [{ secret: 'secret-secret', userName: 'admin' }]
+                        networkAdmins: [{ enrollmentSecret : 'secret-secret', userName: 'admin' }]
 
                     }
                 );
@@ -245,7 +245,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
                         logLevel: 'DEBUG',
-                        networkAdmins: [{ secret: 'secret-secret', userName: 'admin' }]
+                        networkAdmins: [{ enrollmentSecret : 'secret-secret', userName: 'admin' }]
                     });
             });
         });

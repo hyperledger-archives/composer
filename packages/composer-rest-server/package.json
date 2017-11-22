@@ -58,7 +58,7 @@
     "strong-error-handler": "1.0.1",
     "touch": "1.0.0",
     "ws": "3.0.0",
-    "yargs": "8.0.1"
+    "yargs": "10.0.3"
   },
   "devDependencies": {
     "chai": "3.5.0",
