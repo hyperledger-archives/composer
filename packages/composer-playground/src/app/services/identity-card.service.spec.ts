@@ -445,36 +445,6 @@ describe('IdentityCardService', () => {
             mockAdminService.deleteCard.should.have.been.calledWith('test');
         })));
 
-        it('should delete an identity card and undeploy if web profile', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
-            const mockConnectionProfile2 = {
-                name: 'myWebProfile',
-                type: 'web'
-            };
-
-            let mockIdCard2 = sinon.createStubInstance(IdCard);
-            mockIdCard2.getUserName.returns('alice');
-            mockIdCard2.getConnectionProfile.returns(mockConnectionProfile2);
-            mockIdCard2.getEnrollmentCredentials.returns({
-                secret: 'sauce'
-            });
-            mockIdCard2.getBusinessNetworkName.returns('myNetwork');
-            const mockCardMap = new Map<string, IdCard>();
-            mockCardMap.set('webCard', mockIdCard2);
-            service['idCards'] = mockCardMap;
-
-            sinon.stub(service, 'getAllCardRefsForProfile').returns(['1234']);
-
-            mockAdminService.connect.returns(Promise.resolve());
-
-            service.deleteIdentityCard('webCard');
-
-            tick();
-
-            service['idCards'].size.should.equal(0);
-            mockAdminService.deleteCard.should.have.been.calledWith('webCard');
-            mockAdminService.undeploy.should.have.been.calledWith('myNetwork');
-        })));
-
         it('should not delete an identity card that does not exist', fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             let result;
             service.deleteIdentityCard('test').then(() => {
