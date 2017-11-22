@@ -18,8 +18,8 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const Docker = require('dockerode');
-const homedir = require('homedir');
-const mkdirp = require('mkdirp');
+// const homedir = require('homedir');
+// const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -30,6 +30,9 @@ let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
 let cardStore;
+
+
+const util = require('util');
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -227,12 +230,13 @@ class TestUtil {
                 // Create all necessary configuration for Hyperledger Fabric v1.0.
                 } else if (TestUtil.isHyperledgerFabricV1()) {
 
-                    const keyValStoreOrg1 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org1');
-                    mkdirp.sync(keyValStoreOrg1);
-                    const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
-                    mkdirp.sync(keyValStoreOrg2);
+                    // const keyValStoreOrg1 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org1');
+                    // mkdirp.sync(keyValStoreOrg1);
+                    // const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
+                    // mkdirp.sync(keyValStoreOrg2);
                     let connectionProfileOrg1, connectionProfileOrg2;
                     let connectionProfileOrg1Solo, connectionProfileOrg2Solo;
+
                     if (process.env.FVTEST.match('tls$')) {
                         console.log('setting up TLS Connection Profile for HLF V1');
                         connectionProfileOrg1 = {
@@ -262,7 +266,7 @@ class TestUtil {
                                     cert: './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
                                 }
                             ],
-                            keyValStore: keyValStoreOrg1,
+
                             channel: 'composerchannel',
                             mspID: 'Org1MSP',
                             timeout: '300'
@@ -294,7 +298,7 @@ class TestUtil {
                                     cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                 }
                             ],
-                            keyValStore: keyValStoreOrg2,
+
                             channel: 'composerchannel',
                             mspID: 'Org2MSP',
                             timeout: '300'
@@ -323,7 +327,7 @@ class TestUtil {
                             channel: 'composerchannel',
                             mspID: 'Org1MSP',
                             timeout: '300',
-                            keyValStore: keyValStoreOrg1
+
                         };
                         connectionProfileOrg2 = {
                             type: 'hlfv1',
@@ -347,7 +351,7 @@ class TestUtil {
                             channel: 'composerchannel',
                             mspID: 'Org2MSP',
                             timeout: '300',
-                            keyValStore: keyValStoreOrg2
+
                         };
                     }
                     connectionProfileOrg1Solo = Object.assign({}, connectionProfileOrg1);
@@ -356,17 +360,15 @@ class TestUtil {
                     connectionProfileOrg2Solo.peers.pop();
 
                     //
-                    currentCp = connectionProfileOrg1Solo;
-
+                    currentCp = connectionProfileOrg1;
                     if (process.env.COMPOSER_TIMEOUT_SECS) {
                         connectionProfileOrg1.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
                         connectionProfileOrg2.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
                         console.log('COMPOSER_TIMEOUT_SECS set, using: ', connectionProfileOrg1.timeout, connectionProfileOrg2.timeout);
                     }
-                    console.log('Calling AdminConnection.createProfile() ...');
 
                     let fs = dynamicRequire('fs');
-                    console.log('Calling AdminConnection.importIdentity() ...');
+                    console.log('Creating peer admin cards, and import them to the card store');
                     const admins = [
                         { org: 'org1', keyFile: 'key.pem' },
                         { org: 'org2', keyFile: 'key.pem' }
@@ -399,13 +401,13 @@ class TestUtil {
                             return adminConnection.importCard(`composer-systests-${org}-PeerAdmin`, card)
                             .then(()=>{
                                 return adminConnection.importCard(`composer-systests-${org}-solo-PeerAdmin`, cardsolo);
+                            }).then(()=>{
+                                console.log(util.inspect(cardStore));
+                                console.log('Imported cards to the card store');
                             });
-                            // return adminConnection.importIdentity(`composer-systests-${org}`, 'PeerAdmin', signerCert, key);
+
                         });
-                    }, Promise.resolve())
-                        .then(() => {
-                            console.log('Called AdminConnection.importIdentity() ...');
-                        });
+                    }, Promise.resolve());
 
                 } else {
                     throw new Error('I do not know what kind of tests you want me to run!');
@@ -501,6 +503,7 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when complete.
      */
     static deploy(businessNetworkDefinition, forceDeploy_) {
+        console.log('BANANAS', TestUtil.isHyperledgerFabricV1());
         // do not believe there is any code left doing forceDeploy_
         if (forceDeploy_){ throw new Error('this should not be deploying');}
 
@@ -531,9 +534,11 @@ class TestUtil {
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
+                    console.log('Connecting to org1');
                     return adminConnection.connect('composer-systests-org1-solo-PeerAdmin');
                 })
                 .then(() => {
+                    console.log('Connecting to install');
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
@@ -541,9 +546,11 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
+                    console.log('Connecting to org2');
                     return adminConnection.connect('composer-systests-org2-solo-PeerAdmin');
                 })
                 .then(() => {
+                    console.log('Connecting to install org2');
                     return adminConnection.install(businessNetworkDefinition.getName());
                 })
                 .then(() => {
@@ -551,9 +558,11 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and start the network on the peers for org1 and org2.
+                    console.log('Connecting to start the network');
                     return adminConnection.connect('composer-systests-org1-PeerAdmin');
                 })
                 .then(() => {
+                    console.log('Starting the network');
                     return adminConnection.start(businessNetworkDefinition, {
                         bootstrapTransactions,
                         endorsementPolicy: {
@@ -585,6 +594,7 @@ class TestUtil {
                     });
                 })
                 .then(()=>{
+                    console.log('Creating the network admin id card');
                     let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() },currentCp);
                     return adminConnection.importCard('admincard', adminidCard);
                 })
