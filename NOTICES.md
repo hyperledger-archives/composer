@@ -28,7 +28,7 @@ The Program includes some or all of the following that IBM obtained under the MI
 - loopback-component-explorer - Copyright (c) IBM Corp. 2013,2016. All Rights Reserved.
 - Serve-favicon – Copyright © 2010 Sencha Inc.
 - Copyright (c) 2011 TJ Holowaychuk, Copyright (c) 2011 LearnBoost, Copyright (c) 2014-2017 Douglas Christopher Wilson
--  strong-error-handler - Copyright (c) IBM Corp. 2016. All Rights Reserved.
+- strong-error-handler - Copyright (c) IBM Corp. 2016. All Rights Reserved.
 - Touch - Copyright (c) Isaac Z. Schlueter
 - Yargs - Copyright 2010 James Halliday (mail@substack.net)
 - Modified work Copyright 2014 Contributors (ben@npmjs.com)
@@ -80,6 +80,21 @@ The Program includes some or all of the following that IBM obtained under the MI
 - async (Node) - Copyright (c) 2010-2017 Caolan McMahon
 - jQuery - Copyright JS Foundation and other contributors, https://js.foundation/
 - clipboard - © Zeno Rocha
+- connect-ensure-login - Copyright (c) 2012-2013 Jared Hanson
+- cookie-parser - Copyright (c) 2010 Sencha Inc.  Copyright (c) 2014 TJ Holowaychuk tj@vision-media.ca, Copyright (c) 2015 Douglas Christopher Wilson < doug@somethingdoug.com
+- Jade 
+- Passport-local - Copyright (c) 2011-2014 Jared Hanson
+- strong-error-handler- Copyright (c) IBM Corp. 2016,2017
+- express-flash - Copyright (c) 2012 RGBboy me@rgbboy.com
+- tar - Copyright (c) Isaac Z. Schlueter and Contributors
+- Browserfs - Copyright (c) 2013, 2014, 2015, 2016, 2017 John Vilk and other BrowserFS contributors.
+- chai - Copyright (c) 2017 Chai.js Assertion Library
+- documentation.js - Copyright (c) 2015, documentationjs 
+- node-cache - Copyright (c) 2016 mpneuried
+- ws - Copyright (c) 2011 Einar Otto Stangvik einaros@gmail.com
+- lorem-ipsun - Copyright (c) 2012-2017 Nickolas Kenyeres
+- ngx-clipboard - Copyright (c) 2016 Sam Lin
+- express-session - Copyright (c) 2010 Sencha Inc. Copyright (c) 2011 TJ Holowaychuk tj@vision-media.ca  Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -100,7 +115,12 @@ The Program includes some or all of the following that IBM obtained under the BS
 - yeoman-generator - Copyright (c) 2015, Google All rights reserved.
 - Npm-registry-client - Copyright (c) Isaac Z. Schlueter and Contributors
 - jsDump - Copyright (c) 2008 Ariel Flesler
-
+- source-map - Copyright (c) 2009-2011, Mozilla Foundation and contributors
+- Istanbul-lib-instrument - Copyright 2012-2015 Yahoo! Inc.
+- xhr - Copyright (c) 2012 Raynos.
+- cli-table - Copyright (c) 2010 LearnBoost dev@learnboost.com
+- proxyquire - Copyright 2013 Thorsten Lorenz. 
+- uri-js - Copyright 2011 Gary Court. All rights reserved.
 
 All rights reserved.
 
@@ -117,12 +137,21 @@ The Program includes some or all of the following that IBM obtained under the Ap
 - Dexie 1.5.1
 - Doctrine 2.0
 - fake-indexeddb 1.0.11
-- fabric-sdk-node 1.0.0
+- fabric-sdk-node 1.0.2
+- fabric-ca-client 1.0.2
 - Google Fonts (Open Sans) 1.0
+- JsDoc 3.5.5
 - node-nailgun-client 0.1.0
 - Node-nailgun-server 0.1.3
 - Request 2.81.0
-- Typescript 2.2.1
+- Typescript 2.4.0
+- web-animations-js 2.2.5
+- pouchdb-find 6.2.0
+- pouchdb-collate 6.2.0
+- pouchdb-core 6.2.0
+- pouchdb-adapter-memory 6.2.0
+- pouchdb-adapter-idb 6.2.0
+- pouchdb-adapter-websql 6.2.0
 
 Apache License
 
@@ -156,3 +185,9 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
 
 END OF TERMS AND CONDITIONS
+
+## Artistic License 2.0
+
+"The Program includes some or all of the following that IBM obtained under the Artistic License 2.0 (source code available via the indicated URL):"
+
+- loopback-component-passport 3.2.0 - https://github.com/strongloop/loopback-component-passport
