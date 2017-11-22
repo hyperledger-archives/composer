@@ -155,7 +155,6 @@ describe('AppComponent', () => {
     let mockAboutService;
     let mockConfigService;
     let mockAdminConnection;
-    let mockWindow;
     let mockFileService;
 
     let linkDes;
@@ -165,6 +164,8 @@ describe('AppComponent', () => {
     let routerStub: RouterStub;
 
     let checkVersionStub;
+
+    let analyticsMock;
 
     beforeEach(async(() => {
         mockClientService = sinon.createStubInstance(ClientService);
@@ -187,11 +188,7 @@ describe('AppComponent', () => {
         activatedRoute = new ActivatedRouteStub();
         routerStub = new RouterStub();
 
-        mockWindow = {
-            location: {
-                reload: sinon.stub()
-            }
-        };
+        analyticsMock = global['window'].ga = sinon.stub();
 
         TestBed.configureTestingModule({
             declarations: [AppComponent, MockRouterOutletDirective, MockRouterLinkDirective, MockRouterLinkActiveDirective, MockSuccessDirective, MockNgbModalContainerDirective],
@@ -307,6 +304,43 @@ describe('AppComponent', () => {
 
             welcomeModalStub.should.have.been.called;
         });
+
+        it('should not send analytics', fakeAsync(() => {
+            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
+
+            routerStub.eventParams = {url: '/bob', nav: 'end'};
+
+            updateComponent(false);
+
+            tick();
+
+            analyticsMock.should.not.have.been.called;
+
+            checkVersionStub.should.have.been.called;
+            openVersionModalStub.should.have.been.called;
+        }));
+
+        it('should send analytics', fakeAsync(() => {
+            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
+
+            component['submitAnalytics'] = true;
+
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/banana', nav: 'end'};
+
+            updateComponent(false);
+
+            tick();
+
+            analyticsMock.firstCall.should.have.been.calledWith('set', 'page', '/banana');
+            analyticsMock.secondCall.should.have.been.calledWith('send', 'pageview');
+
+            checkVersionStub.should.have.been.called;
+            openVersionModalStub.should.have.been.called;
+        }));
 
         it('should check version and open version modal', fakeAsync(() => {
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
@@ -504,9 +538,10 @@ describe('AppComponent', () => {
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
         }));
 
-        it('should initialise playground and set use locally to true', fakeAsync(() => {
+        it('should initialise playground and set use locally to true, and not set analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(false);
+            mockConfigService.getConfig.returns(null);
             activatedRoute.testParams = {};
 
             updateComponent();
@@ -517,13 +552,15 @@ describe('AppComponent', () => {
             updateComponent();
 
             mockInitializationService.initialize.should.have.been.called;
+            component['submitAnalytics'].should.equal(false);
 
             component['usingLocally'].should.equal(true);
         }));
 
-        it('should initialise playground and set use locally to false', fakeAsync(() => {
+        it('should initialise playground and set use locally to false and use analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(true);
+            mockConfigService.getConfig.returns({analyticsID: 'myID'});
 
             activatedRoute.testParams = {};
 
@@ -535,6 +572,9 @@ describe('AppComponent', () => {
             updateComponent();
 
             mockInitializationService.initialize.should.have.been.called;
+
+            analyticsMock.should.have.been.calledWith('create', 'myID', 'auto');
+            component['submitAnalytics'].should.equal(true);
 
             component['usingLocally'].should.equal(false);
         }));

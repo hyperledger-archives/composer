@@ -151,7 +151,7 @@ else
     cf push composer-playground -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env composer-playground CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
     cf set-env composer-playground CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
-    cf set-env composer-playground COMPOSER_CONFIG '{"webonly":true}'
+    cf set-env composer-playground COMPOSER_CONFIG '{"webonly":true,  "analyticsID" : "UA-91314349-3"}'
     cf start composer-playground
     popd
 

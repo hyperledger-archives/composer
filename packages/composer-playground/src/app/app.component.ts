@@ -49,6 +49,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private busyModalRef = null;
 
+    private submitAnalytics: boolean = false;
+
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private clientService: ClientService,
@@ -107,6 +109,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     processRouteEvent(event): Promise<void> {
+        if (this.submitAnalytics) {
+            (window)['ga']('set', 'page', event.urlAfterRedirects);
+            (window)['ga']('send', 'pageview');
+        }
+
         let welcomePromise;
         if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
@@ -134,6 +141,12 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.initializationService.initialize()
             .then(() => {
                 this.usingLocally = !this.configService.isWebOnly();
+
+                const config = this.configService.getConfig();
+                if (config && config.analyticsID) {
+                    this.submitAnalytics = true;
+                    window['ga']('create', config.analyticsID, 'auto');
+                }
             });
     }
 
