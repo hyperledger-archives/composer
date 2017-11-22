@@ -57,19 +57,58 @@ stop
 # run the fabric-dev-scripts to get a running fabric
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
-./fabric-dev-servers/createComposerProfile.sh
 
 # pull and tage the correct image for the installer
 docker pull hyperledger/composer-playground:{{ENV_VER}}
 docker tag hyperledger/composer-playground:{{ENV_VER}} hyperledger/composer-playground:latest
 
-
 # Start all composer
 docker-compose -p composer -f docker-compose-playground.yml up -d
-# copy over pre-imported admin credentials
-cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
-docker exec composer mkdir /home/composer/.composer-credentials
-tar -cv * | docker exec -i composer tar x -C /home/composer/.composer-credentials
+
+# manually create the card store
+docker exec composer mkdir /home/composer/.composer
+
+# build the card store locally first
+rm -fr /tmp/onelinecard
+mkdir /tmp/onelinecard
+mkdir /tmp/onelinecard/cards
+mkdir /tmp/onelinecard/client-data
+mkdir /tmp/onelinecard/cards/PeerAdmin@hlfv1
+mkdir /tmp/onelinecard/client-data/PeerAdmin@hlfv1
+mkdir /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials
+
+# copy the various material into the local card store
+cd fabric-dev-servers/fabric-scripts/hlfv1/composer
+cp creds/* /tmp/onelinecard/client-data/PeerAdmin@hlfv1
+cp crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials/certificate
+cp crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials/privateKey
+echo '{"version":1,"userName":"PeerAdmin","roles":["PeerAdmin", "ChannelAdmin"]}' > /tmp/onelinecard/cards/PeerAdmin@hlfv1/metadata.json
+echo '{
+    "type": "hlfv1",
+    "name": "hlfv1",
+    "orderers": [
+       { "url" : "grpc://orderer.example.com:7050" }
+    ],
+    "ca": { "url": "http://ca.org1.example.com:7054",
+            "name": "ca.org1.example.com"
+    },
+    "peers": [
+        {
+            "requestURL": "grpc://peer0.org1.example.com:7051",
+            "eventURL": "grpc://peer0.org1.example.com:7053"
+        }
+    ],
+    "channel": "composerchannel",
+    "mspID": "Org1MSP",
+    "timeout": 300
+}' > /tmp/onelinecard/cards/PeerAdmin@hlfv1/connection.json
+
+# transfer the local card store into the container
+cd /tmp/onelinecard
+tar -cv * | docker exec -i composer tar x -C /home/composer/.composer
+rm -fr /tmp/onelinecard
+
+cd "${WORKDIR}"
 
 # Wait for playground to start
 sleep 5
