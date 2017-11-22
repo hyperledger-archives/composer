@@ -196,6 +196,11 @@ class ClassDeclaration extends Decorated {
                 if(field.isOptional()) {
                     throw new IllegalModelException('Identifying fields cannot be optional.',this.modelFile, this.ast.location);
                 }
+                if(this.getSuperType()){
+                    if(field.getName() === this.getModelFile().getType(this.superType).getIdentifierFieldName()){
+                        throw new IllegalModelException('Identifier cannot extend from super type.');
+                    }
+                }
             }
         }
         else {

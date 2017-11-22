@@ -1,0 +1,8 @@
+namespace com.testing
+
+abstract asset p1 identified by a1 {
+o String a1
+}
+asset p2 identified by a1 extends p1 {
+o String a2
+}

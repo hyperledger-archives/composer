@@ -120,6 +120,12 @@ describe('ClassDeclaration', () => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
+        it('should throw when an identifier extends from a super type', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.identifierextendsfromsupertype.cto', AssetDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Identifier cannot extend from super type/);
+        });
 
         it('should throw when concept name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
