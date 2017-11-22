@@ -169,7 +169,7 @@ class TestUtil {
      */
     static setUp() {
         cardStore = new MemoryCardStore();
-        const adminConnection = new AdminConnection({cardStore});
+        let adminConnection = new AdminConnection({cardStore});
         forceDeploy = false;
         return TestUtil.waitForPorts()
             .then(() => {
@@ -229,7 +229,9 @@ class TestUtil {
 
                 // Create all necessary configuration for Hyperledger Fabric v1.0.
                 } else if (TestUtil.isHyperledgerFabricV1()) {
-
+                    const FileSystemCardStore = dynamicRequire('composer-common').FileSystemCardStore;
+                    cardStore = new FileSystemCardStore();
+                    adminConnection = new AdminConnection({cardStore});
                     // const keyValStoreOrg1 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org1');
                     // mkdirp.sync(keyValStoreOrg1);
                     // const keyValStoreOrg2 = path.resolve(homedir(), '.composer-credentials', 'composer-systests-org2');
@@ -353,11 +355,50 @@ class TestUtil {
                             timeout: '300',
 
                         };
+                        connectionProfileOrg1Solo = {
+                            type: 'hlfv1',
+                            name: 'hlfv1org1',
+                            orderers: [
+                                'grpc://localhost:7050'
+                            ],
+                            ca: {
+                                url: 'http://localhost:7054',
+                                name: 'ca.org1.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpc://localhost:7051',
+                                    eventURL: 'grpc://localhost:7053'
+                                }
+                            ],
+                            channel: 'composerchannel',
+                            mspID: 'Org1MSP',
+                            timeout: '300',
+
+                        };
+                        connectionProfileOrg2Solo = {
+                            type: 'hlfv1',
+                            name: 'hlfv1org2',
+                            orderers: [
+                                'grpc://localhost:7050'
+                            ],
+                            ca: {
+                                url: 'http://localhost:8054',
+                                name: 'ca.org2.example.com'
+                            },
+                            peers: [
+                                {
+                                    requestURL: 'grpc://localhost:8051',
+                                    eventURL: 'grpc://localhost:8053'
+                                }
+                            ],
+                            channel: 'composerchannel',
+                            mspID: 'Org2MSP',
+                            timeout: '300',
+
+                        };
                     }
-                    connectionProfileOrg1Solo = Object.assign({}, connectionProfileOrg1);
-                    connectionProfileOrg1Solo.peers.pop();
-                    connectionProfileOrg2Solo = Object.assign({}, connectionProfileOrg2);
-                    connectionProfileOrg2Solo.peers.pop();
+
 
                     //
                     currentCp = connectionProfileOrg1;
@@ -503,7 +544,6 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when complete.
      */
     static deploy(businessNetworkDefinition, forceDeploy_) {
-        console.log('BANANAS', TestUtil.isHyperledgerFabricV1());
         // do not believe there is any code left doing forceDeploy_
         if (forceDeploy_){ throw new Error('this should not be deploying');}
 
@@ -526,7 +566,7 @@ class TestUtil {
             {
                 $class: 'org.hyperledger.composer.system.IssueIdentity',
                 participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                identityName: 'admin',
+                identityName: 'admin'
             }
         ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
@@ -616,7 +656,7 @@ class TestUtil {
         } else if (!forceDeploy) {
             let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
-            currentCp = {type : 'embedded',name:'defaultProfile'};
+            // currentCp = {type : 'embedded',name:'defaultProfile'};
             let connectionprofile;
 
             if (TestUtil.isEmbedded() || TestUtil.isProxy()){

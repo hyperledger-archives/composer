@@ -49,7 +49,7 @@ describe('Access control system tests', function() {
     });
 
     before(function () {
-        console.log('before');
+
         // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
             { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')}
@@ -70,11 +70,10 @@ describe('Access control system tests', function() {
 
 
         bnID = businessNetworkDefinition.getName();
-        console.log('calling deploy');
+
         return TestUtil.deploy(businessNetworkDefinition)
             .then((_cardStore) => {
                 cardStore = _cardStore;
-                console.log('card store in uses is '+cardStore);
                 return TestUtil.getClient(cardStore,'systest-accesscontrols')
                     .then((result) => {
                         client = result;

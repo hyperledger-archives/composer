@@ -34,6 +34,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     # Delete any existing configuration.
     rm -rf ${HOME}/.composer-connection-profiles/composer-systests*
     rm -rf ${HOME}/.composer-credentials/composer-systests*
+    rm -rf ${HOME}/.composer/* 
 
     # Pull any required Docker images.
     if [[ ${FVTEST} == hlfv1* ]]; then
