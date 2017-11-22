@@ -82,7 +82,7 @@ chai.use(require('chai-as-promised'));
                 return adminConnection.install(businessNetworkDefinition.getName());
             })
             .then(()=>{
-                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });

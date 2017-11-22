@@ -465,7 +465,7 @@ class AdminConnection {
      *
      * @param {BusinessNetworkDefinition} businessNetworkDefinition usual network definition
      * @param {Object[]} networkAdmins array of objects that are defining the network admins
-     *                                   [ { name, certificate } , { name, secret }]
+     *                                   [ { name, certificate } , { name, enrollmentSecret  }]
      * @return {Object[]} The bootstrap transactions.
      * @private
      */
@@ -506,7 +506,7 @@ class AdminConnection {
                     certificate : networkAdmin.certificate
                 });
                 LOG.debug(method, 'Created bootstrap transaction to bind identity', identityTransaction);
-            } else if (networkAdmin.secret) {
+            } else if (networkAdmin.enrollmentSecret) {
                 // Handle an enrollment secret which requires an issue identity transaction.
                 identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
                 Object.assign(identityTransaction, {
@@ -549,7 +549,7 @@ class AdminConnection {
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
      * @param {Object} [startOptions] connector specific start options
-     *                  NetworkAdmins:   [ { name, certificate } , { name, secret }]
+     *                  NetworkAdmins:   [ { name, certificate } , { name, enrollmentSecret  }]
      *
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed - with a MAP of cards key is name
@@ -582,8 +582,8 @@ class AdminConnection {
                         };
 
                         let newCard;
-                        if (networkAdmin.secret){
-                            metadata.enrollmentSecret = networkAdmin.secret;
+                        if (networkAdmin.enrollmentSecret ){
+                            metadata.enrollmentSecret = networkAdmin.enrollmentSecret ;
                             newCard = new IdCard(metadata,connectionProfile);
                         } else {
                             newCard = new IdCard(metadata,connectionProfile);

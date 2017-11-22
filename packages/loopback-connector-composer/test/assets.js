@@ -135,7 +135,7 @@ chai.use(require('chai-as-promised'));
         before(() => {
             const cardStore = new MemoryCardStore();
             adminConnection = new AdminConnection({ cardStore });
-            let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+            let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
 
             let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
@@ -154,7 +154,7 @@ chai.use(require('chai-as-promised'));
                 return adminConnection.install(businessNetworkDefinition.getName());
             })
             .then(()=>{
-                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',secret:'adminpw'}] });
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
