@@ -30,6 +30,7 @@ let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
 let cardStore;
+
 /**
  * Trick browserify by making the ID parameter to require dynamic.
  * @param {string} id The module ID.
@@ -191,7 +192,13 @@ class TestUtil {
                     const ConnectorServer = dynamicRequire('composer-connector-server');
                     const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
                     // const FSConnectionProfileStore = dynamicRequire('composer-common').FSConnectionProfileStore;
-                    // const fs = dynamicRequire('fs');
+                    const BrowserFS = dynamicRequire('browserfs/dist/node/index');
+                    const bfs_fs = BrowserFS.BFSRequire('fs');
+                    BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
+
+                    const FileSystemCardStore = dynamicRequire('composer-common').FileSystemCardStore;
+                    cardStore = new FileSystemCardStore({fs:bfs_fs});
+
                     const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
                     const socketIO = dynamicRequire('socket.io');
                     // We are using the embedded connector, but we configure it to route through the
@@ -202,13 +209,14 @@ class TestUtil {
                     // Since we're a single process, we have to force the embedded connection manager into
                     // the connection profile manager that the connector server is using.
                     const connectionManager = new EmbeddedConnectionManager(connectionProfileManager);
-                    connectionProfileManager.getConnectionManager = () => {
+                    connectionProfileManager.getConnectionManagerByType = () => {
                         return Promise.resolve(connectionManager);
                     };
                     const io = socketIO(15699);
                     io.on('connect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
                         new ConnectorServer(cardStore, connectionProfileManager, socket);
+                        console.log('Connector Server created');
                     });
                     io.on('disconnect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
