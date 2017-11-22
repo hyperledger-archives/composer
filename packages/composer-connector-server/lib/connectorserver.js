@@ -223,7 +223,7 @@ class ConnectorServer {
                 return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
             })
             .then((deleted) => {
-                callback(deleted);
+                callback(null, deleted);
                 LOG.exit(method);
             })
             .catch((error) => {
