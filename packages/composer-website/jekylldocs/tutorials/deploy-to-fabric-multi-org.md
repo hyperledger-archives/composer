@@ -43,7 +43,7 @@ Clone the following GitHub repository:
 
     git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
 
-Follow the [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html).
+Follow the [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html), ensuring that you use the GitHub repository cloned in the previous step. You must not clone and use the Hyperledger Fabric version of the GitHub repository as it is currently missing changes that are required for this tutorial.
 
 <h2 class='everybody'>Step One: Starting a {{site.data.conrefs.hlf_full}} network</h2>
 
@@ -54,7 +54,7 @@ This tutorial will assume that you use the {{site.data.conrefs.hlf_full}} networ
 You can now start the BYFN network. You must specify additional flags that are not specified in the Building Your First Network tutorial. This is because we want to use CouchDB as the world state database, and we want to start a Certificate Authority (CA) for each organization.
 
     ./byfn.sh -m generate
-    ./byfn.sh -m up -s couchdb -f docker-compose-e2e.yaml
+    ./byfn.sh -m up -s couchdb -a
 
 If the command works successfully, the BYFN network is started, and you will see the following output:
 
@@ -541,8 +541,6 @@ The certficates will be placed into a directory called `bob` in the current work
 Run the `composer network start` command to start the business network. Only `Org1` needs to perform this operation. This command uses the `endorsement-policy.json` file created in step thirteen, and the `admin-pub.pem` files created by both Alice and Bob in step fifteen and step sixteen, so you must ensure that all of these files are accessible to this command:
 
     composer network start -c PeerAdmin@byfn-network-org1 -a tutorial-network@0.0.1.bna -o endorsementPolicyFile=endorsement-policy.json -A alice -C alice/admin-pub.pem -A bob -C bob/admin-pub.pem
-
-<h3 class='warning'>Warning! This command currently throws an error with the text "Path must be a string". This error can be safely ignored. We are working on fixing this issue!</h3>
 
 Once this command completes, the business network will have been started. Both Alice and Bob will be able to access the business network, start to set up the business network, and onboard other participants from their respective organizations. However, both Alice and Bob must create new business network cards with the certificates that they created in the previous steps so that they can access the business network.
 
