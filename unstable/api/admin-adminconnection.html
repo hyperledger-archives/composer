@@ -729,7 +729,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fufilled when the business network has been deployed.</p>
+<p><code>Promise</code> - A promise that will be fufilled when the business network has been deployed - with a MAP of cards key is name</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -751,7 +751,7 @@ The connection profile must exist in the profile store.</p>
 <td style="text-align: left"><strong>startOptions</strong></td>
 <td style="text-align: left">Object</td>
 <td style="text-align: left">true</td>
-<td style="text-align: left">connector specific start options                  startOptions.card the card to use for the NetworkAdmin</td>
+<td style="text-align: left">connector specific start options                  NetworkAdmins:   [ { name, certificate } , { name, secret }]</td>
 </tr>
 </tbody></table>
 
