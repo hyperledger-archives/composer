@@ -38,6 +38,7 @@ describe('composer participant cmd launcher unit tests', function () {
         sandbox.stub(yargs, 'group').returns(yargs);
         sandbox.stub(yargs, 'options').returns(yargs);
         sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
