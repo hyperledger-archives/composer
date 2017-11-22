@@ -78,9 +78,9 @@ export class SampleBusinessNetworkService {
         if (credentials) {
             networkAdmin['certificate'] = credentials.certificate;
         } else if (networkSecret) {
-            networkAdmin['secret'] = networkSecret;
+            networkAdmin['enrollmentSecret'] = networkSecret;
         } else {
-            networkAdmin['secret'] = 'adminpw';
+            networkAdmin['enrollmentSecret'] = 'adminpw';
         }
 
         cardName = cardName || networkId + '@' + networkName;

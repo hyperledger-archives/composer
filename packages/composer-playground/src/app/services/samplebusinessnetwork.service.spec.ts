@@ -194,7 +194,7 @@ describe('SampleBusinessNetworkService', () => {
             let createdCardMap = new Map<string, IdCard>();
             let createdCard = new IdCard({
                 userName: 'admin',
-                secret: 'adminpw',
+                enrollmentSecret: 'adminpw',
                 businessNetwork: 'myNetwork'
             }, {name: 'myProfile', type: 'hlfv1'});
             createdCardMap.set('admin', createdCard);
@@ -218,7 +218,7 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.start.should.have.been.calledWith(sinon.match.object, {
                 networkAdmins: [{
                     userName: 'admin',
-                    secret: 'adminpw'
+                    enrollmentSecret : 'adminpw'
                 }]
             });
             adminMock.importCard.should.have.been.calledWith('myCardName', createdCard);
@@ -230,7 +230,7 @@ describe('SampleBusinessNetworkService', () => {
             let createdCardMap = new Map<string, IdCard>();
             let createdCard = new IdCard({
                 userName: 'myUserId',
-                secret: 'adminpw',
+                enrollmentSecret: 'adminpw',
                 businessNetwork: 'myNetwork'
             }, {name: 'myProfile', type: 'hlfv1'});
             createdCardMap.set('myUserId', createdCard);
@@ -254,7 +254,7 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.start.should.have.been.calledWith(sinon.match.object, {
                 networkAdmins: [{
                     userName: 'myUserId',
-                    secret: 'mySecret'
+                    enrollmentSecret: 'mySecret'
                 }]
             });
 

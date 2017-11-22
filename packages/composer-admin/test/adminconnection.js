@@ -268,7 +268,7 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition, {
                 networkAdmins : [{
                     userName : 'admin',
-                    secret : 'adminpw'
+                    enrollmentSecret  : 'adminpw'
                 }]
             })
                 .then(() => {
@@ -276,14 +276,14 @@ describe('AdminConnection', () => {
                     sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
                         networkAdmins : [{
                             userName : 'admin',
-                            secret : 'adminpw'
+                            enrollmentSecret  : 'adminpw'
                         }]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
                     sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
                         networkAdmins : [{
                             userName : 'admin',
-                            secret : 'adminpw'
+                            enrollmentSecret  : 'adminpw'
                         }]
                     });
                 });
@@ -297,7 +297,7 @@ describe('AdminConnection', () => {
             return adminConnection.start(businessNetworkDefinition, {
                 networkAdmins : [{
                     userName : 'admin',
-                    secret : 'adminpw'
+                    enrollmentSecret  : 'adminpw'
                 }, {userName : 'admin', certificate : 'cert'}]
             })
                 .then(() => {
@@ -305,14 +305,14 @@ describe('AdminConnection', () => {
                     sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
                         networkAdmins : [{
                             userName : 'admin',
-                            secret : 'adminpw'
+                            enrollmentSecret  : 'adminpw'
                         }, {userName : 'admin', certificate : 'cert'}]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
                     sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
                         networkAdmins : [{
                             userName : 'admin',
-                            secret : 'adminpw'
+                            enrollmentSecret  : 'adminpw'
                         }, {userName : 'admin', certificate : 'cert'}]
                     });
                 });
@@ -325,18 +325,18 @@ describe('AdminConnection', () => {
             sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
             return adminConnection.start(businessNetworkDefinition, {
                 opt : 1,
-                networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
             })
                 .then(() => {
                     sinon.assert.calledOnce(adminConnection._buildStartTransaction);
                     sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
                         opt : 1,
-                        networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                        networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
                     sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
                         opt : 1,
-                        networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                        networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
                     });
                 });
         });
@@ -675,7 +675,7 @@ describe('AdminConnection', () => {
             return adminConnection._buildStartTransaction(businessNetworkDefinition, {
                 networkAdmins : [{
                     userName : 'admin',
-                    secret : 'adminpw'
+                    enrollmentSecret  : 'adminpw'
                 }, {userName : 'adminc', certificate : 'certcertcert'}]
             })
                 .then((startTransactionJSON) => {
@@ -732,7 +732,7 @@ describe('AdminConnection', () => {
         it('should build the start transaction if empty bootstrap transactions specified', () => {
             return adminConnection._buildStartTransaction(businessNetworkDefinition, {
                 bootstrapTransactions : [],
-                networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
             })
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
@@ -778,7 +778,7 @@ describe('AdminConnection', () => {
             const startOptions = {
                 logLevel : 'DEBUG',
                 card : userCard,
-                networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
             };
             return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
                 .then((startTransactionJSON) => {
@@ -817,7 +817,7 @@ describe('AdminConnection', () => {
         it('should build the start transaction ignoring additional unmodelled properties from the start options', () => {
             const startOptions = {
                 notAModelledProp : 'lulz',
-                networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
             };
             return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
                 .then((startTransactionJSON) => {
@@ -965,14 +965,14 @@ describe('AdminConnection', () => {
 
             return adminConnection._buildStartTransaction(businessNetworkDefinition, {
                 bootstrapTransactions,
-                networkAdmins : [{userName : 'admin', secret : 'adminpw'}]
+                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
             }).should.eventually.be.rejectedWith('You cannot specify both network administrators and bootstrap transactions');
         });
 
         it('should throw error if no userName specified', () => {
             return adminConnection._buildStartTransaction(businessNetworkDefinition, {
                 networkAdmins : [{
-                    secret : 'adminpw'
+                    enrollmentSecret  : 'adminpw'
                 }]
             }).should.eventually.be.rejectedWith('A user name must be specified for all network administrators');
         });
