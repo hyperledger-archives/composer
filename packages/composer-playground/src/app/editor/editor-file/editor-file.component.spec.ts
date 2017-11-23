@@ -269,7 +269,6 @@ describe('EditorFileComponent', () => {
             component['editorContent'] = 'my model';
             component.setCurrentCode();
             mockFileService.updateFile.should.have.been.calledWith('myId', 'my model', 'model');
-            mockFileService.validateFile.should.have.been.calledWith('myId', 'model');
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', updatedFile);
             should.not.exist(component['currentError']);
         });
@@ -279,7 +278,6 @@ describe('EditorFileComponent', () => {
             component['editorContent'] = 'my script';
             component.setCurrentCode();
             mockFileService.updateFile.should.have.been.calledWith('myId', 'my script', 'script');
-            mockFileService.validateFile.should.have.been.calledWith('myId', 'script');
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', updatedFile);
             should.not.exist(component['currentError']);
         });
@@ -289,7 +287,6 @@ describe('EditorFileComponent', () => {
             component['editorContent'] = 'my acl';
             component.setCurrentCode();
             mockFileService.updateFile.should.have.been.calledWith('myId', 'my acl', 'acl');
-            mockFileService.validateFile.should.have.been.calledWith('myId', 'acl');
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', updatedFile);
             should.not.exist(component['currentError']);
         });
@@ -299,7 +296,6 @@ describe('EditorFileComponent', () => {
             component['editorContent'] = 'my query';
             component.setCurrentCode();
             mockFileService.updateFile.should.have.been.calledWith('myId', 'my query', 'query');
-            mockFileService.validateFile.should.have.been.calledWith('myId', 'query');
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', updatedFile);
             should.not.exist(component['currentError']);
         });
@@ -312,7 +308,6 @@ describe('EditorFileComponent', () => {
             };
             component.setCurrentCode();
             mockFileService.updateFile.should.have.been.calledWith('myId', '{"name": "my network"}', 'package');
-            mockFileService.validateFile.should.have.been.calledWith('myId', 'package');
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', updatedFile);
             should.not.exist(component['currentError']);
         });
@@ -346,18 +341,8 @@ describe('EditorFileComponent', () => {
             component.setCurrentCode();
 
             mockFileService.updateFile.should.have.been.calledWith('myId', 'my acl', 'acl');
-            mockFileService.validateFile.should.not.have.been.called;
-            component['currentError'].should.equal('Error: some error');
-        });
-
-        it('should not update business network on error', () => {
-            mockFileService.validateFile.returns('some error');
-            component['_editorFile'].isAcl.returns(true);
-            component['editorContent'] = 'my acl';
-            component.setCurrentCode();
-            mockFileService.updateFile.should.have.been.calledWith('myId', 'my acl', 'acl');
             mockFileService.updateBusinessNetwork.should.not.have.been.called;
-            component['currentError'].should.equal('some error');
+            component['currentError'].should.equal('Error: some error');
         });
     });
 
