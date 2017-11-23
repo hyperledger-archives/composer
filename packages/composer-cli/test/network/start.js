@@ -79,7 +79,7 @@ describe('composer start network CLI unit tests', function () {
                         ,archiveFile: 'testArchiveFile.zip'
                        ,optionsFile: '/path/to/options.json'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
             sandbox.stub(Start, 'getArchiveFileContents');
             const optionsObject = {
                 endorsementPolicy: {
@@ -121,7 +121,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                        ,option: 'endorsementPolicyFile=/path/to/some/file.json'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
             sandbox.stub(Start, 'getArchiveFileContents');
 
             Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
@@ -150,7 +150,7 @@ describe('composer start network CLI unit tests', function () {
                        ,archiveFile: 'testArchiveFile.zip'
                        ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -179,7 +179,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -230,7 +230,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                                    ,archiveFile: 'testArchiveFile.zip'
                                    ,networkAdmin: 'admin'
-                                   ,networkAdminSecret:'true'
+                                   ,networkAdminEnrollSecret:'true'
                                 ,file:'mycardfile'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -258,7 +258,7 @@ describe('composer start network CLI unit tests', function () {
                        ,archiveFile: 'testArchiveFile.zip'
                        ,loglevel: 'DEBUG'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -283,7 +283,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'};
+                       ,networkAdminEnrollSecret:'true'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -318,7 +318,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin1'
-                        ,networkAdminSecret: true};
+                        ,networkAdminEnrollSecret: true};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -344,7 +344,7 @@ describe('composer start network CLI unit tests', function () {
                         ,archiveFile: 'testArchiveFile.zip'
 
                         ,networkAdmin: 'admin1'
-                        ,networkAdminSecret: true
+                        ,networkAdminEnrollSecret: true
                         ,optionsFile: '/path/to/options.json'};
 
 
@@ -386,7 +386,7 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                 ,archiveFile: 'testArchiveFile.zip'
                 ,networkAdmin: 'admin1'
-                ,networkAdminSecret: true
+                ,networkAdminEnrollSecret: true
                 ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -404,7 +404,7 @@ describe('composer start network CLI unit tests', function () {
             ,archiveFile: 'testArchiveFile.zip'
 
             ,networkAdmin: 'admin1'
-            ,networkAdminSecret: true
+            ,networkAdminEnrollSecret: true
             ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -422,8 +422,9 @@ describe('composer start network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                                     ,archiveFile: 'testArchiveFile.zip'
-                                    , 'networkAdmin': { id: 'admin1',secret: 'true', file: 'mycard'}
-            };
+                                    ,networkAdmin: 'admin1'
+                                    ,networkAdminEnrollSecret: true
+                                    ,file: 'mycard'};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 

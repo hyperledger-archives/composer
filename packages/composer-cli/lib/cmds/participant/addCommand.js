@@ -41,8 +41,6 @@ module.exports.builder = (yargs) =>{
 
     yargs.check(checkFn);
 
-    yargs.group(['card','data'],'Participant options');
-
     return yargs;
 };
 

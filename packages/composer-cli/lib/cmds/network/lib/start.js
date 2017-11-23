@@ -77,7 +77,7 @@ class Start {
             // grab the network admins
             // what we want is an array of the following
             // {userName, certificate, secret, file}
-            startOptions.networkAdmins = networkAdmins = Start.createNetworkAdmins(argv);
+            startOptions.networkAdmins = networkAdmins = cmdUtil.parseNetworkAdmins(argv);
             cmdUtil.log(chalk.bold.blue('Processing these Network Admins: '));
             startOptions.networkAdmins.forEach((e)=>{
                 cmdUtil.log(chalk.blue('\tuserName: ')+e.userName);
@@ -149,68 +149,6 @@ class Start {
             throw new Error('Archive file '+archiveFile+' does not exist.');
         }
         return archiveFileContents;
-    }
-
-    /** Parse the argv structure to get an array of Network Admins
-     * @param {array} argv standard YARGS structure
-     * @return {array} simple objects with details of the network admins to create
-     */
-    static createNetworkAdmins(argv){
-        let networkAdmins;
-        if (typeof argv.networkAdmin.id === 'object'){
-
-            networkAdmins = Object.keys(argv.networkAdmin.id).map((index)=>{
-                let admin={};
-                admin.userName = argv.networkAdmin.id[index];
-                if (argv.networkAdmin.cert && argv.networkAdmin.cert[index]){
-                    admin.certificate = argv.networkAdmin.cert[index];
-                }
-
-                if (!admin.certificate && argv.networkAdmin.secret) {
-                    admin.secret = argv.networkAdmin.secret[index];
-                } else {
-                    throw new Error('Need to have certificate or secret');
-                }
-
-                if (argv.networkAdmin.file && argv.networkAdmin.file[index]){
-                    admin.file = argv.networkAdmin.file[index];
-                }
-                return admin;
-            });
-
-        } else if (typeof argv.networkAdmin === 'object') {
-            let admin={};
-            admin.userName = argv.networkAdmin.id;
-            if (argv.networkAdmin.certificate){
-                admin.certificate = argv.networkAdmin.certificate;
-            } else if (argv.networkAdmin.secret){
-                admin.enrollmentSecret  = argv.networkAdmin.secret;
-            } else {
-                throw new Error('Need to have certificate or secret');
-            }
-
-            if (argv.networkAdmin.file){
-                admin.file = argv.networkAdmin.file;
-            }
-            networkAdmins = [ admin ];
-        } else {
-            // old school
-            let admin={};
-            admin.userName = argv.networkAdmin;
-            if (argv.networkAdminCertificateFile){
-                admin.certificate = argv.networkAdminCertificateFile;
-            } else if (argv.networkAdminSecret){
-                admin.enrollmentSecret  = argv.networkAdminSecret;
-            } else {
-                throw new Error('Need to have certificate or secret');
-            }
-
-            if (argv.file){
-                admin.file = argv.file;
-            }
-            networkAdmins = [ admin ];
-        }
-        return networkAdmins;
     }
 }
 module.exports = Start;
