@@ -45,9 +45,6 @@ module.exports.builder = function (yargs){
     // enforce singletons
     yargs.check(checkFn);
 
-    // grouping for the card options - moves them away from the standard --version etc.
-    yargs.group(['archiveFile','sourceType','sourceName'],'Archive options');
-
     return yargs;
 };
 

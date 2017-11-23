@@ -32,7 +32,7 @@
             </svg>
         </button>
     </section>
-    <section *ngIf="!identity" class="sample-section">
+    <section *ngIf="showSpecial" class="sample-section">
         <div class="sample-icon">
             <svg class="ibm-icon vertical-top">
                 <use xlink:href="#icon-konnichiwa"></use>
@@ -56,7 +56,7 @@
         <p [class.none]="!identity.getBusinessNetworkName()" title="{{identity.getBusinessNetworkName() || 'none'}}">
             {{identity.getBusinessNetworkName() || 'none'}}</p>
     </section>
-    <section *ngIf="!identity" class="business-network-details">
+    <section *ngIf="showSpecial" class="business-network-details">
         <h3>Business Network</h3>
         <p title="basic-sample-network">basic-sample-network</p>
     </section>
@@ -69,7 +69,7 @@
                 <use xlink:href="#icon-forward_16"></use>
             </svg>
         </button>
-        <button *ngIf="!identity" type="button" class="action connect"
+        <button *ngIf="showSpecial" type="button" class="action connect"
                 (click)="deploySample()">
             <span>Get Started</span>
             <svg class="ibm-icon" aria-hidden="true">

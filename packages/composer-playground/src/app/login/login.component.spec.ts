@@ -108,6 +108,7 @@ class MockIdentityCardComponent {
     @Input() identity: any;
     @Input() indestructible: any;
     @Input() cardRef: string;
+    @Input() showSpecial: boolean;
 }
 
 @Component({
@@ -191,7 +192,7 @@ describe(`LoginComponent`, () => {
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: DrawerService, useValue: mockDrawer},
                 {provide: NgbModal, useValue: mockModal},
-                {provide: ConfigService, useValue: mockConfigService}
+                {provide: ConfigService, useValue: mockConfigService},
             ]
         });
 
@@ -450,6 +451,7 @@ describe(`LoginComponent`, () => {
         beforeEach(() => {
             mockIdCard = sinon.createStubInstance(IdCard);
             mockIdCard.getUserName.returns('myCard');
+            mockIdCard.getConnectionProfile.returns({type: 'hlfv1'});
             mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef', mockIdCard);
 
@@ -511,6 +513,34 @@ describe(`LoginComponent`, () => {
             tick();
 
             // check services called
+            mockAdminService.connect.should.not.have.been.called;
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
+            loadIdentityCardsStub.should.have.been.called;
+
+            mockAlertService.successStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should undeploy and refresh the identity cards after successfully calling identityCardService.deleteIdentityCard()', fakeAsync(() => {
+            mockIdCard.getConnectionProfile.returns({type: 'web'});
+            mockIdCards.set('myCardRef', mockIdCard);
+
+            component['idCards'] = mockIdCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
+            mockAdminService.connect.resolves();
+            mockAdminService.undeploy.resolves();
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.removeIdentity('myCardRef');
+            tick();
+
+            // check services called
+            mockAdminService.connect.should.have.been.called;
+            mockAdminService.undeploy.should.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
 
@@ -776,6 +806,8 @@ describe(`LoginComponent`, () => {
             mockSampleBusinessNetworkService.getChosenSample.returns(Promise.resolve(businessNetworkMock));
             mockSampleBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve('myNewCardRef'));
 
+            let loadCardsStub = sinon.stub(component, 'loadIdentityCards').resolves();
+
             let changeIdentityStub = sinon.stub(component, 'changeIdentity');
             component.deploySample('profileRef');
 
@@ -786,6 +818,7 @@ describe(`LoginComponent`, () => {
             mockSampleBusinessNetworkService.getSampleList.should.have.been.called;
             mockSampleBusinessNetworkService.getChosenSample.should.have.been.calledWith({name: 'mySample'});
             mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network');
+            loadCardsStub.should.have.been.calledWith(true);
             changeIdentityStub.should.have.been.calledWith('playgroundSample@basic-sample-network');
         }));
     });

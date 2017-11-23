@@ -82,7 +82,7 @@ describe('composer deploy network CLI unit tests', function () {
                         ,archiveFile: 'testArchiveFile.zip'
                        ,optionsFile: '/path/to/options.json'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'true'
+                       ,networkAdminEnrollSecret:'true'
                        ,file:'default'
             };
 
@@ -122,7 +122,7 @@ describe('composer deploy network CLI unit tests', function () {
                         'identities': [{ role: { mspId: 'Org1MSP', name: 'member' } }],
                         'policy': { '1-of': [{ 'signed-by': 0 }] }
                     },
-                    networkAdmins: [{ file: 'default', secret: 'true', userName: 'admin' }]
+                    networkAdmins: [{ file: 'default', enrollmentSecret : 'true', userName: 'admin' }]
                 });
             });
         });
@@ -133,7 +133,7 @@ describe('composer deploy network CLI unit tests', function () {
                         ,archiveFile: 'testArchiveFile.zip'
                         ,option: 'endorsementPolicyFile=/path/to/some/file.json'
                         ,networkAdmin: 'admin'
-                        ,networkAdminSecret:'secret-secret'};
+                        ,networkAdminEnrollSecret:'secret-secret'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -154,7 +154,7 @@ describe('composer deploy network CLI unit tests', function () {
 
                     {
                         endorsementPolicyFile: '/path/to/some/file.json',
-                        networkAdmins: [{ secret: 'secret-secret', userName: 'admin' }]
+                        networkAdmins: [{ enrollmentSecret : 'secret-secret', userName: 'admin' }]
 
                     }
                 );
@@ -167,7 +167,7 @@ describe('composer deploy network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
-                        ,networkAdminSecret:'secret-secret'
+                        ,networkAdminEnrollSecret:'secret-secret'
                         ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -196,7 +196,7 @@ describe('composer deploy network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
-                        ,networkAdminSecret:'secret-secret'
+                        ,networkAdminEnrollSecret:'secret-secret'
                         ,file:'writetothisfile'};
 
 
@@ -225,7 +225,7 @@ describe('composer deploy network CLI unit tests', function () {
                        ,archiveFile: 'testArchiveFile.zip'
                        ,loglevel: 'DEBUG'
                        ,networkAdmin: 'admin'
-                       ,networkAdminSecret:'secret-secret'};
+                       ,networkAdminEnrollSecret:'secret-secret'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -245,7 +245,7 @@ describe('composer deploy network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
                     {
                         logLevel: 'DEBUG',
-                        networkAdmins: [{ secret: 'secret-secret', userName: 'admin' }]
+                        networkAdmins: [{ enrollmentSecret : 'secret-secret', userName: 'admin' }]
                     });
             });
         });
@@ -291,7 +291,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                         ,networkAdmin: 'admin1'
-                        ,networkAdminSecret: 'secret-secret'};
+                        ,networkAdminEnrollSecret: 'secret-secret'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
             sandbox.stub(Start, 'getArchiveFileContents');
@@ -318,7 +318,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                         ,networkAdmin: 'admin1'
-                        ,networkAdminSecret: 'secret-secret'
+                        ,networkAdminEnrollSecret: 'secret-secret'
                         ,optionsFile: '/path/to/options.json'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');
@@ -393,7 +393,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                             ,networkAdmin: 'admin1'
-                            ,networkAdminSecret: 'secret-secret'
+                            ,networkAdminEnrollSecret: 'secret-secret'
                             ,archiveFile: 'testArchiveFile.zip'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents').withArgs(argv.archiveFile).throws(new Error('failure'));
@@ -407,7 +407,7 @@ describe('composer deploy network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                                         ,networkAdmin: 'admin1'
-                                        ,networkAdminSecret: 'secret-secret'
+                                        ,networkAdminEnrollSecret: 'secret-secret'
                                         ,archiveFile: 'testArchiveFile.zip'};
 
             sandbox.stub(Deploy, 'getArchiveFileContents');

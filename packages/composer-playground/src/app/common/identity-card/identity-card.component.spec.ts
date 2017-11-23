@@ -62,6 +62,8 @@ describe(`IdentityCardComponent`, () => {
             let deploySampleSpy = sinon.spy(component, 'deploySample');
             let deployEventSpy = sinon.spy(component.onDeploySample, 'emit');
 
+            component.showSpecial = true;
+
             component.onDeploySample.subscribe((data) => {
                 should.not.exist(data);
                 done();

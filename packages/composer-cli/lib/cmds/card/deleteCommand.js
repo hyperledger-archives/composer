@@ -23,7 +23,6 @@ module.exports.builder = (yargs) => {
         name: { alias: 'n', required: true, describe: 'The name of the card to delete', type: 'string' }
     });
 
-    yargs.group(['n'],'Card options');
     yargs.requiresArg(['n']);
 
     return yargs;

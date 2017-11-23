@@ -36,7 +36,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             return BusinessNetworkDefinition.fromArchive(banana);
         })
         .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition, {networkAdmins :[{userName:'admin',secret:'adminpw'}] });
+            return adminConnection.deploy(businessNetworkDefinition, {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
         })
         .then(() => {
             const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', type: 'embedded' });

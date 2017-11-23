@@ -30,6 +30,9 @@ export class IdentityCardComponent {
     @Input()
     indestructible: boolean = false;
 
+    @Input()
+    showSpecial: boolean = false;
+
     @Output()
     onConnect: EventEmitter<string> = new EventEmitter<string>();
 

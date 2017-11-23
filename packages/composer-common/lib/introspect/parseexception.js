@@ -29,10 +29,16 @@ class ParseException extends BaseFileException {
      * Create an ParseException
      * @param {string} message - the message for the exception
      * @param {string} fileLocation - the optional file location associated with the exception
+     * @param {string} fileName - the optional file name associated with the exception
      */
-    constructor(message, fileLocation) {
-
+    constructor(message, fileLocation, fileName) {
         let fullMessage = message;
+        let suffix = '';
+
+        // Add the file name onto the message if it has been set.
+        if (fileName) {
+            suffix += ' File ' + fileName;
+        }
 
         // The parser does not give us back the end location of an invalid token.
         // Making the end column equal to the end column makes use of
@@ -46,8 +52,14 @@ class ParseException extends BaseFileException {
                     }
                 }
             }
-            fullMessage+= ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+            if (suffix) {
+                suffix+= ' line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+            } else {
+                suffix+= ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+            }
         }
+
+        fullMessage += suffix;
         super(message, fileLocation, fullMessage);
     }
 

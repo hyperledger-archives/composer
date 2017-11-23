@@ -28,9 +28,6 @@ module.exports.builder =function (yargs) {
         'file': {alias: 'f', required: false, describe: 'The card file name for the new identity', type: 'string' }
     });
 
-    yargs.group(['c','f'],'Business Network Cards');
-    yargs.group(['u','a','x'],'Identity Options');
-
     return yargs;
 };
 

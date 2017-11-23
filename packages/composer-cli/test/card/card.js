@@ -35,9 +35,9 @@ describe('composer participant cmd launcher unit tests', function () {
 
         sandbox.stub(yargs, 'check').returns(yargs);
         sandbox.stub(yargs, 'conflicts').returns(yargs);
-        sandbox.stub(yargs, 'group').returns(yargs);
         sandbox.stub(yargs, 'options').returns(yargs);
         sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
@@ -63,14 +63,12 @@ describe('composer participant cmd launcher unit tests', function () {
         it('should drive the yargs builder fn correctly',()=>{
             cardCommand.builder(yargs);
             sinon.assert.calledOnce(yargs.options);
-            sinon.assert.calledOnce(yargs.group);
             sinon.assert.calledOnce(yargs.check);
         });
 
         it('should drive the yargs builder fn correctly',()=>{
             deleteCommand.builder(yargs);
             sinon.assert.calledOnce(yargs.options);
-            sinon.assert.calledOnce(yargs.group);
             sinon.assert.calledOnce(yargs.requiresArg);
         });
     });
