@@ -1,5 +1,5 @@
-var openRotation = 270;
-var closeRotation = 180;
+var openRotation = 0;
+var closeRotation = 270;
 
 $(function(){
     $('a').each(function(){
@@ -14,8 +14,7 @@ $(function(){
 $(function(){
     $('.context-nav a').each(function(){
         if ($(this).prop('href') == window.location.href) {
-            $(this).parent().parent().css('background-color', 'white');
-            $(this).parent().parent().parent().css('background-color', 'white');
+            $(this).parent().parent().closest('li').addClass('activeBorder');
         }
     });
 });
@@ -29,7 +28,16 @@ $(function(){
         if ($(this).closest('li').children('ul').length == 0) {
             $(this).toggleClass('hidden');
         }
+        if (!$(this).parent().parent().parent().hasClass('active')) {
+            $(this).addClass('hidden');
+        }
     });
+});
+
+$('li').hover(function(){
+    if (!$(this).hasClass('active') && $(this).children('ul').length > 0) {
+        $(this).find('.caret').toggleClass('hidden');
+    }
 });
 
 $('.caret').click(function() {
