@@ -13,6 +13,9 @@ import { IdCard } from 'composer-common';
 export class IdentityCardComponent {
 
     @Input()
+    link: String;
+
+    @Input()
     identity: IdCard;
 
     @Input()

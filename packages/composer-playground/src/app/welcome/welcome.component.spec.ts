@@ -2,11 +2,13 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Component, DebugElement } from '@angular/core';
+import { Component, DebugElement, Input } from '@angular/core';
 
 import { WelcomeComponent } from './welcome.component';
+import { ConfigService } from './../services/config.service';
+import { Config } from './../services/config/configStructure.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import * as sinon from 'sinon';
 
@@ -15,6 +17,8 @@ import * as sinon from 'sinon';
     template: ''
 })
 class MockTutorialLinkComponent {
+    @Input()
+    link: string;
 }
 
 describe('WelcomeComponent', () => {
@@ -22,6 +26,8 @@ describe('WelcomeComponent', () => {
     let fixture: ComponentFixture<WelcomeComponent>;
     let debug: DebugElement;
     let element: HTMLElement;
+    let mockConfigService;
+    let mockConfig;
 
     let ngbActiveModalMock = {
         close: sinon.stub(),
@@ -29,9 +35,18 @@ describe('WelcomeComponent', () => {
     };
 
     beforeEach(async(() => {
+        mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfigService.loadConfig.returns(Promise.resolve({banner: ['Custom', 'Composer Playground']}));
+        mockConfig = sinon.createStubInstance(Config);
+        mockConfig.setToDefault();
+        mockConfigService.getConfig.returns(new Config());
         TestBed.configureTestingModule({
             declarations: [WelcomeComponent, MockTutorialLinkComponent],
-            providers: [{provide: NgbActiveModal, useValue: ngbActiveModalMock}]
+            providers: [
+                {provide: NgbActiveModal, useValue: ngbActiveModalMock},
+                {provide: ConfigService, useValue: mockConfigService},
+                {provide: Config, useValue: mockConfig}
+            ]
         })
         .compileComponents();
     }));
@@ -49,7 +64,51 @@ describe('WelcomeComponent', () => {
     });
 
     it('should have correct title', () => {
-        element.textContent.should.contain('Welcome to Hyperledger Composer Playground!');
+        component['config'] = mockConfig;
+        element.textContent.should.contain('Welcome to');
     });
+
+    it('should set the config using get config if config is loaded', () => {
+        let myConfig = new Config();
+        myConfig.webonly = true;
+        myConfig.title = 'My Title';
+        myConfig.banner = ['My', 'Banner'];
+        myConfig.links = {
+          docs: 'My Docs',
+          tutorial: 'My Tutorial',
+          community: 'My Community',
+          github: 'My Github',
+          install: 'My Install'
+        };
+
+        mockConfigService.getConfig.returns(myConfig);
+
+        component.ngOnInit();
+
+        component['config'].should.deep.equal(myConfig);
+    });
+
+    it('should set the config using load config if getConfig fails', fakeAsync(() => {
+        let myConfig = new Config();
+        myConfig.webonly = true;
+        myConfig.title = 'My Title';
+        myConfig.banner = ['My', 'Banner'];
+        myConfig.links = {
+          docs: 'My Docs',
+          tutorial: 'My Tutorial',
+          community: 'My Community',
+          github: 'My Github',
+          install: 'My Install'
+        };
+
+        mockConfigService.getConfig.throws(new Error('error'));
+        mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+        component.ngOnInit();
+
+        tick();
+
+        component['config'].should.deep.equal(myConfig);
+    }));
 
 });

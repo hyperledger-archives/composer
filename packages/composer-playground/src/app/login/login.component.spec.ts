@@ -17,6 +17,7 @@ import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConfigService } from '../services/config.service';
+import { Config } from '../services/config/configStructure.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { BusinessNetworkDefinition } from 'composer-common';
 
@@ -103,6 +104,7 @@ class MockFooterComponent {
     template: ''
 })
 class MockIdentityCardComponent {
+    @Input() link: String;
     @Input() identity: any;
     @Input() indestructible: any;
     @Input() cardRef: string;
@@ -129,6 +131,8 @@ class MockCreateIdentityCardComponent {
     template: ''
 })
 class MockTutorialLinkComponent {
+    @Input()
+    link: string;
 }
 
 describe(`LoginComponent`, () => {
@@ -144,6 +148,7 @@ describe(`LoginComponent`, () => {
     let routerStub;
     let mockAlertService;
     let mockConfigService;
+    let mockConfig;
     let mockModal;
     let mockDrawer;
     let businessNetworkMock;
@@ -156,6 +161,7 @@ describe(`LoginComponent`, () => {
         mockSampleBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfig = sinon.createStubInstance(Config);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
         businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
@@ -220,6 +226,19 @@ describe(`LoginComponent`, () => {
 
             mockConfigService.isWebOnly.should.have.been.called;
             component['usingLocally'].should.be.false;
+        }));
+
+        it('should set config', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            mockConfigService.isWebOnly.returns(true);
+            mockConfigService.getConfig.returns(mockConfig);
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+            component.ngOnInit();
+
+            tick();
+
+            mockConfigService.getConfig.should.have.been.called;
+            component['config'].should.deep.equal(mockConfig);
         }));
     });
 

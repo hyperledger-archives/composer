@@ -12,6 +12,7 @@ import {
 import { MockBackend } from '@angular/http/testing';
 
 import { ConfigService } from './config.service';
+import { Config } from './config/configStructure.service';
 import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
@@ -21,48 +22,10 @@ let should = chai.should();
 
 describe('ConfigService', () => {
 
-    let mockConfig = {
-        cards: [
-            {
-                metadata: {
-                    name: 'PeerAdmin',
-                    enrollmentId: 'PeerAdmin',
-                    enrollmentSecret: 'NOTUSED',
-                    roles: [
-                        'PeerAdmin',
-                        'ChannelAdmin'
-                    ]
-                },
-                connectionProfile: {
-                    name: 'hlfabric',
-                    description: 'Hyperledger Fabric v1.0',
-                    type: 'hlfv1',
-                    keyValStore: '/home/composer/.composer-credentials',
-                    timeout: 300,
-                    orderers: [
-                        {
-                            url: 'grpc://orderer.example.com:7050'
-                        }
-                    ],
-                    channel: 'composerchannel',
-                    mspID: 'Org1MSP',
-                    ca: {
-                        url: 'http://ca.org1.example.com:7054',
-                        name: 'ca.org1.example.com'
-                    },
-                    peers: [
-                        {
-                            requestURL: 'grpc://peer0.org1.example.com:7051',
-                            eventURL: 'grpc://peer0.org1.example.com:7053'
-                        }
-                    ]
-                },
-                credentials: null
-            }
-        ]
-    };
+    let mockConfig;
 
     beforeEach(() => {
+        mockConfig = sinon.createStubInstance(Config);
         TestBed.configureTestingModule({
             imports: [HttpModule],
             providers: [
@@ -74,15 +37,27 @@ describe('ConfigService', () => {
 
     describe('loadConfig', () => {
         it('should load config', fakeAsync(inject([ConfigService, XHRBackend], (service: ConfigService, mockBackend) => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+
             // setup a mocked response
             mockBackend.connections.subscribe((connection) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockConfig)
+                    body: JSON.stringify(myConfig)
                 })));
             });
 
             service.loadConfig().then((config) => {
-                config.should.deep.equal(mockConfig);
+                config.should.deep.equal(myConfig);
             });
             tick();
         })));
@@ -109,19 +84,22 @@ describe('ConfigService', () => {
             }).should.throw(/config has not been loaded/);
         })));
 
-        it('should return false if web only', fakeAsync(inject([ConfigService], (service: ConfigService) => {
+        it('should return true if web only', fakeAsync(inject([ConfigService], (service: ConfigService) => {
             service['configLoaded'] = true;
+            service['config'] = mockConfig;
+            service['config'].webonly = true;
             let result = service.isWebOnly();
-            tick();
-            result.should.equal(false);
+
+            result.should.equal(true);
         })));
 
-        it('should return true if not web only', fakeAsync(inject([ConfigService], (service: ConfigService) => {
+        it('should return false if not web only', fakeAsync(inject([ConfigService], (service: ConfigService) => {
             service['configLoaded'] = true;
-            service['config'] = {webonly: true};
+            service['config'] = mockConfig;
+            service['config'].webonly = false;
             let result = service.isWebOnly();
-            tick();
-            result.should.equal(true);
+
+            result.should.equal(false);
         })));
     });
 })
