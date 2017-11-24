@@ -10,7 +10,7 @@ url: "https://hyperledger.github.io/composer/"
 #be the sitebaseurl - but the build scripts handle this for you.
 #
 baseurl: "/api-doc/composer"
-destination: /home/matthew/github/api-docs/docs/composer
+destination: /home/matthew/github/api-doc/api-doc/composer
 highlighter: rouge
 markdown: redcarpet
 redcarpet:

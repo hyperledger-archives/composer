@@ -89,8 +89,8 @@ class JSONGenerator {
 
 
 
-            let listMethods = data.methods;
-            listMethods
+            data.methods = data.methods.filter((e)=>{return e.visibility==='+';});
+            data.methods
             .forEach((e)=>{
                 e.description = e.commentData.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~');
                 e.parameters = [];

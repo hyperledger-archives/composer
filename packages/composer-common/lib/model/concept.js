@@ -29,7 +29,7 @@ const Typed = require('./typed');
  * Resources are used in Composer to represent Assets, Participants, Transactions and
  * other domain classes that can be serialized for long-term persistent storage.
  *
- * @extends Identifiable
+ * @extends Typed
  * @see See  {@link Resource}
  * @class
  * @memberof module:composer-common

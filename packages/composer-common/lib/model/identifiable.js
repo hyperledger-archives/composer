@@ -21,6 +21,7 @@ const Typed = require('./typed');
  * Identifiable is an entity with a namespace, type and an identifier.
  * Applications should retrieve instances from {@link Factory}
  * This class is abstract.
+ * @extends Typed
  * @abstract
  * @class
  * @memberof module:composer-common

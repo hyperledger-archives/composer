@@ -43,9 +43,61 @@ function processDirectory(path) {
             items.forEach((item) => {
                 processFile(item);
             });
-
+            augment();
+           
             fs.writeFileSync('allData.json',JSON.stringify(masterData),'utf8');
+            write();
         });
+}
+
+function augment(){
+    Object.keys(masterData).forEach((module)=>{
+        Object.keys(masterData[module]).forEach((c)=>{
+            // if the class does have something it extends, we need to add the methods
+            // otherwise, move on. 
+            let thisClass = masterData[module][c];
+            if (thisClass.extends){
+                console.log(` ${thisClass.module}:${thisClass.name} extends  ${thisClass.extends}  ${thisClass.superClass}`);
+                addSuperClassMethods(thisClass);
+                console.log(JSON.stringify(thisClass));
+            }
+        });
+    });
+}
+function write(){
+    Object.keys(masterData).forEach((module)=>{
+        Object.keys(masterData[module]).forEach((c)=>{
+            // if the class does have something it extends, we need to add the methods
+            // otherwise, move on. 
+            let thisClass = masterData[module][c];
+            let filename = path.resolve('./_jsondata/',module+'-'+(thisClass.name.toLowerCase())+'.json')
+            fs.writeFileSync(filename,JSON.stringify(thisClass),'utf8');
+        });
+    });
+}
+// Simple function to add in the super class methods
+function addSuperClassMethods(thisClass){
+    let superType = thisClass.extends;
+    if (!thisClass.superMethods){
+        thisClass.superMethods=[];
+    }
+    while (superType){
+        // asumption that super types are in the same module
+        let superTypeDetails =  masterData[thisClass.module][superType];
+        if (!superTypeDetails) {superType=null; continue;}
+        let superMethods = superTypeDetails.methods;
+        // for each method, check if it has been overridden locally and if it hasn't then 
+        // add it
+        superMethods.forEach((m)=>{
+            let foundMethod= thisClass.methods.find( (localMethod)=>{ return localMethod.name === m.name;});
+            if (!foundMethod){
+                thisClass.superMethods.push({"fromClass": superType, "method" :m});
+            }
+        })
+
+        // finally get the superType of the superType
+        superType = superTypeDetails.extends;
+    }
 }
 
 /**
@@ -63,8 +115,8 @@ function processFile(file, fileProcessor) {
         let m = data.module;
 
         if (!masterData.hasOwnProperty(m)){
-            masterData[m] = [];
+            masterData[m] = {};
         }
-        masterData[m].push(data);
+        masterData[m][data.name]=(data);
     }
 }

@@ -14,19 +14,21 @@ node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir $
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-runtime/lib/api  --outputDir ${DIR}/jsondata
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --inputDir ${DIR}/../composer-common/lib  --outputDir ${DIR}/jsondata
 node ${DIR}/../composer-common/lib/codegen/parsejs.js --format JSON --single ${DIR}/../composer-runtime/lib/api.js  --outputDir ${DIR}/jsondata
+cd ${DIR}
+node ./scripts/merge.js
+
 # for each json file process using the class template
-for file in ${DIR}/jsondata/*.json
+for file in ${DIR}/_jsondata/*.json
 do
   echo "${file}"
   BASENAME="$(basename -s .json ${file})"
   ((INDEX++))
-  ${DIR}/apigen-opus/bin/cli1.js -i jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"${INDEX}\"}"
+  ${DIR}/apigen-opus/bin/cli1.js -i _jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"${INDEX}\"}"
 done
 
 # TODO, create the template a class index.
 # This can be done by merging the json data from each class, and using a different template
-cd ${DIR}
-node ./scripts/merge.js
+
 ${DIR}/apigen-opus/bin/cli1.js -i allData -t classindex.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"1205\"}"
 
 
