@@ -17,6 +17,7 @@
 /**
  * Currently we have a wallet singleton, but this is temporary until
  * we decide how wallets fit into the administrative and client APIs.
+ * @private
  */
 let theWallet = null;
 

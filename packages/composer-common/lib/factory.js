@@ -38,7 +38,9 @@ const uuid = require('uuid');
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
- * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p>
+ *
+ * **Applications should retrieve instances from {@link BusinessNetworkDefinition}**
+ *
  * @class
  * @memberof module:composer-common
  */
@@ -52,6 +54,7 @@ class Factory {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager to use for this registry
+     * @private
      */
     constructor(modelManager) {
         this.modelManager = modelManager;
@@ -59,13 +62,13 @@ class Factory {
 
     /**
      * Create a new Resource with a given namespace, type name and id
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
-     * @param {string} id - the identifier
+     * @param {String} ns - the namespace of the Resource
+     * @param {String} type - the type of the Resource
+     * @param {String} id - the identifier
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {string} [options.generate] - Pass one of: <dl>
+     * @param {String} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
@@ -130,12 +133,12 @@ class Factory {
 
     /**
      * Create a new Concept with a given namespace and type name
-     * @param {string} ns - the namespace of the Concept
-     * @param {string} type - the type of the Concept
+     * @param {String} ns - the namespace of the Concept
+     * @param {String} type - the type of the Concept
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Concept} instead of a {@link ValidatedConcept}. Defaults to false.
-     * @param {string} [options.generate] - Pass one of: <dl>
+     * @param {String} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
@@ -177,13 +180,13 @@ class Factory {
     /**
      * Create a new Relationship with a given namespace, type and identifier.
      * A relationship is a typed pointer to an instance. I.e the relationship
-     * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates`
+     * with `namespace = 'org.acme'`, `type = 'Vehicle'` and `id = 'ABC' creates`
      * a pointer that points at an instance of org.acme.Vehicle with the id
      * ABC.
      *
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
-     * @param {string} id - the identifier
+     * @param {String} ns - the namespace of the Resource
+     * @param {String} type - the type of the Resource
+     * @param {String} id - the identifier
      * @return {Relationship} - the new relationship instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
@@ -197,12 +200,12 @@ class Factory {
     /**
      * Create a new transaction object. The identifier of the transaction is
      * set to a UUID.
-     * @param {string} ns - the namespace of the transaction.
-     * @param {string} type - the type of the transaction.
-     * @param {string} [id] - an optional identifier for the transaction; if you do not specify
+     * @param {String} ns - the namespace of the transaction.
+     * @param {String} type - the type of the transaction.
+     * @param {String} [id] - an optional identifier for the transaction; if you do not specify
      * one then an identifier will be automatically generated.
      * @param {Object} [options] - an optional set of options
-     * @param {string} [options.generate] - Pass one of: <dl>
+     * @param {String} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
@@ -234,12 +237,12 @@ class Factory {
     /**
      * Create a new event object. The identifier of the event is
      * set to a UUID.
-     * @param {string} ns - the namespace of the event.
-     * @param {string} type - the type of the event.
-     * @param {string} [id] - an optional identifier for the event; if you do not specify
+     * @param {String} ns - the namespace of the event.
+     * @param {String} type - the type of the event.
+     * @param {String} [id] - an optional identifier for the event; if you do not specify
      * one then an identifier will be automatically generated.
      * @param {Object} [options] - an optional set of options
-     * @param {string} [options.generate] - Pass one of: <dl>
+     * @param {String} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>

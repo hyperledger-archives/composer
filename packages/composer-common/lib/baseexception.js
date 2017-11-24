@@ -16,7 +16,6 @@
 
 /**
 * A base class for all Composer exceptions
-* <p><a href="./diagrams/baseexception.svg"><img src="./diagrams/baseexception.svg" style="height:100%;"/></a></p>
 * @extends Error
 * @class
 * @memberof module:composer-common

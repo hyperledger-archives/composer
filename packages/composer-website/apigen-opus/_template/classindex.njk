@@ -16,21 +16,21 @@ index-order: {{index}}
 ## Common API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in common | sort(attribute='name') %}| [{{c.name}}](common-{{c.name | lower}}) | {{c.description}} |
+{% for c in common | sort(attribute='name') %}| [{{c.name}}](common-{{c.name | lower}}) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Client API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in client | sort(attribute='name') %}|[{{c.name}}](client-{{c.name | lower}}) | {{c.description}} |
+{% for c in client | sort(attribute='name') %}|[{{c.name}}](client-{{c.name | lower}}) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Admin API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in admin | sort(attribute='name') %}| [{{c.name}}](admin-{{c.name | lower}})| {{c.description}} |
+{% for c in admin | sort(attribute='name') %}| [{{c.name}}](admin-{{c.name | lower}})| {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Runtime API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in runtime | sort(attribute='name') %}| [{{c.name}}](runtime-{{c.name | lower}}) | {{c.description}} |
+{% for c in runtime | sort(attribute='name') %}| [{{c.name}}](runtime-{{c.name | lower}}) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 

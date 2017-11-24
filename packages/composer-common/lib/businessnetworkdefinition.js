@@ -54,13 +54,17 @@ const _isFileInNodeModuleDir = function (file, basePath) {
     return result;
 };
 /**
- * <p>
  * A BusinessNetworkDefinition defines a set of Participants that exchange Assets by
  * sending Transactions. This class manages the metadata and domain-specific types for
  * the network as well as a set of executable scripts.
- * </p>
+ *
+ * Applications should
+ * retrieve instances from {@link BusinessNetworkDefinition#fromArchive}
+ * @summary A BusinessNetworkDefinition defines a set of Participants that exchange Assets by
+ * sending Transactions.
  * @class
  * @memberof module:composer-common
+ *
  */
 class BusinessNetworkDefinition {
 
@@ -76,6 +80,7 @@ class BusinessNetworkDefinition {
      * @param {String} description  - the description of the business network. If package.json is passed then this is ignored.
      * @param {object} packageJson  - the JS object for package.json (optional)
      * @param {String} readme  - the readme in markdown for the business network (optional)
+     * @private
      */
     constructor(identifier, description, packageJson, readme) {
         const method = 'constructor';
@@ -121,6 +126,10 @@ class BusinessNetworkDefinition {
 
     /**
      * Returns the identifier for this business network
+     * The identifier is formed from a business network name + '@' + version. The
+     * version is a semver valid version string. It is not used by Hyperledger Composer
+     * and is not needed in any other API. It is for application developer information purposes onlyu
+     *
      * @return {String} the identifier of this business network
      */
     getIdentifier() {
@@ -580,7 +589,7 @@ class BusinessNetworkDefinition {
      * that pass the options.scriptGlob pattern. By default you should put Javascript
      * files under the 'lib' directory.
      * </p>
-     *
+     * @summary Builds a BusinessNetworkDefintion from the contents of a directory.
      * @param {String} path to a local directory
      * @param {Object} [options] - an optional set of options to configure the instance.
      * @param {Object} [options.dependencyGlob] - specify the glob pattern used to match

@@ -23,6 +23,9 @@ const ResourceId = require('./resourceid');
  * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates
  * a pointer that points at an instance of org.acme.Vehicle with the id
  * ABC.
+ *
+ * Applications should retrieve instances from {@link Factory}
+ *
  * @extends Identifiable
  * @see See {@link Identifiable}
  * @class
