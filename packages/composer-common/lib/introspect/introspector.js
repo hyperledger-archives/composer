@@ -15,9 +15,9 @@
 'use strict';
 
 /**
- * <p>
+ *
  * Provides access to the structure of transactions, assets and participants.
- * </p>
+ *
  * @class
  * @memberof module:composer-common
  */

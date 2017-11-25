@@ -22,6 +22,7 @@ const BaseFileException = require('../basefileexception');
  * @see See  {@link BaseFileException}
  * @class
  * @memberof module:composer-common
+ * @private
  */
 class IllegalModelException extends BaseFileException {
 

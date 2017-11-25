@@ -23,6 +23,7 @@ const Globalize = require('./globalize');
  * @see see {@link BaseException}
  * @class
  * @memberof module:composer-common
+ * @private
  */
 class TypeNotFoundException extends BaseException {
     /**

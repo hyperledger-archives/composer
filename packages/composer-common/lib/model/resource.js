@@ -17,18 +17,18 @@
 const Identifiable = require('./identifiable');
 
 /**
- * <p>
+ *
  * Resource is an instance that has a type. The type of the resource
  * specifies a set of properites (which themselves have types).
- * </p>
- * <p>
+ *
+ *
  * Type information in Composer is used to validate the structure of
  * Resource instances and for serialization.
- * </p>
- * <p>
+ *
+ *
  * Resources are used in Composer to represent Assets, Participants, Transactions and
  * other domain classes that can be serialized for long-term persistent storage.
- * </p>
+ *
  * @extends Identifiable
  * @see See {@link Resource}
  * @class

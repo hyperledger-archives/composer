@@ -17,6 +17,15 @@ module ChangeLocalMdLinksToHtml
       page.content = page.content.gsub(/\{@link (\w*)-([\w#]*)\}/) { "[#{$2}](#{$1}-#{$2.downcase})"  }
       page.content = page.content.gsub(/\{@link ([\w#]*)\}/) { "[#{$1}]("+modulename+"-#{$1.downcase})"  }
       page.content = page.content.gsub(/\{@link ([\w#]*) (\w*)\}/) { "[#{$2}]("+modulename+"-#{$1.downcase})"  }
+
+# Candidate extra regexp to cope with more cases of links... not yet fully tested     
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?(#[\w]*) (\w*)\}/) { "[#{$2}](#{$1.downcase})"  }
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?(#[\w]*)\}/) { "[#{$1}](#{$1.downcase})"  }
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?(\w*)[.-]([\w#]*) (\w*)\}/) { "[#{$3}](#{$1}-#{$2.downcase})"  }
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?(\w*)[.-]([\w#]*)\}/) { "[#{$2}](#{$1}-#{$2.downcase})"  }
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?([\w#]*)\}/) { "[#{$1}]("+modulename+"-#{$1.downcase})"  }
+#      page.content = page.content.gsub(/\{(?:@link )?(?:module:)?(?:composer-)?([\w#]*) (\w*)\}/) { "[#{$2}]("+modulename+"-#{$1.downcase})"  }
+
     end
   end
 end
