@@ -67,21 +67,24 @@ class JSONGenerator {
                 if (e.title==='extends'){
                     data.extends=e.name;
                 } else if (e.title === 'see'){
-                    //  "See [Registry]{@link module:composer-client.Registry}"
-                    let s1 = e.description.substring(0,e.description.indexOf('{'));
-                    let a = e.description.indexOf('}');
-                    let b = e.description.lastIndexOf('.')+1;
-                    data.seeAlso.push(s1+'('+e.description.substring(a,b).toLowerCase()+')');
+                    data.seeAlso.push(e.description);
                 } else if (e.title === 'memberof'){
-
                     data.module=e.description.substr(e.description.indexOf('-')+1);
-
                 } else if (e.title === 'private'){
                     data.visibility ='private';
                 }  else if (e.title === 'protected'){
                     data.visibility='protected';
+                } else if (e.title === 'summary'){
+                    data.summary === e.description;
                 }
             });
+            if (!data.summary){
+                let s =  data.description.join(' ');
+                let i = s.indexOf('.');
+                if (i>0) {
+                    data.summary = s.substring(0,i);
+                }
+            }
             delete data.tags;
 
 
@@ -92,6 +95,7 @@ class JSONGenerator {
                 e.description = e.commentData.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~');
                 e.parameters = [];
                 e.suboptions = [];
+                e.seeAlso = [];
                 e.commentData.tags.forEach( (p)=>{
                     if (p.title==='param'){
                         let oneParam = {};
@@ -119,12 +123,21 @@ class JSONGenerator {
                             description : p.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~'),
                             type : p.type.name
                         };
+                    } else if (p.title === 'see'){
+                        e.seeAlso.push(p.description);
+                    } else if (p.title === 'summary'){
+                        e.summary = p.description;
                     }
                 });
+                if (!e.summary){
+                    let s =  e.description.join(' ');
+                    let i = s.indexOf('.');
+                    if (i>0) {
+                        e.summary = s.substring(0,i);
+                    }
+                }
             });
 
-            // let f = path.resolve(program.outputDir, path.parse(file).name+'.json');
-            // fs.writeFileSync(f,JSON.stringify(data));
         }
         return data;
     }

@@ -39,10 +39,12 @@ const newErrorWithCause = (message, cause) => {
 };
 
 /**
- * An ID card. Encapsulates credentials and other information required to connect to a specific business network
+ * Business Network Card. Encapsulates credentials and other information required to connect to a specific business network
  * as a specific user.
- * <p>
- * Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory.
+ *
+ * Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory, as well as the constructor.
+ *
+ * @summary Business Network Card to connect to a business network
  * @class
  * @memberof module:composer-common
  */
@@ -94,7 +96,7 @@ class IdCard {
     /**
      * Name of the user identity associated with the card. This should be unique within the scope of a given
      * business network and connection profile.
-     * <p>
+     *
      * This is a mandatory field.
      * @return {String} Name of the user identity.
      */
@@ -121,7 +123,7 @@ class IdCard {
 
     /**
      * Connection profile for this card.
-     * <p>
+     *
      * This is a mandatory field.
      * @return {Object} connection profile.
      */

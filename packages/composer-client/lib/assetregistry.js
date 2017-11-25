@@ -21,7 +21,7 @@ const REGISTRY_TYPE = 'Asset';
 
 /**
  * The AssetRegistry is used to manage a set of assets stored on the Blockchain.
- * <p><a href="./diagrams/assetregistry.svg"><img src="./diagrams/assetregistry.svg" style="height:100%;"/></a></p>
+ *
  * @extends Registry
  * @see See {@link Registry}
  * @class

@@ -11,8 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.15.2 {68406255a10d8d14522b65523accf0f3} 2017-11-22
+Version 0.15.2 {ffe3b4462083652d34102e485dac3e23} 2017-11-22
 - Extend ParseException with file name
+- Make private number of constructors and removed exceptions from formally documented API
 
 Version 0.15.1 {015d225161956eb66be1636cef324c8a} 2017-11-14
 - Add in has to the Card Store

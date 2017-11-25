@@ -6,7 +6,7 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: The Client, Admin, and Runtime components of Hyperledger Composer
 index-order: {{index}}
 ---
-[Overview](api-doc-index)  -  [Common API ](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API ](allData#admin-api)  -  [Runtime API ](allData#runtime-api)
+[Overview](api-doc-index)  -  [Common API](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API](allData#admin-api)  -  [Runtime API](allData#runtime-api)
 # {{name}}
 
 {{commentData.description}}
@@ -30,7 +30,7 @@ index-order: {{index}}
 ## Method Summary
 | Name | Returns | Description |
 | :---- | :-------- | :----------- |
-{% for method in methods | sort(attribute='name') %}| [{{method.name}}](#{{method.name | lower }}) | `{{method.returnType}}` | {{method.description[0]}}  |
+{% for method in methods | sort(attribute='name') %}| [{{method.name}}](#{{method.name | lower }}) | `{{method.returnType}}` | {% if method.summary %}{{method.summary}}{% else %}{{method.description[0]}}{% endif %}  |
 {% endfor %}
 
 {#
@@ -61,21 +61,28 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 {% endif %}
 
 {% if method.return %}
-
 ### Returns
-`{{method.return.type}}` - {% for l in method.return.description -%}
+`{@link {{method.return.type}} }` - {% for l in method.return.description -%}
 {{l}}
 {% endfor %}
+{% endif %}
 
+{% if method.seeAlso %}
+### See also
+{% for sa in method.seeAlso -%}
+- {{sa}}
+{% else %}
+
+{% endfor %}
 {% endif %}
 
 
 ### Parameters
 {% if method.parameters | length != 0 -%}
-| Name | Type | Optional | Description |
+| Name | Type | Mandatory | Description |
 | :-----------  | :----------- | :----------- | :----------- |
 {% for p in method.parameters -%}
-|**{{p.name}}**| {{p.type}} |{{p.optional}}|{{p.description}}|
+|**{{p.name}}**| {{p.type}} |{% if p.optional==='true' %}No{% else %}*Yes*{% endif %}|{{p.description}}|
 {% endfor %}
 {% else %}
 No parameters
@@ -84,10 +91,10 @@ No parameters
 {% if method.suboptions | length != 0 -%}
 ### Sub-options
 
-| Name | Type | Optional | Description |
+| Name | Type | Mandatory | Description |
 | :-----------  | :----------- | :----------- | :----------- |
 {% for p in method.suboptions -%}
-|**{{p.name}}**| {{p.type}} |{{p.optional}}|{{p.description}}|
+|**{{p.name}}**| {{p.type}} |{% if p.optional==='true' %}No{% else %}*Yes*{% endif %}|{{p.description}}|
 {% endfor %}
 {% else %}
 
