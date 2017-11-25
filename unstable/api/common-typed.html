@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -256,7 +248,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="typed">Typed</h1>
 
@@ -289,22 +281,22 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="#getfullyqualifiedtype">getFullyQualifiedType</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Get the fully-qualified type name of the instance (including namespace).</td>
+<td style="text-align: left">Get the fully-qualified type name of the instance (including namespace)</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getnamespace">getNamespace</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Get the namespace of the instance.</td>
+<td style="text-align: left">Get the namespace of the instance</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#gettype">getType</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Get the type of the instance (a short name, not including namespace).</td>
+<td style="text-align: left">Get the type of the instance (a short name, not including namespace)</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#instanceof">instanceOf</a></td>
 <td style="text-align: left"><code>boolean</code></td>
-<td style="text-align: left">Check to see if this instance is an instance of the specified fully qualified type name.</td>
+<td style="text-align: left">Check to see if this instance is an instance of the specified fully qualified type name</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#setpropertyvalue">setPropertyValue</a></td>
@@ -323,7 +315,9 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - The type of this object</p>
+<p><code>[](common-string)</code> - The type of this object</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -337,7 +331,9 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - The fully-qualified type name of this object</p>
+<p><code>[](common-string)</code> - The fully-qualified type name of this object</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -351,7 +347,9 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - The namespace of this object</p>
+<p><code>[](common-string)</code> - The namespace of this object</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -363,26 +361,28 @@ ga('send', 'pageview');
 
 <p>Sets a property on this Resource</p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>propName</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the name of the field</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the value of the property</td>
 </tr>
 </tbody></table>
@@ -393,26 +393,28 @@ ga('send', 'pageview');
 
 <p>Adds a value to an array property on this Resource</p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>propName</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the name of the field</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the value of the property</td>
 </tr>
 </tbody></table>
@@ -425,7 +427,9 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>boolean</code> - True if this instance is an instance of the specified fully qualified type name, false otherwise.</p>
+<p><code>[](common-boolean)</code> - True if this instance is an instance of the specified fully qualified type name, false otherwise.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -433,14 +437,14 @@ ga('send', 'pageview');
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>fqt</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The fully qualified type name.</td>
 </tr>
 </tbody></table>

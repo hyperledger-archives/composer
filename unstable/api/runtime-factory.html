@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -256,7 +248,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="factory">Factory</h1>
 
@@ -284,7 +276,7 @@ method instead.</p>
 <tr>
 <td style="text-align: left"><a href="#newconcept">newConcept</a></td>
 <td style="text-align: left"><code>Concept</code></td>
-<td style="text-align: left">Create a new concept with a given namespace, type, and identifier. A concept is an advanced data structure</td>
+<td style="text-align: left">Create a new concept with a given namespace, type, and identifier</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#newevent">newEvent</a></td>
@@ -294,12 +286,12 @@ method instead.</p>
 <tr>
 <td style="text-align: left"><a href="#newrelationship">newRelationship</a></td>
 <td style="text-align: left"><code>Relationship</code></td>
-<td style="text-align: left">Create a new relationship with a given namespace, type, and identifier. A relationship is a typed pointer to an instance. For example, a new relationship with namespace &#39;org.acme&#39;, type &#39;Vehicle&#39; and identifier &#39;VEHICLE_1&#39; creates` a pointer that points at an existing instance of org.acme.Vehicle with the identifier &#39;VEHICLE_1&#39;.</td>
+<td style="text-align: left">Create a new relationship with a given namespace, type, and identifier</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#newresource">newResource</a></td>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left">Create a new resource (an instance of an asset, participant, or transaction). The properties of the new instance should be set as standard JavaScript object properties. The new instance can then be stored in a registry using the appropriate registry APIs, for example <a href="runtime-assetregistry">AssetRegistry</a>.</td>
+<td style="text-align: left">Create a new resource (an instance of an asset, participant, or transaction)</td>
 </tr>
 </tbody></table>
 
@@ -322,7 +314,9 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - The new instance of the resource.</p>
+<p><code>[](runtime-resource)</code> - The new instance of the resource.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -330,26 +324,26 @@ method instead.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The namespace of the resource to create.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The type of the resource to create.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The identifier of the new resource.</td>
 </tr>
 </tbody></table>
@@ -381,7 +375,9 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Relationship</code> - The new instance of the relationship.</p>
+<p><code>[](runtime-relationship)</code> - The new instance of the relationship.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -389,26 +385,26 @@ method instead.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The namespace of the resource referenced by the relationship.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The type of the resource referenced by the relationship.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The identifier of the resource referenced by the relationship.</td>
 </tr>
 </tbody></table>
@@ -441,7 +437,9 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Concept</code> - The new instance of the concept.</p>
+<p><code>[](runtime-concept)</code> - The new instance of the concept.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -449,20 +447,20 @@ method instead.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The namespace of the concept.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The type of the concept.</td>
 </tr>
 </tbody></table>
@@ -485,7 +483,9 @@ method instead.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - The new instance of the event.</p>
+<p><code>[](runtime-resource)</code> - The new instance of the event.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -493,20 +493,20 @@ method instead.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The namespace of the event.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The type of the event.</td>
 </tr>
 </tbody></table>

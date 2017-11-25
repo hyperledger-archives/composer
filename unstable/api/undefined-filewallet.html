@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -256,7 +248,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="filewallet">FileWallet</h1>
 
@@ -283,42 +275,42 @@ stores the credentials on the file system.</p>
 <tr>
 <td style="text-align: left"><a href="#add">add</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Add a new credential to the wallet.</td>
+<td style="text-align: left">Add a new credential to the wallet</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Constructor.</td>
+<td style="text-align: left">Constructor</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#contains">contains</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Check to see if the named credentials are in the wallet.</td>
+<td style="text-align: left">Check to see if the named credentials are in the wallet</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#get">get</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get the named credentials from the wallet.</td>
+<td style="text-align: left">Get the named credentials from the wallet</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#gethomedirectory">getHomeDirectory</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Get the current home directory.</td>
+<td style="text-align: left">Get the current home directory</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#list">list</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">List all of the credentials in the wallet.</td>
+<td style="text-align: left">List all of the credentials in the wallet</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#remove">remove</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Remove existing credentials from the wallet.</td>
+<td style="text-align: left">Remove existing credentials from the wallet</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#update">update</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Update existing credentials in the wallet.</td>
+<td style="text-align: left">Update existing credentials in the wallet</td>
 </tr>
 </tbody></table>
 
@@ -332,7 +324,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - The current home directory.</p>
+<p><code>[](-string)</code> - The current home directory.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -342,26 +336,28 @@ stores the credentials on the file system.</p>
 
 <p>Constructor.</p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The options to use.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>fs</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The file system implementation to use.</td>
 </tr>
 </tbody></table>
@@ -372,14 +368,14 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.directory</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The directory to store credentials in.</td>
 </tr>
 </tbody></table>
@@ -392,7 +388,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved with an array of credential names, or rejected with an error.</p>
+<p><code>[](-promise)</code> - A promise that is resolved with an array of credential names, or rejected with an error.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -406,7 +404,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved with a boolean; true if the named credentials are in the wallet, false otherwise.</p>
+<p><code>[](-promise)</code> - A promise that is resolved with a boolean; true if the named credentials are in the wallet, false otherwise.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -414,14 +414,14 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the credentials.</td>
 </tr>
 </tbody></table>
@@ -434,7 +434,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved with the named credentials, or rejected with an error.</p>
+<p><code>[](-promise)</code> - A promise that is resolved with the named credentials, or rejected with an error.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -442,14 +444,14 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the credentials.</td>
 </tr>
 </tbody></table>
@@ -462,7 +464,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -470,20 +474,20 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the credentials.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The credentials.</td>
 </tr>
 </tbody></table>
@@ -496,7 +500,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -504,20 +510,20 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the credentials.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The credentials.</td>
 </tr>
 </tbody></table>
@@ -530,7 +536,9 @@ stores the credentials on the file system.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -538,14 +546,14 @@ stores the credentials on the file system.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the credentials.</td>
 </tr>
 </tbody></table>

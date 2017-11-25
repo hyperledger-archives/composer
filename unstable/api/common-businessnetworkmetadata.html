@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -256,17 +248,18 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="businessnetworkmetadata">BusinessNetworkMetadata</h1>
 
-<p>
-Defines the metadata for a BusinessNeworkDefinition. This includes:
+<p>Defines the metadata for a BusinessNeworkDefinition. This includes:</p>
+
 <ul>
-  <li>package.json</li>
-  <li>README.md (optional)</li>
+<li>package.json</li>
+<li>README.md (optional)</li>
 </ul>
-</p>
+
+<p><strong>Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong></p>
 
 <h3 id="details">Details</h3>
 
@@ -286,71 +279,38 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="#constructor">constructor</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the BusinessNetworkMetadata. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#getdescription">getDescription</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the description for this business network.</td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the description for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getidentifier">getIdentifier</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the identifier for this business network, formed from name@version.</td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the identifier for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getname">getName</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the name for this business network.</td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the name for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getpackagejson">getPackageJson</a></td>
 <td style="text-align: left"><code>object</code></td>
-<td style="text-align: left">Returns the package.json for this business network.</td>
+<td style="text-align: left">Returns the package</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getreadme">getREADME</a></td>
 <td style="text-align: left"><code>String</code></td>
-<td style="text-align: left">Returns the README.md for this business network. This may be null if the business network does not have a README.md</td>
+<td style="text-align: left">Returns the README</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getversion">getVersion</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the version for this business network.</td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the version for this business network</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
-
-<h2 id="new-businessnetworkmetadata">new BusinessNetworkMetadata()</h2>
-
-<p>Create the BusinessNetworkMetadata. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></p>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>packageJson</strong></td>
-<td style="text-align: left">object</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the JS object for package.json (required)</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>readme</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the README.md for the business network (may be null)</td>
-</tr>
-</tbody></table>
 
 <h2 id="getreadme">getREADME</h2>
 
@@ -360,7 +320,9 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - the README.md file for the business network or null</p>
+<p><code>[](common-string)</code> - the README.md file for the business network or null</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -374,7 +336,9 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h3 id="returns">Returns</h3>
 
-<p><code>object</code> - the Javascript object for package.json</p>
+<p><code>[](common-object)</code> - the Javascript object for package.json</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -382,13 +346,15 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h2 id="getname">getName</h2>
 
-<p><em>string getName(  )</em></p>
+<p><em>String getName(  )</em></p>
 
 <p>Returns the name for this business network.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - the name of the business network</p>
+<p><code>[](common-string)</code> - the name of the business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -396,13 +362,15 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h2 id="getdescription">getDescription</h2>
 
-<p><em>string getDescription(  )</em></p>
+<p><em>String getDescription(  )</em></p>
 
 <p>Returns the description for this business network.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - the description of the business network</p>
+<p><code>[](common-string)</code> - the description of the business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -410,13 +378,15 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h2 id="getversion">getVersion</h2>
 
-<p><em>string getVersion(  )</em></p>
+<p><em>String getVersion(  )</em></p>
 
 <p>Returns the version for this business network.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - the description of the business network</p>
+<p><code>[](common-string)</code> - the description of the business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -424,13 +394,15 @@ Defines the metadata for a BusinessNeworkDefinition. This includes:
 
 <h2 id="getidentifier">getIdentifier</h2>
 
-<p><em>string getIdentifier(  )</em></p>
+<p><em>String getIdentifier(  )</em></p>
 
-<p>Returns the identifier for this business network, formed from name@version.</p>
+<p>Returns the identifier for this business network. Formed from name@version.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>string</code> - the identifier of the business network</p>
+<p><code>[](common-string)</code> - the identifier of the business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 

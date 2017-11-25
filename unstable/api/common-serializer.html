@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -256,7 +248,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="serializer">Serializer</h1>
 
@@ -284,17 +276,17 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create a Serializer. <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></td>
+<td style="text-align: left">Create a Serializer</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#fromjson">fromJSON</a></td>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left">Create a <a href="common-resource">Resource</a> from a JavaScript Object representation. The JavaScript Object should have been created by calling the <a href="common-serializer#tojson">toJSON</a> API.</td>
+<td style="text-align: left">Create a <a href="common-resource">Resource</a> from a JavaScript Object representation</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#tojson">toJSON</a></td>
 <td style="text-align: left"><code>Object</code></td>
-<td style="text-align: left"><p> Convert a <a href="common-resource">Resource</a> to a JavaScript object suitable for long-term peristent storage. </p></td>
+<td style="text-align: left"><p> Convert a <a href="common-resource">Resource</a> to a JavaScript object suitable for long-term peristent storage</td>
 </tr>
 </tbody></table>
 
@@ -304,26 +296,28 @@ ga('send', 'pageview');
 
 <p>Create a Serializer. <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>factory</strong></td>
 <td style="text-align: left">Factory</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The Factory to use to create instances</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>modelManager</strong></td>
 <td style="text-align: left">ModelManager</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The ModelManager to use for validation etc.</td>
 </tr>
 </tbody></table>
@@ -336,7 +330,9 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Object</code> - The Javascript Object that represents the resource</p>
+<p><code>[](common-object)</code> - The Javascript Object that represents the resource</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -344,20 +340,20 @@ ga('send', 'pageview');
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>resource</strong></td>
 <td style="text-align: left">Resource</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The instance to convert to JSON</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the optional serialization options.</td>
 </tr>
 </tbody></table>
@@ -368,32 +364,32 @@ ga('send', 'pageview');
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.validate</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">validate the structure of the Resource with its model prior to serialization (default to true)</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.convertResourcesToRelationships</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Convert resources that are specified for relationship fields into relationships, false by default.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.permitResourcesForRelationships</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Permit resources in the place of relationships (serializing them as resources), false by default.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.deduplicateResources</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Generate $id for resources and if a resources appears multiple times in the object graph only the first instance is serialized in full, subsequent instances are replaced with a reference to the $id</td>
 </tr>
 </tbody></table>
@@ -407,7 +403,9 @@ The Resource is populated based on the JavaScript object.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - The new populated resource</p>
+<p><code>[](common-resource)</code> - The new populated resource</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -415,20 +413,20 @@ The Resource is populated based on the JavaScript object.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>jsonObject</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The JavaScript Object for a Resource</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the optional serialization options</td>
 </tr>
 </tbody></table>
@@ -439,20 +437,20 @@ The Resource is populated based on the JavaScript object.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.acceptResourcesForRelationships</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">handle JSON objects in the place of strings for relationships, defaults to false.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.validate</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">validate the structure of the Resource with its model prior to serialization (default to true)</td>
 </tr>
 </tbody></table>

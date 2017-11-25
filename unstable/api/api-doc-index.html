@@ -206,27 +206,19 @@ ga('send', 'pageview');
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
 <li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
 <li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
@@ -262,6 +254,10 @@ ga('send', 'pageview');
 
 <p>The <a href="../jsdoc/index.html">original JSDoc format</a> can still be found temporarily, whilst the new format is refinded. Please do send us your feedback.</p>
 
+<h2 id="quick-links">Quick Links</h2>
+
+<p><a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+
 <h2 id="overview">Overview</h2>
 
 <p>All the classes are listed in the <a href="./allData.html">Class Index</a></p>
@@ -277,6 +273,147 @@ from client applications. Hyperledger Composer resources are stored on the Block
 submitted for processing. These functions may update the state of resources
 stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
 </ol>
+
+<h2 id="javascript-language-support">JavaScript language support</h2>
+
+<p>Applications that are using the client or admin APIs, that are not running inside a transaction function can be written to use ES6.
+As an example, it allows the use of the async/await syntax. </p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets. </span>
+  <span class="k">try</span><span class="p">{</span>
+    <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
+    <span class="kr">await</span> <span class="nx">assestRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
+
+    <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
+    <span class="nx">LOG</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+
+    <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+      <span class="c1">// error handling</span>
+  <span class="p">}</span>
+</code></pre></div>
+<p>The promise chain syntax can be used, and must be used within Transaction Functions. </p>
+
+<p><strong>All code within a transaction function must use ES5 syntax - along with Promise Chains</strong></p>
+
+<p>Using promises the example above would be:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets. </span>
+
+  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span>  <span class="p">{</span> 
+        <span class="kd">var</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+       <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
+    <span class="p">})</span> 
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">LOG</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+      <span class="c1">// error handling</span>
+    <span class="p">});</span>
+</code></pre></div>
+<h2 id="admin-and-client-api">Admin and Client API</h2>
+
+<p>These APIs are specifically used to obtain connect to a Business Network Connection to either administer it, or obtain the resources to perform business operations. Business operations could be to add assets, or submit transaction functions.</p>
+
+<p>The starting point for these APIs are the <code>AdminConnection</code> or <code>BusinessNetworkConnection</code>. Both APIs follow a similar pattern to connect.
+A name of an already imported business network card is needed. By default these cards are ready from the file system card store.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
+<span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardNameToUse'</span><span class="p">);</span>
+
+<span class="c1">//</span>
+<span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">bizNetConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+<span class="kd">let</span> <span class="nx">businessNetworkDefintion</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">bizNetConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'cardNameToUse'</span><span class="p">);</span>
+
+</code></pre></div>
+<h3 id="registries">Registries</h3>
+
+<p>A key part of the Client API is are the Regsitry classes. There are the <em>AssetRegsitry</em>, <em>ParticipantRegistry</em>, <em>IdentityRegistry</em>, <em>TransactionRegistries</em> and the <em>Historian</em>. Each of these have a common super type of <em>Registry</em>.</p>
+
+<p>The Registry supports accessing a registry to obtain resources. </p>
+
+<ul>
+<li>Add one or more resources</li>
+<li>Update one or more resources</li>
+<li>Remove one or all resources</li>
+<li>Get one or all resources</li>
+<li>Check if a resource exists</li>
+<li>Resolve one or all resources</li>
+</ul>
+
+<p>The difference between resolve and get are that get will no resolve any relationships that are defined in the resource. A reference to the resource will be supplied. A resolve call will iterate over all the relationships.</p>
+
+<p>Registries are automatically created for each asset, participnat, and transaction. Additional registries can be created if required using the addRegistry call. </p>
+
+<h2 id="common-api">Common API</h2>
+
+<p>The Common API contains the APIs used to obtain information about the Business Network you are conencted to and to create new assets, participants, transactions and events. It also provides APIs to find out information about these resources.  </p>
+
+<p>For example to create a new asset</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
+<span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'PID:1234567890'</span><span class="p">);</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Fred'</span><span class="p">;</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Bloggs'</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="runtime-api">Runtime API</h3>
+
+<p>The Runtime API is the available API to all transaction functions. It allows access to APIs to
+- build and issue queries
+- emit events
+- get registries of all types
+- get the current participant
+- get the serializer to create resources from JavaScript objects
+- post HTTP REST calls</p>
+
+<p>The Common API calls are also available to interact with resources, together with the Registry APIs. For each </p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Call methods on the driver participant registry.</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Add optional error handling here.</span>
+  <span class="p">});</span>
+</code></pre></div>
+<p><strong>NOTE: All transaction functions should be written to ES5 and additional use Promise chains</strong></p>
+
+<h3 id="transaction-functions">Transaction Functions</h3>
+
+<p>The transaction function is the part of Composer that can be considered to be the <em>smart contract</em> execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the <em>source of truth</em> of the assets is maintained. </p>
+
+<p>Definition of the transaction functions is within the .cto model file.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
+
+transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --&gt; LandTitle title
+}
+</code></pre></div>
+<p>This is then linked to the implementation of the transaction function by annotations in the comment of the function.  <code>@transaction</code> marks this function as a transaction function. <code>@param</code> connects this transaction to the <code>RegisterPropertyForSale</code> defined in the model.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * @param {net.biz.digitalPropertyNetwork} registryProperty
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">codeToImplementatTheTransactionFunction</span><span class="p">(</span><span class="nx">registryProperty</span><span class="p">){</span>
+ <span class="c1">//</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The function argument <code>registryProperty</code> for sale will be a fully resolved copy of the transaction resource. The <code>--&gt; LandTitle title</code> in this example would be a fully resolved LandTitle resource.</p>
+
+<h4 id="restrictions">Restrictions</h4>
+
+<ul>
+<li>Transaction functions should not use random numbers</li>
+<li>Additional transactions can not be submitted from the implemetnation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.</li>
+<li>Always use <code>getCurrentParticipant()</code> to get the details of the invoking participant</li>
+</ul>
 
             
           </section>
