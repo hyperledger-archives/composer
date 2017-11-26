@@ -56,10 +56,8 @@ function augment(){
             // if the class does have something it extends, we need to add the methods
             // otherwise, move on. 
             let thisClass = masterData[module][c];
-            if (thisClass.extends){
-                console.log(` ${thisClass.module}:${thisClass.name} extends  ${thisClass.extends}  ${thisClass.superClass}`);
-                addSuperClassMethods(thisClass);
-                console.log(JSON.stringify(thisClass));
+            if (thisClass.extends){               
+                addSuperClassMethods(thisClass);                
             }
         });
     });
@@ -70,7 +68,7 @@ function write(){
             // if the class does have something it extends, we need to add the methods
             // otherwise, move on. 
             let thisClass = masterData[module][c];
-            let filename = path.resolve('./_jsondata/',module+'-'+(thisClass.name.toLowerCase())+'.json')
+            let filename = path.resolve('./jsondata/',module+'-'+(thisClass.name.toLowerCase())+'.json')
             fs.writeFileSync(filename,JSON.stringify(thisClass),'utf8');
         });
     });

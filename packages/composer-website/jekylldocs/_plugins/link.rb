@@ -10,11 +10,17 @@ module ChangeLocalMdLinksToHtml
       else
         modulename = "none"
       end
+      mdnprefix = "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/"
+      page.content = page.content.gsub(/\{(?:@link )?(string|map|promise|boolean)\s*\}/) {"[#{$1}]("+mdnprefix+"#{$1})"}
+
+      # Converts any Markdown link using .md suffix to a .html suffix
       page.content = page.content.gsub(/(\[[^\]]*\]\([^:\)]*)\.md\)/, '\1.html)')
+
+      # Special cases to copy with difference approaches to the {@link xxxx} tag      
       page.content = page.content.gsub(/\{@link (#[\w]*) (\w*)\}/) { "[#{$2}](#{$1.downcase})"  }
       page.content = page.content.gsub(/\{@link (#[\w]*)\}/) { "[#{$1}](#{$1.downcase})"  }
-      page.content = page.content.gsub(/\{@link (\w*)-([\w#]*) (\w*)\}/) { "[#{$3}](#{$1}-#{$2.downcase})"  }
-      page.content = page.content.gsub(/\{@link (\w*)-([\w#]*)\}/) { "[#{$2}](#{$1}-#{$2.downcase})"  }
+      page.content = page.content.gsub(/\{@link (\w*)[.-]([\w#]*) (\w*)\}/) { "[#{$3}](#{$1}-#{$2.downcase})"  }
+      page.content = page.content.gsub(/\{@link (?:module:)?(?:composer-)?(\w*)[.-]([\w#]*)\}/) { "[#{$2}](#{$1}-#{$2.downcase})"  }
       page.content = page.content.gsub(/\{@link ([\w#]*)\}/) { "[#{$1}]("+modulename+"-#{$1.downcase})"  }
       page.content = page.content.gsub(/\{@link ([\w#]*) (\w*)\}/) { "[#{$2}]("+modulename+"-#{$1.downcase})"  }
 

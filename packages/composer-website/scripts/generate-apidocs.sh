@@ -23,7 +23,7 @@ do
   echo "${file}"
   BASENAME="$(basename -s .json ${file})"
   ((INDEX++))
-  ${DIR}/apigen-opus/bin/cli1.js -i _jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"${INDEX}\"}"
+  ${DIR}/apigen-opus/bin/cli1.js -i jsondata/${BASENAME} -t class.njk -o ${DIR}/jekylldocs/api --context "{\"index\":\"${INDEX}\"}"
 done
 
 # TODO, create the template a class index.
