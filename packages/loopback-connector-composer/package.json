@@ -1,6 +1,6 @@
 {
   "name": "loopback-connector-composer",
-  "version": "0.15.3",
+  "version": "0.16.0",
   "description": "A Loopback connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -27,8 +27,8 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "dependencies": {
-    "composer-client": "0.15.3",
-    "composer-common": "0.15.3",
+    "composer-client": "0.16.0",
+    "composer-common": "0.16.0",
     "loopback": "3.4.0",
     "loopback-connector": "4.0.0",
     "node-cache": "4.1.1"
@@ -36,8 +36,8 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
-    "composer-admin": "0.15.3",
-    "composer-connector-embedded": "0.15.3",
+    "composer-admin": "0.16.0",
+    "composer-connector-embedded": "0.16.0",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "license-check": "1.1.5",
