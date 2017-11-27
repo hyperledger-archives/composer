@@ -14,7 +14,7 @@ In this step by step tutorial we'll walk through setting up a business network, 
 
 ## Step One: Open the {{site.data.conrefs.composer_full}} Playground
 
-Open <a href="http://composer-playground.mybluemix.net" target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Business Network** screen. The **My Business Network** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
+Open <a href={{site.data.links.playground}} target="blank">{{site.data.conrefs.composer_short}} Playground</a>. You should see the **My Business Network** screen. The **My Business Network** page shows you a summary of the business networks you can connect to, and the identities you can use to connect to them. Don't worry about this too much for the time being, as we're going to create our own network.
 
 ## Step Two: Creating a new business network
 
