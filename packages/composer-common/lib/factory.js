@@ -39,7 +39,7 @@ const uuid = require('uuid');
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
  *
- * **Applications should retrieve instances from {@link BusinessNetworkDefinition}**
+ * **Applications should retrieve instances of the Factory from {@link BusinessNetworkDefinition#getFactory}**
  *
  * @class
  * @memberof module:composer-common

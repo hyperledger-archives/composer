@@ -28,6 +28,8 @@ const REGISTRY_TYPE = 'Asset';
  * as adding assets are treated as transactions so are therefore recorded.
  *
  * Details of these are in the system model.
+ *
+ * **Applications should retrieve instances from {@link BusinessNetworkConnection}**
  * @extends Registry
  * @see See {@link Registry}
  * @class
@@ -85,7 +87,7 @@ class Historian extends Registry {
      *
      * @param {Resource} resource The resource to be added to the registry.
      * @param {string} data The data for the resource.
-     * @private
+     *
      */
     add(resource) {
         throw new Error('cannot add historian records to the historian');
@@ -96,7 +98,7 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {Resource[]} resources The resources to be added to the registry.
-     * @private
+     *
      */
     addAll(resources) {
         throw new Error('cannot add historian records to the historian');
@@ -107,7 +109,7 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {Resource} resource The resource to be updated in the registry.
-     * @private
+     *
      */
     update(resource) {
         throw new Error('cannot update historian records in the historian');
@@ -118,7 +120,7 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {Resource[]} resources The resources to be updated in the asset registry.
-     * @private
+     *
      */
     updateAll(resources) {
         throw new Error('cannot update historian records in the historian');
@@ -129,7 +131,7 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {(Resource|string)} resource The resource, or the unique identifier of the resource.
-     * @private
+     *
      */
     remove(resource) {
         throw new Error('cannot remove historian records from the historian');
@@ -140,7 +142,7 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {(Resource[]|string[])} resources The resources, or the unique identifiers of the resources.
-     * @private
+     *
      */
     removeAll(resources) {
         throw new Error('cannot remove historian records from the historian');

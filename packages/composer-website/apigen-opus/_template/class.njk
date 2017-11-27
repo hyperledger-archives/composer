@@ -27,16 +27,21 @@ index-order: {{index}}
 {% endfor %}
 {% endif %}
 
+{% if methods | length != 0 -%}
 ## Method Summary
 | Name | Returns | Description |
 | :---- | :-------- | :----------- |
 {% for method in methods | sort(attribute='name') %}| [{{method.name}}](#{{method.name | lower }}) | `{{method.returnType}}` | {% if method.summary %}{{method.summary}}{% else %}{{method.description[0]}}{% endif %}  |
 {% endfor %}
+{% endif %}
 
-{#
-{% for method in methods | sort(attribute='name') %}| [{{method.name}}](#{{method.name | lower }}{% for args in method.parameters %}-{{args.name | lower }}{% endfor %}) | `{{method.returnType}}` | {{method.description[0]}}  |
-#}
-
+{% if superMethods | length != 0 -%}
+## Inherited Method Summary
+| Supertype | Name | Returns | Description |
+| :-------- | :--- | :-------- | :----------- |
+{% for method in superMethods | sort(attribute='method.method.name') %}| {{ method.fromClass }} |[{{method.method.name}}](#{{method.method.name | lower }}) | `{{method.method.returnType}}` | {% if method.method.summary %}{{method.method.summary}}{% else %}{{method.method.description[0]}}{% endif %}  |
+{% endfor %}
+{% endif %}
 
 # Method Details
 {% for method in methods %}
@@ -44,10 +49,8 @@ index-order: {{index}}
 ## new {{name}}()
 {% else %}
 ## {{method.name}}
-_{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
+_{{method.return.type}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
 {% endif %}
-
-
 
 {% for l in method.description -%}
 {{l}}
@@ -62,7 +65,7 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 
 {% if method.return %}
 ### Returns
-`{@link {{method.return.type}} }` - {% for l in method.return.description -%}
+**{@link {% if method.return.fqntype %}{{method.return.fqntype}}{% else %}{{method.return.type}}{% endif %}}** - {% for l in method.return.description -%}
 {{l}}
 {% endfor %}
 {% endif %}
@@ -108,3 +111,74 @@ No parameters
 {% endif %}
 {% endfor %} 
 
+##Inherited methods
+
+{% for m in superMethods %}
+{% set method = m.method %}
+{% if method.name == 'constructor'%}
+## new {{name}}()
+{% else %}
+## {{method.name}}
+_{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
+{% endif %}
+
+**Inherited from:**  {{m.fromClass}}
+
+{% for l in method.description -%}
+{{l}}
+{% endfor %}
+
+{% if method.example %}
+### Example
+```javascript
+{{method.example}}
+```
+{% endif %}
+
+{% if method.return %}
+### Returns
+{@link {% if method.return.fqntype %}{{method.return.fqntype}}{% else %}{{method.return.type}}{% endif %}} - {% for l in method.return.description -%}
+{{l}}
+{% endfor %}
+{% endif %}
+
+{% if method.seeAlso %}
+### See also
+{% for sa in method.seeAlso -%}
+- {{sa}}
+{% else %}
+
+{% endfor %}
+{% endif %}
+
+
+### Parameters
+{% if method.parameters | length != 0 -%}
+| Name | Type | Mandatory | Description |
+| :-----------  | :----------- | :----------- | :----------- |
+{% for p in method.parameters -%}
+|**{{p.name}}**| {{p.type}} |{% if p.optional==='true' %}No{% else %}*Yes*{% endif %}|{{p.description}}|
+{% endfor %}
+{% else %}
+No parameters
+{% endif %}
+
+{% if method.suboptions | length != 0 -%}
+### Sub-options
+
+| Name | Type | Mandatory | Description |
+| :-----------  | :----------- | :----------- | :----------- |
+{% for p in method.suboptions -%}
+|**{{p.name}}**| {{p.type}} |{% if p.optional==='true' %}No{% else %}*Yes*{% endif %}|{{p.description}}|
+{% endfor %}
+{% else %}
+
+{% endif %}
+
+{% if method.example %}
+### Example
+```javascript
+{{method.example}}
+```
+{% endif %}
+{% endfor %} 

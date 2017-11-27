@@ -19,12 +19,13 @@ const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('ParticipantRegistry');
 
 /**
- * Do not attempt to create an instance of this class.<br>
- * You must use the {@link runtime-api#getParticipantRegistry getParticipantRegistry}
+ * The ParticipantRegistry is used to manage a set of participants stored on the blockchain.
+ *
+ * Do not attempt to create an instance of this class. You must use the {@link runtime-api#getParticipantRegistry getParticipantRegistry}
  * method instead.
  *
  * @class ParticipantRegistry
- * @classdesc An participant registry manages a set of participants.
+ * @summary An participant registry manages a set of participants.
  * @memberof module:composer-runtime
  * @public
  */

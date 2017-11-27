@@ -30,7 +30,7 @@ const RelationshipDeclaration = require('./relationshipdeclaration');
  * A ClassDeclaration is conceptually owned by a ModelFile which
  * defines all the classes that are part of a namespace.
  *
- * @private
+ *
  * @abstract
  * @class
  * @memberof module:composer-common
