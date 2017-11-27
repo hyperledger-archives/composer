@@ -18,6 +18,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 let masterData = {};
+let classToModule = {};
 
 // Loop through all the files in the input directory
 processDirectory('./jsondata/');
@@ -51,11 +52,19 @@ function processDirectory(path) {
 }
 
 function augment(){
+    console.log(classToModule)
     Object.keys(masterData).forEach((module)=>{
         Object.keys(masterData[module]).forEach((c)=>{
             // if the class does have something it extends, we need to add the methods
             // otherwise, move on. 
             let thisClass = masterData[module][c];
+            thisClass.methods.forEach((method)=>{
+                if (method.returnType) {
+                let m = classToModule[method.returnType.toLowerCase()];
+                if (m){
+                    method.return.fqntype=m+'-'+method.returnType;
+                }
+            }});
             if (thisClass.extends){               
                 addSuperClassMethods(thisClass);                
             }
@@ -90,6 +99,15 @@ function addSuperClassMethods(thisClass){
             let foundMethod= thisClass.methods.find( (localMethod)=>{ return localMethod.name === m.name;});
             if (!foundMethod){
                 thisClass.superMethods.push({"fromClass": superType, "method" :m});
+            } else {
+                // check if the method that we have found include the @inhertidoc tag
+                if (foundMethod.decorators && foundMethod.decorators.find((e)=>{return e === 'inheritdoc';})){
+                    // get the docs from the super method and use those instead.
+                    foundMethod.description = m.description;
+                    foundMethod.parameters = m.parameters;
+                    foundMethod.return = m.return;
+
+                }
             }
         })
 
@@ -116,5 +134,6 @@ function processFile(file, fileProcessor) {
             masterData[m] = {};
         }
         masterData[m][data.name]=(data);
+        classToModule[data.name.toLowerCase()]=m;
     }
 }

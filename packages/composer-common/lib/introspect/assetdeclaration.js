@@ -22,7 +22,7 @@ const IllegalModelException = require('./illegalmodelexception');
  * an Asset. It extends ClassDeclaration which manages a set of
  * fields, a super-type and the specification of an
  * identifying field.
- * @private
+ *
  * @extends ClassDeclaration
  * @see See {@link ClassDeclaration}
  * @class

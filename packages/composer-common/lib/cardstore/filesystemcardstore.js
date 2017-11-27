@@ -29,8 +29,9 @@ const LOG = Logger.getLog('FileSystemCardStore');
 
 /**
  * Manages persistence of business network cards to a Node file system implementation.
- *
- * @private
+ * This is the default cardstore of Admin and Business Network connections.
+ * It stores card in the `~/.composer` directory.
+ * @extends BusinessNetworkCardStore
  * @class
  * @memberof module:composer-common
  */

@@ -40,9 +40,10 @@ class JSONGenerator {
             classData.methods = classData.methods.concat(functions);
 
             let json = this._process(classData);
-
-            let f = path.resolve(program.outputDir, json.module+'-'+path.parse(file).name+'.json');
-            fs.writeFileSync(f,JSON.stringify(json));
+            if (json.module) {
+                let f = path.resolve(program.outputDir, json.module+'-'+path.parse(file).name+'.json');
+                fs.writeFileSync(f,JSON.stringify(json));
+            }
         }
     }
 
@@ -119,10 +120,21 @@ class JSONGenerator {
                             e.parameters.push(oneParam);
                         }
                     } else if (p.title.startsWith('return')) {
-                        e.return = {
-                            description : p.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~'),
-                            type : p.type.name
-                        };
+                        if (p.type.name){
+                            e.return = {
+                                description : p.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~'),
+                                type : p.type.name
+                            };
+                        } else {
+
+                            if (p.type.expression && p.type.expression.name === 'Array'){
+
+                                e.return = {
+                                    description : p.description.replace(/\n\s*\n/g, '~~~~').replace(/\n/g, ' ').split('~~~~'),
+                                    type : p.type.applications[0].name+'[]'
+                                };
+                            }
+                        }
                     } else if (p.title === 'see'){
                         e.seeAlso.push(p.description);
                     } else if (p.title === 'summary'){

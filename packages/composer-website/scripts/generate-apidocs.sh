@@ -18,7 +18,7 @@ cd ${DIR}
 node ./scripts/merge.js
 
 # for each json file process using the class template
-for file in ${DIR}/_jsondata/*.json
+for file in ${DIR}/jsondata/*.json
 do
   echo "${file}"
   BASENAME="$(basename -s .json ${file})"

@@ -18,9 +18,9 @@ const ClassDeclaration = require('./classdeclaration');
 
 /**
  * EnumDeclaration defines an enumeration of static values.
- * @private
+ *
  * @extends ClassDeclaration
- * @see See {@link  ClassDeclaration}
+ * @see See {@link ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

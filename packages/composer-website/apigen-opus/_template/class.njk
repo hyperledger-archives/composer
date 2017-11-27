@@ -49,10 +49,10 @@ index-order: {{index}}
 ## new {{name}}()
 {% else %}
 ## {{method.name}}
-_{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
+_{{method.return.type}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
 {% endif %}
 
-**_{% for l in method.description -%}_**
+{% for l in method.description -%}
 {{l}}
 {% endfor %}
 
@@ -65,7 +65,7 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 
 {% if method.return %}
 ### Returns
-**{@link {{method.return.type}}}** - {% for l in method.return.description -%}
+**{@link {% if method.return.fqntype %}{{method.return.fqntype}}{% else %}{{method.return.type}}{% endif %}}** - {% for l in method.return.description -%}
 {{l}}
 {% endfor %}
 {% endif %}
@@ -137,7 +137,7 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 
 {% if method.return %}
 ### Returns
-{@link {{method.return.type}}} - {% for l in method.return.description -%}
+{@link {% if method.return.fqntype %}{{method.return.fqntype}}{% else %}{{method.return.type}}{% endif %}} - {% for l in method.return.description -%}
 {{l}}
 {% endfor %}
 {% endif %}

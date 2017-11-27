@@ -24,6 +24,7 @@ let theWallet = null;
 /**
  * Base class representing a wallet (a container of credentials).
  * @protected
+ * @class
  * @abstract
  */
 class Wallet {

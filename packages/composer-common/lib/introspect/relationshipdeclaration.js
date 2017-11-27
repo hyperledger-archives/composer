@@ -21,8 +21,8 @@ const ModelUtil = require('../modelutil');
 /**
  * Class representing a relationship between model elements
  * @extends Property
- * @see See  {@link  Property}
- * @private
+ * @see See  {@link Property}
+ *
  * @class
  * @memberof module:composer-common
  */

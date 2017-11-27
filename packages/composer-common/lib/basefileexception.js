@@ -22,7 +22,7 @@ const BaseException = require('./baseexception');
  * @see {@link BaseException}
  * @class
  * @memberof module:composer-common
- * @public
+ * @private
  */
 class BaseFileException extends BaseException {
 
