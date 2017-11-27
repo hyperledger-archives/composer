@@ -9,6 +9,7 @@
     "bin": {
         "composer-playground": "cli.js"
     },
+    "main": "index.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/hyperledger/composer.git"
