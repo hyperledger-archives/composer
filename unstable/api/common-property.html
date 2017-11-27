@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>BaseFileException (Common API) | Hyperledger Composer</title>
+    <title>Property (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>BaseFileException (Common API)</p>
+          <p>Property (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -251,22 +262,18 @@ ga('send', 'pageview');
             
               <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
-<h1 id="basefileexception">BaseFileException</h1>
+<h1 id="property">Property</h1>
 
-<p>Exception throws when a composer file is semantically invalid</p>
+<p>Property representing an attribute of a class declaration,
+either a Field or a Relationship.</p>
 
 <h3 id="details">Details</h3>
 
 <ul>
-<li><p><strong>Extends</strong> BaseException</p></li>
-<li><p><strong>Module</strong> common</p></li>
+<li><strong>Module</strong> common</li>
 </ul>
 
 <h3 id="see-also">See also</h3>
-
-<ul>
-<li><a href="common-baseexception">BaseException</a></li>
-</ul>
 
 <h2 id="method-summary">Method Summary</h2>
 
@@ -280,25 +287,65 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create an IllegalModelException</td>
+<td style="text-align: left">Create a Property</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#getfilelocation">getFileLocation</a></td>
+<td style="text-align: left"><a href="#getfullyqualifiedname">getFullyQualifiedName</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the file location associated with the exception or null</td>
+<td style="text-align: left">Returns the fully name of a property (ns + class name + property name)</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#getshortmessage">getShortMessage</a></td>
+<td style="text-align: left"><a href="#getfullyqualifiedtypename">getFullyQualifiedTypeName</a></td>
 <td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Returns the error message without the location of the error</td>
+<td style="text-align: left">Returns the fully qualified type name of a property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getname">getName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the name of a property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getnamespace">getNamespace</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the namespace of the parent of this property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparent">getParent</a></td>
+<td style="text-align: left"><code>ClassDeclaration</code></td>
+<td style="text-align: left">Returns the owner of this property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#gettype">getType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the type of a property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isarray">isArray</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if the field is declared as an array type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isoptional">isOptional</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if the field is optional</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isprimitive">isPrimitive</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this property is a primitive type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#istypeenum">isTypeEnum</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if the field is declared as an enumerated value</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="new-basefileexception">new BaseFileException()</h2>
+<h2 id="new-property">new Property()</h2>
 
-<p>Create an IllegalModelException</p>
+<p>Create a Property.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -313,34 +360,28 @@ ga('send', 'pageview');
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>message</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>parent</strong></td>
+<td style="text-align: left">ClassDeclaration</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">the message for the exception</td>
+<td style="text-align: left">the owner of this property</td>
 </tr>
 <tr>
-<td style="text-align: left"><strong>fileLocation</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>ast</strong></td>
+<td style="text-align: left">Object</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">the optional file location associated with the exception</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>fullMessage</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">the optional full message text</td>
+<td style="text-align: left">The AST created by the parser</td>
 </tr>
 </tbody></table>
 
-<h2 id="getfilelocation">getFileLocation</h2>
+<h2 id="getparent">getParent</h2>
 
-<p><em>string getFileLocation(  )</em></p>
+<p><em>ClassDeclaration getParent(  )</em></p>
 
-<p>Returns the file location associated with the exception or null</p>
+<p>Returns the owner of this property</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-string)</code> - the optional location associated with the exception</p>
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the parent class declaration</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -348,21 +389,151 @@ ga('send', 'pageview');
 
 <p>No parameters</p>
 
-<h2 id="getshortmessage">getShortMessage</h2>
+<h2 id="getname">getName</h2>
 
-<p><em>string getShortMessage(  )</em></p>
+<p><em>string getName(  )</em></p>
 
-<p>Returns the error message without the location of the error</p>
+<p>Returns the name of a property</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-string)</code> - the error message</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the name of this field</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
+
+<h2 id="gettype">getType</h2>
+
+<p><em>string getType(  )</em></p>
+
+<p>Returns the type of a property</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the type of this field</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isoptional">isOptional</h2>
+
+<p><em>boolean isOptional(  )</em></p>
+
+<p>Returns true if the field is optional</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the field is optional</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getfullyqualifiedtypename">getFullyQualifiedTypeName</h2>
+
+<p><em>string getFullyQualifiedTypeName(  )</em></p>
+
+<p>Returns the fully qualified type name of a property</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the fully qualified type of this property</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getfullyqualifiedname">getFullyQualifiedName</h2>
+
+<p><em>string getFullyQualifiedName(  )</em></p>
+
+<p>Returns the fully name of a property (ns + class name + property name)</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the fully qualified name of this property</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getnamespace">getNamespace</h2>
+
+<p><em>string getNamespace(  )</em></p>
+
+<p>Returns the namespace of the parent of this property</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the namespace of the parent of this property</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isarray">isArray</h2>
+
+<p><em>boolean isArray(  )</em></p>
+
+<p>Returns true if the field is declared as an array type</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the property is an array type</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="istypeenum">isTypeEnum</h2>
+
+<p><em>boolean isTypeEnum(  )</em></p>
+
+<p>Returns true if the field is declared as an enumerated value</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the property is an enumerated value</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isprimitive">isPrimitive</h2>
+
+<p><em>boolean isPrimitive(  )</em></p>
+
+<p>Returns true if this property is a primitive type.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the property is a primitive type.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

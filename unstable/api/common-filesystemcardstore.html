@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>BaseException (Common API) | Hyperledger Composer</title>
+    <title>FileSystemCardStore (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>BaseException (Common API)</p>
+          <p>FileSystemCardStore (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -251,14 +262,16 @@ ga('send', 'pageview');
             
               <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
-<h1 id="baseexception">BaseException</h1>
+<h1 id="filesystemcardstore">FileSystemCardStore</h1>
 
-<p>A base class for all Composer exceptions</p>
+<p>Manages persistence of business network cards to a Node file system implementation.
+This is the default cardstore of Admin and Business Network connections.
+It stores card in the <code>~/.composer</code> directory.</p>
 
 <h3 id="details">Details</h3>
 
 <ul>
-<li><p><strong>Extends</strong> Error</p></li>
+<li><p><strong>Extends</strong> BusinessNetworkCardStore</p></li>
 <li><p><strong>Module</strong> common</p></li>
 </ul>
 
@@ -276,15 +289,58 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the BaseException</td>
+<td style="text-align: left">Constructor</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#delete">delete</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Delete a specific card from the store.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#get">get</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Gets a card from the store.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getall">getAll</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Gets all cards from the store.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#has">has</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Has returns a boolean indicating whether a card with the specified name exists or not.</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#put">put</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Puts a card in the store. If the named card already exists in the store, it will be replaced.</td>
+</tr>
+</tbody></table>
+
+<h2 id="inherited-method-summary">Inherited Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Supertype</th>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">BusinessNetworkCardStore</td>
+<td style="text-align: left"><a href="#getdefaultcardname">getDefaultCardName</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Get a default name for a given business network card</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="new-baseexception">new BaseException()</h2>
+<h2 id="new-filesystemcardstore">new FileSystemCardStore()</h2>
 
-<p>Create the BaseException.</p>
+<p>Constructor.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -299,10 +355,210 @@ ga('send', 'pageview');
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>message</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left">Object</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The exception message.</td>
+<td style="text-align: left">Additional configuration options for the card store.</td>
+</tr>
+</tbody></table>
+
+<h3 id="sub-options">Sub-options</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options.fs</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Node file system implementation. Defaults to Node implementation.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options.storePath</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Location of the card store. Default: $HOME/.composer/cards</td>
+</tr>
+</tbody></table>
+
+<h2 id="get">get</h2>
+
+<p><em>Promise get( String cardname )</em></p>
+
+<p>Gets a card from the store.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that is resolved with an IdCard, or rejected if the card does not exist.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to get</td>
+</tr>
+</tbody></table>
+
+<h2 id="put">put</h2>
+
+<p><em>Promise put( String cardname, IdCard card )</em></p>
+
+<p>Puts a card in the store. If the named card already exists in the store, it will be replaced.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves once the data is written</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to save</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>card</strong></td>
+<td style="text-align: left">IdCard</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The card</td>
+</tr>
+</tbody></table>
+
+<h2 id="has">has</h2>
+
+<p><em>Promise has( String cardname )</em></p>
+
+<p>Has returns a boolean indicating whether a card with the specified name exists or not.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise resolved with true or false.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to check</td>
+</tr>
+</tbody></table>
+
+<h2 id="getall">getAll</h2>
+
+<p><em>Promise getAll(  )</em></p>
+
+<p>Gets all cards from the store.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that is resolved with a Map where the keys are identity card names and the values are IdCard objects.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="delete">delete</h2>
+
+<p><em>Promise delete( String cardname )</em></p>
+
+<p>Delete a specific card from the store.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves to true if the card existed; otherwise false.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to delete.</td>
+</tr>
+</tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
+
+<h2 id="getdefaultcardname">getDefaultCardName</h2>
+
+<p><em>String getDefaultCardName( IdCard card )</em></p>
+
+<p><strong>Inherited from:</strong>  BusinessNetworkCardStore</p>
+
+<p>Get a default name for a given business network card.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> - A card name</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>card</strong></td>
+<td style="text-align: left">IdCard</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">A business network card</td>
 </tr>
 </tbody></table>
 

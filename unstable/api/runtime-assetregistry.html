@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -253,7 +264,9 @@ ga('send', 'pageview');
 
 <h1 id="assetregistry">AssetRegistry</h1>
 
-<p>Do not attempt to create an instance of this class.<br>
+<p>The AssetRegistry is used to manage a set of assets stored on the Blockchain.</p>
+
+<p>Do not attempt to create an instance of this class.
 You must use the <a href="runtime-api#getassetregistry">getAssetRegistry</a>
 method instead.</p>
 
@@ -348,7 +361,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved with an array of <a href="common-resource">Resource</a> instances representing all of the assets stored in this asset registry. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an array of <a href="common-resource">Resource</a> instances representing all of the assets stored in this asset registry. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -396,7 +409,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved with a <a href="common-resource">Resource</a> instance representing the specified asset in this asset registry. If the specified asset does not exist, or the current user does not have access to the specified asset, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a <a href="common-resource">Resource</a> instance representing the specified asset in this asset registry. If the specified asset does not exist, or the current user does not have access to the specified asset, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -456,7 +469,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved with a boolean which is true if the specified asset exists in this asset registry, and false if the specified participant does not exist.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a boolean which is true if the specified asset exists in this asset registry, and false if the specified participant does not exist.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -520,7 +533,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when all of the assets have been added to this asset registry. If the assets cannot be added to this asset registry, or if the assets already exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been added to this asset registry. If the assets cannot be added to this asset registry, or if the assets already exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -585,7 +598,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when the asset has been added to this asset registry. If the asset cannot be added to this asset registry, or if the asset already exists in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset has been added to this asset registry. If the asset cannot be added to this asset registry, or if the asset already exists in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -651,7 +664,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when all of the assets have been updated in this asset registry. If the assets cannot be updated in this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been updated in this asset registry. If the assets cannot be updated in this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -718,7 +731,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when the asset have been updated in this asset registry. If the asset cannot be updated in this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset have been updated in this asset registry. If the asset cannot be updated in this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -782,7 +795,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when all of the assets have been removed from this asset registry. If the assets cannot be removed from this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been removed from this asset registry. If the assets cannot be removed from this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -844,7 +857,7 @@ method instead.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](runtime-promise)</code> - A promise. The promise is resolved when the asset has been removed from this asset registry. If the asset cannot be removed from this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset has been removed from this asset registry. If the asset cannot be removed from this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -881,6 +894,8 @@ method instead.</p>
     <span class="c1">// Add optional error handling here.</span>
   <span class="p">});</span>
 </code></pre></div>
+<h2 id="inherited-methods">Inherited methods</h2>
+
             
           </section>
         </div>

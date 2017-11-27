@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>FileWallet ( API) | Hyperledger Composer</title>
+    <title>MemoryCardStore (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>FileWallet ( API)</p>
+          <p>MemoryCardStore (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -251,15 +262,16 @@ ga('send', 'pageview');
             
               <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
-<h1 id="filewallet">FileWallet</h1>
+<h1 id="memorycardstore">MemoryCardStore</h1>
 
-<p>Class implementing a wallet (a container of credentials) that
-stores the credentials on the file system.</p>
+<p>Transient in-memory storage of business network cards, useful for testing.
+To use this in preference to the default File System Card Store</p>
 
 <h3 id="details">Details</h3>
 
 <ul>
-<li><strong>Module</strong> </li>
+<li><p><strong>Extends</strong> BusinessNetworkCardStore</p></li>
+<li><p><strong>Module</strong> common</p></li>
 </ul>
 
 <h3 id="see-also">See also</h3>
@@ -274,66 +286,58 @@ stores the credentials on the file system.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="#add">add</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Add a new credential to the wallet</td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
 <td style="text-align: left">Constructor</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#contains">contains</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Check to see if the named credentials are in the wallet</td>
+<td style="text-align: left"><a href="#delete">delete</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Delete a specific card from the store.</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#get">get</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get the named credentials from the wallet</td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Gets a card from the store.</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#gethomedirectory">getHomeDirectory</a></td>
-<td style="text-align: left"><code>string</code></td>
-<td style="text-align: left">Get the current home directory</td>
+<td style="text-align: left"><a href="#getall">getAll</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Gets all cards from the store.</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#list">list</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">List all of the credentials in the wallet</td>
+<td style="text-align: left"><a href="#has">has</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Has returns a boolean indicating whether a card with the specified name exists or not.</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#remove">remove</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Remove existing credentials from the wallet</td>
+<td style="text-align: left"><a href="#put">put</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Puts a card in the store. If the named card already exists in the store, it will be replaced.</td>
 </tr>
+</tbody></table>
+
+<h2 id="inherited-method-summary">Inherited Method Summary</h2>
+
+<table><thead>
 <tr>
-<td style="text-align: left"><a href="#update">update</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Update existing credentials in the wallet</td>
+<th style="text-align: left">Supertype</th>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">BusinessNetworkCardStore</td>
+<td style="text-align: left"><a href="#getdefaultcardname">getDefaultCardName</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Get a default name for a given business network card</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="gethomedirectory">getHomeDirectory</h2>
-
-<p><em>string getHomeDirectory(  )</em></p>
-
-<p>Get the current home directory.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><code>[](-string)</code> - The current home directory.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<p>No parameters</p>
-
-<h2 id="new-filewallet">new FileWallet()</h2>
+<h2 id="new-memorycardstore">new MemoryCardStore()</h2>
 
 <p>Constructor.</p>
 
@@ -341,55 +345,113 @@ stores the credentials on the file system.</p>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>options</strong></td>
-<td style="text-align: left">Object</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The options to use.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>fs</strong></td>
-<td style="text-align: left">Object</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The file system implementation to use.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
 
-<h3 id="sub-options">Sub-options</h3>
+<h2 id="get">get</h2>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>options.directory</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The directory to store credentials in.</td>
-</tr>
-</tbody></table>
+<p><em>Promise get( String cardname )</em></p>
 
-<h2 id="list">list</h2>
-
-<p><em>Promise list(  )</em></p>
-
-<p>List all of the credentials in the wallet.</p>
+<p>Gets a card from the store.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with an array of credential names, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that is resolved with an IdCard, or rejected if the card does not exist.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to get</td>
+</tr>
+</tbody></table>
+
+<h2 id="put">put</h2>
+
+<p><em>Promise put( String cardname, IdCard card )</em></p>
+
+<p>Puts a card in the store. If the named card already exists in the store, it will be replaced.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves once the data is written</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to save</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>card</strong></td>
+<td style="text-align: left">IdCard</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The card</td>
+</tr>
+</tbody></table>
+
+<h2 id="has">has</h2>
+
+<p><em>Promise has( String cardname )</em></p>
+
+<p>Has returns a boolean indicating whether a card with the specified name exists or not.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise resolved with true or false.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of the card to check</td>
+</tr>
+</tbody></table>
+
+<h2 id="getall">getAll</h2>
+
+<p><em>Promise getAll(  )</em></p>
+
+<p>Gets all cards from the store.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that is resolved with a Map where the keys are identity card names and the values are IdCard objects.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -397,15 +459,15 @@ stores the credentials on the file system.</p>
 
 <p>No parameters</p>
 
-<h2 id="contains">contains</h2>
+<h2 id="delete">delete</h2>
 
-<p><em>Promise contains( string name )</em></p>
+<p><em>Promise delete( String cardname )</em></p>
 
-<p>Check to see if the named credentials are in the wallet.</p>
+<p>Delete a specific card from the store.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with a boolean; true if the named credentials are in the wallet, false otherwise.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves to true if the card existed; otherwise false.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -420,22 +482,26 @@ stores the credentials on the file system.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>cardName</strong></td>
+<td style="text-align: left">String</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
+<td style="text-align: left">The name of the card to delete.</td>
 </tr>
 </tbody></table>
 
-<h2 id="get">get</h2>
+<h2 id="inherited-methods">Inherited methods</h2>
 
-<p><em>Promise get( string name )</em></p>
+<h2 id="getdefaultcardname">getDefaultCardName</h2>
 
-<p>Get the named credentials from the wallet.</p>
+<p><em>String getDefaultCardName( IdCard card )</em></p>
+
+<p><strong>Inherited from:</strong>  BusinessNetworkCardStore</p>
+
+<p>Get a default name for a given business network card.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with the named credentials, or rejected with an error.</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> - A card name</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -450,112 +516,10 @@ stores the credentials on the file system.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
+<td style="text-align: left"><strong>card</strong></td>
+<td style="text-align: left">IdCard</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-</tbody></table>
-
-<h2 id="add">add</h2>
-
-<p><em>Promise add( string name, string value )</em></p>
-
-<p>Add a new credential to the wallet.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>value</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The credentials.</td>
-</tr>
-</tbody></table>
-
-<h2 id="update">update</h2>
-
-<p><em>Promise update( string name, string value )</em></p>
-
-<p>Update existing credentials in the wallet.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>value</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The credentials.</td>
-</tr>
-</tbody></table>
-
-<h2 id="remove">remove</h2>
-
-<p><em>Promise remove( string name )</em></p>
-
-<p>Remove existing credentials from the wallet.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
+<td style="text-align: left">A business network card</td>
 </tr>
 </tbody></table>
 

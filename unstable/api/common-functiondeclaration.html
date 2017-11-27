@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Wallet ( API) | Hyperledger Composer</title>
+    <title>FunctionDeclaration (Common API) | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Wallet ( API)</p>
+          <p>FunctionDeclaration (Common API)</p>
           </div>
 
           <nav class="context-nav">
@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -251,14 +262,17 @@ ga('send', 'pageview');
             
               <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
-<h1 id="wallet">Wallet</h1>
+<h1 id="functiondeclaration">FunctionDeclaration</h1>
 
-<p>Base class representing a wallet (a container of credentials).</p>
+<p>FunctionDeclaration defines a function that has been defined
+in a model file. If the name of the function starts with &#39;on&#39;
+then the name of the function denotes the name of a transaction
+declaration that the function processes.</p>
 
 <h3 id="details">Details</h3>
 
 <ul>
-<li><strong>Module</strong> </li>
+<li><strong>Module</strong> common</li>
 </ul>
 
 <h3 id="see-also">See also</h3>
@@ -273,58 +287,151 @@ ga('send', 'pageview');
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="#add">add</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Add a new credential to the wallet</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#contains">contains</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Check to see if the named credentials are in the wallet</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#get">get</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get the named credentials from the wallet</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#getwallet">getWallet</a></td>
-<td style="text-align: left"><code>Wallet</code></td>
-<td style="text-align: left">Get the wallet singleton</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#list">list</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">List all of the credentials in the wallet</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#remove">remove</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Remove existing credentials from the wallet</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#setwallet">setWallet</a></td>
+<td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Set the wallet singleton</td>
+<td style="text-align: left">Create a FunctionDeclaration</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#update">update</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Update existing credentials in the wallet</td>
+<td style="text-align: left"><a href="#getdecorators">getDecorators</a></td>
+<td style="text-align: left"><code>string[]</code></td>
+<td style="text-align: left">Returns the decorators that the function was tagged with</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getfunctiontext">getFunctionText</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the text of this function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getlanguage">getLanguage</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the programming language that the function is written in</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getname">getName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the name of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparameternames">getParameterNames</a></td>
+<td style="text-align: left"><code>string[]</code></td>
+<td style="text-align: left">Returns the names of the parameters processed by the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparametertypes">getParameterTypes</a></td>
+<td style="text-align: left"><code>string[]</code></td>
+<td style="text-align: left">Returns the types of the parameters processed by the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getreturntype">getReturnType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the return type for this function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getthrows">getThrows</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the type thrown by this function</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#gettransactiondeclarationname">getTransactionDeclarationName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the short name of the transaction declaration that is being processed</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getvisibility">getVisibility</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the visibility of this function</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="getwallet">getWallet</h2>
+<h2 id="new-functiondeclaration">new FunctionDeclaration()</h2>
 
-<p><em>Wallet getWallet(  )</em></p>
+<p>Create a FunctionDeclaration</p>
 
-<p>Get the wallet singleton.</p>
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>modelManager</strong></td>
+<td style="text-align: left">ModelManager</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the ModelManager used to validate this function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>language</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the language that the function is written in. E.g. JS.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>visibility</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the visibility of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>returnType</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the return type of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>throws</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the type that is thrown by the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>parameterNames</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the names of parameters of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>parameterTypes</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the type names of parameters of the function</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>decorators</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the function decorators</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>functionText</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the function as text</td>
+</tr>
+</tbody></table>
+
+<h2 id="getfunctiontext">getFunctionText</h2>
+
+<p><em>string getFunctionText(  )</em></p>
+
+<p>Returns the text of this function.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-wallet)</code> - The wallet singleton, or null if one has not been specified.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the text that defines the function</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -332,41 +439,15 @@ ga('send', 'pageview');
 
 <p>No parameters</p>
 
-<h2 id="setwallet">setWallet</h2>
+<h2 id="getthrows">getThrows</h2>
 
-<p><em>void setWallet( Wallet wallet )</em></p>
+<p><em>string getThrows(  )</em></p>
 
-<p>Set the wallet singleton.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>wallet</strong></td>
-<td style="text-align: left">Wallet</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The new wallet singleton.</td>
-</tr>
-</tbody></table>
-
-<h2 id="list">list</h2>
-
-<p><em>Promise list(  )</em></p>
-
-<p>List all of the credentials in the wallet.</p>
+<p>Returns the type thrown by this function</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with an array of credential names, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the type thrown by the function</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -374,167 +455,135 @@ ga('send', 'pageview');
 
 <p>No parameters</p>
 
-<h2 id="contains">contains</h2>
+<h2 id="getlanguage">getLanguage</h2>
 
-<p><em>Promise contains( string name )</em></p>
+<p><em>string getLanguage(  )</em></p>
 
-<p>Check to see if the named credentials are in the wallet.</p>
+<p>Returns the programming language that the function is written in</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with a boolean; true if the named credentials are in the wallet, false otherwise.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the language of the function</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
 
-<h2 id="get">get</h2>
+<h2 id="getdecorators">getDecorators</h2>
 
-<p><em>Promise get( string name )</em></p>
+<p><em>string[] getDecorators(  )</em></p>
 
-<p>Get the named credentials from the wallet.</p>
+<p>Returns the decorators that the function was tagged with</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved with the named credentials, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the @ prefixed decorators for the function</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
 
-<h2 id="add">add</h2>
+<h2 id="getvisibility">getVisibility</h2>
 
-<p><em>Promise add( string name, string value )</em></p>
+<p><em>string getVisibility(  )</em></p>
 
-<p>Add a new credential to the wallet.</p>
+<p>Returns the visibility of this function</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the visibility of the function (+ is public), (- is private)</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>value</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The credentials.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
 
-<h2 id="update">update</h2>
+<h2 id="getreturntype">getReturnType</h2>
 
-<p><em>Promise update( string name, string value )</em></p>
+<p><em>string getReturnType(  )</em></p>
 
-<p>Update existing credentials in the wallet.</p>
+<p>Returns the return type for this function</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the return type for the function</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>value</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The credentials.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
 
-<h2 id="remove">remove</h2>
+<h2 id="getname">getName</h2>
 
-<p><em>Promise remove( string name )</em></p>
+<p><em>string getName(  )</em></p>
 
-<p>Remove existing credentials from the wallet.</p>
+<p>Returns the name of the function</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](-promise)</code> - A promise that is resolved when complete, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the name of the function.</p>
 
 <h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>name</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of the credentials.</td>
-</tr>
-</tbody></table>
+<p>No parameters</p>
+
+<h2 id="gettransactiondeclarationname">getTransactionDeclarationName</h2>
+
+<p><em>string getTransactionDeclarationName(  )</em></p>
+
+<p>Returns the short name of the transaction declaration that is being processed. This is calculated by removing the &#39;on&#39; prefix from the function name. If the function name does not start with &#39;on&#39; then null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the name of the transaction declaration.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getparameternames">getParameterNames</h2>
+
+<p><em>string[] getParameterNames(  )</em></p>
+
+<p>Returns the names of the parameters processed by the function.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the names of the parameters.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getparametertypes">getParameterTypes</h2>
+
+<p><em>string[] getParameterTypes(  )</em></p>
+
+<p>Returns the types of the parameters processed by the function.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the types of the parameters.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

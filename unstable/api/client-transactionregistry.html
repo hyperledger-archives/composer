@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -253,8 +264,9 @@ ga('send', 'pageview');
 
 <h1 id="transactionregistry">TransactionRegistry</h1>
 
-<p>The TransactionRegistry is used to store a set of transactions on the blockchain.
-<p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p></p>
+<p>The TransactionRegistry is used to store a set of transactions on the blockchain.</p>
+
+<p><strong>Applications should retrieve instances from <a href="client-businessnetworkconnection">BusinessNetworkConnection</a></strong></p>
 
 <h3 id="details">Details</h3>
 
@@ -293,10 +305,83 @@ ga('send', 'pageview');
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Get an existing transaction registry</td>
 </tr>
+</tbody></table>
+
+<h2 id="inherited-method-summary">Inherited Method Summary</h2>
+
+<table><thead>
 <tr>
-<td style="text-align: left"><a href="#transactionregistryexists">transactionRegistryExists</a></td>
+<th style="text-align: left">Supertype</th>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#remove">remove</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Determine whether an registry exists</td>
+<td style="text-align: left">Remove an asset with a given type and id from the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#addall">addAll</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Adds a list of new resources to the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#updateall">updateAll</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Updates a list of resources in the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#update">update</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Updates a resource in the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#removeall">removeAll</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Removes a list of resources from the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#add">add</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Adds a new resource to the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#getall">getAll</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get all of the resources in the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#get">get</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get a specific resource in the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#exists">exists</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Determines whether a specific resource exists in the registry</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#resolveall">resolveAll</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get all of the resources in the registry, and resolve all of their relationships to other assets, participants, and transactions</td>
+</tr>
+<tr>
+<td style="text-align: left">Registry</td>
+<td style="text-align: left"><a href="#resolve">resolve</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Get a specific resource in the registry, and resolve all of its relationships to other assets, participants, and transactions</td>
 </tr>
 </tbody></table>
 
@@ -310,7 +395,7 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](client-promise)</code> - A promise that will be resolved with a list of <a href="client-transactionregistry">TransactionRegistry</a> instances representing the transaction registries.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of <a href="client-transactionregistry">TransactionRegistry</a> instances representing the transaction registries.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -370,7 +455,7 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](client-promise)</code> - A promise that will be resolved with a <a href="client-transactionregistry">TransactionRegistry</a> instance representing the transaction registry.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a <a href="client-transactionregistry">TransactionRegistry</a> instance representing the transaction registry.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -424,7 +509,7 @@ ga('send', 'pageview');
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](client-promise)</code> - A promise that will be resolved with a <a href="client-transactionregistry">TransactionRegistry</a> instance representing the new transaction registry.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a <a href="client-transactionregistry">TransactionRegistry</a> instance representing the new transaction registry.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -476,15 +561,19 @@ ga('send', 'pageview');
 </tr>
 </tbody></table>
 
-<h2 id="transactionregistryexists">transactionRegistryExists</h2>
+<h2 id="inherited-methods">Inherited methods</h2>
 
-<p><em>Promise transactionRegistryExists( SecurityContext securitycontext, string id, ModelManager modelmanager, Factory factory, Serializer serializer )</em></p>
+<h2 id="addall">addAll</h2>
 
-<p>Determine whether an registry exists.</p>
+<p><em>Promise addAll(  resources )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Adds a list of new resources to the registry.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](client-promise)</code> - A promise that will be resolved with a boolean indicating whether the asset registry exists</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is added to the registry.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -499,34 +588,302 @@ ga('send', 'pageview');
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>securityContext</strong></td>
-<td style="text-align: left">SecurityContext</td>
+<td style="text-align: left"><strong>resources</strong></td>
+<td style="text-align: left"></td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The user&#39;s security context.</td>
+<td style="text-align: left">The resources to be added to the registry.</td>
 </tr>
+</tbody></table>
+
+<h2 id="add">add</h2>
+
+<p><em>Promise add( Resource resource )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Adds a new resource to the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is added to the registry.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>resource</strong></td>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The resource to be added to the registry.</td>
+</tr>
+</tbody></table>
+
+<h2 id="updateall">updateAll</h2>
+
+<p><em>Promise updateAll(  resources )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Updates a list of resources in the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is added to the registry.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>resources</strong></td>
+<td style="text-align: left"></td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The resources to be updated in the asset registry.</td>
+</tr>
+</tbody></table>
+
+<h2 id="update">update</h2>
+
+<p><em>Promise update( Resource resource )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Updates a resource in the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is updated in the registry.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>resource</strong></td>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The resource to be updated in the registry.</td>
+</tr>
+</tbody></table>
+
+<h2 id="removeall">removeAll</h2>
+
+<p><em>Promise removeAll( ;  resources )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Removes a list of resources from the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is added to the registry.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>resources</strong></td>
+<td style="text-align: left">;</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The resources, or the unique identifiers of the resources.</td>
+</tr>
+</tbody></table>
+
+<h2 id="remove">remove</h2>
+
+<p><em>Promise remove( Resource; string resource )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Remove an asset with a given type and id from the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved when the resource is removed from the registry.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>resource</strong></td>
+<td style="text-align: left">Resource; string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The resource, or the unique identifier of the resource.</td>
+</tr>
+</tbody></table>
+
+<h2 id="getall">getAll</h2>
+
+<p><em>Promise getAll(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Get all of the resources in the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with an array of JSON objects representing the resources.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="get">get</h2>
+
+<p><em>Promise get( string id )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Get a specific resource in the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with a JSON object representing the resource.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The unique identifier of the asset registry.</td>
+<td style="text-align: left">The unique identifier of the resource.</td>
 </tr>
+</tbody></table>
+
+<h2 id="exists">exists</h2>
+
+<p><em>Promise exists( string id )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Determines whether a specific resource exists in the registry.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with true/false depending on whether the resource exists.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
 <tr>
-<td style="text-align: left"><strong>modelManager</strong></td>
-<td style="text-align: left">ModelManager</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The ModelManager to use for this asset registry.</td>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
 </tr>
+</thead><tbody>
 <tr>
-<td style="text-align: left"><strong>factory</strong></td>
-<td style="text-align: left">Factory</td>
+<td style="text-align: left"><strong>id</strong></td>
+<td style="text-align: left">string</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The factory to use for this asset registry.</td>
+<td style="text-align: left">The unique identifier of the resource.</td>
 </tr>
+</tbody></table>
+
+<h2 id="resolveall">resolveAll</h2>
+
+<p><em>Promise resolveAll(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Get all of the resources in the registry, and resolve all of their relationships to other assets, participants, and transactions. The result is a JavaScript object, and should only be used for visualization purposes. You cannot use the <a href="#add">add</a> or <a href="#update">update</a> functions with a resolved resource.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with an array of JavaScript objects representing the resources and all of their resolved relationships.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="resolve">resolve</h2>
+
+<p><em>Promise resolve( string id )</em></p>
+
+<p><strong>Inherited from:</strong>  Registry</p>
+
+<p>Get a specific resource in the registry, and resolve all of its relationships to other assets, participants, and transactions. The result is a JavaScript object, and should only be used for visualization purposes. You cannot use the  <a href="#add">add</a> or <a href="#update">update</a> functions with a resolved resource.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with a JavaScript object representing the resource and all of its resolved relationships.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
 <tr>
-<td style="text-align: left"><strong>serializer</strong></td>
-<td style="text-align: left">Serializer</td>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>id</strong></td>
+<td style="text-align: left">string</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The Serializer to use for this asset registry.</td>
+<td style="text-align: left">The unique identifier of the asset.</td>
 </tr>
 </tbody></table>
 

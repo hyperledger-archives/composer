@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>ClassDeclaration (Common API) | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>ClassDeclaration (Common API)</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html"><b>Introduction</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html"><b>Installing</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="../reference/reference-index.html"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="../api/api-doc-index.html"><b>API Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../api/allData.html">API Class Index</a></li>
+<li><a href="../api/admin-adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api/client-assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api/client-businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api/client-historian.html">Historian (Client API)</a></li>
+<li><a href="../api/client-identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api/client-participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api/client-query.html">Query (Client API)</a></li>
+<li><a href="../api/client-registry.html">Registry (Client API)</a></li>
+<li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
+<li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
+<li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
+<li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
+<li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api/common-resource.html">Resource (Common API)</a></li>
+<li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
+<li><a href="../api/common-typed.html">Typed (Common API)</a></li>
+<li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
+<li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
+<li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
+<li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+
+<h1 id="classdeclaration">ClassDeclaration</h1>
+
+<p>ClassDeclaration defines the structure (model/schema) of composite data.
+It is composed of a set of Properties, may have an identifying field, and may
+have a super-type.
+A ClassDeclaration is conceptually owned by a ModelFile which
+defines all the classes that are part of a namespace.</p>
+
+<h3 id="details">Details</h3>
+
+<ul>
+<li><strong>Module</strong> common</li>
+</ul>
+
+<h3 id="see-also">See also</h3>
+
+<h2 id="method-summary">Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#_resolvesupertype">_resolveSuperType</a></td>
+<td style="text-align: left"><code>ClassDeclaration</code></td>
+<td style="text-align: left">Resolve the super type on this class and store it as an internal property</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#constructor">constructor</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Create a ClassDeclaration from an Abstract Syntax Tree</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getallsupertypedeclarations">getAllSuperTypeDeclarations</a></td>
+<td style="text-align: left"><code>ClassDeclaration[]</code></td>
+<td style="text-align: left">Get all the super-type declarations for this type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getassignableclassdeclarations">getAssignableClassDeclarations</a></td>
+<td style="text-align: left"><code>ClassDeclaration[]</code></td>
+<td style="text-align: left">Get the class declarations for all subclasses of this class, including this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getfullyqualifiedname">getFullyQualifiedName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the fully qualified name of this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getidentifierfieldname">getIdentifierFieldName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the name of the identifying field for this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getmodelfile">getModelFile</a></td>
+<td style="text-align: left"><code>ModelFile</code></td>
+<td style="text-align: left">Returns the ModelFile that defines this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getname">getName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the short name of a class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getnamespace">getNamespace</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Return the namespace of this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getnestedproperty">getNestedProperty</a></td>
+<td style="text-align: left"><code>Property</code></td>
+<td style="text-align: left">Get a nested property using a dotted property path</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getownproperties">getOwnProperties</a></td>
+<td style="text-align: left"><code>Property[]</code></td>
+<td style="text-align: left">Returns the fields directly defined by this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getownproperty">getOwnProperty</a></td>
+<td style="text-align: left"><code>Property</code></td>
+<td style="text-align: left">Returns the field with a given name or null if it does not exist</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getproperties">getProperties</a></td>
+<td style="text-align: left"><code>Property[]</code></td>
+<td style="text-align: left">Returns the properties defined in this class and all super classes</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getproperty">getProperty</a></td>
+<td style="text-align: left"><code>Property</code></td>
+<td style="text-align: left">Returns the property with a given name or null if it does not exist</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getsupertype">getSuperType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the FQN of the super type for this class or null if this class does not have a super type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getsupertypedeclaration">getSuperTypeDeclaration</a></td>
+<td style="text-align: left"><code>ClassDeclaration</code></td>
+<td style="text-align: left">Get the super type class declaration for this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getsystemtype">getSystemType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Returns the base system type for this type of class declaration</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isabstract">isAbstract</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class is declared as abstract in the model file</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isconcept">isConcept</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class is the definition of a concept</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isenum">isEnum</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class is an enumeration</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isevent">isEvent</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class is the definition of an event</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isrelationshiptarget">isRelationshipTarget</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class can be pointed to by a relationship</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#issystemcoretype">isSystemCoreType</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class is a system core type - both in the system namespace, and also one of the system core types (Asset, Participant, etc)</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#issystemrelationshiptarget">isSystemRelationshipTarget</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this class can be pointed to by a relationship in a system model</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#issystemtype">isSystemType</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true is this type is in the system namespace</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#tostring">toString</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the string representation of this class</td>
+</tr>
+</tbody></table>
+
+<h1 id="method-details">Method Details</h1>
+
+<h2 id="new-classdeclaration">new ClassDeclaration()</h2>
+
+<p>Create a ClassDeclaration from an Abstract Syntax Tree. The AST is the result of parsing.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>modelFile</strong></td>
+<td style="text-align: left">ModelFile</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the ModelFile for this class</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>ast</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the AST created by the parser</td>
+</tr>
+</tbody></table>
+
+<h2 id="getmodelfile">getModelFile</h2>
+
+<p><em>ModelFile getModelFile(  )</em></p>
+
+<p>Returns the ModelFile that defines this class.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-modelfile">ModelFile</a></strong> - the owning ModelFile</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="_resolvesupertype">_resolveSuperType</h2>
+
+<p><em>ClassDeclaration _resolveSuperType(  )</em></p>
+
+<p>Resolve the super type on this class and store it as an internal property.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - The super type, or null if non specified.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getsystemtype">getSystemType</h2>
+
+<p><em>string getSystemType(  )</em></p>
+
+<p>Returns the base system type for this type of class declaration. Override this method in derived classes to specify a base system type.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the short name of the base system type or null</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isabstract">isAbstract</h2>
+
+<p><em>boolean isAbstract(  )</em></p>
+
+<p>Returns true if this class is declared as abstract in the model file</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class is abstract</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isenum">isEnum</h2>
+
+<p><em>boolean isEnum(  )</em></p>
+
+<p>Returns true if this class is an enumeration.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class is an enumerated type</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isconcept">isConcept</h2>
+
+<p><em>boolean isConcept(  )</em></p>
+
+<p>Returns true if this class is the definition of a concept.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class is a concept</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isevent">isEvent</h2>
+
+<p><em>boolean isEvent(  )</em></p>
+
+<p>Returns true if this class is the definition of an event.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class is an event</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isrelationshiptarget">isRelationshipTarget</h2>
+
+<p><em>boolean isRelationshipTarget(  )</em></p>
+
+<p>Returns true if this class can be pointed to by a relationship</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class may be pointed to by a relationship</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="issystemrelationshiptarget">isSystemRelationshipTarget</h2>
+
+<p><em>boolean isSystemRelationshipTarget(  )</em></p>
+
+<p>Returns true if this class can be pointed to by a relationship in a system model</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class may be pointed to by a relationship</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="issystemtype">isSystemType</h2>
+
+<p><em>boolean isSystemType(  )</em></p>
+
+<p>Returns true is this type is in the system namespace</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class may be pointed to by a relationship</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="issystemcoretype">isSystemCoreType</h2>
+
+<p><em>boolean isSystemCoreType(  )</em></p>
+
+<p>Returns true if this class is a system core type - both in the system namespace, and also one of the system core types (Asset, Participant, etc).</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the class may be pointed to by a relationship</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getname">getName</h2>
+
+<p><em>string getName(  )</em></p>
+
+<p>Returns the short name of a class. This name does not include the namespace from the owning ModelFile.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the short name of this class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getnamespace">getNamespace</h2>
+
+<p><em>String getNamespace(  )</em></p>
+
+<p>Return the namespace of this class.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - namespace - a namespace.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getfullyqualifiedname">getFullyQualifiedName</h2>
+
+<p><em>string getFullyQualifiedName(  )</em></p>
+
+<p>Returns the fully qualified name of this class. The name will include the namespace if present.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the fully-qualified name of this class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getidentifierfieldname">getIdentifierFieldName</h2>
+
+<p><em>string getIdentifierFieldName(  )</em></p>
+
+<p>Returns the name of the identifying field for this class. Note that the identifying field may come from a super type.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the name of the id field for this class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getownproperty">getOwnProperty</h2>
+
+<p><em>Property getOwnProperty( string name )</em></p>
+
+<p>Returns the field with a given name or null if it does not exist. The field must be directly owned by this class -- the super-type is not introspected.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-property">Property</a></strong> - the field definition or null if it does not exist.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the field</td>
+</tr>
+</tbody></table>
+
+<h2 id="getownproperties">getOwnProperties</h2>
+
+<p><em>Property[] getOwnProperties(  )</em></p>
+
+<p>Returns the fields directly defined by this class.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-property">Property</a></strong> - the array of fields</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getsupertype">getSuperType</h2>
+
+<p><em>string getSuperType(  )</em></p>
+
+<p>Returns the FQN of the super type for this class or null if this class does not have a super type.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - the FQN name of the super type or null</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getsupertypedeclaration">getSuperTypeDeclaration</h2>
+
+<p><em>ClassDeclaration getSuperTypeDeclaration(  )</em></p>
+
+<p>Get the super type class declaration for this class.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the super type declaration, or null if there is no super type.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getassignableclassdeclarations">getAssignableClassDeclarations</h2>
+
+<p><em>ClassDeclaration[] getAssignableClassDeclarations(  )</em></p>
+
+<p>Get the class declarations for all subclasses of this class, including this class.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - subclass declarations.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getallsupertypedeclarations">getAllSuperTypeDeclarations</h2>
+
+<p><em>ClassDeclaration[] getAllSuperTypeDeclarations(  )</em></p>
+
+<p>Get all the super-type declarations for this type.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - super-type declarations.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getproperty">getProperty</h2>
+
+<p><em>Property getProperty( string name )</em></p>
+
+<p>Returns the property with a given name or null if it does not exist. Fields defined in super-types are also introspected.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-property">Property</a></strong> - the field, or null if it does not exist</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the field</td>
+</tr>
+</tbody></table>
+
+<h2 id="getproperties">getProperties</h2>
+
+<p><em>Property[] getProperties(  )</em></p>
+
+<p>Returns the properties defined in this class and all super classes.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-property">Property</a></strong> - the array of fields</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getnestedproperty">getNestedProperty</h2>
+
+<p><em>Property getNestedProperty( string propertypath )</em></p>
+
+<p>Get a nested property using a dotted property path</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-property">Property</a></strong> - the property</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>propertyPath</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The property name or name with nested structure e.g a.b.c</td>
+</tr>
+</tbody></table>
+
+<h2 id="tostring">toString</h2>
+
+<p><em>String toString(  )</em></p>
+
+<p>Returns the string representation of this class</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - the string representation of the class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

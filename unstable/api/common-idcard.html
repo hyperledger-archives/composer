@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -383,7 +394,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-string)</code> - Name of the user identity.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - Name of the user identity.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -399,7 +410,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-string)</code> - card description.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - card description.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -415,7 +426,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-string)</code> - business network name.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - business network name.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -432,7 +443,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-object)</code> - connection profile.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - connection profile.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -448,7 +459,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-object)</code> - credentials.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - credentials.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -458,7 +469,7 @@ This is a mandatory field.</p>
 
 <h2 id="setcredentials">setCredentials</h2>
 
-<p><em>void setCredentials( Object credentials )</em></p>
+<p>_ setCredentials( Object credentials )_</p>
 
 <p>Credentials to associate with this card. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</p>
 
@@ -490,7 +501,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-object)</code> - enrollment credentials, or null if none exist.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - enrollment credentials, or null if none exist.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -506,7 +517,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-)</code> - roles.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - roles.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -522,7 +533,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-promise)</code> - Promise to the instantiated IdCard.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise to the instantiated IdCard.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -552,7 +563,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-promise)</code> - Promise of the generated ZIP file; by default an ArrayBuffer.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise of the generated ZIP file; by default an ArrayBuffer.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -600,7 +611,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-promise)</code> - Promise that resolves to an IdCard.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise that resolves to an IdCard.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -636,7 +647,7 @@ This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](common-promise)</code> - Promise that resolves then the save is complete.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise that resolves then the save is complete.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -663,6 +674,8 @@ This is a mandatory field.</p>
 <td style="text-align: left">Node file system API implementation to use for writing card data. Defaults to the Node implementation.</td>
 </tr>
 </tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

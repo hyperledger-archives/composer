@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>ModelFile (Common API) | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>ModelFile (Common API)</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="../introduction/introduction.html"><b>Introduction</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../introduction/key-concepts.html">Key Concepts</a></li>
+<li><a href="../introduction/solution-architecture.html">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="../installing/installing-index.html"><b>Installing</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../installing/getting-started-with-playground.html">Using the Playground online</a></li>
+<li><a href="../installing/prereqs-mac.html">Installing pre-requisites on Mac OS</a></li>
+<li><a href="../installing/using-playground-locally.html">Installing the Playground locally</a></li>
+<li><a href="../installing/development-tools.html">Installing a development environment</a></li>
+</ul></li>
+<li><p><a href="../tutorials/tutorials.html"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="../tutorials/queries.html">Queries Tutorial</a></li>
+<li><a href="../tutorials/deploy-to-fabric-single-org.html">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="../tutorials/deploy-to-fabric-multi-org.html">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="../playground/playground-index.html"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../playground/id-cards-playground.html">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="../business-network/business-network-index.html"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../business-network/businessnetworkdefinition.html">Business Network Definitions</a></li>
+<li><a href="../business-network/bnd-create.html">Create a Business Network Definition</a></li>
+<li><a href="../business-network/bnd-deploy.html">Deploying Business Networks</a></li>
+<li><a href="../business-network/publishing-events.html">Emitting Events</a></li>
+<li><a href="../business-network/testing.html">Testing Business Networks</a></li>
+<li><a href="../business-network/bnd-publish.html">Publish Models or Business Network Definitions</a></li>
+<li><a href="../business-network/query.html">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="../business-network/programmatic-access-control.html">Programmatic access control</a></li>
+<li><a href="../business-network/historian.html">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="../applications/applications-index.html"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../applications/node.html">Writing a Node.js application</a></li>
+<li><a href="../applications/web.html">Writing Web or mobile applications</a></li>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="../integrating/integrating-index.html"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></li>
+<li><a href="../integrating/publishing-events.html">Publishing events from the REST server</a></li>
+<li><a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a></li>
+<li><a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a></li>
+<li><a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a></li>
+<li><a href="../integrating/node-red.html">Integrating with Node-RED</a></li>
+<li><a href="../integrating/call-out.html">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="../managing/managingindex.html"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../managing/participantsandidentities.html">Participants and identities</a></li>
+<li><a href="../managing/participant-add.html">Adding participants</a></li>
+<li><a href="../managing/id-cards-playground.html">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="../managing/identity-issue.html">Issuing a new identity to a participant</a></li>
+<li><a href="../managing/identity-bind.html">Binding an existing identity to a participant</a></li>
+<li><a href="../managing/identity-list.html">Listing all identities in a business network</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/updating-composer.html">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="../problems/diagnostics.html"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="../reference/reference-index.html"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../reference/MeetTheModules.html">Hyperledger Composer npm Modules</a></li>
+<li><a href="../reference/cto_language.html">Modeling Language</a></li>
+<li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
+<li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
+<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
+<li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
+<li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="../api/api-doc-index.html"><b>API Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="../api/allData.html">API Class Index</a></li>
+<li><a href="../api/admin-adminconnection.html">AdminConnection (Admin API)</a></li>
+<li><a href="../api/client-assetregistry.html">AssetRegistry (Client API)</a></li>
+<li><a href="../api/client-businessnetworkconnection.html">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="../api/client-historian.html">Historian (Client API)</a></li>
+<li><a href="../api/client-identityregistry.html">IdentityRegistry (Client API)</a></li>
+<li><a href="../api/client-participantregistry.html">ParticipantRegistry (Client API)</a></li>
+<li><a href="../api/client-query.html">Query (Client API)</a></li>
+<li><a href="../api/client-registry.html">Registry (Client API)</a></li>
+<li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
+<li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
+<li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
+<li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
+<li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
+<li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
+<li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
+<li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
+<li><a href="../api/common-resource.html">Resource (Common API)</a></li>
+<li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
+<li><a href="../api/common-typed.html">Typed (Common API)</a></li>
+<li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
+<li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
+<li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
+<li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
+<li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
+<li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+
+<h1 id="modelfile">ModelFile</h1>
+
+<p>Class representing a Model File. A Model File contains a single namespace
+and a set of model elements: assets, transactions etc.</p>
+
+<h3 id="details">Details</h3>
+
+<ul>
+<li><strong>Module</strong> common</li>
+</ul>
+
+<h3 id="see-also">See also</h3>
+
+<h2 id="method-summary">Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><a href="#getalldeclarations">getAllDeclarations</a></td>
+<td style="text-align: left"><code>ClassDeclaration[]</code></td>
+<td style="text-align: left">Get all declarations in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getassetdeclaration">getAssetDeclaration</a></td>
+<td style="text-align: left"><code>AssetDeclaration</code></td>
+<td style="text-align: left">Get the AssetDeclarations defined in this ModelFile or null</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getassetdeclarations">getAssetDeclarations</a></td>
+<td style="text-align: left"><code>AssetDeclaration[]</code></td>
+<td style="text-align: left">Get the AssetDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getconceptdeclarations">getConceptDeclarations</a></td>
+<td style="text-align: left"><code>ConceptDeclaration[]</code></td>
+<td style="text-align: left">Get the ConceptDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getdeclarations">getDeclarations</a></td>
+<td style="text-align: left"><code>ClassDeclaration[]</code></td>
+<td style="text-align: left">Get the instances of a given type in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getdefinitions">getDefinitions</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the definitions for this model</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getenumdeclarations">getEnumDeclarations</a></td>
+<td style="text-align: left"><code>EnumDeclaration[]</code></td>
+<td style="text-align: left">Get the EnumDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#geteventdeclaration">getEventDeclaration</a></td>
+<td style="text-align: left"><code>EventDeclaration</code></td>
+<td style="text-align: left">Get the EventDeclaration defined in this ModelFile or null</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#geteventdeclarations">getEventDeclarations</a></td>
+<td style="text-align: left"><code>EventDeclaration[]</code></td>
+<td style="text-align: left">Get the EventDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getimports">getImports</a></td>
+<td style="text-align: left"><code>string[]</code></td>
+<td style="text-align: left">Returns the types that have been imported into this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getlocaltype">getLocalType</a></td>
+<td style="text-align: left"><code>ClassDeclaration</code></td>
+<td style="text-align: left">Returns the type with the specified name or null</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getmodelmanager">getModelManager</a></td>
+<td style="text-align: left"><code>ModelManager</code></td>
+<td style="text-align: left">Returns the ModelManager associated with this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getname">getName</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the filename for this model file</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getnamespace">getNamespace</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the Namespace for this model file</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparticipantdeclaration">getParticipantDeclaration</a></td>
+<td style="text-align: left"><code>ParticipantDeclaration</code></td>
+<td style="text-align: left">Get the ParticipantDeclaration defined in this ModelFile or null</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getparticipantdeclarations">getParticipantDeclarations</a></td>
+<td style="text-align: left"><code>ParticipantDeclaration[]</code></td>
+<td style="text-align: left">Get the ParticipantDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#gettransactiondeclaration">getTransactionDeclaration</a></td>
+<td style="text-align: left"><code>TransactionDeclaration</code></td>
+<td style="text-align: left">Get the TransactionDeclaration defined in this ModelFile or null</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#gettransactiondeclarations">getTransactionDeclarations</a></td>
+<td style="text-align: left"><code>TransactionDeclaration[]</code></td>
+<td style="text-align: left">Get the TransactionDeclarations defined in this ModelFile</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#isdefined">isDefined</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if the type is defined in the model file</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#issystemmodelfile">isSystemModelFile</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Returns true if this ModelFile is a system model</td>
+</tr>
+</tbody></table>
+
+<h1 id="method-details">Method Details</h1>
+
+<h2 id="getmodelmanager">getModelManager</h2>
+
+<p><em>ModelManager getModelManager(  )</em></p>
+
+<p>Returns the ModelManager associated with this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-modelmanager">ModelManager</a></strong> - The ModelManager for this ModelFile</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getimports">getImports</h2>
+
+<p><em>string[] getImports(  )</em></p>
+
+<p>Returns the types that have been imported into this ModelFile.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The array of imports for this ModelFile</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isdefined">isDefined</h2>
+
+<p><em>boolean isDefined( string type )</em></p>
+
+<p>Returns true if the type is defined in the model file</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true if the type (asset or transaction) is defined</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>type</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="getlocaltype">getLocalType</h2>
+
+<p><em>ClassDeclaration getLocalType( string type )</em></p>
+
+<p>Returns the type with the specified name or null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the ClassDeclaration, or null if the type does not exist</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>type</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the short OR FQN name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="getassetdeclaration">getAssetDeclaration</h2>
+
+<p><em>AssetDeclaration getAssetDeclaration( string name )</em></p>
+
+<p>Get the AssetDeclarations defined in this ModelFile or null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-assetdeclaration">AssetDeclaration</a></strong> - the AssetDeclaration with the given short name</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="gettransactiondeclaration">getTransactionDeclaration</h2>
+
+<p><em>TransactionDeclaration getTransactionDeclaration( string name )</em></p>
+
+<p>Get the TransactionDeclaration defined in this ModelFile or null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-transactiondeclaration">TransactionDeclaration</a></strong> - the TransactionDeclaration with the given short name</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="geteventdeclaration">getEventDeclaration</h2>
+
+<p><em>EventDeclaration getEventDeclaration( string name )</em></p>
+
+<p>Get the EventDeclaration defined in this ModelFile or null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-eventdeclaration">EventDeclaration</a></strong> - the EventDeclaration with the given short name</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="getparticipantdeclaration">getParticipantDeclaration</h2>
+
+<p><em>ParticipantDeclaration getParticipantDeclaration( string name )</em></p>
+
+<p>Get the ParticipantDeclaration defined in this ModelFile or null</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-participantdeclaration">ParticipantDeclaration</a></strong> - the ParticipantDeclaration with the given short name</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>name</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the name of the type</td>
+</tr>
+</tbody></table>
+
+<h2 id="getnamespace">getNamespace</h2>
+
+<p><em>string getNamespace(  )</em></p>
+
+<p>Get the Namespace for this model file.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The Namespace for this model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getname">getName</h2>
+
+<p><em>string getName(  )</em></p>
+
+<p>Get the filename for this model file. Note that this may be null.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The filename for this model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getassetdeclarations">getAssetDeclarations</h2>
+
+<p><em>AssetDeclaration[] getAssetDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the AssetDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-assetdeclaration">AssetDeclaration</a></strong> - the AssetDeclarations defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="gettransactiondeclarations">getTransactionDeclarations</h2>
+
+<p><em>TransactionDeclaration[] getTransactionDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the TransactionDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-transactiondeclaration">TransactionDeclaration</a></strong> - the TransactionDeclarations defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="geteventdeclarations">getEventDeclarations</h2>
+
+<p><em>EventDeclaration[] getEventDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the EventDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-eventdeclaration">EventDeclaration</a></strong> - the EventDeclarations defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="getparticipantdeclarations">getParticipantDeclarations</h2>
+
+<p><em>ParticipantDeclaration[] getParticipantDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the ParticipantDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-participantdeclaration">ParticipantDeclaration</a></strong> - the ParticipantDeclaration defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="getconceptdeclarations">getConceptDeclarations</h2>
+
+<p><em>ConceptDeclaration[] getConceptDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the ConceptDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-conceptdeclaration">ConceptDeclaration</a></strong> - the ParticipantDeclaration defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="getenumdeclarations">getEnumDeclarations</h2>
+
+<p><em>EnumDeclaration[] getEnumDeclarations( Boolean includesystemtype )</em></p>
+
+<p>Get the EnumDeclarations defined in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-enumdeclaration">EnumDeclaration</a></strong> - the EnumDeclaration defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="getdeclarations">getDeclarations</h2>
+
+<p><em>ClassDeclaration[] getDeclarations( Function type, Boolean includesystemtype )</em></p>
+
+<p>Get the instances of a given type in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the ClassDeclaration defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>type</strong></td>
+<td style="text-align: left">Function</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the type of the declaration</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>includeSystemType</strong></td>
+<td style="text-align: left">Boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Include the decalarations of system type in returned data</td>
+</tr>
+</tbody></table>
+
+<h2 id="getalldeclarations">getAllDeclarations</h2>
+
+<p><em>ClassDeclaration[] getAllDeclarations(  )</em></p>
+
+<p>Get all declarations in this ModelFile</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the ClassDeclarations defined in the model file</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getdefinitions">getDefinitions</h2>
+
+<p><em>string getDefinitions(  )</em></p>
+
+<p>Get the definitions for this model.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The definitions for this model.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="issystemmodelfile">isSystemModelFile</h2>
+
+<p><em>boolean isSystemModelFile(  )</em></p>
+
+<p>Returns true if this ModelFile is a system model</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - true of this ModelFile is a system model</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

@@ -198,19 +198,32 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
@@ -220,8 +233,6 @@ ga('send', 'pageview');
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -438,7 +449,7 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - Resolved when the card is imported, resolves to true if updated, false if added.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Resolved when the card is imported, resolves to true if updated, false if added.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -474,7 +485,7 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - resolved with an instance of the network id card populated</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - resolved with an instance of the network id card populated</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -504,7 +515,7 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - resolved with a  Map of idcard objects keyed by their  String names.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - resolved with a  Map of idcard objects keyed by their  String names.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -520,7 +531,7 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - Resolves true if deleted, false if not deleted, is rejected if an error occurs.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Resolves true if deleted, false if not deleted, is rejected if an error occurs.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -550,7 +561,7 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - Resolves with true if the card with the name exists, resolved with false if not</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Resolves with true if the card with the name exists, resolved with false if not</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -591,7 +602,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that when resolved indicates the connection is complete</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that when resolved indicates the connection is complete</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -643,7 +654,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be resolved when the connection is terminated.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved when the connection is terminated.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -683,7 +694,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been deployed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -747,7 +758,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been deployed - with a MAP of cards key is name</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed - with a MAP of cards key is name</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -811,7 +822,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been deployed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -870,7 +881,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been undeployed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been undeployed.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -923,7 +934,7 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been updated.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been updated.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -978,7 +989,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the business network has been updated.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been updated.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1032,7 +1043,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the composer runtime has been upgraded, or rejected otherwise.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the composer runtime has been upgraded, or rejected otherwise.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1071,7 +1082,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be fufilled when the connection has been tested. The promise will be rejected if the version is incompatible.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the connection has been tested. The promise will be rejected if the version is incompatible.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1109,7 +1120,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that resolves if successful.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves if successful.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1161,7 +1172,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that resolves with the current logging level if successful.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves with the current logging level if successful.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1201,7 +1212,7 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>[](admin-promise)</code> - A promise that will be resolved with an array of business network identifiers, or rejected with an error.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of business network identifiers, or rejected with an error.</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -1222,6 +1233,8 @@ Note this will remove ALL the contents of the network registries, but not any sy
     <span class="c1">// Add error handling here.</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="inherited-methods">Inherited methods</h2>
+
             
           </section>
         </div>
