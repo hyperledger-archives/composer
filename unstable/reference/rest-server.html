@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Listing all identities in a business network | Hyperledger Composer</title>
+    <title>Hyperledger Composer REST Server | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Listing all identities in a business network</p>
+          <p>Hyperledger Composer REST Server</p>
           </div>
 
           <nav class="context-nav">
@@ -249,59 +249,99 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="listing-all-identities-in-a-business-network">Listing all identities in a business network</h1>
+              <h1 id="hyperledger-composer-rest-server">Hyperledger Composer REST Server</h1>
 
-<p>When a new identity is issued to a participant, or an existing identity is bound to a
-participant, a mapping between the identity and the participant is created in the identity
-registry in the deployed business network. When that participant uses that identity to
-submit transactions to the deployed business network, the Composer runtime looks for a
-valid mapping for that identity in the identity registry. This lookup is done using
-the public key signature or fingerprint, essentially a hash of the certificate contents
-that is unique to that certificate and identity.</p>
+<p>The Hyperledger Composer REST server, <code>composer-rest-server</code>, can be used to generate a REST API from a deployed blockchain business network that can be easily consumed by HTTP or REST clients.</p>
 
-<p>In order to perform identity management operations in a deployed business network, you
-will need to list and review the set of identities in the identity registry.</p>
+<h2 id="configuring-the-rest-server-using-environment-variables">Configuring the REST server using environment variables</h2>
 
-<h2 id="before-you-start">Before you start</h2>
-
-<p>Before you follow these steps, you should have added a participant to a participant
-registry, and issued a new identity or bound an existing identity to that participant.
-Otherwise the identity registry will be empty and you will not see any results.</p>
-
-<h2 id="procedure">Procedure</h2>
+<p>The REST server can be configured using environment variables, instead of supplying configuration options via the command line. The REST server supports the following environment variables:</p>
 
 <ol>
-<li>Connect to the business network and list the identities in the identity registry
+<li><p><code>COMPOSER_CARD</code></p>
 
-<ul>
-<li>JavaScript API</li>
-</ul></li>
-</ol>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
-  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@digitalPropertyNetwork'</span><span class="p">)</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getIdentityRegistry</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">identityRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">identityRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">identities</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="nx">identities</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">identity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`identityId = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">identityId</span><span class="p">}</span><span class="s2">, name = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2">, state = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">state</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
-          <span class="p">});</span>
-          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
-          <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-      <span class="p">});</span>
-</code></pre></div>
-<ul>
-<li><p>Command line</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity list -c admin@digitalPropertyNetwork
+<p>You can use the <code>COMPOSER_CARD</code> environment variable to specify the name of the discovery business network card that the REST server should use to connect to the business network.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CARD=admin@my-network
 </code></pre></div></li>
-</ul>
+<li><p><code>COMPOSER_NAMESPACES</code></p>
+
+<p>You can use the <code>COMPOSER_NAMESPACES</code> environment variable to specify if the REST server should generate a REST API with namespaces or not. Valid values are <code>always</code>, <code>required</code>, and <code>never</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_NAMESPACES=never
+</code></pre></div></li>
+<li><p><code>COMPOSER_AUTHENTICATION</code></p>
+
+<p>You can use the <code>COMPOSER_AUTHENTICATION</code> environment variable to specify if the REST server should enable REST API authentication or not. Valid values are <code>true</code> and <code>false</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_AUTHENTICATION=true
+</code></pre></div>
+<p>For more information, see <a href="../integrating/enabling-rest-authentication.html">Enabling authentication for the REST server</a>.</p></li>
+<li><p><code>COMPOSER_MULTIUSER</code></p>
+
+<p>You can use the <code>COMPOSER_MULTIUSER</code> environment variable to specify if the REST server should enable multiple user mode or not. Valid values are <code>true</code> and <code>false</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_MULTIUSER=true
+</code></pre></div>
+<p>For more information, see <a href="../integrating/enabling-multiuser.html">Enabling multiple user mode for the REST server</a>.</p></li>
+<li><p><code>COMPOSER_PROVIDERS</code></p>
+
+<p>You can use the <code>COMPOSER_PROVIDERS</code> environment variable to specify the Passport strategies that the REST server should use to authenticate clients of the REST API.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_PROVIDERS='{
+  "github": {
+    "provider": "github",
+    "module": "passport-github",
+    "clientID": "REPLACE_WITH_CLIENT_ID",
+    "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
+    "authPath": "/auth/github",
+    "callbackURL": "/auth/github/callback",
+    "successRedirect": "/",
+    "failureRedirect": "/"
+  }
+}'
+</code></pre></div></li>
+<li><p><code>COMPOSER_DATASOURCES</code></p>
+
+<p>You can use the <code>COMPOSER_DATASOURCES</code> environment variable to specify the LoopBack data sources and the connection information required by the selected LoopBack connector.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_DATASOURCES='{
+  "db": {
+    "name": "db",
+    "connector": "mongodb",
+    "host": "mongo"
+  }
+}'
+</code></pre></div></li>
+<li><p><code>COMPOSER_TLS</code></p>
+
+<p>You can use the <code>COMPOSER_TLS</code> environment variable to specify if the REST server should enable HTTPS and TLS. Valid values are <code>true</code> and <code>false</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS=true
+</code></pre></div>
+<p>For more information, see <a href="../integrating/securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a>.</p></li>
+<li><p><code>COMPOSER_TLS_CERTIFICATE</code></p>
+
+<p>You can use the <code>COMPOSER_TLS_CERTIFICATE</code> environment variable to specify the certificate file that the REST server should use when HTTPS and TLS are enabled.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
+</code></pre></div></li>
+<li><p><code>COMPOSER_TLS_KEY</code></p>
+
+<p>You can use the <code>COMPOSER_TLS_KEY</code> environment variable to specify the private key file that the REST server should use when HTTPS and TLS are enabled.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_KEY=/tmp/key.pem
+</code></pre></div></li>
+</ol>
 
             
           </section>
