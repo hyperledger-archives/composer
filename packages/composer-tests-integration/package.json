@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -66,10 +66,10 @@
   "dependencies": {
     "browserfs": "1.1.0",
     "chai": "3.5.0",
-    "composer-admin": "0.16.1",
-    "composer-cli": "0.16.1",
-    "composer-client": "0.16.1",
-    "composer-common": "0.16.1",
+    "composer-admin": "0.17.0",
+    "composer-cli": "0.17.0",
+    "composer-client": "0.17.0",
+    "composer-common": "0.17.0",
     "thenify-all": "1.6.0",
     "verdaccio": "2.6.4"
   }
