@@ -19,12 +19,14 @@ const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('AssetRegistry');
 
 /**
- * Do not attempt to create an instance of this class.<br>
+ * The AssetRegistry is used to manage a set of assets stored on the Blockchain.
+ *
+ * Do not attempt to create an instance of this class.
  * You must use the {@link runtime-api#getAssetRegistry getAssetRegistry}
  * method instead.
  *
  * @class AssetRegistry
- * @classdesc An asset registry manages a set of assets.
+ * @summary An asset registry manages a set of assets.
  * @memberof module:composer-runtime
  * @public
  */

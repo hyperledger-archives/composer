@@ -24,7 +24,7 @@ const LOG = Logger.getLog('Serializer');
  * method instead.
  *
  * @class Serializer
- * @classdesc A serializer serializes instances of assets, participants, transactions,
+ * @summary A serializer serializes instances of assets, participants, transactions,
  * and relationships to and from a JSON serialization format.
  * @memberof module:composer-runtime
  * @public

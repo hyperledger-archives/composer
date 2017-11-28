@@ -20,7 +20,7 @@ const IllegalModelException = require('./illegalmodelexception');
 /** Class representing the definition of a Participant.
  * @extends ClassDeclaration
  * @see See  {@link ClassDeclaration}
- * @private
+ *
  * @class
  * @memberof module:composer-common
  */

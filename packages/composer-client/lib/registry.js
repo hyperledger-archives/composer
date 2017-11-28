@@ -19,7 +19,8 @@ const Util = require('composer-common').Util;
 
 /**
  * Class representing an Abstract Registry.
- * <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="height:100%;"/></a></p>
+ *
+ * ** Applications should retrieve instances from {@link BusinessNetworkConnection}**
  * @abstract
  * @class
  * @memberof module:composer-client

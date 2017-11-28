@@ -18,6 +18,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 let masterData = {};
+let classToModule = {};
 
 // Loop through all the files in the input directory
 processDirectory('./jsondata/');
@@ -43,9 +44,76 @@ function processDirectory(path) {
             items.forEach((item) => {
                 processFile(item);
             });
-
+            augment();
+           
             fs.writeFileSync('allData.json',JSON.stringify(masterData),'utf8');
+            write();
         });
+}
+
+function augment(){
+    console.log(classToModule)
+    Object.keys(masterData).forEach((module)=>{
+        Object.keys(masterData[module]).forEach((c)=>{
+            // if the class does have something it extends, we need to add the methods
+            // otherwise, move on. 
+            let thisClass = masterData[module][c];
+            thisClass.methods.forEach((method)=>{
+                if (method.returnType) {
+                let m = classToModule[method.returnType.toLowerCase()];
+                if (m){
+                    method.return.fqntype=m+'-'+method.returnType;
+                }
+            }});
+            if (thisClass.extends){               
+                addSuperClassMethods(thisClass);                
+            }
+        });
+    });
+}
+function write(){
+    Object.keys(masterData).forEach((module)=>{
+        Object.keys(masterData[module]).forEach((c)=>{
+            // if the class does have something it extends, we need to add the methods
+            // otherwise, move on. 
+            let thisClass = masterData[module][c];
+            let filename = path.resolve('./jsondata/',module+'-'+(thisClass.name.toLowerCase())+'.json')
+            fs.writeFileSync(filename,JSON.stringify(thisClass),'utf8');
+        });
+    });
+}
+// Simple function to add in the super class methods
+function addSuperClassMethods(thisClass){
+    let superType = thisClass.extends;
+    if (!thisClass.superMethods){
+        thisClass.superMethods=[];
+    }
+    while (superType){
+        // asumption that super types are in the same module
+        let superTypeDetails =  masterData[thisClass.module][superType];
+        if (!superTypeDetails) {superType=null; continue;}
+        let superMethods = superTypeDetails.methods;
+        // for each method, check if it has been overridden locally and if it hasn't then 
+        // add it
+        superMethods.forEach((m)=>{
+            let foundMethod= thisClass.methods.find( (localMethod)=>{ return localMethod.name === m.name;});
+            if (!foundMethod){
+                thisClass.superMethods.push({"fromClass": superType, "method" :m});
+            } else {
+                // check if the method that we have found include the @inhertidoc tag
+                if (foundMethod.decorators && foundMethod.decorators.find((e)=>{return e === 'inheritdoc';})){
+                    // get the docs from the super method and use those instead.
+                    foundMethod.description = m.description;
+                    foundMethod.parameters = m.parameters;
+                    foundMethod.return = m.return;
+
+                }
+            }
+        })
+
+        // finally get the superType of the superType
+        superType = superTypeDetails.extends;
+    }
 }
 
 /**
@@ -63,8 +131,9 @@ function processFile(file, fileProcessor) {
         let m = data.module;
 
         if (!masterData.hasOwnProperty(m)){
-            masterData[m] = [];
+            masterData[m] = {};
         }
-        masterData[m].push(data);
+        masterData[m][data.name]=(data);
+        classToModule[data.name.toLowerCase()]=m;
     }
 }

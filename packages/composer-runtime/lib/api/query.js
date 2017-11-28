@@ -19,12 +19,14 @@ const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Query');
 
 /**
- * Do not attempt to create an instance of this class.<br>
+ * The Query class represents a built query.
+ *
+ * Do not attempt to create an instance of this class.
  * You must use the {@link runtime-api#buildQuery buildQuery}
  * method instead.
  *
  * @class Query
- * @classdesc A query represents a built query.
+ * @summary A query represents a built query.
  * @memberof module:composer-runtime
  * @public
  */
