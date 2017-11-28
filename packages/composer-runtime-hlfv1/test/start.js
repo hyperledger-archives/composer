@@ -12,13 +12,25 @@
  * limitations under the License.
  */
 
-package main
+'use strict';
 
-// The version of this chaincode, the default pool size, and the
-// default garbage collection interval. All three values are
-// replaced as part of the deployment process; version is replaced
-// with the npm package version, and PoolSize/GCInterval are
-// replaced with defaults or user specified overrides.
-const version = "development"
-const PoolSize = 8
-const GCInterval = 5
+require('chai').should();
+const sinon = require('sinon');
+const shim = require('fabric-shim');
+
+let sandbox;
+
+beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+});
+afterEach(() => {
+    sandbox.restore();
+});
+
+describe('start', () => {
+    it('should call shim start', () => {
+        sandbox.stub(shim, 'start').returns();
+        require('../start');
+        sinon.assert.calledOnce(shim.start);
+    });
+});

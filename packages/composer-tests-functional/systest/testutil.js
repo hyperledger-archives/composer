@@ -18,8 +18,6 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const Docker = require('dockerode');
-// const homedir = require('homedir');
-// const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -30,9 +28,6 @@ let docker = new Docker();
 let forceDeploy = false;
 let testRetries = 4;
 let cardStore;
-
-
-const util = require('util');
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -497,7 +492,6 @@ class TestUtil {
                             .then(()=>{
                                 return adminConnection.importCard(`composer-systests-${org}-solo-PeerAdmin`, cardsolo);
                             }).then(()=>{
-                                console.log(util.inspect(cardStore));
                                 console.log('Imported cards to the card store');
                             });
 

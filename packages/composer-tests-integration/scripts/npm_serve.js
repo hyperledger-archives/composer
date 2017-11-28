@@ -14,10 +14,8 @@
 
 'use strict';
 
-const spawn = require('child_process').spawn;
 const exec = require('child_process').exec;
 
-const fs = require('fs');
 const lernaFile = require('../../../lerna.json');
 let version = lernaFile.version;
 
@@ -47,41 +45,6 @@ function invokeCmd(cmd) {
         });
     });
 }
-
-/**
- * Recusively delete a folder and contents (synchronous)
- * @param {String} path - the path to the folder to inspect
- */
-function recusiveDelete(path) {
-    if( fs.existsSync(path) ) {
-        fs.readdirSync(path).forEach(function(file,index){
-            let curPath = path + '/' + file;
-            if( fs.lstatSync(curPath).isDirectory() ) {
-                // recurse
-                recusiveDelete(curPath);
-            } else {
-                // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
-}
-
-// Start a local npm server to host our own files
-let npmServer = spawn('verdaccio', ['-c', './scripts/config.yaml']);
-
-npmServer.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-});
-
-npmServer.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`);
-});
-
-npmServer.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-});
 
 // Required packages for serving
 let packages = [
@@ -115,16 +78,4 @@ return packages.reduce((promiseChain, p) => {
             return invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
         });
     }, Promise.resolve());
-})
-.then(() => {
-    // Kill the server
-    npmServer.kill();
-    // Clean up storage
-    recusiveDelete('./scripts/storage');
-    return Promise.resolve();
-})
-.catch((error) => {
-    npmServer.kill();
-    recusiveDelete('./scripts/storage');
-    throw new Error(error);
 });

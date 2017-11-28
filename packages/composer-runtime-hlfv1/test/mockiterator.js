@@ -12,13 +12,19 @@
  * limitations under the License.
  */
 
-package main
+'use strict';
 
-import "testing"
+const EventEmitter = require('events');
 
-func TestNewComposer(t *testing.T) {
-	composer := NewComposer()
-	if composer == nil {
-		t.Fatal("NewComposer returned nil")
-	}
+class MockIterator extends EventEmitter {
+
+    next() {
+
+    }
+    close() {
+
+    }
 }
+
+module.exports = MockIterator;
+

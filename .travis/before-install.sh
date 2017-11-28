@@ -7,14 +7,6 @@ set -o pipefail
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Ensure we're using the correct fork of go-duktape.
-pushd "${DIR}/packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3"
-if ! git remote -v | grep sstone1 > /dev/null; then
-    echo Using the wrong version of go-duktape: refusing to run the build
-    exit 1
-fi
-popd
-
 # Remove the MongoDB repo as their GPG key has expired.
 sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
 # Remove Riak https://github.com/travis-ci/travis-ci/issues/8607
