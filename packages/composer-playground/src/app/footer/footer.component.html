@@ -3,22 +3,22 @@
         <div class="footer-item">
             <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Legal</a>
         </div>
-        <div class="footer-item">
-            <a href="https://github.com/hyperledger/composer" target="_blank">GitHub</a>
+        <div *ngIf='config.links.github.trim() !== ""' class="footer-item">
+            <a href="{{ config.links.github }}" target="_blank">GitHub</a>
         </div>
     </div>
     <div class="footer-right">
         <div class="footer-item">
             Playground v{{ playgroundVersion }}
         </div>
-        <div class="footer-item">
-            <a href="https://hyperledger.github.io/composer/tutorials/playground-tutorial.html" target="_blank">Tutorial</a>
+        <div *ngIf='config.links.tutorial.trim() !== ""' class="footer-item">
+            <a href="{{ config.links.tutorial }}" target="_blank">Tutorial</a>
         </div>
-        <div class="footer-item">
-            <a href="https://hyperledger.github.io/composer/introduction/introduction.html" target="_blank">Docs</a>
+        <div *ngIf='config.links.docs.trim() !== ""' class="footer-item">
+            <a href="{{ config.links.docs }}" target="_blank">Docs</a>
         </div>
-        <div class="footer-item">
-            <a href="https://hyperledger.github.io/composer/support/support-index.html" target="_blank">Community</a>
+        <div *ngIf='config.links.community.trim() !== ""' class="footer-item">
+            <a href="{{ config.links.community }}" target="_blank">Community</a>
         </div>
     </div>
 </div>

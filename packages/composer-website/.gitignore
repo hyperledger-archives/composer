@@ -52,5 +52,5 @@ installers/*/install.sh
 jekylldocs/install*.sh
 jsondata/**
 jekylldocs/api/**/*
-
+_jsondata/**
 allData.json

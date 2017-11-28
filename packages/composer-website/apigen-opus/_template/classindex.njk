@@ -6,6 +6,7 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: The Client, Admin, and Runtime components of Hyperledger Composer
 index-order: {{index}}
 ---
+[Overview](api-doc-index)  -  [Common API](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API](allData#admin-api)  -  [Runtime API](allData#runtime-api)
 # Index of Classes
 
 - [Common API](#common-api)
@@ -16,21 +17,21 @@ index-order: {{index}}
 ## Common API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in common | sort(attribute='name') %}| [{{c.name}}](common-{{c.name | lower}}) | {{c.description}} |
+{% for key, c in common | dictsort %}| [{{c.name}}](common-{{c.name | lower}}.html) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Client API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in client | sort(attribute='name') %}|[{{c.name}}](client-{{c.name | lower}}) | {{c.description}} |
+{% for key,c in client | dictsort %}|[{{c.name}}](client-{{c.name | lower}}) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Admin API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in admin | sort(attribute='name') %}| [{{c.name}}](admin-{{c.name | lower}})| {{c.description}} |
+{% for key, c in admin | dictsort  %}| [{{c.name}}](admin-{{c.name | lower}})| {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 ## Runtime API
 | Name  | Description |
 | :---- | :----------- |
-{% for c in runtime | sort(attribute='name') %}| [{{c.name}}](runtime-{{c.name | lower}}) | {{c.description}} |
+{% for key,c in runtime | dictsort %}| [{{c.name}}](runtime-{{c.name | lower}}) | {% if c.summary %}{{c.summary}}{% else %}{{c.description}}{% endif %} |
 {% endfor %}
 

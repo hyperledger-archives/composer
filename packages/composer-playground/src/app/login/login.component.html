@@ -16,7 +16,9 @@
         </span>
         <div class="identities">
             <identity-card *ngIf="configService.isWebOnly() && connectionProfileRef === 'web-$default' && idCards.size === indestructibleCards.length"
-                           (onDeploySample)="deploySample(connectionProfileRef)" [showSpecial]="true">
+                           (onDeploySample)="deploySample(connectionProfileRef)"
+                           [link]="config.links.tutorial"
+                           [showSpecial]="true">
             </identity-card>
             <identity-card *ngFor="let cardRef of idCardRefs.get(connectionProfileRef)"
                            [identity]="idCards.get(cardRef)"
@@ -54,7 +56,7 @@
             </svg>
             <span>My Wallet</span>
         </button>
-        <tutorial-link *ngIf="showDeployNetwork"></tutorial-link>
+        <tutorial-link [hidden]="config.links.tutorial === ''" [link]="config.links.tutorial" *ngIf="showDeployNetwork"></tutorial-link>
     </div>
     <div *ngIf="showDeployNetwork">
         <deploy-business-network (finishedSampleImport)="finishedDeploying()" [showCredentials]="showCredentials"></deploy-business-network>

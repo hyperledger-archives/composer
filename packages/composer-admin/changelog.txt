@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.15.2 {e884fc077830200cc28a41dc5110a8f2} 2017-11-24
+- Correct type of the BusinessNetworkName to string
+
 Version 0.15.1 {1cdbc570fba640585d546ae9076740e8} 2017-11-10
 - Remove AdminConnection.getCard in favour of AdminConnection.exportCard
 - Add AdminConnection.hasCard to enable checks on card status

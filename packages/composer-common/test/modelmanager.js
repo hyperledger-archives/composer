@@ -302,6 +302,52 @@ describe('ModelManager', () => {
             }).should.throw(/Expected.* File mf2.cto line 2 column 27/);
         });
 
+        it('should handle model files with assets passed in the wrong logical order', () => {
+            const mf1 = `namespace ns1
+            import ns2.BaseThing
+            asset ExtThing extends BaseThing {
+            }`;
+            const mf2 = `namespace ns2
+            abstract asset BaseThing identified by thingId {
+                o String thingId
+            }`;
+            modelManager.addModelFiles([mf1, mf2], ['mf1.cto', 'mf2.cto']);
+        });
+
+        it('should handle model files with events passed in the wrong logical order', () => {
+            const mf1 = `namespace ns1
+            import ns2.BaseThing
+            event ExtThing extends BaseThing {
+            }`;
+            const mf2 = `namespace ns2
+            abstract event BaseThing {
+            }`;
+            modelManager.addModelFiles([mf1, mf2], ['mf1.cto', 'mf2.cto']);
+        });
+
+        it('should handle model files with participants passed in the wrong logical order', () => {
+            const mf1 = `namespace ns1
+            import ns2.BaseThing
+            participant ExtThing identified by thingId extends BaseThing {
+                o String thingId
+            }`;
+            const mf2 = `namespace ns2
+            abstract participant BaseThing {
+            }`;
+            modelManager.addModelFiles([mf1, mf2], ['mf1.cto', 'mf2.cto']);
+        });
+
+        it('should handle model files with transactions passed in the wrong logical order', () => {
+            const mf1 = `namespace ns1
+            import ns2.BaseThing
+            transaction ExtThing extends BaseThing {
+            }`;
+            const mf2 = `namespace ns2
+            abstract transaction BaseThing {
+            }`;
+            modelManager.addModelFiles([mf1, mf2], ['mf1.cto', 'mf2.cto']);
+        });
+
     });
 
     describe('#updateModelFile', () => {

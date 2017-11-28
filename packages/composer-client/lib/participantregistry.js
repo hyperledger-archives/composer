@@ -21,7 +21,7 @@ const REGISTRY_TYPE = 'Participant';
 
 /**
  * The ParticipantRegistry is used to manage a set of participants stored on the blockchain.
- * <p><a href="./diagrams/participantregistry.svg"><img src="./diagrams/participantregistry.svg" style="height:100%;"/></a></p>
+ *
  * @extends Registry
  * @see See {@link Registry}
  * @class

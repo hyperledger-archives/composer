@@ -7,6 +7,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
+import { Config } from '../services/config/configStructure.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
@@ -39,6 +40,8 @@ export class LoginComponent implements OnInit {
     private showSubScreen: boolean = false;
     private showCredentials: boolean = true;
 
+    private config = new Config();
+
     constructor(private router: Router,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
@@ -56,7 +59,7 @@ export class LoginComponent implements OnInit {
         return this.initializationService.initialize()
             .then(() => {
                 this.usingLocally = !this.configService.isWebOnly();
-
+                this.config = this.configService.getConfig();
                 return this.loadIdentityCards();
             });
     }
@@ -284,8 +287,9 @@ export class LoginComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     let deletePromise: Promise<void>;
-                    if (card.getConnectionProfile().type === 'web') {
-                        deletePromise = this.adminService.connect(cardRef, card, true)
+                    let cards = this.identityCardService.getAllCardsForBusinessNetwork(card.getBusinessNetworkName(), this.identityCardService.getQualifiedProfileName(card.getConnectionProfile()));
+                    if (card.getConnectionProfile().type === 'web' && cards.size === 1) {
+                           deletePromise = this.adminService.connect(cardRef, card, true)
                             .then(() => {
                                 return this.adminService.undeploy(card.getBusinessNetworkName());
                             });

@@ -1,6 +1,6 @@
 {
   "name": "composer-rest-server",
-  "version": "0.15.2",
+  "version": "0.17.0",
   "description": "Hyperledger Composer REST server that uses the Hyperledger Composer LoopBack connector",
   "engines": {
     "node": ">=8",
@@ -35,8 +35,8 @@
   "dependencies": {
     "body-parser": "1.17.0",
     "clui": "0.3.1",
-    "composer-admin": "0.15.2",
-    "composer-common": "0.15.2",
+    "composer-admin": "0.17.0",
+    "composer-common": "0.17.0",
     "compression": "1.0.3",
     "connect-ensure-login": "0.1.1",
     "cookie-parser": "1.4.3",
@@ -52,7 +52,7 @@
     "loopback-boot": "2.25.0",
     "loopback-component-explorer": "5.2.0",
     "loopback-component-passport": "3.2.0",
-    "loopback-connector-composer": "0.15.2",
+    "loopback-connector-composer": "0.17.0",
     "passport-local": "1.0.0",
     "serve-favicon": "2.0.1",
     "strong-error-handler": "1.0.1",
@@ -65,8 +65,8 @@
     "chai-as-promised": "6.0.0",
     "chai-http": "3.0.0",
     "clone": "2.1.1",
-    "composer-client": "0.15.2",
-    "composer-connector-embedded": "0.15.2",
+    "composer-client": "0.17.0",
+    "composer-connector-embedded": "0.17.0",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "ldapjs": "1.0.1",
