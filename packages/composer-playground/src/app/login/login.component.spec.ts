@@ -457,6 +457,8 @@ describe(`LoginComponent`, () => {
 
             loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
             loadIdentityCardsStub.returns(Promise.resolve());
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(new Map<string, IdCard>());
         });
 
         it('should open the delete-confirm modal', fakeAsync(() => {
@@ -522,6 +524,13 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should undeploy and refresh the identity cards after successfully calling identityCardService.deleteIdentityCard()', fakeAsync(() => {
+            let myMap = new Map<string, IdCard>();
+
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+
+            myMap.set('idCardOne', idCardOne);
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(myMap);
             mockIdCard.getConnectionProfile.returns({type: 'web'});
             mockIdCards.set('myCardRef', mockIdCard);
 
@@ -541,6 +550,40 @@ describe(`LoginComponent`, () => {
             // check services called
             mockAdminService.connect.should.have.been.called;
             mockAdminService.undeploy.should.have.been.called;
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
+            loadIdentityCardsStub.should.have.been.called;
+
+            mockAlertService.successStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should not undeploy if more than one identity', fakeAsync(() => {
+            let myMap = new Map<string, IdCard>();
+
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+            let idCardTwo = new IdCard({userName: 'fred', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+
+            myMap.set('myCardRef', idCardOne);
+            myMap.set('idCardTwo', idCardTwo);
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(myMap);
+            mockIdCard.getConnectionProfile.returns({type: 'web'});
+            mockIdCards.set('myCardRef', mockIdCard);
+
+            component['idCards'] = mockIdCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.removeIdentity('myCardRef');
+            tick();
+
+            // check services called
+            mockAdminService.connect.should.not.have.been.called;
+            mockAdminService.undeploy.should.not.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
 
