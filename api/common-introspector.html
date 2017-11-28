@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,13 +260,11 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="introspector">Introspector</h1>
 
-<p>
-Provides access to the structure of transactions, assets and participants.
-</p>
+<p>Provides access to the structure of transactions, assets and participants.</p>
 
 <h3 id="details">Details</h3>
 
@@ -284,17 +286,17 @@ Provides access to the structure of transactions, assets and participants.
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the Introspector. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></td>
+<td style="text-align: left">Create the Introspector</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getclassdeclaration">getClassDeclaration</a></td>
 <td style="text-align: left"><code>ClassDeclaration</code></td>
-<td style="text-align: left">Returns the class declaration with the given fully qualified name. Throws an error if the class declaration does not exist.</td>
+<td style="text-align: left">Returns the class declaration with the given fully qualified name</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getclassdeclarations">getClassDeclarations</a></td>
 <td style="text-align: left"><code>ClassDeclaration[]</code></td>
-<td style="text-align: left">Returns all the class declarations for the business network.</td>
+<td style="text-align: left">Returns all the class declarations for the business network</td>
 </tr>
 </tbody></table>
 
@@ -304,20 +306,22 @@ Provides access to the structure of transactions, assets and participants.
 
 <p>Create the Introspector. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>modelManager</strong></td>
 <td style="text-align: left">ModelManager</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the ModelManager that backs this Introspector</td>
 </tr>
 </tbody></table>
@@ -330,7 +334,9 @@ Provides access to the structure of transactions, assets and participants.
 
 <h3 id="returns">Returns</h3>
 
-<p>`` - the array of class declarations</p>
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the array of class declarations</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -344,7 +350,9 @@ Provides access to the structure of transactions, assets and participants.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>ClassDeclaration</code> - the class declaration</p>
+<p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the class declaration</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -352,17 +360,19 @@ Provides access to the structure of transactions, assets and participants.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>fullyQualifiedTypeName</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the fully qualified name of the type</td>
 </tr>
 </tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,15 +260,16 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="businessnetworkdefinition">BusinessNetworkDefinition</h1>
 
-<p>
-A BusinessNetworkDefinition defines a set of Participants that exchange Assets by
+<p>A BusinessNetworkDefinition defines a set of Participants that exchange Assets by
 sending Transactions. This class manages the metadata and domain-specific types for
-the network as well as a set of executable scripts.
-</p>
+the network as well as a set of executable scripts.</p>
+
+<p>Applications should
+retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">BusinessNetworkDefinition#fromArchive</a></p>
 
 <h3 id="details">Details</h3>
 
@@ -284,19 +289,14 @@ the network as well as a set of executable scripts.
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="#constructor">constructor</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the BusinessNetworkDefinition. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">BusinessNetworkDefinition#fromArchive</a></strong> </p></td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#fromarchive">fromArchive</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Create a BusinessNetworkDefinition from an archive.</td>
+<td style="text-align: left">Create a BusinessNetworkDefinition from an archive</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#fromdirectory">fromDirectory</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Builds a BusinessNetworkDefintion from the contents of a directory. The directory must include a package.json in the root (used to specify the name, version and description of the business network). This method is designed to work with business networks that refer to external models using npm dependencies as well as business networks that statically package their model files. <p> If package.json contains a dependencies property then this method will search for model (CTO) files under the node_modules directory for each dependency that passes the options.dependencyGlob pattern. </p> <p> If the network depends on an npm module its dependencies (transitive closure) will also be scanned for model (CTO) files. </p> <p> The directory may optionally contain a README.md file which is accessible from the BusinessNetworkMetadata.getREADME method. </p> <p> In addition all model files will be added that are not under node_modules and that pass the options.modelFileGlob pattern. By default you should put model files under a directory called &#39;models&#39;. </p> <p> All script (js) files will be added that are not under node_modules and that pass the options.scriptGlob pattern. By default you should put Javascript files under the &#39;lib&#39; directory. </p></td>
+<td style="text-align: left">Builds a BusinessNetworkDefintion from the contents of a directory.</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getdescription">getDescription</a></td>
@@ -306,17 +306,17 @@ the network as well as a set of executable scripts.
 <tr>
 <td style="text-align: left"><a href="#getfactory">getFactory</a></td>
 <td style="text-align: left"><code>Factory</code></td>
-<td style="text-align: left">Provides access to the Factory for this business network. The Factory is used to create the types defined in this business network.</td>
+<td style="text-align: left">Provides access to the Factory for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getidentifier">getIdentifier</a></td>
 <td style="text-align: left"><code>String</code></td>
-<td style="text-align: left">Returns the identifier for this business network</td>
+<td style="text-align: left">Returns the identifier for this business network The identifier is formed from a business network name + &#39;@&#39; + version</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getintrospector">getIntrospector</a></td>
 <td style="text-align: left"><code>Introspector</code></td>
-<td style="text-align: left">Provides access to the Introspector for this business network. The Introspector is used to reflect on the types defined within this business network.</td>
+<td style="text-align: left">Provides access to the Introspector for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getmetadata">getMetadata</a></td>
@@ -331,7 +331,7 @@ the network as well as a set of executable scripts.
 <tr>
 <td style="text-align: left"><a href="#getserializer">getSerializer</a></td>
 <td style="text-align: left"><code>Serializer</code></td>
-<td style="text-align: left">Provides access to the Serializer for this business network. The Serializer is used to serialize instances of the types defined within this business network.</td>
+<td style="text-align: left">Provides access to the Serializer for this business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getversion">getVersion</a></td>
@@ -341,61 +341,23 @@ the network as well as a set of executable scripts.
 <tr>
 <td style="text-align: left"><a href="#toarchive">toArchive</a></td>
 <td style="text-align: left"><code>Buffer</code></td>
-<td style="text-align: left">Store a BusinessNetworkDefinition as an archive.</td>
+<td style="text-align: left">Store a BusinessNetworkDefinition as an archive</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="new-businessnetworkdefinition">new BusinessNetworkDefinition()</h2>
-
-<p>Create the BusinessNetworkDefinition. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">BusinessNetworkDefinition#fromArchive</a></strong> </p></p>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>identifier</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the identifier of the business network. The identifier is formed from a business network name + &#39;@&#39; + version. The version is a semver valid version string. If package.json is passed this is ignored.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>description</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the description of the business network. If package.json is passed then this is ignored.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>packageJson</strong></td>
-<td style="text-align: left">object</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the JS object for package.json (optional)</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>readme</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">the readme in markdown for the business network (optional)</td>
-</tr>
-</tbody></table>
-
 <h2 id="getidentifier">getIdentifier</h2>
 
 <p><em>String getIdentifier(  )</em></p>
 
-<p>Returns the identifier for this business network</p>
+<p>Returns the identifier for this business network The identifier is formed from a business network name + &#39;@&#39; + version. The version is a semver valid version string. It is not used by Hyperledger Composer and is not needed in any other API. It is for application developer information purposes onlyu</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - the identifier of this business network</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - the identifier of this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -409,7 +371,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>BusinessNetworkMetadata</code> - the metadata for this business network</p>
+<p><strong><a href="common-businessnetworkmetadata">BusinessNetworkMetadata</a></strong> - the metadata for this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -423,7 +387,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - the name of this business network</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - the name of this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -437,7 +403,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - the version of this business network. Use semver module to parse.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - the version of this business network. Use semver module to parse.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -451,7 +419,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - the description of this business network</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - the description of this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -465,7 +435,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - a Promise to the instantiated business network</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - a Promise to the instantiated business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -473,14 +445,14 @@ the network as well as a set of executable scripts.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>Buffer</strong></td>
 <td style="text-align: left">Buffer</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the Buffer to a zip archive</td>
 </tr>
 </tbody></table>
@@ -493,7 +465,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Buffer</code> - buffer  - the zlib buffer</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Buffer">Buffer</a></strong> - buffer  - the zlib buffer</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -501,14 +475,14 @@ the network as well as a set of executable scripts.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">JSZip options</td>
 </tr>
 </tbody></table>
@@ -521,7 +495,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - a Promise to the instantiated business network</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - a Promise to the instantiated business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -529,20 +505,20 @@ the network as well as a set of executable scripts.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>path</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">to a local directory</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options to configure the instance.</td>
 </tr>
 </tbody></table>
@@ -553,26 +529,26 @@ the network as well as a set of executable scripts.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.dependencyGlob</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">specify the glob pattern used to match the npm dependencies to process. Defaults to **</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.modelFileGlob</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">specify the glob pattern used to match the model files to include. Defaults to <strong>\/models/</strong>\/*.cto</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.scriptGlob</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">specify the glob pattern used to match the script files to include. Defaults to <strong>\/lib/</strong>\/*.js</td>
 </tr>
 </tbody></table>
@@ -585,7 +561,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Introspector</code> - the Introspector for this business network</p>
+<p><strong><a href="common-introspector">Introspector</a></strong> - the Introspector for this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -599,7 +577,9 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Factory</code> - the Factory for this business network</p>
+<p><strong><a href="runtime-factory">Factory</a></strong> - the Factory for this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -613,11 +593,15 @@ the network as well as a set of executable scripts.
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Serializer</code> - the Serializer for this business network</p>
+<p><strong><a href="runtime-serializer">Serializer</a></strong> - the Serializer for this business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

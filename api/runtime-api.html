@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,7 +260,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="api">Api</h1>
 
@@ -285,7 +289,7 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <td style="text-align: left"><a href="#buildquery">buildQuery</a></td>
 <td style="text-align: left"><code>Query</code></td>
-<td style="text-align: left">Build a query ready for later execution. The specified query string must be written in the Composer query language.</td>
+<td style="text-align: left">Build a query ready for later execution</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#emit">emit</a></td>
@@ -295,27 +299,27 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <td style="text-align: left"><a href="#getassetregistry">getAssetRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get an existing asset registry using the unique identifier of the asset registry. An asset registry can be used to retrieve, update, or delete existing assets, or create new assets.</td>
+<td style="text-align: left">Get an existing asset registry using the unique identifier of the asset registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getcurrentparticipant">getCurrentParticipant</a></td>
 <td style="text-align: left"><code>module:composer-common.Resource</code></td>
-<td style="text-align: left">Get the current participant. The current participant is determined by the identity that was used to submit the current transaction.</td>
+<td style="text-align: left">Get the current participant</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getfactory">getFactory</a></td>
 <td style="text-align: left"><code>module:composer-runtime.Factory</code></td>
-<td style="text-align: left">Get the factory. The factory can be used to create new instances of assets, participants, and transactions for storing in registries. The factory can also be used for creating relationships to assets, particpants, and transactions.</td>
+<td style="text-align: left">Get the factory</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getparticipantregistry">getParticipantRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get an existing participant registry using the unique identifier of the participant registry. An participant registry can be used to retrieve, update, or delete existing participants, or create new participants.</td>
+<td style="text-align: left">Get an existing participant registry using the unique identifier of the participant registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getserializer">getSerializer</a></td>
 <td style="text-align: left"><code>module:composer-common.Serializer</code></td>
-<td style="text-align: left">Get the serializer. The serializer can be used to create new instances of assets, participants, and transactions from a JavaScript object, or to create a JavaScript object suitable for long-lived persistence.</td>
+<td style="text-align: left">Get the serializer</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#post">post</a></td>
@@ -325,7 +329,7 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <td style="text-align: left"><a href="#query">query</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery.</td>
+<td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery</td>
 </tr>
 </tbody></table>
 
@@ -343,7 +347,13 @@ properties or internal methods which could be accessed or misused.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>module:composer-runtime.Factory</code> - The factory.</p>
+<p><strong><a href="runtime-factory">Factory</a></strong> - The factory.</p>
+
+<h3 id="see-also">See also</h3>
+
+<ul>
+<li><a href="runtime-factory">Factory</a></li>
+</ul>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -365,7 +375,9 @@ properties or internal methods which could be accessed or misused.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>module:composer-common.Serializer</code> - The serializer.</p>
+<p><strong><a href="common-serializer">Serializer</a></strong> - The serializer.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -393,7 +405,9 @@ properties or internal methods which could be accessed or misused.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise. The promise is resolved with an {@link module:composer-runtime.AssetRegistry AssetRegistry} instance representing the asset registry if it exists. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an {@link module:composer-runtime.AssetRegistry AssetRegistry} instance representing the asset registry if it exists. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -401,14 +415,14 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The ID of the asset registry.</td>
 </tr>
 </tbody></table>
@@ -441,7 +455,9 @@ properties or internal methods which could be accessed or misused.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise. The promise is resolved with an {@link module:composer-runtime.ParticipantRegistry ParticipantRegistry} instance representing the participant registry if it exists. If the participant registry does not exist, or the current user does not have access to the participant registry, then the promise will be rejected with an error that describes the problem.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an {@link module:composer-runtime.ParticipantRegistry ParticipantRegistry} instance representing the participant registry if it exists. If the participant registry does not exist, or the current user does not have access to the participant registry, then the promise will be rejected with an error that describes the problem.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -449,14 +465,14 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The ID of the participant registry.</td>
 </tr>
 </tbody></table>
@@ -493,7 +509,9 @@ properties or internal methods which could be accessed or misused.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>module:composer-common.Resource</code> - The current participant, or null if the transaction was submitted using an identity that does not map to a participant.</p>
+<p><strong><a href="common-resource">Resource</a></strong> - The current participant, or null if the transaction was submitted using an identity that does not map to a participant.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -521,7 +539,9 @@ properties or internal methods which could be accessed or misused.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise. The promise is resolved with a HttpResponse that represents the result of the HTTP POST.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a HttpResponse that represents the result of the HTTP POST.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -529,35 +549,37 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>url</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The URL to post the data to</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>typed</strong></td>
 <td style="text-align: left">Typed</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The typed instance to be posted. The instance will be serialized to JSON.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The options that are passed to Serializer.toJSON</td>
 </tr>
 </tbody></table>
 
 <h2 id="emit">emit</h2>
 
-<p><em>void emit( Resource event )</em></p>
+<p>_ emit( Resource event )_</p>
 
 <p>Emit an event defined in the transaction</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -565,14 +587,14 @@ properties or internal methods which could be accessed or misused.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>event</strong></td>
 <td style="text-align: left">Resource</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The event to be emitted</td>
 </tr>
 </tbody></table>
@@ -600,7 +622,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Query</code> - The built query, which can be passed in a call to query.</p>
+<p><strong><a href="runtime-query">Query</a></strong> - The built query, which can be passed in a call to query.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -608,14 +632,14 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>query</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The query string, written using the Composer query language.</td>
 </tr>
 </tbody></table>
@@ -655,7 +679,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -663,20 +689,20 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>query</strong></td>
 <td style="text-align: left">string; Query</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the query, or a built query.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>parameters</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The parameters for the query.</td>
 </tr>
 </tbody></table>
@@ -693,6 +719,8 @@ This functionality is Blockchain platform dependent. For example, when a Compose
     <span class="c1">// Add optional error handling here.</span>
   <span class="p">});</span>
 </code></pre></div>
+<h2 id="inherited-methods">Inherited methods</h2>
+
             
           </section>
         </div>

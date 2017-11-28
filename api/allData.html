@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,7 +260,9 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="index-of-classes">Index of Classes</h1>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+
+<h1 id="index-of-classes">Index of Classes</h1>
 
 <ul>
 <li><a href="#common-api">Common API</a></li>
@@ -274,96 +280,120 @@ ga('send', 'pageview');
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="common-baseexception">BaseException</a></td>
-<td style="text-align: left">A base class for all Composer exceptions <p><a href="./diagrams/baseexception.svg"><img src="./diagrams/baseexception.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left"><a href="common-assetdeclaration.html">AssetDeclaration</a></td>
+<td style="text-align: left">AssetDeclaration defines the schema (aka model or class) for an Asset</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-basefileexception">BaseFileException</a></td>
-<td style="text-align: left">Exception throws when a composer file is semantically invalid</td>
+<td style="text-align: left"><a href="common-businessnetworkcardstore.html">BusinessNetworkCardStore</a></td>
+<td style="text-align: left">Manages persistence of business network cards</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-businessnetworkcardstore">BusinessNetworkCardStore</a></td>
-<td style="text-align: left">Manages persistence of business network cards.</td>
+<td style="text-align: left"><a href="common-businessnetworkdefinition.html">BusinessNetworkDefinition</a></td>
+<td style="text-align: left">A BusinessNetworkDefinition defines a set of Participants that exchange Assets by sending Transactions</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></td>
-<td style="text-align: left"><p> A BusinessNetworkDefinition defines a set of Participants that exchange Assets by sending Transactions. This class manages the metadata and domain-specific types for the network as well as a set of executable scripts. </p></td>
+<td style="text-align: left"><a href="common-businessnetworkmetadata.html">BusinessNetworkMetadata</a></td>
+<td style="text-align: left">Defines the metadata for a BusinessNeworkDefinition</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-businessnetworkmetadata">BusinessNetworkMetadata</a></td>
-<td style="text-align: left"><p> Defines the metadata for a BusinessNeworkDefinition. This includes: <ul>   <li>package.json</li>   <li>README.md (optional)</li> </ul> </p></td>
+<td style="text-align: left"><a href="common-classdeclaration.html">ClassDeclaration</a></td>
+<td style="text-align: left">ClassDeclaration defines the structure (model/schema) of composite data</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-concept">Concept</a></td>
-<td style="text-align: left"><p> Resource is an instance that has a type. The type of the resource specifies a set of properites (which themselves have types). </p> <p> Type information in Composer is used to validate the structure of Resource instances and for serialization. </p> <p> Resources are used in Composer to represent Assets, Participants, Transactions and other domain classes that can be serialized for long-term persistent storage. </p></td>
+<td style="text-align: left"><a href="common-concept.html">Concept</a></td>
+<td style="text-align: left">Resource is an instance that has a type</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-factory">Factory</a></td>
-<td style="text-align: left">Use the Factory to create instances of Resource: transactions, participants and assets. <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left"><a href="common-conceptdeclaration.html">ConceptDeclaration</a></td>
+<td style="text-align: left">ConceptDeclaration defines the schema (aka model or class) for an Concept</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-idcard">IdCard</a></td>
-<td style="text-align: left">An ID card. Encapsulates credentials and other information required to connect to a specific business network as a specific user. <p> Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory.</td>
+<td style="text-align: left"><a href="common-enumdeclaration.html">EnumDeclaration</a></td>
+<td style="text-align: left">EnumDeclaration defines an enumeration of static values</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-identifiable">Identifiable</a></td>
-<td style="text-align: left">Identifiable is an entity with a namespace, type and an identifier.,This class is abstract.</td>
+<td style="text-align: left"><a href="common-enumvaluedeclaration.html">EnumValueDeclaration</a></td>
+<td style="text-align: left">Class representing a value from a set of enumerated values</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-illegalmodelexception">IllegalModelException</a></td>
-<td style="text-align: left">Exception throws when a composer file is semantically invalid</td>
+<td style="text-align: left"><a href="common-eventdeclaration.html">EventDeclaration</a></td>
+<td style="text-align: left">Class representing the definition of an Event</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-introspector">Introspector</a></td>
-<td style="text-align: left"><p> Provides access to the structure of transactions, assets and participants. </p></td>
+<td style="text-align: left"><a href="common-factory.html">Factory</a></td>
+<td style="text-align: left">Use the Factory to create instances of Resource: transactions, participants and assets</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-invalidqueryexception">InvalidQueryException</a></td>
-<td style="text-align: left">Exception thrown for invalid queries</td>
+<td style="text-align: left"><a href="common-filesystemcardstore.html">FileSystemCardStore</a></td>
+<td style="text-align: left">Manages persistence of business network cards to a Node file system implementation</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-parseexception">ParseException</a></td>
-<td style="text-align: left">Exception throws when a Composer file is syntactically invalid</td>
+<td style="text-align: left"><a href="common-functiondeclaration.html">FunctionDeclaration</a></td>
+<td style="text-align: left">FunctionDeclaration defines a function that has been defined in a model file</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-relationship">Relationship</a></td>
-<td style="text-align: left">A Relationship is a typed pointer to an instance. I.e the relationship with namespace = &#39;org.acme&#39;, type = &#39;Vehicle&#39; and id = &#39;ABC&#39; creates a pointer that points at an instance of org.acme.Vehicle with the id ABC.</td>
+<td style="text-align: left"><a href="common-idcard.html">IdCard</a></td>
+<td style="text-align: left">Business Network Card</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-resource">Resource</a></td>
-<td style="text-align: left"><p> Resource is an instance that has a type. The type of the resource specifies a set of properites (which themselves have types). </p> <p> Type information in Composer is used to validate the structure of Resource instances and for serialization. </p> <p> Resources are used in Composer to represent Assets, Participants, Transactions and other domain classes that can be serialized for long-term persistent storage. </p></td>
+<td style="text-align: left"><a href="common-identifiable.html">Identifiable</a></td>
+<td style="text-align: left">Identifiable is an entity with a namespace, type and an identifier</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-securitycontext">SecurityContext</a></td>
-<td style="text-align: left">SecurityContext is used to authenticate and manage user credentials to the underlying blockchain fabric. <p><a href="./diagrams/securitycontext.svg"><img src="./diagrams/securitycontext.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left"><a href="common-introspector.html">Introspector</a></td>
+<td style="text-align: left">Provides access to the structure of transactions, assets and participants</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-securityexception">SecurityException</a></td>
-<td style="text-align: left">Class representing a security exception <p><a href="./diagrams/securityexception.svg"><img src="./diagrams/securityexception.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left"><a href="common-memorycardstore.html">MemoryCardStore</a></td>
+<td style="text-align: left">Transient in-memory storage of business network cards, useful for testing</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-serializer">Serializer</a></td>
-<td style="text-align: left">Serialize Resources instances to/from various formats for long-term storage (e.g. on the blockchain). <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left"><a href="common-modelfile.html">ModelFile</a></td>
+<td style="text-align: left">Class representing a Model File</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-typed">Typed</a></td>
-<td style="text-align: left">Object is an instance with a namespace and a type.,This class is abstract.</td>
+<td style="text-align: left"><a href="common-modelmanager.html">ModelManager</a></td>
+<td style="text-align: left">Manages the Composer model files</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-typenotfoundexception">TypeNotFoundException</a></td>
-<td style="text-align: left">Error thrown when a Composer type does not exist.</td>
+<td style="text-align: left"><a href="common-participantdeclaration.html">ParticipantDeclaration</a></td>
+<td style="text-align: left">Class representing the definition of a Participant</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-validatedconcept">ValidatedConcept</a></td>
-<td style="text-align: left"><p> Resource is an instance that has a type. The type of the resource specifies a set of properites (which themselves have types). </p> <p> Type information in Composer is used to validate the structure of Resource instances and for serialization. </p> <p> Resources are used in Composer to represent Assets, Participants, Transactions and other domain classes that can be serialized for long-term persistent storage. </p></td>
+<td style="text-align: left"><a href="common-property.html">Property</a></td>
+<td style="text-align: left">Property representing an attribute of a class declaration, either a Field or a Relationship</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-validatedresource">ValidatedResource</a></td>
-<td style="text-align: left">ValidatedResource is a Resource that can validate that property changes (or the whole instance) do not violate the structure of the type information associated with the instance.</td>
+<td style="text-align: left"><a href="common-relationship.html">Relationship</a></td>
+<td style="text-align: left">A Relationship is a typed pointer to an instance</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-validationexception">ValidationException</a></td>
-<td style="text-align: left">Exception thrown when a resource fails to model against the model</td>
+<td style="text-align: left"><a href="common-relationshipdeclaration.html">RelationshipDeclaration</a></td>
+<td style="text-align: left">Class representing a relationship between model elements</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-resource.html">Resource</a></td>
+<td style="text-align: left">Resource is an instance that has a type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-serializer.html">Serializer</a></td>
+<td style="text-align: left">Serialize Resources instances to/from various formats for long-term storage (e</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-transactiondeclaration.html">TransactionDeclaration</a></td>
+<td style="text-align: left">Class representing the definition of an Transaction</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-typed.html">Typed</a></td>
+<td style="text-align: left">Object is an instance with a namespace and a type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-validatedconcept.html">ValidatedConcept</a></td>
+<td style="text-align: left">Resource is an instance that has a type</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="common-validatedresource.html">ValidatedResource</a></td>
+<td style="text-align: left">ValidatedResource is a Resource that can validate that property changes (or the whole instance) do not violate the structure of the type information associated with the instance</td>
 </tr>
 </tbody></table>
 
@@ -377,35 +407,35 @@ ga('send', 'pageview');
 </thead><tbody>
 <tr>
 <td style="text-align: left"><a href="client-assetregistry">AssetRegistry</a></td>
-<td style="text-align: left">The AssetRegistry is used to manage a set of assets stored on the Blockchain. <p><a href="./diagrams/assetregistry.svg"><img src="./diagrams/assetregistry.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left">The AssetRegistry is used to manage a set of assets stored on the Blockchain</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-businessnetworkconnection">BusinessNetworkConnection</a></td>
-<td style="text-align: left">Use this class to connect to and then interact with a deployed BusinessNetworkDefinition. Use the AdminConnection class in the composer-admin module to deploy BusinessNetworksDefinitions.</td>
+<td style="text-align: left">Use this class to connect to and then interact with a deployed BusinessNetworkDefinition</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-historian">Historian</a></td>
-<td style="text-align: left">The Historian records the history of actions taken using Composer. It is a registry that stores HistorianRecords; each record is created in response to a transaction being executred.,As well as the transactions that are defined in the Network model other actions such as adding assets are treated as transactions so are therefore recorded.,Details of these are in the system model.</td>
+<td style="text-align: left">The Historian records the history of actions taken using Composer</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-identityregistry">IdentityRegistry</a></td>
-<td style="text-align: left">The IdentityRegistry is used to store a set of identities on the blockchain. <p><a href="./diagrams/identityregistry.svg"><img src="./diagrams/identityregistry.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left">The IdentityRegistry is used to store a set of identities on the blockchain</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-participantregistry">ParticipantRegistry</a></td>
-<td style="text-align: left">The ParticipantRegistry is used to manage a set of participants stored on the blockchain. <p><a href="./diagrams/participantregistry.svg"><img src="./diagrams/participantregistry.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left">The ParticipantRegistry is used to manage a set of participants stored on the blockchain</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-query">Query</a></td>
-<td style="text-align: left">The Query class represents a built query. A built query has been parsed and validated. Do not attempt to create an instance of this class.<br> You must use the <a href="client-businessnetworkconnection#buildquery">buildQuery</a> method instead.</td>
+<td style="text-align: left">The Query class represents a built query</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-registry">Registry</a></td>
-<td style="text-align: left">Class representing an Abstract Registry. <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left">Class representing an Abstract Registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="client-transactionregistry">TransactionRegistry</a></td>
-<td style="text-align: left">The TransactionRegistry is used to store a set of transactions on the blockchain. <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p></td>
+<td style="text-align: left">The TransactionRegistry is used to store a set of transactions on the blockchain</td>
 </tr>
 </tbody></table>
 
@@ -419,7 +449,7 @@ ga('send', 'pageview');
 </thead><tbody>
 <tr>
 <td style="text-align: left"><a href="admin-adminconnection">AdminConnection</a></td>
-<td style="text-align: left">This class creates an administration connection to a Hyperledger Composer runtime. The connection can then be used to: <ul> <li>Deploy BusinessNetworkDefinitions</li> <li>Undeploy BusinessNetworkDefinitions</li> <li>Update BusinessNetworkDefinitions</li> <li>Send a ping message to the runtime to ensure it is running and correctly configured.</li> <li>Store a connection profile document in the connection profile store</li> </ul> Note: that the methods on this class take the &#39;businessNetworkIdentifier&#39;; this has to match the name given on the create call. An AdminConnection that has been connected to network-A can only be used to adminster network-A.,Instances of AdminConnections can be reused for different networks. Call disconnect(..) then connect(..). Calling an api after disconnect and before connect will give an error.</td>
+<td style="text-align: left">This class creates an administration connection to a Hyperledger Composer runtime</td>
 </tr>
 </tbody></table>
 
@@ -433,27 +463,27 @@ ga('send', 'pageview');
 </thead><tbody>
 <tr>
 <td style="text-align: left"><a href="runtime-api">Api</a></td>
-<td style="text-align: left">A class that contains the root of the transaction processor API. Methods in this class are made available as global functions which can be called by transaction processor functions. The transaction processor API should expose no internal properties or internal methods which could be accessed or misused.</td>
+<td style="text-align: left">A class that contains the root of the transaction processor API</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="runtime-assetregistry">AssetRegistry</a></td>
-<td style="text-align: left">Do not attempt to create an instance of this class.<br> You must use the <a href="runtime-api#getassetregistry">getAssetRegistry</a> method instead.</td>
+<td style="text-align: left">The AssetRegistry is used to manage a set of assets stored on the Blockchain</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="runtime-factory">Factory</a></td>
-<td style="text-align: left">Do not attempt to create an instance of this class.<br> You must use the <a href="runtime-api#getfactory">getFactory</a> method instead.</td>
+<td style="text-align: left">Use the Factory to create instances of Resource: transactions, participants and assets</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="runtime-participantregistry">ParticipantRegistry</a></td>
-<td style="text-align: left">Do not attempt to create an instance of this class.<br> You must use the <a href="runtime-api#getparticipantregistry">getParticipantRegistry</a> method instead.</td>
+<td style="text-align: left">The ParticipantRegistry is used to manage a set of participants stored on the blockchain</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="runtime-query">Query</a></td>
-<td style="text-align: left">Do not attempt to create an instance of this class.<br> You must use the <a href="runtime-api#buildquery">buildQuery</a> method instead.</td>
+<td style="text-align: left">The Query class represents a built query</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="runtime-serializer">Serializer</a></td>
-<td style="text-align: left">Do not attempt to create an instance of this class.<br> You must use the <a href="runtime-api#getserializer">getSerializer</a> method instead.</td>
+<td style="text-align: left">Do not attempt to create an instance of this class</td>
 </tr>
 </tbody></table>
 

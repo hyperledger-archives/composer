@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,13 +260,14 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="factory">Factory</h1>
 
 <p>Use the Factory to create instances of Resource: transactions, participants
-and assets.
-<p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p></p>
+and assets.</p>
+
+<p><strong>Applications should retrieve instances of the Factory from <a href="common-businessnetworkdefinition#getfactory">BusinessNetworkDefinition#getFactory</a></strong></p>
 
 <h3 id="details">Details</h3>
 
@@ -282,11 +287,6 @@ and assets.
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><a href="#constructor">constructor</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the factory. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#newconcept">newConcept</a></td>
 <td style="text-align: left"><code>Resource</code></td>
 <td style="text-align: left">Create a new Concept with a given namespace and type name</td>
@@ -294,12 +294,12 @@ and assets.
 <tr>
 <td style="text-align: left"><a href="#newevent">newEvent</a></td>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left">Create a new event object. The identifier of the event is set to a UUID.</td>
+<td style="text-align: left">Create a new event object</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#newrelationship">newRelationship</a></td>
 <td style="text-align: left"><code>Relationship</code></td>
-<td style="text-align: left">Create a new Relationship with a given namespace, type and identifier. A relationship is a typed pointer to an instance. I.e the relationship with namespace = &#39;org.acme&#39;, type = &#39;Vehicle&#39; and id = &#39;ABC&#39; creates` a pointer that points at an instance of org.acme.Vehicle with the id ABC.</td>
+<td style="text-align: left">Create a new Relationship with a given namespace, type and identifier</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#newresource">newResource</a></td>
@@ -309,43 +309,23 @@ and assets.
 <tr>
 <td style="text-align: left"><a href="#newtransaction">newTransaction</a></td>
 <td style="text-align: left"><code>Resource</code></td>
-<td style="text-align: left">Create a new transaction object. The identifier of the transaction is set to a UUID.</td>
+<td style="text-align: left">Create a new transaction object</td>
 </tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
-<h2 id="new-factory">new Factory()</h2>
-
-<p>Create the factory. <p> <strong>Note: Only to be called by framework code. Applications should retrieve instances from <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> </p></p>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>modelManager</strong></td>
-<td style="text-align: left">ModelManager</td>
-<td style="text-align: left">false</td>
-<td style="text-align: left">The ModelManager to use for this registry</td>
-</tr>
-</tbody></table>
-
 <h2 id="newresource">newResource</h2>
 
-<p><em>Resource newResource( string ns, string type, string id, [Object options] )</em></p>
+<p><em>Resource newResource( String ns, String type, String id, [Object options] )</em></p>
 
 <p>Create a new Resource with a given namespace, type name and id</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - the new instance</p>
+<p><strong><a href="common-resource">Resource</a></strong> - the new instance</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -353,32 +333,32 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the namespace of the Resource</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the type of the Resource</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the identifier</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options</td>
 </tr>
 </tbody></table>
@@ -389,45 +369,47 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.disableValidation</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">pass true if you want the factory to return a <a href="common-resource">Resource</a> instead of a <a href="common-validatedresource">ValidatedResource</a>. Defaults to false.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.generate</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Pass one of: <dl> <dt>sample</dt><dd>return a resource instance with generated sample data.</dd> <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl></td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.includeOptionalFields</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.generate</code> is specified, whether optional fields should be generated.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.allowEmptyId</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.allowEmptyId</code> is specified as true, a zero length string for id is allowed (allows it to be filled in later).</td>
 </tr>
 </tbody></table>
 
 <h2 id="newconcept">newConcept</h2>
 
-<p><em>Resource newConcept( string ns, string type, [Object options] )</em></p>
+<p><em>Resource newConcept( String ns, String type, [Object options] )</em></p>
 
 <p>Create a new Concept with a given namespace and type name</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - the new instance</p>
+<p><strong><a href="common-resource">Resource</a></strong> - the new instance</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -435,26 +417,26 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the namespace of the Concept</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the type of the Concept</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options</td>
 </tr>
 </tbody></table>
@@ -465,39 +447,41 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.disableValidation</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">pass true if you want the factory to return a <a href="common-concept">Concept</a> instead of a <a href="common-validatedconcept">ValidatedConcept</a>. Defaults to false.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.generate</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Pass one of: <dl> <dt>sample</dt><dd>return a resource instance with generated sample data.</dd> <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl></td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.includeOptionalFields</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.generate</code> is specified, whether optional fields should be generated.</td>
 </tr>
 </tbody></table>
 
 <h2 id="newrelationship">newRelationship</h2>
 
-<p><em>Relationship newRelationship( string ns, string type, string id )</em></p>
+<p><em>Relationship newRelationship( String ns, String type, String id )</em></p>
 
-<p>Create a new Relationship with a given namespace, type and identifier. A relationship is a typed pointer to an instance. I.e the relationship with namespace = &#39;org.acme&#39;, type = &#39;Vehicle&#39; and id = &#39;ABC&#39; creates` a pointer that points at an instance of org.acme.Vehicle with the id ABC.</p>
+<p>Create a new Relationship with a given namespace, type and identifier. A relationship is a typed pointer to an instance. I.e the relationship with <code>namespace = &#39;org.acme&#39;</code>, <code>type = &#39;Vehicle&#39;</code> and <code>id = &#39;ABC&#39; creates</code> a pointer that points at an instance of org.acme.Vehicle with the id ABC.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Relationship</code> - the new relationship instance</p>
+<p><strong><a href="common-relationship">Relationship</a></strong> - the new relationship instance</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -505,39 +489,41 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the namespace of the Resource</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the type of the Resource</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the identifier</td>
 </tr>
 </tbody></table>
 
 <h2 id="newtransaction">newTransaction</h2>
 
-<p><em>Resource newTransaction( string ns, string type, [string id], [Object options] )</em></p>
+<p><em>Resource newTransaction( String ns, String type, [String id], [Object options] )</em></p>
 
 <p>Create a new transaction object. The identifier of the transaction is set to a UUID.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - A resource for the new transaction.</p>
+<p><strong><a href="common-resource">Resource</a></strong> - A resource for the new transaction.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -545,32 +531,32 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the namespace of the transaction.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the type of the transaction.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional identifier for the transaction; if you do not specify one then an identifier will be automatically generated.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options</td>
 </tr>
 </tbody></table>
@@ -581,39 +567,41 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.generate</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Pass one of: <dl> <dt>sample</dt><dd>return a resource instance with generated sample data.</dd> <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl></td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.includeOptionalFields</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.generate</code> is specified, whether optional fields should be generated.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.allowEmptyId</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.allowEmptyId</code> is specified as true, a zero length string for id is allowed (allows it to be filled in later).</td>
 </tr>
 </tbody></table>
 
 <h2 id="newevent">newEvent</h2>
 
-<p><em>Resource newEvent( string ns, string type, [string id], [Object options] )</em></p>
+<p><em>Resource newEvent( String ns, String type, [String id], [Object options] )</em></p>
 
 <p>Create a new event object. The identifier of the event is set to a UUID.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Resource</code> - A resource for the new event.</p>
+<p><strong><a href="common-resource">Resource</a></strong> - A resource for the new event.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -621,32 +609,32 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>ns</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the namespace of the event.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>type</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the type of the event.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional identifier for the event; if you do not specify one then an identifier will be automatically generated.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options</td>
 </tr>
 </tbody></table>
@@ -657,29 +645,31 @@ and assets.
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.generate</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Pass one of: <dl> <dt>sample</dt><dd>return a resource instance with generated sample data.</dd> <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl></td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.includeOptionalFields</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.generate</code> is specified, whether optional fields should be generated.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options.allowEmptyId</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if <code>options.allowEmptyId</code> is specified as true, a zero length string for id is allowed (allows it to be filled in later).</td>
 </tr>
 </tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

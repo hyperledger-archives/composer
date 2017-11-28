@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,7 +260,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="validatedresource">ValidatedResource</h1>
 
@@ -274,7 +278,7 @@ the type information associated with the instance.</p>
 <h3 id="see-also">See also</h3>
 
 <ul>
-<li>See (see {@link resource)</li>
+<li>See <a href="common-resource">Resource</a></li>
 </ul>
 
 <h2 id="method-summary">Method Summary</h2>
@@ -299,7 +303,97 @@ the type information associated with the instance.</p>
 <tr>
 <td style="text-align: left"><a href="#validate">validate</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Validates the instance against its model.</td>
+<td style="text-align: left">Validates the instance against its model</td>
+</tr>
+</tbody></table>
+
+<h2 id="inherited-method-summary">Inherited Method Summary</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Supertype</th>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Returns</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#isrelationship">isRelationship</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Determine if this identifiable is a relationship</td>
+</tr>
+<tr>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left"><a href="#tostring">toString</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the string representation of this class</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#getidentifier">getIdentifier</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the identifier of this instance</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#setidentifier">setIdentifier</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Set the identifier of this instance</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#getfullyqualifiedidentifier">getFullyQualifiedIdentifier</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the fully qualified identifier of this instance</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#tostring">toString</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns the string representation of this class</td>
+</tr>
+<tr>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left"><a href="#isresource">isResource</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Determine if this identifiable is a resource</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#isresource">isResource</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Determine if this identifiable is a resource</td>
+</tr>
+<tr>
+<td style="text-align: left">Identifiable</td>
+<td style="text-align: left"><a href="#touri">toURI</a></td>
+<td style="text-align: left"><code>String</code></td>
+<td style="text-align: left">Returns a URI representation of a reference to this identifiable</td>
+</tr>
+<tr>
+<td style="text-align: left">Typed</td>
+<td style="text-align: left"><a href="#gettype">getType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the type of the instance (a short name, not including namespace)</td>
+</tr>
+<tr>
+<td style="text-align: left">Typed</td>
+<td style="text-align: left"><a href="#getfullyqualifiedtype">getFullyQualifiedType</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the fully-qualified type name of the instance (including namespace)</td>
+</tr>
+<tr>
+<td style="text-align: left">Typed</td>
+<td style="text-align: left"><a href="#getnamespace">getNamespace</a></td>
+<td style="text-align: left"><code>string</code></td>
+<td style="text-align: left">Get the namespace of the instance</td>
+</tr>
+<tr>
+<td style="text-align: left">Typed</td>
+<td style="text-align: left"><a href="#instanceof">instanceOf</a></td>
+<td style="text-align: left"><code>boolean</code></td>
+<td style="text-align: left">Check to see if this instance is an instance of the specified fully qualified type name</td>
 </tr>
 </tbody></table>
 
@@ -307,9 +401,11 @@ the type information associated with the instance.</p>
 
 <h2 id="setpropertyvalue">setPropertyValue</h2>
 
-<p><em>void setPropertyValue( string propname, string value )</em></p>
+<p>_ setPropertyValue( string propname, string value )_</p>
 
 <p>Sets a property, validating that it does not violate the model</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -317,29 +413,31 @@ the type information associated with the instance.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>propName</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the name of the field</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the value of the property</td>
 </tr>
 </tbody></table>
 
 <h2 id="addarrayvalue">addArrayValue</h2>
 
-<p><em>void addArrayValue( string propname, string value )</em></p>
+<p>_ addArrayValue( string propname, string value )_</p>
 
 <p>Adds an array property value, validating that it does not violate the model</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -347,33 +445,295 @@ the type information associated with the instance.</p>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>propName</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the name of the field</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>value</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the value of the property</td>
 </tr>
 </tbody></table>
 
 <h2 id="validate">validate</h2>
 
-<p><em>void validate(  )</em></p>
+<p>_ validate(  )_</p>
 
 <p>Validates the instance against its model.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
+
+<h2 id="inherited-methods">Inherited methods</h2>
+
+<h2 id="tostring">toString</h2>
+
+<p><em>String toString(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Resource</p>
+
+<p>Returns the string representation of this class</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> - the string representation of the class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isresource">isResource</h2>
+
+<p><em>boolean isResource(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Resource</p>
+
+<p>Determine if this identifiable is a resource.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a> - True if this identifiable is a resource, false if not.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getidentifier">getIdentifier</h2>
+
+<p><em>string getIdentifier(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Get the identifier of this instance</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a> - The identifier for this object</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="setidentifier">setIdentifier</h2>
+
+<p><em>void setIdentifier( string id )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Set the identifier of this instance</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>id</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">the new identifier for this object</td>
+</tr>
+</tbody></table>
+
+<h2 id="getfullyqualifiedidentifier">getFullyQualifiedIdentifier</h2>
+
+<p><em>string getFullyQualifiedIdentifier(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Get the fully qualified identifier of this instance. (namespace &#39;.&#39; type &#39;#&#39; identifier).</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a> - the fully qualified identifier of this instance</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="tostring">toString</h2>
+
+<p><em>String toString(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Returns the string representation of this class</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> - the string representation of the class</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isrelationship">isRelationship</h2>
+
+<p><em>boolean isRelationship(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Determine if this identifiable is a relationship.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a> - True if this identifiable is a relationship, false if not.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="isresource">isResource</h2>
+
+<p><em>boolean isResource(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Determine if this identifiable is a resource.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a> - True if this identifiable is a resource, false if not.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="touri">toURI</h2>
+
+<p><em>String toURI(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Identifiable</p>
+
+<p>Returns a URI representation of a reference to this identifiable</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> - the URI for the identifiable</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="gettype">getType</h2>
+
+<p><em>string getType(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Typed</p>
+
+<p>Get the type of the instance (a short name, not including namespace).</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a> - The type of this object</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getfullyqualifiedtype">getFullyQualifiedType</h2>
+
+<p><em>string getFullyQualifiedType(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Typed</p>
+
+<p>Get the fully-qualified type name of the instance (including namespace).</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a> - The fully-qualified type name of this object</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getnamespace">getNamespace</h2>
+
+<p><em>string getNamespace(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Typed</p>
+
+<p>Get the namespace of the instance.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a> - The namespace of this object</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="instanceof">instanceOf</h2>
+
+<p><em>boolean instanceOf( String fqt )</em></p>
+
+<p><strong>Inherited from:</strong>  Typed</p>
+
+<p>Check to see if this instance is an instance of the specified fully qualified type name.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a> - True if this instance is an instance of the specified fully qualified type name, false otherwise.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>fqt</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The fully qualified type name.</td>
+</tr>
+</tbody></table>
 
             
           </section>

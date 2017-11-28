@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,7 +260,7 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="businessnetworkconnection">BusinessNetworkConnection</h1>
 
@@ -284,62 +288,62 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <td style="text-align: left"><a href="#addassetregistry">addAssetRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Add a new asset registry.</td>
+<td style="text-align: left">Add a new asset registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#addparticipantregistry">addParticipantRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Add a new participant registry.</td>
+<td style="text-align: left">Add a new participant registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#assetregistryexists">assetRegistryExists</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Determine whether a asset registry exists.</td>
+<td style="text-align: left">Determine whether a asset registry exists</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#bindidentity">bindIdentity</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Bind an existing identity to the specified participant.</td>
+<td style="text-align: left">Bind an existing identity to the specified participant</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#buildquery">buildQuery</a></td>
 <td style="text-align: left"><code>Query</code></td>
-<td style="text-align: left">Build a query ready for later execution. The specified query string must be written in the Composer query language.</td>
+<td style="text-align: left">Build a query ready for later execution</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#connect">connect</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.</td>
+<td style="text-align: left">Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create an instance of the BusinessNetworkConnection class. must be called to connect to a deployed BusinessNetworkDefinition.</td>
+<td style="text-align: left">Create an instance of the BusinessNetworkConnection class</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#disconnect">disconnect</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Disconnects from the Hyperledger Fabric.</td>
+<td style="text-align: left">Disconnects from the Hyperledger Fabric</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getallassetregistries">getAllAssetRegistries</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get a list of all existing asset registries.</td>
+<td style="text-align: left">Get a list of all existing asset registries</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getallparticipantregistries">getAllParticipantRegistries</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get a list of all existing participant registries.</td>
+<td style="text-align: left">Get a list of all existing participant registries</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getalltransactionregistries">getAllTransactionRegistries</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get all transaction registries.</td>
+<td style="text-align: left">Get all transaction registries</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getassetregistry">getAssetRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get an existing asset registry.</td>
+<td style="text-align: left">Get an existing asset registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getbusinessnetwork">getBusinessNetwork</a></td>
@@ -354,57 +358,57 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <td style="text-align: left"><a href="#getidentityregistry">getIdentityRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get the identity registry.</td>
+<td style="text-align: left">Get the identity registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getparticipantregistry">getParticipantRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get an existing participant registry.</td>
+<td style="text-align: left">Get an existing participant registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getregistry">getRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Given a fully qualified name, works out and looks up the registry that this resource will be found in. This only gives back the default registry - it does not look in any application defined registry.</td>
+<td style="text-align: left">Given a fully qualified name, works out and looks up the registry that this resource will be found in</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#gettransactionregistry">getTransactionRegistry</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get the transaction registry.</td>
+<td style="text-align: left">Get the transaction registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#issueidentity">issueIdentity</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Issue an identity with the specified name and map it to the specified participant.</td>
+<td style="text-align: left">Issue an identity with the specified name and map it to the specified participant</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#participantregistryexists">participantRegistryExists</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Determine whether a participant registry exists.</td>
+<td style="text-align: left">Determine whether a participant registry exists</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#ping">ping</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Test the connection to the runtime and verify that the version of the runtime is compatible with this level of the client node.js module.</td>
+<td style="text-align: left">Test the connection to the runtime and verify that the version of the runtime is compatible with this level of the client node</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#query">query</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery.</td>
+<td style="text-align: left">Execute a query defined in a Composer query file, or execute a query built with buildQuery</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#revokeidentity">revokeIdentity</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Revoke the specified identity by removing any existing mapping to a participant.</td>
+<td style="text-align: left">Revoke the specified identity by removing any existing mapping to a participant</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#submittransaction">submitTransaction</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Submit a transaction for processing by the currently connected business network.</td>
+<td style="text-align: left">Submit a transaction for processing by the currently connected business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#transactionregistryexists">transactionRegistryExists</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Determine whether a transaction registry exists.</td>
+<td style="text-align: left">Determine whether a transaction registry exists</td>
 </tr>
 </tbody></table>
 
@@ -414,20 +418,22 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 
 <p>Create an instance of the BusinessNetworkConnection class. must be called to connect to a deployed BusinessNetworkDefinition.</p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional set of options to configure the instance.</td>
 </tr>
 </tbody></table>
@@ -438,14 +444,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.cardStore</strong></td>
 <td style="text-align: left">BusinessNetworkCardStore</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">specify a card store implementation to use.</td>
 </tr>
 </tbody></table>
@@ -469,7 +475,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>BusinessNetworkDefinition</code> - the business network</p>
+<p><strong><a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a></strong> - the business network</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -505,7 +513,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with a list of existing asset registries</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing asset registries</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -513,14 +523,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>includeSystem</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if true the returned list will include the system transaction registries (optional, default to false)</td>
 </tr>
 </tbody></table>
@@ -555,7 +565,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with the existing asset registry, or rejected if the asset registry does not exist.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with the existing asset registry, or rejected if the asset registry does not exist.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -563,14 +575,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the asset registry</td>
 </tr>
 </tbody></table>
@@ -607,7 +619,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with a boolean indicating whether the asset registry exists.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a boolean indicating whether the asset registry exists.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -615,14 +629,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the asset registry</td>
 </tr>
 </tbody></table>
@@ -656,7 +670,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with the new asset registry after it has been added.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with the new asset registry after it has been added.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -664,20 +680,20 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the asset registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the asset registry</td>
 </tr>
 </tbody></table>
@@ -709,7 +725,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with a list of existing participant registries</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing participant registries</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -717,14 +735,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>includeSystem</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if true the returned list will include the system transaction registries (optional, default to false)</td>
 </tr>
 </tbody></table>
@@ -759,7 +777,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with the existing participant registry, or rejected if the participant registry does not exist.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with the existing participant registry, or rejected if the participant registry does not exist.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -767,14 +787,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the participant registry</td>
 </tr>
 </tbody></table>
@@ -811,7 +831,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with a boolean indicating whether the participant registry exists.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a boolean indicating whether the participant registry exists.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -819,14 +841,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the participant registry</td>
 </tr>
 </tbody></table>
@@ -860,7 +882,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with the new participant registry after it has been added.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with the new participant registry after it has been added.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -868,20 +892,20 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the participant registry</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>name</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the participant registry</td>
 </tr>
 </tbody></table>
@@ -913,7 +937,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved to the <a href="client-transactionregistry">TransactionRegistry</a></p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved to the <a href="client-transactionregistry">TransactionRegistry</a></p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -921,14 +947,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the transaction registry</td>
 </tr>
 </tbody></table>
@@ -963,7 +989,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved to the <a href="client-transactionregistry">TransactionRegistry</a></p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved to the <a href="client-transactionregistry">TransactionRegistry</a></p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -971,14 +999,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>includeSystem</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">if true the returned list will include the system transaction registries (optional, default to false)</td>
 </tr>
 </tbody></table>
@@ -1015,7 +1043,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with a boolean indicating whether the transaction registry exists.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a boolean indicating whether the transaction registry exists.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1023,14 +1053,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>id</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The unique identifier of the transaction registry</td>
 </tr>
 </tbody></table>
@@ -1067,7 +1097,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved to the <a href="client-historian">Historian</a></p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved to the <a href="client-historian">Historian</a></p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1103,7 +1135,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved to the <a href="client-identityregistry">IdentityRegistry</a></p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved to the <a href="client-identityregistry">IdentityRegistry</a></p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1136,7 +1170,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise to a BusinessNetworkDefinition that indicates the connection is complete</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise to a BusinessNetworkDefinition that indicates the connection is complete</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1144,20 +1180,20 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>cardName</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">businessNetworkCard Name (must have been imported already)</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>additionalConnectOptions</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Additional configuration options supplied at runtime that override options set in the connection profile. which will override those in the specified connection profile.</td>
 </tr>
 </tbody></table>
@@ -1188,7 +1224,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - resolved with the registry that this fqn could be found in by default</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - resolved with the registry that this fqn could be found in by default</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1196,14 +1234,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>fullyQualifiedName</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The fully qualified name of the resources</td>
 </tr>
 </tbody></table>
@@ -1237,7 +1275,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved when the connection is terminated.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved when the connection is terminated.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1275,7 +1315,9 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fulfilled when the transaction has been processed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fulfilled when the transaction has been processed.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1283,14 +1325,14 @@ Use the AdminConnection class in the composer-admin module to deploy BusinessNet
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>transaction</strong></td>
 <td style="text-align: left">Resource</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The transaction to submit. Use <a href="common-factory#newtransaction">newTransaction</a> to create this object.</td>
 </tr>
 </tbody></table>
@@ -1334,7 +1376,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Query</code> - The built query, which can be passed in a call to query.</p>
+<p><strong><a href="runtime-query">Query</a></strong> - The built query, which can be passed in a call to query.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1342,14 +1386,14 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>query</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The query string, written using the Composer query language.</td>
 </tr>
 </tbody></table>
@@ -1396,7 +1440,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1404,20 +1450,20 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>query</strong></td>
 <td style="text-align: left">string; Query</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name of the query, or a built query.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>parameters</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The parameters for the query.</td>
 </tr>
 </tbody></table>
@@ -1457,7 +1503,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fulfilled when the connection has been tested. The promise will be rejected if the version is incompatible.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fulfilled when the connection has been tested. The promise will be rejected if the version is incompatible.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1482,7 +1530,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fulfilled when the identity has been added to the specified participant. The promise will be rejected if the participant does not exist, or if the identity is already mapped to another participant.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fulfilled when the identity has been added to the specified participant. The promise will be rejected if the participant does not exist, or if the identity is already mapped to another participant.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1490,26 +1540,26 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>participant</strong></td>
 <td style="text-align: left">Resource; Relationship; string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The participant, a relationship to the participant, or the fully qualified identifier of the participant. The participant must already exist.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>identityName</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The name for the new identity.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Options for the new identity.</td>
 </tr>
 </tbody></table>
@@ -1520,14 +1570,14 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.issuer</strong></td>
 <td style="text-align: left">boolean</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Whether or not the new identity should have permissions to create additional new identities. False by default.</td>
 </tr>
 </tbody></table>
@@ -1540,7 +1590,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fulfilled when the identity has been added to the specified participant. The promise will be rejected if the participant does not exist, or if the identity is already mapped to another participant.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fulfilled when the identity has been added to the specified participant. The promise will be rejected if the participant does not exist, or if the identity is already mapped to another participant.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1548,20 +1600,20 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>participant</strong></td>
 <td style="text-align: left">Resource; string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The participant, or the fully qualified identifier of the participant. The participant must already exist.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>certificate</strong></td>
 <td style="text-align: left">string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The certificate for the existing identity.</td>
 </tr>
 </tbody></table>
@@ -1574,7 +1626,9 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - A promise that will be fulfilled when the identity has been removed from the specified participant. The promise will be rejected if the participant does not exist, or if the identity is not mapped to the participant.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fulfilled when the identity has been removed from the specified participant. The promise will be rejected if the participant does not exist, or if the identity is not mapped to the participant.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1582,17 +1636,19 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>identity</strong></td>
 <td style="text-align: left">Resource; string</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">The identity, or the identifier of the identity.</td>
 </tr>
 </tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

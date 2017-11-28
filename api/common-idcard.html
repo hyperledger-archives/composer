@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -256,14 +260,14 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API </a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API </a>  -  <a href="allData#runtime-api">Runtime API </a></p>
+              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h1 id="idcard">IdCard</h1>
 
-<p>An ID card. Encapsulates credentials and other information required to connect to a specific business network
-as a specific user.
-<p>
-Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory.</p>
+<p>Business Network Card. Encapsulates credentials and other information required to connect to a specific business network
+as a specific user.</p>
+
+<p>Instances of this class can be created using IdCard.fromArchive or IdCard.fromDirectory, as well as the constructor.</p>
 
 <h3 id="details">Details</h3>
 
@@ -285,42 +289,42 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <td style="text-align: left"><a href="#constructor">constructor</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Create the IdCard.</td>
+<td style="text-align: left">Create the IdCard</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#fromarchive">fromArchive</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Create an IdCard from a card archive. <p> Valid types for <em>zipData</em> are any of the types supported by JSZip.</td>
+<td style="text-align: left">Create an IdCard from a card archive</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#fromdirectory">fromDirectory</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Create an IdCard from a directory consisting of the content of an ID card.</td>
+<td style="text-align: left">Create an IdCard from a directory consisting of the content of an ID card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getbusinessnetworkname">getBusinessNetworkName</a></td>
 <td style="text-align: left"><code>String</code></td>
-<td style="text-align: left">Name of the business network to which the ID card applies. Generally this will be present but may be omitted for system cards.</td>
+<td style="text-align: left">Name of the business network to which the ID card applies</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getconnectionprofile">getConnectionProfile</a></td>
 <td style="text-align: left"><code>Object</code></td>
-<td style="text-align: left">Connection profile for this card. <p> This is a mandatory field.</td>
+<td style="text-align: left">Connection profile for this card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getcredentials">getCredentials</a></td>
 <td style="text-align: left"><code>Object</code></td>
-<td style="text-align: left">Credentials associated with this card, and which are used to connect to the associated business network. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</td>
+<td style="text-align: left">Credentials associated with this card, and which are used to connect to the associated business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getdescription">getDescription</a></td>
 <td style="text-align: left"><code>String</code></td>
-<td style="text-align: left">Free text description of the card.</td>
+<td style="text-align: left">Free text description of the card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getenrollmentcredentials">getEnrollmentCredentials</a></td>
 <td style="text-align: left"><code>Object</code></td>
-<td style="text-align: left">Enrollment credentials. If there are no credentials associated with this card, these credentials  are used to enroll with a business network and obtain certificates. <p> For an ID/secret enrollment scheme, the credentials are expected to be of the form: <em>{ secret: String }</em>.</td>
+<td style="text-align: left">Enrollment credentials</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getroles">getRoles</a></td>
@@ -330,22 +334,22 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <td style="text-align: left"><a href="#getusername">getUserName</a></td>
 <td style="text-align: left"><code>String</code></td>
-<td style="text-align: left">Name of the user identity associated with the card. This should be unique within the scope of a given business network and connection profile. <p> This is a mandatory field.</td>
+<td style="text-align: left">Name of the user identity associated with the card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#setcredentials">setCredentials</a></td>
 <td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Credentials to associate with this card. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</td>
+<td style="text-align: left">Credentials to associate with this card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#toarchive">toArchive</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Generate a card archive representing this ID card. <p> The default value for the <em>options.type</em> parameter is <em>arraybuffer</em>. See JSZip documentation for other valid values.</td>
+<td style="text-align: left">Generate a card archive representing this ID card</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#todirectory">toDirectory</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Save the content of an IdCard a directory.</td>
+<td style="text-align: left">Save the content of an IdCard a directory</td>
 </tr>
 </tbody></table>
 
@@ -355,26 +359,28 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <p>Create the IdCard.</p>
 
+<h3 id="see-also">See also</h3>
+
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>metadata</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">metadata associated with the card.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>connectionProfile</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">connection profile associated with the card.</td>
 </tr>
 </tbody></table>
@@ -383,11 +389,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <p><em>String getUserName(  )</em></p>
 
-<p>Name of the user identity associated with the card. This should be unique within the scope of a given business network and connection profile. <p> This is a mandatory field.</p>
+<p>Name of the user identity associated with the card. This should be unique within the scope of a given business network and connection profile.
+This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - Name of the user identity.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - Name of the user identity.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -401,7 +410,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - card description.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - card description.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -415,7 +426,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>String</code> - business network name.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - business network name.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -425,11 +438,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <p><em>Object getConnectionProfile(  )</em></p>
 
-<p>Connection profile for this card. <p> This is a mandatory field.</p>
+<p>Connection profile for this card.
+This is a mandatory field.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Object</code> - connection profile.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - connection profile.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -443,7 +459,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Object</code> - credentials.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - credentials.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -451,9 +469,11 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h2 id="setcredentials">setCredentials</h2>
 
-<p><em>void setCredentials( Object credentials )</em></p>
+<p>_ setCredentials( Object credentials )_</p>
 
 <p>Credentials to associate with this card. <p> For PKI-based authentication, the credentials are expected to be of the form: <em>{ certificate: String, privateKey: String }</em>.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -461,14 +481,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>credentials</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">credentials.</td>
 </tr>
 </tbody></table>
@@ -481,7 +501,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Object</code> - enrollment credentials, or null if none exist.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - enrollment credentials, or null if none exist.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -495,7 +517,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p>`` - roles.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></strong> - roles.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -509,7 +533,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Promise to the instantiated IdCard.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise to the instantiated IdCard.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -517,14 +543,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>zipData</strong></td>
 <td style="text-align: left">String; ArrayBuffer; Uint8Array; Buffer; Blob; Promise</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">card archive data.</td>
 </tr>
 </tbody></table>
@@ -537,7 +563,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Promise of the generated ZIP file; by default an ArrayBuffer.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise of the generated ZIP file; by default an ArrayBuffer.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -545,14 +573,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options</strong></td>
 <td style="text-align: left">Object</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">JSZip generation options.</td>
 </tr>
 </tbody></table>
@@ -563,14 +591,14 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>options.type</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">type of the resulting ZIP file data.</td>
 </tr>
 </tbody></table>
@@ -583,7 +611,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Promise that resolves to an IdCard.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise that resolves to an IdCard.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -591,20 +621,20 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>cardDirectory</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">directory containing card data.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>fs</strong></td>
 <td style="text-align: left"></td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Node file system API implementation to use for reading card data. Defaults to the Node implementation.</td>
 </tr>
 </tbody></table>
@@ -617,7 +647,9 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 
 <h3 id="returns">Returns</h3>
 
-<p><code>Promise</code> - Promise that resolves then the save is complete.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Promise that resolves then the save is complete.</p>
+
+<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -625,23 +657,25 @@ Instances of this class can be created using IdCard.fromArchive or IdCard.fromDi
 <tr>
 <th style="text-align: left">Name</th>
 <th style="text-align: left">Type</th>
-<th style="text-align: left">Optional</th>
+<th style="text-align: left">Mandatory</th>
 <th style="text-align: left">Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td style="text-align: left"><strong>cardDirectory</strong></td>
 <td style="text-align: left">String</td>
-<td style="text-align: left">false</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">directory to save card data.</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>fs</strong></td>
 <td style="text-align: left"></td>
-<td style="text-align: left">true</td>
+<td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Node file system API implementation to use for writing card data. Defaults to the Node implementation.</td>
 </tr>
 </tbody></table>
+
+<h2 id="inherited-methods">Inherited methods</h2>
 
             
           </section>

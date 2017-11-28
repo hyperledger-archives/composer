@@ -181,6 +181,7 @@ ga('send', 'pageview');
 <li><a href="../reference/connectionprofile.html">Connection Profiles</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">Hyperledger Composer CLI Commands</a></li>
+<li><a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></li>
 <li><a href="../reference/glossary.html">Hyperledger Composer Glossary of Terms</a></li>
 </ul></li>
 <li><p><a href="../support/support-index.html"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -197,38 +198,41 @@ ga('send', 'pageview');
 <li><a href="../api/client-query.html">Query (Client API)</a></li>
 <li><a href="../api/client-registry.html">Registry (Client API)</a></li>
 <li><a href="../api/client-transactionregistry.html">TransactionRegistry (Client API)</a></li>
-<li><a href="../api/common-baseexception.html">BaseException (Common API)</a></li>
-<li><a href="../api/common-basefileexception.html">BaseFileException (Common API)</a></li>
+<li><a href="../api/common-assetdeclaration.html">AssetDeclaration (Common API)</a></li>
 <li><a href="../api/common-businessnetworkcardstore.html">BusinessNetworkCardStore (Common API)</a></li>
 <li><a href="../api/common-businessnetworkdefinition.html">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="../api/common-businessnetworkmetadata.html">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="../api/common-classdeclaration.html">ClassDeclaration (Common API)</a></li>
+<li><a href="../api/common-conceptdeclaration.html">ConceptDeclaration (Common API)</a></li>
 <li><a href="../api/common-concept.html">Concept (Common API)</a></li>
+<li><a href="../api/common-enumdeclaration.html">EnumDeclaration (Common API)</a></li>
+<li><a href="../api/common-enumvaluedeclaration.html">EnumValueDeclaration (Common API)</a></li>
+<li><a href="../api/common-eventdeclaration.html">EventDeclaration (Common API)</a></li>
 <li><a href="../api/common-factory.html">Factory (Common API)</a></li>
+<li><a href="../api/common-filesystemcardstore.html">FileSystemCardStore (Common API)</a></li>
+<li><a href="../api/common-functiondeclaration.html">FunctionDeclaration (Common API)</a></li>
 <li><a href="../api/common-idcard.html">IdCard (Common API)</a></li>
 <li><a href="../api/common-identifiable.html">Identifiable (Common API)</a></li>
-<li><a href="../api/common-illegalmodelexception.html">IllegalModelException (Common API)</a></li>
 <li><a href="../api/common-introspector.html">Introspector (Common API)</a></li>
-<li><a href="../api/common-invalidqueryexception.html">InvalidQueryException (Common API)</a></li>
-<li><a href="../api/common-parseexception.html">ParseException (Common API)</a></li>
+<li><a href="../api/common-memorycardstore.html">MemoryCardStore (Common API)</a></li>
+<li><a href="../api/common-modelfile.html">ModelFile (Common API)</a></li>
+<li><a href="../api/common-modelmanager.html">ModelManager (Common API)</a></li>
+<li><a href="../api/common-participantdeclaration.html">ParticipantDeclaration (Common API)</a></li>
+<li><a href="../api/common-property.html">Property (Common API)</a></li>
+<li><a href="../api/common-relationshipdeclaration.html">RelationshipDeclaration (Common API)</a></li>
 <li><a href="../api/common-relationship.html">Relationship (Common API)</a></li>
 <li><a href="../api/common-resource.html">Resource (Common API)</a></li>
-<li><a href="../api/common-securitycontext.html">SecurityContext (Common API)</a></li>
-<li><a href="../api/common-securityexception.html">SecurityException (Common API)</a></li>
 <li><a href="../api/common-serializer.html">Serializer (Common API)</a></li>
+<li><a href="../api/common-transactiondeclaration.html">TransactionDeclaration (Common API)</a></li>
 <li><a href="../api/common-typed.html">Typed (Common API)</a></li>
-<li><a href="../api/common-typenotfoundexception.html">TypeNotFoundException (Common API)</a></li>
 <li><a href="../api/common-validatedconcept.html">ValidatedConcept (Common API)</a></li>
 <li><a href="../api/common-validatedresource.html">ValidatedResource (Common API)</a></li>
-<li><a href="../api/common-validationexception.html">ValidationException (Common API)</a></li>
 <li><a href="../api/runtime-api.html">Api (Runtime API)</a></li>
 <li><a href="../api/runtime-assetregistry.html">AssetRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-factory.html">Factory (Runtime API)</a></li>
 <li><a href="../api/runtime-participantregistry.html">ParticipantRegistry (Runtime API)</a></li>
 <li><a href="../api/runtime-query.html">Query (Runtime API)</a></li>
 <li><a href="../api/runtime-serializer.html">Serializer (Runtime API)</a></li>
-<li><a href="../api/undefined-consolelogger.html">ConsoleLogger ( API)</a></li>
-<li><a href="../api/undefined-filewallet.html">FileWallet ( API)</a></li>
-<li><a href="../api/undefined-wallet.html">Wallet ( API)</a></li>
 </ul></li>
 </ul>
 
@@ -262,170 +266,33 @@ ga('send', 'pageview');
 
 <p>When deploying the Hyperledger Composer REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as connection profiles, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.</p>
 
+<h2 id="business-network-cards-and-the-business-network-card-store">Business network cards and the business network card store</h2>
+
+<p>The REST server uses a business network card specified during startup to connect to and discover the assets, participants, and transactions within a deployed business network. This information is required in order to generate the REST API. This business network card is known as the discovery business network card. By default, the discovery business network card is also used to handle all requests to the REST API. However the REST server can also be configured to multiple user mode, which allows authenticated users to supply their own business network cards for handling requests to the REST API.</p>
+
+<p>In order to use a discovery business network card, that business network card must first be imported into a business network card store available to the REST server. The default business network card store is a local file system directory with the path <code>~/.composer</code> (where <code>~</code> is the current users home directory). When using the Docker image for the REST server, you must mount a volume into place of the default business network card store that contains an imported discovery business network card. In the Docker image for the REST server, the business network card store used by the REST server is in the directory <code>/home/composer/.composer</code> (because the REST server in the Docker image always runs under the <code>composer</code> user).</p>
+
+<p>A business network card contains a connection profile that describes how to connect to the Hyperledger Fabric network where the deployed business network is running. Note that the connection profile must be valid for use within the Docker image for the REST server, and the hostnames must be correct and accessible by this Docker image.</p>
+
 <h2 id="configuring-the-rest-server-with-a-persistent-data-store">Configuring the REST server with a persistent data store</h2>
 
-<p>All user information is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database.</p>
+<p>All information regarding authenticated users and their wallets (containing that users business network cards when multiple user mode is enabled) is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database.</p>
 
 <p>You should be able to use any LoopBack connector, but we recommend that you use a LoopBack connector for a NoSQL database. For example, MongoDB or Apache CouchDB.</p>
 
 <p>The LoopBack connector needs to be installed in order for the REST server to locate and use it. You can install additional LoopBack connectors by using <code>npm</code>, for example:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">npm install -g loopback-connector-mongodb
 </code></pre></div>
-<p>Finally, you need to supply the REST server with the connection information required by the LoopBack connector. This connection information should be supplied by using the <code>COMPOSER_DATASOURCES</code> environment variable. For more information, see below.</p>
+<p>Finally, you need to supply the REST server with the connection information required by the LoopBack connector. This connection information should be supplied by using the <code>COMPOSER_DATASOURCES</code> environment variable. For more information on the environment variables that can be used to configure the REST server, see the reference documentation: <a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></p>
 
-<h2 id="configuring-the-rest-server-using-environment-variables">Configuring the REST server using environment variables</h2>
-
-<p>The REST server can be configured using environment variables, instead of supplying configuration options via the command line. The REST server supports the following environment variables:</p>
-
-<ol>
-<li><p><code>COMPOSER_CONFIG</code></p>
-
-<p>You can use the <code>COMPOSER_CONFIG</code> environment variable to supply connection profiles to the REST server.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONFIG='{
-  "connectionProfiles": {
-    "hlfv1": {
-      "name": "hlfv1",
-      "description": "Hyperledger Fabric v1.0",
-      "type": "hlfv1",
-      "keyValStore": "/home/composer/.composer-credentials",
-      "timeout": 300,
-      "orderers": [
-        {
-          "url": "grpc://orderer.example.com:7050"
-        }
-      ],
-      "channel": "composerchannel",
-      "mspID": "Org1MSP",
-      "ca": {
-        "url": "http://ca.org1.example.com:7054",
-        "name": "ca.org1.example.com"
-      },
-      "peers": [
-        {
-          "requestURL": "grpc://peer0.org1.example.com:7051",
-          "eventURL": "grpc://peer0.org1.example.com:7053"
-        }
-      ]
-    }
-  }
-}'
-</code></pre></div></li>
-<li><p><code>COMPOSER_CONNECTION_PROFILE</code></p>
-
-<p>You can use the <code>COMPOSER_CONNECTION_PROFILE</code> environment variable to specify the name of the connection profile that the REST server should use.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfv1
-</code></pre></div></li>
-<li><p><code>COMPOSER_BUSINESS_NETWORK</code></p>
-
-<p>You can use the <code>COMPOSER_BUSINESS_NETWORK</code> environment variable to specify the name of the deployed business network that the REST server should connect to.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_BUSINESS_NETWORK=my-network
-</code></pre></div></li>
-<li><p><code>COMPOSER_ENROLLMENT_ID</code></p>
-
-<p>You can use the <code>COMPOSER_ENROLLMENT_ID</code> environment variable to specify the enrollment ID of the Blockchain identity that the REST server should use to connect to the deployed business network.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_ENROLLMENT_ID=loopback1
-</code></pre></div></li>
-<li><p><code>COMPOSER_ENROLLMENT_SECRET</code></p>
-
-<p>You can use the <code>COMPOSER_ENROLLMENT_SECRET</code> environment variable to specify the enrollment secret of the Blockchain identity that the REST server should use to connect to the deployed business network.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_ENROLLMENT_SECRET=RVsigkBwXrDv
-</code></pre></div></li>
-<li><p><code>COMPOSER_NAMESPACES</code></p>
-
-<p>You can use the <code>COMPOSER_NAMESPACES</code> environment variable to specify if the REST server should generate a REST API with namespaces or not. Valid values are <code>always</code>, <code>required</code>, and <code>never</code>.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_NAMESPACES=never
-</code></pre></div></li>
-<li><p><code>COMPOSER_AUTHENTICATION</code></p>
-
-<p>You can use the <code>COMPOSER_AUTHENTICATION</code> environment variable to specify if the REST server should enable REST API authentication or not. Valid values are <code>true</code> and <code>false</code>.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_AUTHENTICATION=true
-</code></pre></div>
-<p>For more information, see <a href="./enabling-rest-authentication.html">Enabling authentication for the REST server</a>.</p></li>
-<li><p><code>COMPOSER_MULTIUSER</code></p>
-
-<p>You can use the <code>COMPOSER_MULTIUSER</code> environment variable to specify if the REST server should enable multiple user mode or not. Valid values are <code>true</code> and <code>false</code>.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_MULTIUSER=true
-</code></pre></div>
-<p>For more information, see <a href="./enabling-multiuser.html">Enabling multiple user mode for the REST server</a>.</p></li>
-<li><p><code>COMPOSER_DATASOURCES</code></p>
-
-<p>You can use the <code>COMPOSER_DATASOURCES</code> environment variable to specify the LoopBack data sources and the connection information required by the selected LoopBack connector.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_DATASOURCES='{
-  "db": {
-    "name": "db",
-    "connector": "mongodb",
-    "host": "mongo"
-  }
-}'
-</code></pre></div></li>
-<li><p><code>COMPOSER_PROVIDERS</code></p>
-
-<p>You can use the <code>COMPOSER_PROVIDERS</code> environment variable to specify the Passport strategies that the REST server should use to authenticate clients of the REST API.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_PROVIDERS='{
-  "github": {
-    "provider": "github",
-    "module": "passport-github",
-    "clientID": "REPLACE_WITH_CLIENT_ID",
-    "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
-    "authPath": "/auth/github",
-    "callbackURL": "/auth/github/callback",
-    "successRedirect": "/",
-    "failureRedirect": "/"
-  }
-}'
-</code></pre></div></li>
-<li><p><code>COMPOSER_TLS</code></p>
-
-<p>You can use the <code>COMPOSER_TLS</code> environment variable to specify if the REST server should enable HTTPS and TLS. Valid values are <code>true</code> and <code>false</code>.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS=true
-</code></pre></div>
-<p>For more information, see <a href="./securing-the-rest-server.html">Securing the REST server using HTTPS and TLS</a>.</p></li>
-<li><p><code>COMPOSER_TLS_CERTIFICATE</code></p>
-
-<p>You can use the <code>COMPOSER_TLS_CERTIFICATE</code> environment variable to specify the certificate file that the REST server should use when HTTPS and TLS are enabled.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_CERTIFICATE=/tmp/cert.pem
-</code></pre></div></li>
-<li><p><code>COMPOSER_TLS_KEY</code></p>
-
-<p>You can use the <code>COMPOSER_TLS_KEY</code> environment variable to specify the private key file that the REST server should use when HTTPS and TLS are enabled.</p>
-
-<p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_KEY=/tmp/key.pem
-</code></pre></div></li>
-</ol>
-
-<h2 id="packaging-the-rest-server-with-additional-node-js-modules">Packaging the REST server with additional Node.js modules</h2>
+<h2 id="extending-the-docker-image-for-the-rest-server-with-additional-node-js-modules">Extending the Docker image for the REST server with additional Node.js modules</h2>
 
 <p>In order to deploy the REST server as a Docker container with additional LoopBack connectors and Passport strategies, you must extend the <code>hyperledger/composer-rest-server</code> Docker image.</p>
 
 <p>Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
 RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
-    npm cache clean &amp;&amp; \
+    npm cache clean --force &amp;&amp; \
     ln -s node_modules .node_modules
 </code></pre></div>
 <p>You can build this Docker image by placing the Dockerfile above into a directory and using the <code>docker build</code> command, for example:</p>
@@ -440,171 +307,101 @@ RUN npm install --production loopback-connector-mongodb passport-github &amp;&am
 <p>The examples are based on the business network that is deployed to Hyperledger Fabric v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.</p>
 
 <ol>
-<li><p>Start an instance of MongoDB:</p>
+<li><p>Ensure that a valid business network card for your business network is in your local business network card store by running the following <code>composer network ping</code> command. This example uses a business network card for the <code>admin</code> user on the <code>my-network</code> business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@my-network
+</code></pre></div>
+<p>Note that you <strong>must</strong> use the <code>composer network ping</code> command to test the connection to the business network before proceeding. If the business network card only contains a user ID and enrollment secret, then the <code>composer network ping</code> command will trigger the enrollment process to occur and certificates to be stored in the business network card. It is <strong>not</strong> advisable to use a business network card with only a user ID and enrollment secret when using the Docker image for the REST server.</p></li>
+<li><p>Start an instance of the Docker image for MongoDB named <code>mongo</code>. This MongoDB instance will be used to persist all information regarding authenticated users and their wallets (containing that users business network cards when multiple user mode is enabled) for the REST server.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">docker run -d --name mongo --network composer_default -p 27017:27017 mongo
-</code></pre></div></li>
-<li><p>Create a new, empty directory. Create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
+</code></pre></div>
+<p>Note that the MongoDB instance is attached to the Docker network named <code>composer_default</code>. This means that the MongoDB instance will be available on the Docker network named <code>composer_default</code> using the hostname <code>mongo</code>. We will use the hostname <code>mongo</code> to configure the REST server in a subsequent step. Depending on your Docker networking configuration, you may need to specify a different Docker network name. The MongoDB port <code>27017</code> is also exposed on the host network using port <code>27017</code>, so you can use other MongoDB client applications to interact with this MongoDB instance if desired.</p></li>
+<li><p>Extend the Docker image for the REST server by adding the LoopBack connector for MongoDB and the Passport strategy for GitHub authentication. Create a new, empty directory on your local file system, and create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
 RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
-    npm cache clean &amp;&amp; \
+    npm cache clean --force &amp;&amp; \
     ln -s node_modules .node_modules
-</code></pre></div></li>
-<li><p>Change into the directory created in step 2, and build the Docker image:</p>
+</code></pre></div>
+<p>Build the extended Docker image by running the following <code>docker build</code> command in the directory containing the file named <code>Dockerfile</code> that you just created:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
-</code></pre></div></li>
-<li><p>Create a new file named <code>envvars.txt</code>, with the following contents:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfv1
-COMPOSER_BUSINESS_NETWORK=my-network
-COMPOSER_ENROLLMENT_ID=admin
-COMPOSER_ENROLLMENT_SECRET=adminpw
+</code></pre></div>
+<p>If this command completes successfully, a new Docker image called <code>myorg/my-composer-rest-server</code> has been built and stored in the local Docker registry on your system. If you wish to use this Docker image on other systems, you may need to push the Docker image into a Docker registry, such as Docker Hub.</p></li>
+<li><p>The Docker image for the REST server is configured using environment variables rather than command line options. Create a new file named <code>envvars.txt</code> to store the environment variables for our REST server, with the following contents:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CARD=admin@my-network
 COMPOSER_NAMESPACES=never
 COMPOSER_AUTHENTICATION=true
 COMPOSER_MULTIUSER=true
-COMPOSER_CONFIG='{
-  "connectionProfiles": {
-    "hlfv1": {
-      "name": "hlfv1",
-      "description": "Hyperledger Fabric v1.0",
-      "type": "hlfv1",
-      "keyValStore": "/home/composer/.composer-credentials",
-      "timeout": 300,
-      "orderers": [
-        {
-          "url": "grpc://orderer.example.com:7050"
-        }
-      ],
-      "channel": "composerchannel",
-      "mspID": "Org1MSP",
-      "ca": {
-        "url": "http://ca.org1.example.com:7054",
-        "name": "ca.org1.example.com"
-      },
-      "peers": [
-        {
-          "requestURL": "grpc://peer0.org1.example.com:7051",
-          "eventURL": "grpc://peer0.org1.example.com:7053"
-        }
-      ]
+COMPOSER_PROVIDERS='{
+    "github": {
+        "provider": "github",
+        "module": "passport-github",
+        "clientID": "REPLACE_WITH_CLIENT_ID",
+        "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
+        "authPath": "/auth/github",
+        "callbackURL": "/auth/github/callback",
+        "successRedirect": "/",
+        "failureRedirect": "/"
     }
-  }
 }'
 COMPOSER_DATASOURCES='{
-  "db": {
-    "name": "db",
-    "connector": "mongodb",
-    "host": "mongo"
-  }
+    "db": {
+        "name": "db",
+        "connector": "mongodb",
+        "host": "mongo"
+    }
 }'
-COMPOSER_PROVIDERS='{
-  "github": {
-      "provider": "github",
-      "module": "passport-github",
-      "clientID": "REPLACE_WITH_CLIENT_ID",
-      "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
-      "authPath": "/auth/github",
-      "callbackURL": "/auth/github/callback",
-      "successRedirect": "/",
-      "failureRedirect": "/"
-  }
-}'
-</code></pre></div></li>
-<li><p>Load the environment variables:</p>
+</code></pre></div>
+<p>Note that the name of the discovery business network card <code>admin@my-network</code> has been set as the value of the <code>COMPOSER_CARD</code> environment variable. We have disabled namespaces in the generated REST API by specifying <code>never</code> as the value of the <code>COMPOSER_NAMESPACES</code> environment variable. We have enabled authentication of REST API clients by setting the <code>COMPOSER_AUTHENTICATION</code> environment variable to <code>true</code>, and also enabled multi-user mode by setting the <code>COMPOSER_MULTIUSER</code> environment variable to <code>true</code>.</p>
+
+<p>We have configured our REST server to use GitHub authentication by configuring the Passport strategy for GitHub in the <code>COMPOSER_PROVIDERS</code> environment variable. Note that you must replace both <code>REPLACE_WITH_CLIENT_ID</code> and <code>REPLACE_WITH_CLIENT_SECRET</code> with the appropriate configuration from GitHub in order for this configuration to work successfully.</p>
+
+<p>We have configured our REST server to use our MongoDB instance by configuring the LoopBack connector for MongoDB in the <code>COMPOSER_DATASOURCES</code> environment variable. Note that the host name of the MongoDB instance, <code>mongo</code>, has been specified in the <code>host</code> property of the LoopBack data source named <code>db</code>.</p>
+
+<p>Load the environment variables into your current shell by running the following command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">source envvars.txt
-</code></pre></div></li>
-<li><p>Start the Docker container:</p>
+</code></pre></div>
+<p>If you open a new shell, for example a new terminal window or tab, then you must run the same <code>source</code> command again to load the environment variables into the new shell.</p>
+
+<p>For more information on the environment variables that can be used to configure the REST server, see the reference documentation: <a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></p></li>
+<li><p>Start a new instance of the extended Docker image for the REST server that you created in step 3 by running the following <code>docker run</code> command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">docker run \
     -d \
-    -e COMPOSER_CONNECTION_PROFILE=${COMPOSER_CONNECTION_PROFILE} \
-    -e COMPOSER_BUSINESS_NETWORK=${COMPOSER_BUSINESS_NETWORK} \
-    -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
-    -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
+    -e COMPOSER_CARD=${COMPOSER_CARD} \
     -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
     -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
     -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
-    -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
-    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
     -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+    -v ~/.composer:/home/composer/.composer \
     --name rest \
     --network composer_default \
     -p 3000:3000 \
     myorg/my-composer-rest-server
-</code></pre></div></li>
+</code></pre></div>
+<p>Note that we have passed through all of the environment variables that we set in previous steps by using multiple <code>-e</code> options. If you need to add or remove any additional environment variables to configure the REST server, then you must add or remove the appropriate <code>-e</code> options as well.</p>
+
+<p>We have mounted our local business network card store into the REST server Docker container by specifying <code>-v ~/.composer:/home/composer/.composer</code>. This permits the REST server to access and use our local business network card store when trying to load the discovery business network card specified using the <code>COMPOSER_CARD</code> environment variable.</p>
+
+<p>We have also specified the Docker network name <code>composer_default</code>, and name of the Docker container as <code>rest</code>. This means that the REST server instance will be available on the Docker network named <code>composer_default</code> using the hostname <code>rest</code>. The REST server port <code>3000</code> is also exposed on the host network using port <code>3000</code>.</p>
+
+<p>You can check that the REST server has started successfully by using the <code>docker logs</code> command, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker logs -f rest
+</code></pre></div>
+<p>If the REST server has started successfully, then you will see it output a log message similar to <code>Browse your REST API at http://localhost:3000/explorer</code>.</p></li>
 </ol>
 
-<p>You should now be able to access the persistent and secured REST server using the following URL: <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</p>
+<p>Now that the REST server has started successfully, you can access the REST server running inside the Docker container by using the following URL: <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. </p>
 
-<h2 id="run-the-rest-server-in-a-docker-container-with-no-security-eg-dev-test">Run the REST server in a Docker Container - with no security (eg. Dev/Test)</h2>
+<h2 id="final-notes">Final notes</h2>
 
-<p>These steps will run the REST server in a Docker Container with no security, and therefore no need for persistence of identities.  Activity on the REST server will be in the context of the Admin user used to start the REST server.  Running the REST server in this way is generally good for experimentation and learning, but is not likely to be appropriate for production use.</p>
+<p>In this guide, you have seen how to start a single instance of the REST server using Docker, where that single instance is configured to use MongoDB as a persistent data store. For a true highly available, production deployment of the REST server, you will need to:</p>
 
-<ol>
-<li><p>Pull the Docker Image for the REST Server:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">docker pull hyperledger/composer-rest-server
-</code></pre></div></li>
-<li><p>Create a new file named <code>envvars.txt</code>, with the following contents:
-(The values used below will typically work with a Test Fabric created from examples in this documentation, but the value of the <code>COMPOSER_BUSINESS_NETWORK</code> will need to be set correctly.)</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfv1
-COMPOSER_BUSINESS_NETWORK=&lt;my-network&gt;
-COMPOSER_ENROLLMENT_ID=admin
-COMPOSER_ENROLLMENT_SECRET=adminpw
-COMPOSER_NAMESPACES=never
-COMPOSER_AUTHENTICATION=false
-COMPOSER_MULTIUSER=false
-COMPOSER_CONFIG='{
-  "connectionProfiles": {
-    "hlfv1": {
-      "name": "hlfv1",
-      "description": "Hyperledger Fabric v1.0",
-      "type": "hlfv1",
-      "keyValStore": "/home/composer/.composer-credentials",
-      "timeout": 300,
-      "orderers": [
-        {
-          "url": "grpc://orderer.example.com:7050"
-        }
-      ],
-      "channel": "composerchannel",
-      "mspID": "Org1MSP",
-      "ca": {
-        "url": "http://ca.org1.example.com:7054",
-        "name": "ca.org1.example.com"
-      },
-      "peers": [
-        {
-          "requestURL": "grpc://peer0.org1.example.com:7051",
-          "eventURL": "grpc://peer0.org1.example.com:7053"
-        }
-      ]
-    }
-  }
-}'
-</code></pre></div></li>
-<li><p>Load the environment variables:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">source envvars.txt
-</code></pre></div></li>
-<li><p>Start the Docker container:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">docker run \
-    -d \
-    -e COMPOSER_CONNECTION_PROFILE=${COMPOSER_CONNECTION_PROFILE} \
-    -e COMPOSER_BUSINESS_NETWORK=${COMPOSER_BUSINESS_NETWORK} \
-    -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
-    -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
-    -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
-    -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
-    -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
-    -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
-    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
-    -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
-    --name resttest \
-    --network composer_default \
-    -p 3000:3000 \
-    hyperledger/composer-rest-server
-</code></pre></div></li>
-</ol>
+<ul>
+<li>Configure a highly available instance of the persistent data store, for example a MongoDB replica set.</li>
+<li>Run multiple instances of the REST server Docker image. This is easy to do by changing the name of the Docker container using the <code>--name</code> argument, and updating or removing the host port mapping for subsequent REST server instances using the <code>-p 3000:3000</code> argument.</li>
+<li>Deploy a load balancer, for example Nginx, to distribute REST requests from clients across all of the instances of the REST server.</li>
+</ul>
 
-<p>You should now be able to access the persistent and secured REST server using the following URL: <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</p>
-
-<p>For the REST Server to work in this insecure mode, be sure that the environment variables <code>COMPOSER_DATASOURCES</code> and <code>COMPOSER_PROVIDERS</code> are not set to any value.  Also note the importance of the part of the docker run command <code>--network composer_default</code> which enables the REST Server to &#39;find&#39; the various Fabric Servers.</p>
+<p>Once you have performed these three tasks, you should be able to stop, restart, or remove any of the REST server instances (but not all!) without losing access to the deployed business network over REST.</p>
 
             
           </section>
