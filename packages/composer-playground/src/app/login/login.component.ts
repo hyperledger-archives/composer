@@ -287,8 +287,9 @@ export class LoginComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     let deletePromise: Promise<void>;
-                    if (card.getConnectionProfile().type === 'web') {
-                        deletePromise = this.adminService.connect(cardRef, card, true)
+                    let cards = this.identityCardService.getAllCardsForBusinessNetwork(card.getBusinessNetworkName(), this.identityCardService.getQualifiedProfileName(card.getConnectionProfile()));
+                    if (card.getConnectionProfile().type === 'web' && cards.size === 1) {
+                           deletePromise = this.adminService.connect(cardRef, card, true)
                             .then(() => {
                                 return this.adminService.undeploy(card.getBusinessNetworkName());
                             });
