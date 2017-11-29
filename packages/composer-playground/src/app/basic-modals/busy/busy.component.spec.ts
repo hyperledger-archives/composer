@@ -2,33 +2,68 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { Component, DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 import * as sinon from 'sinon';
-import * as chai from 'chai';
-
-let should = chai.should();
 
 import { BusyComponent } from './busy.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
+@Component({
+    template: `
+        <busy [busy]="busy"></busy>`
+})
+class TestHostComponent {
+    busy = {
+        title: 'myTitle',
+        text: 'myText'
+    };
+}
+
 describe('BusyComponent', () => {
-    let component: BusyComponent;
-    let fixture: ComponentFixture<BusyComponent>;
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
 
     let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
 
+    let busyElement: DebugElement;
+
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [BusyComponent],
+            declarations: [BusyComponent, TestHostComponent],
             providers: [{provide: NgbActiveModal, useValue: mockActiveModal}]
         });
 
-        fixture = TestBed.createComponent(BusyComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
+
+        busyElement = fixture.debugElement.query(By.css('busy'));
     });
 
     it('should create', () => {
         component.should.be.ok;
+    });
+
+    it('should display the error', () => {
+        fixture.detectChanges();
+        let titleElement = busyElement.queryAll(By.css('span'));
+        titleElement[1].nativeElement.innerHTML.should.equal('myTitle');
+
+        let textElement = busyElement.queryAll(By.css('.busy-text'));
+        textElement[0].nativeElement.innerHTML.should.equal('myText');
+
+        component['busy'] = {
+            title: 'differentTitle',
+            text: 'differentText'
+        };
+
+        fixture.detectChanges();
+       // titleElement = busyElement.queryAll(By.css('span'));
+        titleElement[1].nativeElement.innerHTML.should.equal('differentTitle');
+
+       // textElement = busyElement.queryAll(By.css('.busy-text'));
+        textElement[0].nativeElement.innerHTML.should.equal('differentText');
     });
 });

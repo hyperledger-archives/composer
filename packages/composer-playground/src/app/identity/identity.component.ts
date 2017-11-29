@@ -230,7 +230,6 @@ export class IdentityComponent implements OnInit {
         // show confirm/delete dialog first before taking action
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Revoke Identity';
-        confirmModalRef.componentInstance.fileAction = 'revoke the permissions for';
         confirmModalRef.componentInstance.fileType = 'identity';
         confirmModalRef.componentInstance.fileName = identity.name;
         confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';

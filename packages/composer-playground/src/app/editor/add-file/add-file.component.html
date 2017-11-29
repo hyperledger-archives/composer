@@ -58,16 +58,16 @@
           Define the logic of transaction executions using JavaScript.
         </div>
       </div>
-      <div class="file-types-list-item" [ngClass]="{'selection-disabled': queryExists()}">
-        <input [disabled]="queryExists()" type="radio" id="file-type-qry" name="file-type-qry" [(ngModel)]="fileType" value="qry"
+      <div class="file-types-list-item">
+        <input type="radio" id="file-type-qry" name="file-type-qry" [(ngModel)]="fileType" value="qry"
                (change)="changeCurrentFileType()">
         <label class="radio-label" for="file-type-qry">Query File (.qry)</label>
         <div class="description">
           Define the queries in here (Note: you can only have 1 of these per .bna).
         </div>
       </div>
-      <div class="file-types-list-item" [ngClass]="{'selection-disabled': aclExists()}">
-        <input [disabled]="aclExists()" type="radio" id="file-type-acl" name="file-type-acl" [(ngModel)]="fileType" value="acl"
+      <div class="file-types-list-item">
+        <input type="radio" id="file-type-acl" name="file-type-acl" [(ngModel)]="fileType" value="acl"
                (change)="changeCurrentFileType()">
         <label class="radio-label" for="file-type-acl">Access Control File (permissions.acl)</label>
         <div class="description">

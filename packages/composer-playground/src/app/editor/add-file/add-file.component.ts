@@ -11,7 +11,6 @@ import { FileService } from '../../services/file.service';
 })
 export class AddFileComponent {
 
-    files = [];
     currentFile = null;
     currentFileName = null;
     fileType = '';
@@ -23,7 +22,6 @@ export class AddFileComponent {
     supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl', '.qry'];
 
     addModelNamespace: string = 'org.acme.model';
-    addModelFileName: string = 'models/org.acme.model';
     addModelPath: string = 'models/';
     addModelFileExtension: string = '.cto';
     addScriptFileName: string = 'lib/script';
@@ -34,24 +32,6 @@ export class AddFileComponent {
     constructor(private alertService: AlertService,
                 private activeModal: NgbActiveModal,
                 private fileService: FileService) {
-    }
-
-    queryExists() {
-        for (let i = 0; i < this.files.length; i++) {
-            if (this.files[i].query === true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    aclExists() {
-        for (let i = 0; i < this.files.length; i++) {
-            if (this.files[i].acl === true) {
-                return true;
-            }
-        }
-        return false;
     }
 
     removeFile() {
@@ -101,55 +81,6 @@ export class AddFileComponent {
             .catch((err) => {
                 this.fileRejected(err);
             });
-    }
-
-    getDataBuffer(file: File) {
-        return new Promise((resolve, reject) => {
-            let fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file);
-            fileReader.onload = () => {
-                let dataBuffer = Buffer.from(fileReader.result);
-                resolve(dataBuffer);
-            };
-
-            fileReader.onerror = (err) => {
-                reject(err);
-            };
-        });
-    }
-
-    createScript(file: File, dataBuffer) {
-        this.fileType = 'js';
-        let filename = (file && file.name) ? 'lib/' + file.name : this.addScriptFileName;
-        this.currentFile = this.fileService.createScriptFile(filename, 'JS', dataBuffer.toString());
-        this.currentFileName = this.currentFile.getIdentifier();
-    }
-
-    createModel(file: File, dataBuffer) {
-        this.fileType = 'cto';
-        let filename = (file && file.name) ? 'models/' + file.name : this.addModelFileName;
-        this.currentFile = this.fileService.createModelFile(dataBuffer.toString(), filename);
-        this.currentFileName = this.currentFile.getName();
-    }
-
-    createReadme(dataBuffer) {
-        this.fileType = 'md';
-        this.currentFile = dataBuffer.toString();
-        this.currentFileName = 'README.md';
-    }
-
-    createRules(dataBuffer) {
-        this.fileType = 'acl';
-        let filename = 'permissions.acl';
-        this.currentFile = this.fileService.createAclFile(filename, dataBuffer.toString());
-        this.currentFileName = filename;
-    }
-
-    createQuery(dataBuffer) {
-        this.fileType = 'qry';
-        let filename = 'queries.qry';
-        this.currentFile = this.fileService.createQueryFile(filename, dataBuffer.toString());
-        this.currentFileName = filename;
     }
 
     fileRejected(reason: string) {
@@ -218,5 +149,54 @@ namespace ${newModelNamespace}`;
             this.currentFileName = 'permissions.acl';
             this.currentFile = this.fileService.createAclFile(this.currentFileName, code);
         }
+    }
+
+    private getDataBuffer(file: File) {
+        return new Promise((resolve, reject) => {
+            let fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+            fileReader.onload = () => {
+                let dataBuffer = Buffer.from(fileReader.result);
+                resolve(dataBuffer);
+            };
+
+            fileReader.onerror = (err) => {
+                reject(err);
+            };
+        });
+    }
+
+    private createScript(file: File, dataBuffer) {
+        this.fileType = 'js';
+        let filename = 'lib/' + file.name;
+        this.currentFile = this.fileService.createScriptFile(filename, 'JS', dataBuffer.toString());
+        this.currentFileName = this.currentFile.getIdentifier();
+    }
+
+    private createModel(file: File, dataBuffer) {
+        this.fileType = 'cto';
+        let filename = 'models/' + file.name;
+        this.currentFile = this.fileService.createModelFile(dataBuffer.toString(), filename);
+        this.currentFileName = this.currentFile.getName();
+    }
+
+    private createReadme(dataBuffer) {
+        this.fileType = 'md';
+        this.currentFile = dataBuffer.toString();
+        this.currentFileName = 'README.md';
+    }
+
+    private createRules(dataBuffer) {
+        this.fileType = 'acl';
+        let filename = 'permissions.acl';
+        this.currentFile = this.fileService.createAclFile(filename, dataBuffer.toString());
+        this.currentFileName = filename;
+    }
+
+    private createQuery(dataBuffer) {
+        this.fileType = 'qry';
+        let filename = 'queries.qry';
+        this.currentFile = this.fileService.createQueryFile(filename, dataBuffer.toString());
+        this.currentFileName = filename;
     }
 }
