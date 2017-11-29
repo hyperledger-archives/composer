@@ -14,7 +14,6 @@
 
 'use strict';
 
-//const Serializer = require('composer-common').Serializer;
 const Context = require('composer-runtime').Context;
 const Engine = require('composer-runtime').Engine;
 const NodeContainer = require('../lib/nodecontainer');
@@ -30,7 +29,6 @@ const sinon = require('sinon');
 describe('NodeContext', () => {
 
     let mockNodeContainer;
-//    let mockSerializer;
     let mockEngine;
     let context;
 
@@ -60,7 +58,6 @@ XVMHPa0iyC497vdNURA=\
         mockNodeContainer = sinon.createStubInstance(NodeContainer);
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockNodeContainer);
- //       mockSerializer = sinon.createStubInstance(Serializer);
         context = new NodeContext(mockEngine, mockStub);
     });
 
@@ -84,7 +81,6 @@ XVMHPa0iyC497vdNURA=\
 
         it('should return the container identity service', () => {
             context.getIdentityService().should.be.an.instanceOf(NodeIdentityService);
-            //context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
         });
 
     });
@@ -92,7 +88,6 @@ XVMHPa0iyC497vdNURA=\
     describe('#getEventService', () => {
 
         it('should return the container event service', () => {
-            //context.getSerializer = sinon.stub().returns(mockSerializer);
             context.getEventService().should.be.an.instanceOf(NodeEventService);
         });
 

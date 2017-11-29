@@ -11,8 +11,7 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test-inner": "cucumber-js",
-    "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio",
-    "int-test1": "npm run pretest && npm run lint && node ./scripts/npm_serve && npm run test-inner"
+    "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio"
   },
   "repository": {
     "type": "git",
