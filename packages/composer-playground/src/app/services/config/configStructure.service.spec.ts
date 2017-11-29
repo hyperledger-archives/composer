@@ -23,7 +23,8 @@ describe('Config', () => {
                 tutorial: 'My Tutorial',
                 community: 'My Community',
                 github: 'My Github',
-                install: 'My Install'
+                install: 'My Install',
+                legal: 'My License'
               },
               analyticsID: 'My ID'
           };
@@ -38,7 +39,8 @@ describe('Config', () => {
                                             tutorial: 'My Tutorial',
                                             community: 'My Community',
                                             github: 'My Github',
-                                            install: 'My Install'
+                                            install: 'My Install',
+                                            legal: 'My License'
                                           });
           service.analyticsID.should.deep.equal('My ID');
       });
@@ -65,7 +67,8 @@ describe('Config', () => {
                               tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
                               community: 'https://hyperledger.github.io/composer/support/support-index.html',
                               github: 'https://github.com/hyperledger/composer',
-                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html'
+                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                              legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                           };
 
           service.setValuesFromObject(object);
@@ -75,7 +78,8 @@ describe('Config', () => {
                                               tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
                                               community: 'https://hyperledger.github.io/composer/support/support-index.html',
                                               github: 'https://github.com/hyperledger/composer',
-                                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html'
+                                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                                              legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                                           });
       });
   });
@@ -90,7 +94,8 @@ describe('Config', () => {
           tutorial: 'My Tutorial',
           community: 'My Community',
           github: 'My Github',
-          install: 'My Install'
+          install: 'My Install',
+          legal: 'My License'
         };
         service.analyticsID = 'My ID';
 
@@ -104,7 +109,8 @@ describe('Config', () => {
                                             tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
                                             community: 'https://hyperledger.github.io/composer/support/support-index.html',
                                             github: 'https://github.com/hyperledger/composer',
-                                            install: 'https://hyperledger.github.io/composer/installing/installing-index.html'
+                                            install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                                            legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                                         });
 
         should.not.exist(service.analyticsID);

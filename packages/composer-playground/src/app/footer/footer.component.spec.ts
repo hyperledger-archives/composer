@@ -23,8 +23,6 @@ describe('FooterComponent', () => {
 
     let component: FooterComponent;
     let fixture: ComponentFixture<FooterComponent>;
-    let de: DebugElement;
-    let el: HTMLElement;
     let mockAboutService;
     let mockConfigService;
     let mockConfig;
@@ -47,10 +45,6 @@ describe('FooterComponent', () => {
 
         fixture = TestBed.createComponent(FooterComponent);
         component = fixture.componentInstance;
-
-        //  query for the title <h2> by CSS element selector
-        de = fixture.debugElement.query(By.css('a'));
-        el = de.nativeElement;
     });
 
     describe('ngOninit', () => {
@@ -83,7 +77,8 @@ describe('FooterComponent', () => {
               tutorial: 'My Tutorial',
               community: 'My Community',
               github: 'My Github',
-              install: 'My Install'
+              install: 'My Install',
+              legal: 'My License'
             };
 
             mockConfigService.getConfig.returns(myConfig);
@@ -104,7 +99,8 @@ describe('FooterComponent', () => {
               tutorial: 'My Tutorial',
               community: 'My Community',
               github: 'My Github',
-              install: 'My Install'
+              install: 'My Install',
+              legal: 'My License'
             };
 
             mockConfigService.getConfig.throws(new Error('error'));
