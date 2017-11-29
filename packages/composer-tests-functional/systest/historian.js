@@ -243,11 +243,9 @@ describe('Historian', function() {
                     hrecords.length.should.equal(1);
                     return client.getTransactionRegistry('org.hyperledger.composer.system.UpdateAsset');
                 }).then((result) => {
-                    //console.log(hrecords);
                     updateAssetTransactionRegistry = result;
                     return updateAssetTransactionRegistry.get(hrecords[0].transactionId);
                 }).then((result) => {
-                    //console.log(result);
 
                     result.resources[0].stringValue.should.equal('ciao mondo');
                     result.resources[0].stringValues.should.deep.equal(['ciao', 'mondo']);
@@ -410,11 +408,9 @@ describe('Historian', function() {
                     hrecords.length.should.equal(1);
                     return client.getTransactionRegistry('org.hyperledger.composer.system.UpdateParticipant');
                 }).then((result) => {
-                    //console.log(hrecords);
                     updateParticipantTransactionRegistry = result;
                     return updateParticipantTransactionRegistry.get(hrecords[0].transactionId);
                 }).then((result) => {
-                    //console.log(result);
 
                     result.resources[0].stringValue.should.equal('ciao mondo');
                     result.resources[0].stringValues.should.deep.equal(['ciao', 'mondo']);

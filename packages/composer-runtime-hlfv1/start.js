@@ -12,25 +12,8 @@
  * limitations under the License.
  */
 
-package main
+'use strict';
+const shim = require('fabric-shim');
+const Composer = require('./lib/composer');
 
-import (
-	"fmt"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-)
-
-// The logger for all code in this chaincode.
-var logger = shim.NewLogger("Composer")
-
-// main starts the shim, which establishes the connection to the Hyperledger
-// Fabric and registers the chaincode for deploys, queries, and invokes.
-func main() {
-	logger.Debug("Entering main")
-	defer func() { logger.Debug("Exiting main") }()
-	chaincode := NewChaincode()
-	err := shim.Start(chaincode)
-	if err != nil {
-		fmt.Printf("Error starting chaincode: %s", err)
-	}
-}
+shim.start(new Composer());
