@@ -176,17 +176,22 @@ class Registry extends EventEmitter {
      */
     add(resource, options) {
 
-        return Promise.resolve().then(() => {
-            if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');                }
-            else if (this.type !== resource.getClassDeclaration().getSystemType()){
-                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
-            }
-        })
-            .then(() => {
-                return this.accessController.check(resource, 'CREATE');
-            })
-            .then(() => {
+        // return Promise.resolve().then(() => {
+        //     if (!(resource instanceof Resource)) {
+        //         throw new Error('Expected a Resource or Concept.');                }
+        //     else if (this.type !== resource.getClassDeclaration().getSystemType()){
+        //         throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+        //     }
+        // })
+        //     .then(() => {
+        //         return this.accessController.check(resource, 'CREATE');
+        //     })
+        return this.testAdd(resource)
+            .then((result) => {
+                if (result){
+                    // uh-oh something is not permitted
+                    throw result;
+                }
                 options = options || { forceAdd: false };
                 let id = resource.getIdentifier();
                 let object = this.serializer.toJSON(resource, {
@@ -202,6 +207,38 @@ class Registry extends EventEmitter {
                 });
             });
     }
+
+    /**
+     * Tests to see if the the specified resource to this registry could be added to the registry
+     * invokes the same ACL rules as really adding.
+     *
+     * @param {Resource} resource The resource to test adding to this registry.
+     * @return {Promise} A promise that will be resolved with null if this resource could be added, or resolved with the
+     * error that would have been thrown.
+     */
+    testAdd(resource) {
+
+        return Promise.resolve().then(() => {
+            if (!(resource instanceof Resource)) {
+                throw new Error('Expected a Resource or Concept.');                }
+            else if (this.type !== resource.getClassDeclaration().getSystemType()){
+                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+            }
+        })
+        .then(() => {
+            return this.accessController.check(resource, 'CREATE');
+        })
+        .then(()=>{
+            return null;
+        })
+        .catch((error)=>{
+            // access has not been granted, so return the error that would have been thrown in the
+            // promise
+            return Promise.resolve(error);
+        });
+
+    }
+
 
     /**
      * An event signalling that a resource has been updated in this registry.

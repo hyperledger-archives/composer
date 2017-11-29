@@ -31,7 +31,7 @@ process.setMaxListeners(Infinity);
 
 describe('Access control system tests', function() {
 
-    this.retries(TestUtil.retries());
+    // this.retries(TestUtil.retries());
 
     let bnID;
 
@@ -153,6 +153,66 @@ describe('Access control system tests', function() {
                 client = result;
             });
     });
+
+    it('should reject transaction if you do not have permission to execute it', () => {
+        let bobsfactory = bobClient.getBusinessNetwork().getFactory();
+        let tx = bobsfactory.newTransaction('systest.accesscontrols','UpdateAssetValue');
+
+        let alicesfactory = aliceClient.getBusinessNetwork().getFactory();
+        let newAsset = alicesfactory.newResource('systest.accesscontrols','txAsset','aid001');
+        newAsset.theValue='Mine all mine';
+        let txAssetRegistry;
+        return aliceClient.getAssetRegistry('systest.accesscontrols.txAsset')
+        .then((_txAssetRegistry)=>{
+            txAssetRegistry = _txAssetRegistry;
+            return txAssetRegistry.add(newAsset);
+        })
+        .then(()=>{
+            // bob tries to update it
+            tx.newValue='Bob trying to steal Alice\'s asset';
+            tx.theAsset = newAsset;
+            return bobClient.submitTransaction(tx);
+        }).should.be.rejectedWith(/ does not have \'CREATE\' access to resource/);
+
+    });
+
+    it('should be able to allow access only in a transaction function', () => {
+        let bobsfactory = bobClient.getBusinessNetwork().getFactory();
+        let alicesfactory = aliceClient.getBusinessNetwork().getFactory();
+
+        let question = alicesfactory.newResource('systest.accesscontrols','Question','qid1');
+        let answer = alicesfactory.newResource('systest.accesscontrols','Answer','aid1');
+        let answerRelationship = alicesfactory.newRelationship('systest.accesscontrols','Answer','aid1');
+
+        question.question='What is the meaning of life?';
+        question.correctAnswer = answerRelationship;
+        answer.text='42';
+
+        let questionRegistry;
+        let answerRegistry;
+
+        return aliceClient.getAssetRegistry('systest.accesscontrols.Question')
+            .then((result)=>{
+                questionRegistry = result;
+                return aliceClient.getAssetRegistry('systest.accesscontrols.Answer');
+            })
+            .then((result)=>{
+                answerRegistry = result;
+                return questionRegistry.add(question);
+            })
+           .then(()=>{
+               return answerRegistry.add(answer);
+           })
+           .then(()=> {
+                // bob should be able to submit a transaction to get his answer validated
+               let tx = bobsfactory.newTransaction('systest.accesscontrols','MarkQuestion');
+               let q = bobsfactory.newRelationship('systest.accesscontrols','Question','qid1');
+               tx.question = q;
+               tx.text = 'chocolate';
+               return bobClient.submitTransaction(tx);
+           }).should.be.rejectedWith(/uh-oh/);
+    });
+
 
     it('should be able to enforce read access permissions on an asset registry via client getAll', () => {
         return Promise.resolve()
