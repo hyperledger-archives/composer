@@ -28,7 +28,9 @@ const LOG = Logger.getLog('FileWallet');
 /**
  * Class implementing a wallet (a container of credentials) that
  * stores the credentials on the file system.
- * @protected
+ *
+ * @private
+ * @class
  */
 class FileWallet extends Wallet {
 

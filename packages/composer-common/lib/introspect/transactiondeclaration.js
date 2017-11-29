@@ -22,7 +22,7 @@ const ModelUtil = require('../modelutil');
 /** Class representing the definition of an Transaction.
  * @extends ClassDeclaration
  * @see See  {@link ClassDeclaration}
- * @private
+ *
  * @class
  * @memberof module:composer-common
  */

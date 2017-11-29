@@ -21,6 +21,7 @@
  * @abstract
  * @class
  * @memberof module:composer-common
+ * @private
  */
 class SecurityContext {
 

@@ -20,7 +20,7 @@ const ModelUtil = require('../modelutil');
 /**
  * Property representing an attribute of a class declaration,
  * either a Field or a Relationship.
- * @private
+ *
  * @class
  * @memberof module:composer-common
  */

@@ -2,8 +2,10 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, async, inject } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { Component, DebugElement } from '@angular/core';
 
 import * as sinon from 'sinon';
 
@@ -13,35 +15,43 @@ import { AlertService } from '../../basic-modals/alert.service';
 import { FileImporterComponent } from '../../common/file-importer';
 import { FileDragDropDirective } from '../../common/file-importer/file-drag-drop';
 
-describe('CredentialsComponent', () => {
-    let component: CredentialsComponent;
-    let fixture: ComponentFixture<CredentialsComponent>;
+@Component({
+    template: `
+        <credentials (credentials)="credentials($event)"></credentials>`
+})
+class TestHostComponent {
+    public result;
 
-    let mockAlertService;
+    credentials(data) {
+        this.result = data;
+    }
+}
+
+describe('CredentialsComponent', () => {
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
+    let credentialsElement: DebugElement;
+
     let sandbox;
 
     beforeEach(() => {
-        mockAlertService = sinon.createStubInstance(AlertService);
-
-        mockAlertService.successStatus$ = {next: sinon.stub()};
-        mockAlertService.busyStatus$ = {next: sinon.stub()};
-        mockAlertService.errorStatus$ = {next: sinon.stub()};
-
         sandbox = sinon.sandbox.create();
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [CredentialsComponent,
+            declarations: [TestHostComponent,
+                CredentialsComponent,
                 FileImporterComponent,
                 FileDragDropDirective],
-            providers: [
-                {provide: AlertService, useValue: mockAlertService}
-            ]
+            providers: [AlertService]
         })
             .compileComponents();
 
-        fixture = TestBed.createComponent(CredentialsComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
+
+        component.result = null;
+        credentialsElement = fixture.debugElement.query(By.css('credentials'));
     });
 
     it('should be created', () => {
@@ -51,190 +61,227 @@ describe('CredentialsComponent', () => {
     describe('#formatCert', () => {
         it('should remove all instances of \n from a given certificate', () => {
             let testCert = 'this is the\\n\\ntest cert';
-            let result = component.formatCert(testCert);
+            let credentialsComponent = credentialsElement.componentInstance;
+            let result = credentialsComponent.formatCert(testCert);
             result.should.equal('this is the\n\ntest cert');
         });
 
         it('should remove all instances of \r\n from a given certificate', () => {
             let testCert = 'this is the\\r\\ntest cert';
-            let result = component.formatCert(testCert);
+            let credentialsComponent = credentialsElement.componentInstance;
+            let result = credentialsComponent.formatCert(testCert);
             result.should.equal('this is the\ntest cert');
         });
 
         it('should remove all instances of \n\r from a given certificate', () => {
             let testCert = 'this is the\\n\\rtest cert';
-            let result = component.formatCert(testCert);
+            let credentialsComponent = credentialsElement.componentInstance;
+            let result = credentialsComponent.formatCert(testCert);
             result.should.equal('this is the\ntest cert');
         });
     });
 
     describe('#validContents', () => {
-        it('should not enable validation if trying to set certificates', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
+        it('should emit empty object if no certs entered when trying to set certificates', fakeAsync(() => {
+            fixture.detectChanges();
+
+            let useCertElement = credentialsElement.query(By.css('#useCert'));
+            useCertElement.nativeElement.checked = true;
+            useCertElement.nativeElement.dispatchEvent(new Event('change'));
+
+            tick();
+            fixture.detectChanges();
+
+            component.result.should.deep.equal({});
+        }));
+
+        it('should emit empty object if public certificate is empty when using certificates', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
+
+            let privateKeyElement = credentialsElement.query(By.css('#privateKey'));
+            privateKeyElement.nativeElement.value = 'privateKey';
+            privateKeyElement.nativeElement.dispatchEvent(new Event('input'));
+
+            let userIdElement = credentialsElement.query(By.css('#name'));
+            userIdElement.nativeElement.value = 'userID';
+            userIdElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            component.result.should.deep.equal({});
+        }));
+
+        it('it should not validate if the private certificate is empty when using certificates', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
+
+            let certificateElement = credentialsElement.query(By.css('#publicKey'));
+            certificateElement.nativeElement.textContent = 'myCert';
+            certificateElement.nativeElement.dispatchEvent(new Event('input'));
+
+            let userIdElement = credentialsElement.query(By.css('#name'));
+            userIdElement.nativeElement.textContent = 'userID';
+            userIdElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            component.result.should.deep.equal({});
+        }));
+
+        it('it should not validate if the user ID is empty when using certificates', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
+
+            let certificateElement = credentialsElement.query(By.css('#publicKey'));
+            certificateElement.nativeElement.textContent = 'myCert';
+            certificateElement.nativeElement.dispatchEvent(new Event('input'));
+
+            let privateKeyElement = credentialsElement.query(By.css('#privateKey'));
+            privateKeyElement.nativeElement.textContent = 'privateKey';
+            privateKeyElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            component.result.should.deep.equal({});
+        }));
+
+        it('should validate when using certificates', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
+
+            let useCertElement = credentialsElement.query(By.css('#useCert'));
+            useCertElement.nativeElement.checked = true;
+            useCertElement.nativeElement.dispatchEvent(new Event('change'));
+
+            fixture.detectChanges();
+            tick();
+
+            let certificateElement = credentialsElement.query(By.css('#publicKey'));
+            certificateElement.nativeElement.value = 'myCert';
+            certificateElement.nativeElement.dispatchEvent(new Event('input'));
+
+            let privateKeyElement = credentialsElement.query(By.css('#privateKey'));
+            privateKeyElement.nativeElement.value = 'privateKey';
+            privateKeyElement.nativeElement.dispatchEvent(new Event('input'));
+
+            let userIdElement = credentialsElement.query(By.css('#name'));
+            userIdElement.nativeElement.value = 'userID';
+            userIdElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            component.result.should.deep.equal({
+                userId: 'userID',
+                cert: 'myCert',
+                key: 'privateKey'
             });
-            // Certs path
-            component['useCerts'] = true;
-            component.validContents();
-            credentialsSpy.should.have.been.called;
-        });
+        }));
 
-        it('should not validate if the public certificate is empty when using certificates', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
-            });
-            // Certs path
-            component['useCerts'] = true;
-            component['addedPublicCertificate'] = null;
-            component['addedPrivateCertificate'] = 'privateKey';
-            component['userId'] = 'userID';
+        it('should not validate if a userID field is empty when specifying user ID/Secret', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
 
-            component.validContents();
+            let useSecretElement = credentialsElement.query(By.css('#noCert'));
+            useSecretElement.nativeElement.checked = true;
+            useSecretElement.nativeElement.dispatchEvent(new Event('change'));
 
-            credentialsSpy.should.have.been.called;
-        });
+            fixture.detectChanges();
+            tick();
 
-        it('it should not validate if the private certificate is empty when using certificates', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
-            });
-            // Certs path
-            component['useCerts'] = true;
-            component['addedPublicCertificate'] = 'publicKey';
-            component['addedPrivateCertificate'] = null;
-            component['userId'] = 'userID';
+            let userSecretElement = credentialsElement.query(By.css('#userSecret'));
+            userSecretElement.nativeElement.value = 'mySecret';
+            userSecretElement.nativeElement.dispatchEvent(new Event('input'));
 
-            component.validContents();
+            tick();
+            fixture.detectChanges();
 
-            credentialsSpy.should.have.been.called;
-        });
+            component.result.should.deep.equal({});
+        }));
 
-        it('it should not validate if the user ID is empty when using certificates', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
-            });
-            // Certs path
-            component['useCerts'] = true;
-            component['addedPublicCertificate'] = 'publicKey';
-            component['addedPrivateCertificate'] = 'privateKey';
-            component['userId'] = null;
+        it('should not validate if a userSecret field is empty when specifying user ID/Secret', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
 
-            component.validContents();
+            let useSecretElement = credentialsElement.query(By.css('#noCert'));
+            useSecretElement.nativeElement.checked = true;
+            useSecretElement.nativeElement.dispatchEvent(new Event('change'));
 
-            credentialsSpy.should.have.been.called;
-        });
+            fixture.detectChanges();
+            tick();
 
-        it('it should validate when using certificates', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({
-                    userId: 'userID',
-                    cert: 'publicKey',
-                    key: 'privateKey'
-                });
-            });
+            let userIdElement = credentialsElement.query(By.css('#userId'));
+            userIdElement.nativeElement.value = 'userID';
+            userIdElement.nativeElement.dispatchEvent(new Event('input'));
 
-            // Certs path
-            component['useCerts'] = true;
-            component['addedPublicCertificate'] = 'publicKey';
-            component['addedPrivateCertificate'] = 'privateKey';
-            component['userId'] = 'userID';
+            tick();
+            fixture.detectChanges();
 
-            component.validContents();
+            component.result.should.deep.equal({});
+        }));
 
-            credentialsSpy.should.have.been.called;
-        });
+        it('should validate if all text fields are added when specifying user ID/Secret', fakeAsync(() => {
+            fixture.detectChanges();
+            tick();
 
-        it('should not validate if a userID field is empty when specifying user ID/Secret', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
-            });
-            // Secret/ID path
-            component['useCerts'] = false;
-            component['userId'] = null;
-            component['userSecret'] = 'mySecret';
+            let useSecretElement = credentialsElement.query(By.css('#noCert'));
+            useSecretElement.nativeElement.checked = true;
+            useSecretElement.nativeElement.dispatchEvent(new Event('change'));
 
-            component.validContents();
+            fixture.detectChanges();
+            tick();
 
-            credentialsSpy.should.have.been.called;
-        });
+            let userIdElement = credentialsElement.query(By.css('#userId'));
+            userIdElement.nativeElement.value = 'userID';
+            userIdElement.nativeElement.dispatchEvent(new Event('input'));
 
-        it('should not validate if a userSecret field is empty when specifying user ID/Secret', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({});
-            });
+            let userSecretElement = credentialsElement.query(By.css('#userSecret'));
+            userSecretElement.nativeElement.value = 'mySecret';
+            userSecretElement.nativeElement.dispatchEvent(new Event('input'));
 
-            // Secret/ID path
-            component['useCerts'] = false;
-            component['userId'] = 'myID';
-            component['userSecret'] = null;
+            tick();
+            fixture.detectChanges();
 
-            component.validContents();
-
-            credentialsSpy.should.have.been.called;
-        });
-
-        it('should validate if all text fields are added when specifying user ID/Secret', () => {
-            let credentialsSpy = sinon.spy(component.credentials, 'emit');
-            component.credentials.subscribe((result) => {
-                result.should.deep.equal({userId: 'myID', secret: 'mySecret'});
-            });
-
-            // Secret/ID path
-            component['useCerts'] = false;
-            component['userId'] = 'myID';
-            component['userSecret'] = 'mySecret';
-
-            component.validContents();
-
-            credentialsSpy.should.have.been.called;
-        });
-    });
-
-    describe('#useCertificates', () => {
-        it('should set flag to false when passed false', () => {
-            component['useCertificates'](false);
-            component['useCerts'].should.be.false;
-        });
-
-        it('should set flag to true when passed true', () => {
-            component['useCertificates'](true);
-            component['useCerts'].should.be.true;
-        });
+            component.result.should.deep.equal({userId: 'userID', secret: 'mySecret'});
+        }));
     });
 
     describe('#fileDetected', () => {
         it('should change this.expandInput to true', () => {
-            component.fileDetected();
-            component['expandInput'].should.equal(true);
+            fixture.detectChanges();
+
+            credentialsElement.componentInstance['expandInput'] = false;
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropDragOver', null);
+
+            credentialsElement.componentInstance['expandInput'].should.equal(true);
         });
     });
 
     describe('#fileLeft', () => {
         it('should change this.expectedInput to false', () => {
-            component.fileLeft();
-            component['expandInput'].should.equal(false);
+            fixture.detectChanges();
+
+            credentialsElement.componentInstance['expandInput'] = true;
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropDragLeave', null);
+
+            credentialsElement.componentInstance['expandInput'].should.equal(false);
         });
     });
 
-    describe('#getDataBuffer', () => {
-        let file;
+    describe('#fileAccepted', () => {
         let mockFileReadObj;
-        let mockBuffer;
         let mockFileRead;
         let content;
 
         beforeEach(() => {
-            content = 'hello world';
-            let data = new Blob([content], {type: 'text/plain'});
-            file = new File([data], 'mock.bna');
-
             mockFileReadObj = {
                 readAsArrayBuffer: sandbox.stub(),
                 result: content,
@@ -250,138 +297,114 @@ describe('CredentialsComponent', () => {
             mockFileRead.restore();
         });
 
-        it('should return data from a file', () => {
-            let promise = component.getDataBuffer(file);
-            mockFileReadObj.onload();
-            return promise
-                .then((data) => {
-                    // Assertions
-                    data.toString().should.equal(content);
-                });
-        });
+        it('should not accept if not a PEM (.pem) file', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            content = '-----BEGIN CERTIFICATE-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.bob');
 
-        it('should give error in promise chain', () => {
-            let promise = component.getDataBuffer(file);
-            mockFileReadObj.onerror('error');
-            return promise
-                .then((data) => {
-                    // Assertions
-                    data.should.be.null;
-                })
-                .catch((err) => {
-                    // Assertions
-                    err.should.equal('error');
-                });
-        });
-    });
-
-    describe('#fileAccepted', () => {
-        it('should only accept PEM (.pem) files', fakeAsync(() => {
-            let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
-            let file = new File([b], 'certificate.pem');
-
-            component.fileAccepted(file);
-            tick();
-        }));
-
-        it('should detect if the file is a certificate', fakeAsync(() => {
-            component['certType'] = '-----BEGIN CERTIFICATE-----';
-
-            let b = new Blob(['-----BEGIN CERTIFICATE-----'], {type: 'text/plain'});
-            let file = new File([b], 'certificate.pem');
-
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                .returns(Promise.resolve('-----BEGIN CERTIFICATE-----'));
-
-            let formatSpy = sinon.spy(component, 'setPublicCert');
-
-            component.fileAccepted(file);
-            tick();
-
-            formatSpy.called;
-        }));
-
-        it('should detect if the file is a private key', fakeAsync(() => {
-            component['certType'] = '-----BEGIN PRIVATE KEY-----';
-
-            let b = new Blob(['-----BEGIN PRIVATE-----'], {type: 'text/plain'});
-            let file = new File([b], 'privateKey.pem');
-
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                .returns(Promise.resolve('-----BEGIN PRIVATE KEY-----'));
-
-            let formatSpy = sinon.spy(component, 'setPrivateCert');
-
-            component.fileAccepted(file);
-            tick();
-
-            formatSpy.called;
-        }));
-
-        it('should detect if .pem file contents are not of the correct format', fakeAsync(() => {
-            component['certType'] = 'x';
-
-            let b = new Blob(['bad cert format'], {type: 'text/plain'});
-            let file = new File([b], 'privateKey.pem');
-
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                .returns(Promise.resolve('bad cert format'));
-
-            let formatSpy = sinon.spy(component, 'setPrivateCert');
-
-            component.fileAccepted(file);
-            tick();
-
-            formatSpy.called;
-        }));
-
-        it('should reject any file that is not a PEM file', fakeAsync(() => {
-            let b = new Blob(['/**PNG File*/'], {type: 'text/plain'});
-            let file = new File([b], 'newfile.png');
-
-            let createMock = sandbox.stub(component, 'fileRejected');
-            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                .returns(Promise.resolve('some data'));
-
-            component.fileAccepted(file);
-            tick();
-
-            createMock.calledWith('Unexpected File Type: png');
-        }));
-    });
-
-    describe('#setPublicCert', () => {
-        it('should set the public certificate', () => {
-            component.setPublicCert('-----BEGIN CERTIFICATE-----');
-            component['addedPublicCertificate'].should.equal('-----BEGIN CERTIFICATE-----');
-        });
-    });
-
-    describe('#setPrivateCert', () => {
-        it('should set the private certificate', () => {
-            component.setPrivateCert('-----BEGIN PRIVATE KEY-----');
-            component['addedPrivateCertificate'].should.equal('-----BEGIN PRIVATE KEY-----');
-        });
-    });
-
-    describe('#fileRejected', () => {
-        it('should return an error status', async(() => {
-            component.fileRejected('long reason to reject file');
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('long reason to reject file');
-        }));
-    });
-
-    describe('ngAfterViewInit', () => {
-        it('should validate changes on change of the form', async(() => {
-            let validStub = sinon.stub(component, 'validContents');
-
-            component['userId'] = 'newValue';
+            mockFileReadObj.result = content;
 
             fixture.detectChanges();
 
-            fixture.whenStable().then(() => {
-                validStub.should.have.been.called;
+            alertService.errorStatus$.subscribe((message) => {
+                if (message !== null) {
+                    message.toString().should.equal('Error: Unexpected file type: bob');
+                }
             });
+
+            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+
+            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            errorStatusSpy.should.have.been.called;
+        })));
+
+        it('should detect if the file is a certificate', fakeAsync(() => {
+            content = '-----BEGIN CERTIFICATE-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPublicCertificate.should.equal('-----BEGIN CERTIFICATE-----');
         }));
+
+        it('should detect if the file is a private key', fakeAsync(() => {
+            content = '-----BEGIN PRIVATE KEY-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'privateKey.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPrivateCertificate.should.equal('-----BEGIN PRIVATE KEY-----');
+        }));
+
+        it('should detect if .pem file contents are not of the correct format', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            content = 'bad cert format';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'privateKey.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            alertService.errorStatus$.subscribe((message) => {
+                if (message !== null) {
+                    message.toString().should.equal('Error: Certificate content in unexpected format.');
+                }
+            });
+
+            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            errorStatusSpy.should.have.been.called;
+        })));
+
+        it('handle file read problem', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            content = '-----BEGIN PRIVATE KEY-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'privateKey.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            alertService.errorStatus$.subscribe((message) => {
+                if (message !== null) {
+                    message.toString().should.equal('Error: File has an error');
+                }
+            });
+
+            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            let dragDropElement = credentialsElement.query(By.css('.create-route'));
+            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
+            mockFileReadObj.onerror(new Error('File has an error'));
+            tick();
+
+            errorStatusSpy.should.have.been.called;
+        })));
     });
 });

@@ -4,6 +4,7 @@
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Component, DebugElement } from '@angular/core';
 
 import { IdCard } from 'composer-common';
 
@@ -14,198 +15,262 @@ import * as sinon from 'sinon';
 
 let should = chai.should();
 
+@Component({
+    template: `
+        <identity-card [identity]="identity" [indestructible]="indestructible" [cardRef]="cardRef" [preview]="preview"
+                       [showSpecial]="showSpecial" [showDismissIcon]="showDismissIcon" (onConnect)="onConnect($event)"
+                       (onDeploySample)="onDeploySample($event)" (onDismiss)="onDismiss($event)"
+                       (onDelete)="onDelete($event)"
+                       (onExport)="onExport($event)"></identity-card>`
+
+})
+class TestHostComponent {
+
+    identity: IdCard = new IdCard({
+        userName: 'pedantic-owl',
+        businessNetwork: 'conga-network'
+    }, {name: 'dialup-modem', type: 'hlfv1'});
+    cardRef: string;
+    preview: boolean = false;
+    showDismissIcon: boolean = false;
+    indestructible: boolean = false;
+    showSpecial: boolean = false;
+
+    public result: String;
+
+    onConnect(data) {
+        this.result = data;
+    }
+
+    onDeploySample(data) {
+        this.result = data;
+    }
+
+    onDismiss(data) {
+        this.result = data;
+    }
+
+    onDelete(data) {
+        this.result = data;
+    }
+
+    onExport(data) {
+        this.result = data;
+    }
+}
+
 describe(`IdentityCardComponent`, () => {
 
-    let component: IdentityCardComponent;
-    let fixture: ComponentFixture<IdentityCardComponent>;
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
 
-    let mockIdCard;
-    let mockConnectionProfile;
+    let identityCardElement: DebugElement;
 
     beforeEach(() => {
-        mockConnectionProfile = {
-            name: 'dialup-modem'
-        };
-
-        mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getUserName.returns('pedantic-owl');
-        mockIdCard.getBusinessNetworkName.returns('conga-network');
-        mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
-        mockIdCard.getRoles.returns([]);
-
         TestBed.configureTestingModule({
-            declarations: [IdentityCardComponent]
+            declarations: [TestHostComponent, IdentityCardComponent]
         });
 
-        fixture = TestBed.createComponent(IdentityCardComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
 
         component = fixture.componentInstance;
+        component.result = null;
+
+        identityCardElement = fixture.debugElement.query(By.css('identity-card'));
     });
 
     describe('#connect', () => {
-        it('should emit connect event', (done) => {
-            component.identity = mockIdCard;
-
-            component.onConnect.subscribe((e) => {
-                e.should.equal('pedantic-owl');
-                done();
-            });
+        it('should emit connect event', () => {
+            let connectEventSpy = sinon.spy(component, 'onConnect');
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.connect'));
-            button.nativeElement.click();
+            button.triggerEventHandler('click', null);
+
+            fixture.detectChanges();
+
+            connectEventSpy.should.have.been.called;
+            component.result.should.equal('pedantic-owl');
         });
     });
 
     describe('deploySample', () => {
-        it('should emit the deploy sample event', (done) => {
-            let deploySampleSpy = sinon.spy(component, 'deploySample');
-            let deployEventSpy = sinon.spy(component.onDeploySample, 'emit');
-
-            component.showSpecial = true;
-
-            component.onDeploySample.subscribe((data) => {
-                should.not.exist(data);
-                done();
-            });
+        it('should emit the deploy sample event', () => {
+            let deployEventSpy = sinon.spy(component, 'onDeploySample');
+            component['identity'] = null;
+            component['showSpecial'] = true;
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.connect'));
-            button.nativeElement.click();
+            button.triggerEventHandler('click', null);
 
-            deploySampleSpy.should.have.been.called;
             deployEventSpy.should.have.been.called;
+            should.not.exist(component.result);
         });
     });
 
     describe('#dismiss', () => {
-        it('should emit dismiss event', (done) => {
-            component.showDismissIcon = true;
-            component.identity = mockIdCard;
-
-            component.onDismiss.subscribe((e) => {
-                e.should.equal('pedantic-owl');
-                done();
-            });
+        it('should emit dismiss event', () => {
+            let dismissEventSpy = sinon.spy(component, 'onDismiss');
+            component['showDismissIcon'] = true;
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.dismiss'));
-            button.nativeElement.click();
+            button.triggerEventHandler('click', null);
+
+            dismissEventSpy.should.have.been.called;
+            component.result.should.equal('pedantic-owl');
         });
     });
 
     describe('#delete', () => {
-        it('should emit delete event', (done) => {
-            component.identity = mockIdCard;
-
-            component.onDelete.subscribe((e) => {
-                e.should.equal('pedantic-owl');
-                done();
-            });
+        it('should emit delete event', () => {
+            let deleteEventSpy = sinon.spy(component, 'onDelete');
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.delete'));
-            button.nativeElement.click();
+            button.triggerEventHandler('click', null);
+
+            deleteEventSpy.should.have.been.called;
+            component.result.should.equal('pedantic-owl');
         });
     });
 
     describe('#export', () => {
-        it('should emit export event', (done) => {
-            component.identity = mockIdCard;
-
-            component.onExport.subscribe((e) => {
-                e.should.equal('pedantic-owl');
-                done();
-            });
+        it('should emit export event', () => {
+            let exportEventSpy = sinon.spy(component, 'onExport');
 
             fixture.detectChanges();
             let button = fixture.debugElement.query(By.css('button.export'));
-            button.nativeElement.click();
+            button.triggerEventHandler('click', null);
+
+            exportEventSpy.should.have.been.called;
+            component.result.should.equal('pedantic-owl');
         });
     });
 
     describe('#getInitials', () => {
         it('should get one initial', () => {
-            mockIdCard.getUserName.returns('admin');
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'admin',
+                businessNetwork: 'conga-network'
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getInitials();
+            fixture.detectChanges();
 
-            result.should.equal('a');
+            let initialsElement = identityCardElement.query(By.css('.initials'));
+
+            initialsElement.nativeElement.textContent.should.equal('a');
         });
 
         it('should get two initials', () => {
-            mockIdCard.getUserName.returns('pedantic owl');
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'pedantic owl',
+                businessNetwork: 'conga-network'
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getInitials();
+            fixture.detectChanges();
 
-            result.should.equal('po');
+            let initialsElement = identityCardElement.query(By.css('.initials'));
+
+            initialsElement.nativeElement.textContent.should.equal('po');
         });
 
         it('should get maximum of two initials', () => {
-            mockIdCard.getUserName.returns('eat conga repeat');
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'eat conga repeat',
+                businessNetwork: 'conga-network'
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getInitials();
+            fixture.detectChanges();
 
-            result.should.equal('ec');
+            let initialsElement = identityCardElement.query(By.css('.initials'));
+
+            initialsElement.nativeElement.textContent.should.equal('ec');
         });
 
         it('should get non-ascii \'initials\'', () => {
-            mockIdCard.getUserName.returns('黄 丽');
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: '黄 丽',
+                businessNetwork: 'conga-network'
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getInitials();
+            fixture.detectChanges();
 
-            result.should.equal('黄丽');
+            let initialsElement = identityCardElement.query(By.css('.initials'));
+
+            initialsElement.nativeElement.textContent.should.equal('黄丽');
         });
 
         it('should smile if there are no initials', () => {
-            mockIdCard.getUserName.returns(' ');
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: ' ',
+                businessNetwork: 'conga-network'
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getInitials();
+            fixture.detectChanges();
 
-            result.should.equal(':)');
+            let initialsElement = identityCardElement.query(By.css('.initials'));
+
+            initialsElement.nativeElement.textContent.should.equal(':)');
         });
     });
 
     describe('#getRoles', () => {
         it('should get PeerAdmin role', () => {
-            mockIdCard.getRoles.returns(['PeerAdmin']);
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'pedantic-owl',
+                businessNetwork: 'conga-network',
+                roles: ['PeerAdmin']
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getRoles();
+            fixture.detectChanges();
 
-            result.should.deep.equal('PeerAdmin');
+            let rolesElement = identityCardElement.query(By.css('.role-icon'));
+
+            rolesElement.nativeElement.title.should.equal('PeerAdmin');
         });
 
         it('should get ChannelAdmin role', () => {
-            mockIdCard.getRoles.returns(['ChannelAdmin']);
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'pedantic-owl',
+                businessNetwork: 'conga-network',
+                roles: ['ChannelAdmin']
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getRoles();
+            fixture.detectChanges();
 
-            result.should.deep.equal('ChannelAdmin');
+            let rolesElement = identityCardElement.query(By.css('.role-icon'));
+
+            rolesElement.nativeElement.title.should.equal('ChannelAdmin');
         });
 
         it('should not get other roles', () => {
-            mockIdCard.getRoles.returns(['GreenConga']);
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'pedantic-owl',
+                businessNetwork: 'conga-network',
+                roles: ['GreenConga']
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getRoles();
+            fixture.detectChanges();
 
-            should.not.exist(result);
+            let rolesElement = identityCardElement.query(By.css('.role-icon'));
+
+            should.not.exist(rolesElement);
         });
 
         it('should get valid roles as comma separated string', () => {
-            mockIdCard.getRoles.returns(['BlueConga', 'PeerAdmin', 'GreenConga', 'ChannelAdmin', 'PurpleConga']);
-            component.identity = mockIdCard;
+            component['identity'] = new IdCard({
+                userName: 'pedantic-owl',
+                businessNetwork: 'conga-network',
+                roles: ['BlueConga', 'PeerAdmin', 'GreenConga', 'ChannelAdmin', 'PurpleConga']
+            }, {name: 'dialup-modem', type: 'hlfv1'});
 
-            let result = component.getRoles();
+            fixture.detectChanges();
 
-            result.should.deep.equal('PeerAdmin, ChannelAdmin');
+            let rolesElement = identityCardElement.query(By.css('.role-icon'));
+
+            rolesElement.nativeElement.title.should.equal('PeerAdmin, ChannelAdmin');
         });
     });
 });

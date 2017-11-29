@@ -325,6 +325,80 @@ describe('ClassDeclaration', () => {
 
     });
 
+    describe('#_resolveSuperType', () => {
+
+        it('should return null if no super type', () => {
+            let modelManager = new ModelManager();
+            let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
+            should.equal(classDecl._resolveSuperType(), null);
+        });
+
+        it('should return the super class declaration for a system super class', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+        });
+
+        it('should return the super class declaration for a super class in the same file', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            abstract asset BaseAsset { }
+            asset TestAsset identified by assetId extends BaseAsset { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.acme.BaseAsset');
+        });
+
+        it('should return the super class declaration for a super class in another file', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.base
+            abstract asset BaseAsset { }`);
+            modelManager.addModelFile(`namespace org.acme
+            import org.base.BaseAsset
+            asset TestAsset identified by assetId extends BaseAsset { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.base.BaseAsset');
+        });
+
+    });
+
+    describe('#getSuperTypeDeclaration', () => {
+
+        it('should return null if no super type', () => {
+            let modelManager = new ModelManager();
+            let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
+            should.equal(classDecl.getSuperTypeDeclaration(), null);
+        });
+
+        it('should resolve the super type if not already resolved', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            classDecl.superTypeDeclaration = null;
+            let spy = sinon.spy(classDecl, '_resolveSuperType');
+            let superClassDecl = classDecl.getSuperTypeDeclaration();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+            sinon.assert.calledOnce(spy);
+        });
+
+        it('should not resolve the super type if not already resolved', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let spy = sinon.spy(classDecl, '_resolveSuperType');
+            let superClassDecl = classDecl.getSuperTypeDeclaration();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+            sinon.assert.notCalled(spy);
+        });
+
+    });
+
     describe('#validation', function() {
         const modelFileNames = [
             'test/data/parser/validation.cto'

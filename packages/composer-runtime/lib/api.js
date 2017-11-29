@@ -78,6 +78,7 @@ class Api {
          * assets, participants, and transactions for storing in registries. The
          * factory can also be used for creating relationships to assets, particpants,
          * and transactions.
+         * @see {@link module:composer-runtime.Factory}
          * @example
          * // Get the factory.
          * var factory = getFactory();

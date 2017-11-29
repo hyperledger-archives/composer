@@ -19,9 +19,16 @@ const IdCard = require('../idcard');
 
 /**
  * Transient in-memory storage of business network cards, useful for testing.
+ * To use this in preference to the default File System Card Store
  *
+ * @example
+ * const AdminConnection = require("composer-admin").AdminConnection;
+ * const MemoryCardStore = require('composer-common').MemoryCardStore;
+ *
+ * let cardStore = new MemoryCardStore();
+ * let adminConnection = new AdminConnection({cardStore});
  * @class
- * @private
+ * @extends BusinessNetworkCardStore
  * @memberof module:composer-common
  */
 class MemoryCardStore extends BusinessNetworkCardStore {

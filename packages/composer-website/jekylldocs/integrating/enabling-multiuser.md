@@ -34,7 +34,7 @@ You can use the `-m true` argument to start the REST server with multiple user m
 
 For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:
 
-    composer-rest-server -c admin@mynetwork -m true
+    composer-rest-server -c admin@my-network -m true
 
 The `-m true` argument automatically enables REST API authentication. You can alternatively supply both arguments, `-a true -m true`, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.
 
