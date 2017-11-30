@@ -167,10 +167,7 @@ export class EditorFileComponent {
 
             let updatedFile = this.fileService.updateFile(this._editorFile.id, this.editorContent, type);
 
-            if (!this.currentError) {
-                // update the stored business network
-                this.fileService.updateBusinessNetwork(this._editorFile.id, updatedFile);
-            }
+            this.fileService.updateBusinessNetwork(this._editorFile.id, updatedFile);
 
             this.fileService.businessNetworkChanged$.next(true);
         } catch (e) {
