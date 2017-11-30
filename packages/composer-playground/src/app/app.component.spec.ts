@@ -1161,6 +1161,7 @@ describe('AppComponent', () => {
             tick();
 
             component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(myConfig['banner']);
         }));
 
         it('should set the config using load config if getConfig fails', fakeAsync(() => {
@@ -1190,6 +1191,7 @@ describe('AppComponent', () => {
             tick();
 
             component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(myConfig['banner']);
         }));
     });
 
