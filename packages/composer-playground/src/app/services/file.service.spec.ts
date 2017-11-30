@@ -687,6 +687,7 @@ describe('FileService', () => {
             testModels.set('1', file);
 
             sinon.stub(fileService, 'getModelFile');
+            sinon.stub(fileService, 'validateFile').returns(null);
 
             fileService['modelFiles'] = testModels;
 
@@ -719,6 +720,8 @@ describe('FileService', () => {
                 getName: sinon.stub().returns('myName'),
                 getDefinitions: sinon.stub().returns('myDefs')
             });
+
+            sinon.stub(fileService, 'validateFile').returns(null);
 
             let addFileStub = sinon.stub(fileService, 'addFile').returns('myFile');
             let deleteFileStub = sinon.stub(fileService, 'deleteFile');
@@ -761,6 +764,8 @@ describe('FileService', () => {
                 getDefinitions: sinon.stub().returns('myDefs')
             });
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService['modelFiles'] = testModels;
 
             fileService.updateFile(id, content, type);
@@ -768,6 +773,35 @@ describe('FileService', () => {
             fileService['dirty'].should.equal(false);
 
             addFileStub.should.not.have.been.called;
+        })));
+
+        it('should throw an error if validate file returns a message for model files', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the model', 'model');
+            let testModels = new Map<string, EditorFile>();
+
+            let id = '1';
+            let content = 'this is the NEW model';
+            let type = 'model';
+
+            testModels.set('1', file);
+
+            sinon.stub(fileService, 'getModelFile').returns({getName: sinon.stub().returns('myName')});
+
+            sinon.stub(fileService, 'createModelFile').returns({
+                getNamespace: sinon.stub().returns('myNamespace'),
+                getName: sinon.stub().returns('myName'),
+                getDefinitions: sinon.stub().returns('myDefs')
+            });
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            fileService['modelFiles'] = testModels;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no model file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -823,6 +857,8 @@ describe('FileService', () => {
             });
 
             sinon.stub(fileService, 'modelNamespaceCollides').returns(false);
+
+            sinon.stub(fileService, 'validateFile').returns(null);
 
             let addFileStub = sinon.stub(fileService, 'addFile');
 
