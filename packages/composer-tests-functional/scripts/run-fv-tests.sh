@@ -54,6 +54,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-preview
         docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-preview
         docker pull hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
+        docker pull verdaccio/verdaccio:2.6.4
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
