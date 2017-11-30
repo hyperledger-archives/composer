@@ -116,59 +116,12 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    showNewId(identity: {userID, userSecret}): Promise<any> {
-        const modalRef = this.modalService.open(IdentityIssuedComponent);
-        modalRef.componentInstance.userID = identity.userID;
-        modalRef.componentInstance.userSecret = identity.userSecret;
-
-        return modalRef.result
-            .then((result) => {
-                if (result) {
-                    if (result.choice === 'add') {
-                        this.alertService.successStatus$.next({
-                            title: 'ID Card added to wallet',
-                            text: 'The ID card ' + this.identityCardService.getIdentityCard(result.cardRef).getUserName() + ' was successfully added to your wallet',
-                            icon: '#icon-role_24'
-                        });
-                    } else if (result.choice === 'export') {
-                        return this.exportIdentity(result.card);
-                    }
-                }
-            });
-    }
-
-    addIdentityToWallet(identity: {userID, userSecret}): Promise<any> {
-        let currentCard = this.identityCardService.getCurrentIdentityCard();
-        let connectionProfile = currentCard.getConnectionProfile();
-        let businessNetworkName = currentCard.getBusinessNetworkName();
-
-        return this.identityCardService.createIdentityCard(identity.userID, null, businessNetworkName, identity.userSecret, connectionProfile)
-            .then((cardRef: string) => {
-                this.alertService.successStatus$.next({
-                    title: 'ID Card added to wallet',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
-                    icon: '#icon-role_24'
-                });
-            });
-    }
-
-    exportIdentity(card: IdCard): Promise<any> {
-        let fileName = card.getUserName() + '.card';
-
-        return card.toArchive()
-            .then((archiveData) => {
-                let file = new Blob([archiveData],
-                    {type: 'application/octet-stream'});
-                return saveAs(file, fileName);
-            });
-    }
-
     setCurrentIdentity(cardRef: string, revertOnError: boolean): Promise<void> {
-        let startIdentity = this.currentIdentity;
-
         if (this.currentIdentity === cardRef) {
             return Promise.resolve();
         }
+
+        let startIdentity = this.currentIdentity;
 
         this.identityCardService.setCurrentIdentityCard(cardRef)
             .then(() => {
@@ -192,27 +145,6 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    removeIdentity(cardRef: string): Promise<void> {
-      let userID = this.identityCards.get(cardRef).getUserName();
-      return this.identityCardService.deleteIdentityCard(cardRef)
-          .then(() => {
-              return this.loadAllIdentities();
-          })
-          .then(() => {
-              // Send alert
-              this.alertService.busyStatus$.next(null);
-              this.alertService.successStatus$.next({
-                  title: 'Removal Successful',
-                  text: userID + ' was successfully removed.',
-                  icon: '#icon-bin_icon'
-              });
-          })
-          .catch((error) => {
-              this.alertService.busyStatus$.next(null);
-              this.alertService.errorStatus$.next(error);
-          });
-    }
-
     openRemoveModal(cardRef: string): Promise<void> {
 
         let userID = this.identityCards.get(cardRef).getUserName();
@@ -227,14 +159,13 @@ export class IdentityComponent implements OnInit {
         confirmModalRef.componentInstance.confirmButtonText = 'Remove';
 
         return confirmModalRef.result
-            .then((result) => {
-                if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Removing ID',
-                        text: 'Removing identity ' + userID + ' from your wallet'
-                    });
-                    return this.removeIdentity(cardRef);
-                }
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Removing ID',
+                    text: 'Removing identity ' + userID + ' from your wallet'
+                });
+                return this.removeIdentity(cardRef);
+
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal
                 if (reason && reason !== ModalDismissReasons.BACKDROP_CLICK && reason !== ModalDismissReasons.ESC) {
@@ -255,47 +186,111 @@ export class IdentityComponent implements OnInit {
         confirmModalRef.componentInstance.action = 'revoke';
 
         return confirmModalRef.result
-            .then((result) => {
-                if (result) {
-                    this.alertService.busyStatus$.next({
-                        title: 'Revoking identity within business network',
-                        text: 'Revoking identity ' + identity.name
-                    });
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Revoking identity within business network',
+                    text: 'Revoking identity ' + identity.name
+                });
 
-                    return this.clientService.revokeIdentity(identity)
-                        .then(() => {
-                            // only try and remove it if its in the wallet
-                            let walletIdentity = this.cardRefs.find((myIdentity) => {
-                                return identity.ref === myIdentity;
-                            });
-
-                            if (walletIdentity) {
-                                return this.removeIdentity(identity.ref);
-                            }
-                        })
-                        .then(() => {
-                            return this.loadAllIdentities();
-                        })
-                        .then(() => {
-                            // Send alert
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.successStatus$.next({
-                                title: 'Revoke Successful',
-                                text: identity.name + ' was successfully revoked.',
-                                icon: '#icon-bin_icon'
-                            });
-                        })
-                        .catch((error) => {
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.errorStatus$.next(error);
+                return this.clientService.revokeIdentity(identity)
+                    .then(() => {
+                        // only try and remove it if its in the wallet
+                        let walletIdentity = this.cardRefs.find((myIdentity) => {
+                            return identity.ref === myIdentity;
                         });
-                }
+
+                        if (walletIdentity) {
+                            return this.removeIdentity(identity.ref);
+                        }
+                    })
+                    .then(() => {
+                        return this.loadAllIdentities();
+                    })
+                    .then(() => {
+                        // Send alert
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.successStatus$.next({
+                            title: 'Revoke Successful',
+                            text: identity.name + ' was successfully revoked.',
+                            icon: '#icon-bin_icon'
+                        });
+                    })
+                    .catch((error) => {
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.errorStatus$.next(error);
+                    });
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal
                 if (reason && reason !== ModalDismissReasons.BACKDROP_CLICK && reason !== ModalDismissReasons.ESC) {
                     this.alertService.busyStatus$.next(null);
                     this.alertService.errorStatus$.next(reason);
                 }
+            });
+    }
+
+    private removeIdentity(cardRef: string): Promise<void> {
+        let userID = this.identityCards.get(cardRef).getUserName();
+        return this.identityCardService.deleteIdentityCard(cardRef)
+            .then(() => {
+                return this.loadAllIdentities();
+            })
+            .then(() => {
+                // Send alert
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({
+                    title: 'Removal Successful',
+                    text: userID + ' was successfully removed.',
+                    icon: '#icon-bin_icon'
+                });
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
+    }
+
+    private showNewId(identity: { userID, userSecret }): Promise<any> {
+        const modalRef = this.modalService.open(IdentityIssuedComponent);
+        modalRef.componentInstance.userID = identity.userID;
+        modalRef.componentInstance.userSecret = identity.userSecret;
+
+        return modalRef.result
+            .then((result) => {
+                if (result.choice === 'add') {
+                    this.alertService.successStatus$.next({
+                        title: 'ID Card added to wallet',
+                        text: 'The ID card ' + this.identityCardService.getIdentityCard(result.cardRef).getUserName() + ' was successfully added to your wallet',
+                        icon: '#icon-role_24'
+                    });
+                } else if (result.choice === 'export') {
+                    return this.exportIdentity(result.card);
+                }
+            });
+    }
+
+    private exportIdentity(card: IdCard): Promise<any> {
+        let fileName = card.getUserName() + '.card';
+
+        return card.toArchive()
+            .then((archiveData) => {
+                let file = new Blob([archiveData],
+                    {type: 'application/octet-stream'});
+                return saveAs(file, fileName);
+            });
+    }
+
+    private addIdentityToWallet(identity: { userID, userSecret }): Promise<any> {
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
+        let connectionProfile = currentCard.getConnectionProfile();
+        let businessNetworkName = currentCard.getBusinessNetworkName();
+
+        return this.identityCardService.createIdentityCard(identity.userID, null, businessNetworkName, identity.userSecret, connectionProfile)
+            .then((cardRef: string) => {
+                this.alertService.successStatus$.next({
+                    title: 'ID Card added to wallet',
+                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
+                    icon: '#icon-role_24'
+                });
             });
     }
 }

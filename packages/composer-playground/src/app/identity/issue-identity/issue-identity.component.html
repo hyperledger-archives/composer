@@ -1,7 +1,7 @@
 <section class="issue-identity">
   <header class="modal-header">
     <h1>Issue New Identity</h1>
-    <button class="icon modal-exit" (click)="activeModal.close()">
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">
       <svg class="ibm-icon" aria-hidden="true">
        <use xlink:href="#icon-close_new"></use>
       </svg>
@@ -45,7 +45,7 @@
     <p>Issuing an identity generates a one-time secret. You can choose to send this to somebody or use it yourself when it has been issued.</p>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.close();">
+    <button type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
     <button type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress || !isParticipant">
