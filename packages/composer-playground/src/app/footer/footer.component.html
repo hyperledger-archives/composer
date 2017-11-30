@@ -1,7 +1,7 @@
 <div class="footer-main">
     <div class="footer-left">
-        <div class="footer-item">
-            <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Legal</a>
+        <div *ngIf='config.links.legal.trim() !== ""' class="footer-item">
+            <a href="{{ config.links.legal }}" target="_blank">Legal</a>
         </div>
         <div *ngIf='config.links.github.trim() !== ""' class="footer-item">
             <a href="{{ config.links.github }}" target="_blank">GitHub</a>
