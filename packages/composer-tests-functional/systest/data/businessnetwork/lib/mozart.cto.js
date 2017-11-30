@@ -22,7 +22,6 @@
 * @param  {com.composer.AnimalMovementDeparture} movementDeparture - the transaction to be processed
 */
 function onAnimalMovementDeparture(movementDeparture) {
-    console.log('onAnimalMovementDeparture');
     if(movementDeparture.animal.movementStatus !== 'IN_FIELD'){
         throw new Error('Animal is already IN_TRANSIT');
     }
@@ -53,7 +52,6 @@ function onAnimalMovementDeparture(movementDeparture) {
 * @param  {com.composer.AnimalMovementArrival} movementArrival - the transaction to be processed
 */
 function onAnimalMovementArrival(movementArrival) {
-    console.log('onAnimalMovementArrival');
 
     if(movementArrival.animal.movementStatus !== 'IN_TRANSIT'){
         throw new Error('Animal is not IN_TRANSIT');

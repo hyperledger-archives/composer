@@ -171,9 +171,6 @@ describe('Asset system tests', function() {
         return client
             .getAllAssetRegistries()
             .then(function (assetRegistries) {
-                console.log('-----');
-                console.log(assetRegistries);
-                console.log('-----');
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
                     {'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'},

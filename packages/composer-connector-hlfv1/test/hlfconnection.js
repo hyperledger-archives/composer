@@ -43,7 +43,7 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 
 
-const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
+const runtimeModulePath = path.resolve(path.dirname(require.resolve('composer-runtime-hlfv1')));
 
 //TODO: Ideally we should stub out hlftxeventhandler.
 describe('HLFConnection', () => {
@@ -111,9 +111,8 @@ describe('HLFConnection', () => {
     describe('#createEventHub', () => {
 
         it('should call new event hub', () => {
-            (() => {
-                HLFConnection.createEventHub(mockClient);
-            }).should.throw(/The clientContext has not been properly initialized, missing userContext/);
+            const eventHub = HLFConnection.createEventHub(mockClient);
+            eventHub.should.be.instanceOf(EventHub);
         });
 
     });
@@ -379,9 +378,6 @@ describe('HLFConnection', () => {
     });
 
     describe('#install', () => {
-        const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
-        const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
-        const constantsFilePath = path.resolve(targetDirectoryPath, 'constants.go');
 
         beforeEach(() => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
@@ -395,31 +391,7 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
         });
 
-        it('should reject error if unable to create temp dir', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').rejects(new Error('some error 1'));
-            return connection.install(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/some error 1/);
-        });
-
-        it('should rethrow error if unable to copy chaincode source', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').rejects(new Error('some error 2'));
-            return connection.install(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/some error/);
-        });
-
-        it('should rethrow error if unable to copy chaincode source', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').rejects(new Error('some error 3'));
-            return connection.install(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/some error 3/);
-        });
-
-        it('should install the runtime with the default pool size', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
+        it('should install the runtime', () => {
 
             // This is the install proposal and response (from the peers).
             const proposalResponses = [{
@@ -433,18 +405,10 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
             return connection.install(mockSecurityContext, 'org-acme-biznet')
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = 8/));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -453,121 +417,8 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should install the runtime with the specified pool size', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
-            // This is the install proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
-            return connection.install(mockSecurityContext, 'org-acme-biznet', {poolSize:3})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = 3/));
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        targets: [mockPeer]
-                    });
-                });
-        });
-
-        it('should install the runtime with the default garbage collection interval', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
-            // This is the install proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
-            return connection.install(mockSecurityContext, 'org-acme-biznet')
-                .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const GCInterval = 5/));
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        targets: [mockPeer]
-                    });
-                });
-        });
-
-        it('should install the runtime with the specified garbage collection interval', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
-            // This is the install proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
-            return connection.install(mockSecurityContext, 'org-acme-biznet', {gcInterval:30})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const GCInterval = 30/));
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
-                        txId: mockTransactionID,
-                        targets: [mockPeer]
-                    });
-                });
-        });
 
         it('should throw error if peer rejects installation', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
 
             // This is the install proposal and response (from the peers).
             const proposalResponses = [{
@@ -586,10 +437,6 @@ describe('HLFConnection', () => {
         });
 
         it('should throw error if all peers says chaincode already installed and from deploy flag not defined', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
             const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
             const installResponses = [errorResp, errorResp, errorResp];
             const proposal = { proposal: 'i do' };
@@ -602,10 +449,6 @@ describe('HLFConnection', () => {
         });
 
         it('should not throw an error and return false for chaincode installed if from deploy flag set', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
             const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
             const installResponses = [errorResp, errorResp, errorResp];
             const proposal = { proposal: 'i do' };
@@ -622,10 +465,6 @@ describe('HLFConnection', () => {
 
 
         it('should throw an error if it only installs chaincode on some of the peers that need chaincode installed', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
             const goodResp = {
                 response: {
                     status: 200
@@ -643,10 +482,6 @@ describe('HLFConnection', () => {
         });
 
         it('should install chaincode on peers that still need chaincode to be installed', () => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
-
             const goodResp = {
                 response: {
                     status: 200
@@ -778,7 +613,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -820,7 +655,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -862,7 +697,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -902,7 +737,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -965,7 +800,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1209,15 +1044,7 @@ describe('HLFConnection', () => {
             }
         }];
 
-
-        const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
-        const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
-        const constantsFilePath = path.resolve(targetDirectoryPath, 'constants.go');
-
         beforeEach(() => {
-            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
-            sandbox.stub(connection.fs, 'copy').resolves();
-            sandbox.stub(connection.fs, 'outputFile').resolves();
             sandbox.stub(process, 'on').withArgs('exit').yields();
             sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
             sandbox.stub(connection, '_initializeChannel').resolves();
@@ -1318,27 +1145,20 @@ describe('HLFConnection', () => {
             };
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
                     // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         targets: [mockPeer]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1379,27 +1199,19 @@ describe('HLFConnection', () => {
             };
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         targets: [mockPeer]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1440,27 +1252,19 @@ describe('HLFConnection', () => {
             };
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', deployOptions)
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         targets: [mockPeer]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1560,27 +1364,19 @@ describe('HLFConnection', () => {
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         targets: [mockPeer]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1617,27 +1413,19 @@ describe('HLFConnection', () => {
             connection._validateResponses.withArgs(installResponses).returns({ignoredErrors: 1, validResponses: []});
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
                         targets: [mockPeer]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1684,18 +1472,10 @@ describe('HLFConnection', () => {
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
             return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}')
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
-                    // Check the filter ignores any relevant node modules files.
-                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
-                    sinon.assert.calledOnce(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledWith(connection.fs.outputFile, constantsFilePath, sinon.match(/const PoolSize = /));
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodePath: 'composer',
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
@@ -1891,7 +1671,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
                     sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
-                        chaincodePath: 'composer',
+                        chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
