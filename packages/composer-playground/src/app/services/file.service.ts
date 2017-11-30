@@ -273,6 +273,10 @@ export class FileService {
                 let original: ModelFile = this.getModelFile(id);
                 if (original) {
                     let modelFile = this.createModelFile(content, original.getName());
+                    let validationError = this.validateFile(id, type);
+                    if (validationError) {
+                      throw new Error(validationError);
+                    }
 
                     if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                         // don't want it to replace the files as want the error to happen
@@ -432,6 +436,7 @@ export class FileService {
                     let modelManager = this.currentBusinessNetwork.getModelManager();
                     modelFile.validate(modelManager);
                     let original: ModelFile = modelManager.getModelFile(id);
+
                     if (original) {
                         let newModelFile = this.createModelFile(modelFile.getContent(), original.getName());
                         if (this.modelNamespaceCollides(newModelFile.getNamespace(), id)) {
