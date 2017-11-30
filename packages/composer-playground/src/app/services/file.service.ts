@@ -258,6 +258,7 @@ export class FileService {
     // Handle the update of a file.
     updateFile(id: string, content: string, type: string): EditorFile {
         let updatedFile: EditorFile;
+        let validationError;
         switch (type) {
             // Deal with the update of a model file.
             case 'model':
@@ -273,7 +274,7 @@ export class FileService {
                 let original: ModelFile = this.getModelFile(id);
                 if (original) {
                     let modelFile = this.createModelFile(content, original.getName());
-                    let validationError = this.validateFile(id, type);
+                    validationError = this.validateFile(id, type);
                     if (validationError) {
                       throw new Error(validationError);
                     }
@@ -297,6 +298,10 @@ export class FileService {
                 let updatedScriptFile = this.scriptFiles.get(id);
                 updatedScriptFile.setContent(content);
                 updatedFile = updatedScriptFile;
+                validationError = this.validateFile(id, type);
+                if (validationError) {
+                  throw new Error(validationError);
+                }
                 break;
             // Deal with the update of a query file.
             case 'query':
@@ -305,6 +310,10 @@ export class FileService {
                 }
                 this.queryFile.setContent(content);
                 updatedFile = this.queryFile;
+                validationError = this.validateFile(id, type);
+                if (validationError) {
+                  throw new Error(validationError);
+                }
                 break;
             // Deal with the update of an acl file.
             case 'acl':
@@ -313,6 +322,10 @@ export class FileService {
                 }
                 this.aclFile.setContent(content);
                 updatedFile = this.aclFile;
+                validationError = this.validateFile(id, type);
+                if (validationError) {
+                  throw new Error(validationError);
+                }
                 break;
             // Deal with the update of a readme file.
             case 'readme':
@@ -328,6 +341,10 @@ export class FileService {
                 }
                 this.packageJson.setContent(JSON.parse(content));
                 updatedFile = this.packageJson;
+                validationError = this.validateFile(id, type);
+                if (validationError) {
+                  throw new Error(validationError);
+                }
                 break;
             default:
                 throw new Error('Attempted update of unknown file type: ' + type);

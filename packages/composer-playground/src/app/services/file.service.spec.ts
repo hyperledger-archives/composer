@@ -816,29 +816,6 @@ describe('FileService', () => {
             fileService['dirty'].should.equal(false);
         })));
 
-        it('should update the correct script file', fakeAsync(inject([FileService], (fileService: FileService) => {
-            let file = new EditorFile('1', '1', 'this is the script', 'script');
-            let testScripts = new Map<string, EditorFile>();
-
-            let id = '1';
-            let content = 'this is the NEW script';
-            let type = 'script';
-
-            testScripts.set('1', file);
-
-            fileService['scriptFiles'] = testScripts;
-
-            fileService.updateFile(id, content, type);
-
-            let testFile = fileService.getFile('1', 'script');
-
-            testFile.getId().should.equal('1');
-            testFile.getContent().should.equal('this is the NEW script');
-            testFile.getType().should.equal('script');
-
-            fileService['dirty'].should.equal(true);
-        })));
-
         it('should update the correct model file with a not namespace', fakeAsync(inject([FileService], (fileService: FileService) => {
             let file = new EditorFile('1', '1', 'this is the model', 'model');
             let testModels = new Map<string, EditorFile>();
@@ -877,6 +854,52 @@ describe('FileService', () => {
             fileService['dirty'].should.equal(true);
         })));
 
+        it('should update the correct script file', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the script', 'script');
+            let testScripts = new Map<string, EditorFile>();
+
+            sinon.stub(fileService, 'validateFile').returns(null);
+
+            let id = '1';
+            let content = 'this is the NEW script';
+            let type = 'script';
+
+            testScripts.set('1', file);
+
+            fileService['scriptFiles'] = testScripts;
+
+            fileService.updateFile(id, content, type);
+
+            let testFile = fileService.getFile('1', 'script');
+
+            testFile.getId().should.equal('1');
+            testFile.getContent().should.equal('this is the NEW script');
+            testFile.getType().should.equal('script');
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the script returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the script', 'script');
+            let testScripts = new Map<string, EditorFile>();
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            let id = '1';
+            let content = 'this is the NEW script';
+            let type = 'script';
+
+            testScripts.set('1', file);
+
+            fileService['scriptFiles'] = testScripts;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
+        })));
+
         it('should throw an error if there is no script file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
             let id = '1';
             let content = 'this is the NEW script';
@@ -898,6 +921,8 @@ describe('FileService', () => {
 
             fileService['queryFile'] = file;
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService.updateFile(id, content, type);
 
             let testFile = fileService.getFile('1', 'query');
@@ -907,6 +932,24 @@ describe('FileService', () => {
             testFile.getType().should.equal('query');
 
             fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the query returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the query', 'query');
+
+            let id = '1';
+            let content = 'this is the NEW query';
+            let type = 'query';
+
+            fileService['queryFile'] = file;
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no query file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -924,6 +967,8 @@ describe('FileService', () => {
         it('should update the correct acl file', fakeAsync(inject([FileService], (fileService: FileService) => {
             let file = new EditorFile('1', '1', 'this is the acl', 'acl');
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             let id = '1';
             let content = 'this is the NEW acl';
             let type = 'acl';
@@ -939,6 +984,24 @@ describe('FileService', () => {
             testFile.getType().should.equal('acl');
 
             fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the acl returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the acl', 'acl');
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            let id = '1';
+            let content = 'this is the NEW acl';
+            let type = 'acl';
+
+            fileService['aclFile'] = file;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no acl file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -994,6 +1057,8 @@ describe('FileService', () => {
 
             fileService['packageJson'] = file;
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService.updateFile(id, content, type);
 
             let testFile = fileService.getFile('1', 'package');
@@ -1003,6 +1068,24 @@ describe('FileService', () => {
             testFile.getType().should.equal('package');
 
             fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the packageJSON returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', '{"name" : "this is the NEW packageJson"}', 'package');
+
+            let id = '1';
+            let content = '{"name" : "this is the NEW packageJson"}';
+            let type = 'package';
+
+            fileService['packageJson'] = file;
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no packageJson file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
