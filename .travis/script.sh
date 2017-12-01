@@ -37,9 +37,14 @@ if [ "${DOCS}" != "" ]; then
     # Build the documentation.
     npm run doc
     if [ -n "${TRAVIS_TAG}" ]; then
-       export JEKYLL_ENV=production
-       npm run full:prod
-       npm run linkcheck:prod
+        export JEKYLL_ENV=production
+        if [ "${TRAVIS_BRANCH}" = "master" ]; then
+            npm run full:latest
+            npm run linkcheck:latest
+        else
+            npm run full:stable
+            npm run linkcheck:stable
+        fi
     else
        npm run full:unstable
        npm run linkcheck:unstable

@@ -27,16 +27,23 @@ export TODIR="${DIR}/packages/composer-website/out/gh-pages"
 # Load the GitHub repository using the gh-pages branch.
 git clone -b gh-pages git@github.com:${TRAVIS_REPO_SLUG}.git ${TODIR}
 
+# Should be able to copy all the docs as needed
+mkdir -p ${TODIR}/${DOCS}
+rm -rf ${TODIR}/${DOCS}/*
+cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/${DOCS}/
+
+echo "<meta http-equiv=\"refresh\" content=\"0; url=stable/index.html\" />" > ${TODIR}/index.html
+
 # If this is a full docs build, copy the docs into the GitHub repository as the main website.
-if [ "${DOCS}" == "full" ]; then
-    rm -rf ${TODIR}/*
-    cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/
-fi
+#if [ "${DOCS}" == "stable" ]; then
+#    rm -rf ${TODIR}/*
+#    cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/stable
+#fi
 
 # Always copy the docs into the GitHub repository as the unstable website.
-mkdir -p ${TODIR}/unstable
-rm -rf ${TODIR}/unstable/*
-cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/unstable/
+#mkdir -p ${TODIR}/unstable
+#rm -rf ${TODIR}/unstable/*
+#cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/unstable/
 
 # Add all the changes, commit, and push to the GitHub repository.
 cd ${TODIR}

@@ -14,10 +14,12 @@
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
-    "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
+    "full:stable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_stable.yml",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
+    "full:latest": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_latest.yml",
     "changelog": "./scripts/changelog.sh",
-    "linkcheck:prod": "./scripts/linkcheck.sh prod",
+    "linkcheck:stable": "./scripts/linkcheck.sh prod",
+    "linkcheck:latest": "./scripts/linkcheck.sh latest",
     "linkcheck:unstable": "./scripts/linkcheck.sh unstable"
   },
   "repository": {
