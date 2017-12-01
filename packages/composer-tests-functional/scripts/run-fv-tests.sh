@@ -38,11 +38,9 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
 
     # Pull any required Docker images.
     if [[ ${FVTEST} == hlfv1* ]]; then
-        npm run stop_verdaccio
         rm -fr ./storage
         rm -fr ./verdaccio
         rm -fr ${HOME}/.config/verdaccio
-        npm run start_verdaccio
         sleep 5
         if [[ ${FVTEST} == *tls ]]; then
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
@@ -54,6 +52,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-preview
         docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-preview
         docker pull hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
+        docker pull verdaccio/verdaccio:2.6.4
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi

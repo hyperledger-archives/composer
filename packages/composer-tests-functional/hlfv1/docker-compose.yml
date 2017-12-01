@@ -117,4 +117,16 @@ services:
     environment:
       DB_URL: http://localhost:5984/member_db
 
+  verdaccio:
+    container_name: verdaccio
+    image: verdaccio/verdaccio:2.6.4
+    ports:
+      - 4873:4873
+    volumes:
+      - vedaccio:/vedaccio
+      - "./conf:/verdaccio/conf"
+
+volumes:
+  vedaccio:
+    driver: local
 
