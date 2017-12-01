@@ -24,7 +24,6 @@
  * @transaction
  */
 function onAnimalMovementDeparture(movementDeparture) {
-    console.log('onAnimalMovementDeparture');
     if(movementDeparture.animal.movementStatus !== 'IN_FIELD'){
         throw new Error('Animal is already IN_TRANSIT');
     }
@@ -57,7 +56,6 @@ function onAnimalMovementDeparture(movementDeparture) {
  * @transaction
  */
 function onAnimalMovementArrival(movementArrival) {
-    console.log('onAnimalMovementArrival');
 
     if(movementArrival.animal.movementStatus !== 'IN_TRANSIT'){
         throw new Error('Animal is not IN_TRANSIT');

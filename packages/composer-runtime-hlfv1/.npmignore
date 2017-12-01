@@ -2,6 +2,7 @@
 logs
 *.log
 npm-debug.log*
+composer-logs
 
 # Runtime data
 pids
@@ -13,6 +14,9 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+
+# test directory
+test
 
 # nyc test coverage
 .nyc_output
@@ -45,8 +49,11 @@ out
 *.swp
 
 # Build generated files should be ignored by git, but not by npm.
-composer
-# composer.js.go
-composer.js
-composer.js.map
-composer.min.js
+.editorconfig
+.eslintignore
+.eslintrc.yml
+header.txt
+jsdoc.json
+LICENSE.txt
+README.md
+

@@ -55,6 +55,7 @@ stop
 
 
 # run the fabric-dev-scripts to get a running fabric
+export FABRIC_VERSION=hlfv11
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
 

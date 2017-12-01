@@ -41,11 +41,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.0.3
-        docker pull hyperledger/fabric-ca:$ARCH-1.0.3
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.0.3
-        docker pull hyperledger/fabric-orderer:$ARCH-1.0.3
-        docker pull hyperledger/fabric-couchdb:$ARCH-1.0.3
+        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-preview
+        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-preview
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-preview
+        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-preview
+        docker pull hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
@@ -64,6 +64,14 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
+        cd ${DIR}
+        cd ../composer-runtime-hlfv1
+        if [ `uname` = "Darwin" ]; then
+            GATEWAY="$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')"
+        else
+            GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+        fi
+        echo registry=http://${GATEWAY}:4873 > .npmrc
     fi
 
     # configure v1 to run the tests
@@ -107,10 +115,19 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     fi
 
     # Delete any written configuration.
+    rm -fr ./verdaccio
+    rm -fr ./storage
+    rm -fr ${HOME}/.config/verdaccio
     rm -rf ${HOME}/.composer/cards/Test*
+    rm -rf ${HOME}/.composer/client-data/Test*
     rm -rf ./tmp/*
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
+    if [ "${DOCKER_FILE}" != "" ]; then
+        cd ../composer-runtime-hlfv1
+        rm .npmrc
+        cd "${DIR}"
+    fi
 
     # Delete any crypto-config material
     if [ -d ./hlfv1/crypto-config ]; then
