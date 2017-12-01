@@ -38,11 +38,9 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
 
     # Pull any required Docker images.
     if [[ ${FVTEST} == hlfv1* ]]; then
-        npm run stop_verdaccio
         rm -fr ./storage
         rm -fr ./verdaccio
         rm -fr ${HOME}/.config/verdaccio
-        npm run start_verdaccio
         sleep 5
         if [[ ${FVTEST} == *tls ]]; then
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
