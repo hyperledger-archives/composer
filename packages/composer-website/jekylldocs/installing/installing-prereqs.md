@@ -1,18 +1,68 @@
 ---
 layout: default
-title: Installing pre-requisites on Mac OS
+title: Installing pre-requisites
 category: start
 section: installing
 sidebar: sidebars/accordion-toc0.md
-excerpt: Guide to installing the pre-requisites on Mac OS X
-index-order: 202
+excerpt: Make sure you have the required pre-requisites by following [**Installing pre-requisites**](../installing/installing-prereqs.html).
+index-order: 201
 ---
 
-# Installing the pre-requisites for {{site.data.conrefs.composer_full}} on Mac OS X
+# Installing pre-requisites
+
+The {{site.data.conrefs.composer_full}} pre-requisites can be installed on Ubuntu or MacOS.  Choose your operating system to jump to the appropriate section, or scroll down to find the instructions:
+
+<a href=#ubuntu><button class="secondary">Ubuntu</button></a> <a href=#macos><button class="secondary">Mac OS</button></a>
+
+<a name="ubuntu"></a>
+# Ubuntu
+
+To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+
+The following are prerequisites for installing the required development tools:
+
+- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+- Docker Engine: Version 17.03 or higher
+- Docker-Compose: Version 1.8 or higher
+- Node: 8.9 or higher (note version 9 is not supported)
+- npm: v5.x
+- git: 2.9.x or higher
+- Python: 2.7.x
+- A code editor of your choice, we recommend VSCode.
+
+**If installing {{site.data.conrefs.composer_full}} using Linux, be aware of the following advice:
+
+- Login as a normal user, rather than root.
+- Do not `su` to root.
+- When installing prerequisites, use curl, then unzip using sudo.
+- Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it's actions are required to be run as root.
+- Do not use npm with `sudo` or `su` to root to use it.
+- Avoid installing node globally as root.**
+
+If you're running on Ubuntu, you can download the prerequisites using the following commands:
+
+```bash
+curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+
+chmod u+x prereqs-ubuntu.sh
+```
+
+Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.
+
+```
+./prereqs-ubuntu.sh
+```
+
+## What next?
+
+> Congratulations, the installation of the pre-requisites for {{site.data.conrefs.composer_full}} is complete! You can now proceed with [Installing the development environment](../installing/development-tools.html).
+
+<a name="macos"></a>
+# Mac OS
 
 Follow these instructions to install the pre-requsities for installing {{site.data.conrefs.composer_full}} on a local Mac OS X machine. You need to install these tools *before* you attempt to install {{site.data.conrefs.composer_full}}.
 
-> Note Mac OS X version `10.12.6` was used for these instructions. 
+> Note Mac OS X version `10.12.6` was used for these instructions.
 
 ## Install nvm and Apple Xcode
 
@@ -42,7 +92,7 @@ Switch back to the terminal and create your bash profile (stores user preference
 
 ```
 touch .bash_profile
-``` 
+```
 
 Then rerun the original curl command:
 
@@ -75,7 +125,7 @@ nvm use --lts
 Check that Node is installed:
 
 ```
-node --version 
+node --version
 ```
 
 ## Install Docker
@@ -100,4 +150,4 @@ Type `composer` into the search bar and then press the `Install` button next to 
 
 ## What next?
 
-Congratulations, the installation of the pre-requisites for {{site.data.conrefs.composer_full}} is complete! You can now proceed with installing the {{site.data.conrefs.composer_full}} npm modules, as described in [Step 1 here](../installing/development-tools.html).
+> Congratulations, the installation of the pre-requisites for {{site.data.conrefs.composer_full}} is complete! You can now proceed with [Installing the development environment](../installing/development-tools.html).
