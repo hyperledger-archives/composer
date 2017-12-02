@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Installing pre-requisites on Mac OS | Hyperledger Composer</title>
+    <title>Installing pre-requisites | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Installing pre-requisites on Mac OS</p>
+          <p>Installing pre-requisites</p>
           </div>
 
           <nav class="context-nav">
@@ -106,10 +106,9 @@ ga('send', 'pageview');
 <li><p><a href="/composer/unstable/installing/installing-index"><b>Installing</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
-<li><a href="/composer/unstable/installing/getting-started-with-playground">Using the Playground online</a></li>
-<li><a href="/composer/unstable/installing/prereqs-mac">Installing pre-requisites on Mac OS</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing the Playground locally</a></li>
-<li><a href="/composer/unstable/installing/development-tools">Installing a development environment</a></li>
+<li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -260,12 +259,64 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="installing-the-pre-requisites-for-hyperledger-composer-on-mac-os-x">Installing the pre-requisites for Hyperledger Composer on Mac OS X</h1>
+              <h1 id="installing-pre-requisites">Installing pre-requisites</h1>
+
+<p>The Hyperledger Composer pre-requisites can be installed on Ubuntu or MacOS.  Choose your operating system to jump to the appropriate section, or scroll down to find the instructions:</p>
+
+<p><a href=#ubuntu><button class="secondary">Ubuntu</button></a> <a href=#macos><button class="secondary">Mac OS</button></a></p>
+
+<p><a name="ubuntu"></a></p>
+
+<h1 id="ubuntu">Ubuntu</h1>
+
+<p>To run Hyperledger Composer and Hyperledger Fabric, we recommend you have at least 4Gb of memory.</p>
+
+<p>The following are prerequisites for installing the required development tools:</p>
+
+<ul>
+<li>Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12</li>
+<li>Docker Engine: Version 17.03 or higher</li>
+<li>Docker-Compose: Version 1.8 or higher</li>
+<li>Node: 8.9 or higher (note version 9 is not supported)</li>
+<li>npm: v5.x</li>
+<li>git: 2.9.x or higher</li>
+<li>Python: 2.7.x</li>
+<li>A code editor of your choice, we recommend VSCode.</li>
+</ul>
+
+<p>**If installing Hyperledger Composer using Linux, be aware of the following advice:</p>
+
+<ul>
+<li>Login as a normal user, rather than root.</li>
+<li>Do not <code>su</code> to root.</li>
+<li>When installing prerequisites, use curl, then unzip using sudo.</li>
+<li>Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it&#39;s actions are required to be run as root.</li>
+<li>Do not use npm with <code>sudo</code> or <code>su</code> to root to use it.</li>
+<li>Avoid installing node globally as root.**</li>
+</ul>
+
+<p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">curl <span class="nt">-O</span> https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+
+chmod u+x prereqs-ubuntu.sh
+</code></pre></div>
+<p>Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">./prereqs-ubuntu.sh
+</code></pre></div>
+<h2 id="what-next">What next?</h2>
+
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
+
+<p><a name="macos"></a></p>
+
+<h1 id="mac-os">Mac OS</h1>
 
 <p>Follow these instructions to install the pre-requsities for installing Hyperledger Composer on a local Mac OS X machine. You need to install these tools <em>before</em> you attempt to install Hyperledger Composer.</p>
 
 <blockquote>
-<p>Note Mac OS X version <code>10.12.6</code> was used for these instructions. </p>
+<p>Note Mac OS X version <code>10.12.6</code> was used for these instructions.</p>
 </blockquote>
 
 <h2 id="install-nvm-and-apple-xcode">Install nvm and Apple Xcode</h2>
@@ -309,7 +360,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">nvm use --lts
 </code></pre></div>
 <p>Check that Node is installed:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">node --version 
+<div class="highlight"><pre><code class="language-" data-lang="">node --version
 </code></pre></div>
 <h2 id="install-docker">Install Docker</h2>
 
@@ -333,7 +384,9 @@ ga('send', 'pageview');
 
 <h2 id="what-next">What next?</h2>
 
-<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with installing the Hyperledger Composer npm modules, as described in <a href="../installing/development-tools.html">Step 1 here</a>.</p>
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
 
             
           </section>
