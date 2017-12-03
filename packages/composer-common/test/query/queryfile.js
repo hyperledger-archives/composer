@@ -74,7 +74,7 @@ describe('QueryFile', () => {
         it('should throw a ParseException on invalid input', () => {
             (() => {
                 new QueryFile('test.qry', modelManager, invalidQuery);
-            }).should.throw(/Line 3/);
+            }).should.throw(/File test.qry line 3/);
         });
 
         it('should throw an error if it does not have a location', () => {

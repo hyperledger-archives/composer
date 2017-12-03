@@ -19,7 +19,7 @@ const Reset = require ('./lib/reset.js');
 module.exports.command = 'reset [options]';
 module.exports.describe = 'Resets a business network';
 module.exports.builder = {
-    card: { alias: 'c', required: false, description: 'The cardname to use to reset  the network', type:'string'}
+    card: { alias: 'c', required: true, description: 'The cardname to use to reset  the network', type:'string'}
 };
 
 module.exports.handler = (argv) => {

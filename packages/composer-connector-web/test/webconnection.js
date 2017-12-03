@@ -17,7 +17,6 @@
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Context = require('composer-runtime').Context;
 const DataCollection = require('composer-runtime').DataCollection;
 const DataService = require('composer-runtime').DataService;
@@ -38,7 +37,6 @@ describe('WebConnection', () => {
     let sandbox;
     let mockConnectionManager;
     let mockConnectionProfileManager;
-    let mockConnectionProfileStore;
     let mockSecurityContext;
     let identity;
     let connection;
@@ -49,22 +47,15 @@ describe('WebConnection', () => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionManager.getConnectionProfileManager.returns(mockConnectionProfileManager);
-        mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
-        mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
-        mockConnectionProfileStore.load.resolves({
-            type: 'web',
-            networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-        });
-        mockConnectionProfileStore.save.resolves();
         mockSecurityContext = sinon.createStubInstance(WebSecurityContext);
         identity = {
-            identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
-            name: 'bob1',
-            issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
-            secret: 'suchsecret',
-            certificate: '',
-            options: {
-                issuer: true
+            identifier : 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+            name : 'bob1',
+            issuer : 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+            secret : 'suchsecret',
+            certificate : '',
+            options : {
+                issuer : true
             }
         };
         mockSecurityContext.getIdentity.returns(identity);
@@ -84,11 +75,11 @@ describe('WebConnection', () => {
     });
 
     describe('#createTransactionId', () => {
-        it('should just return null ', ()=>{
+        it('should just return null ', () => {
             connection.createTransactionId(mockSecurityContext)
-            .then((result)=>{
-                should.be.equal(result,null);
-            });
+                .then((result) => {
+                    should.be.equal(result, null);
+                });
         });
     });
 
@@ -138,20 +129,13 @@ describe('WebConnection', () => {
                 });
         });
 
-        it('should throw if the business network was specified but it does not exist', () => {
-            connection.deleteChaincodeID('org.acme.business');
-            return connection.login('doge', 'suchs3cret')
-                .should.be.rejectedWith(/No chaincode ID found/);
-        });
-
         it('should create a new runtime and return a new security context with a non-null chaincode ID if the business network does exist', () => {
-            should.equal(WebConnection.getBusinessNetwork('org.acme.business', 'devFabric1'), undefined);
+            should.equal(WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838'), undefined);
             return connection.login('doge', 'suchs3cret')
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    securityContext.getChaincodeID().should.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-                    WebConnection.getBusinessNetwork('org.acme.business', 'devFabric1').should.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-                    WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838').should.exist;
+                    securityContext.getChaincodeID().should.equal('org.acme.business');
+                    WebConnection.getChaincode('org.acme.business').should.exist;
                     sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
                 });
         });
@@ -159,22 +143,20 @@ describe('WebConnection', () => {
         it('should use an existing runtime and return a new security context with a non-null chaincode ID if the business network does exist', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockEngine = sinon.createStubInstance(Engine);
-            WebConnection.addBusinessNetwork('org.acme.business', 'devFabric1', '133c00a3-8555-4aa5-9165-9de9a8f8a838');
-            WebConnection.addChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838', mockContainer, mockEngine);
-            let originalChaincode = WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838');
+            WebConnection.addChaincode('org.acme.business', mockContainer, mockEngine);
+            let originalChaincode = WebConnection.getChaincode('org.acme.business');
             return connection.login('doge', 'suchs3cret')
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    securityContext.getChaincodeID().should.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-                    WebConnection.getBusinessNetwork('org.acme.business', 'devFabric1').should.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-                    WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838').should.equal(originalChaincode);
+                    securityContext.getChaincodeID().should.equal('org.acme.business');
+                    WebConnection.getChaincode('org.acme.business').should.equal(originalChaincode);
                     sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
                 });
         });
 
     });
 
-    describe('#install', ()  => {
+    describe('#install', () => {
         it('should perform a no-op and return a resolved promise', () => {
             return connection.install(mockSecurityContext, 'org-acme-biznet')
                 .then(() => {
@@ -182,13 +164,13 @@ describe('WebConnection', () => {
         });
     });
 
-    describe('#deploy', ()  => {
+    describe('#deploy', () => {
         it('should just call start', () => {
             sinon.stub(connection, 'start').resolves();
-            return connection.deploy(mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' })
+            return connection.deploy(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
                 .then(() => {
                     sinon.assert.calledOnce(connection.start);
-                    sinon.assert.calledWith(connection.start, mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' });
+                    sinon.assert.calledWith(connection.start, mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'});
                 });
         });
     });
@@ -198,7 +180,7 @@ describe('WebConnection', () => {
 
         it('should call the init engine method, ping, and store the chaincode ID', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
-            mockContainer.getUUID.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
+            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
             mockSecurityContext.getIdentity.returns(identity);
             sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
             let mockEngine = sinon.createStubInstance(Engine);
@@ -206,7 +188,7 @@ describe('WebConnection', () => {
             sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', { start: 'options' })
+            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
@@ -214,45 +196,56 @@ describe('WebConnection', () => {
                         context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
                         return true;
                     }), 'init', ['{"start":"json"}']);
-                    WebConnection.getBusinessNetwork('testnetwork', 'devFabric1').should.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
                     WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838').should.deep.equal({
-                        id: '133c00a3-8555-4aa5-9165-9de9a8f8a838',
-                        container: mockContainer,
-                        engine: mockEngine
+                        id : '133c00a3-8555-4aa5-9165-9de9a8f8a838',
+                        container : mockContainer,
+                        engine : mockEngine
                     });
                 });
+        });
+
+        it('should handle network already exisiting', () => {
+            let mockContainer = sinon.createStubInstance(WebContainer);
+            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
+            mockSecurityContext.getIdentity.returns(identity);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.rejects({message : 'cannot add testnetwork as the object already exists'});
+            sinon.stub(connection, 'ping').resolves();
+            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
+                .should.be.rejectedWith('business network with name testnetwork already exists');
+        });
+
+        it('should handle error', () => {
+            let mockContainer = sinon.createStubInstance(WebContainer);
+            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
+            mockSecurityContext.getIdentity.returns(identity);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.rejects({message : 'some error'});
+            sinon.stub(connection, 'ping').resolves();
+            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
+                .should.be.rejectedWith({message : 'some error'});
         });
 
     });
 
 
-
     describe('#undeploy', () => {
-
         it('should remove the business network', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
             return connection.undeploy(mockSecurityContext, 'org.acme.Business')
                 .then(() => {
-                    should.equal(WebConnection.getBusinessNetwork('org.acme.Business', 'devFabric1'), undefined);
+                    should.equal(WebConnection.getChaincode('eeb8858-eced-4a32-b1cd-2491f1e3718f'), undefined);
                 });
         });
-
-        it('should handle a duplicate removal of a business network', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            return connection.undeploy(mockSecurityContext, 'org.acme.Business')
-                .then(() => {
-                    return connection.undeploy(mockSecurityContext, 'org.acme.Business');
-                });
-        });
-
     });
 
     describe('#ping', () => {
@@ -264,7 +257,7 @@ describe('WebConnection', () => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
                     result.should.deep.equal({
-                        hello: 'world'
+                        hello : 'world'
                     });
                 });
         });
@@ -277,11 +270,10 @@ describe('WebConnection', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
             mockSecurityContext.getIdentity.returns(identity);
             mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            mockEngine.query.resolves({ test: 'data from engine' });
+            mockEngine.query.resolves({test : 'data from engine'});
             return connection.queryChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
                 .then((result) => {
                     sinon.assert.calledOnce(mockEngine.query);
@@ -291,7 +283,7 @@ describe('WebConnection', () => {
                         return true;
                     }), 'testFunction', ['arg1', 'arg2']);
                     result.should.be.an.instanceOf(Buffer);
-                    JSON.parse(result.toString()).should.deep.equal({ test: 'data from engine' });
+                    JSON.parse(result.toString()).should.deep.equal({test : 'data from engine'});
                 });
         });
 
@@ -303,11 +295,10 @@ describe('WebConnection', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
             mockSecurityContext.getIdentity.returns(identity);
             mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            mockEngine.invoke.resolves({ test: 'data from engine' });
+            mockEngine.invoke.resolves({test : 'data from engine'});
             return connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
                 .then((result) => {
                     sinon.assert.calledOnce(mockEngine.invoke);
@@ -335,9 +326,9 @@ describe('WebConnection', () => {
         it('should ensure and return the identities collection', () => {
             mockDataService.ensureCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
             return connection.getIdentities()
-               .then((identities) => {
-                   identities.should.equal(mockIdentitiesDataCollection);
-               });
+                .then((identities) => {
+                    identities.should.equal(mockIdentitiesDataCollection);
+                });
         });
 
     });
@@ -345,18 +336,18 @@ describe('WebConnection', () => {
     describe('#getIdentity', () => {
 
         const adminIdentity = {
-            identifier: '',
-            name: 'admin',
-            issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-            secret: 'adminpw',
-            certificate: [
+            identifier : '',
+            name : 'admin',
+            issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+            secret : 'adminpw',
+            certificate : [
                 '-----BEGIN CERTIFICATE-----',
                 'YWRtaW4=',
                 '-----END CERTIFICATE-----'
             ].join('\n').concat('\n'),
-            imported: false,
-            options: {
-                issuer: true
+            imported : false,
+            options : {
+                issuer : true
             }
         };
 
@@ -398,18 +389,18 @@ describe('WebConnection', () => {
     describe('#_createAdminIdentity', () => {
 
         const adminIdentity = {
-            certificate: [
+            certificate : [
                 '-----BEGIN CERTIFICATE-----',
                 'YWRtaW4=',
                 '-----END CERTIFICATE-----'
             ].join('\n').concat('\n'),
-            identifier: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-            issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-            name: 'admin',
-            secret: 'adminpw',
-            imported: false,
-            options: {
-                issuer: true
+            identifier : '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+            issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+            name : 'admin',
+            secret : 'adminpw',
+            imported : false,
+            options : {
+                issuer : true
             }
         };
 
@@ -435,11 +426,11 @@ describe('WebConnection', () => {
 
         it('should not check the secret if the name is admin', () => {
             const identity = {
-                identifier: '',
-                name: 'admin',
-                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                secret: 'adminpw',
-                imported: false
+                identifier : '',
+                name : 'admin',
+                issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                secret : 'adminpw',
+                imported : false
             };
             sinon.stub(connection, 'getIdentity').resolves(identity);
             return connection.testIdentity('admin', 'blahblah')
@@ -460,11 +451,11 @@ describe('WebConnection', () => {
 
         it('should not throw if the secret does match and the identity was imported', () => {
             const identity = {
-                identifier: '',
-                name: 'admin',
-                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                secret: 'adminpw',
-                imported: true
+                identifier : '',
+                name : 'admin',
+                issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                secret : 'adminpw',
+                imported : true
             };
             sinon.stub(connection, 'getIdentity').resolves(identity);
             return connection.testIdentity('bob1', 'suchsecret')
@@ -485,16 +476,16 @@ describe('WebConnection', () => {
         it('should return the existing identity if it already exists', () => {
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
             mockIdentitiesDataCollection.get.withArgs('doge').resolves({
-                certificate: '',
-                identifier: '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
-                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                name: 'doge',
-                secret: 'f892c30a'
+                certificate : '',
+                identifier : '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
+                issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                name : 'doge',
+                secret : 'f892c30a'
             });
             return connection.createIdentity(mockSecurityContext, 'doge')
                 .then((result) => {
                     sinon.assert.notCalled(mockIdentitiesDataCollection.add);
-                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
+                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
                 });
         });
 
@@ -506,19 +497,19 @@ describe('WebConnection', () => {
                 .then((result) => {
                     sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
                     sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                        certificate: [
+                        certificate : [
                             '-----BEGIN CERTIFICATE-----',
                             'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
                             '-----END CERTIFICATE-----'
                         ].join('\n').concat('\n'),
-                        identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
-                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                        name: 'doge',
-                        secret: 'f892c30a',
-                        imported: false,
-                        options: { }
+                        identifier : '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
+                        issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                        name : 'doge',
+                        secret : 'f892c30a',
+                        imported : false,
+                        options : {}
                     });
-                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
+                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
                 });
         });
 
@@ -526,25 +517,25 @@ describe('WebConnection', () => {
             sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
-            return connection.createIdentity(mockSecurityContext, 'doge', { issuer: true })
+            return connection.createIdentity(mockSecurityContext, 'doge', {issuer : true})
                 .then((result) => {
                     sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
                     sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                        certificate: [
+                        certificate : [
                             '-----BEGIN CERTIFICATE-----',
                             'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
                             '-----END CERTIFICATE-----'
                         ].join('\n').concat('\n'),
-                        identifier: '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
-                        issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                        name: 'doge',
-                        secret: 'f892c30a',
-                        imported: false,
-                        options: {
-                            issuer: true
+                        identifier : '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
+                        issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                        name : 'doge',
+                        secret : 'f892c30a',
+                        imported : false,
+                        options : {
+                            issuer : true
                         }
                     });
-                    result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
+                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
                 });
         });
 
@@ -556,126 +547,4 @@ describe('WebConnection', () => {
         });
 
     });
-
-    describe('#list', () => {
-
-        it('should list all existing business networks', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: {
-                    'org-acme-business': '133c00a3-8555-4aa5-9165-9de9a8f8a838',
-                    'org-acme-biznet2': '6eeb8858-eced-4a32-b1cd-2491f1e3718f'
-                }
-            });
-            return connection.list()
-                .should.eventually.be.deep.equal(['org-acme-biznet2', 'org-acme-business']);
-        });
-
-        it('should cope with missing business networks', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
-            });
-            return connection.list()
-                .should.eventually.be.deep.equal([]);
-        });
-
-    });
-
-    describe('#getChaincodeID', () => {
-
-        it('should return the chaincode ID for the specified business network', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-            });
-            return connection.getChaincodeID('org.acme.business')
-                .should.eventually.equal('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-        });
-
-        it('should undefined if the specified business network does not exist', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-            });
-            return connection.getChaincodeID('org-acme-biznet2')
-                .should.eventually.be.undefined;
-        });
-
-        it('should undefined if the profile contains no networks', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
-            });
-            return connection.getChaincodeID('org-acme-biznet2')
-                .should.eventually.be.undefined;
-        });
-
-    });
-
-    describe('#setChaincodeID', () => {
-
-        it('should set the chaincode ID for the specified business network', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web'
-            });
-            return connection.setChaincodeID('org.acme.business', '133c00a3-8555-4aa5-9165-9de9a8f8a838')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
-                        networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-                    });
-                });
-        });
-
-        it('should update the chaincode ID for an existing business network', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-            });
-            return connection.setChaincodeID('org.acme.business', '5b8d4830-e348-4a25-9fc4-64b89690a6a3')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
-                        networks: { 'org.acme.business': '5b8d4830-e348-4a25-9fc4-64b89690a6a3' }
-                    });
-                });
-        });
-
-    });
-
-    describe('#deleteChaincodeID', () => {
-
-        it('should delete the chaincode ID for the specified business network', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-            });
-            return connection.deleteChaincodeID('org.acme.business')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
-                        networks: { }
-                    });
-                });
-        });
-
-        it('should ignore a missing business network', () => {
-            mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
-                type: 'web',
-                networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-            });
-            return connection.deleteChaincodeID('org-acme-biznet2')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                    sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {
-                        type: 'web',
-                        networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
-                    });
-                });
-        });
-
-    });
-
 });

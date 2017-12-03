@@ -164,4 +164,21 @@ describe('LoopBackCardStore', () => {
 
     });
 
+    describe('#has', () => {
+
+        it('should return true if the specified business network card exists', () => {
+            return cardStore.has('alice1@bond-network').then((result)=>{
+                should.equal(true,result);
+            });
+
+        });
+
+        it('should throw an error if the specified business network card does not exist', () => {
+            return cardStore.has('charlie1@bond-network').then((result)=>{
+                should.equal(false,result);
+            });
+        });
+
+    });
+
 });

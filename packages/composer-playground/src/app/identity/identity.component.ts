@@ -112,22 +112,15 @@ export class IdentityComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     if (result.choice === 'add') {
-                        return this.addCardToWallet(result.card);
+                        this.alertService.successStatus$.next({
+                            title: 'ID Card added to wallet',
+                            text: 'The ID card ' + this.identityCardService.getIdentityCard(result.cardRef).getUserName() + ' was successfully added to your wallet',
+                            icon: '#icon-role_24'
+                        });
                     } else if (result.choice === 'export') {
                         return this.exportIdentity(result.card);
                     }
                 }
-            });
-    }
-
-    addCardToWallet(card: IdCard): Promise<any> {
-        return this.identityCardService.addIdentityCard(card)
-            .then((cardRef: string) => {
-                this.alertService.successStatus$.next({
-                    title: 'ID Card added to wallet',
-                    text: 'The ID card ' + this.identityCardService.getIdentityCard(cardRef).getUserName() + ' was successfully added to your wallet',
-                    icon: '#icon-role_24'
-                });
             });
     }
 
@@ -136,7 +129,7 @@ export class IdentityComponent implements OnInit {
         let connectionProfile = currentCard.getConnectionProfile();
         let businessNetworkName = currentCard.getBusinessNetworkName();
 
-        return this.identityCardService.createIdentityCard(identity.userID, businessNetworkName, identity.userSecret, connectionProfile)
+        return this.identityCardService.createIdentityCard(identity.userID, null, businessNetworkName, identity.userSecret, connectionProfile)
             .then((cardRef: string) => {
                 this.alertService.successStatus$.next({
                     title: 'ID Card added to wallet',
@@ -169,7 +162,7 @@ export class IdentityComponent implements OnInit {
                     title: 'Reconnecting...',
                     text: 'Using identity ' + this.currentIdentity
                 });
-                return this.clientService.ensureConnected(null, true);
+                return this.clientService.ensureConnected(true);
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
@@ -182,6 +175,27 @@ export class IdentityComponent implements OnInit {
     }
 
     removeIdentity(cardRef: string): Promise<void> {
+      let userID = this.identityCards.get(cardRef).getUserName();
+      return this.identityCardService.deleteIdentityCard(cardRef)
+          .then(() => {
+              return this.loadAllIdentities();
+          })
+          .then(() => {
+              // Send alert
+              this.alertService.busyStatus$.next(null);
+              this.alertService.successStatus$.next({
+                  title: 'Removal Successful',
+                  text: userID + ' was successfully removed.',
+                  icon: '#icon-bin_icon'
+              });
+          })
+          .catch((error) => {
+              this.alertService.busyStatus$.next(null);
+              this.alertService.errorStatus$.next(error);
+          });
+    }
+
+    openRemoveModal(cardRef: string): Promise<void> {
 
         let userID = this.identityCards.get(cardRef).getUserName();
 
@@ -201,23 +215,7 @@ export class IdentityComponent implements OnInit {
                         title: 'Removing ID',
                         text: 'Removing identity ' + userID + ' from your wallet'
                     });
-
-                    return this.identityCardService.deleteIdentityCard(cardRef)
-                        .then(() => {
-                            return this.loadAllIdentities();
-                        })
-                        .then(() => {
-                            // Send alert
-                            this.alertService.busyStatus$.next(null);
-                            this.alertService.successStatus$.next({
-                                title: 'Removal Successful',
-                                text: userID + ' was successfully removed.',
-                                icon: '#icon-bin_icon'
-                            });
-                        })
-                        .catch((error) => {
-                            this.alertService.errorStatus$.next(error);
-                        });
+                    return this.removeIdentity(cardRef);
                 }
             }, (reason) => {
                 // runs this when user presses 'cancel' button on the modal
@@ -232,7 +230,6 @@ export class IdentityComponent implements OnInit {
         // show confirm/delete dialog first before taking action
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Revoke Identity';
-        confirmModalRef.componentInstance.fileAction = 'revoke the permissions for';
         confirmModalRef.componentInstance.fileType = 'identity';
         confirmModalRef.componentInstance.fileName = identity.name;
         confirmModalRef.componentInstance.deleteMessage = 'Are you sure you want to do this?';

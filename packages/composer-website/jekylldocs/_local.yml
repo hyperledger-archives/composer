@@ -1,0 +1,49 @@
+## Config file solely for use in local testing of the jekyll configuration
+title: Hyperledger Composer
+description: Create business networks and application for Hyperledger
+
+email:
+url: "https://hyperledger.github.io/composer/"
+
+
+#For publishing to your own gh-pages branch of the Docs repo this will need to
+#be the sitebaseurl - but the build scripts handle this for you.
+#
+baseurl: "/api-doc/composer"
+destination: /home/matthew/github/api-doc/docs/composer
+highlighter: rouge
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "strikethrough", "superscript", "with_toc_data"]
+
+
+# _config.build.yml sets future and show_drafts to false on `grunt build`
+future: true
+show_drafts: true
+
+permalink: /blog/:title.html
+
+plugins:
+- jekyll-sitemap
+
+exclude: [
+            package.json,
+            bower.json,
+            grunt.js,
+            Gruntfile.js,
+            node_modules,
+            bower_components,
+            validation-report.json,
+            validation-status.json,
+            scripts.js,
+            scripts.tmp.min.js,
+            style.css,
+            style.tmp.min.css,
+            Makefile,
+            exclude.rsync,
+            README.markdown
+         ]
+
+google_tracking_id:
+  development: UA-91314349-2
+  production: UA-91314349-1

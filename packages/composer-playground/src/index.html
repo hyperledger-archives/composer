@@ -17,7 +17,7 @@
 <body class="composer">
   <app>
     <div class="initial-loading-elements" style="margin-top: 40vh; color: #19273C;">
-    <h1 style="font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1.25em; font-weight: 300; text-align: center; line-height: 100%;">Loading Hyperledger Composer...</h1>
+    <h1 style="font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1.25em; font-weight: 300; text-align: center; line-height: 100%;">Loading <%= htmlWebpackPlugin.options.title %>...</h1>
     <p style="font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 0.9rem; font-weight: 400; text-align: center; color: #8C9696; margin-bottom: 1.3em;">Prepare to Blockchain</p>
     </div>
   </app>
@@ -27,9 +27,6 @@
     (A[l].q=A[l].q||[]).push(arguments)},A[l].l=1*new Date();a=n.createElement(g),
     r=n.getElementsByTagName(g)[0];a.async=1;a.src=u;r.parentNode.insertBefore(a,r)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-91314349-3', 'auto');
-    ga('send', 'pageview');
   </script>
 
   <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>

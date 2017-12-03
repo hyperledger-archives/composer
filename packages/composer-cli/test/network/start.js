@@ -21,6 +21,8 @@ const Start = require('../../lib/cmds/network/lib/start.js');
 const StartCmd = require('../../lib/cmds/network/startCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const IdCard = require('composer-common').IdCard;
+const ora = require('ora');
+
 require('chai').should();
 
 const chai = require('chai');
@@ -47,10 +49,14 @@ describe('composer start network CLI unit tests', function () {
         businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.start.resolves();
+        mockAdminConnection.update.resolves();
         mockAdminConnection.exportCard.resolves(testCard);
+        let mapCards = new Map();
+        mapCards.set('conga',testCard);
+        mockAdminConnection.start.resolves(mapCards);
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
@@ -104,25 +110,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                   sinon.match( {
-                       bootstrapTransactions: [
-                           {
-                               $class: 'org.hyperledger.composer.system.AddParticipant',
-                               resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                               targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                               timestamp: sinon.match.any,
-                               transactionId: sinon.match.any
-                           }, {
-                               $class: 'org.hyperledger.composer.system.IssueIdentity',
-                               identityName: 'admin',
-                               participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                               timestamp: sinon.match.any,
-                               transactionId: sinon.match.any
-                           }
-
-                       ],
-                       endorsementPolicy: optionsObject.endorsementPolicy
-                   }));
+                    {
+                        endorsementPolicy: optionsObject.endorsementPolicy,  networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                    });
             });
         });
 
@@ -147,25 +137,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                    sinon.match( {
-                        bootstrapTransactions: [
-                            {
-                                $class: 'org.hyperledger.composer.system.AddParticipant',
-                                resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp: sinon.match.any,
-                                transactionId: sinon.match.any
-                            }, {
-                                $class: 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName: 'admin',
-                                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp: sinon.match.any,
-                                transactionId: sinon.match.any
-                            }
+                    {                       endorsementPolicyFile: '/path/to/some/file.json', networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
 
-                        ],
-                        endorsementPolicyFile: '/path/to/some/file.json'
-                    }));
+                    });
             });
         });
 
@@ -193,25 +167,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                    sinon.match( {
-                        bootstrapTransactions: [
-                            {
-                                $class: 'org.hyperledger.composer.system.AddParticipant',
-                                resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp: sinon.match.any,
-                                transactionId: sinon.match.any
-                            }, {
-                                $class: 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName: 'admin',
-                                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp: sinon.match.any,
-                                transactionId: sinon.match.any
-                            }
-
-                        ],
-                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING
-                    }));
+                    {
+                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING, networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                    });
             });
         });
 
@@ -237,24 +195,61 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,sinon.match( {
-                    bootstrapTransactions: [
-                        {
-                            $class: 'org.hyperledger.composer.system.AddParticipant',
-                            resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                            targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }, {
-                            $class: 'org.hyperledger.composer.system.IssueIdentity',
-                            identityName: 'admin',
-                            participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }
-
-                    ]}));
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
+                {    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]}  );
             });
+        });
+
+        it('Good path, all parms correctly specified. with the certificate', function () {
+
+            let argv = {card:'cardname'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,networkAdmin: 'admin'
+                                   ,networkAdminCertificateFile:'certificate-file'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns('asdasdasd');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                            sinon.assert.calledOnce(mockAdminConnection.start);
+
+
+                        });
+        });
+        it('Good path, all parms correctly specified. File output set for the card', function () {
+
+            let argv = {card:'cardname'
+                                   ,archiveFile: 'testArchiveFile.zip'
+                                   ,networkAdmin: 'admin'
+                                   ,networkAdminEnrollSecret:'true'
+                                ,file:'mycardfile'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                            sinon.assert.calledOnce(mockAdminConnection.start);
+                            sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
+                               { networkAdmins: [{ file: 'mycardfile', enrollmentSecret : 'true', userName: 'admin' }] } );
+                        }       );
         });
 
         it('Good path, all parms correctly specified, including optional logLevel.', function () {
@@ -279,23 +274,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,sinon.match( {
-                    bootstrapTransactions: [
-                        {
-                            $class: 'org.hyperledger.composer.system.AddParticipant',
-                            resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                            targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }, {
-                            $class: 'org.hyperledger.composer.system.IssueIdentity',
-                            identityName: 'admin',
-                            participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }
-
-                    ], logLevel: 'DEBUG' }));
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,{ networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }],logLevel: 'DEBUG' });
             });
         });
 
@@ -320,23 +299,9 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition, sinon.match( {
-                    bootstrapTransactions: [
-                        {
-                            $class: 'org.hyperledger.composer.system.AddParticipant',
-                            resources: [{ $class: 'org.hyperledger.composer.system.NetworkAdmin', participantId: 'admin' }],
-                            targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }, {
-                            $class: 'org.hyperledger.composer.system.IssueIdentity',
-                            identityName: 'admin',
-                            participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                            timestamp: sinon.match.any,
-                            transactionId: sinon.match.any
-                        }
-                    ]
-                }));
+                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,  {
+                    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                });
             });
         });
 
@@ -352,8 +317,8 @@ describe('composer start network CLI unit tests', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
-                        ,networkAdmin: ['admin1']
-                        ,networkAdminEnrollSecret: [true]};
+                        ,networkAdmin: 'admin1'
+                        ,networkAdminEnrollSecret: true};
 
             sandbox.stub(Start, 'getArchiveFileContents');
 
@@ -369,25 +334,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
-                const deployOptions = mockAdminConnection.start.args[0][1];
-                sanitize(deployOptions.bootstrapTransactions);
-                deployOptions.bootstrapTransactions.should.deep.equal([
-                    {
-                        $class: 'org.hyperledger.composer.system.AddParticipant',
-                        resources: [
-                            {
-                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                                participantId: 'admin1'
-                            }
-                        ],
-                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                    },
-                    {
-                        $class: 'org.hyperledger.composer.system.IssueIdentity',
-                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                        identityName: 'admin1'
-                    }
-                ]);
+
             });
         });
 
@@ -396,8 +343,8 @@ describe('composer start network CLI unit tests', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
 
-                        ,networkAdmin: ['admin1']
-                        ,networkAdminEnrollSecret: [true]
+                        ,networkAdmin: 'admin1'
+                        ,networkAdminEnrollSecret: true
                         ,optionsFile: '/path/to/options.json'};
 
 
@@ -427,26 +374,74 @@ describe('composer start network CLI unit tests', function () {
                 const startOptions = mockAdminConnection.start.args[0][1];
                 sanitize(startOptions.bootstrapTransactions);
                 startOptions.bootstrapTransactions.should.deep.equal([
-                    {
-                        $class: 'org.hyperledger.composer.system.AddParticipant',
-                        resources: [
-                            {
-                                $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                                participantId: 'admin1'
-                            }
-                        ],
-                        targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                    },
-                    {
-                        $class: 'org.hyperledger.composer.system.IssueIdentity',
-                        participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                        identityName: 'admin1'
-                    },
+
                     {
                         $class: 'org.acme.foobar.MyTransaction'
                     }
                 ]);
             });
+        });
+
+        it('Should report correct error if connect fails', () => {
+            let argv = {card:'cardname'
+                ,archiveFile: 'testArchiveFile.zip'
+                ,networkAdmin: 'admin1'
+                ,networkAdminEnrollSecret: true
+                ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.rejects(new Error('some error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/some error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Should report correct error if export card fails', () => {
+            let argv = {card:'cardname'
+            ,archiveFile: 'testArchiveFile.zip'
+
+            ,networkAdmin: 'admin1'
+            ,networkAdminEnrollSecret: true
+            ,optionsFile: '/path/to/options.json'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            mockAdminConnection.connect.resolves();
+            mockAdminConnection.start.rejects(new Error('export error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Start.handler(argv).should.eventually.be.rejectedWith(/export error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Good path, network administrator specified', function () {
+
+            let argv = {card:'cardname'
+                                    ,archiveFile: 'testArchiveFile.zip'
+                                    ,networkAdmin: 'admin1'
+                                    ,networkAdminEnrollSecret: true
+                                    ,file: 'mycard'};
+
+            sandbox.stub(Start, 'getArchiveFileContents');
+
+            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+
+            return StartCmd.handler(argv)
+                        .then ((result) => {
+                            argv.thePromise.should.be.a('promise');
+                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                            sinon.assert.calledOnce(mockAdminConnection.connect);
+                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                            sinon.assert.calledOnce(mockAdminConnection.start);
+
+                        });
         });
 
     });
@@ -475,6 +470,18 @@ describe('composer start network CLI unit tests', function () {
             let testArchiveFile = 'testfile.zip';
             (() => {Start.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
 
+        });
+        it('Unexpected errror', function () {
+
+            let argv = {card:'cardname'
+                                               ,archiveFile: 'testArchiveFile.zip'
+                                               ,networkAdmin: 'admin'
+                                               ,networkAdminCertificateFile:'certificate-file'};
+
+
+            sandbox.stub(Start, 'getArchiveFileContents').withArgs('testArchiveFile.zip').throws(new Error('computer says no'));
+
+            return Start.handler(argv).should.be.rejectedWith(/computer says no/);
         });
 
     });

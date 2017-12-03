@@ -23,6 +23,7 @@ require('chai').should();
 describe('InvalidRelationship', () => {
 
     let modelManager;
+    let classDecl;
     let relationship;
 
     beforeEach(() => {
@@ -47,7 +48,8 @@ describe('InvalidRelationship', () => {
             --> SampleParticipant owner
             --> SampleParticipant[] owners
         }`);
-        relationship = new InvalidRelationship(new Relationship(modelManager, 'org.acme.sample', 'SampleAsset', 'ASSET_1'), new Error('such error'));
+        classDecl = modelManager.getType('org.acme.sample.SampleAsset');
+        relationship = new InvalidRelationship(new Relationship(modelManager, classDecl, 'org.acme.sample', 'SampleAsset', 'ASSET_1'), new Error('such error'));
     });
 
     describe('#constructor', () => {

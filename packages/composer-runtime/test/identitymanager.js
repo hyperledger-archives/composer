@@ -77,7 +77,6 @@ describe('IdentityManager', () => {
         it('should look up an identity using the identifier', () => {
             mockIdentityService.getIdentifier.returns('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63');
             let identity = factory.newResource('org.hyperledger.composer.system', 'Identity', '7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63');
-            mockIdentityRegistry.exists.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').resolves(true);
             mockIdentityRegistry.get.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').resolves(identity);
             return identityManager.getIdentity()
                 .should.eventually.be.equal(identity);
@@ -85,11 +84,10 @@ describe('IdentityManager', () => {
 
         it('should look up an issued identity using the name and issuer', () => {
             mockIdentityService.getIdentifier.returns('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63');
-            mockIdentityRegistry.exists.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').resolves(false);
+            mockIdentityRegistry.get.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').rejects();
             mockIdentityService.getName.returns('admin');
             mockIdentityService.getIssuer.returns('26341f1fc63f30886c54abeba3aca520601126ae2a57869d1ec1a3f854ebc417');
             let identity = factory.newResource('org.hyperledger.composer.system', 'Identity', '9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50');
-            mockIdentityRegistry.exists.withArgs('9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50').resolves(true);
             mockIdentityRegistry.get.withArgs('9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50').resolves(identity);
             return identityManager.getIdentity()
                 .should.eventually.be.equal(identity);
@@ -97,10 +95,10 @@ describe('IdentityManager', () => {
 
         it('should throw for an identity that does not exist', () => {
             mockIdentityService.getIdentifier.returns('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63');
-            mockIdentityRegistry.exists.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').resolves(false);
+            mockIdentityRegistry.get.withArgs('7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63').rejects();
             mockIdentityService.getName.returns('admin');
             mockIdentityService.getIssuer.returns('26341f1fc63f30886c54abeba3aca520601126ae2a57869d1ec1a3f854ebc417');
-            mockIdentityRegistry.exists.withArgs('9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50').resolves(false);
+            mockIdentityRegistry.get.withArgs('9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50').rejects();
             return identityManager.getIdentity()
                 .should.be.rejectedWith(/The current identity has not been registered/);
         });

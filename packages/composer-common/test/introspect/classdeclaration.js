@@ -30,16 +30,12 @@ const sinon = require('sinon');
 
 describe('ClassDeclaration', () => {
 
-    let mockModelManager;
-    let mockModelFile;
-    let mockSystemAsset;
+    let modelManager;
+    let modelFile;
 
     beforeEach(() => {
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
-        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
-        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
-        mockModelFile = sinon.createStubInstance(ModelFile);
+        modelManager = new ModelManager();
+        modelFile = new ModelFile(modelManager, 'namespace com.hyperledger.testing', 'org.acme.cto');
     });
 
     /**
@@ -59,7 +55,7 @@ describe('ClassDeclaration', () => {
     };
 
     const loadModelFile = (modelFileName) => {
-        return loadModelFiles([modelFileName], mockModelManager)[0];
+        return loadModelFiles([modelFileName], modelManager)[0];
     };
 
     const loadLastDeclaration = (modelFileName, type) => {
@@ -78,13 +74,13 @@ describe('ClassDeclaration', () => {
 
         it('should throw if ast not specified', () => {
             (() => {
-                new ClassDeclaration(mockModelFile, null);
+                new ClassDeclaration(modelFile, null);
             }).should.throw(/required/);
         });
 
         it('should throw if ast contains invalid type', () => {
             (() => {
-                new ClassDeclaration(mockModelFile, {
+                new ClassDeclaration(modelFile, {
                     id: {
                         name: 'suchName'
                     },
@@ -124,6 +120,12 @@ describe('ClassDeclaration', () => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
+        it('should throw when an identifier extends from a super type', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.identifierextendsfromsupertype.cto', AssetDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Identifier cannot extend from super type/);
+        });
 
         it('should throw when concept name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
@@ -155,7 +157,7 @@ describe('ClassDeclaration', () => {
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -177,7 +179,7 @@ describe('ClassDeclaration', () => {
     describe('#getModelFile', () => {
 
         it('should return the model file', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -186,7 +188,7 @@ describe('ClassDeclaration', () => {
                     ]
                 }
             });
-            clz.getModelFile().should.equal(mockModelFile);
+            clz.getModelFile().should.equal(modelFile);
         });
 
     });
@@ -194,7 +196,7 @@ describe('ClassDeclaration', () => {
     describe('#getName', () => {
 
         it('should return the class name', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -204,7 +206,7 @@ describe('ClassDeclaration', () => {
                 }
             });
             clz.getName().should.equal('suchName');
-            clz.toString().should.equal('ClassDeclaration {id=undefined.suchName enum=false abstract=false}');
+            clz.toString().should.equal('ClassDeclaration {id=com.hyperledger.testing.suchName enum=false abstract=false}');
         });
 
     });
@@ -212,8 +214,7 @@ describe('ClassDeclaration', () => {
     describe('#getFullyQualifiedName', () => {
 
         it('should return the fully qualified name if function is in a namespace', () => {
-            mockModelFile.getNamespace.returns('com.hyperledger.testing');
-            let clz = new ClassDeclaration(mockModelFile, {
+            let clz = new ClassDeclaration(modelFile, {
                 id: {
                     name: 'suchName'
                 },
@@ -321,6 +322,80 @@ describe('ClassDeclaration', () => {
             subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
         });
 
+
+    });
+
+    describe('#_resolveSuperType', () => {
+
+        it('should return null if no super type', () => {
+            let modelManager = new ModelManager();
+            let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
+            should.equal(classDecl._resolveSuperType(), null);
+        });
+
+        it('should return the super class declaration for a system super class', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+        });
+
+        it('should return the super class declaration for a super class in the same file', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            abstract asset BaseAsset { }
+            asset TestAsset identified by assetId extends BaseAsset { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.acme.BaseAsset');
+        });
+
+        it('should return the super class declaration for a super class in another file', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.base
+            abstract asset BaseAsset { }`);
+            modelManager.addModelFile(`namespace org.acme
+            import org.base.BaseAsset
+            asset TestAsset identified by assetId extends BaseAsset { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let superClassDecl = classDecl._resolveSuperType();
+            superClassDecl.getFullyQualifiedName().should.equal('org.base.BaseAsset');
+        });
+
+    });
+
+    describe('#getSuperTypeDeclaration', () => {
+
+        it('should return null if no super type', () => {
+            let modelManager = new ModelManager();
+            let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
+            should.equal(classDecl.getSuperTypeDeclaration(), null);
+        });
+
+        it('should resolve the super type if not already resolved', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            classDecl.superTypeDeclaration = null;
+            let spy = sinon.spy(classDecl, '_resolveSuperType');
+            let superClassDecl = classDecl.getSuperTypeDeclaration();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+            sinon.assert.calledOnce(spy);
+        });
+
+        it('should not resolve the super type if not already resolved', () => {
+            let modelManager = new ModelManager();
+            modelManager.addModelFile(`namespace org.acme
+            asset TestAsset identified by assetId { o String assetId }`);
+            let classDecl = modelManager.getType('org.acme.TestAsset');
+            let spy = sinon.spy(classDecl, '_resolveSuperType');
+            let superClassDecl = classDecl.getSuperTypeDeclaration();
+            superClassDecl.getFullyQualifiedName().should.equal('org.hyperledger.composer.system.Asset');
+            sinon.assert.notCalled(spy);
+        });
 
     });
 

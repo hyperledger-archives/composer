@@ -20,7 +20,7 @@ const IdCard = require('../../lib/idcard');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
-const should = chai.should();
+chai.should();
 
 describe('MemoryCardStore', () => {
     let testCard;
@@ -51,10 +51,8 @@ describe('MemoryCardStore', () => {
             }).should.become(testCard);
         });
 
-        it('should return null or undefined for non-existent card', () => {
-            return cardStore.get('name').then(result => {
-                should.not.exist(result);
-            });
+        it('should throw for non-existent card', () => {
+            return cardStore.get('name').should.be.rejected;
         });
     });
 
@@ -76,8 +74,15 @@ describe('MemoryCardStore', () => {
     });
 
     describe('#delete', () => {
-        it('should fail for non-existent card', () => {
-            return cardStore.delete('pengiun').should.be.rejected;
+        it('should return false for non-existent card', () => {
+            return cardStore.delete('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const name = 'conga';
+            return cardStore.put(name, testCard).then(() => {
+                return cardStore.delete(name);
+            }).should.become(true);
         });
 
         it('should delete existing card', () => {
@@ -89,6 +94,20 @@ describe('MemoryCardStore', () => {
             }).then(cardMap => {
                 cardMap.size.should.equal(0);
             });
+        });
+    });
+
+
+    describe('#has', () => {
+        it('should return false for non-existent card', () => {
+            return cardStore.has('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const name = 'conga';
+            return cardStore.put(name, testCard).then(() => {
+                return cardStore.has(name);
+            }).should.become(true);
         });
     });
 

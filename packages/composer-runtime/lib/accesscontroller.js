@@ -108,10 +108,15 @@ class AccessController {
             return Promise.resolve();
         }
 
+        // Filter the list of ACL rules into ones that it could be.
+        let aclRules = aclManager.getAclRules();
+        let filteredAclRules = aclRules.filter((aclRule) => {
+            return this.matchRule(resource, access, participant, transaction, aclRule);
+        });
+
         // Iterate over the ACL rules in order, but stop at the first rule
         // that permits the action.
-        let aclRules = aclManager.getAclRules();
-        return aclRules.reduce((promise, aclRule) => {
+        return filteredAclRules.reduce((promise, aclRule) => {
             return promise.then((result) => {
                 if (result) {
                     return result;
@@ -141,6 +146,52 @@ class AccessController {
     }
 
     /**
+     * Match the specified ACL rule, returning true if the rule is a match,
+     * and false otherwise.
+     * @param {Resource} resource The resource.
+     * @param {string} access The level of access.
+     * @param {Resource} participant The participant.
+     * @param {Resource} transaction The transaction.
+     * @param {AclRule} aclRule The ACL rule to filter.
+     * @return {boolean} True if the rule is a match, and false otherwise.
+     */
+    matchRule(resource, access, participant, transaction, aclRule) {
+        const method = 'matchRule';
+        LOG.entry(method, resource, access, participant, transaction, aclRule);
+
+        // Is the ACL rule relevant to the specified verb?
+        if (!this.matchVerb(access, aclRule)) {
+            LOG.debug(method, 'Verb does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the ACL rule relevant to the specified noun?
+        if (!this.matchNoun(resource, aclRule)) {
+            LOG.debug(method, 'Noun does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the ACL rule relevant to the specified participant?
+        if (!this.matchParticipant(participant, aclRule)) {
+            LOG.debug(method, 'Participant does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the ACL rule relevant to the specified transaction?
+        if (!this.matchTransaction(transaction, aclRule)) {
+            LOG.debug(method, 'Transaction does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        LOG.exit(method, true);
+        return true;
+    }
+
+    /**
      * Check the specified ACL rule permits the specified level
      * of access to the specified resource.
      * @param {Resource} resource The resource.
@@ -154,34 +205,6 @@ class AccessController {
     checkRule(resource, access, participant, transaction, aclRule) {
         const method = 'checkRule';
         LOG.entry(method, resource, access, participant, transaction, aclRule);
-
-        // Is the ACL rule relevant to the specified noun?
-        if (!this.matchNoun(resource, aclRule)) {
-            LOG.debug(method, 'Noun does not match');
-            LOG.exit(method, false);
-            return Promise.resolve(false);
-        }
-
-        // Is the ACL rule relevant to the specified verb?
-        if (!this.matchVerb(access, aclRule)) {
-            LOG.debug(method, 'Verb does not match');
-            LOG.exit(method, false);
-            return Promise.resolve(false);
-        }
-
-        // Is the ACL rule relevant to the specified participant?
-        if (!this.matchParticipant(participant, aclRule)) {
-            LOG.debug(method, 'Participant does not match');
-            LOG.exit(method, false);
-            return Promise.resolve(false);
-        }
-
-        // Is the ACL rule relevant to the specified transaction?
-        if (!this.matchTransaction(transaction, aclRule)) {
-            LOG.debug(method, 'Transaction does not match');
-            LOG.exit(method, false);
-            return Promise.resolve(false);
-        }
 
         // Is the predicate met?
         return this.matchPredicate(resource, participant, transaction, aclRule)
@@ -230,7 +253,12 @@ class AccessController {
         let noun = aclRule.getNoun();
         let reqFQN = noun.getFullyQualifiedName();
 
-        if (!ModelUtil.isMatchingType(resource, reqFQN)) {
+        if (noun.hasWildcard()) {
+            if (!ModelUtil.isMatchingType(resource, reqFQN)) {
+                LOG.exit(method, false);
+                return false;
+            }
+        } else if (!resource.instanceOf(reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -301,7 +329,12 @@ class AccessController {
         // namespace.
         let reqFQN = reqParticipant.getFullyQualifiedName();
 
-        if (!ModelUtil.isMatchingType(participant, reqFQN)) {
+        if (reqParticipant.hasWildcard()) {
+            if (!ModelUtil.isMatchingType(participant, reqFQN)) {
+                LOG.exit(method, false);
+                return false;
+            }
+        } else if (!participant.instanceOf(reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -356,7 +389,12 @@ class AccessController {
         // namespace.
         let reqFQN = reqTransaction.getFullyQualifiedName();
 
-        if (!ModelUtil.isMatchingType(transaction, reqFQN)) {
+        if (reqTransaction.hasWildcard()) {
+            if (!ModelUtil.isMatchingType(transaction, reqFQN)) {
+                LOG.exit(method, false);
+                return false;
+            }
+        } else if (!transaction.instanceOf(reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -378,6 +416,15 @@ class AccessController {
     matchPredicate(resource, participant, transaction, aclRule) {
         const method = 'matchPredicate';
         LOG.entry(method, resource, participant, transaction, aclRule);
+
+        // shortcut evaluation if simple boolean predicate
+        if (aclRule.getPredicate().getExpression() === 'true') {
+            LOG.exit(method, true);
+            return Promise.resolve(true);
+        } else if (aclRule.getPredicate().getExpression() === 'false') {
+            LOG.exit(method, false);
+            return Promise.resolve(false);
+        }
 
         // We want to permit access to related assets and participants, so prepare the resources.
         const compiledAclBundle = this.context.getCompiledAclBundle();

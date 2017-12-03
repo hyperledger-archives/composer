@@ -464,6 +464,8 @@ describe('FileService', () => {
             testModels[0].getId().should.equal('1');
             testModels[0].getContent().should.equal('this is the model');
             testModels[0].getType().should.equal('model');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add a model file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -482,6 +484,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains model file with ID: 1/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should add a new script file if one with the same ID does not exist', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -497,6 +501,8 @@ describe('FileService', () => {
             testScripts[0].getId().should.equal('1');
             testScripts[0].getContent().should.equal('this is the script');
             testScripts[0].getType().should.equal('script');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add a script file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -515,6 +521,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains script file with ID: 1/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should add a new query file if one with the same ID does not exist', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -530,6 +538,8 @@ describe('FileService', () => {
             testQuery.getId().should.equal('1');
             testQuery.getContent().should.equal('this is the query');
             testQuery.getType().should.equal('query');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add a query file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -545,6 +555,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains a query file/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should add a new acl file if one with the same ID does not exist', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -560,6 +572,8 @@ describe('FileService', () => {
             testAcl.getId().should.equal('1');
             testAcl.getContent().should.equal('this is the acl');
             testAcl.getType().should.equal('acl');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add an acl file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -575,6 +589,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains an acl file/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should add a new readme if one with the same ID does not exist', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -590,6 +606,8 @@ describe('FileService', () => {
             testReadMe.getId().should.equal('1');
             testReadMe.getContent().should.equal('this is the readme');
             testReadMe.getType().should.equal('readme');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add a readme file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -605,6 +623,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains a readme file/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should add a new package if one with the same ID does not exist', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -620,6 +640,8 @@ describe('FileService', () => {
             testPackage.getId().should.equal('1');
             testPackage.getContent().should.equal('this is the package');
             testPackage.getType().should.equal('package');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error when trying to add a package file with existing ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -635,6 +657,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/FileService already contains a package.json file/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should default to throwing an error', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -646,6 +670,8 @@ describe('FileService', () => {
             (() => {
                 fileService.addFile(id, displayID, content, type);
             }).should.throw(/Attempted addition of unknown file type: octopus/);
+
+            fileService['dirty'].should.equal(false);
         })));
     });
 
@@ -661,6 +687,7 @@ describe('FileService', () => {
             testModels.set('1', file);
 
             sinon.stub(fileService, 'getModelFile');
+            sinon.stub(fileService, 'validateFile').returns(null);
 
             fileService['modelFiles'] = testModels;
 
@@ -671,6 +698,8 @@ describe('FileService', () => {
             testFile.getId().should.equal('1');
             testFile.getContent().should.equal('this is the NEW model');
             testFile.getType().should.equal('model');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should update the correct model file with a namespace change', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -692,6 +721,8 @@ describe('FileService', () => {
                 getDefinitions: sinon.stub().returns('myDefs')
             });
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             let addFileStub = sinon.stub(fileService, 'addFile').returns('myFile');
             let deleteFileStub = sinon.stub(fileService, 'deleteFile');
 
@@ -708,6 +739,8 @@ describe('FileService', () => {
             testFile.getType().should.equal('model');
 
             deleteFileStub.should.have.been.called;
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should return if namespace collides', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -731,11 +764,44 @@ describe('FileService', () => {
                 getDefinitions: sinon.stub().returns('myDefs')
             });
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService['modelFiles'] = testModels;
 
             fileService.updateFile(id, content, type);
 
+            fileService['dirty'].should.equal(false);
+
             addFileStub.should.not.have.been.called;
+        })));
+
+        it('should throw an error if validate file returns a message for model files', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the model', 'model');
+            let testModels = new Map<string, EditorFile>();
+
+            let id = '1';
+            let content = 'this is the NEW model';
+            let type = 'model';
+
+            testModels.set('1', file);
+
+            sinon.stub(fileService, 'getModelFile').returns({getName: sinon.stub().returns('myName')});
+
+            sinon.stub(fileService, 'createModelFile').returns({
+                getNamespace: sinon.stub().returns('myNamespace'),
+                getName: sinon.stub().returns('myName'),
+                getDefinitions: sinon.stub().returns('myDefs')
+            });
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            fileService['modelFiles'] = testModels;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no model file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -746,27 +812,8 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/File does not exist of type model and id 1/);
-        })));
 
-        it('should update the correct script file', fakeAsync(inject([FileService], (fileService: FileService) => {
-            let file = new EditorFile('1', '1', 'this is the script', 'script');
-            let testScripts = new Map<string, EditorFile>();
-
-            let id = '1';
-            let content = 'this is the NEW script';
-            let type = 'script';
-
-            testScripts.set('1', file);
-
-            fileService['scriptFiles'] = testScripts;
-
-            fileService.updateFile(id, content, type);
-
-            let testFile = fileService.getFile('1', 'script');
-
-            testFile.getId().should.equal('1');
-            testFile.getContent().should.equal('this is the NEW script');
-            testFile.getType().should.equal('script');
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should update the correct model file with a not namespace', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -788,6 +835,8 @@ describe('FileService', () => {
 
             sinon.stub(fileService, 'modelNamespaceCollides').returns(false);
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             let addFileStub = sinon.stub(fileService, 'addFile');
 
             fileService['modelFiles'] = testModels;
@@ -801,6 +850,54 @@ describe('FileService', () => {
             testFile.getType().should.equal('model');
 
             addFileStub.should.not.have.been.called;
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should update the correct script file', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the script', 'script');
+            let testScripts = new Map<string, EditorFile>();
+
+            sinon.stub(fileService, 'validateFile').returns(null);
+
+            let id = '1';
+            let content = 'this is the NEW script';
+            let type = 'script';
+
+            testScripts.set('1', file);
+
+            fileService['scriptFiles'] = testScripts;
+
+            fileService.updateFile(id, content, type);
+
+            let testFile = fileService.getFile('1', 'script');
+
+            testFile.getId().should.equal('1');
+            testFile.getContent().should.equal('this is the NEW script');
+            testFile.getType().should.equal('script');
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the script returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the script', 'script');
+            let testScripts = new Map<string, EditorFile>();
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            let id = '1';
+            let content = 'this is the NEW script';
+            let type = 'script';
+
+            testScripts.set('1', file);
+
+            fileService['scriptFiles'] = testScripts;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no script file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -811,6 +908,8 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/File does not exist of type script and id 1/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should update the correct query file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -822,6 +921,8 @@ describe('FileService', () => {
 
             fileService['queryFile'] = file;
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService.updateFile(id, content, type);
 
             let testFile = fileService.getFile('1', 'query');
@@ -829,6 +930,26 @@ describe('FileService', () => {
             testFile.getId().should.equal('1');
             testFile.getContent().should.equal('this is the NEW query');
             testFile.getType().should.equal('query');
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the query returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the query', 'query');
+
+            let id = '1';
+            let content = 'this is the NEW query';
+            let type = 'query';
+
+            fileService['queryFile'] = file;
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no query file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -839,10 +960,14 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/Query file does not exist in file service/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should update the correct acl file', fakeAsync(inject([FileService], (fileService: FileService) => {
             let file = new EditorFile('1', '1', 'this is the acl', 'acl');
+
+            sinon.stub(fileService, 'validateFile').returns(null);
 
             let id = '1';
             let content = 'this is the NEW acl';
@@ -857,6 +982,26 @@ describe('FileService', () => {
             testFile.getId().should.equal('1');
             testFile.getContent().should.equal('this is the NEW acl');
             testFile.getType().should.equal('acl');
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the acl returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the acl', 'acl');
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            let id = '1';
+            let content = 'this is the NEW acl';
+            let type = 'acl';
+
+            fileService['aclFile'] = file;
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no acl file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -867,6 +1012,8 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/Acl file does not exist in file service/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should update the correct readme file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -885,6 +1032,8 @@ describe('FileService', () => {
             testFile.getId().should.equal('1');
             testFile.getContent().should.equal('this is the NEW readme');
             testFile.getType().should.equal('readme');
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should throw an error if there is no readme file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -895,6 +1044,8 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/ReadMe file does not exist in file service/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should update the correct packageJson file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -906,6 +1057,8 @@ describe('FileService', () => {
 
             fileService['packageJson'] = file;
 
+            sinon.stub(fileService, 'validateFile').returns(null);
+
             fileService.updateFile(id, content, type);
 
             let testFile = fileService.getFile('1', 'package');
@@ -913,6 +1066,26 @@ describe('FileService', () => {
             testFile.getId().should.equal('1');
             testFile.getContent().should.deep.equal({name: 'this is the NEW packageJson'});
             testFile.getType().should.equal('package');
+
+            fileService['dirty'].should.equal(true);
+        })));
+
+        it('should through an error if validate file on the packageJSON returns something', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', '{"name" : "this is the NEW packageJson"}', 'package');
+
+            let id = '1';
+            let content = '{"name" : "this is the NEW packageJson"}';
+            let type = 'package';
+
+            fileService['packageJson'] = file;
+
+            sinon.stub(fileService, 'validateFile').returns('Validator error message');
+
+            (() => {
+                fileService.updateFile(id, content, type);
+            }).should.throw(/Validator error message/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is no packageJson file with the given ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -923,6 +1096,8 @@ describe('FileService', () => {
             (() => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/PackageJson file does not exist in file service/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should default to throwing an error', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -934,6 +1109,7 @@ describe('FileService', () => {
                 fileService.updateFile(id, content, type);
             }).should.throw(/Attempted update of unknown file type: octopus/);
 
+            fileService['dirty'].should.equal(false);
         })));
     });
 
@@ -952,6 +1128,8 @@ describe('FileService', () => {
             fileService.deleteFile(id, type);
 
             should.not.exist(testModels.get('1'));
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should delete the correct script file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -968,6 +1146,8 @@ describe('FileService', () => {
             fileService.deleteFile(id, type);
 
             should.not.exist(testScripts.get('1'));
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should delete the correct query file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -982,6 +1162,8 @@ describe('FileService', () => {
 
             let testQuery = fileService.getEditorQueryFile();
             should.not.exist(testQuery);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should delete the correct acl file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -996,6 +1178,8 @@ describe('FileService', () => {
 
             let testAcl = fileService.getEditorAclFile();
             should.not.exist(testAcl);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should delete the correct readme file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1010,6 +1194,8 @@ describe('FileService', () => {
 
             let testReadMe = fileService.getEditorReadMe();
             should.not.exist(testReadMe);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should delete the correct package file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1024,6 +1210,8 @@ describe('FileService', () => {
 
             let testPackage = fileService.getEditorPackageFile();
             should.not.exist(testPackage);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should default to throwing an error', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1033,6 +1221,8 @@ describe('FileService', () => {
             (() => {
                 fileService.deleteFile(id, type);
             }).should.throw(/Attempted deletion of file unknown type: octopus/);
+
+            fileService['dirty'].should.equal(false);
 
         })));
     });
@@ -1069,6 +1259,7 @@ describe('FileService', () => {
             should.not.exist(testAcl);
             should.not.exist(testQuery);
 
+            fileService['dirty'].should.equal(true);
         })));
     });
 
@@ -1082,6 +1273,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw(/There is no existing file of type model with the id 1/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is an existing model file with the given replacement file ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1101,6 +1294,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw(/There is an existing file of type model with the id 2/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there in no script file with the given "file to replace" ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1112,6 +1307,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw(/There is no existing file of type script with the id 1/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should throw an error if there is an existing script file with the given replacement file ID', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1131,6 +1328,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw(/There is an existing file of type script with the id 2/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should default to throw an error', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1142,6 +1341,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw(/Attempted replace of ununsupported file type: octopus/);
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should correctly replace a model file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1161,6 +1362,8 @@ describe('FileService', () => {
             fileService['modelFiles'] = testModels;
 
             let replacedFile = fileService.replaceFile(oldId, newId, content, type);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should correctly replace a model file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1182,6 +1385,8 @@ describe('FileService', () => {
             fileService['modelFiles'] = testModels;
 
             let replacedFile = fileService.replaceFile(oldId, newId, content, type);
+
+            fileService['dirty'].should.equal(true);
         })));
 
         it('should correctly replace a model file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1206,6 +1411,8 @@ describe('FileService', () => {
             (() => {
                 fileService.replaceFile(oldId, newId, content, type);
             }).should.throw();
+
+            fileService['dirty'].should.equal(false);
         })));
 
         it('should correctly replace a script file', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1225,6 +1432,8 @@ describe('FileService', () => {
             replacedFile.getId().should.equal('2');
             replacedFile.getContent().should.equal('this is the script');
             replacedFile.getType().should.equal('script');
+
+            fileService['dirty'].should.equal(true);
         })));
     });
 
@@ -1549,6 +1758,8 @@ describe('FileService', () => {
 
             getFilesStub.should.have.been.called;
 
+            fileService['dirty'].should.deep.equal(false);
+
             should.not.exist(fileService['currentFile']);
         }));
 
@@ -1571,6 +1782,8 @@ describe('FileService', () => {
             addFileStub.callCount.should.equal(2);
 
             getFilesStub.should.have.been.called;
+
+            fileService['dirty'].should.deep.equal(false);
 
             should.not.exist(fileService['currentFile']);
         }));
@@ -1607,6 +1820,8 @@ describe('FileService', () => {
 
             getFilesStub.should.have.been.called;
 
+            fileService['dirty'].should.deep.equal(false);
+
             should.not.exist(fileService['currentFile']);
         }));
 
@@ -1635,6 +1850,8 @@ describe('FileService', () => {
             addFileStub.getCall(4).should.have.been.calledWith('readme', 'README.md', 'myReadMe', 'readme');
 
             getFilesStub.should.have.been.called;
+
+            this.dirty = false;
 
             fileService['currentFile'].should.deep.equal(file);
         }));
@@ -2371,5 +2588,29 @@ describe('FileService', () => {
             let result = service.getBusinessNetwork();
             result.should.deep.equal(businessNetworkDefMock);
         }));
+    });
+
+    describe('changesDeployed', () => {
+      it('should set dirty to false', inject([FileService], (service: FileService) => {
+          service['dirty'] = true;
+
+          service.changesDeployed();
+
+          service['dirty'].should.deep.equal(false);
+      }));
+    });
+
+    describe('isDirty', () => {
+      it('should return dirty', inject([FileService], (service: FileService) => {
+          service['dirty'] = true;
+
+          service.isDirty().should.deep.equal(true);
+      }));
+
+      it('should return dirty', inject([FileService], (service: FileService) => {
+          service['dirty'] = false;
+
+          service.isDirty().should.deep.equal(false);
+      }));
     });
 });

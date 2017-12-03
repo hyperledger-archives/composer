@@ -15,7 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const fs = require('fs');
 const http = require('http');
@@ -30,8 +30,6 @@ chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
-
 const keyFile = path.resolve(__dirname, 'key.pem');
 const keyContents = fs.readFileSync(keyFile, 'utf8');
 const certFile = path.resolve(__dirname, 'cert.pem');
@@ -41,21 +39,30 @@ describe('server', () => {
 
     let composerConfig;
     let idCard;
+    let cardStore;
 
     before(() => {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
-        })
+        cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({ cardStore });
+        let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+        const deployCardName = 'deployer-card';
+
+        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+        let businessNetworkDefinition;
+
+        return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
         .then(() => {
-            return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connect(deployCardName);
         })
         .then(() => {
             return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
         })
-        .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition);
+        .then((result) => {
+            businessNetworkDefinition = result;
+            return adminConnection.install(businessNetworkDefinition.getName());
+        })
+        .then(()=>{
+            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
@@ -66,7 +73,7 @@ describe('server', () => {
     beforeEach(() => {
         composerConfig = {
             card: 'admin@bond-network',
-            fs: bfs_fs
+            cardStore
         };
         delete process.env.COMPOSER_DATASOURCES;
         delete process.env.COMPOSER_PROVIDERS;

@@ -862,6 +862,54 @@ li {
 
 }
 
+h2.everybody {
+  background-color: #e1e1e1;
+  background-image: url("../img/Artboard 1@0.5x.png");
+  background-repeat: no-repeat;
+  background-position: left 5px center;
+  background-size: 32px 32px;
+  // background-origin: content-box;
+  border-radius: 5px;
+  max-width: 100%;
+  padding: 5px 5px 5px 48px;
+  text-align: center;
+}
+
+h2.alice {
+  background-color: #e1f7d5;
+  background-image: url("../img/GreenBlockAlone@0.5x.png");
+  background-repeat: no-repeat;
+  background-position: left 5px center;
+  background-size: 32px 32px;
+  // background-origin: content-box;
+  border-radius: 5px;
+  max-width: 100%;
+  padding: 5px 5px 5px 48px;
+  text-align: left;
+}
+
+h2.bob {
+  background-color: #c9c9ff;
+  background-image: url("../img/VioletBlockAlone@0.5x.png");
+  background-repeat: no-repeat;
+  background-position: right 5px center;
+  background-size: 32px 32px;
+  // background-origin: content-box;
+  border-radius: 5px;
+  max-width: 100%;
+  padding: 5px 48px 5px 5px;
+  text-align: right;
+}
+
+h3.warning {
+  background-color: #f6d155;
+  // background-origin: content-box;
+  border-radius: 5px;
+  max-width: 100%;
+  padding: 5px 5px 5px 5px;
+  text-align: left;
+}
+
 // Docs styling updates
 
 // nav {

@@ -60,7 +60,7 @@ describe('AclFile', () => {
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
             const ast = {
-                rules: [ {id: {name: 'fake'}, noun: 'org.acme', verbs: 'UPDATE', participant: 'EVERYONE', action: 'ALLOW'} ]
+                rules: [ {id: {name: 'fake'}, noun: {qualifiedName: 'org.acme.*'}, verbs: 'UPDATE', participant: 'ANY', action: 'ALLOW'} ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new AclFile( 'test', modelManager, 'fake definitions');
@@ -70,7 +70,7 @@ describe('AclFile', () => {
         it('should throw a ParseException on invalid input', () => {
             (() => {
                 new AclFile('test.acl', modelManager, invalidAcl);
-            }).should.throw(/Line 5/);
+            }).should.throw(/File test.acl line 5/);
         });
 
         it('should throw an error if it does not have a location', () => {

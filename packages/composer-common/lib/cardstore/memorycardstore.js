@@ -19,9 +19,16 @@ const IdCard = require('../idcard');
 
 /**
  * Transient in-memory storage of business network cards, useful for testing.
+ * To use this in preference to the default File System Card Store
  *
+ * @example
+ * const AdminConnection = require("composer-admin").AdminConnection;
+ * const MemoryCardStore = require('composer-common').MemoryCardStore;
+ *
+ * let cardStore = new MemoryCardStore();
+ * let adminConnection = new AdminConnection({cardStore});
  * @class
- * @private
+ * @extends BusinessNetworkCardStore
  * @memberof module:composer-common
  */
 class MemoryCardStore extends BusinessNetworkCardStore {
@@ -37,8 +44,11 @@ class MemoryCardStore extends BusinessNetworkCardStore {
      * @inheritdoc
      */
     get(cardName) {
-        const result = this.cards.get(cardName);
-        return Promise.resolve(result);
+        const card = this.cards.get(cardName);
+        if (!card) {
+            return Promise.reject(new Error('Card not found: ' + cardName));
+        }
+        return Promise.resolve(card);
     }
 
     /**
@@ -55,6 +65,13 @@ class MemoryCardStore extends BusinessNetworkCardStore {
     /**
      * @inheritdoc
      */
+    has(cardName) {
+        return Promise.resolve(this.cards.has(cardName));
+    }
+
+    /**
+     * @inheritdoc
+     */
     getAll() {
         return Promise.resolve(this.cards);
     }
@@ -64,10 +81,7 @@ class MemoryCardStore extends BusinessNetworkCardStore {
      */
     delete(cardName) {
         const cardExisted = this.cards.delete(cardName);
-        if (!cardExisted) {
-            return Promise.reject(new Error('Card not found: ' + cardName));
-        }
-        return Promise.resolve();
+        return Promise.resolve(cardExisted);
     }
 
 }

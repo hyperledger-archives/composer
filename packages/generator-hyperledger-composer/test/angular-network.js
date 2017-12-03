@@ -8,23 +8,35 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const BrowserFS = require('browserfs/dist/node/index');
 const bfs_fs = BrowserFS.BFSRequire('fs');
 const IdCard = require('composer-common').IdCard;
+const deployCardName = 'deployer-card';
 
 describe('hyperledger-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
 
     let tmpDir; // This is the directory which we will create our app into
+
     before(function() {
+
+        let metadata = { version:1 };
+        metadata.userName = 'PeerAdmin';
+        metadata.roles = 'PeerAdmin';
+
+
+
+        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'generatorProfile'});
+        idCard_PeerAdmin.setCredentials({ certificate: 'cert', privateKey: 'key' });
+
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('generatorProfile',{type : 'embedded'})
+        const adminConnection = new AdminConnection({    fs: bfs_fs });
+        return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
         .then(() => {
-            return adminConnection.connectWithDetails('generatorProfile', 'admin', 'Xurw3yU9zI0l');
+            return adminConnection.connect(deployCardName);
         })
         .then(() => {
             const banana = fs.readFileSync(path.resolve(__dirname+'/data/', 'digitalPropertyNetwork.bna'));
             return BusinessNetworkDefinition.fromArchive(banana);
         })
         .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition);
+            return adminConnection.deploy(businessNetworkDefinition, {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
         })
         .then(() => {
             const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', type: 'embedded' });

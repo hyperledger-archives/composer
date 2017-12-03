@@ -45,9 +45,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     private addScriptFileExtension: string = '.js';
     private addModelFileExtension: string = '.cto';
 
-    private noError: boolean = true;
-    private dirty: boolean = false;
     private deploying: boolean = false;
+    private noError: boolean = true;
 
     private editActive: boolean = false; // Are the input boxes visible?
     private editingPackage: boolean = false; // Is the package.json being edited?
@@ -78,7 +77,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     .subscribe((noError) => {
                         if (this.editorFilesValidate() && noError) {
                             this.noError = noError;
-                            this.dirty = true;
                         } else {
                             this.noError = false;
                         }
@@ -123,7 +121,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setInitialFile() {
-        if (this.files.length) {
+        if (this.files && this.files.length > 0) {
             let initialFile = this.files.find((file) => {
                 return file.isReadMe();
             });
@@ -156,13 +154,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
             // Update inputFileName
             this.inputFileNameArray = this.formatFileName(file.displayID);
-
-            // re-validate, since we do not persist bad files- they revert when navigated away
-            if (this.editorFilesValidate()) {
-                this.noError = true;
-            } else {
-                this.noError = false;
-            }
 
             // remove fileError flag
             this.fileNameError = null;
@@ -218,8 +209,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -261,8 +251,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -295,8 +284,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -310,7 +298,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.fileService.setBusinessNetworkReadme(readme);
                 this.files = this.fileService.getEditorFiles();
                 this.setCurrentFile(this.files[0]);
-                this.dirty = true;
             }, (reason) => {
                 if (reason && reason !== 1) {
                     this.alertService.errorStatus$.next(reason);
@@ -320,7 +307,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.fileService.setBusinessNetworkReadme(readme);
             this.files = this.fileService.getEditorFiles();
             this.setCurrentFile(this.files[0]);
-            this.dirty = true;
         }
     }
 
@@ -354,8 +340,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.files = this.fileService.getEditorFiles();
-            this.dirty = true;
-            this.editorFilesValidate();
+            this.noError = this.editorFilesValidate();
         }
     }
 
@@ -443,13 +428,13 @@ export class EditorComponent implements OnInit, OnDestroy {
                 return this.adminService.update(this.fileService.getBusinessNetwork());
             })
             .then(() => {
-                this.dirty = false;
                 this.deploying = false;
-                return this.clientService.refresh(this.fileService.getBusinessNetworkName());
+                return this.clientService.refresh();
             })
             .then(() => {
                 this.updatePackageInfo();
                 this.updateFiles();
+                this.fileService.changesDeployed();
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
                     title: 'Update Successful',
@@ -504,7 +489,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     let newFile = this.fileService.replaceFile(this.currentFile.id, inputFileName, contents, 'script'); // file service uses its own saved contents so can rename an invalid file
                     this.files = this.fileService.getEditorFiles();
                     this.setCurrentFile(newFile);
-                    this.dirty = true;
                 } else {
                     this.editActive = false;
                 }
@@ -516,7 +500,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                     let newFile = this.fileService.replaceFile(this.currentFile.id, inputFileName, contents, 'model'); // file service uses its own saved contents so it can use an invalid file, needs the last known good contents though so can get namespace if its can't from own contents
                     this.files = this.fileService.getEditorFiles();
                     this.setCurrentFile(newFile);
-                    this.dirty = true;
                 } else {
                     this.editActive = false;
                 }
@@ -574,11 +557,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.setInitialFile();
 
                     // validate the remaining (acl/cto files and conditionally enable deploy
-                    if (this.editorFilesValidate()) {
-                        this.fileService.businessNetworkChanged$.next(true);
-                    } else {
-                        this.fileService.businessNetworkChanged$.next(false);
-                    }
+                    this.noError = this.editorFilesValidate();
 
                     // Send alert
                     this.alertService.busyStatus$.next(null);
@@ -667,6 +646,12 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         if (this.fileService.validateFile('package', 'package') !== null) {
             allValid = false;
+        }
+
+        if (allValid) {
+            for (let file of this.files) {
+                this.fileService.updateBusinessNetwork(file.id, file);
+            }
         }
         return allValid;
     }

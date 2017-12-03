@@ -132,6 +132,53 @@ describe('composer card create CLI', function() {
         });
     });
 
+
+    it('should create card with only private key specified',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
+        const args = {
+            connectionProfileFile: 'filename',
+            privateKey:'keyfile',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledTwice(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                return card.getEnrollmentCredentials() === null;
+            }, 'No enrollment credentials'));
+        });
+    });
+
+    it('should create card with just a certificate ',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
+        sandbox.stub(JSON, 'parse').returns({name:'network'});
+        const exportSpy = sandbox.spy(Export, 'writeCardToFile');
+        const args = {
+            connectionProfileFile: 'filename',
+            certificate : 'certfile',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledTwice(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+            sinon.assert.calledWith(exportSpy, sinon.match.string, sinon.match((card) => {
+                return card.getEnrollmentCredentials() === null;
+            }, 'No enrollment credentials'));
+        });
+    });
+
     it('create card with roles',()=>{
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
@@ -156,7 +203,7 @@ describe('composer card create CLI', function() {
         });
     });
 
-    it('create card with single role',()=>{
+    it('create card with one  role',()=>{
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');

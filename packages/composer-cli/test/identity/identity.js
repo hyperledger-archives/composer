@@ -15,6 +15,7 @@
 'use strict';
 
 const cmd = require('../../lib/cmds/identity.js');
+const issueCommand = require('../../lib/cmds/identity/issueCommand.js');
 const yargs = require('yargs');
 require('chai').should();
 const chai = require('chai');
@@ -30,7 +31,11 @@ describe('composer identity cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        sandbox.stub(yargs, 'usage').returns(yargs);
+        sandbox.stub(yargs, 'conflicts').returns(yargs);
+        sandbox.stub(yargs, 'options').returns(yargs);
+        sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
@@ -49,6 +54,14 @@ describe('composer identity cmd launcher unit tests', function () {
             sinon.assert.calledOnce(yargs.commandDir);
             sinon.assert.calledWith(yargs.commandDir, 'identity');
             cmd.handler();
+        });
+
+    });
+
+    describe('issuecommand yagrs builder tests', () => {
+        it('should drive the yargs builder fn correctly',()=>{
+            issueCommand.builder(yargs);
+            sinon.assert.calledOnce(yargs.options);
         });
 
     });

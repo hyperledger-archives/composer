@@ -194,8 +194,6 @@ describe('EmbeddedConnection', () => {
 
     });
 
-
-
     describe('#undeploy', () => {
 
         it('should remove the business network', () => {

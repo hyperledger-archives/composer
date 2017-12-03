@@ -15,19 +15,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 ## Creating a Connection Profile
 
-1. Navigate to the Connection Profile store:
-
-        cd $HOME/.composer-connection-profiles
-
-2. Create a new profile folder.
-
-        mkdir ./MyProfile
-
-3. Navigate into the new profile folder.
-
-        cd MyProfile
-
-4. Create a new file called `connection.json` that contains the following information for {{site.data.conrefs.hlf_full}} v1.0.
+1. Create a new file called `connection.json` that contains the following information for {{site.data.conrefs.hlf_full}} v1.0.
         }
 
   Create a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
@@ -35,44 +23,21 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         {
             "type": "hlfv1",
             "orderers": [
-                {
-                    "url": "grpcs://",
-                    "hostnameOverride": "",
-                    "cert": ""
-                },
-                {
-                    "url": "grpcs://",
-                    "hostnameOverride": "",
-                    "cert": ""
-                }
+               { "url" : "grpc://localhost:7050" }
             ],
-            "ca": {
-                    "url:" "https://",
-                    "name": "",
-                    "trustedRoots": [""],
-                    "verify": true
+            "ca": { "url": "http://localhost:7054",
+                    "name": "ca.org1.example.com"
             },
             "peers": [
                 {
-                    "requestURL": "grpcs://",
-                    "eventURL": "grpcs://",
-                    "hostnameOverride": "",
-                    "cert": ""
-                },
-                {
-                    "requestURL": "grpcs://",
-                    "eventURL": "grpcs://",
-                    "hostnameOverride": "",
-                    "cert": ""
+                    "requestURL": "grpc://localhost:7051",
+                    "eventURL": "grpc://localhost:7053"
                 }
             ],
-            "keyValStore": "/YOUR_HOME_DIR/.composer-credentials",
+            "keyValStore": "${HOME}/.composer-credentials",
             "channel": "composerchannel",
             "mspID": "Org1MSP",
-            "timeout": 300,
-            "globalCert": "",
-            "maxSendSize": 10,
-            "maxRecvSize": 15
+            "timeout": "300"
         }
 
     If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
@@ -80,30 +45,27 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
     _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
 
         {
-        "type": "hlfv1",
-        "orderers": [
-            "grpc://localhost:7050"
-        ],
-        "ca": "http://localhost:7054",
-        "peers": [
+          type: 'hlfv1',
+          name: 'hlfv1org1',
+          orderers: [
+            'grpc://localhost:7050'
+          ],
+          ca: {
+            url: 'http://localhost:7054',
+            name: 'ca.org1.example.com'
+          },
+          peers: [
             {
-                "requestURL": "grpc://localhost:7051",
-                "eventURL": "grpc://localhost:7053"
+              requestURL: 'grpc://localhost:7051',
+              eventURL: 'grpc://localhost:7053'
             },
-            {
-                "requestURL": "grpc://localhost:7056",
-                "eventURL": "grpc://localhost:7058"
-            }
-        ],
-        "keyValStore": "/home/.composer-credentials",
-        "channel": "composerchannel",
-        "mspID": "Org1MSP",
-        "timeout": 300,
-        "globalCert": "",
-        "maxSendSize": 10,
-        "maxRecvSize": 15
-        }
+            ],
+          channel: 'composerchannel',
+          mspID: 'Org1MSP',
+          timeout: '300',
+        };
 
+  - `name` is a name used to refer to the connection profile, and is required.
   - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0 is must be `hlfv1`.
   - `ca` defines the url of a {{site.data.conrefs.hlf_full}} certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of `ca` as shown in the first {{site.data.conrefs.hlf_full}} v1.0 example above.
   - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions

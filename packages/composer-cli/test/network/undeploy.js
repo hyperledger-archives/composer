@@ -18,6 +18,7 @@ const Admin = require('composer-admin');
 const IdCard = require('composer-common').IdCard;
 const Undeploy = require('../../lib/cmds/network/undeployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const ora = require('ora');
 
 require('chai').should();
 
@@ -39,7 +40,7 @@ describe('composer undeploy network CLI unit tests', function () {
         sandbox = sinon.sandbox.create();
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.undeploy.resolves();
         mockIdCard = sinon.createStubInstance(IdCard);
@@ -79,6 +80,27 @@ describe('composer undeploy network CLI unit tests', function () {
 
             return Undeploy.handler(argv).should.eventually.be.rejectedWith(/computer says no/);
 
+        });
+
+        it('Should report correct error if connect fails', () => {
+            let argv = {card:'cardname'};
+            mockAdminConnection.connect.rejects(new Error('some error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Undeploy.handler(argv).should.eventually.be.rejectedWith(/some error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
+        });
+
+        it('Should report correct error if export card fails', () => {
+            let argv = {card:'cardname'};
+            mockAdminConnection.connect.resolves();
+            mockAdminConnection.exportCard.rejects(new Error('export error'));
+            let oraStart = sandbox.stub(ora,'start');
+            return Undeploy.handler(argv).should.eventually.be.rejectedWith(/export error/)
+                .then(() => {
+                    sinon.assert.notCalled(oraStart);
+                });
         });
     });
 });

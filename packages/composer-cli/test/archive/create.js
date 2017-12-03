@@ -18,7 +18,9 @@ const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
 const Create = require('../../lib/cmds/archive/createCommand.js');
+const CreateImpl = require('../../lib/cmds/archive/lib/create.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const path = require('path');
 
 require('chai').should();
 
@@ -37,29 +39,30 @@ let mockAdminConnection;
 
 describe('composer archive create unit tests', function () {
 
-    let sandbox;
-
-    beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
-        mockBusinessNetworkDefinition.toArchive.resolves('bytearray');
-
-        sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').resolves(mockBusinessNetworkDefinition);
-        // sandbox.stub(BusinessNetworkDefinition, 'toArchive').resolves('bytearray');
-        sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
-        sandbox.stub(fs,'writeFileSync' );
-        sandbox.stub(process, 'exit');
-
-    });
-
-    afterEach(() => {
-        sandbox.restore();
-    });
 
     describe('Create handler() method tests', function () {
+        let sandbox;
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+
+            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
+            mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+            mockBusinessNetworkDefinition.toArchive.resolves('bytearray');
+
+            sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').resolves(mockBusinessNetworkDefinition);
+
+            sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+            sandbox.stub(fs,'writeFileSync' );
+            sandbox.stub(process, 'exit');
+
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+
 
         it('Good path, all parms correctly specified.', function () {
 
@@ -136,6 +139,37 @@ describe('composer archive create unit tests', function () {
                 err.code.should.equals('MODULE_NOT_FOUND');
             }
         });
+
+        it('Valid module given not loadable for some unknown reason', function () {
+
+            let argv = {archiveFile: 'testArchiveFile.zip',
+                sourceType: 'module', sourceName: 'validmodule'};
+
+            sandbox.stub(CreateImpl, 'loadModule').returns({'I am':'valid'});
+            sandbox.stub(path,'dirname').returns('validdir');
+
+            return Create.handler(argv).then(()=>{
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromDirectory);
+                sinon.assert.calledOnce(mockBusinessNetworkDefinition.toArchive);
+                sinon.assert.calledOnce(fs.writeFileSync);
+            });
+        });
+
+        it('Module not loadable for some unknown reason', function () {
+
+            let argv = {archiveFile: 'testArchiveFile.zip',
+                sourceType: 'module', sourceName: 'fake'};
+
+            let error = new Error('Unkown Error');
+            error.code='42';
+
+            let stub = sandbox.stub(CreateImpl, 'loadModule');
+            stub.throws(error);
+
+            return Create.handler(argv).should.be.rejectedWith('Unkown Error');
+        });
+
 
     });
 

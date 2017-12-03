@@ -17,7 +17,7 @@
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const path = require('path');
-
+const chalk = require('chalk');
 /**
  * Composer "card export" command
  * @private
@@ -35,12 +35,14 @@ class Export {
 
         const adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.exportCard(cardName)
-            .then((card) => {
-                return Export.writeCardToFile(fileName,card);
-            })
-            .then(() => {
-                console.log('Successfully exported business network card: ' + cardName+' to '+fileName);
-            });
+        .then((card) =>{
+            return Export.writeCardToFile(fileName,card);
+        })
+        .then(() => {
+            cmdUtil.log(chalk.blue.bold('\nSuccessfully exported business network card'));
+            cmdUtil.log(chalk.blue('\tCard file: ')+fileName);
+            cmdUtil.log(chalk.blue('\tCard name: ')+cardName);
+        });
 
     }
 

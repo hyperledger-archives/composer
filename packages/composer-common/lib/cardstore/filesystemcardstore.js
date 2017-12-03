@@ -29,8 +29,9 @@ const LOG = Logger.getLog('FileSystemCardStore');
 
 /**
  * Manages persistence of business network cards to a Node file system implementation.
- *
- * @private
+ * This is the default cardstore of Admin and Business Network connections.
+ * It stores card in the `~/.composer` directory.
+ * @extends BusinessNetworkCardStore
  * @class
  * @memberof module:composer-common
  */
@@ -100,6 +101,20 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
     /**
      * @inheritdoc
      */
+    has(cardName){
+        const cardPath = this._cardPath(cardName);
+        let cardExisted;
+        return this.thenifyFs.stat(cardPath).then(
+            stats => cardExisted = true,
+            error => cardExisted = false
+        ).then(() => {
+            return cardExisted;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     getAll() {
         const method = 'getAll';
 
@@ -129,14 +144,15 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
      * @inheritdoc
      */
     delete(cardName) {
-        const method = 'delete';
-
         const cardPath = this._cardPath(cardName);
-        return this.thenifyFs.stat(cardPath).then(() => {
+        let cardExisted;
+        return this.thenifyFs.stat(cardPath).then(
+            stats => cardExisted = true,
+            error => cardExisted = false
+        ).then(() => {
             return thenifyRimraf(cardPath, this.rimrafOptions);
-        }).catch(cause => {
-            LOG.debug(method, cause);
-            throw new Error('Card not found: ' + cardName);
+        }).then(() => {
+            return cardExisted;
         });
     }
 

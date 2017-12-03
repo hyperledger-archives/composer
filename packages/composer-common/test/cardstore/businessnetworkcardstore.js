@@ -55,6 +55,13 @@ describe('BusinessNetworkCardStore', function() {
         });
     });
 
+    describe('#has', function() {
+        it('should throw as abstract method', function() {
+            const store = new BusinessNetworkCardStore();
+            return store.has().should.be.rejectedWith(/Abstract/);
+        });
+    });
+
     describe('#getAll', function() {
         it('should throw as abstract method', function() {
             const store = new BusinessNetworkCardStore();

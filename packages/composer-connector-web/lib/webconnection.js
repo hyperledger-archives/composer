@@ -23,9 +23,6 @@ const WebDataService = require('composer-runtime-web').WebDataService;
 const WebContext = require('composer-runtime-web').WebContext;
 const WebSecurityContext = require('./websecuritycontext');
 
-// A mapping of business networks to chaincode IDs.
-const businessNetworks = {};
-
 // A mapping of chaincode IDs to their instance objects.
 const chaincodes = {};
 
@@ -42,46 +39,18 @@ class WebConnection extends Connection {
     /**
      * Clear any registered business networks and chaincodes.
      */
-    static reset() {
-        for (let id in businessNetworks) {
-            delete businessNetworks[id];
-        }
+    static reset () {
         for (let id in chaincodes) {
             delete chaincodes[id];
         }
     }
 
     /**
-     * Add a business network.
-     * @param {string} businessNetworkIdentifier The business network identifier.
-     * @param {string} connectionProfile The connection profile name.
-     * @param {string} chaincodeID The chaincode ID.
-     */
-    static addBusinessNetwork(businessNetworkIdentifier, connectionProfile, chaincodeID) {
-        businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`] = chaincodeID;
-    }
-
-    /**
-     * Get the specified business network.
-     * @param {string} businessNetworkIdentifier The business network identifier.
-     * @param {string} connectionProfile The connection profile name.
-     * @return {string} The chaincode ID.
-     */
-    static getBusinessNetwork(businessNetworkIdentifier, connectionProfile) {
-        return businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-    }
-
-    /**
      * Delete the specified business network.
      * @param {string} businessNetworkIdentifier The business network identifier.
-     * @param {string} connectionProfile The connection profile name.
      */
-    static deleteBusinessNetwork(businessNetworkIdentifier, connectionProfile) {
-        let chaincodeID = businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        if (chaincodeID) {
-            delete chaincodes[chaincodeID];
-            delete businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        }
+    static deleteBusinessNetwork (businessNetworkIdentifier) {
+        delete chaincodes[businessNetworkIdentifier];
     }
 
     /**
@@ -90,11 +59,11 @@ class WebConnection extends Connection {
      * @param {Container} container The container.
      * @param {Engine} engine The engine.
      */
-    static addChaincode(chaincodeID, container, engine) {
+    static addChaincode (chaincodeID, container, engine) {
         chaincodes[chaincodeID] = {
-            id: chaincodeID,
-            container: container,
-            engine: engine
+            id : chaincodeID,
+            container : container,
+            engine : engine
         };
     }
 
@@ -103,7 +72,7 @@ class WebConnection extends Connection {
      * @param {string} chaincodeID The chaincode ID.
      * @return {object} The chaincode.
      */
-    static getChaincode(chaincodeID) {
+    static getChaincode (chaincodeID) {
         return chaincodes[chaincodeID];
     }
 
@@ -112,7 +81,7 @@ class WebConnection extends Connection {
      * @param {string} [uuid] The UUID to use.
      * @return {Container} The new container.
      */
-    static createContainer(uuid) {
+    static createContainer (uuid) {
         return new WebContainer(uuid);
     }
 
@@ -121,7 +90,7 @@ class WebConnection extends Connection {
      * @param {Container} container The container.
      * @return {Engine} The new engine.
      */
-    static createEngine(container) {
+    static createEngine (container) {
         return new Engine(container);
     }
 
@@ -131,7 +100,7 @@ class WebConnection extends Connection {
      * @param {string} connectionProfile The name of the connection profile associated with this connection
      * @param {string} businessNetworkIdentifier The identifier of the business network for this connection
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
+    constructor (connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         this.dataService = new WebDataService(null, true);
     }
@@ -141,7 +110,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the connection has been
      * terminated, or rejected with an error.
      */
-    disconnect() {
+    disconnect () {
         return Promise.resolve();
     }
 
@@ -152,7 +121,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with a {@link SecurityContext}
      * object representing the logged in participant, or rejected with a login error.
      */
-    login(enrollmentID, enrollmentSecret) {
+    login (enrollmentID, enrollmentSecret) {
         if (!this.businessNetworkIdentifier) {
             return this.testIdentity(enrollmentID, enrollmentSecret)
                 .then((identity) => {
@@ -163,20 +132,14 @@ class WebConnection extends Connection {
         return this.testIdentity(enrollmentID, enrollmentSecret)
             .then((identity_) => {
                 identity = identity_;
-                return this.getChaincodeID(this.businessNetworkIdentifier);
-            })
-            .then((chaincodeID) => {
-                if (!chaincodeID) {
-                    throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
-                }
-                if (!WebConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile)) {
-                    let container = WebConnection.createContainer(chaincodeID);
+
+                if (!WebConnection.getChaincode(this.businessNetworkIdentifier)) {
+                    let container = WebConnection.createContainer(this.businessNetworkIdentifier);
                     let engine = WebConnection.createEngine(container);
-                    WebConnection.addBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile, chaincodeID);
-                    WebConnection.addChaincode(chaincodeID, container, engine);
+                    WebConnection.addChaincode(this.businessNetworkIdentifier, container, engine);
                 }
                 const result = new WebSecurityContext(this, identity);
-                result.setChaincodeID(chaincodeID);
+                result.setChaincodeID(this.businessNetworkIdentifier);
                 return result;
             });
     }
@@ -188,7 +151,7 @@ class WebConnection extends Connection {
      * @param {Object} installOptions connector specific install options
      * @return {Promise} An already resolved promise
      */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
+    install (securityContext, businessNetworkIdentifier, installOptions) {
         return Promise.resolve();
     }
 
@@ -202,7 +165,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
+    deploy (securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
         return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
     }
 
@@ -215,18 +178,20 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed and the network started, or rejected with an error.
      */
-    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
-        let container = WebConnection.createContainer();
+    start (securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+        let container = WebConnection.createContainer(businessNetworkIdentifier);
         let identity = securityContext.getIdentity();
-        let chaincodeID = container.getUUID();
+        let containerName = container.getName();
         let engine = WebConnection.createEngine(container);
-        WebConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeID);
-        WebConnection.addChaincode(chaincodeID, container, engine);
+        WebConnection.addChaincode(containerName, container, engine);
         let context = new WebContext(engine, identity, this);
-        return engine.init(context, 'init', [startTransaction])
-            .then(() => {
-                return this.setChaincodeID(businessNetworkIdentifier, chaincodeID);
-            });
+        return engine.init(context, 'init', [startTransaction]).catch((error) => {
+            if (error.message.includes('as the object already exists')) {
+                throw new Error('business network with name ' + businessNetworkIdentifier + ' already exists');
+            } else {
+                throw error;
+            }
+        });
     }
 
     /**
@@ -237,9 +202,10 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been undeployed, or rejected with an error.
      */
-    undeploy(securityContext, businessNetworkIdentifier) {
+    undeploy (securityContext, businessNetworkIdentifier) {
         WebConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-        return this.deleteChaincodeID(businessNetworkIdentifier);
+        const dataServiceBusinessNetwork = new WebDataService(businessNetworkIdentifier, true);
+        return dataServiceBusinessNetwork.destroy();
     }
 
     /**
@@ -248,7 +214,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the connection to the
      * business network has been tested, or rejected with an error.
      */
-    ping(securityContext) {
+    ping (securityContext) {
         return this.queryChainCode(securityContext, 'ping', [])
             .then((buffer) => {
                 return JSON.parse(buffer.toString());
@@ -263,7 +229,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with the data returned by the
      * chaincode function once it has been invoked, or rejected with an error.
      */
-    queryChainCode(securityContext, functionName, args) {
+    queryChainCode (securityContext, functionName, args) {
         let identity = securityContext.getIdentity();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
@@ -282,7 +248,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved once the chaincode function
      * has been invoked, or rejected with an error.
      */
-    invokeChainCode(securityContext, functionName, args) {
+    invokeChainCode (securityContext, functionName, args) {
         let identity = securityContext.getIdentity();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
@@ -298,7 +264,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with the data collection
      * that stores identities.
      */
-    getIdentities() {
+    getIdentities () {
         return this.dataService.ensureCollection('identities');
     }
 
@@ -308,7 +274,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with the identity, or
      * rejected with an error.
      */
-    getIdentity(identityName) {
+    getIdentity (identityName) {
         let identities;
         return this.getIdentities()
             .then((identities_) => {
@@ -328,7 +294,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with the admin identity when complete,
      * or rejected with an error.
      */
-    _createAdminIdentity() {
+    _createAdminIdentity () {
         const identityName = 'admin';
         const certificateContents = identityName;
         const certificate = [
@@ -339,13 +305,13 @@ class WebConnection extends Connection {
         const identifier = createHash('sha256').update(certificateContents).digest('hex');
         const identity = {
             identifier,
-            name: identityName,
-            issuer: DEFAULT_ISSUER,
-            secret: 'adminpw',
+            name : identityName,
+            issuer : DEFAULT_ISSUER,
+            secret : 'adminpw',
             certificate,
-            imported: false,
-            options: {
-                issuer: true
+            imported : false,
+            options : {
+                issuer : true
             }
         };
         let identities;
@@ -369,7 +335,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved if the user ID and secret
      * is valid, or rejected with an error.
      */
-    testIdentity(identityName, identitySecret) {
+    testIdentity (identityName, identitySecret) {
         return this.getIdentity(identityName)
             .then((identity) => {
                 if (identity.imported) {
@@ -396,7 +362,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
      */
-    createIdentity(securityContext, identityName, options) {
+    createIdentity (securityContext, identityName, options) {
         let identities;
         const currentIdentity = securityContext.getIdentity();
         if (!currentIdentity.options.issuer) {
@@ -412,8 +378,8 @@ class WebConnection extends Connection {
                     return identities.get(identityName)
                         .then((identity) => {
                             return {
-                                userID: identity.name,
-                                userSecret: identity.secret
+                                userID : identity.name,
+                                userSecret : identity.secret
                             };
                         });
                 }
@@ -433,82 +399,23 @@ class WebConnection extends Connection {
                 const secret = uuid.v4().substring(0, 8);
                 const identity = {
                     identifier,
-                    name: identityName,
-                    issuer: DEFAULT_ISSUER,
+                    name : identityName,
+                    issuer : DEFAULT_ISSUER,
                     secret,
                     certificate,
-                    imported: false,
-                    options: options || {}
+                    imported : false,
+                    options : options || {}
                 };
                 return identities.add(identityName, identity)
                     .then(() => {
                         return {
-                            userID: identity.name,
-                            userSecret: identity.secret
+                            userID : identity.name,
+                            userSecret : identity.secret
                         };
                     });
             });
     }
 
-    /**
-     * List all of the deployed business networks. The connection must
-     * be connected for this method to succeed.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @return {Promise} A promise that will be resolved with an array of
-     * business network identifiers, or rejected with an error.
-     */
-    list(securityContext) {
-        return this.getConnectionManager().getConnectionProfileManager().getConnectionProfileStore().load(this.connectionProfile)
-            .then((profile) => {
-                profile.networks = profile.networks || {};
-                return Object.keys(profile.networks).sort();
-            });
-    }
-
-    /**
-     * Get the chaincode ID for the specified business network.
-     * @param {string} businessNetworkIdentifier The identifier of the business network.
-     * @return {Promise} A promise that will be resolved with the chaincode ID, or
-     * rejected with an error.
-     */
-    getChaincodeID(businessNetworkIdentifier) {
-        return this.getConnectionManager().getConnectionProfileManager().getConnectionProfileStore().load(this.connectionProfile)
-            .then((profile) => {
-                profile.networks = profile.networks || {};
-                let chaincodeID = profile.networks[businessNetworkIdentifier];
-                return chaincodeID;
-            });
-    }
-
-    /**
-     * Set the chaincode ID for the specified business network.
-     * @param {string} businessNetworkIdentifier The identifier of the business network.
-     * @param {string} chaincodeID The chaincode ID for the business network.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    setChaincodeID(businessNetworkIdentifier, chaincodeID) {
-        return this.getConnectionManager().getConnectionProfileManager().getConnectionProfileStore().load(this.connectionProfile)
-            .then((profile) => {
-                profile.networks = profile.networks || {};
-                profile.networks[businessNetworkIdentifier] = chaincodeID;
-                return this.connectionManager.getConnectionProfileManager().getConnectionProfileStore().save(this.connectionProfile, profile);
-            });
-    }
-
-    /**
-     * Delete the chaincode ID for the specified business network.
-     * @param {string} businessNetworkIdentifier The identifier of the business network.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    deleteChaincodeID(businessNetworkIdentifier) {
-        return this.getConnectionManager().getConnectionProfileManager().getConnectionProfileStore().load(this.connectionProfile)
-            .then((profile) => {
-                delete profile.networks[businessNetworkIdentifier];
-                return this.connectionManager.getConnectionProfileManager().getConnectionProfileStore().save(this.connectionProfile, profile);
-            });
-    }
 
     /**
      * Create a new transaction id
@@ -516,7 +423,7 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved with a transaction id
      */
-    createTransactionId(securityContext){
+    createTransactionId (securityContext) {
         return Promise.resolve(null);
     }
 }

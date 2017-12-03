@@ -15,12 +15,13 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const Create = require('../../card/lib/create');
+
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const ora = require('ora');
+const Start = require('./start.js');
 
 /**
  * Composer deploy command
@@ -34,26 +35,19 @@ class Deploy {
     * @param {boolean} updateOption true if the network is to be updated
     * @return {Promise} promise when command complete
     */
-    static handler(argv, updateOption) {
+    static handler(argv) {
 
-        let updateBusinessNetwork = (updateOption === true)
-                                  ? true
-                                  : false;
-        let businessNetworkDefinition;
         let adminConnection;
+        let businessNetworkDefinition;
         let businessNetworkName;
         let spinner;
-        let logLevel = argv.loglevel;
         let cardName = argv.card;
-        let card;
-        let filename;
 
-
-        console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
+        cmdUtil.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
         let archiveFileContents = null;
         adminConnection = cmdUtil.createAdminConnection();
-        // Read archive file contents
-        return adminConnection.exportCard(cardName)
+
+        return Promise.resolve()
         .then(()=>{
 
             // getArchiveFileContents, is a sync function, so use Promise.resolve() to ensure it gives a rejected promise
@@ -62,89 +56,32 @@ class Deploy {
         })
         .then ((result) => {
             businessNetworkDefinition = result;
-            businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log(chalk.blue.bold('Business network definition:'));
-            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
-            console.log();
+            businessNetworkName = businessNetworkDefinition.getName();
+            cmdUtil.log(chalk.blue.bold('Business network definition:'));
+            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            cmdUtil.log('');
 
-            // if we are performing an update we have to actually connect to the network
-            // we want to update!
-
+            // install runtime
+            spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
             return adminConnection.connect(cardName);
 
         })
-        .then(() => {
-            // need to get the card now for later use
-            return adminConnection.exportCard(cardName);
-        })
-        .then((_card)=>{
-            card = _card;
-            if (updateBusinessNetwork === false) {
-                spinner = ora('Deploying business network definition. This may take a minute...').start();
-                // Build the deploy options.
-                let deployOptions = cmdUtil.parseOptions(argv);
-                if (logLevel) {
-                    deployOptions.logLevel = logLevel;
-                }
-                deployOptions.card = card;
-                // Build the bootstrap tranactions.
-                let bootstrapTransactions = cmdUtil.buildBootstrapTransactions(businessNetworkDefinition, argv);
-
-                // Merge the deploy options and bootstrap transactions.
-                if (deployOptions.bootstrapTransactions) {
-                    deployOptions.bootstrapTransactions = bootstrapTransactions.concat(deployOptions.bootstrapTransactions);
-                } else {
-                    deployOptions.bootstrapTransactions = bootstrapTransactions;
-                }
-
-                // Deploy the business network.
-                return adminConnection.deploy(businessNetworkDefinition, deployOptions);
-
-            } else {
-                spinner = ora('Updating business network definition. This may take a few seconds...').start();
-                return adminConnection.update(businessNetworkDefinition);
-            }
+        .then((result) => {
+            let installOptions = cmdUtil.parseOptions(argv);
+            return adminConnection.install(businessNetworkName, installOptions);
         }).then((result) => {
-
-            if (!updateBusinessNetwork){
-                // need to create a card for the admin and then write it to disk for the user
-                // to import
-                // set if the options have been given into the metadata
-                let metadata= {
-                    version : 1,
-                    userName : argv.networkAdmin,
-                    businessNetwork : businessNetworkDefinition.getName()
-                };
-                // copy across any other parameters that might be used
-                let createArgs = {};
-                if (argv.file){
-                    createArgs.file = argv.file;
-                }
-
-                if (argv.networkAdminEnrollSecret){
-                    metadata.enrollmentSecret = argv.networkAdminEnrollSecret;
-                } else {
-                    // the networkAdminCertificateFile will be set unless yargs has got it's job wrong!
-                    createArgs.certificate = argv.networkAdminCertificateFile;
-                }
-
-                return Create.createCard(metadata,card.getConnectionProfile(),createArgs).then((_filename)=>{
-                    filename = _filename;
-                    return;
-                });
-            }
-            return result;
-        }).then((result)=>{
             spinner.succeed();
-            console.log('Successfully created business network card to '+filename);
+            cmdUtil.log('');
+            return Start.handler(argv);
+        }).then((result)=>{
             return result;
         })
         .catch((error) => {
             if (spinner) {
                 spinner.fail();
             }
-            console.log();
+            cmdUtil.log();
 
             throw error;
         });

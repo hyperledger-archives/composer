@@ -11,8 +11,8 @@
   "devDependencies": {
     "composer-admin": "latest",
     "composer-client": "latest",
+    "composer-common": "latest",
     "composer-connector-embedded": "latest",
-    "browserfs": "latest",
     "chai": "latest",
     "eslint": "latest",
     "istanbul": "latest",

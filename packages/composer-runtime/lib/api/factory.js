@@ -19,12 +19,14 @@ const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Factory');
 
 /**
+ * Use the Factory to create instances of Resource: transactions, participants and assets.
+ *
  * Do not attempt to create an instance of this class.<br>
  * You must use the {@link runtime-api#getFactory getFactory}
  * method instead.
  *
  * @class Factory
- * @classdesc A factory creates new instances of assets, participants, transactions,
+ * @summary A factory creates new instances of assets, participants, transactions,
  * and relationships.
  * @memberof module:composer-runtime
  * @public

@@ -14,6 +14,7 @@
 
 'use strict';
 
+const createCode = require('../../lib/cmds/generator/createCodeCommand.js');
 const cmd = require('../../lib/cmds/generator.js');
 const yargs = require('yargs');
 require('chai').should();
@@ -30,7 +31,12 @@ describe('composer generator cmd launcher unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-
+        sandbox.stub(yargs, 'usage').returns(yargs);
+        sandbox.stub(yargs, 'conflicts').returns(yargs);
+        sandbox.stub(yargs, 'group').returns(yargs);
+        sandbox.stub(yargs, 'options').returns(yargs);
+        sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
@@ -50,6 +56,17 @@ describe('composer generator cmd launcher unit tests', function () {
             sinon.assert.calledWith(yargs.commandDir, 'generator');
             cmd.handler();
         });
+
+    });
+
+    describe('createCode yargs builder function', () => {
+
+        it('should drive the yargs builder fn correctly',()=>{
+            createCode.builder(yargs);
+            sinon.assert.calledOnce(yargs.options);
+            sinon.assert.calledOnce(yargs.usage);
+        });
+
 
     });
 

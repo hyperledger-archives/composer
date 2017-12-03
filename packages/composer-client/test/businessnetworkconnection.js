@@ -14,16 +14,15 @@
 
 'use strict';
 
+const FileSystemCardStore = require('composer-common').FileSystemCardStore;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const CardStore = require('composer-common').BusinessNetworkCardStore;
-const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const commonQuery = require('composer-common').Query;
 const Connection = require('composer-common').Connection;
-const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const Factory = require('composer-common').Factory;
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const IdCard = require('composer-common').IdCard;
 const IdentityRegistry = require('../lib/identityregistry');
 const ModelManager = require('composer-common').ModelManager;
@@ -109,36 +108,18 @@ describe('BusinessNetworkConnection', () => {
 
     describe('#constructor', () => {
 
-        it('should create a new instance with a specified connection profile store', () => {
-            const mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
-            businessNetworkConnection = new BusinessNetworkConnection({ connectionProfileStore: mockConnectionProfileStore });
+        it('should create a new instance with a specified card store', () => {
+            const mockCardStore = sinon.createStubInstance(BusinessNetworkCardStore);
+            businessNetworkConnection = new BusinessNetworkConnection({cardStore : mockCardStore});
             should.equal(businessNetworkConnection.connection, null);
-            businessNetworkConnection.connectionProfileStore.should.equal(mockConnectionProfileStore);
+            businessNetworkConnection.cardStore.should.equal(mockCardStore);
         });
 
-        it('should create a new instance with a file system connection profile store', () => {
+        it('should create a new instance with a file system card store', () => {
             businessNetworkConnection = new BusinessNetworkConnection();
             should.equal(businessNetworkConnection.connection, null);
-            businessNetworkConnection.connectionProfileStore.should.be.an.instanceOf(FSConnectionProfileStore);
+            businessNetworkConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
         });
-
-        it('should create a new instance with a combo connection profile store', () => {
-            const config = {
-                connectionProfiles: {
-                    hlfabric1: {
-                        type: 'hlfv1'
-                    },
-                    hlfabric2: {
-                        type: 'hlfv2'
-                    }
-                }
-            };
-            process.env.COMPOSER_CONFIG = JSON.stringify(config);
-            businessNetworkConnection = new BusinessNetworkConnection();
-            should.equal(businessNetworkConnection.connection, null);
-            businessNetworkConnection.connectionProfileStore.should.be.an.instanceOf(ComboConnectionProfileStore);
-        });
-
     });
 
     describe('#connectWithDetails', () => {
@@ -148,27 +129,27 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.login.resolves(mockSecurityContext);
             mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
+                data : 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
             return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
-            .then((result) => {
-                sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
-                sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
-                sinon.assert.calledOnce(mockConnection.login);
-                sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
-                sinon.assert.calledOnce(mockConnection.ping);
-                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
-                sinon.assert.calledOnce(Util.queryChainCode);
-                sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
-                businessNetworkConnection.connection.should.equal(mockConnection);
-                result.should.be.an.instanceOf(BusinessNetworkDefinition);
-                businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
-            });
+                .then((result) => {
+                    sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
+                    sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
+                    sinon.assert.calledOnce(mockConnection.ping);
+                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
+                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                    businessNetworkConnection.connection.should.equal(mockConnection);
+                    result.should.be.an.instanceOf(BusinessNetworkDefinition);
+                    businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
+                });
         });
 
         it('should create a connection and download the business network archive supplying any additional options', () => {
@@ -176,27 +157,33 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.login.resolves(mockSecurityContext);
             mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
+                data : 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
-            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
-            .then((result) => {
-                sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
-                sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork', { some: 'other', options: true });
-                sinon.assert.calledOnce(mockConnection.login);
-                sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
-                sinon.assert.calledOnce(mockConnection.ping);
-                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
-                sinon.assert.calledOnce(Util.queryChainCode);
-                sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
-                businessNetworkConnection.connection.should.equal(mockConnection);
-                result.should.be.an.instanceOf(BusinessNetworkDefinition);
-                businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
-            });
+            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', {
+                some : 'other',
+                options : true
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
+                    sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork', {
+                        some : 'other',
+                        options : true
+                    });
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
+                    sinon.assert.calledOnce(mockConnection.ping);
+                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
+                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                    businessNetworkConnection.connection.should.equal(mockConnection);
+                    result.should.be.an.instanceOf(BusinessNetworkDefinition);
+                    businessNetworkConnection.dynamicQueryFile.should.equal(mockQueryFile);
+                });
         });
 
         it('should create a connection, listen for events, and emit the events it detects individually', () => {
@@ -204,33 +191,36 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.login.resolves(mockSecurityContext);
             mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
+                data : 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             const cb = sinon.stub();
             businessNetworkConnection.on('event', cb);
             mockConnection.on.withArgs('events', sinon.match.func).yields([
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
+                {$class : 'org.acme.sample.SampleEvent', eventId : 'event1'},
+                {$class : 'org.acme.sample.SampleEvent', eventId : 'event2'}
             ]);
 
-            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
-            .then((result) => {
-                sinon.assert.calledTwice(cb); // two events
-                const ev1 = cb.args[0][0];
-                ev1.isResource().should.be.true;
-                ev1.instanceOf('org.acme.sample.SampleEvent');
-                ev1.getIdentifier().should.equal('event1');
-                const ev2 = cb.args[1][0];
-                ev2.isResource().should.be.true;
-                ev2.instanceOf('org.acme.sample.SampleEvent');
-                ev2.getIdentifier().should.equal('event2');
-            });
+            return businessNetworkConnection.connectWithDetails('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', {
+                some : 'other',
+                options : true
+            })
+                .then((result) => {
+                    sinon.assert.calledTwice(cb); // two events
+                    const ev1 = cb.args[0][0];
+                    ev1.isResource().should.be.true;
+                    ev1.instanceOf('org.acme.sample.SampleEvent');
+                    ev1.getIdentifier().should.equal('event1');
+                    const ev2 = cb.args[1][0];
+                    ev2.isResource().should.be.true;
+                    ev2.instanceOf('org.acme.sample.SampleEvent');
+                    ev2.getIdentifier().should.equal('event2');
+                });
         });
     });
 
-    describe('#connect',()=>{
+    describe('#connect', () => {
         const userName = 'FredBloggs';
         const enrollmentSecret = 'password';
         const keyValStore = '/conga/conga/conga';
@@ -240,17 +230,17 @@ describe('BusinessNetworkConnection', () => {
         beforeEach(() => {
 
             const metadata = {
-                userName: 'Pingu',
-                roles: [ 'PeerAdmin', 'ChannelAdmin' ]
+                userName : 'Pingu',
+                roles : ['PeerAdmin', 'ChannelAdmin']
             };
-            const connection ={};
-            connection.card='user@penguin-network';
-            connection.name='connectionName';
+            const connection = {};
+            connection.card = 'user@penguin-network';
+            connection.name = 'connectionName';
 
-            idcard =  new IdCard(metadata, connection);
+            idcard = new IdCard(metadata, connection);
             const certificate = 'CERTIFICATE_DATA';
             const privateKey = 'PRIVATE_KEY_DATA';
-            idcard.setCredentials({certificate: certificate, privateKey: privateKey });
+            idcard.setCredentials({certificate : certificate, privateKey : privateKey});
 
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
             let mockCardStore = sinon.createStubInstance(CardStore);
@@ -258,23 +248,23 @@ describe('BusinessNetworkConnection', () => {
             mockCardStore.get.withArgs('cardName').resolves(mockIdCard);
             mockCardStore.get.withArgs('CARD_NAME').resolves(mockIdCard);
             mockCardStore.get.withArgs('credentialsCardName').resolves(idcard);
-            mockIdCard.getEnrollmentCredentials.returns({secret: enrollmentSecret});
+            mockIdCard.getEnrollmentCredentials.returns({secret : enrollmentSecret});
             mockIdCard.getUserName.returns(userName);
-            mockIdCard.getConnectionProfile.returns({ keyValStore: keyValStore });
+            mockIdCard.getConnectionProfile.returns({keyValStore : keyValStore});
             businessNetworkConnection.cardStore = mockCardStore;
 
             mockConnection.login.resolves(mockSecurityContext);
             mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
+                data : 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
             const cb = sinon.stub();
             businessNetworkConnection.on('event', cb);
             mockConnection.on.withArgs('events', sinon.match.func).yields([
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event1' },
-                { $class: 'org.acme.sample.SampleEvent', eventId: 'event2' }
+                {$class : 'org.acme.sample.SampleEvent', eventId : 'event1'},
+                {$class : 'org.acme.sample.SampleEvent', eventId : 'event2'}
             ]);
         });
 
@@ -283,18 +273,18 @@ describe('BusinessNetworkConnection', () => {
         });
 
 
-        it('Correct with with existing card name & additional options',()=>{
-            return businessNetworkConnection.connect('cardName', { some: 'other', options: true })
-                .then((result)=>{
+        it('Correct with with existing card name & additional options', () => {
+            return businessNetworkConnection.connect('cardName', {some : 'other', options : true})
+                .then((result) => {
                     sinon.assert.calledWith(mockConnection.login, userName, enrollmentSecret);
                     businessNetworkConnection.getCard().should.equal(mockIdCard);
                 });
         });
 
-        it('Correct with with existing card name & additional options, without using the enrollmentsecret',()=>{
+        it('Correct with with existing card name & additional options, without using the enrollmentsecret', () => {
 
-            return businessNetworkConnection.connect('credentialsCardName', { some: 'other', options: true })
-                .then((result)=>{
+            return businessNetworkConnection.connect('credentialsCardName', {some : 'other', options : true})
+                .then((result) => {
                     sinon.assert.calledWith(mockConnection.login, 'Pingu', 'na');
                     businessNetworkConnection.getCard().should.equal(idcard);
                 });
@@ -314,7 +304,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should override cardName property specified in additional options', () => {
             const cardName = 'CARD_NAME';
-            return businessNetworkConnection.connect(cardName, { cardName: 'WRONG' })
+            return businessNetworkConnection.connect(cardName, {cardName : 'WRONG'})
                 .then(result => {
                     sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connectWithData,
                         sinon.match.any,
@@ -350,11 +340,11 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
-    describe('#getRegistry',() => {
+    describe('#getRegistry', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves({});
             // businessNetworkConnection.getModelManager.returns(modelManager);
             // Invoke the function.
@@ -366,25 +356,25 @@ describe('BusinessNetworkConnection', () => {
 
         });
 
-        it('should get an tx registry based on name',()=>{
+        it('should get an tx registry based on name', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistry.id='id';
-            mockRegistry.name='name';
-            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            mockRegistry.id = 'id';
+            mockRegistry.name = 'name';
+            sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
             return businessNetworkConnection.getRegistry('org.acme.sample.SampleTransaction');
         });
-        it('should get an asset registry based on name',()=>{
+        it('should get an asset registry based on name', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistry.id='id';
-            mockRegistry.name='name';
-            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            mockRegistry.id = 'id';
+            mockRegistry.name = 'name';
+            sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
             return businessNetworkConnection.getRegistry('org.acme.sample.SampleAsset');
         });
-        it('should get an participant registry based on name',()=>{
+        it('should get an participant registry based on name', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
-            mockRegistry.id='id';
-            mockRegistry.name='name';
-            sandbox.stub(Registry,'getRegistry').resolves(mockRegistry);
+            mockRegistry.id = 'id';
+            mockRegistry.name = 'name';
+            sandbox.stub(Registry, 'getRegistry').resolves(mockRegistry);
             return businessNetworkConnection.getRegistry('org.acme.sample.SampleParticipant');
         });
 
@@ -395,7 +385,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'getAllAssetRegistries').resolves([]);
 
             // Invoke the function.
@@ -434,7 +424,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves({});
 
             // Invoke the function.
@@ -470,7 +460,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'assetRegistryExists').resolves({});
 
             // Invoke the function.
@@ -506,7 +496,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'addAssetRegistry').resolves();
 
             businessNetworkConnection.mockSecurityContext = mockSecurityContext;
@@ -544,7 +534,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(ParticipantRegistry, 'getAllParticipantRegistries').resolves([]);
 
             // Invoke the function.
@@ -583,7 +573,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(ParticipantRegistry, 'getParticipantRegistry').resolves({});
 
             // Invoke the function.
@@ -619,7 +609,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(ParticipantRegistry, 'participantRegistryExists').resolves({});
 
             // Invoke the function.
@@ -654,7 +644,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(ParticipantRegistry, 'addParticipantRegistry').resolves();
 
             businessNetworkConnection.mockSecurityContext = mockSecurityContext;
@@ -693,7 +683,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             let historian = sinon.createStubInstance(Historian);
             sandbox.stub(Historian, 'getHistorian').resolves(historian);
 
@@ -742,7 +732,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             let transactionRegistry = sinon.createStubInstance(TransactionRegistry);
             sandbox.stub(TransactionRegistry, 'getTransactionRegistry').resolves(transactionRegistry);
 
@@ -766,7 +756,7 @@ describe('BusinessNetworkConnection', () => {
                 .getTransactionRegistry('a-test-registry-id')
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
-                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext),'a-test-registry-id', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'a-test-registry-id', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(mockTransactionRegistry);
                 });
 
@@ -779,7 +769,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(TransactionRegistry, 'transactionRegistryExists').resolves({});
 
             // Invoke the function.
@@ -814,7 +804,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should perform a security check', () => {
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
 
             // Invoke the function.
@@ -838,7 +828,7 @@ describe('BusinessNetworkConnection', () => {
                 .getAllTransactionRegistries()
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
-                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer),businessNetworkConnection,false);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer), businessNetworkConnection, false);
                     result.should.have.lengthOf(2);
                     result[0].should.equal(mockTransactionRegistry1);
                     result[1].should.equal(mockTransactionRegistry2);
@@ -849,7 +839,7 @@ describe('BusinessNetworkConnection', () => {
         it('does transaction regisitry exist', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
 
             // Invoke the function.
@@ -890,7 +880,10 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(Util, 'createTransactionId').resolves({id:'c89291eb-969f-4b04-b653-82deb5ee0ba1',idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'});
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
 
             // Invoke the submitTransaction function.
             return businessNetworkConnection
@@ -923,7 +916,10 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(Util, 'createTransactionId').resolves({id:'c89291eb-969f-4b04-b653-82deb5ee0ba1',idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'});
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -934,7 +930,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [ json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', [json]);
 
                 });
 
@@ -956,7 +952,10 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(Util, 'createTransactionId').resolves({id:'c89291eb-969f-4b04-b653-82deb5ee0ba1',idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'});
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -993,7 +992,10 @@ describe('BusinessNetworkConnection', () => {
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').rejects(new Error('such error'));
-            sandbox.stub(Util, 'createTransactionId').resolves({id:'c89291eb-969f-4b04-b653-82deb5ee0ba1',idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'});
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             // Invoke the add function.
             return businessNetworkConnection
                 .submitTransaction(tx)
@@ -1028,8 +1030,8 @@ describe('BusinessNetworkConnection', () => {
         it('should submit a built query', () => {
             const query = new Query('SELECT doge');
             const response = [
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{}']).resolves(buffer);
@@ -1046,12 +1048,12 @@ describe('BusinessNetworkConnection', () => {
         it('should submit a built query with parameters', () => {
             const query = new Query('SELECT doge');
             const response = [
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['build', 'SELECT doge', '{"param1":true}']).resolves(buffer);
-            return businessNetworkConnection.query(query, { param1: true })
+            return businessNetworkConnection.query(query, {param1 : true})
                 .then((response) => {
                     response.should.have.lengthOf(2);
                     response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
@@ -1063,8 +1065,8 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a named query', () => {
             const response = [
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{}']).resolves(buffer);
@@ -1080,12 +1082,12 @@ describe('BusinessNetworkConnection', () => {
 
         it('should submit a named query with parameters', () => {
             const response = [
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_1' },
-                { $class: 'org.acme.sample.SampleAsset', assetId: 'ASSET_2' }
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_1'},
+                {$class : 'org.acme.sample.SampleAsset', assetId : 'ASSET_2'}
             ];
             const buffer = Buffer.from(JSON.stringify(response));
             sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'executeQuery', ['named', 'Q1', '{"param1":true}']).resolves(buffer);
-            return businessNetworkConnection.query('Q1', { param1: true })
+            return businessNetworkConnection.query('Q1', {param1 : true})
                 .then((response) => {
                     response.should.have.lengthOf(2);
                     response[0].instanceOf('org.acme.sample.SampleAsset').should.be.true;
@@ -1102,7 +1104,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
             mockConnection.ping.resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
@@ -1113,7 +1115,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should ping the connection', () => {
             mockConnection.ping.resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
@@ -1125,7 +1127,7 @@ describe('BusinessNetworkConnection', () => {
         it('should throw any errors that do not match ACTIVATION_REQUIRED', () => {
             mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION NOT REQUIRED'));
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             mockConnection.invokeChainCode.withArgs(mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity"}']).resolves();
             businessNetworkConnection.connection = mockConnection;
@@ -1136,7 +1138,7 @@ describe('BusinessNetworkConnection', () => {
         it('should activate the identity if the ping returns ACTIVATION_REQUIRED', () => {
             mockConnection.ping.onFirstCall().rejects(new Error('something something ACTIVATION_REQUIRED'));
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
             mockConnection.invokeChainCode.resolves();
@@ -1156,7 +1158,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
             mockConnection.ping.resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.pingInner()
@@ -1167,7 +1169,7 @@ describe('BusinessNetworkConnection', () => {
 
         it('should ping the connection', () => {
             mockConnection.ping.resolves(Buffer.from(JSON.stringify({
-                version: version
+                version : version
             })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.pingInner()
@@ -1197,7 +1199,7 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', [ '{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
                 });
         });
 
@@ -1208,8 +1210,8 @@ describe('BusinessNetworkConnection', () => {
         beforeEach(() => {
             businessNetworkConnection.connection = mockConnection;
             mockConnection.createIdentity.withArgs(mockSecurityContext, 'dogeid1').resolves({
-                userID: 'dogeid1',
-                userSecret: 'suchsecret'
+                userID : 'dogeid1',
+                userSecret : 'suchsecret'
             });
 
             mockParticipantRegistry.exists.resolves(true);
@@ -1255,8 +1257,8 @@ describe('BusinessNetworkConnection', () => {
                     tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
-                        userID: 'dogeid1',
-                        userSecret: 'suchsecret'
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
                     });
                 });
         });
@@ -1274,8 +1276,8 @@ describe('BusinessNetworkConnection', () => {
                     tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
-                        userID: 'dogeid1',
-                        userSecret: 'suchsecret'
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
                     });
                 });
         });
@@ -1294,8 +1296,8 @@ describe('BusinessNetworkConnection', () => {
                     tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
-                        userID: 'dogeid1',
-                        userSecret: 'suchsecret'
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
                     });
                 });
         });
@@ -1314,18 +1316,24 @@ describe('BusinessNetworkConnection', () => {
                     tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
-                        userID: 'dogeid1',
-                        userSecret: 'suchsecret'
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
                     });
                 });
         });
 
         it('should submit a request to the chaincode with additional options', () => {
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
-            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1', { issuer: true, affiliation: 'dogecorp' })
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1', {
+                issuer : true,
+                affiliation : 'dogecorp'
+            })
                 .then((result) => {
                     sinon.assert.calledOnce(mockConnection.createIdentity);
-                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', { issuer: true, affiliation: 'dogecorp' });
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', {
+                        issuer : true,
+                        affiliation : 'dogecorp'
+                    });
                     sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
                     const tx = businessNetworkConnection.submitTransaction.args[0][0];
                     tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
@@ -1333,8 +1341,8 @@ describe('BusinessNetworkConnection', () => {
                     tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
                     tx.identityName.should.equal('dogeid1');
                     result.should.deep.equal({
-                        userID: 'dogeid1',
-                        userSecret: 'suchsecret'
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
                     });
                 });
         });
@@ -1496,7 +1504,7 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
 
             // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
+            let stub = sandbox.stub(Util, 'securityCheck');
             let identityRegistry = sinon.createStubInstance(IdentityRegistry);
             sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
 

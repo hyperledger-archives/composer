@@ -221,7 +221,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.firstCall.should.have.been.calledWith(
                 {
                     requestURL: ['requestURL_1', Validators.required],
-                    eventURL: ['eventURL_1', Validators.required],
+                    eventURL: ['eventURL_1'],
                     cert: ['peerCert_1'],
                     hostnameOverride: ['peerHostname_1']
                 }
@@ -230,7 +230,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.secondCall.should.have.been.calledWith(
                 {
                     requestURL: ['requestURL_2', Validators.required],
-                    eventURL: ['eventURL_2', Validators.required],
+                    eventURL: ['eventURL_2'],
                     cert: ['peerCert_2']
                 }
             );
@@ -244,7 +244,7 @@ describe('ConnectionProfileComponent', () => {
             groupSpy.firstCall.should.have.been.calledWith(
                 {
                     requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053', Validators.required],
+                    eventURL: ['grpc://localhost:7053'],
                     cert: ['']
                 }
             );
@@ -308,8 +308,8 @@ describe('ConnectionProfileComponent', () => {
             component['v1Form'] = component['fb'].group({
                 name: ['v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
                 peers: component['fb'].array([component['fb'].group({
-                    requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['', Validators.required],
+                    requestURL: ['', Validators.required],
+                    eventURL: [''],
                     cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
@@ -319,13 +319,12 @@ describe('ConnectionProfileComponent', () => {
                 channel: ['composerchannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
                 ca: ['http://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053'],
                 timeout: [300, [Validators.pattern('[0-9]+')]]
             });
 
             component.onValueChanged();
-            component['v1FormErrors'].peers['eventURL'].should.equal('Every Peer Event URL is required.');
+            component['v1FormErrors'].peers['requestURL'].should.equal('Every Peer Request URL is required.');
             onValueChangedSpy.should.be.called;
         });
     });
@@ -352,7 +351,6 @@ describe('ConnectionProfileComponent', () => {
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
                 timeout: 300
             };
 
@@ -375,12 +373,8 @@ describe('ConnectionProfileComponent', () => {
                     eventURL: 'grpc://localhost:7053',
                     cert: ''
                 }],
-                keyValStore: '/tmp/keyValStore',
                 timeout: 300
             };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
 
             component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
 
@@ -389,7 +383,7 @@ describe('ConnectionProfileComponent', () => {
                 description: ['A description for a V1 Profile'],
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053', Validators.required],
+                    eventURL: ['grpc://localhost:7053'],
                     cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
@@ -402,14 +396,11 @@ describe('ConnectionProfileComponent', () => {
                     url: ['http://localhost:7054', [Validators.required]],
                     name: ['']
                 }),
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
                 timeout: [300, [Validators.pattern('[0-9]+')]],
             });
 
             component.onSubmit(null);
             tick();
-            mockConnectionProfileService.createProfile.should.have.been.calledWith('new v1 Profile', profileOne);
-            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v1 Profile');
         }));
 
         it('should throw error on unknown profile type', fakeAsync(() => {
@@ -417,15 +408,11 @@ describe('ConnectionProfileComponent', () => {
                 deployWaitTime: 300,
                 eventHubURL: 'grpc://localhost:7053',
                 invokeWaitTime: 30,
-                keyValStore: '/tmp/keyValStore',
                 membershipServicesURL: 'grpc://localhost:7054',
                 name: 'new v06 Profile',
                 peerURL: 'grpc://localhost:7051',
                 type: 'hlf'
             };
-
-            mockConnectionProfileService.createProfile.returns(Promise.resolve());
-            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne]));
 
             component['connectionProfileData'] = {name: 'unknown profile', profile: {type: 'unknown type'}};
 
@@ -433,8 +420,7 @@ describe('ConnectionProfileComponent', () => {
                 name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
                 peerURL: ['grpc://localhost:7051', [Validators.required]],
                 membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
-                keyValStore: ['/tmp/keyValStore', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053'],
                 deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
                 invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
             });

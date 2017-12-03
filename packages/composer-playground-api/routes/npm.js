@@ -15,7 +15,14 @@
 'use strict';
 
 const RegClient = require('npm-registry-client');
-const client = new RegClient();
+const npmClientConfig = {
+    retry : {
+        count : 1,
+        minTimeout : 2000,
+        maxTimeout : 5000
+    }
+};
+const client = new RegClient(npmClientConfig);
 const semver = require('semver');
 const tar = require('tar');
 const url = require('url');
@@ -29,7 +36,7 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('NPM');
 
-const sampleList = [{name:'basic-sample-network'}];
+const sampleList = [{name : 'basic-sample-network'}];
 const fs = require('fs');
 
 let router = null;
@@ -131,9 +138,9 @@ module.exports = (app, testMode) => {
 
                 // Remove any prelease versions.
                 // TODO: For prelease/unstable Composer versions, we might want to include these.
-                .filter((version) => {
-                    return semver.prerelease(version) === null;
-                })
+                // .filter((version) => {
+                //     return semver.prerelease(version) === null;
+                // })
 
                 // Validate that the package.json includes a "engines" stanza that includes a
                 // "composer" property, with a semantic version range of supported Composer versions.

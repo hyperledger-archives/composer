@@ -24,9 +24,9 @@ $(function() {
   // downloaded files are corrupted by Swagger UI :-(
   function fixupOperation(op) {
     if (op.nickname === 'Card_exportCard') {
-      op.produces = [ 'application/octet-stream' ];
+      op.produces = [ 'application/json', 'application/octet-stream' ];
     } else if (op.nickname === 'System_issueIdentity') {
-      op.produces = [ 'application/octet-stream' ];
+      op.produces = [ 'application/json', 'application/octet-stream' ];
     }
   }
 

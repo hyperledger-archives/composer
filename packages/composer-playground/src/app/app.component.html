@@ -2,7 +2,7 @@
     <nav class="indexnav">
         <div class="navcontent">
             <div class="navlogo">
-                <p title="{{composerBanner[0]}}"><b>{{ composerBanner[0] }}</b></p>&nbsp;<p id="network-name" title="{{composerBanner[1]}}">{{ composerBanner[1] }}</p>
+                <p title="{{config.banner[0]}}"><b>{{ config.banner[0] }}</b></p>&nbsp;<p id="network-name" title="{{config.banner[1]}}">{{ config.banner[1] }}</p>
             </div>
             <div class="navmain" [ngClass]="{'rightonly' : !showHeaderLinks && !usingLocally }">
                 <ul *ngIf="showHeaderLinks" class="links navleft">
@@ -19,7 +19,7 @@
                 </ul>
                 <ul *ngIf="!showHeaderLinks && !usingLocally" class="links navright">
                     <li>
-                        <a href="https://hyperledger.github.io/composer/installing/installing-index.html"
+                        <a href="{{ config.links.install }}"
                            target="_blank">
                             <svg class="nav-icon" aria-hidden="true">
                                 <use xlink:href="#icon-simple_docker"></use>
@@ -32,7 +32,7 @@
                     <div class="drop-select-item flex-container flex">
                         <div ngbDropdown class="d-inline-block" (openChange)="onToggle($event)">
                             <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>
-                                <span title="{{ identityService.currentIdentity | async }}">{{ identityService.currentIdentity | async }}</span>
+                                <span title="{{ identityCardService.getCurrentIdentityCard().getUserName() }}">{{ identityCardService.getCurrentIdentityCard().getUserName() }}</span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                 <button id="content" class="dropdown-item action" [routerLink]="['identity']">

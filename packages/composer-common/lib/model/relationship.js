@@ -15,14 +15,17 @@
 'use strict';
 
 const Identifiable = require('./identifiable');
+const ModelUtil = require('../modelutil');
 const ResourceId = require('./resourceid');
-const Globalize = require('../globalize');
 
 /**
  * A Relationship is a typed pointer to an instance. I.e the relationship
  * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates
  * a pointer that points at an instance of org.acme.Vehicle with the id
  * ABC.
+ *
+ * Applications should retrieve instances from {@link Factory}
+ *
  * @extends Identifiable
  * @see See {@link Identifiable}
  * @class
@@ -37,13 +40,14 @@ class Relationship extends Identifiable {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @param {string} id - The identifier of this instance.
      * @private
      */
-    constructor(modelManager, ns, type, id) {
-        super(modelManager, ns, type, id);
+    constructor(modelManager, classDeclaration, ns, type, id) {
+        super(modelManager, classDeclaration, ns, type, id);
         // we use this metatag to identify the instance as a relationship
         this.$class = 'Relationship';
     }
@@ -75,26 +79,9 @@ class Relationship extends Identifiable {
      */
     static fromURI(modelManager, uriAsString, defaultNamespace, defaultType) {
         const resourceId = ResourceId.fromURI(uriAsString, defaultNamespace, defaultType);
-
-        let modelFile = modelManager.getModelFile(resourceId.namespace);
-        if (!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newrelationship-notregisteredwithmm');
-
-            throw new Error(formatter({
-                namespace: resourceId.namespace
-            }));
-        }
-
-        if (!modelFile.isDefined(resourceId.type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: resourceId.namespace,
-                type: resourceId.type
-            }));
-        }
-
-        let relationship = new Relationship(modelManager, resourceId.namespace, resourceId.type, resourceId.id);
+        let fqt = ModelUtil.getFullyQualifiedName(resourceId.namespace, resourceId.type);
+        let classDeclaration = modelManager.getType(fqt);
+        let relationship = new Relationship(modelManager, classDeclaration, resourceId.namespace, resourceId.type, resourceId.id);
         return relationship;
     }
 }

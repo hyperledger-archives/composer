@@ -21,40 +21,19 @@ $ composer identity bind
 composer identity bind [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --participantId, -a          The particpant to issue the new identity to  [string] [required]
-  --certificateFile, -c        File containing the certificate  [string] [required]
+  --help                 Show help  [boolean]
+  -v, --version          Show version number  [boolean]
+  --card, -c             Name of the network card to use  [string] [required]
+  --participantId, -a    The particpant to issue the new identity to  [string] [required]
+  --certificateFile, -c  File containing the certificate  [string] [required]
 ```
 
 ## Options
 
-`--connectionProfileName, -p`
+`--card, -c`
 
-The connection profile name.  
-Example: `hlfv1`
-
-`--businessNetworkName, -n`
-
-The name of the deployed Business Network to connect to.  
-Example:
-`digitalproperty-network`
-
-`--enrollId, -i`
-
-The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: `maeid1`
-
-`--enrollSecret, -s`
-
-The enrollment secret of the identity that should be used to connect to deployed
-Business Network.  
-Example: `Xurw3yU9zI0l`
+Name of the business network card to use.
+Example: `admin@sample-network`
 
 `--certificateFile, -c`
 

@@ -18,10 +18,7 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 
 /**
- * <p>
  * Composer "identity bind" command
- * </p>
- * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
 class Bind {
@@ -51,8 +48,8 @@ class Bind {
                 return businessNetworkConnection.bindIdentity(participantId, certificate);
             })
             .then((result) => {
-                console.log(`An identity was bound to the participant '${participantId}'`);
-                console.log('The participant can now connect to the business network using the identity');
+                cmdUtil.log(`An identity was bound to the participant '${participantId}'`);
+                cmdUtil.log('The participant can now connect to the business network using the identity');
             });
     }
 

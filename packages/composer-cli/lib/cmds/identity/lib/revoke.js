@@ -41,7 +41,7 @@ class Revoke {
             return businessNetworkConnection.revokeIdentity(identityId);
         })
         .then((result) => {
-            console.log(`The identity '${identityId}' was revoked and can no longer be used to connect to the business network.`);
+            cmdUtil.log(`The identity '${identityId}' was revoked and can no longer be used to connect to the business network.`);
         });
     }
 

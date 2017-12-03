@@ -18,19 +18,19 @@ const Concept = require('./concept');
 const TypedStack = require('../serializer/typedstack');
 
 /**
- * <p>
+ *
  * Resource is an instance that has a type. The type of the resource
  * specifies a set of properites (which themselves have types).
- * </p>
- * <p>
+ *
+ *
  * Type information in Composer is used to validate the structure of
  * Resource instances and for serialization.
- * </p>
- * <p>
+ *
+ *
  * Resources are used in Composer to represent Assets, Participants, Transactions and
  * other domain classes that can be serialized for long-term persistent storage.
- * </p>
- * @extends Identifiable
+ *
+ * @extends Concept
  * @see See {@link Resource}
  * @class
  * @memberof module:composer-common
@@ -44,13 +44,14 @@ class ValidatedConcept extends Concept {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @param {ResourceValidator} resourceValidator - The validator to use for this instance
      * @private
      */
-    constructor(modelManager, ns, type, resourceValidator) {
-        super(modelManager, ns, type);
+    constructor(modelManager, classDeclaration, ns, type, resourceValidator) {
+        super(modelManager, classDeclaration, ns, type);
         this.$validator = resourceValidator;
     }
 

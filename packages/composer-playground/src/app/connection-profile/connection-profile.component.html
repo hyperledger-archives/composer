@@ -139,13 +139,10 @@
                                         </div>
                                         <div class="nested-row">
                                             <div class="nested-property">
-                                                Event URL*
+                                                Event URL
                                             </div>
                                             <div class="nested-value">
-                                                <input [ngClass]="{'error-underline': v1FormErrors.peers.eventURL}" class="margin-right" type="text" formControlName="eventURL">
-                                                <div *ngIf="v1FormErrors.peers.eventURL" class="error-message">
-                                                    {{ v1FormErrors.peers.eventURL }}
-                                                </div>
+                                                <input class="margin-right" type="text" formControlName="eventURL">
                                                 <input hidden type="text" formControlName="cert">
                                             </div>
                                         </div>
@@ -158,17 +155,6 @@
                             <button type="button" class="secondary" *ngIf="v1Form.controls.peers.controls.length > 1"
                                 (click)="removePeer((v1Form.controls.orderers.controls.length - 1))">Remove Peer
                             </button>
-                        </div>
-                    </div>
-                    <div class="profile-row">
-                        <div class="profile-property">
-                            Key Value Store Directory Path*
-                        </div>
-                        <div class="profile-value">
-                            <input [ngClass]="{'error-underline': v1FormErrors.keyValStore}" type="text" formControlName="keyValStore">
-                            <div *ngIf="v1FormErrors.keyValStore" class="error-message">
-                                {{ v1FormErrors.keyValStore }}
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -193,7 +179,7 @@
                 <div class="info">Provide values for all required properties to continue.</div>
                 <div>
                     <button class="secondary" (click)="stopEditing()">Cancel</button>
-                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Save</button>
+                    <button class="primary" type="submit" [disabled]="!v1Form.valid">Next</button>
                 </div>
             </footer>
             <footer *ngIf="v1Form.valid">

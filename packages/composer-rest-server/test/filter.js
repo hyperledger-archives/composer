@@ -15,7 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
@@ -25,8 +25,6 @@ const server = require('../server/server');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
-
-const bfs_fs = BrowserFS.BFSRequire('fs');
 
 ['always', 'never'].forEach((namespaces) => {
 
@@ -58,6 +56,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 $class: 'org.acme.bond.Bond',
                 description: 'A',
                 dayCountFraction: 'EOM',
+                currency: 'Sterling',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -81,6 +80,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 $class: 'org.acme.bond.Bond',
                 description: 'B',
                 dayCountFraction: 'EOY',
+                currency: 'USD',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -143,7 +143,81 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     periodMultiplier: 6
                 }
             }
-        }];
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_5',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'E',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 5000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_5',
+                maturity: '2016-02-27T21:03:52.000Z',
+                parValue: 5000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_6',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'F',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 6000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_6',
+                maturity: '2015-02-27T21:03:52.000Z',
+                parValue: 6000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        },
+        {
+            $class: 'org.acme.bond.BondAsset',
+            ISINCode: 'ISIN_7',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOY',
+                description: 'A',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 60000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#ISSUER_3',
+                owners: ['resource:org.acme.bond.Issuer#ISSUER_1', 'resource:org.acme.bond.Issuer#ISSUER_2'],
+                maturity: '2010-02-27T21:03:52.000Z',
+                parValue: 60000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
+        }
+        ];
 
         let app;
         let businessNetworkConnection;
@@ -151,20 +225,28 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
         let idCard;
 
         before(() => {
-            BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-            const adminConnection = new AdminConnection({ fs: bfs_fs });
-            return adminConnection.createProfile('defaultProfile', {
-                type : 'embedded'
-            })
+            const cardStore = new MemoryCardStore();
+            const adminConnection = new AdminConnection({ cardStore });
+            let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
+            const deployCardName = 'deployer-card';
+
+            let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+            let businessNetworkDefinition;
+
+            return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
             .then(() => {
-                return adminConnection.connectWithDetails('defaultProfile', 'admin', 'Xurw3yU9zI0l');
+                return adminConnection.connect(deployCardName);
             })
             .then(() => {
                 return BusinessNetworkDefinition.fromDirectory('./test/data/bond-network');
             })
-            .then((businessNetworkDefinition) => {
+            .then((result) => {
+                businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.deploy(businessNetworkDefinition);
+                return adminConnection.install(businessNetworkDefinition.getName());
+            })
+            .then(()=>{
+                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
@@ -173,15 +255,16 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
             .then(() => {
                 return server({
                     card: 'admin@bond-network',
-                    fs: bfs_fs,
+                    cardStore,
                     namespaces: namespaces
                 });
             })
             .then((result) => {
                 app = result.app;
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connectWithDetails('defaultProfile', 'bond-network', 'admin', 'Xurw3yU9zI0l');
+                businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
+                return businessNetworkConnection.connect('admin@bond-network');
             })
+
             .then(() => {
                 return businessNetworkConnection.getAssetRegistry('org.acme.bond.BondAsset');
             })
@@ -190,7 +273,10 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     serializer.fromJSON(assetData[0]),
                     serializer.fromJSON(assetData[1]),
                     serializer.fromJSON(assetData[2]),
-                    serializer.fromJSON(assetData[3])
+                    serializer.fromJSON(assetData[3]),
+                    serializer.fromJSON(assetData[4]),
+                    serializer.fromJSON(assetData[5]),
+                    serializer.fromJSON(assetData[6])
                 ]);
             })
             .then(() => {
@@ -248,19 +334,52 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
             });
 
-            xit('should return matches with a STRING property using json format', () => {
+            it('should return matches with a DATETIME property using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":"2018-01-27T21:03:52.000Z"}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with a DATETIME property using json format', () => {
+            it('should return matches with a DOUBLE property using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.parValue":1000}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with a DOUBLE property using json format', () => {
+            it('should return matches with an INTEGER CONCEPT property using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.paymentFrequency.periodMultiplier":4}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return matches with an INTEGER CONCEPT property using json format', () => {
-            });
-
-            xit('should return matches with an ENUM CONCEPT property using json format', () => {
+            it('should return matches with an ENUM CONCEPT property using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.paymentFrequency.period":"YEAR"}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
             it('should return matches with multiple properties, STRING and DATETIME, using json format', () => {
@@ -297,12 +416,19 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     });
             });
 
-            xit('should return an empty array if nothing matches the filter on a property field, using json format', () => {
+            it('should return an empty array if nothing matches the filter on a property field, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter[where][bond.dayCountFraction]="DOES_NOT_EXIST"`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
             it('should return an empty array if nothing matches the filter on an identifier field using object format', () => {
                 return chai.request(app)
-                    .get(`/api/${prefix}BondAsset?filter[where][ISINCode]=DOES_NOT_EXIST`)
+                    .get(`/api/${prefix}BondAsset?filter[where][ISINCode]="DOES_NOT_EXIST"`)
                     .then((res) => {
                         res.should.be.json;
                         res.should.have.status(200);
@@ -313,57 +439,200 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe('Filter Greater/Less Than', () => {
             // valid only for numerical and date values
-            xit('should return GREATER THAN matches with a DOUBLE property, using json format', () => {
+            it('should return GREATER THAN matches with a DOUBLE property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.parValue":{"gt":5000}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[5],
+                        assetData[6]
+                    ]);
+                });
             });
 
-            xit('should return GREATER THAN matches with an INTEGER property, using json format', () => {
+            it('should return GREATER THAN matches with an INTEGER property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.paymentFrequency.periodMultiplier":{"gt":5}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[3],
+                        assetData[4],
+                        assetData[5],
+                        assetData[6]
+                    ]);
+                });
             });
 
-            xit('should return GREATER THAN matches with a DATETIME property, using json format', () => {
+            it('should return GREATER THAN matches with a DATETIME property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"gt":"2018-01-27T21:03:52.000Z"}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return LESS THAN matches with a DOUBLE property, using json format', () => {
+            it('should return LESS THAN matches with a DOUBLE property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"lt":2000}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return LESS THAN matches with an INTEGER property, using json format', () => {
+            it('should return LESS THAN matches with an INTEGER property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.paymentFrequency.periodMultiplier":{"lt":5}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1],
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return LESS THAN matches with a DATETIME property, using json format', () => {
+            it('should return LESS THAN matches with a DATETIME property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"lt":"2016-01-27T21:03:52.000Z"}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[5],
+                        assetData[6]
+                    ]);
+                });
             });
 
-            xit('should return an empty array if no matching GREATER THAN DOUBLE property, using json format', () => {
+            it('should return an empty array if no matching GREATER THAN DOUBLE property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"gt":200000}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
-            xit('should return an empty array if no matching GREATER THAN DATETIME property, using json format', () => {
+            it('should return an empty array if no matching GREATER THAN DATETIME property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"gt":"2019-01-27T21:03:52.000Z"}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
-            xit('should return an empty array if no matching LESS THAN DOUBLE property using, json format', () => {
+            it('should return an empty array if no matching LESS THAN DOUBLE property using, json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"lt":200}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
-            xit('should return an empty array if no matching LESS THAN DATETIME property using,json format', () => {
+            it('should return an empty array if no matching LESS THAN DATETIME property using,json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.maturity":{"lt":"2006-01-27T21:03:52.000Z"}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
         });
 
         describe('Filter AND', () => {
             // interested in depth and combination
-            xit('should return matches with an identifier field AND non-identifier STRING property, using json format', () => {
+            it('should return matches with an identifier field AND non-identifier STRING property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"ISINCode":"ISIN_1"},{"bond.description":"A"}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with an identifier field AND non-identifier DOUBLE property, using json format', () => {
+            it('should return matches with an identifier field with non-identifier STRING property using implicit and, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1", "bond.description":"A"}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with an identifier field AND non-identifier DATETIME property, using json format', () => {
+            it('should return matches with an identifier field AND non-identifier DATETIME property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"ISINCode":"ISIN_1"},{"bond.maturity":{"lte":"2018-01-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with TWO non-identifier STRING properties, using json format', () => {
+            it('should return matches with TWO non-identifier STRING properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOY", "bond.description":"B"}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return matches with THREE non-identifier STRING properties, using json format', () => {
+            it('should return matches with THREE non-identifier STRING properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.dayCountFraction":"EOY", "bond.description":"B", "bond.currency":"USD"}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return matches with non-identifier STRING AND DOUBLE properties, using json format', () => {
-
+            it('should return matches with non-identifier STRING AND DOUBLE properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOY"},{"bond.parValue":{"lte":2000}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
             it('should return matches with non-identifier STRING AND LESS THAN DATETIME properties, using json format', () => {
@@ -379,33 +648,118 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 });
             });
 
-            xit('should return matches with non-identifier DOUBLE AND DATETIME properties, using json format', () => {
+            it('should return matches with non-identifier DOUBLE AND DATETIME properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.parValue":{"lte":2000}},{"bond.maturity":{"lt":"2018-06-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches with non-identifier STRING AND DOUBLE AND DATETIME properties, using json format', () => {
+            it('should return matches with non-identifier STRING AND DOUBLE AND DATETIME properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"bond.dayCountFraction":"EOM"},{"bond.parValue":{"lte":2000}},{"bond.maturity":{"lt":"2018-06-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return an empty array if no matching AND properties, using json format', () => {
+            it('should return an empty array if no matching AND properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"ISINCode":"ISIN_1"},{"bond.description":"B"}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
         });
 
         describe('Filter OR', () => {
-            xit('should return matches on the identifier when filtering on the identifier field OR a property, using json format', () => {
+            it('should return matches on the identifier when filtering on the identifier field OR a STRING property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"ISINCode":"ISIN_1"},{"bond.description":"A"}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[6]
+                    ]);
+                });
             });
 
-            xit('should return matches on the property when filtering on the identifier field OR a property, using json format', () => {
+            it('should return matches on the property when filtering on the identifier field OR a DOUBLE property, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"ISINCode":"ISIN_1"},{"bond.parValue":{"lte":2000}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return matches on the property when filtering on the identifier field OR a property, using object format', () => {
+            it('should return matches on the property when filtering on the identifier field OR a DATETIME property, using object format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"ISINCode":"ISIN_1"},{"bond.maturity":{"gte":"2018-01-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return matches on a DOUBLE when filtering on DOUBLE OR STRING properties, using json format', () => {
+            it('should return matches on DOUBLE when filtering on DOUBLE OR STRING properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"XYZ"},{"bond.faceAmount":2000}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return matches on a STRING when filtering on DOUBLE OR STRING properties, using json format', () => {
+            it('should return matches on a STRING when filtering on DOUBLE OR STRING properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"EOM"},{"bond.faceAmount":200000}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return matches on a DATETIME when filtering on DATETIME OR STRING properties, using json format', () => {
+            it('should return matches on a DATETIME when filtering on DATETIME OR STRING properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"XYZ"},{"bond.maturity":{"gte":"2018-01-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
             it('should return matches when filtering on DATETIME OR STRING OR DOUBLE properties, using json format', () => {
@@ -421,24 +775,65 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 });
             });
 
-            xit('should return matches on a DATETIME when filtering on DATETIME OR STRING properties, using object format', () => {
+            it('should return matches on a DATETIME when filtering on DATETIME OR STRING properties, using object format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter[where][or][0][bond.dayCountFraction]=XYZ&filter[where][or][1][bond.maturity]=2018-01-27T21:03:52.000Z`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return an empty array if no matching OR properties, using json format', () => {
+            it('should return an empty array if no matching OR properties, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"XYZ"},{"bond.maturity":{"gte":"2028-01-27T21:03:52.000Z"}}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
-            xit('should return an empty array if no matching OR properties, using object format', () => {
+            it('should return an empty array if no matching OR properties, using object format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter[where][or][0][bond.dayCountFraction]=XYZ&filter[where][or][1][bond.maturity]=2020-01-27T21:03:52.000Z`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
 
         });
 
         describe('Filter AND/OR', () => {
-            xit('should return matches when filtering on the identifier field AND a property OR property, using json format', () => {
+            it('should return matches when filtering on the identifier field AND a property OR property, using json format', () => {
                 // (IDENTIFIER) AND (PROPERTY OR PROPERTY)
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"ISINCode":"ISIN_1"},{"or":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
-            xit('should return matches when filtering on the identifier field OR a property AND property, using json format', () => {
+            it('should return matches when filtering on the identifier field OR a property AND property, using json format', () => {
                 // (IDENTIFIER) OR (PROPERTY AND PROPERTY)
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"ISINCode":"ISIN_1"},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0]
+                    ]);
+                });
             });
 
             it('should return matches when filtering on the property AND a property OR property, using json format', () => {
@@ -454,23 +849,85 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 });
             });
 
-            xit('should return matches when filtering on the property OR a property AND property, using json format', () => {
+            it('should return matches when filtering on the property OR a property AND property, using json format', () => {
                 // (PROPERTY) OR (PROPERTY AND PROPERTY)
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.dayCountFraction":"EOM"},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":1000}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[2]
+                    ]);
+                });
             });
 
-            xit('should return matches when filtering with compound AND/OR clauses on properties, using json format', () => {
+            it('should return matches when filtering with compound AND/OR clauses on properties, using json format', () => {
                 // (PROPERTY AND PROPERTY) OR (PROPERTY AND PROPERTY) OR (PROPERTY AND PROPERTY)
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"and":[{"bond.description":"A"},{"bond.currency":"Sterling"}]},{"and":[{"bond.dayCountFraction":"EOM"},{"bond.paymentFrequency.periodMultiplier":1}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":{"gte":1000}}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
             xit('should return matches when filtering with compound AND/OR clauses on properties, using json format', () => {
                 // (PROPERTY OR PROPERTY) AND (PROPERTY OR PROPERTY) AND (PROPERTY OR PROPERTY)
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"or":[{"bond.description":"A"},{"bond.currency":"Sterling"}]},{"or":[{"bond.dayCountFraction":"EOM"},{"bond.paymentFrequency.periodMultiplier":1}]},{"or":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":{"gte":1000}}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
             xit('should return matches when filtering with nested AND/OR clauses on properties, using json format', () => {
                 // (PROPERTY OR (PROPERTY AND PROPERTY)) AND (PROPERTY AND (PROPERTY OR PROPERTY))
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"or":[{"bond.description":"A"},{"and":[{"bond.currency":"Sterling"},{"bond.dayCountFraction":"EOM"}]}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"or":[{"bond.paymentFrequency.periodMultiplier":1}, {"bond.faceAmount":{"gte":1000}}]}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
             });
 
-            xit('should return an empty array if no matching AND/OR properties, using object format', () => {
+            xit('should return matches when filtering with nested AND/OR clauses on properties, using json format', () => {
+                // (PROPERTY OR (PROPERTY AND PROPERTY)) AND (PROPERTY AND (PROPERTY OR PROPERTY))
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"or":[{"bond.description":"A"},{"and":[{"bond.currency":"Sterling"},{"bond.dayCountFraction":"EOM"}]}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"or":[{"bond.paymentFrequency.periodMultiplier":1}, {"bond.faceAmount":{"gte":1000}}]}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1]
+                    ]);
+                });
+            });
+
+            it('should return an empty array if no matching AND/OR properties, using object format', () => {
+                 // (PROPERTY OR (PROPERTY AND PROPERTY))
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"bond.description":"X"},{"and":[{"bond.currency":"Sterling"},{"bond.dayCountFraction":"YY"}]}]}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([]);
+                });
             });
         });
 
@@ -503,7 +960,18 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                 });
             });
 
-            xit('should return matches when filtering on INTEGER property field, using json format', () => {
+            it('should return matches when filtering on INTEGER property field, using json format', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.paymentFrequency.periodMultiplier":{"between":[1, 5]}}}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.deep.equal([
+                        assetData[0],
+                        assetData[1],
+                        assetData[2]
+                    ]);
+                });
             });
 
             it('should return matches when filtering on DOUBLE property field, using json format', () => {
@@ -540,7 +1008,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -553,7 +1023,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[1],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -579,7 +1051,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
@@ -605,21 +1079,19 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     res.should.have.status(200);
                     res.body.should.deep.equal([
                         assetData[2],
-                        assetData[3]
+                        assetData[3],
+                        assetData[4],
+                        assetData[5]
                     ]);
                 });
             });
 
-            xit('should handle searching BETWEEN when there are unmatched types, using json format', () => {
+            it('should handle searching BETWEEN when there are unmatched types, using json format', () => {
                 return chai.request(app)
                 .get(`/api/${prefix}BondAsset?filter={"where":{"bond.faceAmount":{"between":[0, "Penguin"]}}}`)
-                .then((res) => {
-                    res.should.be.json;
-                    res.should.have.status(200);
-                    res.body.should.deep.equal([
-                        assetData[0],
-                        assetData[2]
-                    ]);
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.contain('Property faceAmount cannot be compared with Penguin (string) expected type Double');
                 });
             });
 
@@ -647,45 +1119,109 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
         describe('Filter include:resolve', () => {
 
-            xit('should return a single fully resolved Resource', () => {
+            it('should return a single fully resolved Resource', () => {
                 return chai.request(app)
                 .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_1"}, "include":"resolve"}`)
                 .then((res) => {
                     res.should.be.json;
                     res.should.have.status(200);
-                    // TODO : Assert fully resolved (includes Issuer)
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].bond.issuer.should.deep.equal(participants[0]);
                 });
             });
 
-            xit('should return multiple fully resolved Resources', () => {
+            it('should return a single fully resolved Resource with both a single relation and multiple relationships', () => {
                 return chai.request(app)
-                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}}, "include":"resolve"}`)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_7"}, "include":"resolve"}`)
                 .then((res) => {
                     res.should.be.json;
                     res.should.have.status(200);
-                    // TODO : Assert all fully resolved (includes Issuer)
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].bond.issuer.should.deep.equal(participants[2]);
+                    res.body[0].bond.owners.should.have.length(2);
+                    res.body[0].bond.owners[0].should.deep.equal(participants[0]);
+                    res.body[0].bond.owners[1].should.deep.equal(participants[1]);
                 });
             });
 
-            xit('should handle missing reference in resolve process of single Resource', () => {
+            it('should return multiple fully resolved Resources', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_1", "ISIN_3"]}}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(3);
+                    res.body[0].bond.issuer.should.deep.equal(participants[0]);
+                    res.body[1].bond.issuer.should.deep.equal(participants[1]);
+                    res.body[2].bond.issuer.should.deep.equal(participants[2]);
+                });
             });
 
-            xit('should handle missing reference in resolve process of multiple Resources', () => {
+            it('should return the missing reference as a string value in resolve process of single Resource', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":"ISIN_5"}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(1);
+                    res.body[0].should.deep.equal(assetData[4]);
+                });
+            });
+
+            it('should return missing references with string values as they are not resolved for multiple Resources', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"ISINCode":{"between":["ISIN_5", "ISIN_6"]}}, "include":"resolve"}`)
+                .then((res) => {
+                    res.should.be.json;
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.have.length(2);
+                    res.body[0].should.deep.equal(assetData[4]);
+                    res.body[1].should.deep.equal(assetData[5]);
+                });
             });
         });
 
         describe('Filter UNSUPPORTED', () => {
 
             xit('should return an error message when trying to use NEAR', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.perValue":{"near": 10000}}}`)
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/The key nlike operator is not supported by the Composer filter where/);
+                });
             });
 
-            xit('should return an error message when trying to use LIKE', () => {
+            it('should return an error message when trying to use LIKE', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.currency":{"like": "Sterling"}}}`)
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/The key like operator is not supported by the Composer filter where/);
+                });
             });
 
-            xit('should return an error message when trying to use NLIKE', () => {
+            it('should return an error message when trying to use NLIKE', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.currency":{"nlike": "Sterling"}}}`)
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/The key nlike operator is not supported by the Composer filter where/);
+                });
             });
 
-            xit('should return an error message when trying to use REGEXP', () => {
+            it('should return an error message when trying to use REGEXP', () => {
+                return chai.request(app)
+                .get(`/api/${prefix}BondAsset?filter={"where":{"bond.currency":{"regexp": "Sterling"}}}`)
+                .catch((err) => {
+                    err.response.should.have.status(500);
+                    err.response.body.error.message.should.match(/The key regexp operator is not supported by the Composer filter where/);
+                });
             });
 
         });

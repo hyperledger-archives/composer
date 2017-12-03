@@ -34,6 +34,17 @@
                                    placeholder="eg Track the exchange of Commodities between traders on a blockchain"></textarea>
                     </td>
                 </tr>
+                <tr>
+                    <th><label for="import-cardName"><h3>Give the network admin card that will be created a name</h3></label>
+                    </th>
+                    <td>
+                        <input [ngClass]="{'error-underline': !cardNameValid}" type="text"
+                               id="import-cardName" [ngModel]="cardName"
+                               (ngModelChange)="setCardName($event)"
+                               placeholder="eg. admin@{{networkName}}">
+                        <div *ngIf="!cardNameValid" class="error-message">The card name must be unique</div>
+                    </td>
+                </tr>
             </table>
         </div>
     </section>
@@ -55,9 +66,8 @@
                 </div>
             </div>
             <div *ngIf="!npmInProgress" class="sample-network-list-container">
-                <div class="sample-network-list"
-                     [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}" id="base-samples">
-                    <div class="sample-network-list-item"
+                <div class="sample-network-list" [ngClass]="{'selected-network' : sampleNetworks[0].name === chosenNetwork.name}" id="base-samples">
+                    <div class="sample-network-list-item" *ngIf="sampleNetworks.length>1"
                          [ngClass]="{'selected-network' : sampleNetworks[1].name === chosenNetwork.name}"
                          (click)="selectNetwork(sampleNetworks[1])">
                         <img *ngIf="sampleNetworks[1].networkImage" src="{{sampleNetworks[1].networkImage}}">
@@ -99,7 +109,7 @@
 
                 <h3>Samples on npm</h3>
 
-                <div class="sample-network-list" id="npm-samples">
+                <div class="sample-network-list" id="npm-samples" *ngIf="sampleNetworks.length>1">
                     <div class="sample-network-list-item"
                          [ngClass]="{'selected-network' : sampleNetwork.name === chosenNetwork.name}"
                          *ngFor=" let sampleNetwork of sampleNetworks | slice:2; let networkIndex=index"
@@ -111,6 +121,9 @@
                         <div class="sample-network-name">{{sampleNetwork.name}}</div>
                     </div>
                 </div>
+                <div *ngIf="sampleNetworks.length==1">
+                    <p class="error-message">Error: could not get any sample networks.</p>
+                </div>        
             </div>
         </div>
     </section>

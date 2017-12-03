@@ -42,7 +42,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-
 describe('BusinessNetworkConnector', () => {
 
     const MODEL_FILE = `
@@ -58,9 +57,13 @@ describe('BusinessNetworkConnector', () => {
         o DateTime theDateTime optional
         o Double theDouble optional
         o Long theLong optional
+        --> Member theMember optional
     }
     participant BaseParticipant identified by theValue {
         o String theValue
+        o String theDescription optional
+    }
+    participant Member extends BaseParticipant {
     }
     transaction BaseTransaction {
     }`;
@@ -553,7 +556,6 @@ describe('BusinessNetworkConnector', () => {
             mockBusinessNetworkConnection.query.resolves([{theString :'mockString'}]);
             mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
             mockSerializer.toJSON.onFirstCall().returns({theString: 'myString'});
-
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}}, { test: 'options' }, (error, result) => {
                     if (error) {
@@ -572,7 +574,7 @@ describe('BusinessNetworkConnector', () => {
         });
 
         it('should retrieve a fully resolved specific Asset for a given id in a where clause', () => {
-            mockAssetRegistry.resolve.resolves({theValue : 'mockId'});
+            mockAssetRegistry.resolve.resolves({theValue : 'mockId', member: {theValue:'member1'}});
 
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
@@ -588,7 +590,66 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
                     sinon.assert.calledOnce(mockAssetRegistry.resolve);
+                    result.length.should.equal(1);
                     result[0].theValue.should.equal('mockId');
+                    result[0].member.should.deep.equal({theValue:'member1'});
+                });
+        });
+        it('should retrieve a fully resolved specific Asset for a given the other property in a where clause', () => {
+            mockAssetRegistry.resolve.resolves({theValue: 'mockId', theString : 'mockString', member: {theValue:'member1'}});
+
+            mockBusinessNetworkConnection.query.resolves([{theValue: 'mockId', theString :'mockString'}]);
+            mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                    sinon.assert.calledOnce(mockAssetRegistry.resolve);
+                    sinon.assert.calledWith(mockAssetRegistry.resolve, 'mockId');
+                    result.length.should.equal(1);
+                    result[0].theString.should.equal('mockString');
+                    result[0].member.should.deep.equal({theValue:'member1'});
+                });
+        });
+
+        it('should retrieve two fully resolved specific Asset for a given the other property in a where clause', () => {
+            mockAssetRegistry.resolve.onCall(0).resolves({theValue: 'mockId1', theString : 'mockString', member: {theValue:'member1'}});
+            mockAssetRegistry.resolve.onCall(1).resolves({theValue: 'mockId2', theString : 'mockString', member: {theValue:'member2'}});
+
+            mockBusinessNetworkConnection.query.resolves([{theValue: 'mockId1', theString :'mockString'},{theValue: 'mockId2', theString :'mockString'} ]);
+            mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                    sinon.assert.calledTwice(mockAssetRegistry.resolve);
+                    sinon.assert.calledWith(mockAssetRegistry.resolve, 'mockId1');
+                    sinon.assert.calledWith(mockAssetRegistry.resolve, 'mockId2');
+                    result.length.should.equal(2);
+                    result[0].theString.should.equal('mockString');
+                    result[0].member.should.deep.equal({theValue:'member1'});
+                    result[1].theString.should.equal('mockString');
+                    result[1].member.should.deep.equal({theValue:'member2'});
                 });
         });
 
@@ -636,18 +697,7 @@ describe('BusinessNetworkConnector', () => {
                     }
                     resolve(result);
                 });
-            }).should.be.rejectedWith(/Unable to resolve: the filter field value is not specified/);
-        });
-
-        it('should handle an error when trying to retrieve a fully resolved specific Asset for a given existing id and another property in a where clause', () => {
-            return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId', 'theOtherValue':'anything'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve(result);
-                });
-            }).should.be.rejectedWith(/Unable to resolve: only one id field is supported/);
+            }).should.be.rejectedWith(/Invalid property name specified in the filter/);
         });
 
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
@@ -2562,7 +2612,11 @@ describe('BusinessNetworkConnector', () => {
                     type: 'table',
                     namespaces: true,
                     name: 'org.acme.base.BaseParticipant'
-                }, {
+                },{
+                    type: 'table',
+                    namespaces: true,
+                    name: 'org.acme.base.Member'
+                },{
                     type: 'table',
                     namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
@@ -2597,6 +2651,10 @@ describe('BusinessNetworkConnector', () => {
                     namespaces: false,
                     name: 'BaseParticipant'
                 }, {
+                    type: 'table',
+                    namespaces: false,
+                    name: 'Member'
+                },{
                     type: 'table',
                     namespaces: false,
                     name: 'BaseTransaction'
@@ -2637,8 +2695,12 @@ describe('BusinessNetworkConnector', () => {
                 }, {
                     type: 'table',
                     namespaces: true,
+                    name: 'org.acme.base.Member'
+                },{
+                    type: 'table',
+                    namespaces: true,
                     name: 'org.acme.base.BaseTransaction'
-                }, {
+                },{
                     type: 'table',
                     namespaces: true,
                     name: 'org.acme.extra.BaseAsset'
@@ -2672,6 +2734,10 @@ describe('BusinessNetworkConnector', () => {
                     type: 'table',
                     namespaces: false,
                     name: 'BaseParticipant'
+                },{
+                    type: 'table',
+                    namespaces: false,
+                    name: 'Member'
                 }, {
                     type: 'table',
                     namespaces: false,
@@ -2782,6 +2848,11 @@ describe('BusinessNetworkConnector', () => {
                 'theBoolean' : {
                     'required' : false,
                     'type' : 'boolean'
+                },
+                'theMember': {
+                    'description': 'The identifier of an instance of theMember',
+                    'required': false,
+                    'type': 'any'
                 }
             },
             'relations' : {},

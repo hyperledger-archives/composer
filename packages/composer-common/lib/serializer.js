@@ -15,6 +15,8 @@
 'use strict';
 
 const EventDeclaration = require('./introspect/eventdeclaration');
+const ConceptDeclaration = require('./introspect/conceptdeclaration');
+const EnumDeclaration = require('./introspect/enumdeclaration');
 const Globalize = require('./globalize');
 const JSONGenerator = require('./serializer/jsongenerator');
 const JSONPopulator = require('./serializer/jsonpopulator');
@@ -27,7 +29,7 @@ const JSONWriter = require('./codegen/jsonwriter');
 /**
  * Serialize Resources instances to/from various formats for long-term storage
  * (e.g. on the blockchain).
- * <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="height:100%;"/></a></p>
+ *
  * @class
  * @memberof module:composer-common
  */
@@ -156,6 +158,11 @@ class Serializer {
             resource = this.factory.newEvent( classDeclaration.getNamespace(),
                                               classDeclaration.getName(),
                                               jsonObject[classDeclaration.getIdentifierFieldName()] );
+        } else if (classDeclaration instanceof ConceptDeclaration) {
+            resource = this.factory.newConcept( classDeclaration.getNamespace(),
+                                                classDeclaration.getName() );
+        } else if (classDeclaration instanceof EnumDeclaration) {
+            throw new Error('Attempting to create an ENUM declaration is not supported.');
         } else {
             resource = this.factory.newResource( classDeclaration.getNamespace(),
                                                  classDeclaration.getName(),

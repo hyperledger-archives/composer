@@ -12,7 +12,6 @@ import { Directive, Input, Injectable } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ClientService } from './services/client.service';
 import { InitializationService } from './services/initialization.service';
-import { IdentityService } from './services/identity.service';
 import { IdentityCardService } from './services/identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AlertService } from './basic-modals/alert.service';
@@ -22,6 +21,7 @@ import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
+import { Config } from './services/config/configStructure.service';
 import { FileService } from './services/file.service';
 
 import { IdCard } from 'composer-common';
@@ -151,13 +151,12 @@ describe('AppComponent', () => {
     let mockAdminService;
     let mockBusinessNetworkConnection;
     let mockIdCard;
-    let mockIdentityService;
     let mockIdentityCardService;
     let mockLocalStorageService;
     let mockAboutService;
     let mockConfigService;
+    let mockConfig;
     let mockAdminConnection;
-    let mockWindow;
     let mockFileService;
 
     let linkDes;
@@ -168,6 +167,8 @@ describe('AppComponent', () => {
 
     let checkVersionStub;
 
+    let analyticsMock;
+
     beforeEach(async(() => {
         mockClientService = sinon.createStubInstance(ClientService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
@@ -177,12 +178,14 @@ describe('AppComponent', () => {
         mockAdminService = sinon.createStubInstance(AdminService);
         mockIdCard = sinon.createStubInstance(IdCard);
         mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
-        mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockAboutService = sinon.createStubInstance(AboutService);
         mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfig = sinon.createStubInstance(Config);
+        mockConfig.setToDefault();
+        mockConfigService.getConfig.returns(mockConfig);
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
 
         mockAlertService = new MockAlertService();
@@ -190,11 +193,7 @@ describe('AppComponent', () => {
         activatedRoute = new ActivatedRouteStub();
         routerStub = new RouterStub();
 
-        mockWindow = {
-            location: {
-                reload: sinon.stub()
-            }
-        };
+        analyticsMock = global['window'].ga = sinon.stub();
 
         TestBed.configureTestingModule({
             declarations: [AppComponent, MockRouterOutletDirective, MockRouterLinkDirective, MockRouterLinkActiveDirective, MockSuccessDirective, MockNgbModalContainerDirective],
@@ -206,7 +205,6 @@ describe('AppComponent', () => {
                 {provide: ActivatedRoute, useValue: activatedRoute},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
-                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: LocalStorageService, useValue: mockLocalStorageService},
                 {provide: AboutService, useValue: mockAboutService},
@@ -312,10 +310,47 @@ describe('AppComponent', () => {
             welcomeModalStub.should.have.been.called;
         });
 
+        it('should not send analytics', fakeAsync(() => {
+            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
+
+            routerStub.eventParams = {url: '/bob', nav: 'end'};
+
+            updateComponent(false);
+
+            tick();
+
+            analyticsMock.should.not.have.been.called;
+
+            checkVersionStub.should.have.been.called;
+            openVersionModalStub.should.have.been.called;
+        }));
+
+        it('should send analytics', fakeAsync(() => {
+            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
+
+            component['submitAnalytics'] = true;
+
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/banana', nav: 'end'};
+
+            updateComponent(false);
+
+            tick();
+
+            analyticsMock.firstCall.should.have.been.calledWith('set', 'page', '/banana');
+            analyticsMock.secondCall.should.have.been.calledWith('send', 'pageview');
+
+            checkVersionStub.should.have.been.called;
+            openVersionModalStub.should.have.been.called;
+        }));
+
         it('should check version and open version modal', fakeAsync(() => {
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName : sinon.stub().returns('bob')});
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -331,7 +366,7 @@ describe('AppComponent', () => {
         it('should check version and not open version modal', fakeAsync(() => {
             let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName : sinon.stub().returns('bob')});
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
             routerStub.eventParams = {url: '/bob', nav: 'end'};
 
@@ -359,7 +394,7 @@ describe('AppComponent', () => {
         it('should show header links if logged in', fakeAsync(() => {
             routerStub.eventParams = {url: '/editor', nav: 'end'};
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName : sinon.stub().returns('bob')});
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
             updateComponent();
 
@@ -392,6 +427,57 @@ describe('AppComponent', () => {
             component['showHeaderLinks'].should.equal(false);
 
             checkVersionStub.should.have.been.called;
+        }));
+
+        it('should set the config using get config if config is loaded', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+
+            mockConfigService.getConfig.returns(myConfig);
+
+            let myTitleSpy = sinon.spy(component, 'setTitle');
+
+            updateComponent();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+            myTitleSpy.should.have.been.called;
+        }));
+
+        it('should set the config using load config if getConfig fails', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+
+            mockConfigService.getConfig.throws(new Error('error'));
+            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+            let myTitleSpy = sinon.spy(component, 'setTitle');
+
+            updateComponent();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+            myTitleSpy.should.have.been.called;
         }));
     });
 
@@ -508,26 +594,28 @@ describe('AppComponent', () => {
             errorStatusSpy = sinon.spy(mockAlertService.errorStatus$, 'next');
         }));
 
-        it('should initialise playground and set use locally to true', fakeAsync(() => {
+        it('should initialise playground and set use locally to true, and not set analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(false);
+            mockConfigService.getConfig.returns(new Config());
             activatedRoute.testParams = {};
 
             updateComponent();
 
             tick();
 
-            // update now got info back about if local or not
-            updateComponent();
-
             mockInitializationService.initialize.should.have.been.called;
+            component['submitAnalytics'].should.equal(false);
 
             component['usingLocally'].should.equal(true);
         }));
 
-        it('should initialise playground and set use locally to false', fakeAsync(() => {
+        it('should initialise playground and set use locally to false and use analytics', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             mockConfigService.isWebOnly.returns(true);
+            let myConfig = new Config();
+            myConfig.analyticsID = 'myID';
+            mockConfigService.getConfig.returns(myConfig);
 
             activatedRoute.testParams = {};
 
@@ -535,10 +623,10 @@ describe('AppComponent', () => {
 
             tick();
 
-            // update now got info back about if local or not
-            updateComponent();
-
             mockInitializationService.initialize.should.have.been.called;
+
+            analyticsMock.should.have.been.calledWith('create', 'myID', 'auto');
+            component['submitAnalytics'].should.equal(true);
 
             component['usingLocally'].should.equal(false);
         }));
@@ -1028,28 +1116,100 @@ describe('AppComponent', () => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
             mockOnError = sinon.stub(component, 'onErrorStatus');
             mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-
         }));
 
         it('should log the user out', fakeAsync(() => {
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             routerStub.navigate.returns(Promise.resolve(true));
             activatedRoute.testParams = {};
+            mockConfigService.getConfig.returns(mockConfig);
             updateComponent();
 
             component.logout();
 
             tick();
 
+            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith(null);
             mockClientService.disconnect.should.have.been.called;
             mockFileService.deleteAllFiles.should.have.been.called;
-            mockIdentityService.setLoggedIn.should.have.been.calledWith(false);
             routerStub.navigate.should.have.been.calledWith(['/login']);
+        }));
+
+        it('should set the config using get config if config is loaded', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            routerStub.navigate.returns(Promise.resolve(true));
+            activatedRoute.testParams = {};
+            mockConfigService.getConfig.returns(myConfig);
+
+            updateComponent();
+
+            component.logout();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
+        }));
+
+        it('should set the config using load config if getConfig fails', fakeAsync(() => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            routerStub.navigate.returns(Promise.resolve(true));
+            activatedRoute.testParams = {};
+            mockConfigService.getConfig.throws(new Error('error'));
+            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+            updateComponent();
+
+            component.logout();
+
+            tick();
+
+            component['config'].should.deep.equal(myConfig);
         }));
     });
 
     describe('onToggle', () => {
 
+        let mockOnBusy;
+        let mockOnError;
+        let mockOnTransactionEvent;
+        let mockQueryParamsUpdated;
+
+        beforeEach(async(() => {
+            mockOnBusy = sinon.stub(component, 'onBusyStatus');
+            mockOnError = sinon.stub(component, 'onErrorStatus');
+            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
+            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
+
+        }));
+
         it('should set toggle down on true event', () => {
+            updateComponent();
             component['dropListActive'] = false;
 
             component['onToggle'](true);
@@ -1058,6 +1218,7 @@ describe('AppComponent', () => {
         });
 
         it('should set toggle up on false event', () => {
+            updateComponent();
             component['dropListActive'] = true;
 
             component['onToggle'](false);

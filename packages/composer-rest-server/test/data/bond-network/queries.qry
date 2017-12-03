@@ -50,9 +50,29 @@ query findBondByIsMaturedBeforeMaturity {
     description: "Find all bonds that are either matured or before a maturity _$maturity"
     statement: SELECT org.acme.bond.BondAsset WHERE (bond.isMatured == true OR bond.maturity < _$maturity)
 }
-query findBondByCurrencyAndDayCount {
-    description: "Find all bonds by a specific currency _$currency and the number days no more than a specified day"
-    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency AND bond.dayCount <= _$dayCount)
+query findBondByTheIsMaturedAndCurrencyORDayCount {
+    description: "Find all bonds by a specific currency _$currency and the number days."
+    statement: SELECT org.acme.bond.BondAsset WHERE ((bond.isMatured == true AND bond.currency == _$currency) OR bond.dayCount <= _$dayCount )
+}
+query findBondByCurrencyORTheDayCountAndMaturity {
+    description: "Find all bonds by a specific currency _$currency or the number days _$dayCount and after a maturity date:_$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency OR (bond.dayCount <= _$dayCount AND bond.maturity > _$maturity))
+}
+query findBondByTheCurrencyOrDayCountANDMaturity {
+    description: "Find all bonds by a specific currency _$currency or the number days _$dayCount and after a maturity date:_$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE ((bond.currency == _$currency OR bond.dayCount <= _$dayCount) AND bond.maturity > _$maturity)
+}
+query findBondByCurrencyANDTheDayCountOrMaturity {
+    description: "Find all bonds by a specific currency _$currency and the number days _$dayCount or after a maturity date:_$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency AND (bond.dayCount <= _$dayCount OR bond.maturity > _$maturity))
+}
+query findBondByCurrencyOrDayCountOrMaturity {
+    description: "Find all bonds by a specific currency _$currency and the number days _$dayCount or after a maturity date:_$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency OR bond.dayCount <= _$dayCount OR bond.maturity > _$maturity)
+}
+query findBondByCurrencyAndDayCountAndMaturity {
+    description: "Find all bonds by a specific currency _$currency and the number days _$dayCount and after a maturity date:_$maturity"
+    statement: SELECT org.acme.bond.BondAsset WHERE (bond.currency == _$currency AND bond.dayCount <= _$dayCount AND bond.maturity > _$maturity)
 }
 query findBondByCurrencyAndUnsupportedType {
     description: "Find all bonds by a specific currency _$currency and an instrumentId"

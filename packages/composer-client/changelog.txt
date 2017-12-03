@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.15.2 {a8fd262223df81e6fc39e64af64dcb38} 2017-11-27
+- Correctly document APIs on all registries
+
 Version 0.15.0 {97251fb34e6261fc64bb0b6b1d816108} 2017-11-01
 - Change BusinessNetworkConnection.connect to work exclusively with cards
 - Change BusinessNetworkConnection constructor documentation for cards instead of connection profiles

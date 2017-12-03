@@ -55,14 +55,10 @@ export abstract class ImportComponent implements OnInit {
         this.npmInProgress = true;
         return this.sampleBusinessNetworkService.getSampleList()
             .then((sampleNetworkList) => {
-                this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
-                this.selectNetwork(this.sampleNetworks[1]);
-                this.npmInProgress = false;
-
+                this.initNetworkList(sampleNetworkList);
             })
             .catch((error) => {
-                this.npmInProgress = false;
-                this.alertService.errorStatus$.next(error);
+                this.initNetworkList([]);
             });
     }
 
@@ -131,7 +127,7 @@ export abstract class ImportComponent implements OnInit {
             }
         };
         let permissions =
-`rule NetworkAdminUser {
+            `rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
     operation: ALL
@@ -161,36 +157,31 @@ rule NetworkAdminSystem {
 
     closeSample() {
         this.sampleDropped = false;
-        this.selectNetwork(this.sampleNetworks[1]);
+        this.selectNetwork(this.sampleNetworks[0]);
     }
 
     addEmptyNetworkOption(networks: any[]): any[] {
-
         let newOrder = [];
-
-        // Append new network option to the list.
         newOrder.push(this.EMPTY_BIZNET);
-
         for (let i = 0; i < networks.length; i++) {
             newOrder.push(networks[i]);
         }
-
         return newOrder;
     }
 
     updateBusinessNetworkNameAndDesc(network) {
-      let nameEl = this.networkName;
-      let descEl = this.networkDescription;
-      let name = network.name;
-      let desc = (typeof network.description === 'undefined') ? '' : network.description;
-      if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
-        this.networkName = name;
-        this.lastName = name;
-      }
-      if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
-        this.networkDescription = desc;
-        this.lastDesc = desc;
-      }
+        let nameEl = this.networkName;
+        let descEl = this.networkDescription;
+        let name = network.name;
+        let desc = (typeof network.description === 'undefined') ? '' : network.description;
+        if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
+            this.networkName = name;
+            this.lastName = name;
+        }
+        if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
+            this.networkDescription = desc;
+            this.lastDesc = desc;
+        }
     }
 
     private fileDetected() {
@@ -234,5 +225,15 @@ rule NetworkAdminSystem {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
+    }
+
+    private initNetworkList(sampleNetworkList): void {
+        this.sampleNetworks = this.addEmptyNetworkOption(sampleNetworkList);
+        if (this.sampleNetworks.length === 1) {
+            this.selectNetwork(this.sampleNetworks[0]);
+        } else {
+            this.selectNetwork(this.sampleNetworks[1]);
+        }
+        this.npmInProgress = false;
     }
 }

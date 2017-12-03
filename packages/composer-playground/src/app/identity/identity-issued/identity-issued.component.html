@@ -21,8 +21,13 @@
             </ng-template>
             <ng-template ngbPanelContent>
                 <p>Just add the business network card to your wallet to start using the new identity yourself</p>
+                <label for="cardName"><h3>Give the business network card a name</h3></label>
+                <input type="text" [ngModel]="cardName" id="cardName" name="cardName"
+                       (ngModelChange)="setCardName($event)"
+                       autocomplete="off" placeholder="e.g. {{newCard.getUserName() + '@' + newCard.getBusinessNetworkName()}}">
+                <div *ngIf="!cardNameValid" class="error-message">The card name must be unique</div>
                 <div class="actions">
-                  <button type="button" class="primary" (click)="addToWallet();">Add to wallet</button>
+                  <button type="button" class="primary" (click)="addToWallet()" [disabled]="!cardNameValid">Add to wallet</button>
                 </div>
             </ng-template>
           </ngb-panel>

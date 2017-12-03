@@ -15,7 +15,7 @@
 'use strict';
 
 const doctrine = require('doctrine');
-const esprima = require('esprima');
+// const esprima = require('esprima');  see comment in getExample fn
 const acorn = require('acorn');
 
 /**
@@ -41,13 +41,18 @@ class JavaScriptParser {
         let comments = [];
         this.tokens = [];
 
+        // If the magic flag is set, don't collect tokens. They eat up a lot of
+        // memory and this is problematic for the HLFv1 runtime (the only place
+        // that this flag is set).
+        let noTokens = !!global.composerJavaScriptParserNoTokens;
+
         let options =  {
             // collect ranges for each node
             ranges: true,
             // collect comments in Esprima's format
             onComment: comments,
             // collect token ranges
-            onToken: this.tokens,
+            onToken: noTokens ? null : this.tokens,
             // collect token locations
             locations: true,
             // locations: true,
@@ -543,13 +548,15 @@ class JavaScriptParser {
             result = tags[0].description;
         }
 
-        try {
-            // Pass as a function so that return statements are valid
-            let program = 'function testSyntax() {' + result + '}';
-            esprima.parse(program);
-        } catch (e) {
-            throw Error('Malformed JSDoc Comment. Invalid @example tag: ' + comment);
-        }
+        // Currently esprima seems to have a problem with the async await code.
+        // TODO: Investigate if this can be handled
+        // try {
+        //     // Pass as a function so that return statements are valid
+        //     let program = 'function testSyntax() {' + result + '}';
+        //     esprima.parse(program);
+        // } catch (e) {
+        //     throw Error('Malformed JSDoc Comment. Invalid @example tag: ' + comment);
+        // }
 
         return result;
     }

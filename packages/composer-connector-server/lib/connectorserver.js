@@ -13,7 +13,7 @@
  */
 
 'use strict';
-
+const IdCard = require('composer-common').IdCard;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
@@ -33,7 +33,7 @@ class ConnectorServer {
      * @param {Error} error The error to serialize with serializerr.
      * @return {Object} The error serialized by serializerr.
      */
-    static serializerr(error) {
+    static serializerr (error) {
         if (error instanceof Error) {
             return realSerializerr(error);
         } else {
@@ -43,14 +43,14 @@ class ConnectorServer {
 
     /**
      * Constructor.
-     * @param {ConnectionProfileStore} connectionProfileStore The connection profile store to use.
+     * @param {BusinessNetworkCardStore} businessNetworkCardStore The business network card store to use.
      * @param {ConnectionProfileManager} connectionProfileManager The connection profile manager to use.
      * @param {Socket} socket The connected socket to use for communicating with the client.
      */
-    constructor(connectionProfileStore, connectionProfileManager, socket) {
+    constructor (businessNetworkCardStore, connectionProfileManager, socket) {
         const method = 'constructor';
-        LOG.entry(method, connectionProfileStore, connectionProfileManager, socket);
-        this.connectionProfileStore = connectionProfileStore;
+        LOG.entry(method, businessNetworkCardStore, connectionProfileManager, socket);
+        this.businessNetworkCardStore = businessNetworkCardStore;
         this.connectionProfileManager = connectionProfileManager;
         this.socket = socket;
         let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).sort();
@@ -69,15 +69,15 @@ class ConnectorServer {
     }
 
     /**
-     * Handle a request from the client to load a connection profile.
-     * @param {string} connectionProfile The name of the connection profile
+     * Handle a request from the client to get a busines network card.
+     * @param {string} cardName The name of the card.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionProfileStoreLoad(connectionProfile, callback) {
-        const method = 'connectionProfileStoreLoad';
-        LOG.entry(method, connectionProfile);
-        return this.connectionProfileStore.load(connectionProfile)
+    businessNetworkCardStoreGet (cardName, callback) {
+        const method = 'businessNetworkCardStoreGet';
+        LOG.entry(method, cardName);
+        return this.businessNetworkCardStore.get(cardName)
             .then((result) => {
                 callback(null, result);
                 LOG.exit(method, result);
@@ -90,38 +90,65 @@ class ConnectorServer {
     }
 
     /**
-     * Handle a request from the client to save a connection profile.
-     * @param {string} connectionProfile The name of the connection profile
-     * @param {object} connectionOptions The connection options loaded from the profile
+     * Handle a request from the client to has a busines network card.
+     * @param {string} cardName The name of the card.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionProfileStoreSave(connectionProfile, connectionOptions, callback) {
-        const method = 'connectionProfileStoreSave';
-        LOG.entry(method, connectionProfile, connectionOptions);
-        return this.connectionProfileStore.save(connectionProfile, connectionOptions)
-            .then(() => {
-                callback(null);
-                LOG.exit(method);
+    businessNetworkCardStoreHas (cardName, callback) {
+        const method = 'businessNetworkCardStoreHas';
+        LOG.entry(method, cardName);
+        return this.businessNetworkCardStore.has(cardName)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
             })
             .catch((error) => {
                 LOG.error(error);
                 callback(ConnectorServer.serializerr(error));
-                LOG.exit(method);
+                LOG.exit(method, null);
             });
     }
 
     /**
-     * Handle a request from the client to load all connection profiles.
+     * Handle a request from the client to get a busines network card.
+     * @param {string} cardName The name of the card.
+     * @param {object} cardProperties The card.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionProfileStoreLoadAll(callback) {
-        const method = 'connectionProfileStoreLoadAll';
+    businessNetworkCardStorePut (cardName, cardProperties, callback) {
+        const method = 'businessNetworkCardStorePut';
+        LOG.entry(method, cardName, cardProperties);
+        let card = new IdCard(cardProperties.metadata, cardProperties.connectionProfile);
+        card.setCredentials(cardProperties.credentials);
+        return this.businessNetworkCardStore.put(cardName, card)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+    /**
+     * Handle a request from the client to get a busines network card.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    businessNetworkCardStoreGetAll (callback) {
+        const method = 'businessNetworkCardStoreGetAll';
         LOG.entry(method);
-        return this.connectionProfileStore.loadAll()
+        return this.businessNetworkCardStore.getAll()
             .then((result) => {
-                callback(null, result);
+                let resultObject = {};
+                result.forEach((card, cardName) => {
+                    resultObject[cardName] = card;
+                });
+                callback(null, resultObject);
                 LOG.exit(method, result);
             })
             .catch((error) => {
@@ -132,23 +159,23 @@ class ConnectorServer {
     }
 
     /**
-     * Handle a request from the client to delete a connection profile.
-     * @param {string} connectionProfile The name of the connection profile
+     * Handle a request from the client to get a busines network card.
+     * @param {string} cardName The name of the card.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionProfileStoreDelete(connectionProfile, callback) {
-        const method = 'connectionProfileStoreDelete';
-        LOG.entry(method, connectionProfile);
-        return this.connectionProfileStore.delete(connectionProfile)
-            .then(() => {
-                callback(null);
-                LOG.exit(method);
+    businessNetworkCardStoreDelete (cardName, callback) {
+        const method = 'businessNetworkCardStorePut';
+        LOG.entry(method, cardName);
+        return this.businessNetworkCardStore.delete(cardName)
+            .then((result) => {
+                callback(null, result);
+                LOG.exit(method, result);
             })
             .catch((error) => {
                 LOG.error(error);
                 callback(ConnectorServer.serializerr(error));
-                LOG.exit(method);
+                LOG.exit(method, null);
             });
     }
 
@@ -162,10 +189,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerImportIdentity(connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
+    connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
         LOG.entry(method, connectionProfile, id, certificate, privateKey);
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
             })
@@ -181,6 +208,33 @@ class ConnectorServer {
     }
 
     /**
+     * Handle a request from the client to remove an identity.
+     * @param {string} connectionProfile The name of the connection profile
+     * @param {object} connectionOptions The connection options loaded from the profile
+     * @param {string} id the id to associate with the identity
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
+        const method = 'connectionManagerRemoveIdentity';
+        LOG.entry(method, connectionProfile, id);
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
+            .then((connectionManager) => {
+                return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
+            })
+            .then((deleted) => {
+                callback(null, deleted);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method, null);
+            });
+    }
+
+
+    /**
      * Obtain the credentials associated with a given identity.
      * @param {String} connectionProfileName - Name of the connection profile.
      * @param {Object} connectionOptions - connection options loaded from the profile.
@@ -188,10 +242,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} Promise that resolves to credentials.
      */
-    connectionManagerExportIdentity(connectionProfileName, connectionOptions, id, callback) {
+    connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
         const method = 'connectionManagerExportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
-        return this.connectionProfileManager.getConnectionManager(connectionProfileName)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
             .then((connectionManager) => {
                 return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
             })
@@ -214,22 +268,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
+    connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
         const method = 'connectionManagerConnect';
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
-        return this.connectionProfileStore.load(connectionProfile, connectionOptions)
-            .then((existingConnectionOptions) => {
-                connectionOptions = Object.assign({}, existingConnectionOptions, connectionOptions);
-            })
-            .catch((error) => {
-                // Ignore, it doesn't exist.
-            })
-            .then(() => {
-                return this.connectionProfileStore.save(connectionProfile, connectionOptions);
-            })
-            .then(() => {
-                return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier);
-            })
+        return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
             .then((connection) => {
                 let connectionID = uuid.v4();
                 this.connections[connectionID] = connection;
@@ -249,7 +291,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDisconnect(connectionID, callback) {
+    connectionDisconnect (connectionID, callback) {
         const method = 'connectionDisconnect';
         LOG.entry(method, connectionID);
         let connection = this.connections[connectionID];
@@ -262,7 +304,8 @@ class ConnectorServer {
         }
         delete this.connections[connectionID];
 
-        connection.removeListener('events', () => {});
+        connection.removeListener('events', () => {
+        });
 
         return connection.disconnect()
             .then(() => {
@@ -284,7 +327,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionLogin(connectionID, enrollmentID, enrollmentSecret, callback) {
+    connectionLogin (connectionID, enrollmentID, enrollmentSecret, callback) {
         const method = 'connectionLogin';
         LOG.entry(method, connectionID, enrollmentID, enrollmentSecret);
         let connection = this.connections[connectionID];
@@ -324,7 +367,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionInstall(connectionID, securityContextID, businessNetworkIdentifier, installOptions, callback) {
+    connectionInstall (connectionID, securityContextID, businessNetworkIdentifier, installOptions, callback) {
         const method = 'connectionDeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, installOptions);
         let connection = this.connections[connectionID];
@@ -365,7 +408,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionStart(connectionID, securityContextID, businessNetworkIdentifier, startTransaction, startOptions, callback) {
+    connectionStart (connectionID, securityContextID, businessNetworkIdentifier, startTransaction, startOptions, callback) {
         const method = 'connectionDeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, startTransaction, startOptions);
         let connection = this.connections[connectionID];
@@ -406,7 +449,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDeploy(connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
+    connectionDeploy (connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
         const method = 'connectionDeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions);
         let connection = this.connections[connectionID];
@@ -445,7 +488,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUpdate(connectionID, securityContextID, businessNetworkBase64, callback) {
+    connectionUpdate (connectionID, securityContextID, businessNetworkBase64, callback) {
         const method = 'connectionUpdate';
         LOG.entry(method, connectionID, securityContextID, businessNetworkBase64);
         let connection = this.connections[connectionID];
@@ -488,7 +531,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, callback) {
+    connectionUndeploy (connectionID, securityContextID, businessNetworkIdentifier, callback) {
         const method = 'connectionUndeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier);
         let connection = this.connections[connectionID];
@@ -526,7 +569,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionPing(connectionID, securityContextID, callback) {
+    connectionPing (connectionID, securityContextID, callback) {
         const method = 'connectionPing';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];
@@ -566,7 +609,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionQueryChainCode(connectionID, securityContextID, functionName, args, callback) {
+    connectionQueryChainCode (connectionID, securityContextID, functionName, args, callback) {
         const method = 'connectionQueryChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
@@ -603,10 +646,12 @@ class ConnectorServer {
      * @param {string} securityContextID The security context ID.
      * @param {string} functionName The runtime function to call.
      * @param {string[]} args The arguments to pass to the runtime function.
+     * @param {Object} options options to pass to invoking chaincode
+     * @param {Object} options.transactionId Transaction Id to use.
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, callback) {
+    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, options, callback) {
         const method = 'connectionInvokeChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
@@ -625,7 +670,7 @@ class ConnectorServer {
             LOG.exit(method, null);
             return Promise.resolve();
         }
-        return connection.invokeChainCode(securityContext, functionName, args)
+        return connection.invokeChainCode(securityContext, functionName, args, options)
             .then(() => {
                 callback(null);
                 LOG.exit(method);
@@ -646,7 +691,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionCreateIdentity(connectionID, securityContextID, userID, options, callback) {
+    connectionCreateIdentity (connectionID, securityContextID, userID, options, callback) {
         const method = 'connectionCreateIdentity';
         LOG.entry(method, connectionID, securityContextID, userID, options);
         let connection = this.connections[connectionID];
@@ -684,7 +729,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionList(connectionID, securityContextID, callback) {
+    connectionList (connectionID, securityContextID, callback) {
         const method = 'connectionList';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];
@@ -722,7 +767,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionCreateTransactionId(connectionID, securityContextID, callback) {
+    connectionCreateTransactionId (connectionID, securityContextID, callback) {
         const method = 'connectionCreateTransactionId';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];

@@ -16,6 +16,9 @@
 
 /**
  * Manages persistence of business network cards.
+ * Applications would not work with this abstract class directly, but with one of the subclass
+ * {@link FileSystemCardStore} or {@link MemoryCardStore}.  The File system card store is the default for
+ * both Admin and Business Network Connections
  *
  * @abstract
  * @class
@@ -36,7 +39,7 @@ class BusinessNetworkCardStore {
      * Gets a card from the store.
      * @abstract
      * @param {String} cardName The name of the card to get
-     * @return {Promise} A promise that is resolved with an IdCard.
+     * @return {Promise} A promise that is resolved with an IdCard, or rejected if the card does not exist.
      */
     get(cardName) {
         return Promise.reject(new Error('Abstract function called'));
@@ -54,6 +57,16 @@ class BusinessNetworkCardStore {
     }
 
     /**
+     * Has returns a boolean indicating whether a card with the specified name exists or not.
+     * @abstract
+     * @param {String} cardName The name of the card to check
+     * @return {Promise} A promise resolved with true or false.
+     */
+    has(cardName){
+        return Promise.reject(new Error('Abstract function called'));
+    }
+
+    /**
      * Gets all cards from the store.
      * @abstract
      * @return {Promise} A promise that is resolved with a Map where
@@ -66,8 +79,8 @@ class BusinessNetworkCardStore {
     /**
      * Delete a specific card from the store.
      * @abstract
-     * @param {String} cardName The name of the card to delete
-     * @return {Promise} A promise that resolves when the card is deleted.
+     * @param {String} cardName The name of the card to delete.
+     * @return {Promise} A promise that resolves to true if the card existed; otherwise false.
      */
     delete(cardName) {
         return Promise.reject(new Error('Abstract function called'));

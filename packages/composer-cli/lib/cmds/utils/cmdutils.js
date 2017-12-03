@@ -18,10 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const fs = require('fs');
-const Logger = require('composer-common').Logger;
 const prompt = require('prompt');
-
-const LOG = Logger.getLog('CmdUtil');
 
 /**
  * Internal Utility Class
@@ -29,6 +26,18 @@ const LOG = Logger.getLog('CmdUtil');
  * @private
  */
 class CmdUtil {
+
+
+    /** Simple log method to output to the console
+     * Used to put a single console.log() here, so eslinting is easier.
+     * And if this needs to written to a file at some point it is also eaiser
+     */
+    static log(){
+        Array.from(arguments).forEach((s)=>{
+            console.log(s);
+        });
+
+    }
 
     /**
      * Parse connector specific options.
@@ -47,7 +56,7 @@ class CmdUtil {
             if (fs.existsSync(argv.optionsFile)) {
                 mergedOptions = JSON.parse(fs.readFileSync(argv.optionsFile));
             } else {
-                console.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
+                CmdUtil.log('WARNING: options file ' + argv.optionsFile + ' specified, but wasn\'t found');
             }
         }
 
@@ -102,7 +111,7 @@ class CmdUtil {
             const certificateFile = networkAdminCertificateFiles[index];
             const certificate = fs.readFileSync(certificateFile, { encoding: 'utf8' });
             return {
-                name: networkAdmin,
+                userName: networkAdmin,
                 certificate
             };
 
@@ -122,10 +131,10 @@ class CmdUtil {
         return networkAdmins.map((networkAdmin, index) => {
 
             // Grab the secret for the network admin.
-            const secret = networkAdminEnrollSecrets[index];
+            const enrollmentSecret = networkAdminEnrollSecrets[index];
             return {
-                name: networkAdmin,
-                secret
+                userName: networkAdmin,
+                enrollmentSecret
             };
 
         });
@@ -143,6 +152,7 @@ class CmdUtil {
         const networkAdmins = CmdUtil.arrayify(argv.networkAdmin);
         const networkAdminCertificateFiles = CmdUtil.arrayify(argv.networkAdminCertificateFile);
         const networkAdminEnrollSecrets = CmdUtil.arrayify(argv.networkAdminEnrollSecret);
+        const files = CmdUtil.arrayify(argv.file);
 
         // It's valid not to specify any network administrators.
         if (networkAdmins.length === 0) {
@@ -155,85 +165,32 @@ class CmdUtil {
         }
 
         // Check that enough certificate files have been specified.
+        let result;
         if (networkAdmins.length === networkAdminCertificateFiles.length) {
-            return CmdUtil.parseNetworkAdminsWithCertificateFiles(networkAdmins, networkAdminCertificateFiles);
+            result = CmdUtil.parseNetworkAdminsWithCertificateFiles(networkAdmins, networkAdminCertificateFiles);
         }
 
         // Check that enough enrollment secrets have been specified.
-        if (networkAdmins.length === networkAdminEnrollSecrets.length) {
-            return CmdUtil.parseNetworkAdminsWithEnrollSecrets(networkAdmins, networkAdminEnrollSecrets);
+        else if (networkAdmins.length === networkAdminEnrollSecrets.length) {
+            result = CmdUtil.parseNetworkAdminsWithEnrollSecrets(networkAdmins, networkAdminEnrollSecrets);
         }
 
         // Not enough certificate files or enrollment secrets!
-        throw new Error('You must specify certificate files or enrollment secrets for all network administrators');
+        else {
+            console.log(JSON.stringify(argv, null, 4));
+            throw new Error('You must specify certificate files or enrollment secrets for all network administrators');
+        }
 
-    }
-
-    /**
-     * Build the bootstrap transactions for any business network administrators specified on the command line.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinitinon The business network definition.
-     * @param {Object} argv The command line arguments as parsed by yargs.
-     * @return {Object[]} The bootstrap transactions.
-     */
-    static buildBootstrapTransactions(businessNetworkDefinitinon, argv) {
-        const method = 'buildBootstrapTransactions';
-        LOG.entry(method, businessNetworkDefinitinon, argv);
-
-        // Grab the useful things from the business network definition.
-        const factory = businessNetworkDefinitinon.getFactory();
-        const serializer = businessNetworkDefinitinon.getSerializer();
-
-        // Parse the network administrators.
-        const networkAdmins = CmdUtil.parseNetworkAdmins(argv);
-
-        // Convert the network administrators into add participant transactions.
-        const addParticipantTransactions = networkAdmins.map((networkAdmin) => {
-            const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.name);
-            const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
-            const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
-            Object.assign(addParticipantTransaction, {
-                resources: [ participant ],
-                targetRegistry
+        // If any files specified, check we have enough, and merge them into the result.
+        if (files.length && files.length !== result.length) {
+            throw new Error('If you specify a network administrators card file name, you must specify one for all network administrators');
+        } else if (files.length) {
+            files.forEach((file, index) => {
+                result[index].file = file;
             });
-            LOG.debug(method, 'Created bootstrap transaction to add participant', addParticipantTransaction);
-            return addParticipantTransaction;
-        });
+        }
+        return result;
 
-        // Convert the network administrators into issue or bind identity transactions.
-        const identityTransactions = networkAdmins.map((networkAdmin) => {
-
-            // Handle a certificate which requires a bind identity transaction.
-            let identityTransaction;
-            if (networkAdmin.certificate) {
-                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
-                Object.assign(identityTransaction, {
-                    participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.name),
-                    certificate: networkAdmin.certificate
-                });
-                LOG.debug(method, 'Created bootstrap transaction to bind identity', identityTransaction);
-            }
-
-            // Handle an enrollment secret which requires an issue identity transactiom.
-            if (networkAdmin.secret) {
-                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
-                Object.assign(identityTransaction, {
-                    participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.name),
-                    identityName: networkAdmin.name
-                });
-                LOG.debug(method, 'Created bootstrap transaction to issue identity', identityTransaction);
-            }
-            return identityTransaction;
-
-        });
-
-        // Serialize all of the transactions into a single array.
-        const transactions = addParticipantTransactions.concat(identityTransactions);
-        const json = transactions.map((transaction) => {
-            return serializer.toJSON(transaction);
-        });
-
-        LOG.exit(method, json);
-        return json;
     }
 
     /**
@@ -279,6 +236,21 @@ class CmdUtil {
      */
     static getDefaultCardName(card) {
         return BusinessNetworkCardStore.getDefaultCardName(card);
+    }
+
+    /**
+      * Get contents from archive file
+      * @param {string} archiveFile connection profile name
+      * @return {String} archiveFileContents archive file contents
+      */
+    static getArchiveFileContents(archiveFile) {
+        let archiveFileContents;
+        if (fs.existsSync(archiveFile)) {
+            archiveFileContents = fs.readFileSync(archiveFile);
+        } else {
+            throw new Error('Archive file '+archiveFile+' does not exist.');
+        }
+        return archiveFileContents;
     }
 }
 

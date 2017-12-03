@@ -16,7 +16,6 @@ export class InitializationService {
     private config;
 
     constructor(private alertService: AlertService,
-                private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private configService: ConfigService) {
     }
@@ -33,13 +32,13 @@ export class InitializationService {
                 return this.configService.loadConfig();
             })
             .then((config) => {
-                let force = !this.identityService.getLoggedIn();
+                let force = !this.identityCardService.getCurrentIdentityCard();
                 this.alertService.busyStatus$.next({
                     title: 'Initializing Playground',
                     force: force
                 });
                 this.config = config;
-                return this.identityCardService.loadIdentityCards(this.configService.isWebOnly());
+                return this.identityCardService.loadIdentityCards();
             })
             .then(() => {
                 let idCards: IdCard[] = [];

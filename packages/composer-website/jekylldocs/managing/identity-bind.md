@@ -14,10 +14,10 @@ An existing identity can be issued to a participant using either the API or the 
 Once the existing identity has been bound, the identity can then be used by the participant
 to interact with the business network in the context of that participant.
 
-When using Hyperledger Fabric, you can bind existing certificates that have been created
-by using the Hyperledger Fabric certificate authority (CA) or by using other tooling such
+When using {[site.data.conrefs.hlf_full}}, you can bind existing certificates that have been created
+by using the {[site.data.conrefs.hlf_full}} certificate authority (CA) or by using other tooling such
 as `cryptogen`. The existing certificates must be valid for use for submitting transactions
-on the Hyperledger Fabric network.
+on the {[site.data.conrefs.hlf_full}} network.
 
 ## Before you start
 
@@ -64,7 +64,7 @@ of that participant has been created and placed into a participant registry.
     AiBcj/JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx
     rkM5DH3e5ECM7T+T1Ovr+1AK6bs=
     -----END CERTIFICATE-----`
-  return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'admin', 'adminpw')
+  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
       .then(() => {
           return businessNetworkConnection.bindIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', certificate)
       })
@@ -78,9 +78,9 @@ of that participant has been created and placed into a participant registry.
   ```
   * Command line
 
-  ```bash
-  composer identity bind -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -c /tmp/cert.pem -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
-  ```
+
+        composer identity bind -c admin@digitalPropertyNetwork -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+
 
 2. As the participant, test the connection to the business network
   * JavaScript API
@@ -88,7 +88,7 @@ of that participant has been created and placed into a participant registry.
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
   let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'maeid1', 'RJJmlOpvNVRV')
+  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
       .then(() => {
           return businessNetworkConnection.ping();
       })
@@ -104,9 +104,8 @@ of that participant has been created and placed into a participant registry.
 
   * Command line
 
-  ```bash
-  composer network ping -p hlfv1 -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
-  ```
+
+        composer network ping -c admin@digitalPropertyNetwork
 
   The participant ID will be printed to the console, and should match the participant
   ID that was specified in the `composer identity bind` command.

@@ -27,11 +27,11 @@ chai.use(require('chai-as-promised'));
  * @return {Promise} A promise that is resolved when complete, or rejected with an
  * error.
  */
-function runCucumberTest(featureSource) {
+function runCucumberTest (featureSource) {
     const feature = Cucumber.FeatureParser.parse({
-        scenarioFilter: new Cucumber.ScenarioFilter({}),
-        source: featureSource,
-        uri: path.resolve(__dirname, '..', 'features', 'test.feature')
+        scenarioFilter : new Cucumber.ScenarioFilter({}),
+        source : featureSource,
+        uri : path.resolve(__dirname, '..', 'features', 'test.feature')
     });
 
     // Load the support functions.
@@ -40,24 +40,24 @@ function runCucumberTest(featureSource) {
         require('..').call(context);
     });
     const supportCodeLibrary = Cucumber.SupportCodeLibraryBuilder.build({
-        cwd: '/',
-        fns: Cucumber.getSupportCodeFns()
+        cwd : '/',
+        fns : Cucumber.getSupportCodeFns()
     });
     const formatterOptions = {
-        colorsEnabled: true,
-        cwd: '/',
-        log: (data) => {
+        colorsEnabled : true,
+        cwd : '/',
+        log : (data) => {
             // console.log(data);
         },
-        supportCodeLibrary: supportCodeLibrary
+        supportCodeLibrary : supportCodeLibrary
     };
 
     const prettyFormatter = Cucumber.FormatterBuilder.build('pretty', formatterOptions);
 
     const runtime = new Cucumber.Runtime({
-        features: [feature],
-        listeners: [prettyFormatter],
-        supportCodeLibrary: supportCodeLibrary
+        features : [feature],
+        listeners : [prettyFormatter],
+        supportCodeLibrary : supportCodeLibrary
     });
     return runtime.start();
 }

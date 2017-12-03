@@ -17,7 +17,7 @@
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
-
+const cmdUtil = require('../../utils/cmdutils');
 /**
  * <p>
  * Composer List Archive command
@@ -35,14 +35,13 @@ class ListBNA {
     */
     static handler(argv) {
 
-        console.log('Listing Business Network Archive from '+argv.archiveFile);
+        cmdUtil.log('Listing Business Network Archive from '+argv.archiveFile);
         let readFile = fs.readFileSync(argv.archiveFile);
         return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
-            console.log('Identifier:'+businessNetwork.getIdentifier());
-            console.log('Name:'+businessNetwork.getName());
-            console.log('Version:'+businessNetwork.getVersion());
+            cmdUtil.log('Identifier:'+businessNetwork.getIdentifier());
+            cmdUtil.log('Name:'+businessNetwork.getName());
+            cmdUtil.log('Version:'+businessNetwork.getVersion());
 
-            // console.log(businessNetwork.modelManager.modelFiles);
             return;
 
         });

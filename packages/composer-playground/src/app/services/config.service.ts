@@ -1,28 +1,34 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
+import { has, get } from 'lodash';
+
+import { Config } from './config/configStructure.service';
 
 @Injectable()
 export class ConfigService {
 
-    private configLoaded: boolean = false;
-    private config: any = null;
+    public configLoaded: boolean = false;
+    private config: Config = null;
 
     constructor(private http: Http) {
     }
 
-    loadConfig(): Promise<any> {
+    loadConfig(): Promise<Config> {
         // Load the config data.
         return this.http.get('/config.json')
             .map((res: Response) => res.json())
             .toPromise()
             .then((config) => {
                 this.configLoaded = true;
-                this.config = config;
-                return config;
+                let newConfig = new Config();
+                newConfig.setToDefault();
+                newConfig.setValuesFromObject(config);
+                this.config = newConfig;
+                return newConfig;
             });
     }
 
-    getConfig(): any {
+    getConfig(): Config {
         if (!this.configLoaded) {
             throw new Error('config has not been loaded');
         }
@@ -32,8 +38,6 @@ export class ConfigService {
     isWebOnly(): boolean {
         if (!this.configLoaded) {
             throw new Error('config has not been loaded');
-        } else if (!this.config) {
-            return false;
         }
         return this.config.webonly;
     }

@@ -36,7 +36,7 @@ describe('composer upgrade runtime CLI unit tests', function () {
         sandbox = sinon.sandbox.create();
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-        mockAdminConnection.createProfile.resolves();
+
         mockAdminConnection.connect.resolves();
         mockAdminConnection.upgrade.resolves();
 

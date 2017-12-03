@@ -9,7 +9,6 @@ import { By } from '@angular/platform-browser';
 
 import { ImportComponent } from './import.component';
 
-import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -92,7 +91,6 @@ describe('DeployComponent', () => {
     let mockDragDropComponent;
 
     let mockBusinessNetworkService;
-    let mockAdminService;
     let mockAlertService;
     let mockClientService;
     let mockNgbModal;
@@ -104,7 +102,6 @@ describe('DeployComponent', () => {
 
     beforeEach(() => {
         mockBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
-        mockAdminService = sinon.createStubInstance(AdminService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
@@ -127,7 +124,6 @@ describe('DeployComponent', () => {
             declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective, MockCredentialsDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
-                {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: NgbModal, useValue: mockNgbModal}],
@@ -152,7 +148,6 @@ describe('DeployComponent', () => {
         let onShowMock;
 
         beforeEach(() => {
-            mockAdminService.connectWithoutNetwork.returns(Promise.resolve());
             onShowMock = sinon.stub(component, 'onShow');
         });
 
@@ -171,11 +166,16 @@ describe('DeployComponent', () => {
     });
 
     describe('onShow', () => {
-        it('should get the list of sample networks', fakeAsync(() => {
-            let selectNetworkStub = sinon.stub(component, 'selectNetwork');
-            let addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
-            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
 
+        let selectNetworkStub;
+        let addEmptyNetworkOption;
+        beforeEach(() => {
+            selectNetworkStub = sinon.stub(component, 'selectNetwork');
+        });
+
+        it('should get the list of sample networks', fakeAsync(() => {
+            mockBusinessNetworkService.getSampleList.returns(Promise.resolve([{name: 'modelTwo'}, {name: 'modelOne'}]));
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}, {name: 'modelOne'}, {name: 'modelTwo'}]);
             component.onShow();
             component['npmInProgress'].should.equal(true);
             tick();
@@ -188,15 +188,14 @@ describe('DeployComponent', () => {
 
         it('should handle error', fakeAsync(() => {
             mockBusinessNetworkService.getSampleList.returns(Promise.reject({message: 'some error'}));
-
+            addEmptyNetworkOption = sinon.stub(component, 'addEmptyNetworkOption').returns([{name: 'empty'}]);
             component.onShow();
-
             component['npmInProgress'].should.equal(true);
             tick();
 
+            addEmptyNetworkOption.should.have.been.calledWith([]);
+            selectNetworkStub.should.have.been.calledWith({name: 'empty'});
             component['npmInProgress'].should.equal(false);
-
-            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
     });
 
@@ -287,7 +286,7 @@ describe('DeployComponent', () => {
             component.closeSample();
 
             component['sampleDropped'].should.equal(false);
-            selectStub.should.have.been.calledWith({network: 'two'});
+            selectStub.should.have.been.calledWith({network: 'one'});
         });
     }));
 
@@ -424,6 +423,7 @@ describe('DeployComponent', () => {
             component['currentBusinessNetwork'] = {network: 'my network'};
             component['networkName'] = 'newNetwork';
             component['networkDescription'] = 'myDescription';
+            component['cardName'] = 'myCardName';
 
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
@@ -435,7 +435,7 @@ describe('DeployComponent', () => {
 
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'}, 'newNetwork', 'myDescription');
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'}, 'myCardName', 'newNetwork', 'myDescription', '', null, null);
 
             component['deployInProgress'].should.equal(false);
 
@@ -444,10 +444,10 @@ describe('DeployComponent', () => {
 
         it('should handle error', fakeAsync(() => {
             component['currentBusinessNetwork'] = {network: 'my network'};
-            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject('some error'));
+            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'some error'}));
 
             component.finishedSampleImport.subscribe((result) => {
-                result.should.deep.equal({deployed: false, error: 'some error'});
+                result.should.deep.equal({deployed: false, error: {message: 'some error'}});
             });
 
             let deployPromise = component.deploy();
@@ -456,56 +456,71 @@ describe('DeployComponent', () => {
 
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
             component['deployInProgress'].should.equal(false);
-            finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: 'some error'});
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: {message: 'some error'}});
+            mockAlertService.errorStatus$.next.should.have.been.calledWith({message: 'some error'});
+        }));
+
+        it('should handle error with card name', fakeAsync(() => {
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'Card already exists: bob'}));
+
+            let deployPromise = component.deploy();
+
+            tick();
+
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            component['deployInProgress'].should.equal(false);
+            component['cardNameValid'].should.equal(false);
+            finishedSampleImportSpy.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
     });
 
     describe('setNetworkName', () => {
 
         it('should set the name and desc to values passed', fakeAsync(() => {
-          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+            component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
 
-          tick();
+            tick();
 
-          component['networkName'].should.deep.equal('my-network');
-          component['networkDescription'].should.deep.equal('some description');
+            component['networkName'].should.deep.equal('my-network');
+            component['networkDescription'].should.deep.equal('some description');
         }));
 
         it('should not update the name if a user has changed the value', fakeAsync(() => {
-          component['networkName'] = 'user-entered-name';
-          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+            component['networkName'] = 'user-entered-name';
+            component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
 
-          tick();
+            tick();
 
-          component['networkName'].should.deep.equal('user-entered-name');
-          component['networkDescription'].should.deep.equal('some description');
+            component['networkName'].should.deep.equal('user-entered-name');
+            component['networkDescription'].should.deep.equal('some description');
         }));
 
         it('should not update the description if a user has changed the value', fakeAsync(() => {
-          component['networkDescription'] = 'user entered description';
-          component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
+            component['networkDescription'] = 'user entered description';
+            component.updateBusinessNetworkNameAndDesc({name: 'my-network', description: 'some description'});
 
-          tick();
+            tick();
 
-          component['networkName'].should.deep.equal('my-network');
-          component['networkDescription'].should.deep.equal('user entered description');
+            component['networkName'].should.deep.equal('my-network');
+            component['networkDescription'].should.deep.equal('user entered description');
         }));
 
         it('should set name to undefined when no name sent', fakeAsync(() => {
-          component.updateBusinessNetworkNameAndDesc({});
+            component.updateBusinessNetworkNameAndDesc({});
 
-          tick();
+            tick();
 
-          should.equal(component['networkName'], undefined);
+            should.equal(component['networkName'], undefined);
         }));
 
         it('should set desc to \'\' when no desc sent', fakeAsync(() => {
-          component.updateBusinessNetworkNameAndDesc({});
+            component.updateBusinessNetworkNameAndDesc({});
 
-          tick();
+            tick();
 
-          component['networkDescription'].should.deep.equal('');
+            component['networkDescription'].should.deep.equal('');
         }));
 
         it('should set the network name', () => {
@@ -647,6 +662,24 @@ describe('DeployComponent', () => {
             let result = component.isInvalidDeploy();
 
             result.should.equal(false);
+        });
+    });
+
+    describe('setCardName', () => {
+        it('should set the card name and cardNameValid to true', () => {
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(true);
+        });
+
+        it('should not set the card name if it hasn\'t changed and not update cardNameValid', () => {
+            component['cardNameValid'] = false;
+            component['cardName'] = 'myCardName';
+            component['setCardName']('myCardName');
+
+            component['cardName'].should.equal('myCardName');
+            component['cardNameValid'].should.equal(false);
         });
     });
 });

@@ -40,7 +40,7 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
   let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'admin', 'adminpw')
+  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
       .then(() => {
           return businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
       })
@@ -57,10 +57,8 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   * Command line
 
   ```bash
-  composer identity issue -p hlfv1 -n 'digitalproperty-network' -i admin -s adminpw -u maeid1 -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+  composer identity issue -c admin@network -f maeid1.card -u maeid1 -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
   ```
-
-  The enrollment secret will be printed to the console.
 
 2. As the participant, test the connection to the business network
   * JavaScript API
@@ -68,7 +66,7 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
   let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('hlfv1', 'digitalproperty-network', 'maeid1', 'RJJmlOpvNVRV')
+  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
       .then(() => {
           return businessNetworkConnection.ping();
       })
@@ -85,7 +83,5 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   * Command line
 
   ```bash
-  composer network ping -p hlfv1 -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
+  composer network ping -c maeid1@network
   ```
-
-  The participant ID will be printed to the console, and should match the participant ID that was specified in the `composer identity issue` command.

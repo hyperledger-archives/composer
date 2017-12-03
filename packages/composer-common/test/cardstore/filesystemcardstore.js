@@ -159,6 +159,17 @@ describe('FileSystemCardStore', function() {
         let tmpStorePath;
         let cardStore;
 
+        const createDummyCard = (cardName) => {
+            const cardPath = path.join(tmpStorePath, cardName);
+            return thenifyFs.mkdir(cardPath).then(() => {
+                const dummyFilePath = path.join(cardPath, 'dummyFile');
+                const dummyFileContent = 'This is an empty file';
+                return thenifyFs.writeFile(dummyFilePath, dummyFileContent);
+            }).then(() => {
+                return cardPath;
+            });
+        };
+
         beforeEach(function() {
             return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
                 tmpStorePath = path;
@@ -172,24 +183,67 @@ describe('FileSystemCardStore', function() {
             return thenifyRimraf(tmpStorePath, rimrafOptions);
         });
 
-        it('should throw on non-existent card name', function() {
+        it('should return false for non-existent card', () => {
+            return cardStore.delete('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
             const cardName = 'conga';
-            return cardStore.delete(cardName).should.be.rejectedWith(cardName);
+            return createDummyCard(cardName).then(() => {
+                return cardStore.delete(cardName);
+            }).should.become(true);
         });
 
         it('should delete an existing card', function() {
             const cardName = 'conga';
+            let cardPath;
+            return createDummyCard(cardName).then((path) => {
+                cardPath = path;
+                return cardStore.delete(cardName);
+            }).then(() => {
+                return thenifyFs.access(cardPath);
+            }).should.be.rejected;
+        });
+    });
+
+    describe('#has', function() {
+        let tmpStorePath;
+        let cardStore;
+
+        const createDummyCard = (cardName) => {
             const cardPath = path.join(tmpStorePath, cardName);
             return thenifyFs.mkdir(cardPath).then(() => {
                 const dummyFilePath = path.join(cardPath, 'dummyFile');
                 const dummyFileContent = 'This is an empty file';
                 return thenifyFs.writeFile(dummyFilePath, dummyFileContent);
             }).then(() => {
-                return cardStore.delete(cardName);
-            }).then(() => {
-                return thenifyFs.access(cardPath).should.be.rejected;
+                return cardPath;
+            });
+        };
+
+        beforeEach(function() {
+            return thenifyFs.mkdtemp(path.join(os.tmpdir(), 'composer-test-cards-')).then(path => {
+                tmpStorePath = path;
+                const options = { storePath: tmpStorePath };
+                cardStore = new FileSystemCardStore(options);
             });
         });
-    });
 
+        afterEach(function() {
+            const rimrafOptions = { disableGlob: true };
+            return thenifyRimraf(tmpStorePath, rimrafOptions);
+        });
+
+        it('should return false for non-existent card', () => {
+            return cardStore.has('pengiun').should.become(false);
+        });
+
+        it('should return true for existing card', () => {
+            const cardName = 'conga';
+            return createDummyCard(cardName).then(() => {
+                return cardStore.has(cardName);
+            }).should.become(true);
+        });
+
+    });
 });

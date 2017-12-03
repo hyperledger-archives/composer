@@ -19,8 +19,9 @@ const Typed = require('./typed');
 
 /**
  * Identifiable is an entity with a namespace, type and an identifier.
- *
+ * Applications should retrieve instances from {@link Factory}
  * This class is abstract.
+ * @extends Typed
  * @abstract
  * @class
  * @memberof module:composer-common
@@ -34,13 +35,14 @@ class Identifiable extends Typed {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @param {string} id - The identifier of this instance.
      * @private
      */
-    constructor(modelManager, ns, type, id) {
-        super(modelManager, ns, type);
+    constructor(modelManager, classDeclaration, ns, type, id) {
+        super(modelManager, classDeclaration, ns, type);
         this.$identifier = id;
     }
 

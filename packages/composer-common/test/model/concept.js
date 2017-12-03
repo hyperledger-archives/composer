@@ -19,7 +19,6 @@ const Concept = require('../../lib/model/concept');
 const Serializer = require('../../lib/serializer');
 const Factory = require('../../lib/factory');
 
-const sinon = require('sinon');
 const fs = require('fs');
 
 const chai = require('chai');
@@ -39,6 +38,7 @@ describe('Concept', function () {
   `;
 
     let modelManager = null;
+    let classDecl = null;
 
     before(function () {
         modelManager = new ModelManager();
@@ -46,6 +46,7 @@ describe('Concept', function () {
 
     beforeEach(function () {
         modelManager.addModelFile(levelOneModel);
+        classDecl = modelManager.getType('org.acme.l1.Person');
     });
 
     afterEach(function () {
@@ -53,28 +54,15 @@ describe('Concept', function () {
     });
 
     describe('#getClassDeclaration', function() {
-        it('should throw with no ModelFile', function () {
-            const resource = new Concept(modelManager, 'org.acme.l1', 'Person' );
-            const stub = sinon.stub(modelManager, 'getModelFile', function(){return null;});
-            (function () {
-                resource.getClassDeclaration();
-            }).should.throw(/No model for namespace org.acme.l1 is registered with the ModelManager/);
-            stub.restore();
-        });
-        it('should throw with no type', function () {
-            const resource = new Concept(modelManager, 'org.acme.l1', 'Person' );
-            const modelFile = modelManager.getModelFile('org.acme.l1');
-            const stub = sinon.stub(modelFile, 'getType', function(type){return null;});
-            (function () {
-                resource.getClassDeclaration();
-            }).should.throw(/The namespace org.acme.l1 does not contain the type Person/);
-            stub.restore();
+        it('should return the class declaraction', function () {
+            const resource = new Concept(modelManager, classDecl, 'org.acme.l1', 'Person' );
+            resource.getClassDeclaration().should.equal(classDecl);
         });
     });
 
     describe('#toJSON', () => {
         it('should throw if toJSON is called', function () {
-            const resource = new Concept(modelManager, 'org.acme.l1', 'Person');
+            const resource = new Concept(modelManager, classDecl, 'org.acme.l1', 'Person');
             (function () {
                 resource.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
@@ -119,11 +107,33 @@ describe('Concept', function () {
             const obj = serializer.fromJSON(jsObject);
             obj.getIdentifier().should.equal('123');
         });
+
+        it('should generate a concept from JSON', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel, 'concept.cto');
+            const factory = new Factory(modelManager);
+            const serializer = new Serializer(factory, modelManager);
+            const jsObject = JSON.parse('{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}');
+            const obj = serializer.fromJSON(jsObject);
+            obj.isConcept().should.be.true;
+        });
+
+        it('should generate an error trying to create an ENUM from JSON', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel, 'concept.cto');
+            const factory = new Factory(modelManager);
+            const serializer = new Serializer(factory, modelManager);
+            const jsObject = JSON.parse('{"$class":"org.acme.biznet.assetStatus"}');
+            (function () {
+                serializer.fromJSON(jsObject);
+            }).should.throw(/Attempting to create an ENUM declaration is not supported./);
+        });
+
     });
 
     describe('#isConcept', () => {
         it('should be true', () => {
-            const resource = new Concept(modelManager, 'org.acme.l1', 'Person');
+            const resource = new Concept(modelManager, classDecl, 'org.acme.l1', 'Person');
             resource.isConcept().should.be.true;
         });
     });

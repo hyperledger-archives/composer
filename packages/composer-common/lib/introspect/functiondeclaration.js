@@ -24,7 +24,7 @@ const ModelUtil = require('../modelutil');
  * in a model file. If the name of the function starts with 'on'
  * then the name of the function denotes the name of a transaction
  * declaration that the function processes.
- * @private
+ *
  * @class
  * @memberof module:composer-common
  */

@@ -1,0 +1,78 @@
+{
+  "name": "composer-tests-integration",
+  "version": "0.17.0",
+  "description": "Integration tests for Hyperledger Composer",
+  "main": "index.js",
+  "scripts": {
+    "start_verdaccio": "verdaccio -l 0.0.0.0:4873 -c ./scripts/config.yaml >/dev/null &",
+    "stop_verdaccio": "pkill verdaccio | true",
+    "pretest": "npm run licchk",
+    "licchk": "license-check",
+    "postlicchk": "npm run lint",
+    "lint": "eslint .",
+    "test-inner": "cucumber-js",
+    "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperledger/composer.git"
+  },
+  "keywords": [
+    "blockchain"
+  ],
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hyperledger/composer/issues"
+  },
+  "homepage": "https://github.com/hyperledger/composer#readme",
+  "devDependencies": {
+    "chai-as-promised": "6.0.0",
+    "cucumber": "2.2.0",
+    "eslint": "3.17.1",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0"
+  },
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "features/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
+  },
+  "dependencies": {
+    "browserfs": "1.1.0",
+    "chai": "3.5.0",
+    "composer-admin": "0.17.0",
+    "composer-cli": "0.17.0",
+    "composer-client": "0.17.0",
+    "composer-common": "0.17.0",
+    "thenify-all": "1.6.0",
+    "verdaccio": "2.6.4"
+  }
+}

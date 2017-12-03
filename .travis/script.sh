@@ -45,19 +45,27 @@ if [ "${DOCS}" != "" ]; then
        npm run linkcheck:unstable
     fi
 
+# Are we running functional verification tests?
+elif [ "${FVTEST}" != "" ]; then
+
+    # Run the fv tests.
+    ${DIR}/packages/composer-tests-functional/scripts/run-fv-tests.sh 
+    # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
+
 # Are we running playground e2e tests?
-elif [ "${SYSTEST}" = "e2e" ]; then
+elif [ "${INTEST}" = "e2e" ]; then
 
     # Run the playground e2e tests.
     cd "${DIR}/packages/composer-playground"
     npm run e2e:main
 
-# Are we running system tests?
-elif [ "${SYSTEST}" != "" ]; then
+# Are we running integration tests?
+elif [ "${INTEST}" != "" ]; then
 
-    # Run the system tests.
-    ${DIR}/packages/composer-systests/scripts/run-system-tests.sh 
-    # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
+    # Run the integration tests.
+    ${DIR}/packages/composer-tests-integration/scripts/run-integration-tests.sh 
+    # append to the previous line to get duration timestamps....  | gnomon --real-time=false
+     
 # We must be running unit tests.
 else
 

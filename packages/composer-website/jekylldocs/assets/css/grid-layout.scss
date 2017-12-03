@@ -43,13 +43,13 @@ $callout: #FFD640;
     justify-items: start;
     overflow-y: scroll;
     height: 100vh;
+    background-color: $white;
 
     // Scrollbar overrides
     &::-webkit-scrollbar {
       display: none;
     }
     -ms-overflow-style: none;  // IE 10+
-
 
     .docs-pagenav-grid {
       padding-top: 5vh;
@@ -100,31 +100,28 @@ $callout: #FFD640;
     }
 
     .context-nav {
-      // margin-top: 5vh;
 
       ul {
         padding-left: 0;
         margin: 0;
-        // margin-left: 1rem;
 
       li {
         list-style: none;
-        border-bottom: 1px solid $keyline-highlight;
         position: relative;
         overflow: hidden;
         transition: 0.4s;
+        background-color: $white;
         &.hide {
             height: 4rem !important;
+            background-color: $white;
         }
         &:hover {
-          border-right: 0px solid $first-highlight;
           &:after {
               content: " ";
               position: absolute;
               top: 0;
               right: 0px;
               bottom: 0;
-              width: 2px;
               background-color: $first-highlight;
           }
         }
@@ -137,9 +134,12 @@ $callout: #FFD640;
               top: 0;
               right: 0px;
               bottom: 0;
-              width: 2px;
               background-color: $first-highlight;
           }
+        }
+        &.activeBorder {
+          border-right: 3px solid $first-highlight;
+          transition: none;
         }
         a {
           padding-left: 2rem;
@@ -152,12 +152,11 @@ $callout: #FFD640;
           }
         }
 
-
         ul {
           list-style: none;
           padding-left: 0;
           margin: 0;
-          margin-left: 2rem;
+          margin-left: 0rem;
           margin-top: 1rem;
           padding-bottom: 2rem;
           &:hover {
@@ -167,24 +166,32 @@ $callout: #FFD640;
                 top: 0;
                 right: 0px;
                 bottom: 0;
-                width: 2px;
                 background-color: $first-highlight;
             }
-            // &:after {
-            //     display: none;
-            // }
           }
 
           li {
             border-bottom: none;
-            border-left: 2px solid $keyline-highlight;
+            border-left: 3px solid $white;
             &:hover {
-              border-left: 2px solid $first-highlight;
+              border-left: 3px solid $first-highlight;
               border-right: none;
             }
           }
         }
       }
+
+      .caret {
+        float: right;
+        width: 13px;
+        height: 13px;
+        padding: 10px;
+        margin-top: -10px;
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
     }
 
       a {
@@ -211,6 +218,7 @@ $callout: #FFD640;
           li {
             border-bottom: none;
             padding: 0;
+            background-color: $white !important;
 
             &:hover {
               border-right: none;
@@ -309,8 +317,6 @@ $callout: #FFD640;
 
           blockquote {
             background-color: white;
-            // border: 1px solid $keyline-highlight;
-            // border-radius: 4px;
             padding: 1rem;
             padding-left: 2rem;
             margin-left: 0;
@@ -320,7 +326,6 @@ $callout: #FFD640;
 
           pre {
             background-color: #272B36;
-            // border: 1px solid $keyline-highlight;
             padding: 1rem;
             color: white;
             border-radius: 4px;
@@ -447,10 +452,8 @@ $callout: #FFD640;
           thead {
             font-weight: 600;
             padding-bottom: 1rem;
-            // border-bottom: 1px solid blue;
           }
           tbody {
-            // display: block;
             tr {
               transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
               &:last-of-type {
@@ -683,11 +686,13 @@ copy-button {
     font-size: 0.9rem;
     line-height: 30px;
     border-bottom: 2px solid transparent;
+    background-color: $white;
 
     &.opened {
       max-width: 70%;
       border-bottom: 2px solid $primary-text;
       padding-left: 0.8rem;
+      background-color: $white;
 
 
       &:focus {
@@ -718,7 +723,6 @@ copy-button {
 
   .trigger {
     width: 18px;
-    // height: 18px;
   }
 
   .submit-input {

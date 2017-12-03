@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageService } from 'angular-2-local-storage';
 
 import { AdminService } from './admin.service';
-import { IdentityService } from './identity.service';
+import { IdentityCardService } from './identity-card.service';
 import { AlertService } from '../basic-modals/alert.service';
-import { ConnectionProfileStoreService } from './connectionProfileStores/connectionprofilestore.service';
+import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
 import {
     BusinessNetworkDefinition,
-    ModelFile,
-    Script,
-    AclFile,
-    QueryFile,
     TransactionDeclaration
 } from 'composer-common';
 
@@ -25,10 +20,9 @@ export class ClientService {
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
 
     constructor(private adminService: AdminService,
-                private identityService: IdentityService,
+                private identityCardService: IdentityCardService,
                 private alertService: AlertService,
-                private localStorageService: LocalStorageService,
-                private connectionProfileStoreService: ConnectionProfileStoreService) {
+                private businessNetworkCardStoreService: BusinessNetworkCardStoreService) {
     }
 
     // horrible hack for tests
@@ -39,7 +33,7 @@ export class ClientService {
     getBusinessNetworkConnection(): BusinessNetworkConnection {
         if (!this.businessNetworkConnection) {
             this.businessNetworkConnection = new BusinessNetworkConnection({
-                connectionProfileStore: this.connectionProfileStoreService.getConnectionProfileStore()
+                cardStore: this.businessNetworkCardStoreService.getBusinessNetworkCardStore()
             });
         }
         return this.businessNetworkConnection;
@@ -53,49 +47,29 @@ export class ClientService {
         return this.currentBusinessNetwork;
     }
 
-    ensureConnected(name: string = null, force: boolean = false): Promise<any> {
+    ensureConnected(force: boolean = false): Promise<any> {
         if (this.isConnected && !force) {
             return Promise.resolve();
         } else if (this.connectingPromise) {
             return this.connectingPromise;
         }
 
-        let connectionProfile = this.identityService.getCurrentConnectionProfile();
+        let cardName = this.identityCardService.getCurrentCardRef();
+        let card = this.identityCardService.getCurrentIdentityCard();
 
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
-            text: 'Using the connection profile ' + connectionProfile.name
+            text: 'Using the connection profile ' + card.getConnectionProfile().name
         });
 
-        let businessNetworkName: string;
-        let userId = this.identityService.getCurrentUserName();
-
-        if (!name) {
-            try {
-                let businessNetwork = this.getBusinessNetwork();
-                if (businessNetwork) {
-                    businessNetworkName = this.getBusinessNetwork().getName();
-                }
-            } catch (error) {
-                console.log('business network name not set yet so using from local storage');
-            } finally {
-                if (!businessNetworkName) {
-                    businessNetworkName = this.getSavedBusinessNetworkName(userId);
-                }
-            }
-        } else {
-            businessNetworkName = name;
-        }
-
-        this.connectingPromise = this.adminService.connect(businessNetworkName, force)
+        this.connectingPromise = this.adminService.connect(cardName, card, force)
             .then(() => {
-                return this.refresh(businessNetworkName);
+                return this.refresh();
             })
             .then(() => {
                 console.log('connected');
                 this.isConnected = true;
                 this.connectingPromise = null;
-                this.setSavedBusinessNetworkName(userId);
                 this.alertService.busyStatus$.next(null);
             })
             .catch((error) => {
@@ -107,22 +81,19 @@ export class ClientService {
         return this.connectingPromise;
     }
 
-    refresh(businessNetworkName): Promise<any> {
+    refresh(): Promise<any> {
         this.currentBusinessNetwork = null;
-        let connectionProfile = this.identityService.getCurrentConnectionProfile();
-        let connectionProfileRef = this.identityService.getCurrentQualifiedProfileName();
-        let enrollmentCredentials = this.identityService.getCurrentEnrollmentCredentials();
-        const enrollmentSecret = enrollmentCredentials ? enrollmentCredentials.secret : null;
-        const userName = this.identityService.getCurrentUserName();
+        let cardRef = this.identityCardService.getCurrentCardRef();
+        let card = this.identityCardService.getCurrentIdentityCard();
 
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
-            text: 'refreshing the connection to ' + connectionProfile.name
+            text: 'refreshing the connection to ' + card.getConnectionProfile().name
         });
 
         return this.getBusinessNetworkConnection().disconnect()
             .then(() => {
-                return this.getBusinessNetworkConnection().connectWithDetails(connectionProfileRef, businessNetworkName, userName, enrollmentSecret);
+                return this.getBusinessNetworkConnection().connect(cardRef);
             });
     }
 
@@ -137,7 +108,7 @@ export class ClientService {
     }
 
     issueIdentity(userID, participantFQI, options): Promise<string> {
-        let connectionProfile = this.identityService.getCurrentConnectionProfile();
+        let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
 
         ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
             if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
@@ -169,15 +140,5 @@ export class ClientService {
             .then((resolvedTransaction) => {
                 return resolvedTransaction;
             });
-    }
-
-    getSavedBusinessNetworkName(identity: string): string {
-        let key = `currentBusinessNetwork:${identity}`;
-        return this.localStorageService.get<string>(key);
-    }
-
-    setSavedBusinessNetworkName(identity: string): void {
-        let key = `currentBusinessNetwork:${identity}`;
-        this.localStorageService.set(key, this.getBusinessNetwork().getName());
     }
 }

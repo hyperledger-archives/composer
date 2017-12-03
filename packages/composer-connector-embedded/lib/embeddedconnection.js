@@ -229,6 +229,7 @@ class EmbeddedConnection extends Connection {
         return Promise.resolve();
     }
 
+
     /**
      * Test ("ping") the connection to the business network.
      * @param {SecurityContext} securityContext The participant's security context.

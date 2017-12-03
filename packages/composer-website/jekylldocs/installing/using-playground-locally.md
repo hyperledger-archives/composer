@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Installing the Playground locally
+title: Installing Playground only
 category: start
 sidebar: sidebars/accordion-toc0.md
 section: installing
-excerpt: To run the Playground locally with a local instance of Hyperledger Fabric, click [**Install Local Playground**](../installing/using-playground-locally.html) here or in the table of contents on the left.
+excerpt: A single-line installer is available for the Playground only.  Note that this is not a full dev environment, and most users will want to follow [**Installing the development environment**](../installing/development-tools.html) instead.
 index-order: 203
 ---
 
@@ -46,4 +46,4 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
 
 ## What's next?
 
-* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-guide.html).
+* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-tutorial.html).

@@ -1,11 +1,11 @@
 import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from './services/client.service';
 import { AlertService } from './basic-modals/alert.service';
-import { IdentityService } from './services/identity.service';
 import { IdentityCardService } from './services/identity-card.service';
 import { InitializationService } from './services/initialization.service';
 import { BusyComponent } from './basic-modals/busy';
@@ -15,6 +15,7 @@ import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
+import { Config } from './services/config/configStructure.service';
 import { ViewTransactionComponent } from './test/view-transaction';
 import { FileService } from './services/file.service';
 
@@ -46,14 +47,15 @@ export class AppComponent implements OnInit, OnDestroy {
     private showWelcome = true;
     private dropListActive = false;
 
-    private composerBanner = ['Hyperledger', 'Composer Playground'];
+    private config = new Config();
 
     private busyModalRef = null;
+
+    private submitAnalytics: boolean = false;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private clientService: ClientService,
-                private identityService: IdentityService,
                 private identityCardService: IdentityCardService,
                 private initializationService: InitializationService,
                 private alertService: AlertService,
@@ -61,7 +63,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 private localStorageService: LocalStorageService,
                 private aboutService: AboutService,
                 private configService: ConfigService,
-                private fileService: FileService) {
+                private fileService: FileService,
+                private titleService: Title) {
     }
 
     ngOnInit(): Promise<void> {
@@ -87,6 +90,15 @@ export class AppComponent implements OnInit, OnDestroy {
             if (!success) {
                 this.openVersionModal();
             }
+            try {
+              let config = this.configService.getConfig();
+              return Promise.resolve(config);
+            } catch (err) {
+              return this.configService.loadConfig();
+            }
+        }).then((config) => {
+            this.config = config;
+            this.setTitle(this.config['title']);
         });
     }
 
@@ -98,15 +110,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
     logout() {
         this.clientService.disconnect();
-        this.identityService.setLoggedIn(false);
-        this.fileService.deleteAllFiles();
-        this.composerBanner = ['Hyperledger', 'Composer Playground'];
-        this.showWelcome = false;
+        this.identityCardService.setCurrentIdentityCard(null)
+            .then(() => {
+                this.fileService.deleteAllFiles();
+                this.showWelcome = false;
 
-        return this.router.navigate(['/login']);
+                try {
+                  this.config = this.configService.getConfig();
+                } catch (err) {
+                  this.configService.loadConfig()
+                  .then((config) => {
+                      this.config = config;
+                  });
+                }
+
+                return this.router.navigate(['/login']);
+            });
     }
 
     processRouteEvent(event): Promise<void> {
+        if (this.submitAnalytics) {
+            (window)['ga']('set', 'page', event.urlAfterRedirects);
+            (window)['ga']('send', 'pageview');
+        }
+
         let welcomePromise;
         if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
@@ -122,7 +149,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     let connectionProfile = card.getConnectionProfile();
                     let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
                     let busNetName = this.clientService.getBusinessNetwork().getName();
-                    this.composerBanner = [profileName, busNetName];
+                    this.config['banner'] = [profileName, busNetName];
                 });
         }
 
@@ -134,6 +161,12 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.initializationService.initialize()
             .then(() => {
                 this.usingLocally = !this.configService.isWebOnly();
+
+                const config = this.configService.getConfig();
+                if (config && config.analyticsID) {
+                    this.submitAnalytics = true;
+                    window['ga']('create', config.analyticsID, 'auto');
+                }
             });
     }
 
@@ -237,5 +270,9 @@ export class AppComponent implements OnInit, OnDestroy {
     getPlaygroundDetails(): string {
         let key = `playgroundVersion`;
         return this.localStorageService.get<string>(key);
+    }
+
+    setTitle(newTitle: string) {
+        this.titleService.setTitle(newTitle);
     }
 }

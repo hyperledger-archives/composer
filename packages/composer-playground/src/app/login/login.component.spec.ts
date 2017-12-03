@@ -11,15 +11,13 @@ import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject } from 'rxjs/Rx';
-
-import { IdentityService } from '../services/identity.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ClientService } from '../services/client.service';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { AdminService } from '../services/admin.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConfigService } from '../services/config.service';
+import { Config } from '../services/config/configStructure.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { BusinessNetworkDefinition } from 'composer-common';
 
@@ -106,8 +104,11 @@ class MockFooterComponent {
     template: ''
 })
 class MockIdentityCardComponent {
+    @Input() link: String;
     @Input() identity: any;
     @Input() indestructible: any;
+    @Input() cardRef: string;
+    @Input() showSpecial: boolean;
 }
 
 @Component({
@@ -130,6 +131,8 @@ class MockCreateIdentityCardComponent {
     template: ''
 })
 class MockTutorialLinkComponent {
+    @Input()
+    link: string;
 }
 
 describe(`LoginComponent`, () => {
@@ -138,30 +141,27 @@ describe(`LoginComponent`, () => {
     let fixture: ComponentFixture<LoginComponent>;
 
     let mockAdminService;
-    let mockIdentityService;
     let mockIdentityCardService;
     let mockClientService;
-    let mockConnectionProfileService;
     let mockInitializationService;
     let mockSampleBusinessNetworkService;
     let routerStub;
     let mockAlertService;
     let mockConfigService;
+    let mockConfig;
     let mockModal;
     let mockDrawer;
     let businessNetworkMock;
 
     beforeEach(() => {
-
-        mockIdentityService = sinon.createStubInstance(IdentityService);
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockSampleBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfig = sinon.createStubInstance(Config);
         mockDrawer = sinon.createStubInstance(DrawerService);
         mockModal = sinon.createStubInstance(NgbModal);
         businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
@@ -183,10 +183,8 @@ describe(`LoginComponent`, () => {
                 MockTutorialLinkComponent
             ],
             providers: [
-                {provide: IdentityService, useValue: mockIdentityService},
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: Router, useValue: routerStub},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
@@ -194,7 +192,7 @@ describe(`LoginComponent`, () => {
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: DrawerService, useValue: mockDrawer},
                 {provide: NgbModal, useValue: mockModal},
-                {provide: ConfigService, useValue: mockConfigService}
+                {provide: ConfigService, useValue: mockConfigService},
             ]
         });
 
@@ -229,10 +227,23 @@ describe(`LoginComponent`, () => {
             mockConfigService.isWebOnly.should.have.been.called;
             component['usingLocally'].should.be.false;
         }));
+
+        it('should set config', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            mockConfigService.isWebOnly.returns(true);
+            mockConfigService.getConfig.returns(mockConfig);
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+            component.ngOnInit();
+
+            tick();
+
+            mockConfigService.getConfig.should.have.been.called;
+            component['config'].should.deep.equal(mockConfig);
+        }));
     });
 
     describe('loadIdentityCards', () => {
-        it('should load identity cards and sort the profiles', fakeAsync(() => {
+        it('should load identity cards and sort the profiles force reload', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('card1');
             mockIdCard1.getConnectionProfile.returns({name: 'myProfile1'});
@@ -265,13 +276,14 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.getIndestructibleIdentityCards.returns(['myCardRef4']);
             let sortCards = sinon.stub(component, 'sortIdCards');
 
-            component.loadIdentityCards();
+            component.loadIdentityCards(true);
 
             tick();
 
             sortCards.should.have.been.called;
 
-            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2']);
+            mockIdentityCardService.getIdentityCards.should.have.been.calledWith(true);
+            component['connectionProfileRefs'].should.deep.equal(['xxx-bobProfile', 'xxx-myProfile1', 'xxx-myProfile2', 'web-$default']);
             component['connectionProfileNames'].size.should.equal(4);
             component['connectionProfileNames'].get('xxx-myProfile1').should.equal('myProfile1');
             component['connectionProfileNames'].get('xxx-myProfile2').should.equal('myProfile2');
@@ -310,7 +322,7 @@ describe(`LoginComponent`, () => {
 
             tick();
 
-            component['connectionProfileRefs'].should.deep.equal(['web-$default', 'xxx-bobProfile']);
+            component['connectionProfileRefs'].should.deep.equal(['xxx-bobProfile', 'web-$default']);
             component['connectionProfileNames'].size.should.equal(1);
             component['connectionProfileNames'].get('xxx-bobProfile').should.equal('bobProfile');
             component['idCardRefs'].size.should.equal(1);
@@ -355,8 +367,7 @@ describe(`LoginComponent`, () => {
             tick();
 
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('myCardRef');
-            mockClientService.ensureConnected.should.have.been.calledWith('myNetwork', true);
-            mockIdentityService.setLoggedIn.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
             routerStub.navigate.should.have.been.calledWith(['editor']);
         }));
@@ -371,7 +382,6 @@ describe(`LoginComponent`, () => {
 
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('myCardRef');
             mockClientService.ensureConnected.should.not.have.been.called;
-            mockIdentityService.setLoggedIn.should.not.have.been.called;
 
             routerStub.navigate.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
@@ -441,11 +451,14 @@ describe(`LoginComponent`, () => {
         beforeEach(() => {
             mockIdCard = sinon.createStubInstance(IdCard);
             mockIdCard.getUserName.returns('myCard');
+            mockIdCard.getConnectionProfile.returns({type: 'hlfv1'});
             mockIdCards = new Map<string, IdCard>();
             mockIdCards.set('myCardRef', mockIdCard);
 
             loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
             loadIdentityCardsStub.returns(Promise.resolve());
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(new Map<string, IdCard>());
         });
 
         it('should open the delete-confirm modal', fakeAsync(() => {
@@ -502,6 +515,75 @@ describe(`LoginComponent`, () => {
             tick();
 
             // check services called
+            mockAdminService.connect.should.not.have.been.called;
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
+            loadIdentityCardsStub.should.have.been.called;
+
+            mockAlertService.successStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should undeploy and refresh the identity cards after successfully calling identityCardService.deleteIdentityCard()', fakeAsync(() => {
+            let myMap = new Map<string, IdCard>();
+
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+
+            myMap.set('idCardOne', idCardOne);
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(myMap);
+            mockIdCard.getConnectionProfile.returns({type: 'web'});
+            mockIdCards.set('myCardRef', mockIdCard);
+
+            component['idCards'] = mockIdCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
+            mockAdminService.connect.resolves();
+            mockAdminService.undeploy.resolves();
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.removeIdentity('myCardRef');
+            tick();
+
+            // check services called
+            mockAdminService.connect.should.have.been.called;
+            mockAdminService.undeploy.should.have.been.called;
+            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
+            loadIdentityCardsStub.should.have.been.called;
+
+            mockAlertService.successStatus$.next.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should not undeploy if more than one identity', fakeAsync(() => {
+            let myMap = new Map<string, IdCard>();
+
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+            let idCardTwo = new IdCard({userName: 'fred', businessNetwork: 'bn'}, {name: 'cp1', type: 'web'});
+
+            myMap.set('myCardRef', idCardOne);
+            myMap.set('idCardTwo', idCardTwo);
+
+            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(myMap);
+            mockIdCard.getConnectionProfile.returns({type: 'web'});
+            mockIdCards.set('myCardRef', mockIdCard);
+
+            component['idCards'] = mockIdCards;
+            mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(true)
+            });
+
+            component.removeIdentity('myCardRef');
+            tick();
+
+            // check services called
+            mockAdminService.connect.should.not.have.been.called;
+            mockAdminService.undeploy.should.not.have.been.called;
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
 
@@ -583,7 +665,6 @@ describe(`LoginComponent`, () => {
         });
 
         it('should import an identity card', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.resolve());
             let mockIdCard = sinon.createStubInstance(IdCard);
             mockIdentityCardService.getIdentityCard.returns(mockIdCard);
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
@@ -598,7 +679,9 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should handle errors', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.reject('some error'));
+            mockDrawer.open.returns({
+                result: Promise.reject('some error')
+            });
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
 
             component.importIdentity();
@@ -766,6 +849,8 @@ describe(`LoginComponent`, () => {
             mockSampleBusinessNetworkService.getChosenSample.returns(Promise.resolve(businessNetworkMock));
             mockSampleBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve('myNewCardRef'));
 
+            let loadCardsStub = sinon.stub(component, 'loadIdentityCards').resolves();
+
             let changeIdentityStub = sinon.stub(component, 'changeIdentity');
             component.deploySample('profileRef');
 
@@ -775,8 +860,9 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
             mockSampleBusinessNetworkService.getSampleList.should.have.been.called;
             mockSampleBusinessNetworkService.getChosenSample.should.have.been.calledWith({name: 'mySample'});
-            mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'my-basic-sample', 'The Composer basic sample network');
-            changeIdentityStub.should.have.been.calledWith('myNewCardRef');
+            mockSampleBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith(businessNetworkMock, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network');
+            loadCardsStub.should.have.been.calledWith(true);
+            changeIdentityStub.should.have.been.calledWith('playgroundSample@basic-sample-network');
         }));
     });
 });

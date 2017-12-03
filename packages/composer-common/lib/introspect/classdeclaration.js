@@ -15,12 +15,13 @@
 'use strict';
 
 const Decorated = require('./decorated');
-const Field = require('./field');
 const EnumValueDeclaration = require('./enumvaluedeclaration');
-const RelationshipDeclaration = require('./relationshipdeclaration');
-const IllegalModelException = require('./illegalmodelexception');
+const Field = require('./field');
 const Globalize = require('../globalize');
+const IllegalModelException = require('./illegalmodelexception');
 const Introspector = require('./introspector');
+const ModelUtil = require('../modelutil');
+const RelationshipDeclaration = require('./relationshipdeclaration');
 
 /**
  * ClassDeclaration defines the structure (model/schema) of composite data.
@@ -29,7 +30,7 @@ const Introspector = require('./introspector');
  * A ClassDeclaration is conceptually owned by a ModelFile which
  * defines all the classes that are part of a namespace.
  *
- * @private
+ *
  * @abstract
  * @class
  * @memberof module:composer-common
@@ -52,6 +53,7 @@ class ClassDeclaration extends Decorated {
         }
         this.modelFile = modelFile;
         this.process();
+        this.fqn = ModelUtil.getFullyQualifiedName(modelFile.getNamespace(), this.name);
     }
 
     /**
@@ -76,6 +78,7 @@ class ClassDeclaration extends Decorated {
         this.name = this.ast.id.name;
         this.properties = [];
         this.superType = null;
+        this.superTypeDeclaration = null;
         this.idField = null;
         this.abstract = false;
 
@@ -120,6 +123,39 @@ class ClassDeclaration extends Decorated {
     }
 
     /**
+     * Resolve the super type on this class and store it as an internal property.
+     * @return {ClassDeclaration} The super type, or null if non specified.
+     */
+    _resolveSuperType() {
+        if (!this.superType) {
+            return null;
+        }
+        // Clear out any old resolved super types.
+        this.superTypeDeclaration = null;
+        let classDecl = null;
+        if(this.getModelFile().isImportedType(this.superType)) {
+            let fqnSuper = this.getModelFile().resolveImport(this.superType);
+            classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+        }
+        else {
+            classDecl = this.getModelFile().getType(this.superType);
+        }
+
+        if(!classDecl) {
+            throw new IllegalModelException('Could not find super type ' + this.superType, this.modelFile, this.ast.location);
+        }
+
+        // Prevent extending declaration with different type of declaration
+        if (this.constructor.name !== classDecl.constructor.name) {
+            let typeName = this.getSystemType();
+            let superTypeName = classDecl.getSystemType();
+            throw new IllegalModelException(`${typeName} (${this.getName()}) cannot extend ${superTypeName} (${classDecl.getName()})`, this.modelFile, this.ast.location);
+        }
+        this.superTypeDeclaration = classDecl;
+        return classDecl;
+    }
+
+    /**
      * Semantic validation of the structure of this class. Subclasses should
      * override this method to impose additional semantic constraints on the
      * contents/relations of fields.
@@ -149,28 +185,7 @@ class ClassDeclaration extends Decorated {
 
         // if we have a super type make sure it exists
         if(this.superType!==null) {
-            let classDecl = null;
-            if(this.getModelFile().isImportedType(this.superType)) {
-                let fqnSuper = this.getModelFile().resolveImport(this.superType);
-                classDecl = this.modelFile.getModelManager().getType(fqnSuper);
-            }
-            else {
-                classDecl = this.getModelFile().getType(this.superType);
-            }
-
-            if(classDecl===null) {
-                throw new IllegalModelException('Could not find super type ' + this.superType, this.modelFile, this.ast.location);
-            }
-
-            // Prevent extending declaration with different type of declaration
-            const supertypeDeclaration = this.getModelFile().getType(this.superType);
-            if (supertypeDeclaration) {
-                if (this.constructor.name !== supertypeDeclaration.constructor.name) {
-                    let typeName = this.getSystemType();
-                    let superTypeName = supertypeDeclaration.getSystemType();
-                    throw new IllegalModelException(`${typeName} (${this.getName()}) cannot extend ${superTypeName} (${supertypeDeclaration.getName()})`, this.modelFile, this.ast.location);
-                }
-            }
+            this._resolveSuperType();
         }
 
         if(this.idField) {
@@ -194,6 +209,11 @@ class ClassDeclaration extends Decorated {
 
                 if(field.isOptional()) {
                     throw new IllegalModelException('Identifying fields cannot be optional.',this.modelFile, this.ast.location);
+                }
+                if(this.getSuperType()){
+                    if(field.getName() === this.getModelFile().getType(this.superType).getIdentifierFieldName()){
+                        throw new IllegalModelException('Identifier cannot extend from super type.');
+                    }
                 }
             }
         }
@@ -349,7 +369,7 @@ class ClassDeclaration extends Decorated {
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.getNamespace() + '.' + this.name;
+        return this.fqn;
     }
 
     /**
@@ -430,15 +450,15 @@ class ClassDeclaration extends Decorated {
      */
     getSuperTypeDeclaration() {
         if (!this.superType) {
+            // No super type.
             return null;
+        } else if (!this.superTypeDeclaration) {
+            // Super type that hasn't been resolved yet.
+            return this._resolveSuperType();
+        } else {
+            // Resolved super type.
+            return this.superTypeDeclaration;
         }
-
-        const supertypeDeclaration = this.getModelFile().getType(this.superType);
-        if (!supertypeDeclaration) {
-            throw new Error('Could not find super type: ' + this.superType);
-        }
-
-        return supertypeDeclaration;
     }
 
     /**

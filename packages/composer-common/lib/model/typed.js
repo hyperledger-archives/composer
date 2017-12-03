@@ -15,7 +15,6 @@
 'use strict';
 
 const Field = require('../introspect/field');
-const ModelUtil = require('../modelutil');
 
 /**
  * Object is an instance with a namespace and a type.
@@ -34,12 +33,14 @@ class Typed {
      * </p>
      *
      * @param {ModelManager} modelManager - The ModelManager for this instance
+     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
      * @private
      */
-    constructor(modelManager, ns, type) {
+    constructor(modelManager, classDeclaration, ns, type) {
         this.$modelManager = modelManager;
+        this.$classDeclaration = classDeclaration;
         this.$namespace = ns;
         this.$type = type;
     }
@@ -77,7 +78,7 @@ class Typed {
      * @return {string} The fully-qualified type name of this object
      */
     getFullyQualifiedType() {
-        return ModelUtil.getFullyQualifiedName(this.$namespace, this.$type);
+        return this.$classDeclaration.getFullyQualifiedName();
     }
 
     /**
@@ -92,25 +93,10 @@ class Typed {
      * Returns the class declaration for this instance object.
      *
      * @return {ClassDeclaration} - the class declaration for this instance
-     * @throws {Error} - if the class or namespace for the instance is not declared
      * @private
      */
     getClassDeclaration() {
-        // do we have a model file?
-        let modelFile = this.getModelManager().getModelFile(this.getNamespace());
-
-        if (!modelFile) {
-            throw new Error('No model for namespace ' + this.getNamespace() + ' is registered with the ModelManager');
-        }
-
-        // do we have a class?
-        let classDeclaration = modelFile.getType(this.getType());
-
-        if (!classDeclaration) {
-            throw new Error('The namespace ' + this.getNamespace() + ' does not contain the type ' + this.getType());
-        }
-
-        return classDeclaration;
+        return this.$classDeclaration;
     }
 
     /**
@@ -178,9 +164,20 @@ class Typed {
      * qualified type name, false otherwise.
      */
     instanceOf(fqt) {
+        // Check to see if this is an exact instance of the specified type.
         const classDeclaration = this.getClassDeclaration();
-        return classDeclaration.getFullyQualifiedName() === fqt ||
-            classDeclaration.getAllSuperTypeDeclarations().some(declaration => declaration.getFullyQualifiedName() === fqt);
+        if (classDeclaration.getFullyQualifiedName() === fqt) {
+            return true;
+        }
+        // Now walk the class hierachy looking to see if it's an instance of the specified type.
+        let superTypeDeclaration = classDeclaration.getSuperTypeDeclaration();
+        while (superTypeDeclaration) {
+            if (superTypeDeclaration.getFullyQualifiedName() === fqt) {
+                return true;
+            }
+            superTypeDeclaration = superTypeDeclaration.getSuperTypeDeclaration();
+        }
+        return false;
     }
 
     /**

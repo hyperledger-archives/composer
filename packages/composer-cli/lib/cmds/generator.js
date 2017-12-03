@@ -17,7 +17,8 @@
 exports.command = 'generator <subcommand>';
 exports.desc = 'Composer generator command to convert a Business Network Definition to code';
 exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('generator');
+   // apply commands in subdirectories, throws an error if an incorrect command is entered
+    return yargs.demandCommand(1, 'Incorrect command. Please see the list of commands above, or enter "composer generator --help".')
+   .commandDir('generator');
 };
 exports.handler = function (argv) {};
