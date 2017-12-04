@@ -67,7 +67,27 @@ class EngineTransactions {
         // Resolve the users copy of the transaction.
         LOG.debug(method, 'Parsed transaction, resolving it', transaction);
         let resolvedTransaction;
-        return context.getResolver().resolve(transaction)
+
+
+        // Get the historian.
+        LOG.debug(method, 'Getting historian');
+        return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord')
+            .then((result) => {
+                historian = result;
+                LOG.debug(method, 'Getting default transaction registry for '+txClass);
+                return registryManager.get('Transaction', txClass);
+            })
+            .then((result) => {
+                txRegistry = result;
+                // check that we can add to both these registries ahead of time
+                return txRegistry.testAdd(transaction);
+            })
+            .then((result)=>{
+                if (result){
+                    throw result;
+                }
+                return context.getResolver().resolve(transaction);
+            })
             .then((resolvedTransaction_) => {
 
                 // Save the resolved transaction.
@@ -105,18 +125,6 @@ class EngineTransactions {
                     throw error;
                 }
 
-                // Get the historian.
-                LOG.debug(method, 'Getting historian');
-                return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
-
-            })
-            .then((result) => {
-                historian = result;
-                LOG.debug(method, 'Getting default transaction registry for '+txClass);
-                return registryManager.get('Transaction', txClass);
-            })
-            .then((result) => {
-                txRegistry = result;
                 // Store the transaction in the transaction registry.
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
                 return txRegistry.add(transaction);

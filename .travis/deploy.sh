@@ -51,7 +51,11 @@ if [ "${DOCS}" != "" ]; then
   if [ -z "${TRAVIS_TAG}" ]; then
     DOCS="unstable"
   else
-    DOCS="full"
+    if [ "${TRAVIS_BRANCH}" = "master" ]; then
+        DOCS="latest"
+    else
+        DOCS="stable"
+    fi
   fi
   ./.travis/deploy_docs.sh
   exit 0
