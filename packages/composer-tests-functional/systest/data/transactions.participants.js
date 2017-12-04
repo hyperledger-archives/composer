@@ -140,25 +140,22 @@ function onSimpleTransactionWithParticipantRelationshipArrays(transaction) {
     assertEqual('integerParticipants[1].integerValue', transaction.integerParticipants[1].integerValue, 56373351);
 }
 
-function onGetAllParticipantsFromParticipantRegistryTransaction(transaction) {
+// example of async/await
+async function onGetAllParticipantsFromParticipantRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
-        .then(function (ar) {
-            return ar.getAll();
-        })
-        .then(function (as) {
-            as.sort(function (a, b) {
-                return a.participantId.localeCompare(b.participantId);
-            });
-            // console.log(JSON.stringify(as));
-            if (as.length !== 2) { throw new Error('length does not match'); }
-            if (typeof as[0] !== 'object') { throw new Error('first participant is not an object'); }
-            if (typeof as[1] !== 'object') { throw new Error('second participant is not an object'); }
-            if (as[0].participantId !== 'stringParticipant1') { throw new Error('first participant has invalid value'); }
-            if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first participant has invalid value'); }
-            if (as[1].participantId !== 'stringParticipant2') { throw new Error('second participant has invalid value'); }
-            if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second participant has invalid value'); }
-        });
+    let ar = await getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant');
+    let as = await ar.getAll();
+    as.sort(function (a, b) {
+        return a.participantId.localeCompare(b.participantId);
+    });
+    // console.log(JSON.stringify(as));
+    if (as.length !== 2) { throw new Error('length does not match'); }
+    if (typeof as[0] !== 'object') { throw new Error('first participant is not an object'); }
+    if (typeof as[1] !== 'object') { throw new Error('second participant is not an object'); }
+    if (as[0].participantId !== 'stringParticipant1') { throw new Error('first participant has invalid value'); }
+    if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first participant has invalid value'); }
+    if (as[1].participantId !== 'stringParticipant2') { throw new Error('second participant has invalid value'); }
+    if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second participant has invalid value'); }
 }
 
 function onGetParticipantFromParticipantRegistryTransaction(transaction) {
@@ -174,21 +171,13 @@ function onGetParticipantFromParticipantRegistryTransaction(transaction) {
         });
 }
 
-function onExistsParticipantInParticipantRegistryTransaction(transaction) {
-    // console.log(JSON.stringify(transaction));
-    var pr;
-    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
-        .then(function (pr_) {
-            pr = pr_;
-            return pr.exists('stringParticipant1');
-        })
-        .then(function (exists) {
-            if (exists !== true) { return new Error('participant does not exist'); }
-            return pr.exists('stringParticipant2');
-        })
-        .then(function (exists) {
-            if (exists !== false) { return new Error('participant does exist'); }
-        });
+// example using async/await
+async function onExistsParticipantInParticipantRegistryTransaction(transaction) {
+    let pr = await getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant');
+    let exists = await pr.exists('stringParticipant1');
+    if (exists !== true) { return new Error('participant does not exist'); }
+    exists = await pr.exists('stringParticipant2');
+    if (exists !== false) { return new Error('participant does exist'); }
 }
 
 function onAddParticipantInTransactionToParticipantRegistryTransaction(transaction) {
