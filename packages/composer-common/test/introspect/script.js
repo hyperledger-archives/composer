@@ -44,11 +44,14 @@ describe('Script', () => {
             new Script(modelManager, 'SCRIPT_001', 'JS', 'function TheFunc() { }' );
         });
 
-        it('should throw when ES7 code is provided', () => {
-            (() => {
-                new Script(modelManager, 'SCRIPT_001', 'JS', 'class TheClass { }' );
-            }).should.throw(/The keyword.*is reserved/);
+        it('should not throw when ES7 code is provided', () => {
+            new Script(modelManager, 'SCRIPT_001', 'JS', 'class TheClass { }' );
         });
+
+        it('should not throw when ES8 (async/await) code is provided', () => {
+            new Script(modelManager, 'SCRIPT_001', 'JS', 'async function TheFunc() { await getAssetRegistry(\'areg\')}' );
+        });
+
 
         it('should include script name on parse error', function() {
             const scriptName = 'BAD_SCRIPT';
@@ -131,7 +134,7 @@ describe('Script', () => {
         });
 
         it('should throw for a TX processor function that does not have 1 parameter', () => {
-            const FUNC_TEXT = `/*@transaction*/ 
+            const FUNC_TEXT = `/*@transaction*/
             function onMyTransaction() {return 0;}`;
             (() => {
                 new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
