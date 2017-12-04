@@ -2,25 +2,23 @@
 @import '../../../assets/styles/base/_variables.scss';
 
 .replace {
-
-  .modal-header {
-    svg {
-      fill: $error-colour-1
+    .modal-header {
+        svg {
+            fill: $error-colour-1
+        }
     }
-  }
 
-  .information {
-      display: flex;
-      flex-direction: column;
-      align-content: flex-start;
-      margin-left: $space-large;
-  }
+    .information {
+        display: flex;
+        flex-direction: column;
+        align-content: flex-start;
+        margin-left: $space-large;
+    }
 
-  .items {
+    .items {
 
-     .item{
-        margin-left: $space-medium;
-     }
-  }
-
+        .item {
+            margin-left: $space-medium;
+        }
+    }
 }

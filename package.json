@@ -14,7 +14,8 @@
   "private": true,
   "scripts": {
     "postinstall": "npm run pkgcheck && npm run bootstrap",
-    "bootstrap": "git submodule init && git submodule update && lerna bootstrap",
+    "repoclean": "lerna clean",
+    "bootstrap": "lerna bootstrap",
     "pretest": "npm run depcheck",
     "test": "lerna run test",
     "scanlicenses": "./scripts/scan-all-licenses.sh",

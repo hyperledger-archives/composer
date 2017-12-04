@@ -1,191 +1,122 @@
 ---
 layout: default
-title: Installing a development environment
+title: Installing the development environment
 category: start
 section: installing
 sidebar: sidebars/accordion-toc0.md
-excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
-index-order: 204
+excerpt: To install the full development environment click [**Installing the development environment**](../installing/development-tools.html) here or in the table of contents on the left.
+index-order: 202
 ---
 
-# Installing and developing with {{site.data.conrefs.composer_full}}
+# Installing the development environment
 
-Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
+Follow these instructions to obtain the {{site.data.conrefs.composer_full}} development tools (primarily used to _create_ Business Networks) and stand up a {{site.data.conrefs.hlf_full}} (primarily used to _run/deploy_ your Business Networks locally).
+Note that the Business Networks you create can also be deployed to {{site.data.conrefs.hlf_full}} runtimes in other environments e.g. on a cloud platform.
 
 
 ## Before you begin
 
-To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, we recommend you have at least 4Gb of memory.
+Make sure you have installed the required pre-requisites, following the instructions in [**Installing pre-requisites**](../installing/installing-prereqs.html).
 
-The following are prerequisites for installing the required development tools:
+These instructions assume that you've not installed the tools and used them before.  If this is not the case, you might want to check that your previous setup is completely destroyed before you start following this guide.  To learn how to do this, skip to the [Appendix](#appendix).
 
-- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
-- Docker Engine: Version 17.03 or higher
-- Docker-Compose: Version 1.8 or higher
-- Node: 8.9 or higher (note version 9 is not supported)
-- npm: v5.x
-- git: 2.9.x or higher
-- Python: 2.7.x
-- A code editor of your choice, we recommend VSCode.
+> To provide flexibility and enable the maximum number of dev, test and deployment scenarios, {{site.data.conrefs.composer_short}} is delivered as a set of components you can install with `npm` and control from the CLI.  These instructions will tell you how to install everything first, then how to control your development environment.
 
-**If installing {{site.data.conrefs.composer_full}} using Linux, be aware of the following advice:
+# Installing components
 
-- Login as a normal user, rather than root.
-- Do not `su` to root.
-- When installing prerequisites, use curl, then unzip using sudo.
-- Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it's actions are required to be run as root.
-- Do not use npm with `sudo` or `su` to root to use it.
-- Avoid installing node globally as root.**
+### Step 1: Install the CLI tools
+There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
 
-If you're running on Ubuntu, you can download the prerequisites using the following commands:
-
-```bash
-curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
-
-chmod u+x prereqs-ubuntu.sh
-```
-
-Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.
-
-```
-./prereqs-ubuntu.sh
-```
-
-If you're running Mac OS X, you can follow the [installation guide for Mac OS X pre-requisites](../installing/prereqs-mac.html).
-
----
-
-## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
-
-The development tools you'll need can all be installed (as a non-privileged user eg non-root) with `npm install -g`.
-
-1. To install `composer-cli` run the following command:
+1. Essential CLI tools:
 
         npm install -g composer-cli
-    The `composer-cli` contains all the command line operations for developing business networks.
 
-2. To install `generator-hyperledger-composer` run the following command:
-
-        npm install -g generator-hyperledger-composer
-    The `generator-hyperledger-composer` is a Yeoman plugin that creates bespoke applications for your business network.
-
-3. To install `composer-rest-server` run the following command:
+2. Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:
 
         npm install -g composer-rest-server
-    The `composer-rest-server` uses the {{site.data.conrefs.composer_full}} LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
 
-4. To install `Yeoman` run the following command:
+3. Useful utility for generating application assets:
+
+        npm install -g generator-hyperledger-composer
+
+4. Yeoman is a tool for generating applications, which utilises `generator-hyperledger-composer`:
 
         npm install -g yo
-    Yeoman is a tool for generating applications. When combined with the `generator-hyperledger-composer` component, it can interpret business networks and generate applications based on them.
 
-### Optional development tools
+### Step 2: Install Playground
+If you've already tried {{site.data.conrefs.composer_short}} online, you'll have seen the browser app "Playground".  You can run this locally on your development machine too, giving you a UI for viewing and demonstrating your business networks.
 
-1. If you use VSCode, install the {{site.data.conrefs.composer_full}} VSCode plugin from the VSCode marketplace.
-
-2. If you want to run the connect to a business network using the Playground locally, install the `composer-playground` using the following command.
+5. Browser app for simple editing and testing Business Networks:
 
         npm install -g composer-playground
 
-3. To run the playground locally run the following command:
+### Step 3: Set up your IDE
+Whilst the browser app _can_ be used to work on your Business Network code, most users will prefer to work in an IDE.  Our favourite is `VSCode`, because a {{site.data.conrefs.composer_short}} extension is available.
 
-        composer-playground
+6. Install VSCode from this URL: [https://code.visualstudio.com/download](https://code.visualstudio.com/download)
 
-    The playground should open automatically at the following address: http://localhost:8080/login
+7. Open VSCode, go to Extensions, then search for and install the `Hyperledger Composer` extension from the Marketplace.
 
+### Step 4: Install {{site.data.conrefs.hlf_full}}
+This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy your business networks to.
 
-## Step 2: Starting {{site.data.conrefs.hlf_full}}
-
-If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../installing/using-playground-locally.html) you'll need to close the containers by using the following scripts.
-
->_Please note: These commands will kill and remove all running containers, and should remove all previously created {{site.data.conrefs.hlf_full}} chaincode images._
-
-```
-docker kill $(docker ps -q)
-docker rm $(docker ps -aq)
-docker rmi $(docker images dev-* -q)
-```
-
-
-1. In a directory of your choice (will assume `~/fabric-tools`) get the zip file that contains the tools to install {{site.data.conrefs.hlf_full}} v1.0.
+8. In a directory of your choice (we will assume `~/fabric-tools`), get the `.zip` file that contains the tools to install {{site.data.conrefs.hlf_full}}:
 
         mkdir ~/fabric-tools && cd ~/fabric-tools
 
         curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
         unzip fabric-dev-servers.zip
 
-    A `tar.gz` file is also available
-
-        mkdir ~/fabric-tools && cd ~/fabric-tools
-        curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
-
-        tar xvzf fabric-dev-servers.tar.gz
+      A `tar.gz` is also available if you prefer: just replace the `.zip` file with `fabric-dev-servers.tar.gz1` and the `unzip` command with a `tar xvzf` command in the above snippet.
 
 
-2. If this is the first time, you'll need to download the fabric runtime first. If you have already downloaded it, then start the fabric environment, and create a {{site.data.conrefs.composer_full}} profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the {{site.data.conrefs.hlf_full}} and the {{site.data.conrefs.composer_full}} profile.
-
-    All the scripts will be in the directory `~/fabric-tools`  A typical sequence for {{site.data.conrefs.composer_full}} use would be
+9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
 
         cd ~/fabric-tools
         ./downloadFabric.sh
+
+> Congratulations, you've now installed everything required for the typical Developer Environment.
+Read on to learn some of the most common things you'll do with this environment to develop and test your Blockchain Business Networks.
+
+# Controlling your dev environment
+
+## Starting and stopping {{site.data.conrefs.hlf_full}}
+You control your runtime using a set of scripts which you'll find in `~/fabric-tools` if you followed the suggested defaults.  
+
+The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
+
+        cd ~/fabric-tools
         ./startFabric.sh
         ./createPeerAdminCard.sh
 
-    Then at the end of your development session
+You can start and stop your runtime using `~/fabric-tools/stopFabric.sh`, and start it again with `~/fabric-tools/startFabric.sh`.
 
-        cd ~/fabric-tools
-        ./stopFabric.sh
-        ./teardownFabric.sh
+At the end of your development session, you run `~/fabric-tools/stopFabric.sh` and then `~/fabric-tools/teardownFabric.sh`.  Note that if you've run the teardown script, the next time you start the runtime, you'll need to create a new PeerAdmin card just like you did on first time startup.
 
+> The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you're looking for a runtime with more persistent state, you'll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.  For further details, see <INSERT LINK HERE>.
 
-> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks.
+## Start the web app ("Playground")
+To start the web app, run:
 
+        composer-playground
 
-## Script details
+It will typically open your browser automatically, at the following address: [http://localhost:8080/login](http://localhost:8080/login)
 
-![](../assets/img/developer-tools-commands.png).
+You should see the `PeerAdmin@hlfv1` Card you created with the `createPeerAdminCard` script on your "My Business Networks" screen in the web app: if you don't see this, you may not have correctly started up your runtime!
 
-This diagram explains the order in which the scripts can be run.
+> Congratulations, you've got all the components running, and you also know how to stop and tear them down when you're done with your dev session.
 
-**Downloading Fabric**
+## What Next?
 
-Issue from the `fabric-tools` directory
-```
-./downloadFabric.sh
-```
-
-**Starting Fabric**
-
-Issue  from the `fabric-tools` directory
-```
-./startFabric.sh
-```
-
-**Stop Fabric**
-
-Issue from the `fabric-tools` directory
-```
-./stopFabric.sh
-```
-
-**Create PeerAdmin Card**
-
-Create a business network card for the peer administrator specific to the {{site.data.conrefs.hlf_full}} instance running.
-```
-./createPeerAdminCard.sh
-```
-
-Note: this creates and imports a business network card to connect to the development fabric you've already started.
-
-**Teardown Fabric**
-
-Issue from the `fabric-tools` directory
-```
-./teardownFabric.sh
-```
+- Learn how to use the web app UI with the [Playground Tutorial](../tutorials/playground-tutorial.html)
+- Learn how to use the CLI and VSCode tools with the [Developer Tutorial](../tutorials/developer-tutorial.html)
 
 
-## What next?
 
-* Begin [**writing a business network definition**](../business-network/business-network-index.html).
-* If you're looking for a tutorial on using the developer tools, see the [**developer guide**](../tutorials/developer-tutorial.html) to run through a sample with the developer tools.
+<a name="appendix"></a>
+# Appendix: destroy a previous setup
+If you've previously used an older version of **{{site.data.conrefs.composer_full}}** and are now setting up a new install, you may want to kill and remove all previous Docker containers, which you can do with these commands:
+
+        docker kill $(docker ps -q)
+        docker rm $(docker ps -aq)
+        docker rmi $(docker images dev-* -q)

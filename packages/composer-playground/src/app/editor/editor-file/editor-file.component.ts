@@ -166,15 +166,8 @@ export class EditorFileComponent {
             }
 
             let updatedFile = this.fileService.updateFile(this._editorFile.id, this.editorContent, type);
-            // read me isn't validated
-            if (!this._editorFile.isReadMe()) {
-                this.currentError = this.fileService.validateFile(updatedFile.getId(), type);
-            }
 
-            if (!this.currentError) {
-                // update the stored business network
-                this.fileService.updateBusinessNetwork(this._editorFile.id, updatedFile);
-            }
+            this.fileService.updateBusinessNetwork(this._editorFile.id, updatedFile);
 
             this.fileService.businessNetworkChanged$.next(true);
         } catch (e) {

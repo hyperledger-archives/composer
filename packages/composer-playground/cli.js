@@ -30,8 +30,12 @@ const argv = require('yargs')
     })
     .argv;
 
+const isDocker = require('is-docker');
 const Logger = require('composer-common').Logger;
+const opener = require('opener');
 const util = require('util');
+
+const LOG = Logger.getLog('Composer');
 
 Logger.setFunctionalLogger({
     log: (level, method, msg, args) => {
@@ -63,29 +67,15 @@ Logger.setFunctionalLogger({
     }
 });
 
-const app = require('composer-playground-api')(argv.port, argv.test);
-const express = require('express');
-const isDocker = require('is-docker');
-const opener = require('opener');
-const path = require('path');
-
+let config;
 if (process.env.COMPOSER_CONFIG) {
-  const config = JSON.parse(process.env.COMPOSER_CONFIG);
-  app.get('/config.json', (req, res, next) => {
-    res.json(config);
-  });
+  config = JSON.parse(process.env.COMPOSER_CONFIG);
 }
-
-const dist = path.resolve(__dirname, 'dist');
-app.use(express.static(dist));
-app.all('/*', (req, res, next) => {
-  res.sendFile('index.html', { root: dist });
-});
-
-const LOG = Logger.getLog('Composer');
 
 const method = 'main';
 LOG.entry(method);
+
+require('.')(argv.port, argv.test, config);
 
 if (!isDocker()) {
     opener(`http://localhost:${argv.port}`);

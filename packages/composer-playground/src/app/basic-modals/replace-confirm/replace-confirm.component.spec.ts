@@ -3,31 +3,80 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReplaceComponent } from './replace-confirm.component';
+import { By } from '@angular/platform-browser';
+import { Component, DebugElement } from '@angular/core';
+import { ErrorComponent } from './error.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
-import * as chai from 'chai';
+import { ReplaceComponent } from './replace-confirm.component';
 
-let should = chai.should();
+@Component({
+    template: `
+        <replace-confirm [mainMessage]="mainMessage" [supplementaryMessage]="supplementaryMessage"
+                         [resource]="resource"></replace-confirm>`
+})
+class TestHostComponent {
+    error: string = null;
+}
 
 describe('ReplaceComponent', () => {
-    let component: ReplaceComponent;
-    let fixture: ComponentFixture<ReplaceComponent>;
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
 
     let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
 
+    let replaceElement: DebugElement;
+
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [ReplaceComponent],
+            declarations: [ReplaceComponent, TestHostComponent],
             providers: [{provide: NgbActiveModal, useValue: mockActiveModal}]
         });
-        fixture = TestBed.createComponent(ReplaceComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
+
+        replaceElement = fixture.debugElement.query(By.css('replace-confirm'));
     });
 
     it('should create', () => {
         component.should.be.ok;
     });
 
+    it('should set the mainMessage, supplementaryMessage and resource', () => {
+        let resourceElement = replaceElement.query((By.css('h1')));
+        let mainMessageElement = replaceElement.queryAll(By.css('section.information p'))[0];
+        let supplementaryElement = replaceElement.queryAll(By.css('section.information p'))[1];
+
+        component['mainMessage'] = 'myMainMessage';
+        component['supplementaryMessage'] = 'mySupplement';
+        component['resource'] = 'myResource';
+
+        fixture.detectChanges();
+
+        resourceElement.nativeElement.textContent.should.equal('Current myResource will be replaced');
+        mainMessageElement.nativeElement.textContent.should.equal('myMainMessage');
+        supplementaryElement.nativeElement.textContent.should.equal('mySupplement');
+    });
+
+    it('should dismiss the modal via cross', () => {
+        let crossButton: DebugElement = replaceElement.query(By.css('.modal-exit'));
+
+        crossButton.triggerEventHandler('click', null);
+        mockActiveModal.dismiss.should.have.been.called;
+    });
+
+    it('should dismiss the modal via cancel', () => {
+        let cancelButton: DebugElement = replaceElement.query(By.css('.secondary'));
+
+        cancelButton.triggerEventHandler('click', null);
+        mockActiveModal.dismiss.should.have.been.called;
+    });
+
+    it('should close the modal via ok', () => {
+        let okButton: DebugElement = replaceElement.query(By.css('.primary'));
+
+        okButton.triggerEventHandler('click', null);
+        mockActiveModal.close.should.have.been.calledWith(true);
+    });
 });

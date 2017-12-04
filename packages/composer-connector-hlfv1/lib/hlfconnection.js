@@ -31,11 +31,8 @@ const TransactionID = require('fabric-client/lib/TransactionID');
 const LOG = Logger.getLog('HLFConnection');
 
 const connectorPackageJSON = require('../package.json');
-const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
+const runtimeModulePath = path.resolve(path.dirname(require.resolve('composer-runtime-hlfv1')));
 const runtimePackageJSON = require('composer-runtime-hlfv1/package.json');
-
-// The chaincode path is the portion of the GOPATH after 'src'.
-const chaincodePath = 'composer';
 
 /**
  * Class representing a connection to a business network running on Hyperledger
@@ -309,7 +306,7 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Install a business network connection.
+     * Install the composer runtime chaincode.
      *
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier the business network name
@@ -325,55 +322,18 @@ class HLFConnection extends Connection {
             return Promise.reject(new Error('businessNetworkIdentifier not specified'));
         }
 
-        // Because hfc needs to write a Dockerfile to the chaincode directory, we
-        // must copy the chaincode to a temporary directory. We need to do this
-        // to handle the case where Composer is installed into the global directory
-        // (npm install -g) and is therefore owned by the root user.
-        let tempDirectoryPath;
-        return this.temp.mkdir('composer')
-            .then((tempDirectoryPath_) => {
+        let txId = this.client.newTransactionID();
 
-                // Copy the chaincode from source directory to temporary directory.
-                tempDirectoryPath = tempDirectoryPath_;
-                let sourceDirectoryPath = path.resolve(runtimeModulePath);
-                let targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', chaincodePath);
-                return this.fs.copy(sourceDirectoryPath, targetDirectoryPath, { filter: (path) => { return !/composer-runtime-hlfv1.*node_modules/.test(path); }});
+        const request = {
+            chaincodeType: 'node',
+            chaincodePath: runtimeModulePath,
+            chaincodeVersion: runtimePackageJSON.version,
+            chaincodeId: businessNetworkIdentifier,
+            txId: txId,
+            targets: this.channel.getPeers()
+        };
 
-            })
-            .then(() => {
-                // Update the chaincode source to have the runtime version in it.
-                // Also provide a default poolSize of 8 if not specified in install options.
-                // Also provide a default gcInterval of 5 (seconds) if not specified in install options.
-                const poolSize = installOptions && installOptions.poolSize ? installOptions.poolSize * 1 : 8;
-                const gcInterval = installOptions && installOptions.gcInterval ? installOptions.gcInterval * 1 : 5;
-                let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'constants.go');
-                let targetFileContents = `
-                package main
-                // The version for this chaincode.
-                const version = "${runtimePackageJSON.version}"
-                const PoolSize = ${poolSize}
-                const GCInterval = ${gcInterval}
-                `;
-                return this.fs.outputFile(targetFilePath, targetFileContents);
-
-            })
-            .then(() => {
-                let txId = this.client.newTransactionID();
-
-                // This is evil! I shouldn't need to set GOPATH in a node.js program.
-                process.env.GOPATH = tempDirectoryPath;
-
-                // Submit the install request to the peer
-                const request = {
-                    chaincodePath: chaincodePath,
-                    chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: businessNetworkIdentifier,
-                    txId: txId,
-                    targets: this.channel.getPeers()
-                };
-
-                return this.client.installChaincode(request);
-            })
+        return this.client.installChaincode(request)
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
                 const CCAlreadyInstalledPattern = /chaincode .+ exists/;
@@ -454,7 +414,7 @@ class HLFConnection extends Connection {
                 finalTxId = this.client.newTransactionID();
 
                 const request = {
-                    chaincodePath: chaincodePath,
+                    chaincodePath: runtimeModulePath,
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: businessNetworkIdentifier,
                     txId: finalTxId,
@@ -1075,7 +1035,7 @@ class HLFConnection extends Connection {
 
                 // Submit the upgrade proposal
                 const request = {
-                    chaincodePath: chaincodePath,
+                    chaincodePath: runtimeModulePath,
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: this.businessNetworkIdentifier,
                     txId: txId,

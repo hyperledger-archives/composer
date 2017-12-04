@@ -74,7 +74,6 @@ The Program includes some or all of the following that IBM obtained under the MI
 - underscore.string.js - Copyright (c) 2011 Esa-Matti Suuronen esa-matti@suuronen.org
 - loopback-connector - Copyright (c) IBM Corp. 2014,2016. All Rights Reserved.
 - Github-changes - Copyright (c) 2014 Lalit Kapoor
-- go-duktape -  Copyright (c) 2015 Oleg Lebedev
 - plantuml-encoder - Copyright (C) 2015 by Markus Hedval|l
 - utf8-bytes –
 - async (Node) - Copyright (c) 2010-2017 Caolan McMahon

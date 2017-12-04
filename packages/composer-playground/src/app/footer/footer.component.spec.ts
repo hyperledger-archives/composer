@@ -1,7 +1,6 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { FooterComponent } from './footer.component';
 import { AboutService } from '../services/about.service';
@@ -10,21 +9,50 @@ import { ConfigService } from './../services/config.service';
 import { Config } from './../services/config/configStructure.service';
 
 import * as sinon from 'sinon';
-import * as sap from 'sinon-as-promised';
 
-import * as chai from 'chai';
+import {
+    HttpModule,
+    Response,
+    ResponseOptions,
+    XHRBackend
+} from '@angular/http';
+import { MockBackend } from '@angular/http/testing';
 
-class MockAlertService {
-    public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
-    public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
-}
+const mockResponseAboutService = {
+    name: 'composer-playground',
+    version: '1',
+    dependencies: {
+        'composer-admin': {
+            version: '2'
+        },
+        'composer-client': {
+            version: '3'
+        },
+        'composer-common': {
+            version: '4'
+        }
+    }
+};
+
+const mockResponseConfigService = {
+    webonly: true,
+    title: 'My Title',
+    banner: ['My', 'Banner'],
+    links: {
+        docs: 'My Docs',
+        tutorial: 'My Tutorial',
+        community: 'My Community',
+        github: 'My Github',
+        install: 'My Install',
+        legal: 'My License'
+    }
+};
 
 describe('FooterComponent', () => {
 
     let component: FooterComponent;
     let fixture: ComponentFixture<FooterComponent>;
-    let de: DebugElement;
-    let el: HTMLElement;
+    let links: DebugElement[];
     let mockAboutService;
     let mockConfigService;
     let mockConfig;
@@ -37,84 +65,125 @@ describe('FooterComponent', () => {
         mockConfigService.getConfig.returns(mockConfig);
 
         TestBed.configureTestingModule({
+            imports: [HttpModule],
             declarations: [FooterComponent],
             providers: [
-                {provide: AboutService, useValue: mockAboutService},
-                {provide: AlertService, useClass: MockAlertService},
-                {provide: ConfigService, useValue: mockConfigService}
+                AlertService,
+                AboutService,
+                ConfigService,
+                {provide: XHRBackend, useClass: MockBackend}
             ]
         });
 
         fixture = TestBed.createComponent(FooterComponent);
         component = fixture.componentInstance;
-
-        //  query for the title <h2> by CSS element selector
-        de = fixture.debugElement.query(By.css('a'));
-        el = de.nativeElement;
     });
 
     describe('ngOninit', () => {
-        it('should call getVersions from the AboutService', fakeAsync(() => {
-            mockAboutService.getVersions.resolves({playground: {version: 'v1'}});
-            component.ngOnInit();
-            tick();
-            component['playgroundVersion'].should.equal('v1');
-        }));
+        it('should initialise the footer', fakeAsync(inject([XHRBackend, ConfigService], (mockBackend, configService: ConfigService) => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+                docs: 'My Docs',
+                tutorial: 'My Tutorial',
+                community: 'My Community',
+                github: 'My Github',
+                install: 'My Install',
+                legal: 'My License'
+            };
 
-        it('should send the error to the AlertService', fakeAsync(() => {
-            mockAboutService.getVersions.returns(Promise.reject('detailed reject message'));
-            component.ngOnInit();
+            configService['configLoaded'] = true;
+            configService['config'] = myConfig;
+
+            mockBackend.connections.subscribe((connection) => {
+                connection.mockRespond(new Response(new ResponseOptions({
+                    body: JSON.stringify(mockResponseAboutService)
+                })));
+            });
+
+            fixture.detectChanges();
             tick();
+            fixture.detectChanges();
+            component['playgroundVersion'].should.equal('1');
+            component['config'].should.deep.equal(myConfig);
+
+            fixture.detectChanges();
+
+            tick();
+
+            links = fixture.debugElement.queryAll(By.css('a'));
+
+            links.length.should.equal(5);
+
+            links[0].nativeElement.textContent.should.equal('Legal');
+            links[1].nativeElement.textContent.should.equal('GitHub');
+            links[2].nativeElement.textContent.should.equal('Tutorial');
+            links[3].nativeElement.textContent.should.equal('Docs');
+            links[4].nativeElement.textContent.should.equal('Community');
+        })));
+
+        it('should load config if not already loaded', fakeAsync(inject([XHRBackend, ConfigService], (mockBackend, configService: ConfigService) => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+                docs: 'My Docs',
+                tutorial: 'My Tutorial',
+                community: 'My Community',
+                github: 'My Github',
+                install: 'My Install',
+                legal: 'My License'
+            };
+
+            mockBackend.connections.subscribe((connection) => {
+                connection.mockRespond(new Response(new ResponseOptions({
+                    body: JSON.stringify(mockResponseConfigService)
+                })));
+            });
+
+            fixture.detectChanges();
+            tick();
+            fixture.detectChanges();
+
+            component['config'].should.deep.equal(myConfig);
+        })));
+
+        it('should handle error from about service', fakeAsync(inject([ConfigService, XHRBackend], (configService, mockBackend) => {
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+                docs: 'My Docs',
+                tutorial: 'My Tutorial',
+                community: 'My Community',
+                github: 'My Github',
+                install: 'My Install',
+                legal: 'My License'
+            };
+
+            configService['configLoaded'] = true;
+            configService['config'] = myConfig;
+
             component['alertService'].errorStatus$.subscribe(
                 (message) => {
-                    message.should.equal('detailed reject message');
+                    if (message !== null) {
+                        message.should.equal('error');
+                    }
+                });
+
+            mockBackend.connections.subscribe(
+                (connection) => {
+                    connection.mockError('error');
                 }
             );
-        }));
 
-        it('should set the config using get config if config is loaded', () => {
-            mockAboutService.getVersions.resolves({playground: {version: 'v1'}});
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-
-            mockConfigService.getConfig.returns(myConfig);
-
-            component.ngOnInit();
-
-            component['config'].should.deep.equal(myConfig);
-        });
-
-        it('should set the config using load config if getConfig fails', fakeAsync(() => {
-            mockAboutService.getVersions.resolves({playground: {version: 'v1'}});
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-
-            mockConfigService.getConfig.throws(new Error('error'));
-            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
-
-            component.ngOnInit();
-
+            fixture.detectChanges();
             tick();
-
-            component['config'].should.deep.equal(myConfig);
-        }));
+            fixture.detectChanges();
+        })));
     });
 });
