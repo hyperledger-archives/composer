@@ -7,8 +7,8 @@ url: "https://hyperledger.github.io/composer/"
 
 #For publishing to your own gh-pages branch of the Docs repo this will need to
 #be the sitebaseurl - but the build scripts handle this for you.
-#
-baseurl: "/composer"
+#baseurl: "/composer"
+
 highlighter: rouge
 markdown: redcarpet
 redcarpet:
