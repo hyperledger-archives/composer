@@ -526,11 +526,11 @@ class BusinessNetworkConnection extends EventEmitter {
             .then((registry) => {
                 switch (type) {
                 case 'Transaction':
-                    return new TransactionRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                    return new TransactionRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer(),this);
                 case 'Asset':
-                    return new AssetRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                    return new AssetRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer(),this);
                 case 'Participant':
-                    return new ParticipantRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer());
+                    return new ParticipantRegistry(registry.id, registry.name, this.securityContext, businessNetwork.getModelManager(), businessNetwork.getFactory(), businessNetwork.getSerializer(),this);
                 }
             });
 
