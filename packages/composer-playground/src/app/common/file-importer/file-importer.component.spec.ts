@@ -12,6 +12,7 @@ import { FileImporterComponent } from './file-importer.component';
 describe('FileImporterComponent', () => {
     let component: FileImporterComponent;
     let fixture: ComponentFixture<FileImporterComponent>;
+    let fileImporterElement: DebugElement;
 
     let spyFileAccepted;
     let spyFileRejected;
@@ -27,6 +28,8 @@ describe('FileImporterComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(FileImporterComponent);
         component = fixture.componentInstance;
+        fileImporterElement = fixture.debugElement;
+
         fixture.detectChanges();
 
         spyFileAccepted = sinon.spy(component.fileAccepted, 'emit');
@@ -48,7 +51,11 @@ describe('FileImporterComponent', () => {
                 }
             };
 
-            component.onFileChange(event);
+            fixture.detectChanges();
+
+            let inputElement = fileImporterElement.query(By.css('input'));
+            inputElement.triggerEventHandler('change', event);
+
             spyFileAccepted.should.have.been.called;
         });
 
@@ -64,7 +71,11 @@ describe('FileImporterComponent', () => {
                 }
             };
 
-            component.onFileChange(event);
+            fixture.detectChanges();
+
+            let inputElement = fileImporterElement.query(By.css('input'));
+            inputElement.triggerEventHandler('change', event);
+
             spyFileRejected.should.have.been.calledWith('file SomeFile.bna was too large');
         });
 
@@ -80,7 +91,11 @@ describe('FileImporterComponent', () => {
                 }
             };
 
-            component.onFileChange(event);
+            fixture.detectChanges();
+
+            let inputElement = fileImporterElement.query(By.css('input'));
+            inputElement.triggerEventHandler('change', event);
+
             spyFileRejected.should.have.been.calledWith('file SomeFile.zip has an unsupported file type');
         });
     });

@@ -1,13 +1,4 @@
-class BaseException extends Error {
-   + void constructor(string) 
-}
-class BaseFileException extends BaseException {
-   + void constructor(string,string,string) 
-   + string getFileLocation() 
-   + string getShortMessage() 
-}
 class BusinessNetworkDefinition {
-   + void constructor(String,String,object,String) 
    + String getIdentifier() 
    + BusinessNetworkMetadata getMetadata() 
    + String getName() 
@@ -21,13 +12,12 @@ class BusinessNetworkDefinition {
    + Serializer getSerializer() 
 }
 class BusinessNetworkMetadata {
-   + void constructor(object,String) 
    + String getREADME() 
    + object getPackageJson() 
-   + string getName() 
-   + string getDescription() 
-   + string getVersion() 
-   + string getIdentifier() 
+   + String getName() 
+   + String getDescription() 
+   + String getVersion() 
+   + String getIdentifier() 
 }
 class BusinessNetworkCardStore {
    + String getDefaultCardName(IdCard) 
@@ -37,23 +27,28 @@ class BusinessNetworkCardStore {
    + Promise getAll() 
    + Promise delete(String) 
 }
-class Factory {
-   + void constructor(ModelManager) 
-   + Resource newResource(string,string,string,Object,boolean,string,boolean,boolean) throws TypeNotFoundException
-   + Resource newConcept(string,string,Object,boolean,string,boolean) throws TypeNotFoundException
-   + Relationship newRelationship(string,string,string) throws TypeNotFoundException
-   + Resource newTransaction(string,string,string,Object,string,boolean,boolean) 
-   + Resource newEvent(string,string,string,Object,string,boolean,boolean) 
+class FileSystemCardStore extends BusinessNetworkCardStore {
+   + void constructor(Object,undefined,String) 
+   + void get() 
+   + void put() 
+   + void has() 
+   + void getAll() 
+   + void delete() 
 }
-class FileWallet extends Wallet {
-   + string getHomeDirectory() 
-   + void constructor(Object,string,Object) 
-   + Promise list() 
-   + Promise contains(string) 
-   + Promise get(string) 
-   + Promise add(string,string) 
-   + Promise update(string,string) 
-   + Promise remove(string) 
+class MemoryCardStore extends BusinessNetworkCardStore {
+   + void constructor() 
+   + void get() 
+   + void put() 
+   + void has() 
+   + void getAll() 
+   + void delete() 
+}
+class Factory {
+   + Resource newResource(String,String,String,Object,boolean,String,boolean,boolean) throws TypeNotFoundException
+   + Resource newConcept(String,String,Object,boolean,String,boolean) throws TypeNotFoundException
+   + Relationship newRelationship(String,String,String) throws TypeNotFoundException
+   + Resource newTransaction(String,String,String,Object,String,boolean,boolean) 
+   + Resource newEvent(String,String,String,Object,String,boolean,boolean) 
 }
 class IdCard {
    + void constructor(Object,Object) 
@@ -70,21 +65,121 @@ class IdCard {
    + Promise fromDirectory(String,undefined) 
    + Promise toDirectory(String,undefined) 
 }
-class IllegalModelException extends BaseFileException {
-   + void constructor(String,ModelFile,Object,String,String,String,String) 
-   + string getModelFile() 
+class AssetDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws IllegalModelException
+   + boolean isRelationshipTarget() 
+   + string getSystemType() 
+}
+class ClassDeclaration extends Decorated {
+   + void constructor(ModelFile,string) throws IllegalModelException
+   + ModelFile getModelFile() 
+   + ClassDeclaration _resolveSuperType() 
+   + string getSystemType() 
+   + boolean isAbstract() 
+   + boolean isEnum() 
+   + boolean isConcept() 
+   + boolean isEvent() 
+   + boolean isRelationshipTarget() 
+   + boolean isSystemRelationshipTarget() 
+   + boolean isSystemType() 
+   + boolean isSystemCoreType() 
+   + string getName() 
+   + String getNamespace() 
+   + string getFullyQualifiedName() 
+   + string getIdentifierFieldName() 
+   + Property getOwnProperty(string) 
+   + Property[] getOwnProperties() 
+   + string getSuperType() 
+   + ClassDeclaration getSuperTypeDeclaration() 
+   + ClassDeclaration[] getAssignableClassDeclarations() 
+   + ClassDeclaration[] getAllSuperTypeDeclarations() 
+   + Property getProperty(string) 
+   + Property[] getProperties() 
+   + Property getNestedProperty(string) throws IllegalModelException
+   + String toString() 
+}
+class ConceptDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws IllegalModelException
+   + boolean isConcept() 
+}
+class EnumDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws IllegalModelException
+   + boolean isEnum() 
+   + String toString() 
+}
+class EnumValueDeclaration extends Property {
+   + void constructor(ClassDeclaration,Object) throws IllegalModelException
+}
+class EventDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws InvalidModelException
+   + string getSystemType() 
+   + boolean isEvent() 
+}
+class FunctionDeclaration {
+   + void constructor(ModelManager,string,string,string,string,string,string[],string[],string[],string) throws IllegalModelException
+   + string getFunctionText() 
+   + string getThrows() 
+   + string getLanguage() 
+   + string[] getDecorators() 
+   + string getVisibility() 
+   + string getReturnType() 
+   + string getName() 
+   + string getTransactionDeclarationName() 
+   + string[] getParameterNames() 
+   + string[] getParameterTypes() 
 }
 class Introspector {
    + void constructor(ModelManager) 
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
-class ParseException extends BaseFileException {
-   + void constructor(string,string) 
+class ModelFile {
+   + ModelManager getModelManager() 
+   + string[] getImports() 
+   + boolean isDefined(string) 
+   + ClassDeclaration getLocalType(string) 
+   + AssetDeclaration getAssetDeclaration(string) 
+   + TransactionDeclaration getTransactionDeclaration(string) 
+   + EventDeclaration getEventDeclaration(string) 
+   + ParticipantDeclaration getParticipantDeclaration(string) 
+   + string getNamespace() 
+   + string getName() 
+   + AssetDeclaration[] getAssetDeclarations(Boolean) 
+   + TransactionDeclaration[] getTransactionDeclarations(Boolean) 
+   + EventDeclaration[] getEventDeclarations(Boolean) 
+   + ParticipantDeclaration[] getParticipantDeclarations(Boolean) 
+   + ConceptDeclaration[] getConceptDeclarations(Boolean) 
+   + EnumDeclaration[] getEnumDeclarations(Boolean) 
+   + ClassDeclaration[] getDeclarations(Function,Boolean) 
+   + ClassDeclaration[] getAllDeclarations() 
+   + string getDefinitions() 
+   + boolean isSystemModelFile() 
 }
-class ConsoleLogger {
-   + string format(string,string,undefined) 
-   + void log(string,string,string,undefined) 
+class ParticipantDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws IllegalModelException
+   + boolean isRelationshipTarget() 
+   + string getSystemType() 
+}
+class Property extends Decorated {
+   + void constructor(ClassDeclaration,Object) throws IllegalModelException
+   + ClassDeclaration getParent() 
+   + string getName() 
+   + string getType() 
+   + boolean isOptional() 
+   + string getFullyQualifiedTypeName() 
+   + string getFullyQualifiedName() 
+   + string getNamespace() 
+   + boolean isArray() 
+   + boolean isTypeEnum() 
+   + boolean isPrimitive() 
+}
+class RelationshipDeclaration extends Property {
+   + void constructor(ClassDeclaration,Object) throws IllegalModelException
+   + String toString() 
+}
+class TransactionDeclaration extends ClassDeclaration {
+   + void constructor(ModelFile,Object) throws IllegalModelException
+   + string getSystemType() 
 }
 class Concept extends Typed {
    + boolean isConcept() 
@@ -125,29 +220,26 @@ class ValidatedResource extends Resource {
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
 }
-class InvalidQueryException extends BaseFileException {
-   + void constructor(String,QueryFile,Object,String,String,String,String) 
-   + QueryFile getQueryFile() 
-}
-class SecurityContext {
-   + void constructor(Connection,string) 
-   + Connection getConnection() 
-   + string getUser() 
-}
-class SecurityException extends BaseException {
-   + void constructor(string) 
+class ModelManager {
+   + void validateModelFile(string,string) throws IllegalModelException
+   + Object addModelFile(string,string) throws IllegalModelException
+   + Object updateModelFile(string,string) throws IllegalModelException
+   + void deleteModelFile(string) 
+   + Object[] addModelFiles(string[],string[]) 
+   + void clearModelFiles() 
+   + string[] getNamespaces() 
+   + ClassDeclaration[] getSystemTypes() 
+   + AssetDeclaration[] getAssetDeclarations(Boolean) 
+   + TransactionDeclaration[] getTransactionDeclarations(Boolean) 
+   + EventDeclaration[] getEventDeclarations(Boolean) 
+   + ParticipantDeclaration[] getParticipantDeclarations(Boolean) 
+   + EnumDeclaration[] getEnumDeclarations(Boolean) 
+   + ConceptDeclaration[] getConceptDeclarations(Boolean) 
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
    + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean,boolean) 
-}
-class ValidationException extends BaseException {
-   + void constructor(string) 
-}
-class TypeNotFoundException extends BaseException {
-   + void constructor(String,String) 
-   + string getTypeName() 
 }
 class Wallet {
    + Wallet getWallet() 

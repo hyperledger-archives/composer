@@ -33,15 +33,15 @@ A BusinessNetworkConnection instance is created and then used to connect to a ru
 
 ```javascript
 this.bizNetworkConnection = new BusinessNetworkConnection();
-this.CONNECTION_PROFILE_NAME = config.get('connectionProfile');
+this.cardName = config.get('cardName');
 this.businessNetworkIdentifier = config.get('businessNetworkIdentifier');
 ```
 
-The first {{site.data.conrefs.composer_full}} API call that we are going to make here, is the connect() API, to establish the connection to the {{site.data.conrefs.composer_full}} runtime on the Hyperledger Fabric.
+The first {{site.data.conrefs.composer_full}} API call that we are going to make here, is the connect() API, to establish the connection to the {{site.data.conrefs.composer_full}} runtime on the {{site.data.conrefs.hlf_full}}.
 This API returns a Promise to the businessNetworkDefinition if successful:
 
 ```javascript
-this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNetworkIdentifier, participantId, participantPwd)
+this.bizNetworkConnection.connect(this.cardName)
 .then((result) => {
   this.businessNetworkDefinition = result;
 });

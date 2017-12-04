@@ -21,9 +21,9 @@ const ClassDeclaration = require('./classdeclaration');
  * an Concept. It extends ClassDeclaration which manages a set of
  * fields, a super-type and the specification of an
  * identifying field.
- * @private
+ *
  * @extends ClassDeclaration
- * @see See  {@link  ClassDeclaration}
+ * @see {@link ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

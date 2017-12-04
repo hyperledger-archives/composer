@@ -32,16 +32,16 @@
             </svg>
         </button>
     </section>
-    <section *ngIf="!identity" class="sample-section">
+    <section *ngIf="showSpecial" class="sample-section">
         <div class="sample-icon">
             <svg class="ibm-icon vertical-top">
                 <use xlink:href="#icon-konnichiwa"></use>
             </svg>
         </div>
         <h2>Hello, Composer!</h2>
-        <p>Get started with the basic-sample-network, or view our <a
-            href="https://hyperledger.github.io/composer/tutorials/playground-tutorial.html" target="_blank">Playground
-            tutorial</a></p>
+        <p>Get started with the basic-sample-network<span [hidden]="link === ''">, or view our <a
+            href="{{ link }}" target="_blank">Playground
+            tutorial</a></span></p>
     </section>
     <section *ngIf="preview" class="connection-profile-details">
         <h3>Connection Profile</h3>
@@ -56,7 +56,7 @@
         <p [class.none]="!identity.getBusinessNetworkName()" title="{{identity.getBusinessNetworkName() || 'none'}}">
             {{identity.getBusinessNetworkName() || 'none'}}</p>
     </section>
-    <section *ngIf="!identity" class="business-network-details">
+    <section *ngIf="showSpecial" class="business-network-details">
         <h3>Business Network</h3>
         <p title="basic-sample-network">basic-sample-network</p>
     </section>
@@ -69,7 +69,7 @@
                 <use xlink:href="#icon-forward_16"></use>
             </svg>
         </button>
-        <button *ngIf="!identity" type="button" class="action connect"
+        <button *ngIf="showSpecial" type="button" class="action connect"
                 (click)="deploySample()">
             <span>Get Started</span>
             <svg class="ibm-icon" aria-hidden="true">

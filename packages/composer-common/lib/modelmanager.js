@@ -24,21 +24,23 @@ const LOG = require('./log/logger').getLog('ModelManager');
 const SYSTEM_MODELS = require('./systemmodel');
 
 /**
- * <p>
+ * Manages the Composer model files.
+ *
+ *
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
  * in a set of Composer files. The contents of these files are managed
  * by the {@link ModelManager}. Each Composer file has a single namespace and contains
  * a set of asset, transaction and participant type definitions.
- * </p>
- * <p>
+ *
+ *
  * Composer applications load their Composer files and then call the {@link ModelManager#addModelFile addModelFile}
  * method to register the Composer file(s) with the ModelManager. The ModelManager
  * parses the text of the Composer file and will make all defined types available
  * to other Composer services, such as the {@link Serializer} (to convert instances to/from JSON)
  * and {@link Factory} (to create instances).
- * </p>
- * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="height:100%;"/></a></p>
- * @private
+ *
+ *
+ *
  * @class
  * @memberof module:composer-common
  */
@@ -49,6 +51,7 @@ class ModelManager {
      * <strong>Note: Only to be called by framework code. Applications should
      * retrieve instances from {@link BusinessNetworkDefinition}</strong>
      * </p>
+     * @private
      */
     constructor() {
         LOG.entry('constructor');

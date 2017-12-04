@@ -34,10 +34,6 @@ module.exports = generators.Base.extend({
             message: 'Please select the type of project:',
             choices: [
                 {
-                    name: 'CLI',
-                    value: 'CLI'
-                },
-                {
                     name: 'Angular',
                     value: 'Angular'
                 },
@@ -65,10 +61,7 @@ module.exports = generators.Base.extend({
     },
 
     configuring: function() {
-        if(this.generatorType === 'CLI'){
-            console.log('You can run this generator using: \'yo hyperledger-composer:cli\'');
-            this.composeWith(require.resolve('../cli'));
-        } else if(this.generatorType === 'Angular'){
+        if(this.generatorType === 'Angular'){
             console.log('You can run this generator using: \'yo hyperledger-composer:angular\'');
             this.composeWith(require.resolve('../angular'));
         } else if (this.generatorType === 'businessnetwork') {

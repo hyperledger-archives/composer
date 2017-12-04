@@ -1,15 +1,17 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.15.2",
+  "version": "0.17.0",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
+    "start_verdaccio": "verdaccio -l 0.0.0.0:4873 -c ./scripts/config.yaml >/dev/null &",
+    "stop_verdaccio": "pkill verdaccio | true",
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test-inner": "cucumber-js",
-    "int-test": "npm run pretest && npm run lint && node ./scripts/npm_serve && npm run test-inner"
+    "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio"
   },
   "repository": {
     "type": "git",
@@ -66,10 +68,10 @@
   "dependencies": {
     "browserfs": "1.1.0",
     "chai": "3.5.0",
-    "composer-admin": "0.15.2",
-    "composer-cli": "0.15.2",
-    "composer-client": "0.15.2",
-    "composer-common": "0.15.2",
+    "composer-admin": "0.17.0",
+    "composer-cli": "0.17.0",
+    "composer-client": "0.17.0",
+    "composer-common": "0.17.0",
     "thenify-all": "1.6.0",
     "verdaccio": "2.6.4"
   }

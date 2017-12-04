@@ -58,6 +58,10 @@ function createServer (port, testMode) {
     });
 
     server.listen(port);
+    // Save the port back into the app. If the port was 0, it will now have
+    // been set to a dynamically assigned port.
+    port = server.address().port;
+    app.set('port', port);
     LOG.info(method, `Playground API started on port ${port}`);
     if(testMode) {
         LOG.info(method, 'Playground API started in test mode');

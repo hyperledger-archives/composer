@@ -70,7 +70,7 @@ describe('AclFile', () => {
         it('should throw a ParseException on invalid input', () => {
             (() => {
                 new AclFile('test.acl', modelManager, invalidAcl);
-            }).should.throw(/Line 5/);
+            }).should.throw(/File test.acl line 5/);
         });
 
         it('should throw an error if it does not have a location', () => {

@@ -16,7 +16,6 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const prompt = require('prompt');
@@ -167,7 +166,7 @@ describe('composer transaction cmdutils unit tests', () => {
         it('should parse a single network admin', () => {
             const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1'], ['admin1.pem']);
             result.should.deep.equal([{
-                name: 'admin1',
+                userName: 'admin1',
                 certificate: pem1
             }]);
         });
@@ -175,13 +174,13 @@ describe('composer transaction cmdutils unit tests', () => {
         it('should parse multiple network admins', () => {
             const result = CmdUtil.parseNetworkAdminsWithCertificateFiles(['admin1', 'admin2', 'admin3'], ['admin1.pem', 'admin2.pem', 'admin3.pem']);
             result.should.deep.equal([{
-                name: 'admin1',
+                userName: 'admin1',
                 certificate: pem1
             }, {
-                name: 'admin2',
+                userName: 'admin2',
                 certificate: pem2
             }, {
-                name: 'admin3',
+                userName: 'admin3',
                 certificate: pem3
             }]);
         });
@@ -193,22 +192,22 @@ describe('composer transaction cmdutils unit tests', () => {
         it('should parse a single network admin', () => {
             const result = CmdUtil.parseNetworkAdminsWithEnrollSecrets(['admin1'], [true]);
             result.should.deep.equal([{
-                name: 'admin1',
-                secret: true
+                userName: 'admin1',
+                enrollmentSecret: true
             }]);
         });
 
         it('should parse multiple network admins', () => {
             const result = CmdUtil.parseNetworkAdminsWithEnrollSecrets(['admin1', 'admin2', 'admin3'], [true, true, true]);
             result.should.deep.equal([{
-                name: 'admin1',
-                secret: true
+                userName: 'admin1',
+                enrollmentSecret: true
             }, {
-                name: 'admin2',
-                secret: true
+                userName: 'admin2',
+                enrollmentSecret: true
             }, {
-                name: 'admin3',
-                secret: true
+                userName: 'admin3',
+                enrollmentSecret: true
             }]);
         });
 
@@ -237,7 +236,7 @@ describe('composer transaction cmdutils unit tests', () => {
                 networkAdminCertificateFile: ['admin1.pem']
             });
             result.should.deep.equal([{
-                name: 'admin1',
+                userName: 'admin1',
                 certificate: pem1
             }]);
         });
@@ -248,8 +247,8 @@ describe('composer transaction cmdutils unit tests', () => {
                 networkAdminEnrollSecret: [true]
             });
             result.should.deep.equal([{
-                name: 'admin1',
-                secret: true
+                userName: 'admin1',
+                enrollmentSecret: true
             }]);
         });
 
@@ -271,183 +270,52 @@ describe('composer transaction cmdutils unit tests', () => {
             }).should.throw(/You must specify certificate files or enrollment secrets for all network administrators/);
         });
 
-    });
-
-    describe('#buildBootstrapTransactions', () => {
-
-        const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
-        const sanitize = (result) => {
-            result.forEach((tx) => {
-                delete tx.timestamp;
-                delete tx.transactionId;
-                return tx;
-            });
-        };
-
-        it('should handle no network admins', () => {
-            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {});
-            sanitize(result);
-            result.should.deep.equal([]);
-        });
-
-        it('should handle a single network admin with a certificate', () => {
-            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+        it('should handle an empty array of file names', () => {
+            const result = CmdUtil.parseNetworkAdmins({
                 networkAdmin: ['admin1'],
-                networkAdminCertificateFile: ['admin1.pem']
+                networkAdminEnrollSecret: [true],
+                file: []
             });
-            sanitize(result);
-            result.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.BindIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                    certificate: pem1
-                }
-            ]);
+            result.should.deep.equal([{
+                userName: 'admin1',
+                enrollmentSecret: true
+            }]);
         });
 
-        it('should handle a single network admin with an enrollment secret', () => {
-            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
+        it('should throw if not enough file names', () => {
+            (() => {
+                CmdUtil.parseNetworkAdmins({
+                    networkAdmin: ['admin1', 'admin2', 'admin3'],
+                    networkAdminEnrollSecret: [true, true, true],
+                    file: 'file1.card'
+                });
+            }).should.throw(/If you specify a network administrators card file name, you must specify one for all network administrators/);
+        });
+
+        it('should handle secrets amd file names', () => {
+            const result = CmdUtil.parseNetworkAdmins({
                 networkAdmin: ['admin1'],
-                networkAdminEnrollSecret: [true]
+                networkAdminEnrollSecret: [true],
+                file: ['admin1-doggo.card']
             });
-            sanitize(result);
-            result.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.IssueIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                    identityName: 'admin1'
-                }
-            ]);
+            result.should.deep.equal([{
+                userName: 'admin1',
+                enrollmentSecret: true,
+                file: 'admin1-doggo.card'
+            }]);
         });
 
-        it('should handle multiple network admins with certificates', () => {
-            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
-                networkAdmin: ['admin1', 'admin2', 'admin3'],
-                networkAdminCertificateFile: ['admin1.pem', 'admin2.pem', 'admin3.pem']
+        it('should handle certificates amd file names', () => {
+            const result = CmdUtil.parseNetworkAdmins({
+                networkAdmin: ['admin1'],
+                networkAdminCertificateFile: ['admin1.pem'],
+                file: ['admin1-doggo.card']
             });
-            sanitize(result);
-            result.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin2'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin3'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.BindIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin1\n-----END CERTIFICATE-----\n'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.BindIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin2',
-                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin2\n-----END CERTIFICATE-----\n'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.BindIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin3',
-                    certificate: '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n'
-                }
-            ]);
-        });
-
-        it('should handle multiple network admins with enrollment secrets', () => {
-            const result = CmdUtil.buildBootstrapTransactions(businessNetworkDefinition, {
-                networkAdmin: ['admin1', 'admin2', 'admin3'],
-                networkAdminEnrollSecret: [true, true, true]
-            });
-            sanitize(result);
-            result.should.deep.equal([
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin1'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin2'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.AddParticipant',
-                    resources: [
-                        {
-                            $class: 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId: 'admin3'
-                        }
-                    ],
-                    targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.IssueIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin1',
-                    identityName: 'admin1'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.IssueIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin2',
-                    identityName: 'admin2'
-                },
-                {
-                    $class: 'org.hyperledger.composer.system.IssueIdentity',
-                    participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin3',
-                    identityName: 'admin3'
-                }
-            ]);
+            result.should.deep.equal([{
+                userName: 'admin1',
+                certificate: pem1,
+                file: 'admin1-doggo.card'
+            }]);
         });
 
     });

@@ -18,6 +18,7 @@ const util = require('util');
 
 /**
  * A functional logger implementation that simply writes to the console.
+ * @private
  */
 class ConsoleLogger {
 

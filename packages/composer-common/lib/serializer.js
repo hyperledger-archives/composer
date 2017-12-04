@@ -29,7 +29,7 @@ const JSONWriter = require('./codegen/jsonwriter');
 /**
  * Serialize Resources instances to/from various formats for long-term storage
  * (e.g. on the blockchain).
- * <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="height:100%;"/></a></p>
+ *
  * @class
  * @memberof module:composer-common
  */

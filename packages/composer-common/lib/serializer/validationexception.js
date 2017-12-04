@@ -22,6 +22,7 @@ const BaseException = require('../baseexception');
  * @see See {@link  BaseException}
  * @class
  * @memberof module:composer-common
+ * @private
  */
 class ValidationException extends BaseException {
 

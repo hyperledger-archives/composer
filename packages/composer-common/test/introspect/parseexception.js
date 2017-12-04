@@ -31,14 +31,24 @@ describe('ParseException', function () {
             exc.should.be.an.instanceOf(BaseFileException);
         });
 
-        it('should cope without an filelocation', function () {
+        it('should cope without an file location or file name', function () {
             let exc = new ParseException('message', null);
             exc.message.should.not.be.null;
         });
 
-        it('should have a message', function () {
+        it('should have a message with a file location', function () {
             let exc = new ParseException('message', fileLocation);
             exc.message.should.match(/message Line 1 column 1/);
+        });
+
+        it('should have a message with a file name', function () {
+            let exc = new ParseException('message', null, 'foo.cto');
+            exc.message.should.match(/message File foo.cto/);
+        });
+
+        it('should have a message with a file location and file name', function () {
+            let exc = new ParseException('message', fileLocation, 'foo.cto');
+            exc.message.should.match(/message File foo.cto line 1 column 1/);
         });
 
         it('should have a stack trace', function () {

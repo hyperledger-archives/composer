@@ -8,7 +8,7 @@ import { ErrorComponent } from './error/error.component';
 import { ReplaceComponent } from './replace-confirm/replace-confirm.component';
 import { SuccessComponent } from './success/success.component';
 import { AlertService } from './alert.service';
-import { TestModule } from './../test/test.module';
+import { TestModule } from '../test/test.module';
 
 @NgModule({
     imports: [CommonModule, NgbModule, TestModule],

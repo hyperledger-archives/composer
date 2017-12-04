@@ -127,7 +127,7 @@ class Composer {
                 return this.adminConnection.start(this.businessNetworkDefinition, {
                     networkAdmins : [{
                         userName : 'admin',
-                        secret : 'adminpw'
+                        enrollmentSecret  : 'adminpw'
                     }]
                 });
             })

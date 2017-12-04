@@ -34,9 +34,21 @@ class BusinessNetworkConnection extends EventEmitter {
 }
 class Historian extends Registry {
    + Promise getHistorian(SecurityContext,ModelManager,Factory,Serializer) 
+   + void add(Resource,string) 
+   + void addAll(Resource[]) 
+   + void update(Resource) 
+   + void updateAll(Resource[]) 
+   + void remove() 
+   + void removeAll() 
 }
 class IdentityRegistry extends Registry {
    + Promise getIdentityRegistry(SecurityContext,ModelManager,Factory,Serializer) 
+   + void add(Resource,string) 
+   + void addAll(Resource[]) 
+   + void update(Resource) 
+   + void updateAll(Resource[]) 
+   + void remove() 
+   + void removeAll() 
 }
 class ParticipantRegistry extends Registry {
    ~ Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer,BusinessNetworkConnection,Boolean) 

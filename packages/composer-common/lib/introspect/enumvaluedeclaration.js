@@ -18,7 +18,7 @@ const Property = require('./property');
 
 /**
  * Class representing a value from a set of enumerated values
- * @private
+ *
  * @extends Property
  * @see See {@link Property}
  * @class

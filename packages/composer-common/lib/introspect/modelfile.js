@@ -29,7 +29,7 @@ const Globalize = require('../globalize');
 /**
  * Class representing a Model File. A Model File contains a single namespace
  * and a set of model elements: assets, transactions etc.
- * @private
+ *
  * @class
  * @memberof module:composer-common
  */
@@ -38,7 +38,7 @@ class ModelFile {
     /**
      * Create a ModelFile. This should only be called by framework code.
      * Use the ModelManager to manage ModelFiles.
-     *
+     * @private
      * @param {ModelManager} modelManager - the ModelManager that manages this
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
@@ -67,7 +67,7 @@ class ModelFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException(err.message, err.location);
+                throw new ParseException(err.message, err.location, fileName);
             }
             else {
                 throw err;

@@ -20,7 +20,7 @@ This means that the business network cannot distinguish between different client
 
 The REST server can be configured to multiple user mode. Multiple user mode permits clients of the REST server to provide their own Blockchain identities for digitally signing transactions. This enables the business network to differentiate between different clients of the REST server.
 
-Multiple user mode requires that REST API authentication is enabled, and will automatically enable REST API authentication if it is not explicitly specified. You must select and configure a Passport strategy for authenticating users. REST API authentication is required so that clients can be identified.
+Multiple user mode requires that [REST API authentication](./enabling-rest-authentication.html) is enabled, and will automatically enable REST API authentication if it is not explicitly specified. You must select and configure a Passport strategy for authenticating users. REST API authentication is required so that clients can be identified.
 
 Once a client has authenticated to the REST API, that client can add Blockchain identities to a wallet. The wallet is private to that client, and is not accessible to other clients. When a client makes a request to the REST server, a Blockchain identity in the clients wallet is used to digitally sign all transactions made by that client.
 
@@ -49,11 +49,13 @@ First, you must issue a Blockchain identity to a participant in the business net
 Follow these steps to add a business network card to the wallet:
 
 1. Navigate to the REST API explorer at http://localhost:3000/explorer/, and then navigate to the wallet APIs by expanding the **Wallet** category.
+
 2. Check that the wallet does not contain any business network cards by calling the `GET /wallet` operation. The response from the operation should be:
 
     ```json
     []
     ```
+
 3. Import the business network card into the wallet by calling the `POST /wallet/import` operation. You must specify the business network card file `alice1@my-network.card` by clicking the **Choose File** button. The response from the operation should be:
 
     ```
@@ -61,6 +63,7 @@ Follow these steps to add a business network card to the wallet:
     ```
 
     The business network card `alice1@my-network` has now been imported into the wallet.
+
 4. Check that the wallet does contain the business network card `alice1@my-network` by calling the `GET /wallet` operation. The response from the operation should be:
 
     ```json

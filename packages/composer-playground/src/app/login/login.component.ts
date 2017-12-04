@@ -7,6 +7,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
+import { Config } from '../services/config/configStructure.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
@@ -15,6 +16,7 @@ import { IdCard } from 'composer-common';
 
 import { saveAs } from 'file-saver';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { AdminService } from '../services/admin.service';
 
 @Component({
     selector: 'app-login',
@@ -38,6 +40,8 @@ export class LoginComponent implements OnInit {
     private showSubScreen: boolean = false;
     private showCredentials: boolean = true;
 
+    private config = new Config();
+
     constructor(private router: Router,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
@@ -46,7 +50,8 @@ export class LoginComponent implements OnInit {
                 private drawerService: DrawerService,
                 private alertService: AlertService,
                 private configService: ConfigService,
-                private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+                private sampleBusinessNetworkService: SampleBusinessNetworkService,
+                private adminService: AdminService) {
 
     }
 
@@ -54,7 +59,7 @@ export class LoginComponent implements OnInit {
         return this.initializationService.initialize()
             .then(() => {
                 this.usingLocally = !this.configService.isWebOnly();
-
+                this.config = this.configService.getConfig();
                 return this.loadIdentityCards();
             });
     }
@@ -96,7 +101,6 @@ export class LoginComponent implements OnInit {
                 cardRefs.sort(this.sortIdCards.bind(this));
             });
 
-            this.idCardRefs = newCardRefs;
             // sort connection profile names and make sure there is always
             // a web connection profile at the start, even when there are
             // no identity cards
@@ -116,8 +120,9 @@ export class LoginComponent implements OnInit {
                     return 1;
                 }
             });
-            unsortedConnectionProfiles.unshift('web-$default');
+            unsortedConnectionProfiles.push('web-$default');
             this.connectionProfileRefs = unsortedConnectionProfiles;
+            this.idCardRefs = newCardRefs;
 
         }).catch((error) => {
             this.alertService.errorStatus$.next(error);
@@ -158,6 +163,9 @@ export class LoginComponent implements OnInit {
             })
             .then((businessNetworkDefinition) => {
                 return this.sampleBusinessNetworkService.deployBusinessNetwork(businessNetworkDefinition, 'playgroundSample@basic-sample-network', 'my-basic-sample', 'The Composer basic sample network', null, null, null);
+            })
+            .then(() => {
+                return this.loadIdentityCards(true);
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
@@ -265,7 +273,8 @@ export class LoginComponent implements OnInit {
     }
 
     removeIdentity(cardRef): void {
-        let userId: string = this.idCards.get(cardRef).getUserName();
+        let card = this.idCards.get(cardRef);
+        let userId: string = card.getUserName();
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Remove ID Card';
         confirmModalRef.componentInstance.fileName = userId;
@@ -277,15 +286,29 @@ export class LoginComponent implements OnInit {
         confirmModalRef.result
             .then((result) => {
                 if (result) {
-                    this.identityCardService.deleteIdentityCard(cardRef)
-                        .then(() => {
-                            this.alertService.successStatus$.next({
-                                title: 'ID Card Removed',
-                                text: 'The ID card was successfully removed from My Wallet.',
-                                icon: '#icon-bin_icon'
+                    let deletePromise: Promise<void>;
+                    let cards = this.identityCardService.getAllCardsForBusinessNetwork(card.getBusinessNetworkName(), this.identityCardService.getQualifiedProfileName(card.getConnectionProfile()));
+                    if (card.getConnectionProfile().type === 'web' && cards.size === 1) {
+                           deletePromise = this.adminService.connect(cardRef, card, true)
+                            .then(() => {
+                                return this.adminService.undeploy(card.getBusinessNetworkName());
                             });
+                    } else {
+                        deletePromise = Promise.resolve();
+                    }
 
-                            return this.loadIdentityCards();
+                    return deletePromise
+                        .then(() => {
+                            return this.identityCardService.deleteIdentityCard(cardRef)
+                                .then(() => {
+                                    this.alertService.successStatus$.next({
+                                        title: 'ID Card Removed',
+                                        text: 'The ID card was successfully removed from My Wallet.',
+                                        icon: '#icon-bin_icon'
+                                    });
+
+                                    return this.loadIdentityCards();
+                                });
                         })
                         .catch((error) => {
                             this.alertService.errorStatus$.next(error);

@@ -16,6 +16,9 @@
 
 /**
  * Manages persistence of business network cards.
+ * Applications would not work with this abstract class directly, but with one of the subclass
+ * {@link FileSystemCardStore} or {@link MemoryCardStore}.  The File system card store is the default for
+ * both Admin and Business Network Connections
  *
  * @abstract
  * @class

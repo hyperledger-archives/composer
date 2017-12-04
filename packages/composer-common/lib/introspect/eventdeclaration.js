@@ -20,8 +20,7 @@ const ModelUtil = require('../modelutil');
 
 /** Class representing the definition of an Event.
  * @extends ClassDeclaration
- * @see See  {@link  ClassDeclaration}
- * @private
+ * @see See  {@link ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

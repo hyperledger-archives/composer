@@ -18,13 +18,13 @@ const Logger = require('./log/logger');
 const LOG = Logger.getLog('BusinessNetworkMetadata');
 
 /**
- * <p>
+ *
  * Defines the metadata for a BusinessNeworkDefinition. This includes:
- * <ul>
- *   <li>package.json</li>
- *   <li>README.md (optional)</li>
- * </ul>
- * </p>
+ *
+ *  - package.json
+ *  - README.md (optional)
+ *
+ * **Applications should retrieve instances from {@link BusinessNetworkDefinition}**
  * @class
  * @memberof module:composer-common
  */
@@ -38,6 +38,7 @@ class BusinessNetworkMetadata {
      * </p>
      * @param {object} packageJson  - the JS object for package.json (required)
      * @param {String} readme  - the README.md for the business network (may be null)
+     * @private
      */
     constructor(packageJson, readme) {
         const method = 'constructor';
@@ -66,7 +67,7 @@ class BusinessNetworkMetadata {
      * check to see if it is a valid name. for some reason regex is not working when this executes
      * inside the chaincode runtime, which is why regex hasn't been used.
      *
-     * @param {string} name the business network name to check
+     * @param {String} name the business network name to check
      * @returns {boolean} true if valid, false otherwise
      *
      * @memberOf BusinessNetworkMetadata
@@ -102,7 +103,7 @@ class BusinessNetworkMetadata {
 
     /**
      * Returns the name for this business network.
-     * @return {string} the name of the business network
+     * @return {String} the name of the business network
      */
     getName() {
         return this.packageJson.name;
@@ -110,7 +111,7 @@ class BusinessNetworkMetadata {
 
     /**
      * Returns the description for this business network.
-     * @return {string} the description of the business network
+     * @return {String} the description of the business network
      */
     getDescription() {
         return this.packageJson.description;
@@ -118,15 +119,15 @@ class BusinessNetworkMetadata {
 
     /**
      * Returns the version for this business network.
-     * @return {string} the description of the business network
+     * @return {String} the description of the business network
      */
     getVersion() {
         return this.packageJson.version;
     }
 
     /**
-     * Returns the identifier for this business network, formed from name@version.
-     * @return {string} the identifier of the business network
+     * Returns the identifier for this business network. Formed from name@version.
+     * @return {String} the identifier of the business network
      */
     getIdentifier() {
         return this.packageJson.name + '@' + this.packageJson.version;

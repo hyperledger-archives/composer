@@ -52,6 +52,6 @@ Feature: Cli steps
             | ../tmp/basic-sample-network.bna |
         When I run the following CLI command
             """
-            composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminSecret adminpw --archiveFile ./tmp/basic-sample-network.bna --file networkadmin
+            composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ./tmp/basic-sample-network.bna --file networkadmin
             """
         Then The stdout information should include text matching /Command succeeded/

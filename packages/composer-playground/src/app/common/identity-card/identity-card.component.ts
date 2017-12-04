@@ -13,6 +13,9 @@ import { IdCard } from 'composer-common';
 export class IdentityCardComponent {
 
     @Input()
+    link: String;
+
+    @Input()
     identity: IdCard;
 
     @Input()
@@ -26,6 +29,9 @@ export class IdentityCardComponent {
 
     @Input()
     indestructible: boolean = false;
+
+    @Input()
+    showSpecial: boolean = false;
 
     @Output()
     onConnect: EventEmitter<string> = new EventEmitter<string>();

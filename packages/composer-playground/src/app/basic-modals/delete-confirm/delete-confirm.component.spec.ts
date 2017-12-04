@@ -2,30 +2,47 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { DebugElement, Component } from '@angular/core';
 import { DeleteComponent } from './delete-confirm.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { EditorFile } from '../../services/editor-file';
 
 import * as sinon from 'sinon';
-import * as chai from 'chai';
 
-let should = chai.should();
+@Component({
+    template: `
+        <delete-confirm [deleteFile]="deleteFile" [fileType]="fileType" [fileName]="fileName" [action]="action"
+                 [headerMessage]="headerMessage" [deleteMessage]="deleteMessage"
+                 [confirmButtonText]="confirmButtonText" [deleteFrom]="deleteFrom"></delete-confirm>`
+})
+class TestHostComponent {
+    deleteFile: any;
+    fileType: string = null;
+    fileName: string = null;
+    action: string = null;
+    headerMessage: string = null;
+    deleteMessage: string = null;
+    confirmButtonText: string = null;
+}
 
 describe('DeleteComponent', () => {
-    let component: DeleteComponent;
-    let fixture: ComponentFixture<DeleteComponent>;
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
 
+    let deleteElement: DebugElement;
     let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [DeleteComponent],
-            providers: [ {provide: NgbActiveModal, useValue: mockActiveModal} ]
+            declarations: [DeleteComponent, TestHostComponent],
+            providers: [{provide: NgbActiveModal, useValue: mockActiveModal}]
         });
-        fixture = TestBed.createComponent(DeleteComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
+
+        deleteElement = fixture.debugElement.query(By.css('delete-confirm'));
     });
 
     it('should create', () => {
@@ -33,47 +50,135 @@ describe('DeleteComponent', () => {
     });
 
     describe('ngOnInit', () => {
+        let headerMessageElement: DebugElement;
+        let informationElement: DebugElement;
+        let deleteMessageElement: DebugElement;
+        let okButtonElement: DebugElement;
 
-        it('should initialise model file parameters', fakeAsync( () => {
-            let testItem = { model: true, displayID: 'test_name' };
-            component['deleteFile'] = testItem;
-            component.ngOnInit();
+        beforeEach(() => {
+            headerMessageElement = deleteElement.query(By.css('h1'));
+            informationElement = deleteElement.queryAll(By.css('p'))[0];
+            deleteMessageElement = deleteElement.queryAll(By.css('p'))[1];
+            okButtonElement = deleteElement.query(By.css('button.delete'));
+        });
 
-            tick();
+        it('should initialise model file parameters', () => {
+            let editorFile: EditorFile = new EditorFile('myID', 'test_name', 'myContent', 'model');
 
-            component['fileName'].should.equal('test_name');
-            component['fileType'].should.equal('Model File');
+            component['deleteFile'] = editorFile;
+            component['headerMessage'] = 'myHeaderMessage';
+            component['deleteMessage'] = 'myDeleteMessage';
+
+            fixture.detectChanges();
+
+            headerMessageElement.nativeElement.textContent.should.equal('myHeaderMessage');
+            informationElement.nativeElement.textContent.should.equal('You are about to remove the Model File test_name.');
+            deleteMessageElement.nativeElement.textContent.should.equal('myDeleteMessage');
+            okButtonElement.nativeElement.textContent.should.equal('Delete File');
+        });
+
+        it('should initialise script file parameters', () => {
+            let editorFile: EditorFile = new EditorFile('myID', 'test_name', 'myContent', 'script');
+
+            component['deleteFile'] = editorFile;
+            component['headerMessage'] = 'myHeaderMessage';
+            component['deleteMessage'] = 'myDeleteMessage';
+
+            fixture.detectChanges();
+
+            headerMessageElement.nativeElement.textContent.should.equal('myHeaderMessage');
+            informationElement.nativeElement.textContent.should.equal('You are about to remove the Script File test_name.');
+            deleteMessageElement.nativeElement.textContent.should.equal('myDeleteMessage');
+            okButtonElement.nativeElement.textContent.should.equal('Delete File');
+        });
+
+        it('should initialise unknown file parameters', () => {
+            let editorFile: EditorFile = new EditorFile('myID', 'test_name', 'myContent', 'random');
+
+            component['deleteFile'] = editorFile;
+            component['headerMessage'] = 'myHeaderMessage';
+            component['deleteMessage'] = 'myDeleteMessage';
+
+            fixture.detectChanges();
+
+            headerMessageElement.nativeElement.textContent.should.equal('myHeaderMessage');
+            informationElement.nativeElement.textContent.should.equal('You are about to remove the File test_name.');
+            deleteMessageElement.nativeElement.textContent.should.equal('myDeleteMessage');
+            okButtonElement.nativeElement.textContent.should.equal('Delete File');
+        });
+
+        it('should not initialise file name if provided', () => {
+            component['headerMessage'] = 'myHeaderMessage';
+            component['deleteMessage'] = 'myDeleteMessage';
+            component['fileName'] = 'myFileName';
+            component['fileType'] = 'myFileType';
+
+            fixture.detectChanges();
+
+            headerMessageElement.nativeElement.textContent.should.equal('myHeaderMessage');
+            informationElement.nativeElement.textContent.should.equal('You are about to remove the myFileType myFileName.');
+            deleteMessageElement.nativeElement.textContent.should.equal('myDeleteMessage');
+            okButtonElement.nativeElement.textContent.should.equal('Delete File');
+        });
+
+        it('should set confirmButtonText, action and delete from', () => {
+            component['headerMessage'] = 'myHeaderMessage';
+            component['deleteMessage'] = 'myDeleteMessage';
+            component['fileName'] = 'myFileName';
+            component['fileType'] = 'myFileType';
+            component['action'] = 'myAction';
+            component['deleteFrom'] = 'myDeleteFrom';
+            component['confirmButtonText'] = 'myButtonText';
+
+            fixture.detectChanges();
+
+            headerMessageElement.nativeElement.textContent.should.equal('myHeaderMessage');
+            informationElement.nativeElement.textContent.should.equal('You are about to myAction the myFileType myFileName from myDeleteFrom.');
+            deleteMessageElement.nativeElement.textContent.should.equal('myDeleteMessage');
+            okButtonElement.nativeElement.textContent.should.equal('myButtonText');
+        });
+
+        it('should throw error if file name or delete file not set', fakeAsync(() => {
+            try {
+                fixture.detectChanges();
+            } catch (error) {
+                error.message.should.equal('either fileName or deleteFile should be specified');
+            }
         }));
 
-        it('should initialise script file parameters', fakeAsync( () => {
-            let testItem = { script: true, displayID: 'test_name' };
-            component['deleteFile'] = testItem;
-            component.ngOnInit();
+        it('should throw error if file name and delete file set', fakeAsync(() => {
+            let editorFile: EditorFile = new EditorFile('myID', 'test_name', 'myContent', 'random');
+            component['fileName'] = 'myFileName';
+            component['deleteFile'] = editorFile;
 
-            tick();
-
-            component['fileName'].should.equal('test_name');
-            component['fileType'].should.equal('Script File');
+            try {
+                fixture.detectChanges();
+            } catch (error) {
+                error.message.should.equal('only one of fileName or deleteFile should be specified');
+            }
         }));
+    });
 
-        it('should initialise unknown file parameters', fakeAsync( () => {
-            let testItem = { displayID: 'test_name' };
-            component['deleteFile'] = testItem;
-            component.ngOnInit();
+    describe('modalClose', () => {
+        it('should dismiss the modal via cross', () => {
+            let crossButton: DebugElement = deleteElement.query(By.css('.modal-exit'));
 
-            tick();
+            crossButton.triggerEventHandler('click', null);
+            mockActiveModal.dismiss.should.have.been.called;
+        });
 
-            component['fileName'].should.equal('test_name');
-            component['fileType'].should.equal('File');
-        }));
+        it('should dismiss the modal via cancel', () => {
+            let cancelButton: DebugElement = deleteElement.query(By.css('.secondary'));
 
-        it('should not initialise file name if provided', fakeAsync( () => {
-            component['fileName'] = 'test_name';
-            component.ngOnInit();
+            cancelButton.triggerEventHandler('click', null);
+            mockActiveModal.dismiss.should.have.been.called;
+        });
 
-            tick();
+        it('should close the modal via ok', () => {
+            let okButton: DebugElement = deleteElement.query(By.css('button.delete'));
 
-            component['fileName'].should.equal('test_name');
-        }));
+            okButton.triggerEventHandler('click', null);
+            mockActiveModal.close.should.have.been.calledWith(true);
+        });
     });
 });

@@ -35,10 +35,10 @@ describe('composer archive cmd launcher unit tests', function () {
         sandbox = sinon.sandbox.create();
         sandbox.stub(yargs, 'check').returns(yargs);
         sandbox.stub(yargs, 'conflicts').returns(yargs);
-        sandbox.stub(yargs, 'group').returns(yargs);
         sandbox.stub(yargs, 'options').returns(yargs);
         sandbox.stub(yargs, 'usage').returns(yargs);
         sandbox.stub(yargs, 'requiresArg').returns(yargs);
+        sandbox.stub(yargs, 'demandCommand').returns(yargs);
     });
 
     afterEach(() => {
@@ -73,7 +73,6 @@ describe('composer archive cmd launcher unit tests', function () {
             sinon.assert.calledOnce(yargs.options);
             sinon.assert.calledOnce(yargs.requiresArg);
             sinon.assert.calledOnce(yargs.check);
-            sinon.assert.calledOnce(yargs.group);
         });
 
 
