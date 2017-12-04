@@ -11,6 +11,7 @@ As a summary:
 
  - All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests.
  - All commits require DCO sign-off
+ - All pull request must be linked to an issue
  - All delivered code must follow the linting rules
  - All features or bug fixes must be tested.
  - All public API methods must be documented.
@@ -59,6 +60,7 @@ $ git push origin defect-1234   # note the branch you have been working on
 ```
 - The next step is to go to the Github web-ui and create a pull request to the master repository for this fork.
 - ...screen shots needed here - wip...
+- All Pull Requests should be linked to the issue they are addressing
 - All Pull Requests should have a review by another comitter on the Composer project
 - Any API, CLI, or major change should be mentioned to a maintainer to ensure consistency
 
