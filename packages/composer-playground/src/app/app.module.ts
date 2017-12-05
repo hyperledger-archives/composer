@@ -17,7 +17,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
-import { AboutComponent } from './about';
 import { BasicModalsModule } from './basic-modals/basic-modals.module';
 import { WelcomeComponent } from './welcome';
 import { NoContentComponent } from './no-content';
@@ -58,7 +57,6 @@ type StoreType = {
         WelcomeComponent
     ],
     declarations: [
-        AboutComponent,
         AppComponent,
         NoContentComponent,
         VersionCheckComponent,

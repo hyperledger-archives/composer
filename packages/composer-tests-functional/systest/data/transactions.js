@@ -147,25 +147,20 @@ function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
     assertEqual('integerAssets[1].integerValue', transaction.integerAssets[1].integerValue, 56373351);
 }
 
-function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
-    // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
-        .then(function (ar) {
-            return ar.getAll();
-        })
-        .then(function (as) {
-            as.sort(function (a, b) {
-                return a.assetId.localeCompare(b.assetId);
-            });
-            // console.log(JSON.stringify(as));
-            if (as.length !== 2) { throw new Error('length does not match'); }
-            if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
-            if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
-            if (as[0].assetId !== 'stringAsset1') { throw new Error('first asset has invalid value'); }
-            if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first asset has invalid value'); }
-            if (as[1].assetId !== 'stringAsset2') { throw new Error('second asset has invalid value'); }
-            if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second asset has invalid value'); }
-        });
+// example using async/await
+async function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
+    let ar = await getAssetRegistry('systest.transactions.SimpleStringAsset');
+    let as = await ar.getAll();
+    as.sort(function (a, b) {
+        return a.assetId.localeCompare(b.assetId);
+    });
+    if (as.length !== 2) { throw new Error('length does not match'); }
+    if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
+    if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
+    if (as[0].assetId !== 'stringAsset1') { throw new Error('first asset has invalid value'); }
+    if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first asset has invalid value'); }
+    if (as[1].assetId !== 'stringAsset2') { throw new Error('second asset has invalid value'); }
+    if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second asset has invalid value'); }
 }
 
 function onGetAssetFromAssetRegistryTransaction(transaction) {
