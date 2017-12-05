@@ -10,6 +10,8 @@
 As a summary:
 
  - All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests.
+ - All commits require DCO sign-off
+ - All pull request must be linked to an issue
  - All delivered code must follow the linting rules
  - All features or bug fixes must be tested.
  - All public API methods must be documented.
@@ -43,6 +45,9 @@ $ git pull upstream master  # gets all the changes from the upstream master
 ```
 $ git checkout -b defect-1234    # Including reference to the git issue is useful
 ```
+- As you commit changes to your local repository ensure you provide sign-off for that commit using the `-s` option of
+`git commit`. For more information see https://github.com/probot/dco#how-it-works
+
 - Time passes, and you now have a change that you are happy with. Next step is to push this to your local repository. First step is to ensure that your branch is update.
 ```
 $ git pull upstream master
@@ -55,6 +60,7 @@ $ git push origin defect-1234   # note the branch you have been working on
 ```
 - The next step is to go to the Github web-ui and create a pull request to the master repository for this fork.
 - ...screen shots needed here - wip...
+- All Pull Requests should be linked to the issue they are addressing
 - All Pull Requests should have a review by another comitter on the Composer project
 - Any API, CLI, or major change should be mentioned to a maintainer to ensure consistency
 
@@ -117,6 +123,30 @@ Hyperledger Composer tests use an assertion library called [chai](http://chaijs.
 ### Code Coverage Using Istanbul
 
 The Hyperledger Composer project uses a code coverage tool called [Istanbul](https://gotwarlost.github.io/istanbul/) to ensure that all the code is tested, including statements, branches, and functions. This helps to improve the quality of the Hyperledger Composer tests. The output of Istanbul can be used to see where any specific tests need to be added to ensure complete code coverage.
+
+### How to run local code inside a real fabric
+When fabric builds the image for the chaincode container, it does this by doing an npm install against the package.json
+of the package `composer-runtime-hlfv1`. This presents a problem as it pulls the code base that has been published to
+the npm registry rather than your local code base. To be able to work with your latest code base you need to run the
+fabric peer in development mode. The following provides steps by example on how to do this.
+
+- Ensure you have the latest fabric-dev-servers package and have set your fabric runtime to V1.1 `export FABRIC_VERSION=hlfv11`
+- Start the fabric in development mode using the -d or --dev option. eg `./startFabric.sh -d`
+- create and import your PeerAdmin card if you haven't done so before eg `./createPeerAdmin.sh` 
+- Open a command window and change to the `packages/composer-runtime-hlfv1` directory
+- Start the Composer chaincode with an appropriate business network name and version of the composer-runtime-hlfv1 (The version you need is the version defined in the package.json of the composer-runtime-hlfv1 package. In this example I have shown a version number of `0.17.0`) eg.
+```
+CORE_CHAINCODE_ID_NAME="mynetwork:0.17.0" node start.js --peer.address grpc://localhost:7052
+```
+- install a composer runtime package (note this doesn't get used but has to be present on the peer) Assuming you are still in the composer-runtime-hlfv1 directory eg.
+```
+node ../composer-cli/cli.js runtime install -n mynetwork -c PeerAdmin@hlfv1
+```
+- instantiate the chaincode, this will drive your running node process you started earlier.
+```
+node cli.js network deploy -a mynetwork.bna -c PeerAdmin@hlfv1 -A admin -S adminpw
+```
+You should now see output in the window running the chaincode showing it executing.
 
 # Next step
 Move on to read [Pull Request Guidelines](./submitting-pull-request.md)

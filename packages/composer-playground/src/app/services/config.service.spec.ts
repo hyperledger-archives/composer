@@ -46,7 +46,8 @@ describe('ConfigService', () => {
               tutorial: 'My Tutorial',
               community: 'My Community',
               github: 'My Github',
-              install: 'My Install'
+              install: 'My Install',
+              legal: 'My License'
             };
 
             // setup a mocked response

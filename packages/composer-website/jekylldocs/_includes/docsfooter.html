@@ -7,7 +7,14 @@
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      {% if site.status == "stable" %}
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      {% elsif site.status == "latest" %}
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+      {% else %}
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+      {% endif %}     
     </ul>
   </div>
 </div>

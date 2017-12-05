@@ -3,16 +3,16 @@
 The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
 
 The recommended *minimum* versions are:
-*Docker*: v1.12.3
-*Docker-compose*: v1.10.0
-*npm*: v4.6.0
-*node.js*: v6.9.5
+- *Docker*: v17.03
+- *Docker-compose*: v1.13.0
+- *npm*: v5.5.1
+- *node.js*: v8.9.1
 
 
 ## Installation for Ubuntu
 
 ### 1. Installing Runtime Components
-Supported versions of Ubuntu are: Trusty, Utopic, Xenial and Yakkety. There is an automated installation script that will install *node* *docker* *docker-compose*.  For Trusty and Utopic, additional kernel packages that allow the use of the AUFS storage driver required by Docker, will also be installed.
+Supported versions of Ubuntu are: Trusty, Xenial and Yakkety. There is an automated installation script that will install *node* *docker* *docker-compose*.  For Trusty, additional kernel packages that allow the use of the AUFS storage driver required by Docker, will also be installed.
 
 If some of the tools are already installed or to do the installation step-by-step follow the [manual instructions](./manual_prerequisites.md).
 
@@ -30,16 +30,7 @@ $ ./prereqs-ubuntu.sh
 
 **Important:** You will need to logout and login again before continuing.
 
-The script will print out the versions installed, if you wish to check here are the version commands.
-
-```bash
-$ node --version
-v6.9.5
-$ docker --version
-Docker version 1.12.3
-$ docker-compose --version
-docker-compose version 1.10.0
-```
+The script will print out the versions installed
 
 ### 2. Installing Git
 This is probably already installed on most Linux machines. Pay particular attention to [setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.

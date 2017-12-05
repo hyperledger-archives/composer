@@ -43,7 +43,8 @@ const mockResponseConfigService = {
         tutorial: 'My Tutorial',
         community: 'My Community',
         github: 'My Github',
-        install: 'My Install'
+        install: 'My Install',
+        legal: 'My License'
     }
 };
 
@@ -89,7 +90,8 @@ describe('FooterComponent', () => {
                 tutorial: 'My Tutorial',
                 community: 'My Community',
                 github: 'My Github',
-                install: 'My Install'
+                install: 'My Install',
+                legal: 'My License'
             };
 
             configService['configLoaded'] = true;
@@ -132,7 +134,8 @@ describe('FooterComponent', () => {
                 tutorial: 'My Tutorial',
                 community: 'My Community',
                 github: 'My Github',
-                install: 'My Install'
+                install: 'My Install',
+                legal: 'My License'
             };
 
             mockBackend.connections.subscribe((connection) => {
@@ -158,7 +161,8 @@ describe('FooterComponent', () => {
                 tutorial: 'My Tutorial',
                 community: 'My Community',
                 github: 'My Github',
-                install: 'My Install'
+                install: 'My Install',
+                legal: 'My License'
             };
 
             configService['configLoaded'] = true;

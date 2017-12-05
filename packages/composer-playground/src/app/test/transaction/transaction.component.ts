@@ -38,7 +38,7 @@ export class TransactionComponent implements OnInit {
         lineNumbers: true,
         lineWrapping: true,
         readOnly: false,
-        mode: 'javascript',
+        mode: 'application/ld+json',
         autofocus: true,
         extraKeys: {
             'Ctrl-Q': (cm) => {
@@ -62,6 +62,15 @@ export class TransactionComponent implements OnInit {
                 return !modelClassDeclaration.isAbstract() &&
                     !modelClassDeclaration.isSystemType() &&
                     modelClassDeclaration instanceof TransactionDeclaration;
+            })
+            .sort((a, b) => {
+                if (a.getName() < b.getName()) {
+                  return -1;
+                } else if (a.getName() > b.getName()) {
+                  return 1;
+                } else {
+                  return 0;
+                }
             });
 
         // Set first in list as selectedTransaction

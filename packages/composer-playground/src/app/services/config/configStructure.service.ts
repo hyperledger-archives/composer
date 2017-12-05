@@ -7,7 +7,8 @@ export class Config {
     tutorial: <string> '',
     community: <string> '',
     github: <string> '',
-    install: <string> ''
+    install: <string> '',
+    legal: <string> ''
   };
   public analyticsID: string = null;
 
@@ -24,7 +25,8 @@ export class Config {
       tutorial: <string> 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
       community: <string> 'https://hyperledger.github.io/composer/support/support-index.html',
       github: <string> 'https://github.com/hyperledger/composer',
-      install: <string> 'https://hyperledger.github.io/composer/installing/installing-index.html'
+      install: <string> 'https://hyperledger.github.io/composer/installing/installing-index.html',
+      legal: <string> 'https://www.apache.org/licenses/LICENSE-2.0'
     };
     this.analyticsID = null;
   }
