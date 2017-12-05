@@ -19,7 +19,7 @@ export class Import {
     return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait)
     .then(() => {
         // must have file drag drop visible
-        OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3);
+        OperationsHelper.retrieveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3);
         return browser.wait(ExpectedConditions.visibilityOf(element(by.id('file-importer_input'))), Constants.longWait);
     })
     .then(() => {
@@ -94,7 +94,7 @@ export class Import {
     browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), Constants.longWait);
 
     // Wait for poplation of sample-network-list-item(s)
-    OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
+    OperationsHelper.retrieveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
     .then(() => {
         let confirmElement = element(by.id('import_confirm'));
         browser.executeScript('arguments[0].scrollIntoView();', confirmElement.getWebElement());
@@ -108,7 +108,7 @@ export class Import {
       browser.wait(ExpectedConditions.visibilityOf(element(by.css('.chosen-network'))), Constants.longWait);
 
       // Wait for poplation of sample-network-list-item(s)
-      OperationsHelper.retriveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
+      OperationsHelper.retrieveMatchingElementsByCSS('.sample-network-list-container', '.sample-network-list-item', 3)
       .then(() => {
         let cancelElement = element(by.id('import_cancel'));
         browser.executeScript('arguments[0].scrollIntoView();', cancelElement.getWebElement());

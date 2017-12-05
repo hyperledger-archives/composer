@@ -8,7 +8,8 @@ exports.config = {
   directConnect: true,
   baseUrl: 'http://127.0.0.1:3001',
   specs: ['./e2e/specs/welcome.spec.ts',
-          './e2e/specs/login-define.spec.ts'],
+          './e2e/specs/login-define.spec.ts',
+          './e2e/specs/playground-tutorial.spec.ts'],
   capabilities: {
     'browserName': 'chrome',
     'chromeOptions': {
@@ -35,4 +36,3 @@ exports.config = {
     browser.manage().window().setSize(1280, 1024);
  }
 }
-
