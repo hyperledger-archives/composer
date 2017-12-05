@@ -115,15 +115,24 @@ describe('TransactionComponent', () => {
 
     describe('#ngOnInit', () => {
 
-        it('should set transactionTypes, selectedTransaction and hiddenTransactionItems',
+        it('should set and sort transactionTypes and set selectedTransaction and hiddenTransactionItems',
             fakeAsync(() => {
                 sandbox.stub(component, 'generateTransactionDeclaration');
                 mockTransaction.isAbstract.returns(false);
-                mockIntrospector.getClassDeclarations.returns([mockTransaction]);
+
+                let mockTransaction2 = sinon.createStubInstance(TransactionDeclaration);
+                let mockTransaction3 = sinon.createStubInstance(TransactionDeclaration);
+                let mockTransaction4 = sinon.createStubInstance(TransactionDeclaration);
+                mockTransaction.getName.returns('A name');
+                mockTransaction2.getName.returns('B name');
+                mockTransaction3.getName.returns('C name');
+                mockTransaction4.getName.returns('C name');
+                mockIntrospector.getClassDeclarations.returns([mockTransaction3, mockTransaction, mockTransaction2, mockTransaction4]);
                 component.ngOnInit();
                 tick();
                 mockBusinessNetwork.getIntrospector.should.be.called;
-                component['transactionTypes'].length.should.equal(1);
+                component['transactionTypes'].length.should.equal(4);
+                component['transactionTypes'].should.deep.equal([mockTransaction, mockTransaction2, mockTransaction3, mockTransaction4]);
                 component['generateTransactionDeclaration'].should.be.called;
             }));
 

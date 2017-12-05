@@ -44,7 +44,6 @@ h2 {
   font-family: $font-stack;
   font-weight: 300;
   font-size: 1.35rem;
-  // letter-spacing: 0.4px;
   line-height: 130%;
   color: $primary-text;
 }
@@ -862,179 +861,50 @@ li {
 
 }
 
-h2.everybody {
-  background-color: #e1e1e1;
-  background-image: url("../img/Artboard 1@0.5x.png");
-  background-repeat: no-repeat;
-  background-position: left 5px center;
-  background-size: 32px 32px;
-  // background-origin: content-box;
-  border-radius: 5px;
-  max-width: 100%;
-  padding: 5px 5px 5px 48px;
-  text-align: center;
+// Needs further cleanup
+
+h2 {
+  &.everybody {
+    background-color: #e1e1e1;
+    background-image: url("../img/Artboard 1@0.5x.png");
+    background-repeat: no-repeat;
+    background-position: left 5px center;
+    background-size: 32px 32px;
+    border-radius: 5px;
+    max-width: 100%;
+    padding: 5px 5px 5px 48px;
+    text-align: center;
+  }
+
+  &.alice {
+    background-color: #e1f7d5;
+    background-image: url("../img/GreenBlockAlone@0.5x.png");
+    background-repeat: no-repeat;
+    background-position: left 5px center;
+    background-size: 32px 32px;
+    border-radius: 5px;
+    max-width: 100%;
+    padding: 5px 5px 5px 48px;
+    text-align: left;
+  }
+
+  &.bob {
+    background-color: #c9c9ff;
+    background-image: url("../img/VioletBlockAlone@0.5x.png");
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+    background-size: 32px 32px;
+    border-radius: 5px;
+    max-width: 100%;
+    padding: 5px 48px 5px 5px;
+    text-align: right;
+  }
+
+  &.warning {
+    background-color: #f6d155;
+    border-radius: 5px;
+    max-width: 100%;
+    padding: 5px 5px 5px 5px;
+    text-align: left;
+  }
 }
-
-h2.alice {
-  background-color: #e1f7d5;
-  background-image: url("../img/GreenBlockAlone@0.5x.png");
-  background-repeat: no-repeat;
-  background-position: left 5px center;
-  background-size: 32px 32px;
-  // background-origin: content-box;
-  border-radius: 5px;
-  max-width: 100%;
-  padding: 5px 5px 5px 48px;
-  text-align: left;
-}
-
-h2.bob {
-  background-color: #c9c9ff;
-  background-image: url("../img/VioletBlockAlone@0.5x.png");
-  background-repeat: no-repeat;
-  background-position: right 5px center;
-  background-size: 32px 32px;
-  // background-origin: content-box;
-  border-radius: 5px;
-  max-width: 100%;
-  padding: 5px 48px 5px 5px;
-  text-align: right;
-}
-
-h3.warning {
-  background-color: #f6d155;
-  // background-origin: content-box;
-  border-radius: 5px;
-  max-width: 100%;
-  padding: 5px 5px 5px 5px;
-  text-align: left;
-}
-
-// Docs styling updates
-
-// nav {
-//       .container {
-//         padding-top: 5px;
-//       }
-//     }
-//
-//   .context-nav {
-//     a {
-//         padding-left: 1rem;
-//         border: none;
-//         border-left: 2px solid transparent;
-//         transition: none;
-//
-//         &:hover {
-//           color: $first-highlight;
-//           border-left: 2px solid $second-highlight;
-//           transition: none;
-//         }
-//
-//         &:last-child {
-//           padding-left: 0;
-//           border: none;
-//         }
-//
-//         &:active {
-//           color: $first-highlight;
-//         }
-//
-//         + strong {
-//           a {
-//             padding-top: 1.5rem;
-//             border-left: none;
-//           }
-//         }
-//       }
-//   }
-//
-//   .SiteWrapper {
-//     .content {
-//       .container {
-//         .content-chunk {
-//
-//           p {
-//             margin-top: 1.3rem;
-//           }
-//
-//           h1 {
-//             font-weight: 300;
-//             font-size: 2em;
-//           }
-//
-//           h2 {
-//             margin-top: 2rem;
-//           }
-//
-//           h3 {
-//             font-family: $font-stack;
-//             font-weight: 300;
-//             font-size: 1.2rem;
-//             line-height: 130%;
-//             color: $primary-text;
-//             margin-top: 2rem;
-//           }
-//
-//           pre {
-//             background-color: $third-highlight;
-//             border: 1px solid $keyline-highlight;
-//           }
-//
-//           code {
-//             border-radius: 2px;
-//             padding-right: 5px;
-//             padding-top: 1px;
-//             padding-bottom: 1px;
-//           }
-//
-//           ul {
-//             list-style: none;
-//             padding-left: 2em;
-//             text-indent: -1em;
-//
-//             li:before {
-//               color: $primary-text;
-//               content: '- \0000a0';
-//               font-size: 1rem;
-//               font-weight: 600;
-//             }
-//
-//             li {
-//               padding-bottom: 0.5rem;
-//               p {
-//                 display: inline;
-//               }
-//
-//             }
-//           }
-//
-//           ol {
-//             border-left: 1px solid $keyline-highlight;
-//             li {
-//                 margin-top: 1.3rem;
-//             }
-//           }
-//
-//         a {
-//           color: $first-highlight;
-//         }
-//         }
-//       }
-//     }
-//   }
-//
-//   // Docs Footer
-//
-//   .docs-footer {
-//     // position: absolute;
-//     // bottom: 0;
-//     background-color: $sixth-highlight;
-//   }
-//
-//   // 404 page
-// .container {
-//   .404-info {
-//
-//   }
-// }
