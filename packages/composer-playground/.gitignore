@@ -60,7 +60,3 @@ npm-debug.log
 # IDE #
 .idea/
 *.swp
-
-# Used to get package versions, created on npm install
-/src/assets/npmlist.json
-
