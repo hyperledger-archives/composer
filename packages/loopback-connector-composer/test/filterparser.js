@@ -84,32 +84,10 @@ describe('FilterParser', () => {
                 FilterParser.parseWhereCondition(whereObject);
             }).should.throw(/The filter where does not support a parameter/);
         });
-
-        it('should throw when a where condition with an unsupported operator', () => {
-            (() => {
-                whereObject = {'f1':{'unknown':'v1'}};
-                FilterParser.parseWhereCondition(whereObject);
-            }).should.throw(/The key unknown operator is not supported by the Composer filter where/);
-        });
-
-        it('should throw when a field value has more than one keys', () => {
-            (() => {
-                whereObject = {'f1':{'lte':'v1', 'gt':'v2'}};
-                FilterParser.parseWhereCondition(whereObject);
-            }).should.throw(/The loopback user input operator has more than one operators in a field object/);
-        });
-
         it('should return when a where condition with a between operator', () => {
             whereObject = {'f1':{'between':[1,10]}};
             whereCondition = '((f1>=1) AND (f1<=10))';
             FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
-        });
-
-        it('should return when a where condition with a between operator', () => {
-            (() => {
-                whereObject = {'f1':{'between':[1,10,20]}};
-                FilterParser.parseWhereCondition(whereObject).should.equal(whereCondition);
-            }).should.throw(/The between value is not an array or does not have two elements/);
         });
 
         it('should return when a where condition with a combination of the and operation', () => {
@@ -308,17 +286,93 @@ describe('FilterParser', () => {
             (() => {FilterParser.parseObjectValue('f1', {'between': [false, true]});
             }).should.throw(/Unsupported data type for the between operator/);
         });
+
+        it('should throw when a field value has more than one keys', () => {
+            (() => {
+                const keyObject = {'lte':'v1', 'gt':'v2'};
+                FilterParser.parseObjectValue('f1', keyObject);
+            }).should.throw(/The loopback user input operator has more than one operators in a field object/);
+        });
+
+        it('should throw when a where condition with an unsupported operator', () => {
+            (() => {
+                const keyObject = {'unknown':'v1'};
+                FilterParser.parseObjectValue('f1', keyObject);
+            }).should.throw(/The key unknown operator is not supported by the Composer filter where/);
+        });
+
+        it('should return when a where condition with a between operator', () => {
+            (() => {
+                const keyObject = {'between':[1,10,20]};
+                FilterParser.parseObjectValue('f1', keyObject);
+            }).should.throw(/The between value is not an array or does not have two elements/);
+        });
+
     });
 
     describe('#isDateTime',()=> {
-        const testDate = new Date('2017-09-26T14:43:48.444Z');
 
-        FilterParser.isDateTime(testDate).should.be.true;
+        it('should return when parse a valid datetime value', () => {
+            const testDate = new Date('2017-09-26T14:43:48.444Z');
+
+            FilterParser.isDateTime(testDate).should.be.true;
+        });
+
+        it('should throw when parse an invalid datetime with an object value', () => {
+
+            FilterParser.isDateTime({'datetime:': '2017-09-26T14:43:48.444Z'}).should.be.false;
+        });
+
+        it('should throw when parse an invalid datetime with a null value', () => {
+
+            FilterParser.isDateTime(null).should.be.false;
+        });
+
+        it('should throw when parse an invalid datetime with a string value', () => {
+            FilterParser.isDateTime('2017-09-26T14:43:48.444Z').should.be.false;
+        });
+
+        it('should throw when parse an invalid datetime with an int value', () => {
+            FilterParser.isDateTime(1234567).should.be.false;
+        });
+
+        it('should throw when parse an invalid datetime with an undefined value', () => {
+            FilterParser.isDateTime(undefined).should.be.false;
+        });
+
     });
 
     describe('#isPrimitiveTypeValue',()=> {
-        const testDate = new Date('2017-09-26T14:43:48.444Z');
 
-        FilterParser.isPrimitiveTypeValue(testDate).should.be.true;
+        it('should return when parse a datetime value', () => {
+            const testDate = new Date('2017-09-26T14:43:48.444Z');
+            FilterParser.isPrimitiveTypeValue(testDate).should.be.true;
+        });
+
+        it('should return when parse a string value', () => {
+            FilterParser.isPrimitiveTypeValue('2017-09-26T14:43:48.444Z').should.be.true;
+        });
+
+        it('should return when parse a number value', () => {
+            FilterParser.isPrimitiveTypeValue(1234567).should.be.true;
+        });
+
+        it('should return when parse a boolean value', () => {
+            FilterParser.isPrimitiveTypeValue(true).should.be.true;
+        });
+
+        it('should return when parse an Object value', () => {
+            FilterParser.isPrimitiveTypeValue({'String':'stringValue'}).should.be.false;
+        });
+
+        it('should throw when parse a null value', () => {
+            (() => {FilterParser.isPrimitiveTypeValue(null);
+            }).should.throw(/The value: null is invalid/);
+        });
+
+        it('should throw when parse an undefined value', () => {
+            (() => {FilterParser.isPrimitiveTypeValue(undefined);
+            }).should.throw(/The value: undefined is invalid/);
+        });
     });
 });
