@@ -5,20 +5,20 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 Automatic installations scripts are available for [Ubuntu](./prerequisites-ubuntu.md)
 
 The recommended *minimum* versions are:
-*Docker*: v1.12.3
-*Docker-compose*: v1.10.0
-*npm*: v4.6.0
-*node.js*: v6.9.5
+- *Docker*: v17.03
+- *Docker-compose*: v1.13.0
+- *npm*: v5.5.1
+- *node.js*: v8.9.1
 
 ## Manual Installation
 
 ### 1. Installing NVM
-We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
+We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version equal to or higher than v8.9.1, but not Node v9 which isn't supported.
 
 [Official nvm GitHub repository](https://github.com/creationix/nvm)
 
 ### 2. Kernel Packages
-If running on Ubuntu Trusty or Utopic, it is necessary to obtain additional Kernel packages to enable use of the [AUFS storage driver](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver) for Docker.
+If running on Ubuntu Trusty, it is necessary to obtain additional Kernel packages to enable use of the [AUFS storage driver](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver) for Docker.
 
 ### 3. Installing Docker Engine
 The Docker Engine is essential for running system tests and running the HyperLedger Fabric.
