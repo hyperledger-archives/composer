@@ -19,19 +19,8 @@ $callout: #FFD640;
 
 .docs-container {
   display: grid;
-  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-columns: 25% 20% 20% 20% 15%;
   grid-template-rows: 20% 20% 20% 20% 20%;
-
-  // responsive button
-  // .toggle {
-  //     display: block ;
-  //   }
-
-  // Scrollbar overrides
-  // ::-webkit-scrollbar {
-  //   display: none;
-  // }
-  // -ms-overflow-style: none;  // IE 10+
 
   hr {
     display: none;
