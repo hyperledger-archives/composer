@@ -23,6 +23,7 @@ const fs = require('fs');
 const childProcess = require('child_process');
 
 let generated = false;
+let savedId;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -258,7 +259,11 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
-            //console.log(command);
+            // match BOBSID for revoking test
+            if(savedId && savedId!=='') {
+                command = command.replace(/BOBSID/, savedId);
+                // console.log('Command:', command);
+            }
 
             return new Promise( (resolve, reject) => {
 
@@ -267,7 +272,14 @@ class Composer {
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
 
+                // Save Bobs identityId so that we can revoke it
+                let regex = /^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$/g;
                 childCliProcess.stdout.on('data', (data) => {
+                    // console.log('>>>', data);
+                    let match = regex.exec(data);
+                    if(match && match.length===2) {
+                        savedId = match[1];
+                    }
                     stdout += data;
                 });
 
@@ -283,7 +295,7 @@ class Composer {
                 childCliProcess.on('close', (code) => {
                     if (code && code !== 0) {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
-                        reject(this.lastResp);
+                        resolve(this.lastResp);
                     } else {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);

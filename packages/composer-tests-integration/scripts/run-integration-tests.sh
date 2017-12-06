@@ -10,6 +10,25 @@ ARCH=`uname -m`
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# Delete any existing configuration.
+rm -fr ./verdaccio
+rm -fr ./storage
+rm -fr ${HOME}/.config/verdaccio
+rm -rf ${HOME}/.composer/cards/Test*
+rm -rf ${HOME}/.composer/client-data/Test*
+rm -rf ${HOME}/.composer/cards/bob*
+rm -rf ${HOME}/.composer/client-data/bob*
+rm -rf ${HOME}/.composer/cards/admin*
+rm -rf ${HOME}/.composer/client-data/admin*
+rm -rf ./tmp/*
+rm -rf ./networkadmin
+rm -rf ${HOME}/.npmrc
+if [ "${DOCKER_FILE}" != "" ]; then
+    cd ../composer-runtime-hlfv1
+    rm .npmrc
+    cd "${DIR}"
+fi
+
 # Switch into the integration tests directory.
 cd "${DIR}"
 
@@ -29,10 +48,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     export COMPOSER_PORT_WAIT_SECS=30
     export COMPOSER_DEPLOY_WAIT_SECS=500
     export COMPOSER_TIMEOUT_SECS=500
-
-    # Delete any existing configuration.
-    rm -rf ${HOME}/.composer-connection-profiles/composer-intests*
-    rm -rf ${HOME}/.composer-credentials/composer-intests*
 
     # Pull any required Docker images.
     if [[ ${INTEST} == hlfv1* ]]; then
@@ -67,7 +82,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         cd ${DIR}
         cd ../composer-runtime-hlfv1
         if [ `uname` = "Darwin" ]; then
-            GATEWAY="$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')"
+            GATEWAY=docker.for.mac.localhost
         else
             GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
@@ -120,6 +135,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -fr ${HOME}/.config/verdaccio
     rm -rf ${HOME}/.composer/cards/Test*
     rm -rf ${HOME}/.composer/client-data/Test*
+    rm -rf ${HOME}/.composer/cards/bob*
+    rm -rf ${HOME}/.composer/client-data/bob*
+    rm -rf ${HOME}/.composer/cards/admin*
+    rm -rf ${HOME}/.composer/client-data/admin*
     rm -rf ./tmp/*
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
