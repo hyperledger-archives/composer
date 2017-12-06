@@ -399,9 +399,18 @@ class Composer {
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
 
+                let success = false;
+
+                setTimeout(() => {
+                    if(!success) {
+                        reject({stdout: stdout, stderr: stderr});
+                    }
+                }, 60000);
+
                 childCliProcess.stdout.on('data', (data) => {
                     stdout += data;
                     if(stdout.match(regex)) {
+                        success = true;
                         resolve({stdout: stdout, stderr: stderr});
                     }
                 });
@@ -411,7 +420,7 @@ class Composer {
                 });
 
                 childCliProcess.on('error', (error) => {
-                    reject(error);
+                    reject({error: error, stdout: stdout, stderr: stderr});
                 });
 
             });
