@@ -1,0 +1,6 @@
+{
+"$class": "org.acme.mynetwork.Trader",
+"tradeId": "TRADER1",
+"firstName": "Jenny",
+"lastName": "Jones"
+}

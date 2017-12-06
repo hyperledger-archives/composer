@@ -26,7 +26,7 @@ export class OperationsHelper {
   }
 
   // Retrieve text from an element
-  static retriveTextFromElement(elm: ElementFinder) {
+  static retrieveTextFromElement(elm: ElementFinder) {
       browser.wait(ExpectedConditions.presenceOf(elm), Constants.longWait);
       browser.wait(ExpectedConditions.visibilityOf(elm), Constants.longWait);
       return browser.wait(() => {
@@ -35,7 +35,7 @@ export class OperationsHelper {
   }
 
   // Retrieve an array of all matching elements
-  static retriveMatchingElementsByCSS(type: string, subset: string, minCount) {
+  static retrieveMatchingElementsByCSS(type: string, subset: string, minCount) {
     browser.wait(this.elementsPresent(element(by.css(type)).all(by.css(subset)), minCount), Constants.longWait);
     return element(by.css(type)).all(by.css(subset));
   }
