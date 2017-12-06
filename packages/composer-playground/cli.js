@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,18 +49,20 @@ Logger.setFunctionalLogger({
                 return arg;
             }
         }).join(', ');
+        /* eslint-disable no-console */
         switch (level) {
-        case 'debug':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'warn':
-            return console.warn(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'info':
-            return console.info(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'verbose':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'error':
-            return console.error(util.format('%s %s %s', method, msg, formattedArguments));
+            case 'debug':
+                return console.log(util.format('%s %s %s', method, msg, formattedArguments));
+            case 'warn':
+                return console.warn(util.format('%s %s %s', method, msg, formattedArguments));
+            case 'info':
+                return console.info(util.format('%s %s %s', method, msg, formattedArguments));
+            case 'verbose':
+                return console.log(util.format('%s %s %s', method, msg, formattedArguments));
+            case 'error':
+                return console.error(util.format('%s %s %s', method, msg, formattedArguments));
         }
+        /* eslint-enable no-console */
     }
 });
 
@@ -70,16 +73,18 @@ const opener = require('opener');
 const path = require('path');
 
 if (process.env.COMPOSER_CONFIG) {
-  const config = JSON.parse(process.env.COMPOSER_CONFIG);
-  app.get('/config.json', (req, res, next) => {
-    res.json(config);
-  });
+    const config = JSON.parse(process.env.COMPOSER_CONFIG);
+    app.get('/config.json', (req, res, next) => {
+        res.json(config);
+    });
 }
 
 const dist = path.resolve(__dirname, 'dist');
 app.use(express.static(dist));
 app.all('/*', (req, res, next) => {
-  res.sendFile('index.html', { root: dist });
+    res.sendFile('index.html', {
+        root: dist
+    });
 });
 
 const LOG = Logger.getLog('Composer');
