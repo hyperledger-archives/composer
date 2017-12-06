@@ -318,25 +318,25 @@ describe('FilterParser', () => {
             FilterParser.isDateTime(testDate).should.be.true;
         });
 
-        it('should throw when parse an invalid datetime with an object value', () => {
+        it('should return false when parse an invalid datetime with an object value', () => {
 
             FilterParser.isDateTime({'datetime:': '2017-09-26T14:43:48.444Z'}).should.be.false;
         });
 
-        it('should throw when parse an invalid datetime with a null value', () => {
+        it('should return false when parse an invalid datetime with a null value', () => {
 
             FilterParser.isDateTime(null).should.be.false;
         });
 
-        it('should throw when parse an invalid datetime with a string value', () => {
+        it('should return false when parse an invalid datetime with a string value', () => {
             FilterParser.isDateTime('2017-09-26T14:43:48.444Z').should.be.false;
         });
 
-        it('should throw when parse an invalid datetime with an int value', () => {
+        it('should return false when parse an invalid datetime with an int value', () => {
             FilterParser.isDateTime(1234567).should.be.false;
         });
 
-        it('should throw when parse an invalid datetime with an undefined value', () => {
+        it('should return false when parse an invalid datetime with an undefined value', () => {
             FilterParser.isDateTime(undefined).should.be.false;
         });
 
@@ -344,24 +344,24 @@ describe('FilterParser', () => {
 
     describe('#isPrimitiveTypeValue',()=> {
 
-        it('should return when parse a datetime value', () => {
+        it('should return true when parse a datetime value', () => {
             const testDate = new Date('2017-09-26T14:43:48.444Z');
             FilterParser.isPrimitiveTypeValue(testDate).should.be.true;
         });
 
-        it('should return when parse a string value', () => {
+        it('should return true when parse a string value', () => {
             FilterParser.isPrimitiveTypeValue('2017-09-26T14:43:48.444Z').should.be.true;
         });
 
-        it('should return when parse a number value', () => {
+        it('should return true when parse a number value', () => {
             FilterParser.isPrimitiveTypeValue(1234567).should.be.true;
         });
 
-        it('should return when parse a boolean value', () => {
+        it('should return true when parse a boolean value', () => {
             FilterParser.isPrimitiveTypeValue(true).should.be.true;
         });
 
-        it('should return when parse an Object value', () => {
+        it('should return false when parse an Object value', () => {
             FilterParser.isPrimitiveTypeValue({'String':'stringValue'}).should.be.false;
         });
 
