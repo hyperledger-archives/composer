@@ -73,6 +73,7 @@
     "composer-cli": "0.17.0",
     "composer-client": "0.17.0",
     "composer-common": "0.17.0",
+    "composer-rest-server": "0.17.0",
     "thenify-all": "1.6.0",
     "verdaccio": "2.6.4"
   }
