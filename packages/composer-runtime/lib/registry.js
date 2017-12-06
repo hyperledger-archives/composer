@@ -176,16 +176,6 @@ class Registry extends EventEmitter {
      */
     add(resource, options) {
 
-        // return Promise.resolve().then(() => {
-        //     if (!(resource instanceof Resource)) {
-        //         throw new Error('Expected a Resource or Concept.');                }
-        //     else if (this.type !== resource.getClassDeclaration().getSystemType()){
-        //         throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
-        //     }
-        // })
-        //     .then(() => {
-        //         return this.accessController.check(resource, 'CREATE');
-        //     })
         return this.testAdd(resource)
             .then((result) => {
                 if (result){
@@ -234,7 +224,7 @@ class Registry extends EventEmitter {
         .catch((error)=>{
             // access has not been granted, so return the error that would have been thrown in the
             // promise
-            return Promise.resolve(error);
+            return error;
         });
 
     }
@@ -290,7 +280,9 @@ class Registry extends EventEmitter {
             options = options || {};
             id = resource.getIdentifier();
             object = this.serializer.toJSON(resource, {
-                convertResourcesToRelationships: options.convertResourcesToRelationships                });                object = this.addInternalProperties(object);
+                convertResourcesToRelationships: options.convertResourcesToRelationships
+            });
+            object = this.addInternalProperties(object);
 
             return this.dataCollection.get(id);
         })
