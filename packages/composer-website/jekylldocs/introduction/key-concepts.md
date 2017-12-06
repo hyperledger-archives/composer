@@ -90,6 +90,6 @@ The historian is a specialised registry which records successful transactions, i
 
 ---
 
-* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../installing/getting-started-with-playground.html)
+* To try {{site.data.conrefs.composer_full}} right away, visit the the [Online Playground]({{site.data.links.playground}})
 * For an architectural overview of a typical solution built with {{site.data.conrefs.composer_short}}, see [Typical Solution Architecture](./solution-architecture.html)
 * To install the Development Tools, see [Getting setup with development tools](../installing/development-tools.html)
