@@ -43,7 +43,6 @@
         "postversion": "git push && git push --tags",
         "pretest": "npm run lint",
         "posttest": "istanbul check-coverage",
-        "postinstall": "npm list -json --depth=0 2>&1 | grep -iv ERR > ./src/assets/npmlist.json",
         "prebuild:dev": "npm run clean:dist",
         "prebuild:prod": "npm run clean:dist",
         "preclean:install": "npm run clean",
