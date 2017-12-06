@@ -31,6 +31,7 @@
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
     "license-check": "1.1.5",
+    "lodash-match-pattern": "2.0.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0"
   },
@@ -72,6 +73,7 @@
     "composer-cli": "0.17.0",
     "composer-client": "0.17.0",
     "composer-common": "0.17.0",
+    "composer-rest-server": "0.17.0",
     "thenify-all": "1.6.0",
     "verdaccio": "2.6.4"
   }
