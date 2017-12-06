@@ -341,8 +341,6 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
-            //console.log(command);
-
             return new Promise( (resolve, reject) => {
 
                 let childCliProcess = childProcess.exec(command);
@@ -391,8 +389,6 @@ class Composer {
             let stdout = '';
             let stderr = '';
             let self = this;
-
-            //console.log(command);
 
             return new Promise( (resolve, reject) => {
 

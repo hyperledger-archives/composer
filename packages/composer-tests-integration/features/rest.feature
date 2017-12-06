@@ -14,7 +14,7 @@ Feature: Rest steps
             """
         Then The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I can import the network admin identity
+    Scenario: Using the CLI, I can delete the network admin identity
         When I run the following CLI command
             """
             composer card delete -n admin@tutorial-network
