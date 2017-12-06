@@ -312,7 +312,7 @@ describe('FilterParser', () => {
 
     describe('#isDateTime',()=> {
 
-        it('should return when parse a valid datetime value', () => {
+        it('should return true when parse a valid datetime value', () => {
             const testDate = new Date('2017-09-26T14:43:48.444Z');
 
             FilterParser.isDateTime(testDate).should.be.true;
