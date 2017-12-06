@@ -31,4 +31,8 @@ module.exports = function () {
     this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), false);
     });
+
+    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
+        return this.composer.checkConsoleOutput(new RegExp(regex), true);
+    });
 };
