@@ -39,6 +39,6 @@ Participants can have their access to transactions restricted based on their rol
 
 ---
 
-* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../installing/getting-started-with-playground.html)
+* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground]({{site.data.links.playground}})
 * For an introduction to {{site.data.conrefs.composer_short}} components and concepts, see [Key Concepts](./key-concepts.html)
 * For an architectural overview of a typical solution built with {{site.data.conrefs.composer_short}}, see [Typical Solution Architecture](./solution-architecture.html)
