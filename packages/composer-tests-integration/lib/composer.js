@@ -254,7 +254,8 @@ class Composer {
     killBackground(label) {
         return new Promise( (resolve, reject) => {
             if (this.tasks[label]) {
-                this.tasks[label].kill('SIGKILL');
+                childProcess.spawn('kill', [this.tasks[label].pid]);
+                // this.tasks[label].kill('SIGKILL');
                 delete this.tasks[label];
                 // delay, ensure child process is really gone!
                 setTimeout(() => {
