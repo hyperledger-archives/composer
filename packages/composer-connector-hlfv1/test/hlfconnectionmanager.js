@@ -531,7 +531,7 @@ describe('HLFConnectionManager', () => {
                     }
                 ],
                 ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
+                cardName: 'admin@hlfv1',
                 channel: 'testchainid',
                 timeout: 123,
                 mspID: 'MSP1Org'
@@ -636,45 +636,23 @@ describe('HLFConnectionManager', () => {
                 .should.be.rejectedWith(/The certificate authority URL has not been specified/);
         });
 
-        it('should throw if none of keyValStore, wallet and cardName are specified', () => {
-            delete connectOptions.keyValStore;
+        it('should throw if none of wallet or cardName are specified', () => {
             delete connectOptions.wallet;
             delete connectOptions.cardName;
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
-                .should.be.rejectedWith(/No key value store directory, wallet or card name has been specified/);
+                .should.be.rejectedWith(/No wallet or card name has been specified/);
         });
 
-        it('should not throw if keyValStore specified but wallet and cardName are not', () => {
-            delete connectOptions.wallet;
-            delete connectOptions.cardName;
-            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-        });
-
-        it('should not throw if wallet specified but keyValStore and cardName are not', () => {
+        it('should not throw if wallet specified but cardName is not', () => {
             connectOptions.wallet = mockWallet;
-            delete connectOptions.keyValStore;
             delete connectOptions.cardName;
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
         });
 
-        it('should not throw if cardName specified but keyValStore and wallet are not', () => {
+        it('should not throw if cardName specified but wallet is not', () => {
             delete connectOptions.wallet;
-            delete connectOptions.keyValStore;
             connectOptions.cardName = 'CONGA_CARD';
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
-        });
-
-        it('should use cardName to build keyValStore path if cardName and keyValStore specified but wallet is not', () => {
-            delete connectOptions.wallet;
-            const cardName = 'CONGA_CARD';
-            connectOptions.cardName = cardName;
-            connectOptions.keyValStore = 'KEY_VAL_STORE';
-            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions).then(connection => {
-                sinon.assert.calledWith(Client.newDefaultKeyValueStore,
-                    sinon.match.has('path',
-                        sinon.match(value => path.isAbsolute(value) && value.includes(connectOptions.cardName)
-                    )));
-            });
         });
 
         //TODO: should throw if wallet not of the right type.
@@ -893,21 +871,20 @@ describe('HLFConnectionManager', () => {
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
-                    sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
+                    sinon.assert.calledWith(Client.newDefaultKeyValueStore, sinon.match.has('path', sinon.match(/composer\/client-data\/admin@hlfv1/)));
                     sinon.assert.calledWith(mockClient.setStateStore, mockKeyValueStore);
                 });
         });
 
-        it('should handle an error creating a store using keyValStore', () => {
+        it('should handle an error creating a new defaultKeyValueStore', () => {
             Client.newDefaultKeyValueStore.reset();
             Client.newDefaultKeyValueStore.rejects('wow such fail');
-            // sandbox.stub(Client, 'newDefaultKeyValueStore').rejects('wow such fail');
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
 
         it('should handle an error creating a store using a wallet', () => {
-            delete connectOptions.keyValStore;
+            delete connectOptions.cardName;
             connectOptions.wallet = {};
             sandbox.stub(Client, 'newCryptoKeyStore').throws('wow such fail');
 
@@ -923,9 +900,8 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should use specified wallet in preference to cardName and keyValStore', () => {
+        it('should use specified wallet in preference to cardName', () => {
             connectOptions.cardName = 'CONGA_CARD';
-            connectOptions.keyValStore = 'KEY_VAL_STORE';
             connectOptions.wallet = mockWallet;
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
@@ -941,10 +917,9 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should use singleton wallet in preference to cardName and keyValStore', () => {
+        it('should use singleton wallet in preference to cardName', () => {
             Wallet.setWallet(mockWallet);
             connectOptions.cardName = 'CONGA_CARD';
-            connectOptions.keyValStore = 'KEY_VAL_STORE';
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
@@ -990,7 +965,7 @@ describe('HLFConnectionManager', () => {
                     }
                 ],
                 ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
+                cardName: 'admin@hlfv1',
                 channel: 'testchainid',
                 timeout: 123,
                 mspID: 'MSP1Org'
@@ -1001,7 +976,7 @@ describe('HLFConnectionManager', () => {
             return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
                 .then(() => {
                     sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
-                    sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
+                    sinon.assert.calledWith(Client.newDefaultKeyValueStore, sinon.match.has('path', sinon.match(/composer\/client-data\/admin@hlfv1/)));
                     sinon.assert.calledOnce(mockClient.setStateStore);
                     sinon.assert.calledWith(mockClient.setStateStore, mockKeyValueStore);
                     sinon.assert.calledOnce(Client.newCryptoSuite);
@@ -1074,12 +1049,11 @@ describe('HLFConnectionManager', () => {
                 .should.be.rejectedWith(/No msp id defined/);
         });
 
-        it('should throw if none of keyValStore, wallet and cardName are specified', () => {
-            delete profile.keyValStore;
+        it('should throw if wallet or cardName not specified', () => {
             delete profile.wallet;
             delete profile.cardName;
             return connectionManager.importIdentity('connprof1', profile, 'anid', 'acert', 'akey')
-                .should.be.rejectedWith(/No key value store directory, wallet or card name has been specified/);
+                .should.be.rejectedWith(/No wallet or card name has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {
@@ -1126,7 +1100,6 @@ describe('HLFConnectionManager', () => {
                     }
                 ],
                 ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
                 timeout: 123,
                 mspID: 'MSP1Org'
@@ -1235,8 +1208,8 @@ describe('HLFConnectionManager', () => {
                     }
                 ],
                 ca: 'http://localhost:7054',
-                keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
+                cardName: 'admin@hlfv1',
                 timeout: 123,
                 mspID: 'MSP1Org'
             };
@@ -1245,6 +1218,12 @@ describe('HLFConnectionManager', () => {
         afterEach(() => {
             sandbox.reset();
         });
+
+        /*
+        it('should throw if wallet or cardname not specified', function() {
+
+        });
+        */
 
         it('should return credentials from Fabric Client for valid user', function() {
             mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);

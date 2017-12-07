@@ -79,13 +79,13 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         npm publish --registry http://localhost:4873
         cd ../composer-common
         npm publish --registry http://localhost:4873
-        cd ../composer-runtime-hlfv1
+
         if [ `uname` = "Darwin" ]; then
-            GATEWAY="$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')"
+            GATEWAY=docker.for.mac.localhost
         else
             GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
-        echo registry=http://${GATEWAY}:4873 > .npmrc
+        echo registry=http://${GATEWAY}:4873 > /tmp/npmrc
         cd "${DIR}"
     fi
 
