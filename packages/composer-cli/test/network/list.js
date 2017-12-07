@@ -93,4 +93,8 @@ describe('composer network list CLI unit tests', function () {
         });
     });
 
+    describe.only('#getMatchingRegistries function tests', function () {
+
+    });
+
 });
