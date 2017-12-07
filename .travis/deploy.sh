@@ -44,10 +44,10 @@ fi
 
 # Check that if this is not a tagged build and not master or the stable v0.16.x
 if [ "${TRAVIS_TAG}" = "" ]; then
-   if [ "${TRAVIS_BRANCH}" != "master" -a "${TRAVIS_BRANCH}" != "v0.16.x" ]; then
+  if [ "${TRAVIS_BRANCH}" != "master" -a "${TRAVIS_BRANCH}" != "v0.16.x" ]; then
     echo Not executing as not building a tag
     exit 0
-   fi  
+  fi  
 fi
 
 # are we building the docs?
