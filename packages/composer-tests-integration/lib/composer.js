@@ -254,14 +254,12 @@ class Composer {
     killBackground(label) {
         return new Promise( (resolve, reject) => {
             if (this.tasks[label]) {
-                this.tasks[label].on('exit', () => {
-                    // delay, ensure child process is really gone!
-                    setTimeout(() => {
-                        resolve();
-                    }, 3000);
-                });
-                this.tasks[label].kill();
+                this.tasks[label].kill('SIGKILL');
                 delete this.tasks[label];
+                // delay, ensure child process is really gone!
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
             } else {
                 reject('No such task: ' + label);
             }
