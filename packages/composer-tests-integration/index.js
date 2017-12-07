@@ -15,9 +15,11 @@
 'use strict';
 
 const clisteps = require('./lib/clisteps');
+const reststeps = require('./lib/reststeps');
 const hooks = require('./lib/hooks');
 
 module.exports = function () {
     clisteps.call(this);
+    reststeps.call(this);
     hooks.call(this);
 };

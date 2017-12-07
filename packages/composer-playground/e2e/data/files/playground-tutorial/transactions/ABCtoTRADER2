@@ -1,0 +1,5 @@
+{
+  "$class": "org.acme.mynetwork.Trade",
+  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+}

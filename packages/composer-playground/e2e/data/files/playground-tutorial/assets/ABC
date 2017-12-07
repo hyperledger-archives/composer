@@ -1,0 +1,8 @@
+{
+  "$class": "org.acme.mynetwork.Commodity",
+  "tradingSymbol": "ABC",
+  "description": "Test commodity",
+  "mainExchange": "Euronext",
+  "quantity": 72.297,
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+}

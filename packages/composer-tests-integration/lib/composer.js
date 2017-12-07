@@ -21,6 +21,8 @@ const path = require('path');
 const sleep = require('sleep-promise');
 const fs = require('fs');
 const childProcess = require('child_process');
+const http = require('http');
+const matchPattern = require('lodash-match-pattern');
 
 let generated = false;
 
@@ -43,12 +45,14 @@ class Composer {
      * Constructor.
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
+     * @param {Object} tasks - current background tasks accessible to all scenarios
      */
-    constructor(uri, errorExpected) {
+    constructor(uri, errorExpected, tasks) {
         this.uri = uri;
         this.errorExpected = errorExpected;
         this.error = null;
         this.lastResp = null;
+        this.tasks = tasks;
     }
 
     /**
@@ -228,6 +232,85 @@ class Composer {
     }
 
     /**
+     * Prepare CLI Command to run
+     * @param {String} label - name associated with task
+     * @param {DataTable} table -  Information listing the CLI command and parameters to be run
+     * @param {RegExp} regex - await the content of stdout before resolving promise
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    runBackground(label, table, regex) {
+        if (typeof table === 'string') {
+            return this._runBackground(label, table, regex);
+        } else {
+            return this._runBackground(label, this.convertTableToCommand(table), regex);
+        }
+    }
+
+    /**
+     * Prepare CLI Command to run
+     * @param {String} label - name associated with task
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    killBackground(label) {
+        if(this.tasks[label]) {
+            this.tasks[label].kill();
+            delete this.tasks[label];
+            return Promise.resolve();
+        } else {
+            return Promise.reject('No such task: ' + label);
+        }
+    }
+
+    /**
+     * Do an HTTP request to REST server
+     * @param {String} method - HTTP method
+     * @param {String} path - path
+     * @param {*} data - request body
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    request(method, path, data) {
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: path,
+            method: method
+        };
+        if(data) {
+            options.headers = {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            };
+        }
+
+        let response = '';
+
+        return new Promise( (resolve, reject) => {
+            const req = http.request(options, (res) => {
+                res.setEncoding('utf8');
+                res.on('data', (chunk) => {
+                    response += chunk;
+                });
+                res.on('end', () => {
+                    this.lastResp = { code: res.statusCode, response: response };
+                    resolve(this.lastResp);
+                });
+            });
+
+            req.on('error', (e) => {
+                this.lastResp = { code: e.statusCode, response: response, error: e };
+                reject(this.lastResp);
+            });
+
+            if(data) {
+                // write data to request body
+                req.write(data);
+            }
+            req.end();
+        });
+
+    }
+
+    /**
      * Convert a prameterised table into a string command to run
      * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
      * @return {String} - String command based upon the input table
@@ -257,8 +340,6 @@ class Composer {
             let command = table;
             let stdout = '';
             let stderr = '';
-
-            //console.log(command);
 
             return new Promise( (resolve, reject) => {
 
@@ -294,6 +375,59 @@ class Composer {
     }
 
     /**
+     * Run a composer CLI command
+     * @param {String} label - name associated with task
+     * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
+     * @param {RegExp} regex - await the content of stdout before resolving promise
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    _runBackground(label, table, regex) {
+        if (typeof table !== 'string') {
+            return Promise.reject('Command passed to function was not a string');
+        } else {
+            let command = table;
+            let stdout = '';
+            let stderr = '';
+            let self = this;
+
+            return new Promise( (resolve, reject) => {
+
+                let childCliProcess = childProcess.exec(command);
+
+                self.tasks[label] = childCliProcess;
+
+                childCliProcess.stdout.setEncoding('utf8');
+                childCliProcess.stderr.setEncoding('utf8');
+
+                let success = false;
+
+                setTimeout(() => {
+                    if(!success) {
+                        reject({stdout: stdout, stderr: stderr});
+                    }
+                }, 60000);
+
+                childCliProcess.stdout.on('data', (data) => {
+                    stdout += data;
+                    if(stdout.match(regex)) {
+                        success = true;
+                        resolve({stdout: stdout, stderr: stderr});
+                    }
+                });
+
+                childCliProcess.stderr.on('data', (data) => {
+                    stderr += data;
+                });
+
+                childCliProcess.on('error', (error) => {
+                    reject({error: error, stdout: stdout, stderr: stderr});
+                });
+
+            });
+        }
+    }
+
+    /**
      * Check the last message with regex
      * @param {RegExp} [regex] Optional regular expression.
      * @param {boolean} isError boolean to indicate if testing error or not
@@ -310,7 +444,7 @@ class Composer {
 
         return new Promise( (resolve, reject) => {
             if (!this.lastResp || !this.lastResp[type]) {
-                reject('a ' + type + ' response was expected, but no repsonse messages have been generated');
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
             } else if (regex) {
                 if(this.lastResp[type].match(regex)) {
                     resolve();
@@ -320,6 +454,63 @@ class Composer {
             }
         });
     }
+
+    /**
+     * Check the HTTP response status
+     * @param {Number} code expected HTTP response code.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseCode(code) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp) {
+                reject('a response was expected, but no response messages have been generated');
+            } else if (this.lastResp.code.toString() === code.toString()) {
+                resolve();
+            } else {
+                reject('received HTTP status: ' + this.lastResp.code + ', ' + this.lastResp.error);
+            }
+        });
+    }
+
+    /**
+     * Check the last message with regex
+     * @param {RegExp} [regex] Optional regular expression.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseBody(regex) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else if (regex) {
+                if(this.lastResp.response.match(regex)) {
+                    resolve();
+                } else {
+                    reject('regex match failed');
+                }
+            }
+        });
+    }
+
+    /**
+     * Check the last message matches JSON
+     * @param {*} pattern Expected json
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseJSON(pattern) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else if (pattern) {
+                const result = matchPattern(JSON.parse(this.lastResp.response), pattern);
+                if(result === null) {
+                    resolve();
+                } else {
+                    reject('JSON match failed: ' + result);
+                }
+            }
+        });
+    }
+
 
 }
 

@@ -2,7 +2,7 @@
 
 ## Platform & version
   - [ ] ubuntu 16.04
-  - [ ] ubuntu 14.0
+  - [ ] ubuntu 14.04
   - [ ] macOS
   - [ ] Windows 10
 
