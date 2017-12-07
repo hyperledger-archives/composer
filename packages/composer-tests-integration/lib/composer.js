@@ -255,7 +255,10 @@ class Composer {
         return new Promise( (resolve, reject) => {
             if (this.tasks[label]) {
                 this.tasks[label].on('exit', () => {
-                    resolve();
+                    // delay, ensure child process is really gone!
+                    setTimeout(() => {
+                        resolve();
+                    }, 3000);
                 });
                 this.tasks[label].kill();
                 delete this.tasks[label];
