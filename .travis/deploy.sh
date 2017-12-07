@@ -9,6 +9,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
 ME=`basename "$0"`
 
+echo "=== Starting the deploy script"
+
 source ${DIR}/build.cfg
 
 if [ "${ABORT_BUILD}" = "true" ]; then
@@ -42,10 +44,10 @@ fi
 
 # Check that if this is not a tagged build and not master or the stable v0.16.x
 if [ "${TRAVIS_TAG}" = "" ]; then
-   if [ "${TRAVIS_BRANCH}" == "master" -o "${TRAVIS_BRANCH}" == "v0.16.x" ]; then
+  if [ "${TRAVIS_BRANCH}" != "master" -a "${TRAVIS_BRANCH}" != "v0.16.x" ]; then
     echo Not executing as not building a tag
     exit 0
-   fi  
+  fi  
 fi
 
 # are we building the docs?
