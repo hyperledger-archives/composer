@@ -252,13 +252,17 @@ class Composer {
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     killBackground(label) {
-        if(this.tasks[label]) {
-            this.tasks[label].kill();
-            delete this.tasks[label];
-            return Promise.resolve();
-        } else {
-            return Promise.reject('No such task: ' + label);
-        }
+        return new Promise( (resolve, reject) => {
+            if (this.tasks[label]) {
+                this.tasks[label].on('exit', () => {
+                    resolve();
+                });
+                this.tasks[label].kill();
+                delete this.tasks[label];
+            } else {
+                reject('No such task: ' + label);
+            }
+        });
     }
 
     /**
