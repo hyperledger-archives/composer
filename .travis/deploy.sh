@@ -40,9 +40,9 @@ if [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
     exit 0
 fi
 
-# Check that if this is not a tagged build, then we only deploy master.
-if [ "${TRAVIS_TAG}" = "" -a "${TRAVIS_BRANCH}" != "master" ]; then
-    echo Not executing as not building a tag and not building from master
+# Check that if this is not a tagged build (branch control in .travis.yml deploy providers)
+if [ "${TRAVIS_TAG}" = "" ]; then
+    echo Not executing as not building a tag
     exit 0
 fi
 

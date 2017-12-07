@@ -30,11 +30,16 @@ script: ./.travis/script.sh
 after_failure: |
     tail -n +1 -- /home/travis/.npm/_logs/*-debug.log
 deploy:
-    provider: script
-    script: ./.travis/deploy.sh
-    skip_cleanup: true
-    on:
-        all_branches: true
+    - provider: script
+	    script: ./.travis/deploy.sh
+	    skip_cleanup: true
+	    on:
+	        branch: master
+    - provider: script
+        script: ./.travis/deploy.sh
+        skip_cleanup: true
+        on:
+            branch: v0.16.x
 cache:
   directories:
     - node_modules
