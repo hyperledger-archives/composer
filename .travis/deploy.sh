@@ -57,7 +57,7 @@ if [ "${DOCS}" != "" ]; then
   else
     if [ "${TRAVIS_BRANCH}" = "master" ]; then
         DOCS="latest"
-    elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
+    elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
         DOCS="stable"
     fi
   fi

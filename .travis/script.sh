@@ -42,7 +42,7 @@ if [ "${DOCS}" != "" ]; then
         if [ "${TRAVIS_BRANCH}" = "master" ]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
+        elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
             npm run full:stable
             npm run linkcheck:stable
         fi
