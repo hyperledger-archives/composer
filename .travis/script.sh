@@ -45,6 +45,10 @@ if [ "${DOCS}" != "" ]; then
         elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
             npm run full:stable
             npm run linkcheck:stable
+        else 
+            echo "Unkown travis branch"
+            echo ${TRAVIS_BRANCH}
+            exit 1    
         fi
     else
        npm run full:unstable
