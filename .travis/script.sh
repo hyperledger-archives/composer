@@ -42,9 +42,13 @@ if [ "${DOCS}" != "" ]; then
         if [ "${TRAVIS_BRANCH}" = "master" ]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
+        elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
             npm run full:stable
             npm run linkcheck:stable
+        else 
+            echo "Unkown travis branch"
+            echo ${TRAVIS_BRANCH}
+            exit 1    
         fi
     else
        npm run full:unstable

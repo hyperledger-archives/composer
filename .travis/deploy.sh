@@ -57,7 +57,7 @@ if [ "${DOCS}" != "" ]; then
   else
     if [ "${TRAVIS_BRANCH}" = "master" ]; then
         DOCS="latest"
-    elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
+    elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
         DOCS="stable"
     fi
   fi
@@ -130,6 +130,19 @@ else
 
     # Grab the current version.
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
+    
+    # process travis environment variables
+    if [ "${TRAVIS_BRANCH}" = "master" ]; then
+        PLAYGROUND_SUFFIX="-latest"      
+        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-4\"}'"
+    elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
+        PLAYGROUND_SUFFIX=""
+        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-3\"}'"      
+    else 
+        echo "Unkown travis branch"
+        echo ${TRAVIS_BRANCH}
+        exit 1    
+    fi
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
@@ -155,14 +168,6 @@ else
 
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-playground
-
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        PLAYGROUND_SUFFIX="-latest"      
-        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-4\"}'"
-    elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
-        PLAYGROUND_SUFFIX=""
-        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-3\"}'"      
-    fi
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
     cf push composer-playground${PLAYGROUND_SUFFIX} -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env composer-playground${PLAYGROUND_SUFFIX} CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
@@ -170,6 +175,7 @@ else
     cf set-env composer-playground${PLAYGROUND_SUFFIX} COMPOSER_CONFIG ${WEB_CFG}
     cf start composer-playground${PLAYGROUND_SUFFIX} 
     popd
+
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"
