@@ -133,12 +133,11 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
 
     if [ "${DOCKER_FILE}" != "" ]; then
         rm ${HOME}/.npmrc
-        cd ../composer-runtime-hlfv1
-        rm .npmrc
-        cd "${DIR}"
+        rm /tmp/npmrc
     fi
 
     # Delete any crypto-config material
+    cd "${DIR}"
     if [ -d ./hlfv1/crypto-config ]; then
         rm -rf ./hlfv1/crypto-config
     fi
