@@ -4,8 +4,15 @@
 set -ev
 set -o pipefail
 
-# Grab the parent (root) directory.
+# Grab the parent (root) directory. Define ME, and the exit fn
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+ME=`basename "$0"`
+echo "-->-- Starting ${ME}"
+function _exit(){
+    printf "%s Exiting %s because %s exit code:%s\n" "--<--" "${ME}" "$1" "$2"   
+    exit $2
+}
+
 
 # Ensure we're using the correct fork of go-duktape.
 pushd "${DIR}/packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3"
@@ -16,9 +23,9 @@ fi
 popd
 
 # Remove the MongoDB repo as their GPG key has expired.
-sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
+sudo rm /etc/apt/sources.list.d/mongodb-3.2.list  || echo "Not an issue any more"
 # Remove Riak https://github.com/travis-ci/travis-ci/issues/8607
-sudo rm -vf /etc/apt/sources.list.d/*riak*
+sudo rm -vf /etc/apt/sources.list.d/*riak*  || echo "Not an issue any more"
 
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
