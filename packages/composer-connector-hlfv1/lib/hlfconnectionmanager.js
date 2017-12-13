@@ -47,10 +47,6 @@ global.hfc = {
 
 
 const Client = require('fabric-client');
-const FabricCAClientImpl = require('fabric-ca-client');
-const Orderer = require('fabric-client/lib/Orderer');
-const Peer = require('fabric-client/lib/Peer');
-
 const ConnectionManager = require('composer-common').ConnectionManager;
 const HLFConnection = require('./hlfconnection');
 const HLFWalletProxy = require('./hlfwalletproxy');
@@ -66,158 +62,36 @@ class HLFConnectionManager extends ConnectionManager {
 
     /**
      * Create a new client.
+     * @param {object} connectOptions connect options
      * @return {Client} A new client.
      */
-    static createClient() {
-        return new Client();
-    }
-
-    /**
-     * Create a new orderer.
-     * @param {string} ordererURL The orderer URL string or the orderer object definition
-     * @param {object} opts optional tls options
-     * @return {Orderer} A new orderer.
-     */
-    static createOrderer(ordererURL, opts) {
-        return new Orderer(ordererURL, opts);
-    }
-
-    /**
-     * parse the orderer definition
-     * @param {string|object} orderer The orderer definition
-     * @param {number} timeout the request
-     * @param {string} globalCert if provided use this unless cert is provided
-     * @return {Orderer} A new orderer.
-     */
-    static parseOrderer(orderer, timeout, globalCert) {
-        if (typeof orderer === 'object') {
-            const opts = HLFConnectionManager._createOpts(timeout, orderer.cert, orderer.hostnameOverride, globalCert);
-            return HLFConnectionManager.createOrderer(orderer.url, opts);
+    static createClient(connectOptions) {
+        let client;
+        try {
+            client = Client.loadFromConfig(connectOptions);
+        } catch(err) {
+            let newError = new Error('Failed to create client from connection profile. ' + err);
+            throw newError;
         }
-        return HLFConnectionManager.createOrderer(orderer, HLFConnectionManager._createOpts(timeout, null, null, globalCert));
+        return client;
     }
 
     /**
-     * create options for fabric-client
+     * Create a new HLF Connection.
+     *
      * @static
-     * @private
-     * @param {number} timeout timeout for requests
-     * @param {string} cert the certificate in PEM format
-     * @param {string} override hostname override required for tests
-     * @param {string} globalCert if provided use this unless cert is provided
-     * @returns {object} options
+     * @param {HLFConnectionManager} connectionManager this connection manager creating the connection
+     * @param {string} connectionProfile the name of the connection profile
+     * @param {string} businessNetworkIdentifier the name of the business network identifier or null if there isn't one
+     * @param {any} connectOptions the connection profile itself in case of any further connection specific options
+     * @param {Client} client the node sdk client
+     * @param {Channel} channel the node sdk channel to be used created from the profile
+     * @param {FabricCAClientImpl} caClient the node sdk ca lient created from the profile
+     * @returns {HLFConnection} connection
+
      */
-    static _createOpts(timeout, cert, override, globalCert) {
-        let opts = {
-            'request-timeout': timeout * 1000
-        };
-        if (override) {
-            opts['ssl-target-name-override'] = override;
-        }
-
-        if (!cert && !globalCert) {
-            return opts;
-        }
-        let finalCert = globalCert;
-        if (cert) {
-            finalCert = cert;
-        }
-
-        if (finalCert.match('^-----BEGIN CERTIFICATE-----')) {
-            opts.pem = finalCert;
-        } else {
-            // assume a file path for now but should support a url mechanism
-            let data = fs.readFileSync(finalCert);
-            opts.pem = Buffer.from(data).toString();
-        }
-        return opts;
-    }
-
-    /**
-     * create a new peer
-     * @static
-     * @param {string} peerURL The peer URL.
-     * @param {object} opts the tls and other options
-     * @returns {Peer} A new Peer
-     * @memberOf HLFConnectionManager
-     */
-    static createPeer(peerURL, opts) {
-        return new Peer(peerURL, opts);
-    }
-
-    /**
-     * parse the peer definition in a connection
-     * @param {string} peer The peer URL.
-     * @param {number} timeout the request timeout
-     * @param {string} globalCert if provided use this unless cert is provided
-     * @param {array} peers Array to store any created peers
-     * @param {array} eventHubDefs Array to store any created event hubs
-     */
-    static parsePeer(peer, timeout, globalCert, peers, eventHubDefs) {
-        const method = 'parsePeer';
-
-        const opts = HLFConnectionManager._createOpts(timeout, peer.cert, peer.hostnameOverride, globalCert);
-        if (!peer.requestURL && !peer.eventURL) {
-            throw new Error('peer incorrectly defined');
-        }
-
-        if (peer.requestURL) {
-            const hfc_peer = HLFConnectionManager.createPeer(peer.requestURL, opts);
-            LOG.debug(method, 'Adding peer URL', peer.requestURL);
-            peers.push(hfc_peer);
-        }
-        if (peer.eventURL) {
-            const eventHub = HLFConnectionManager.createEventHubDefinition(peer.eventURL, opts);
-            LOG.debug(method, 'Setting event hub URL', peer.eventURL);
-            eventHubDefs.push(eventHub);
-        }
-    }
-
-    /**
-     * create an eventhub definition which can be used to instantiate an event hub later.
-     * @static
-     * @param {any} eventURL the event hub url
-     * @param {any} opts options for the event hub
-     * @returns {object} event hub definition
-     * @memberOf HLFConnectionManager
-     */
-    static createEventHubDefinition(eventURL, opts) {
-        return {
-            'eventURL': eventURL,
-            'opts': opts
-        };
-    }
-
-    /**
-     * Create a new CA client.
-     * @param {string} caURL The CA URL.
-     * @param {object} tlsOpts the tls options
-     * @param {string} caName The name of the CA
-     * @param {any} cryptosuite The cryptosuite to use
-     * @return {FabricCAClientImpl} A new CA client.
-     */
-    static createCAClient(caURL, tlsOpts, caName, cryptosuite) {
-        return new FabricCAClientImpl(caURL, tlsOpts, caName, cryptosuite);
-    }
-
-    /**
-     * Create a new CA client from a ca definition
-     * @param {string|object} ca The CA object or string
-     * @param {any} cryptosuite The cryptosuite to assign to the fabric-ca
-     * @return {FabricCAClientImpl} A new CA client.
-     */
-    static parseCA(ca, cryptosuite) {
-        let tlsOpts = null;
-        if (typeof ca === 'object') {
-            if (ca.trustedRoots) {
-                tlsOpts = {
-                    trustedRoots: ca.trustedRoots,
-                    verify: ca.verify  // undefined gets set to true by client
-                };
-            }
-            return HLFConnectionManager.createCAClient(ca.url, tlsOpts, (ca.name || null), cryptosuite);
-        }
-        return HLFConnectionManager.createCAClient(ca, null, null, cryptosuite);
+    static createHLFConnection(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
+        return new HLFConnection(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
     }
 
     /**
@@ -233,34 +107,6 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Validate the profile
-     *
-     * @param {object} profileDefinition profile definition
-     * @param {wallet} wallet an optional wallet
-     *
-     * @memberOf HLFConnectionManager
-     */
-    validateProfileDefinition(profileDefinition, wallet) {
-        if (!Array.isArray(profileDefinition.orderers)) {
-            throw new Error('The orderers array has not been specified in the connection profile');
-        } else if (!profileDefinition.orderers.length) {
-            throw new Error('No orderer URLs have been specified in the connection profile');
-        } else if (!Array.isArray(profileDefinition.peers)) {
-            throw new Error('The peers array has not been specified in the connection profile');
-        } else if (!profileDefinition.peers.length) {
-            throw new Error('No peer URLs have been specified in the connection profile');
-        }  else if (!wallet && !profileDefinition.keyValStore && !profileDefinition.cardName) {
-            throw new Error('No key value store directory, wallet or card name has been specified');
-        } else if (!profileDefinition.ca) {
-            throw new Error('The certificate authority URL has not been specified in the connection profile');
-        } else if (!profileDefinition.channel) {
-            throw new Error('No channel has been specified in the connection profile');
-        } else if (!profileDefinition.mspID) {
-            throw new Error('No msp id defined');
-        }
-    }
-
-    /**
      * link a wallet to the fabric-client store and cryptostore
      * or use the fabric-clients default FileKeyValStore if no
      * wallet specified.
@@ -270,9 +116,8 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {Object} profileData The connection profile.
      * @returns {Promise} resolves to a client configured with the required stores
      *
-     * @memberOf HLFConnectionManager
      */
-    _setupClientStore(client, wallet, profileData) {
+    static _setupClientStore(client, wallet, profileData) {
         const method = '_setupClientStore';
         LOG.entry(method, client, wallet, profileData);
 
@@ -280,14 +125,9 @@ class HLFConnectionManager extends ConnectionManager {
             return this._setupWallet(client, wallet);
         }
 
-        let storePath;
-        if (profileData.cardName) {
-            storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
-        } else {
-            storePath = profileData.keyValStore;
-        }
+        let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
 
-        return this._setupFileStore(client, storePath);
+        return HLFConnectionManager._setupFileStore(client, storePath);
 
     }
 
@@ -297,7 +137,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {Wallet} wallet the wallet implementation
      * @returns {Promise} resolves to a client configured with the required stores
      */
-    _setupWallet(client, wallet) {
+    static _setupWallet(client, wallet) {
         const method = '_setupWallet';
         LOG.entry(method, client, wallet);
         return new HLFWalletProxy(wallet).then((store) => {
@@ -320,7 +160,8 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {String} keyValStorePath File system location to use for the store
      * @returns {Promise} resolves to a client configured with the required stores
      */
-    _setupFileStore(client, keyValStorePath) {
+    static _setupFileStore(client, keyValStorePath) {
+        //TODO: could we use client.initCredentialStores() ?
         const method = '_setupFileStore';
         LOG.entry(method, client, keyValStorePath);
         return Client.newDefaultKeyValueStore({path: keyValStorePath}).then((store) => {
@@ -359,20 +200,16 @@ class HLFConnectionManager extends ConnectionManager {
             return Promise.reject(new Error('enrollmentID not specified'));
         } else if (!enrollmentSecret) {
             return Promise.reject(new Error('enrollmentSecret not specified'));
-        } else if (!connectionOptions.ca) {
-            return Promise.reject(new Error('No ca defined in connection profile'));
         }
 
         // Submit the enrollment request to Fabric CA.
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
-        const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, Client.newCryptoSuite());
+        const client = HLFConnectionManager.createClient(connectionOptions);
+        const caClient = client.getCertificateAuthority();
 
-        // determine the name of the ca.
-        let caName = 'default';
-        if (typeof connectionOptions.ca === 'object' && connectionOptions.ca.name) {
-            caName = connectionOptions.ca.name;
-        }
+        let caName = caClient.getCaName();
+        caName = caName ? caName : 'default';
         return caClient.enroll(options)
             .then((enrollment) => {
                 enrollment.caName = caName;
@@ -418,16 +255,14 @@ class HLFConnectionManager extends ConnectionManager {
         //default the optional wallet
         let wallet = connectionOptions.wallet || Wallet.getWallet();
 
-        // validate the profile
-        try {
-            this.validateProfileDefinition(connectionOptions, wallet);
-        } catch(error) {
-            return Promise.reject(error);
+        if (!wallet && !connectionOptions.cardName) {
+            return Promise.reject(new Error('No wallet or card name has been specified'));
         }
 
-        let mspID = connectionOptions.mspID;
-        const client = HLFConnectionManager.createClient();
-        return this._setupClientStore(client, wallet, connectionOptions)
+        let client = HLFConnectionManager.createClient(connectionOptions);
+        const mspID = client.getMspid();
+        //TODO check if mspId, organisation is defined
+        return HLFConnectionManager._setupClientStore(client, wallet, connectionOptions)
             .then(() => {
                 return client.createUser({
                     username: id,
@@ -450,7 +285,7 @@ class HLFConnectionManager extends ConnectionManager {
     /**
      * Establish a connection to the business network.
      * @param {string} connectionProfile The name of the connection profile
-     * @param {string} businessNetworkIdentifier The identifier of the business network (no version!)
+     * @param {string} businessNetworkIdentifier The identifier of the business network (no version!), can be null if not connecting to a business network
      * @param {object} connectOptions The connection options loaded from the profile
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
@@ -469,73 +304,26 @@ class HLFConnectionManager extends ConnectionManager {
         //default the optional wallet
         let wallet = connectOptions.wallet || Wallet.getWallet();
 
-        // validate the profile
-        try {
-            this.validateProfileDefinition(connectOptions, wallet);
-        } catch(error) {
-            return Promise.reject(error);
-        }
-
-        // Default the optional connection options.
-        if (!connectOptions.timeout) {
-            connectOptions.timeout = 180;
-        }
-
-        // set the message limits if required
-        if (connectOptions.maxSendSize && connectOptions.maxSendSize !== 0) {
-            Client.setConfigSetting('grpc-max-send-message-length', connectOptions.maxSendSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxSendSize);
-        }
-
-        // set the message limits if required
-        if (connectOptions.maxRecvSize && connectOptions.maxRecvSize !== 0) {
-            Client.setConfigSetting('grpc-max-receive-message-length', connectOptions.maxRecvSize * 1 < 0 ? -1 : 1024 * 1024 * connectOptions.maxRecvSize);
+        if (!wallet && !connectOptions.cardName) {
+            return Promise.reject(new Error('No wallet or card name has been specified'));
         }
 
         // Create a new client instance.
-        const client = HLFConnectionManager.createClient();
+        const client = HLFConnectionManager.createClient(connectOptions);
 
-        // Create a new channel instance.
-        const channel = client.newChannel(connectOptions.channel);
+        // TODO: check mspId and organisation have been defined
+        // TODO: find a channel, should be provided by node sdk
+        let channelNames = Object.keys(client._network_config._network_config.channels);
+        const channel = client.getChannel(channelNames[0]);
 
-        // Load all of the orderers into the client.
-        connectOptions.orderers.forEach((orderer) => {
-            LOG.debug(method, 'Adding orderer URL', orderer);
-            channel.addOrderer(HLFConnectionManager.parseOrderer(orderer, connectOptions.timeout, connectOptions.globalCert));
-        });
-
-        // Parse all of the peers.
-        let peers = [];
-        let eventHubDefs = [];
-        try {
-            connectOptions.peers.forEach((peer) => {
-                HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, peers, eventHubDefs);
-            });
-        } catch(error) {
-            return Promise.reject(error);
-        }
-
-        // Check for at least one peer and at least one event hub.
-        if (peers.length === 0) {
-            return Promise.reject(new Error('You must specify at least one peer with a valid requestURL for submitting transactions'));
-        } else if (eventHubDefs.length === 0) {
-            return Promise.reject(new Error('You must specify at least one peer with a valid eventURL for receiving events'));
-        }
-
-        // Load all of the peers into the client.
-        peers.forEach((peer) => {
-            LOG.debug(method, 'Adding peer URL', peer);
-            channel.addPeer(peer);
-        });
-
-        // Set up the wallet.
-        return this._setupClientStore(client, wallet, connectOptions)
+        return HLFConnectionManager._setupClientStore(client, wallet, connectOptions)
             .then(() => {
 
                 // Create a CA client.
-                const caClient = HLFConnectionManager.parseCA(connectOptions.ca, client.getCryptoSuite());
+                const caClient = client.getCertificateAuthority();
 
                 // Now we can create the connection.
-                let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+                let connection = HLFConnectionManager.createHLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
                 LOG.exit(method, connection);
                 return connection;
 
@@ -557,8 +345,12 @@ class HLFConnectionManager extends ConnectionManager {
     exportIdentity(connectionProfileName, connectionOptions, id) {
         const method = 'exportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
-        const client = HLFConnectionManager.createClient();
-        return this._setupClientStore(client, connectionOptions.wallet, connectionOptions)
+
+        //default the optional wallet
+        let wallet = connectionOptions.wallet || Wallet.getWallet();
+
+        const client = HLFConnectionManager.createClient(connectionOptions);
+        return HLFConnectionManager._setupClientStore(client, wallet, connectionOptions)
             .then(() => {
                 return client.getUserContext(id, true);
             })
