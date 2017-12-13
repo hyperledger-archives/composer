@@ -120,11 +120,11 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 
     if [[ "${BUILD_FOCUS}" = "latest" ]]; then
         PLAYGROUND_SUFFIX="-unstable"      
-        WEB_CFG="'{\"webonly\":true}'"
+        WEB_CFG="{\"webonly\":true}"
         TAG="unstable"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         PLAYGROUND_SUFFIX="-next-unstable"
-        WEB_CFG="'{\"webonly\":true}'"      
+        WEB_CFG="{\"webonly\":true}"      
         TAG="next-unstable"
     else 
         _exit "Unknown build focus" 1 
@@ -168,11 +168,11 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
     # process travis environment variables
     if [[ "${BUILD_FOCUS}" = "latest" ]]; then
         PLAYGROUND_SUFFIX=""      
-        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}'"
+        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
         TAG="latest"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         PLAYGROUND_SUFFIX="-next"
-        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}'"
+        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}"
         TAG="next"
     else 
         _exit "Unknown build focus" 1 
