@@ -134,8 +134,6 @@ class Composer {
                 if (Composer.isHyperledgerFabricV1()) {
                     let fs = dynamicRequire('fs');
                     const admins = [
-                        { org: 'org1', keyFile: 'key.pem', profile : 'org1-only' },
-                        { org: 'org2', keyFile: 'key.pem', profile : 'org2-only' },
                         { org: 'org1', keyFile: 'key.pem', profile : 'org1' },
                         { org: 'org2', keyFile: 'key.pem', profile : 'org2' }
                     ];

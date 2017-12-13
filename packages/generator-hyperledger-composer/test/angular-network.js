@@ -22,7 +22,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
 
 
 
-        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'generatorProfile'});
+        let idCard_PeerAdmin = new IdCard(metadata, {'x-type' : 'embedded',name:'generatorProfile'});
         idCard_PeerAdmin.setCredentials({ certificate: 'cert', privateKey: 'key' });
 
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
@@ -39,7 +39,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             return adminConnection.deploy(businessNetworkDefinition, {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
         })
         .then(() => {
-            const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', type: 'embedded' });
+            const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', 'x-type': 'embedded' });
             return adminConnection.importCard('admin@digitalproperty-network', idCard);
         })
         .then(() => {

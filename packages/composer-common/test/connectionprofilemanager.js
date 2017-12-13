@@ -53,12 +53,24 @@ describe('ConnectionProfileManager', () => {
         });
     });
 
-    describe('#getConnectionManager', () => {
+    describe('#getConnectionManagerByType', () => {
 
         it('should throw if no connection manager available', () => {
             let cpm = new ConnectionProfileManager();
             cpm.should.not.be.null;
             return cpm.getConnectionManagerByType( 'foo' ).should.be.rejectedWith(/Failed to load connector module/);
+        });
+
+        it('should throw if no type provided', () => {
+            let cpm = new ConnectionProfileManager();
+            cpm.should.not.be.null;
+            return cpm.getConnectionManagerByType(undefined).should.be.rejectedWith(/No connection type provided/)
+                .then(() => {
+                    return cpm.getConnectionManagerByType(null).should.be.rejectedWith(/No connection type provided/);
+                })
+                .then(() => {
+                    return cpm.getConnectionManagerByType('').should.be.rejectedWith(/No connection type provided/);
+                });
         });
 
         it('should dynamically load the connection manager', () => {
@@ -114,7 +126,7 @@ describe('ConnectionProfileManager', () => {
 
     describe('#connectWithData', () => {
         it('Good path, calling with valid data', () => {
-            const profile = {type : 'foo', data : 'data', name : 'myNetwork'};
+            const profile = {'x-type' : 'foo', data : 'data', name : 'myNetwork'};
 
             // store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
@@ -128,14 +140,14 @@ describe('ConnectionProfileManager', () => {
                     connection.should.equal(stubConnection);
                     sinon.assert.calledOnce(connectionManager.connect);
                     sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {
-                        type : 'foo',
+                        'x-type' : 'foo',
                         data : 'data',
                         name : 'myNetwork'
                     });
                 });
         });
         it('Good path, calling with valid data, and optional data', () => {
-            const profile = {type : 'foo', data : 'data', name : 'myNetwork'};
+            const profile = {'x-type' : 'foo', data : 'data', name : 'myNetwork'};
 
             // store.load.returns( Promise.resolve(profile) );
             const connectionManager = sinon.createStubInstance(ConnectionManager);
@@ -149,7 +161,7 @@ describe('ConnectionProfileManager', () => {
                     connection.should.equal(stubConnection);
                     sinon.assert.calledOnce(connectionManager.connect);
                     sinon.assert.calledWith(connectionManager.connect, 'myNetwork', 'myNetwork', {
-                        type : 'foo',
+                        'x-type' : 'foo',
                         data : 'data',
                         name : 'myNetwork',
                         optional : 'true'
@@ -166,11 +178,11 @@ describe('ConnectionProfileManager', () => {
             let cpm = new ConnectionProfileManager();
             cpm.should.not.be.null;
             cpm.addConnectionManager( 'foo', connectionManager);
-            return cpm.connect( 'foo', 'myNetwork', { overrideMe: 'sure thing', type : 'foo', data : 'data' } )
+            return cpm.connect( 'foo', 'myNetwork', { overrideMe: 'sure thing', 'x-type': 'foo', data : 'data' } )
                 .then((connection) => {
                     connection.should.equal(stubConnection);
                     sinon.assert.calledOnce(connectionManager.connect);
-                    sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {type: 'foo', data : 'data', overrideMe: 'sure thing' });
+                    sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {'x-type': 'foo', data : 'data', overrideMe: 'sure thing' });
                 });
         });
 
