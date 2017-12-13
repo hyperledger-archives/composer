@@ -1039,6 +1039,11 @@ class BusinessNetworkConnector extends Connector {
                 for(let n=0; n < parameters.length; n++) {
                     const param = parameters[n];
                     const paramValue = queryParameters[param.name];
+
+                    if( typeof paramValue === 'undefined' || paramValue ===null ){
+                        throw new Error('The value of the parameter type: ' + param.type + ' is null or undefined.');
+                    }
+
                     switch(param.type) {
                     case 'Integer':
                     case 'Long':

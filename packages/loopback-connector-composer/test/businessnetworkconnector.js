@@ -2341,17 +2341,19 @@ describe('BusinessNetworkConnector', () => {
             testConnector.serializer = mockSerializer;
             testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
             mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
-            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
-            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
+
         });
 
         it('should call the executeQuery with an expected string result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
             const cb = sinon.stub();
             return testConnector.executeQuery( 'stringQuery', { param1: 'blue' }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'stringQuery', { param1: 'blue' });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
@@ -2363,82 +2365,119 @@ describe('BusinessNetworkConnector', () => {
 
         it('should call the executeQuery with an expected double result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theDouble: 10.5}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theDouble: 10.5});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'doubleQuery', { param1: '10.2' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'doubleQuery', { param1: 10.2 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'doubleQuery', { param1: 10.2 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theDouble: 10.5
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected long result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theLong: 1000}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theLong: 1000});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'longQuery', { param1: '100' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'longQuery', { param1: 100 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'longQuery', { param1: 100 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theLong: 1000
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected integer result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theInteger: 15}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theInteger: 15});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'integerQuery', { param1: '100' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'integerQuery', { param1: 10 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'integerQuery', { param1: 10 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theInteger: 15
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected dateTime result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theDateTime: '2007-12-05T14:30' }]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theDateTime: '2007-12-05T14:30'});
             const cb = sinon.stub();
             return testConnector.executeQuery( 'dateTimeQuery', { param1: '2007-04-05T14:30' }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'dateTimeQuery', { param1: '2007-04-05T14:30' });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theDateTime: '2007-12-05T14:30'
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected boolean result', () => {
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theBoolean: true }]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theBoolean: true});
 
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'booleanQuery', { param1: 'false' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'booleanQuery', { param1: false }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'booleanQuery', { param1: false });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theBoolean: true
                     }]);
                 });
+        });
+
+        it('should throw the executeQuery with an null parameter value', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'booleanQuery', { param1: null }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/The value of the parameter type: Boolean is null or undefined./);
+        });
+
+        it('should throw the executeQuery with an undefined parameter value', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'dateTimeQuery', { param1: undefined }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/The value of the parameter type: DateTime is null or undefined./);
         });
 
         it('should throw when executing a query that does not exist', () => {
