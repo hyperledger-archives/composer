@@ -51,13 +51,13 @@ describe('LoopBackCardStore', () => {
             return user.create({ email: 'alice@email.com', password: 'password' });
         })
         .then((user) => {
-            const idCard = new IdCard({ userName: 'alice1', enrollmentSecret: 'aliceSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            const idCard = new IdCard({ userName: 'alice1', enrollmentSecret: 'aliceSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
             return idCard.toArchive({ type: 'nodebuffer' })
                 .then((idCardData) => {
                     return Card.create({ userId: user.id, name: 'alice1@bond-network', base64: idCardData.toString('base64'), data: { test1: 'hello this is a cert', test2: 'nay' } });
                 })
                 .then(() => {
-                    const idCard = new IdCard({ userName: 'bob1', enrollmentSecret: 'bobSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+                    const idCard = new IdCard({ userName: 'bob1', enrollmentSecret: 'bobSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
                     return idCard.toArchive({ type: 'nodebuffer' });
                 })
                 .then((idCardData) => {
@@ -92,7 +92,7 @@ describe('LoopBackCardStore', () => {
     describe('#put', () => {
 
         it('should put the specified business network card', () => {
-            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
             return cardStore.put('charlie1@bond-network', idCard)
                 .then(() => {
                     return Card.findOne({ where: { name: 'charlie1@bond-network' }});
@@ -103,7 +103,7 @@ describe('LoopBackCardStore', () => {
         });
 
         it('should replace the specified business network card', () => {
-            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
             return cardStore.put('charlie1@bond-network', idCard)
                 .then(() => {
                     return Card.count({ name: 'charlie1@bond-network' });
