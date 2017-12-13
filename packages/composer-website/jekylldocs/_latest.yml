@@ -1,2 +1,2 @@
-baseurl: "/composer/latest"
-status: "latest"
+baseurl: "/composer"
+status: "stable"

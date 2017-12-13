@@ -7,14 +7,47 @@ set -o pipefail
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
-
-echo ${ME} `date`
-
+echo "-->-- Starting ${ME}"
 source ${DIR}/build.cfg
+echo "--I-- ${TRAVIS_TAG} ${TRAVIS_BRANCH}"
+
+function _exit(){
+    printf "%s Exiting %s because %s exit code:%s\n" "--<--" "${ME}" "$1" "$2"   
+    exit $2
+}
+
+## regexp to match the latest version
+LATEST_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
+NEXT_REGEXP=v0\.17\.\([0-9]{1,2}\|x\)
+
+## determine the build type here
+if [ -z "${TRAVIS_TAG}" ]; then
+    if [ "${TRAVIS_BRANCH}" = "master" ]; then
+        BUILD_FOCUS="next"
+        BUILD_RELEASE="unstable"
+    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
+        BUILD_FOCUS="latest"
+        BUILD_RELEASE="unstable"
+    else 
+        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
+    fi
+else
+    if [[ "${TRAVIS_BRANCH}" =~ ${NEXT_REGEXP} ]]; then
+        BUILD_FOCUS="next"
+        BUILD_RELEASE="stable"
+    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
+        BUILD_FOCUS="latest"
+        BUILD_RELEASE="stable"
+    else 
+        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
+    fi
+fi
+
+echo "--I-- Build focus is ${BUILD_FOCUS}"
+echo "--I-- Build release is ${BUILD_RELEASE}"
 
 if [ "${ABORT_BUILD}" = "true" ]; then
-  echo "-#- exiting early from ${ME}"
-  exit ${ABORT_CODE}
+  _exit "exiting early from" ${ABORT_CODE}
 fi
 
 
@@ -36,23 +69,33 @@ if [ "${DOCS}" != "" ]; then
 
     # Build the documentation.
     npm run doc
-    echo ${TRAVIS_BRANCH}
-    if [ -n "${TRAVIS_TAG}" ]; then
-        export JEKYLL_ENV=production
-        if [ "${TRAVIS_BRANCH}" = "master" ]; then
+
+    if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
+
+        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+            npm run full:unstable
+            npm run linkcheck:unstable
+        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+            npm run full:next-unstable
+            npm run linkcheck:next-unstable
+        else 
+            _exit "Unknown build focus" 1 
+        fi
+
+    elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
+
+        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [[ "${TRAVIS_BRANCH}" =~ v0\.16\.[0-9]{1,2} ]]; then
-            npm run full:stable
-            npm run linkcheck:stable
+        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+            npm run full:next
+            npm run linkcheck:next
         else 
-            echo "Unkown travis branch"
-            echo ${TRAVIS_BRANCH}
-            exit 1    
+            _exit "Unknown build focus" 1 
         fi
+
     else
-       npm run full:unstable
-       npm run linkcheck:unstable
+       _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
     fi
 
 # Are we running functional verification tests?
@@ -88,4 +131,4 @@ else
 
 fi
 
-echo ${ME} `date`
+_exit "All complete" 0

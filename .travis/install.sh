@@ -4,10 +4,11 @@
 set -ev
 set -o pipefail
 
-# Grab the Concerto directory.
+# Grab the parent directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
 
+echo "-->-- Starting ${ME}"
 source ${DIR}/build.cfg
 
 if [ "${ABORT_BUILD}" = "true" ]; then
@@ -15,12 +16,8 @@ if [ "${ABORT_BUILD}" = "true" ]; then
   exit ${ABORT_CODE}
 fi
 
-# Check of the task current executing
-#if [ ${FC_TASK}" = "docs" ]; then
-  #echo Doing Docs - no requirement for installations of other software
-  #exit 0;
-#fi
-
 # Use lerna bootstrap and not npm install; it's a lot faster in Travis.
 cd ${DIR}
 lerna bootstrap 2>&1
+
+echo "--<-- Exiting ${ME}"
