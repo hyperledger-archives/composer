@@ -7,10 +7,10 @@ client:
   connection:
     timeout:
       peer:
-        endorser: 30s
-        eventHub: 30s
-        eventReg: 30s
-      orderer: 30s
+        endorser: 300
+        eventHub: 300
+        eventReg: 300
+      orderer: 300
 channels:
   composerchannel:
     orderers:
@@ -38,13 +38,9 @@ peers:
   peer0.org1.example.com:
     url: 'grpc://localhost:7051'
     eventUrl: 'grpc://localhost:7053'
-    grpcOptions:
-      request-timeout: 300000
   peer0.org2.example.com:
     url: 'grpc://localhost:8051'
     eventUrl: 'grpc://localhost:8053'
-    grpcOptions:
-      request-timeout: 300000
 certificateAuthorities:
   ca.org1.example.com:
     url: 'http://localhost:7054'
