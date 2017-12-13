@@ -24,7 +24,6 @@ const path = require('path');
 const semver = require('semver');
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
-const EventHub = require('fabric-client/lib/EventHub');
 const TransactionID = require('fabric-client/lib/TransactionID');
 
 const LOG = Logger.getLog('HLFConnection');
@@ -52,16 +51,6 @@ class HLFConnection extends Connection {
         return user;
     }
 
-  /**
-     * Create a new event hub.
-     *
-     * @param {hfc} clientContext client context
-     * @return {EventHub} A new event hub.
-     */
-    static createEventHub(clientContext) {
-        return new EventHub(clientContext);
-    }
-
     /**
      * Constructor.
      * @param {ConnectionManager} connectionManager The owning connection manager.
@@ -71,13 +60,12 @@ class HLFConnection extends Connection {
      * @param {object} connectOptions The connection options in use by this connection.
      * @param {Client} client A configured and connected {@link Client} object.
      * @param {Chain} channel A configured and connected {@link Chain} object.
-     * @param {array} eventHubDefs An array of event hub definitions
      * @param {FabricCAClientImpl} caClient A configured and connected {@link FabricCAClientImpl} object.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
 
         // Validate all the arguments.
         if (!connectOptions) {
@@ -86,8 +74,6 @@ class HLFConnection extends Connection {
             throw new Error('client not specified');
         } else if (!channel) {
             throw new Error('channel not specified');
-        } else if (!eventHubDefs || !Array.isArray(eventHubDefs)) {
-            throw new Error('eventHubDefs not specified or not an array');
         } else if (!caClient) {
             throw new Error('caClient not specified');
         }
@@ -96,24 +82,16 @@ class HLFConnection extends Connection {
         this.connectOptions = connectOptions;
         this.client = client;
         this.channel = channel;
-        this.eventHubDefs = eventHubDefs;
         this.eventHubs = [];
         this.ccEvents = [];
         this.caClient = caClient;
         this.initialized = false;
-        this.commitTimeout = this.connectOptions.timeout * 1000;
+        this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
+        LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
         LOG.exit(method);
-    }
-
-    /**
-     * Get the connection options for this connection.
-     * @return {object} The connection options for this connection.
-     */
-    getConnectionOptions() {
-        return this.connectOptions;
     }
 
     /**
@@ -180,7 +158,7 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspID);
+                return user.setEnrollment(enrollment.key, enrollment.certificate, this.client.getMspid());
             })
             .then(() => {
 
@@ -211,11 +189,15 @@ class HLFConnection extends Connection {
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
-        this.eventHubDefs.forEach((eventHubDef) => {
-            const eventHub = HLFConnection.createEventHub(this.client);  //TODO: Change this.
-            eventHub.setPeerAddr(eventHubDef.eventURL, eventHubDef.opts);
+
+        //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
+        //we want the eventhubs for all peers in a channel that have the eventSource role
+        //This will change with channel based event messages, so have to leave it like this for now.
+        //basically even though we could get all the event hubs for a channel, you would receive all events
+        //from those peers regardless of business network.
+        this.eventHubs = this.client.getEventHubsForOrg();
+        this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
-            this.eventHubs.push(eventHub);
         });
 
         if (this.businessNetworkIdentifier) {
@@ -339,7 +321,7 @@ class HLFConnection extends Connection {
             chaincodeVersion: runtimePackageJSON.version,
             chaincodeId: businessNetworkIdentifier,
             txId: txId,
-            targets: this.channel.getPeers()
+            channelNames: this.channel.getName() // this will drive getting all the Peers to install on
         };
 
         try {
@@ -619,10 +601,12 @@ class HLFConnection extends Connection {
         // and if we did this would allow a malicious peer to stop transactions so we
         // issue a warning so that it get's logged, but we don't know which peer(s) it was
         if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
-            LOG.warn('Peers do not agree, Read Write sets differ');
+            const warning = 'Peers do not agree, Read Write sets differ';
+            LOG.warn(warning);
+            invalidResponseMsgs.push(warning);
         }
         LOG.exit(method, ignoredErrors);
-        return {ignoredErrors, validResponses};
+        return {ignoredErrors, validResponses, invalidResponseMsgs};
     }
 
     /**
@@ -776,7 +760,7 @@ class HLFConnection extends Connection {
                     // will be handled by the catch block
                     throw payload;
                 }
-                LOG.exit(payload);
+                LOG.exit(method, payload);
                 return payload;
             })
             .catch((error) => {
@@ -853,7 +837,7 @@ class HLFConnection extends Connection {
                     fcn: functionName,
                     args: args
                 };
-                return this.channel.sendTransactionProposal(request);
+                return this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
             })
             .then((results) => {
                 // Validate the endorsement results.

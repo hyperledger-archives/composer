@@ -19,6 +19,7 @@ const nodeFs = require('fs');
 const path = require('path');
 const process = require('process');
 const thenifyAll = require('thenify-all');
+const yaml = require('js-yaml');
 const JSZip = require('jszip');
 
 const thenifyMkdirp = thenifyAll(mkdirp);
@@ -26,7 +27,9 @@ const thenifyMkdirp = thenifyAll(mkdirp);
 const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
 
-const CONNECTION_FILENAME = 'connection.json';
+//const CONNECTION_FILENAME = 'connection.json';
+const CONNECTION_FILE_JSON = 'connection.json';
+const CONNECTION_FILE_YAML = 'connection.yaml';
 const METADATA_FILENAME = 'metadata.json';
 const CREDENTIALS_DIRNAME = 'credentials';
 
@@ -202,10 +205,10 @@ class IdCard {
             let connection;
             let credentials = { };
 
-            LOG.debug(method, 'Loading ' + CONNECTION_FILENAME);
-            const connectionFile = zip.file(CONNECTION_FILENAME);
+            LOG.debug(method, 'Loading ' + CONNECTION_FILE_JSON);
+            let connectionFile = zip.file(CONNECTION_FILE_JSON);
             if (!connectionFile) {
-                throw Error('Required file not found: ' + CONNECTION_FILENAME);
+                throw Error('Required file not found: ' + CONNECTION_FILE_JSON);
             }
 
             promise = promise.then(() => {
@@ -274,7 +277,7 @@ class IdCard {
         const zip = new JSZip();
 
         const connectionContents = JSON.stringify(this.connectionProfile);
-        zip.file(CONNECTION_FILENAME, connectionContents);
+        zip.file(CONNECTION_FILE_JSON, connectionContents);
 
         const metadataContents = JSON.stringify(this.metadata);
         zip.file(METADATA_FILENAME, metadataContents);
@@ -316,8 +319,12 @@ class IdCard {
             flag: 'r'
         };
         const metadataPath = path.resolve(cardDirectory, METADATA_FILENAME);
-        const connectionPath = path.resolve(cardDirectory, CONNECTION_FILENAME);
+        const connectionPathJSON = path.resolve(cardDirectory, CONNECTION_FILE_JSON);
+        const connectionPathYAML = path.resolve(cardDirectory, CONNECTION_FILE_YAML);
         const credentialsPath = path.resolve(cardDirectory, CREDENTIALS_DIRNAME);
+
+        let isYAML = true;
+        let causeJSON;
 
         return fs.stat(cardDirectory).catch(cause => {
             throw newErrorWithCause('Unable to read card directory: ' + cardDirectory, cause);
@@ -332,11 +339,26 @@ class IdCard {
                 metadata.version = 0;
             }
         }).then(() => {
-            return fs.readFile(connectionPath, readOptions).catch(cause => {
-                throw newErrorWithCause('Unable to read required file: ' + CONNECTION_FILENAME, cause);
+            return fs.readFile(connectionPathJSON, readOptions).catch(cause => {
+                causeJSON = cause;
+                return null;
             });
         }).then(connectionContent => {
-            connection = JSON.parse(connectionContent);
+            if (connectionContent) {
+                isYAML = false;
+                return connectionContent;
+            }
+            return fs.readFile(connectionPathYAML, readOptions).catch(cause => {
+                throw new Error(`Unable to read required file ${CONNECTION_FILE_JSON} - ${causeJSON} or ${CONNECTION_FILE_YAML} - ${cause}.`);
+            });
+
+        }).then(connectionContent => {
+            if (isYAML) {
+                connection = yaml.safeLoad(connectionContent);
+            }
+            else {
+                connection = JSON.parse(connectionContent);
+            }
         }).then(() => {
             return fs.readdir(credentialsPath).then(credentialFilenames => {
                 const credentialPromises = [];
@@ -377,7 +399,7 @@ class IdCard {
         }
 
         const metadataPath = path.join(cardDirectory, METADATA_FILENAME);
-        const connectionPath = path.join(cardDirectory, CONNECTION_FILENAME);
+        const connectionPath = path.join(cardDirectory, CONNECTION_FILE_JSON);
         const credentialsDir = path.join(cardDirectory, CREDENTIALS_DIRNAME);
 
         const umask = process.umask();
