@@ -334,11 +334,11 @@ class TestUtil {
                             'connection': {
                                 'timeout': {
                                     'peer': {
-                                        'endorser': '30s',
-                                        'eventHub': '30s',
-                                        'eventReg': '30s'
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer': '30s'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -356,11 +356,11 @@ class TestUtil {
                                 'connection': {
                                     'timeout': {
                                         'peer': {
-                                            'endorser': '30s',
-                                            'eventHub': '30s',
-                                            'eventReg': '30s'
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer': '30s'
+                                        'orderer': '300'
                                     }
                                 }
                             },
@@ -403,17 +403,11 @@ class TestUtil {
                             'peers': {
                                 'peer0.org1.example.com': {
                                     'url': 'grpc://localhost:7051',
-                                    'eventUrl': 'grpc://localhost:7053',
-                                    'grpcOptions': {
-                                        'request-timeout': 300 * 1000
-                                    }
+                                    'eventUrl': 'grpc://localhost:7053'
                                 },
                                 'peer0.org2.example.com': {
                                     'url': 'grpc://localhost:8051',
-                                    'eventUrl': 'grpc://localhost:8053',
-                                    'grpcOptions': {
-                                        'request-timeout': 300 * 1000
-                                    }
+                                    'eventUrl': 'grpc://localhost:8053'
                                 }
                             },
                             'certificateAuthorities': {
@@ -437,11 +431,11 @@ class TestUtil {
                             'connection': {
                                 'timeout': {
                                     'peer': {
-                                        'endorser': '30s',
-                                        'eventHub': '30s',
-                                        'eventReg': '30s'
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer': '30s'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -449,13 +443,7 @@ class TestUtil {
                     }
 
 
-                    //
                     currentCp = connectionProfileOrg1;
-                    if (process.env.COMPOSER_TIMEOUT_SECS) {
-                        connectionProfileOrg1.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
-                        connectionProfileOrg2.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
-                        console.log('COMPOSER_TIMEOUT_SECS set, using: ', connectionProfileOrg1.timeout, connectionProfileOrg2.timeout);
-                    }
 
                     let fs = dynamicRequire('fs');
                     console.log('Creating peer admin cards, and import them to the card store');
@@ -564,7 +552,6 @@ class TestUtil {
             enrollmentID = enrollmentID || 'admin';
             let password = TestUtil.isHyperledgerFabricV1() ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
-            // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
                 return thisClient.connect(cardName);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
