@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Enabling authentication for the REST server | Hyperledger Composer</title>
+    <title>Installing pre-requisites | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/stable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Enabling authentication for the REST server</p>
+          <p>Installing pre-requisites</p>
           </div>
 
           <nav class="context-nav">
@@ -259,93 +259,135 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="enabling-authentication-for-the-rest-server">Enabling authentication for the REST server</h1>
+              <h1 id="installing-pre-requisites">Installing pre-requisites</h1>
 
-<hr>
+<p>The Hyperledger Composer pre-requisites can be installed on Ubuntu or MacOS.  Choose your operating system to jump to the appropriate section, or scroll down to find the instructions:</p>
 
-<p>The REST server can be configured to authenticate clients. When this option is enabled, clients must authenticate to the REST server before they are permitted to call the REST API.</p>
+<p><a href=#ubuntu><button class="secondary">Ubuntu</button></a> <a href=#macos><button class="secondary">Mac OS</button></a></p>
 
-<h2 id="selecting-an-authentication-strategy">Selecting an authentication strategy</h2>
+<p><a name="ubuntu"></a></p>
 
-<p>The REST server uses the open source <a href="http://passportjs.org">Passport</a> authentication middleware. Administrators of the REST server must select Passport strategies to authenticate clients. Multiple Passport strategies can be selected, allowing clients of the REST server to select a preferred authentication mechanism. Passport includes a wide range of strategies (300+ at the time of writing), including a mix of social media (Google, Facebook, Twitter) and enterprise (SAML, LDAP) strategies.</p>
+<h1 id="ubuntu">Ubuntu</h1>
 
-<p>The rest of this document will demonstrate how to use the <code>passport-github</code> strategy to authenticate users using their GitHub ID. Install the <code>passport-github</code> strategy by executing the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g passport-github
-</code></pre></div>
-<h2 id="configuring-the-rest-server-to-use-an-authentication-strategy">Configuring the REST server to use an authentication strategy</h2>
+<p>To run Hyperledger Composer and Hyperledger Fabric, we recommend you have at least 4Gb of memory.</p>
 
-<p>The REST server must be configured with a list of Passport strategies to use before REST API authentication can be enabled. This configuration includes both the names of the strategies to use and the individual configuration for each strategy.</p>
-
-<p>In order to configure the <code>passport-github</code> strategy, we will need to register an OAuth application on GitHub and retrieve the client ID and client secret. Follow these steps to register an OAuth application on GitHub:</p>
-
-<ol>
-<li>Navigate to <a href="https://github.com">GitHub</a> and log in with your user ID and password.</li>
-<li>Click on your profile picture on the top right, and click on <strong>Settings</strong> from the drop down menu.</li>
-<li>Click on <strong>OAuth applications</strong> under <strong>Developer settings</strong> on the left hand bar.</li>
-<li>Click on <strong>Register a new application</strong>.</li>
-<li>Specify the following settings:
+<p>The following are prerequisites for installing the required development tools:</p>
 
 <ul>
-<li>Application name: Composer</li>
-<li>Homepage: <a href="http://localhost:3000/">http://localhost:3000/</a></li>
-<li>Application description: OAuth application for Composer</li>
-<li>Authorization callback URL: <a href="http://localhost:3000/auth/github/callback">http://localhost:3000/auth/github/callback</a></li>
-</ul></li>
-<li>Click on <strong>Register application</strong>.</li>
-<li>Note down the values for <strong>Client ID</strong> and <strong>Client Secret</strong>.</li>
-</ol>
+<li>Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12</li>
+<li>Docker Engine: Version 17.03 or higher</li>
+<li>Docker-Compose: Version 1.8 or higher</li>
+<li>Node: 8.9 or higher (note version 9 is not supported)</li>
+<li>npm: v5.x</li>
+<li>git: 2.9.x or higher</li>
+<li>Python: 2.7.x</li>
+<li>A code editor of your choice, we recommend VSCode.</li>
+</ul>
 
-<p>The configuration for the REST server should be specified using the environment variable <code>COMPOSER_PROVIDERS</code>. Set the configuration for the REST server by replacing the values of <code>REPLACE_WITH_CLIENT_ID</code> and <code>REPLACE_WITH_CLIENT_SECRET</code> with the values retrieved from step 7, and executing the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export COMPOSER_PROVIDERS='{
-  "github": {
-    "provider": "github",
-    "module": "passport-github",
-    "clientID": "REPLACE_WITH_CLIENT_ID",
-    "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
-    "authPath": "/auth/github",
-    "callbackURL": "/auth/github/callback",
-    "successRedirect": "/",
-    "failureRedirect": "/"
-  }
-}'
+<p>**If installing Hyperledger Composer using Linux, be aware of the following advice:</p>
+
+<ul>
+<li>Login as a normal user, rather than root.</li>
+<li>Do not <code>su</code> to root.</li>
+<li>When installing prerequisites, use curl, then unzip using sudo.</li>
+<li>Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it&#39;s actions are required to be run as root.</li>
+<li>Do not use npm with <code>sudo</code> or <code>su</code> to root to use it.</li>
+<li>Avoid installing node globally as root.**</li>
+</ul>
+
+<p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+
+chmod u+x prereqs-ubuntu.sh
 </code></pre></div>
-<h2 id="starting-the-rest-server-with-rest-api-authentication-enabled">Starting the REST server with REST API authentication enabled</h2>
-
-<p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-a true</code> argument to start the REST server with authentication enabled. Once authentication is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
-
-<p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c admin@my-network -a true
+<p>Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">./prereqs-ubuntu.sh
 </code></pre></div>
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If authentication has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
+<h2 id="what-next">What next?</h2>
 
-<h2 id="authenticating-to-the-rest-server-using-a-web-browser">Authenticating to the REST server using a web browser</h2>
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
 
-<p>This step is dependent on the configuration and behaviour of the Passport strategies being used by the REST server.</p>
+<p><a name="macos"></a></p>
 
-<ol>
-<li>Authenticate to the REST server by navigating to the value of the <code>authPath</code> property specified in the environment variable <code>COMPOSER_PROVIDERS</code>. In the example above, this is <a href="http://localhost:3000/auth/github">http://localhost:3000/auth/github</a>.</li>
-<li>The REST server will redirect you to GitHub to perform the OAuth web server authentication flow. GitHub will ask you if you want to authorize the Composer application to access your account. Click the <strong>Authorize</strong> button.</li>
-<li>If successful, GitHub will redirect you back to the REST server.</li>
-</ol>
+<h1 id="mac-os">Mac OS</h1>
 
-<p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. Attempt to call one of the business network REST API operations again using the REST API explorer. This time, the calls should succeed.</p>
+<p>Follow these instructions to install the pre-requsities for installing Hyperledger Composer on a local Mac OS X machine. You need to install these tools <em>before</em> you attempt to install Hyperledger Composer.</p>
 
-<h2 id="authenticating-to-the-rest-server-using-an-http-or-rest-client">Authenticating to the REST server using an HTTP or REST client</h2>
+<blockquote>
+<p>Note Mac OS X version <code>10.12.6</code> was used for these instructions.</p>
+</blockquote>
 
-<p>When a user authenticates to the REST server, a unique access token is generated and assigned to the authenticated user. When the user authenticates using a web browser, the access token is stored in a cookie in the local storage of the users web browser. When the authenticated user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated instead of reauthenticating the user.</p>
+<h2 id="install-nvm-and-apple-xcode">Install nvm and Apple Xcode</h2>
 
-<p>The access token can be used to authenticate any HTTP or REST client that wishes to call the REST server. This is required when the HTTP or REST client cannot perform the authentication flow required by the configured Passport strategy. For example, all OAuth2 web authentication flows require the use of a web browser to navigate to the authentication providers website.</p>
+<p>First install nvm (the Node version manager). nvm is a tool that allows you to easily install, update and switch between versions of Node.js.</p>
 
-<p>In order to use the access token, the access token must first be retrieved using a web browser. When you authenticate to the REST server, the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a> will show the access token at the top of the page. By default the access token is hidden, but it can be displayed by clicking the <code>Show</code> button. The access token is a long alphanumeric string, for example: <code>e9M3CLDEEj8SDq0Bx1tkYAZucOTWbgdiWQGLnOxCe7K9GhTruqlet1h5jsw10YjJ</code></p>
+<p>Open the terminal (command line) by clicking on the magnifier in the menu bar at the top right of your screen. Type <code>terminal</code> and press enter.</p>
 
-<p>Once the access token has been retrieved, the access token can be passed into any HTTP or REST request to authenticate the HTTP or REST client. There are two options for passing the access token - using either a query string parameter, or an HTTP header. For both of the following examples, replace the string <code>xxxxx</code> with the value of the access token.</p>
-
-<p>Query string - add the <code>access_token</code> query string parameter to all HTTP or REST requests:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -v http://localhost:3000/api/system/ping?access_token=xxxxx
+<p>In the terminal window paste the text below and press enter:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
 </code></pre></div>
-<p>HTTP header - add the <code>X-Access-Token</code> header to all HTTP or REST requests:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -v -H 'X-Access-Token: xxxxx' http://localhost:3000/api/system/ping
+<p>More information on this script and the Node install process is available <a href="https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/">here</a>.</p>
+
+<p>When you hit enter you should see the pop-up below, prompting you to install <code>git</code>. Press the <code>Get Xcode</code> button to install the full Apple Xcode IDE, including a C++ compiler, used to install native Node.js modules.</p>
+
+<p><img src="../installing/install_xcode.png" alt="Image of prompt to install xCode"></p>
+
+<p>The download and install process for Xcode may take 20 minutes or more. Be patient!</p>
+
+<p>After the installation of Xcode has completed launch Xcode. Accept the license agreement. It will prompt you for your username and password and will install additional components.</p>
+
+<p>After Xcode finishes installing additional components and launches, simply quit Xcode.</p>
+
+<p>Switch back to the terminal and create your bash profile (stores user preferences for bash):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">touch .bash_profile
 </code></pre></div>
+<p>Then rerun the original curl command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+</code></pre></div>
+<p>Close the terminal and reopen it.</p>
+
+<p>Check that nvm is installed and is accessible:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm —-version
+</code></pre></div>
+<h2 id="install-node">Install Node</h2>
+
+<p>Install the latest (long term support) version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm install --lts
+</code></pre></div>
+<p>Switch to the LTS version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm use --lts
+</code></pre></div>
+<p>Check that Node is installed:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">node --version
+</code></pre></div>
+<h2 id="install-docker">Install Docker</h2>
+
+<p>Follow the instructions here to install Docker for Max (stable):
+<a href="https://docs.docker.com/docker-for-mac/install/">https://docs.docker.com/docker-for-mac/install/</a></p>
+
+<p>After running the installed Docker application you should have the whale icon in your menu bar, with a green “Docker is running” status.</p>
+
+<h2 id="install-vscode">Install VSCode</h2>
+
+<p>Install VSCode by visiting:
+<a href="https://code.visualstudio.com">https://code.visualstudio.com</a></p>
+
+<p>Press the “Download for Mac” button and copy the downloaded application into your Applications folder.</p>
+
+<h2 id="install-the-hyperledger-composer-extension-for-vscode">Install the Hyperledger Composer Extension for VSCode</h2>
+
+<p>Launch VSCode and then press the “Extensions” button on the vertical left toolbar.</p>
+
+<p>Type <code>composer</code> into the search bar and then press the <code>Install</code> button next to the <code>Hyperleger Composer</code> extension. Once the install completes you need to press the <code>Reload</code> button to activate the extension.</p>
+
+<h2 id="what-next">What next?</h2>
+
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
+
             
           </section>
         </div>
