@@ -1,40 +1,7 @@
 Feature: Rest steps
 
-    Scenario: Using the CLI, I can perform a runtime install
-        When I run the following CLI command
-            """
-            composer runtime install --card TestPeerAdmin@org1-only --businessNetworkName tutorial-network
-            """
-        Then The stdout information should include text matching /Command succeeded/
-
-    Scenario: Using the CLI, I can perform a business network start
-        When I run the following CLI command
-            """
-            composer network start --card TestPeerAdmin@org1-only --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ./resources/sample-networks/tutorial-network.bna --file networkadmin.card
-            """
-        Then The stdout information should include text matching /Command succeeded/
-
-    Scenario: Using the CLI, I can delete the network admin identity
-        When I run the following CLI command
-            """
-            composer card delete -n admin@tutorial-network
-            """
-        Then The stdout information should include text matching /Command succeeded/
-
-    Scenario: Using the CLI, I can import the network admin identity
-        When I run the following CLI command
-            """
-            composer card import --file networkadmin.card
-            """
-        Then The stdout information should include text matching /Command succeeded/
-
-    Scenario: Using the CLI, I can start a REST API
-        When I spawn the following background task REST_SVR, and wait for /Browse your REST API/
-            """
-            composer-rest-server --card admin@tutorial-network -n never -w true
-            """
-
     Scenario: Using the REST API, I can ping the network
+        Given I have a REST API server for tutorial-network
         When I make a GET request to /api/system/ping
         Then The response code should be 200
         And The response body should be JSON matching
@@ -46,6 +13,7 @@ Feature: Rest steps
             """
 
     Scenario: Using the REST API, I get the list of Traders
+        Given I have a REST API server for tutorial-network
         When I make a GET request to /api/Trader
         Then The response code should be 200
         And The response body should be JSON matching
@@ -196,4 +164,4 @@ Feature: Rest steps
             """
 
     Scenario: Finally, shutdown the REST server
-        When I kill task named REST_SVR
+        When I shutdown the REST server
