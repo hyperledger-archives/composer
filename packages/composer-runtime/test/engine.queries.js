@@ -23,7 +23,7 @@ const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
 const Resource = require('composer-common').Resource;
 const Serializer = require('composer-common').Serializer;
-
+const Logger = require('composer-common').Logger;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -41,6 +41,7 @@ describe('EngineQueries', () => {
     let mockSerializer;
     let mockResource1, mockResource2;
     let engine;
+    let sandbox;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -66,7 +67,7 @@ describe('EngineQueries', () => {
         mockResource1.$identifier = 'ASSET_1';
         mockResource2 = sinon.createStubInstance(Resource);
         mockResource2.$identifier = 'ASSET_2';
-        engine = new Engine(mockContainer);
+
         mockCompiledQueryBundle.buildQuery.returns('5769993d7c0a008e0cb45e30a36e3f2797c47c065be7f214c5dcee90419d326f');
         mockCompiledQueryBundle.execute.resolves([
             { $identifier: 'ASSET_1', $registryId: 'registry1' },
@@ -76,6 +77,14 @@ describe('EngineQueries', () => {
         mockSerializer.fromJSON.withArgs({ $identifier: 'ASSET_2' }).returns(mockResource2);
         mockSerializer.toJSON.withArgs(mockResource1).returns({ $identifier: 'ASSET_1' });
         mockSerializer.toJSON.withArgs(mockResource2).returns({ $identifier: 'ASSET_2' });
+        sandbox = sinon.sandbox.create();
+        sandbox.stub(Logger,'setLoggerCfg');
+
+        engine = new Engine(mockContainer);
+    });
+
+    afterEach(()=>{
+        sandbox.restore();
     });
 
     describe('#executeQuery', () => {

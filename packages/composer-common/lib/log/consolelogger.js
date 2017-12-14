@@ -16,68 +16,67 @@
 
 const util = require('util');
 
+
 /**
- * A functional logger implementation that simply writes to the console.
+ * Called to format.
+ * @param {string} method The method.
+ * @param {string} msg The message.
+ * @param {*} [args] The arguments.
+ * @returns {string} The formatted message.
  * @private
  */
-class ConsoleLogger {
-
-    /**
-     * Called to format.
-     * @param {string} method The method.
-     * @param {string} msg The message.
-     * @param {*} [args] The arguments.
-     * @returns {string} The formatted message.
-     */
-    format(method, msg, args) {
-        if (!args) {
-            return util.format('%s %s', method, msg);
-        }
-        let formattedArguments = args.map((arg) => {
-            if (typeof(arg) === 'function') {
-                return '<function>';
-            } else if (arg === Object(arg)) {
-                // It's an object, array, or function, so serialize it as JSON.
-                try {
-                    return JSON.stringify(arg);
-                } catch (e) {
-                    return arg;
-                }
-            } else {
-                return String(arg);
+function format(method, msg, args) {
+    if (!args) {
+        return util.format('wibble %s %s', method, msg);
+    }
+    let formattedArguments = args.map((arg) => {
+        if (typeof (arg) === 'function') {
+            return '<function>';
+        } else if (arg === Object(arg)) {
+            // It's an object, array, or function, so serialize it as JSON.
+            try {
+                return JSON.stringify(arg);
+            } catch (e) {
+                return arg;
             }
-        }).join(', ');
-        return util.format('%s %s %s', method, msg, formattedArguments);
-    }
-
-    /**
-     * Called to log.
-     * @param {string} level The logging level.
-     * @param {string} method The method.
-     * @param {string} msg The message.
-     * @param {*} [args] The arguments.
-     */
-    log(level, method, msg, args) {
-        const formattedMessage = this.format(method, msg, args);
-        switch (level) {
-        case 'debug':
-            console.log(formattedMessage);
-            break;
-        case 'warn':
-            console.warn(formattedMessage);
-            break;
-        case 'info':
-            console.info(formattedMessage);
-            break;
-        case 'verbose':
-            console.log(formattedMessage);
-            break;
-        case 'error':
-            console.error(formattedMessage);
-            break;
+        } else {
+            return String(arg);
         }
-    }
-
+    }).join(', ');
+    return util.format('wibble %s %s %s', method, msg, formattedArguments);
 }
 
-module.exports = ConsoleLogger;
+/**
+ * Called to log.
+ * @param {string} level The logging level.
+ * @param {string} method The method.
+ * @param {string} msg The message.
+ * @param {*} [args] The arguments.
+ * @private
+ */
+function log(level, method, msg, args) {
+    const formattedMessage = format(method, msg, args);
+    switch (level) {
+    case 'debug':
+        console.log(formattedMessage);
+        break;
+    case 'warn':
+        console.warn(formattedMessage);
+        break;
+    case 'info':
+        console.info(formattedMessage);
+        break;
+    case 'verbose':
+        console.log(formattedMessage);
+        break;
+    case 'error':
+        console.error(formattedMessage);
+        break;
+    }
+}
+
+
+
+module.exports.getLogger = function (config) {
+    return { log: log };
+};

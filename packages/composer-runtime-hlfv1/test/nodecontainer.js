@@ -58,14 +58,4 @@ describe('NodeContainer', () => {
         });
     });
 
-    describe('#initLogging', () => {
-
-        it('should initialise the logging service', () => {
-            let initLoggingStub = sinon.stub(container.getLoggingService(), 'initLogging').resolves();
-            container.initLogging('a stub');
-            sinon.assert.calledOnce(initLoggingStub);
-            sinon.assert.calledWith(initLoggingStub, 'a stub');
-        });
-    });
-
 });

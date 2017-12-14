@@ -15,6 +15,7 @@
 'use strict';
 
 const ConsoleLogger = require('../../lib/log/consolelogger');
+const util = require('util');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -23,15 +24,9 @@ describe('ConsoleLogger', () => {
 
     let sandbox;
     let logger;
+    // let utilMock;
 
-    beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        logger = new ConsoleLogger();
-    });
 
-    afterEach(() => {
-        sandbox.restore();
-    });
 
     describe('#format', () => {
 
@@ -71,11 +66,22 @@ describe('ConsoleLogger', () => {
 
     describe('#log', () => {
 
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+            logger = ConsoleLogger.getLogger();
+            // sandbox.stub(util,'format');
+            sandbox.stub(console, 'log');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
         it('should log debug level', () => {
-            const spy = sandbox.spy(console, 'log');
             logger.log('debug', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
-            sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
+            sinon.assert.calledOnce(console.log);
+            sinon.assert.calledWith(console.log, 'func1 some msg arg1, arg2');
+            sinon.assert.calledOnce(util.format);
         });
 
         it('should log warn level', () => {
