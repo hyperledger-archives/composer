@@ -252,13 +252,18 @@ class Composer {
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     killBackground(label) {
-        if(this.tasks[label]) {
-            this.tasks[label].kill();
-            delete this.tasks[label];
-            return Promise.resolve();
-        } else {
-            return Promise.reject('No such task: ' + label);
-        }
+        return new Promise( (resolve, reject) => {
+            if (this.tasks[label]) {
+                this.tasks[label].kill();
+                delete this.tasks[label];
+                // delay, ensure child process is really gone!
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
+            } else {
+                reject('No such task: ' + label);
+            }
+        });
     }
 
     /**
@@ -392,7 +397,10 @@ class Composer {
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command);
+                let args = command.split(' ');
+                let file = args.shift();
+
+                let childCliProcess = childProcess.spawn(file, args);
 
                 self.tasks[label] = childCliProcess;
 
