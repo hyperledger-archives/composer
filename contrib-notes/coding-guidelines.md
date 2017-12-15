@@ -144,7 +144,7 @@ node ../composer-cli/cli.js runtime install -n mynetwork -c PeerAdmin@hlfv1
 ```
 - instantiate the chaincode, this will drive your running node process you started earlier.
 ```
-node cli.js network deploy -a mynetwork.bna -c PeerAdmin@hlfv1 -A admin -S adminpw
+node cli.js network start -a mynetwork.bna -c PeerAdmin@hlfv1 -A admin -S adminpw
 ```
 You should now see output in the window running the chaincode showing it executing.
 
