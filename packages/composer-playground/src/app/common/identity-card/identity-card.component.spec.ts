@@ -29,7 +29,7 @@ class TestHostComponent {
     identity: IdCard = new IdCard({
         userName: 'pedantic-owl',
         businessNetwork: 'conga-network'
-    }, {name: 'dialup-modem', type: 'hlfv1'});
+    }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
     cardRef: string;
     preview: boolean = false;
     showDismissIcon: boolean = false;
@@ -154,7 +154,7 @@ describe(`IdentityCardComponent`, () => {
             component['identity'] = new IdCard({
                 userName: 'admin',
                 businessNetwork: 'conga-network'
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -167,7 +167,7 @@ describe(`IdentityCardComponent`, () => {
             component['identity'] = new IdCard({
                 userName: 'pedantic owl',
                 businessNetwork: 'conga-network'
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -180,7 +180,7 @@ describe(`IdentityCardComponent`, () => {
             component['identity'] = new IdCard({
                 userName: 'eat conga repeat',
                 businessNetwork: 'conga-network'
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -193,7 +193,7 @@ describe(`IdentityCardComponent`, () => {
             component['identity'] = new IdCard({
                 userName: '黄 丽',
                 businessNetwork: 'conga-network'
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -206,7 +206,7 @@ describe(`IdentityCardComponent`, () => {
             component['identity'] = new IdCard({
                 userName: ' ',
                 businessNetwork: 'conga-network'
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -222,7 +222,7 @@ describe(`IdentityCardComponent`, () => {
                 userName: 'pedantic-owl',
                 businessNetwork: 'conga-network',
                 roles: ['PeerAdmin']
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -236,7 +236,7 @@ describe(`IdentityCardComponent`, () => {
                 userName: 'pedantic-owl',
                 businessNetwork: 'conga-network',
                 roles: ['ChannelAdmin']
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -250,7 +250,7 @@ describe(`IdentityCardComponent`, () => {
                 userName: 'pedantic-owl',
                 businessNetwork: 'conga-network',
                 roles: ['GreenConga']
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 
@@ -264,7 +264,7 @@ describe(`IdentityCardComponent`, () => {
                 userName: 'pedantic-owl',
                 businessNetwork: 'conga-network',
                 roles: ['BlueConga', 'PeerAdmin', 'GreenConga', 'ChannelAdmin', 'PurpleConga']
-            }, {name: 'dialup-modem', type: 'hlfv1'});
+            }, {name: 'dialup-modem', 'x-type': 'hlfv1'});
 
             fixture.detectChanges();
 

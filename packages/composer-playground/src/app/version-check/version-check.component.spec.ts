@@ -53,9 +53,9 @@ describe('VersionCheckComponent', () => {
 
         fixture.detectChanges();
 
-        let cardOne = new IdCard({userName : 'bob', businessNetwork: 'bn1'}, {name : 'cp1', type: 'hlfv1' });
-        let cardTwo = new IdCard({userName : 'fred', businessNetwork: 'bn2'}, {name : 'cp1', type: 'web' });
-        let cardThree = new IdCard({userName : 'jim'}, {name : 'cp1', type: 'web' });
+        let cardOne = new IdCard({userName : 'bob', businessNetwork: 'bn1'}, {name : 'cp1', 'x-type': 'hlfv1' });
+        let cardTwo = new IdCard({userName : 'fred', businessNetwork: 'bn2'}, {name : 'cp1', 'x-type': 'web' });
+        let cardThree = new IdCard({userName : 'jim'}, {name : 'cp1', 'x-type': 'web' });
 
         let cardMap: Map<string, IdCard> = new Map<string, IdCard>();
 

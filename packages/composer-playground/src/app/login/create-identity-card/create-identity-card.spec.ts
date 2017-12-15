@@ -95,7 +95,7 @@ describe('CreateIdentityCardComponent', () => {
             tick();
 
             let profile = { description: 'A description for a V1 Profile',
-                            type: 'hlfv1',
+                            'x-type': 'hlfv1',
                             orderers: [{
                                         url: 'grpc://localhost:7050',
                                         cert: ''
@@ -124,7 +124,7 @@ describe('CreateIdentityCardComponent', () => {
 
         it('should be able to set named profile', fakeAsync(() => {
 
-            let targetProfile = { name: 'Pingu', type: 'Penguin'};
+            let targetProfile = { name: 'Pingu', 'x-type': 'Penguin'};
 
             component['connectionProfiles'] = new Map<string, string>();
             component['connectionProfiles'].set('selectMe', targetProfile);

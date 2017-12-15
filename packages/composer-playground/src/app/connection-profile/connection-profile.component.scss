@@ -5,133 +5,118 @@ connection-profile {
 
     $highlighted: #e4e4e4;
 
-    button {
-        line-height: 30px;
-        font-size: 0.8rem;
-        margin-left: 2px;
-     }
+    table.profile-info {
 
-     footer {
-         display: flex;
+        &.extra-space-right {
+            td {
+                padding-right: 34%;
+            }
+        }
 
-         .info {
-             color: $secondary-text;
-             font-style: italic;
-         }
+        &.extra-space-left {
+            th {
+                padding-left: 1.5%;
+            }
+        }
 
-         &.with-info {
-             justify-content: space-between !important;
-         }
-     }
+        tbody {
+            tr {
+                box-shadow: none;
 
-    .profile-section{
+                th {
+                    text-align: start;
+                    padding-right: $space-medium;
+                }
+
+                td {
+                    vertical-align: text-top;
+                    padding: $space-smedium 0;
+
+                    input[type=checkbox] {
+                      top: 0;
+                      left: 0;
+                    }
+                }
+
+                .text-below {
+                  padding: 0;
+                }
+            }
+        }
+    }
+
+    button.certificate-button {
+        padding: 0 $space-medium;
+        margin-left: $space-medium;
+        min-width: 0;
+        border: 1px solid $second-highlight;
+
+        svg.standard-icon {
+            margin-right: 0;
+        }
+
+        &.no-cert {
+            border: 1px dashed $fifth-highlight;
+        }
+
+        &:not(.no-cert) {
+          svg {
+              fill: #3F55AF
+          }
+        }
+
+        &:hover {
+            background-color: $second-highlight;
+            border-color: $second-highlight;
+            svg {
+                fill: #FFF
+            }
+
+        }
+    }
+
+    .profile-buttons {
+        margin-left: $space-medium;
+    }
+
+    footer {
+        display: flex;
+
+        .info {
+            color: $secondary-text;
+            font-style: italic;
+        }
+
+        &.with-info {
+            justify-content: space-between !important;
+        }
+    }
+
+    .profile-section {
         display: flex;
 
         .description {
-            display: flex;
-            flex-basis: 20%;
-            color:$tertiary-text;
+            flex-basis: 15%;
+            color: $tertiary-text;
+            padding-left: $space-medium;
 
             &.upper {
                 text-transform: uppercase;
             }
         }
 
-        .profile-content {
-            display:flex;
-            flex-grow: 1;
-            flex-direction:column;
-            margin-right:15rem;
+        .data {
+            flex-basis: 85%;
 
-            .profile-row {
-                display: flex;
-                flex-grow: 1;
-                flex-direction: row;
-                color: $primary-text;
-                font-size: 14px;
+            .property-set {
+                border-left: 2px solid $first-highlight;
+                padding-left: $space-medium;
+                margin-bottom: $space-large;
+            }
+
+            .profile-buttons {
+                align-self: flex-end;
                 padding-bottom: $space-medium;
-
-                .profile-property {
-                    display: flex;
-                    align-self: flex-start;
-                    min-width: 7rem;
-                    flex-basis: 20%;
-                    padding-right: $space-large;
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-
-                .profile-value {
-                    display: flex;
-                    flex-grow: 1;
-                    flex-direction: column;
-
-                    .nested-group {
-                        display: flex;
-                        flex-grow: 1;
-                        flex-direction: column;
-                        margin-right:1rem;
-
-                        .nested-group-row {
-                            display: flex;
-                            flex-grow: 1;
-                            flex-direction: row;
-                            color: $primary-text;
-                            font-size: 14px;
-                            padding-bottom: $space-medium;
-
-                            .nested-group-value {
-                                display: flex;
-                                flex-grow: 1;
-                                flex-direction: column;
-                            }
-                        }
-                    }
-
-                    .nested-section {
-                        border-left: 4px solid $first-highlight;
-                        padding-left: $space-smedium;
-                        display: flex;
-                        flex-grow: 1;
-                        flex-direction: column;
-                        margin-bottom: $space-medium;
-
-                        .nested-row {
-                            display: flex;
-                            flex-grow: 1;
-                            align-items: center;
-                            padding-bottom: $space-medium;
-
-                            .nested-property {
-                                min-width: 7rem;
-                                font-style: italic;
-                                padding: 0 $space-smedium $space-small 0;
-                                font-weight: 600;
-                            }
-
-                            .nested-value-row {
-                                display: flex;
-                                flex-grow: 1;
-                                flex-direction: row;
-                            }
-
-                            .nested-value {
-                                    display: flex;
-                                    flex-grow: 1;
-                                    flex-direction: column;
-                                }
-                        }
-
-                        .nested-row:last-child {
-                            padding-bottom: 0;
-                        }
-                    }
-                }
-
-                .profile-buttons {
-                    align-self: flex-end;
-                    padding-bottom: $space-medium;
-                }
             }
         }
 
@@ -141,83 +126,4 @@ connection-profile {
             border-bottom: 1px solid $fourth-highlight;
         }
     }
-
-    .chevron {
-        @include transition(all);
-        transform: rotate(-90deg);
-    }
-
-    .edit-data {
-        background-color: $white;
-        margin-top: $space-medium;
-
-        section {
-            padding: $space-medium;
-            margin-bottom: $space-large;
-
-            .section-title {
-                border-bottom: 1px solid $fourth-highlight;
-                padding-bottom: $space-medium;
-                margin-bottom: $space-medium;
-                font-size: 14px;
-                font-weight: 600;
-                color: $first-highlight;
-            }
-
-            div {
-                display: flex;
-
-                label {
-                    flex-basis: 20%;
-                }
-            }
-
-            .actions {
-                display: flex;
-                background-color: $third-highlight;
-                padding: $space-medium;
-
-                .info {
-                    flex: 1
-                }
-            }
-        }
-    }
-
-    .orderer-group {
-        display: flex;
-        flex-direction: column;
-
-        .orderer-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-
-            .orderer-entry {
-                flex: 1;
-            }
-        }
-    }
-
-    .certificate-button {
-        @extend button;
-        padding-right: 10px;
-        padding-left: 10px;
-        min-width: 0;
-
-        &:hover {
-            background-color: $white;
-            border-color: $second-highlight;
-            svg {
-                fill: #3F55AF
-            }
-
-        }
-    }
-
-    .no-cert {
-        border-color: $error-colour-1;
-        background-color: $error-colour-2;
-    }
-
 }

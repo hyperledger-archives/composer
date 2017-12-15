@@ -40,7 +40,7 @@ describe('InitializationService', () => {
                 connectionProfile: {
                     name: 'hlfabric',
                     description: 'Hyperledger Fabric v1.0',
-                    type: 'hlfv1',
+                    'x-type': 'hlfv1',
                     keyValStore: '/home/composer/.composer-credentials',
                     timeout: 300,
                     orderers: [
