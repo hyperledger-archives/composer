@@ -2009,6 +2009,55 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should choose a valid peer from a list of peers in the same org', async () => {
+            let mockPeer1 = sinon.createStubInstance(Peer);
+            let mockPeer2 = sinon.createStubInstance(Peer);
+            let mockPeer3 = sinon.createStubInstance(Peer);
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(true);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
+            let mockPeers = [mockPeer1, mockPeer2, mockPeer3];
+            mockClient.getPeersForOrg.returns(mockPeers);
+            const response = Buffer.from('hello world');
+            mockChannel.queryByChaincode.resolves([response]);
+            let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(mockChannel.queryByChaincode);
+            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                chaincodeVersion: connectorPackageJSON.version,
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            result.equals(response).should.be.true;
+        });
+
+        it('should choose a valid peer from all peers if no suitable one in same org', async () => {
+            let mockPeer1 = sinon.createStubInstance(Peer);
+            let mockPeer2 = sinon.createStubInstance(Peer);
+            let mockPeer3 = sinon.createStubInstance(Peer);
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
+            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer2]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer3, mockPeer2]);
+            const response = Buffer.from('hello world');
+            mockChannel.queryByChaincode.resolves([response]);
+            let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(mockChannel.queryByChaincode);
+            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                chaincodeVersion: connectorPackageJSON.version,
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer3]
+            });
+            result.equals(response).should.be.true;
+        });
+
+
         it('should throw if no responses are returned', () => {
             mockChannel.queryByChaincode.resolves([]);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
