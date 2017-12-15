@@ -328,7 +328,7 @@ class HLFConnection extends Connection {
             let results = await this.client.installChaincode(request);
             LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
             const CCAlreadyInstalledPattern = /chaincode .+ exists/;
-            let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
+            let {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
             // is the composer runtime already installed on all the peers ?
             let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
@@ -339,7 +339,12 @@ class HLFConnection extends Connection {
 
             // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
             if ((validResponses.length + ignoredErrors) !== results[0].length) {
-                const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
+                let allRespMsgs = '';
+                invalidResponseMsgs.forEach((invalidResponse) => {
+                    allRespMsgs += invalidResponse;
+                    allRespMsgs += '\n';
+                });
+                const errorMsg = `The Composer runtime failed to install on 1 or more peers: ${allRespMsgs}`;
                 throw new Error(errorMsg);
             }
             LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
@@ -354,7 +359,11 @@ class HLFConnection extends Connection {
             throw newError;
         } finally {
             if (installOptions && installOptions.npmrcFile) {
-                await this.fs.remove(runtimeModulePath + '/.npmrc');
+                try {
+                    await this.fs.remove(runtimeModulePath + '/.npmrc');
+                } catch(error) {
+                    // Ignore any error to try to remove, it could be file not there
+                }
             }
         }
     }
