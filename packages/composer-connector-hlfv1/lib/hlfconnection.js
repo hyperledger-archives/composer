@@ -738,11 +738,34 @@ class HLFConnection extends Connection {
         }
 
         let txId = this.client.newTransactionID();
-        let peerArray = [this.channel.getPeers()[0]];
+
+        // determine a peer to use for querying.
+        let queryPeer;
+        let peersForOrg = this.client.getPeersForOrg();
+        if (peersForOrg) {
+            for (let i = 0; i < peersForOrg.length; i++) {
+                if (peersForOrg[i].isInRole('chaincodeQuery')) {
+                    queryPeer = peersForOrg[i];
+                    break;
+                }
+            }
+        }
+
+        // fallback if cannot find a suitable peer in callers organisation,
+        // try all the peers in the channel.
+        if (!queryPeer) {
+            let allPeers = this.channel.getPeers();
+            for (let i = 0; i < allPeers.length; i++) {
+                if (allPeers[i].isInRole('chaincodeQuery')) {
+                    queryPeer = allPeers[i];
+                    break;
+                }
+            }
+        }
 
         // Submit the query request.
         const request = {
-            targets: peerArray,
+            targets: [queryPeer],
             chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
