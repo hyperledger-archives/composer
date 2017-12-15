@@ -94,25 +94,25 @@ describe('CreateIdentityCardComponent', () => {
 
             tick();
 
-            let profile = { description: 'A description for a V1 Profile',
+            let profile = { 'description': 'A description for a V1 Profile',
                             'x-type': 'hlfv1',
-                            orderers: [{
+                            'orderers': [{
                                         url: 'grpc://localhost:7050',
                                         cert: ''
                                         }],
-                            ca: {
+                            'ca': {
                                     url: 'http://localhost:7054',
                                     name: ''
                                 },
-                            peers: [{
+                            'peers': [{
                                         requestURL: 'grpc://localhost:7051',
                                         eventURL: 'grpc://localhost:7053',
                                         cert: ''
                                     }],
-                            keyValStore: '/tmp/keyValStore',
-                            channel: 'composerchannel',
-                            mspID: 'Org1MSP',
-                            timeout: 300
+                            'keyValStore': '/tmp/keyValStore',
+                            'channel': 'composerchannel',
+                            'mspID': 'Org1MSP',
+                            'timeout': 300
                         };
 
             let expectedConstruct = {name: 'New Connection Profile',
@@ -124,7 +124,7 @@ describe('CreateIdentityCardComponent', () => {
 
         it('should be able to set named profile', fakeAsync(() => {
 
-            let targetProfile = { name: 'Pingu', 'x-type': 'Penguin'};
+            let targetProfile = { 'name': 'Pingu', 'x-type': 'Penguin'};
 
             component['connectionProfiles'] = new Map<string, string>();
             component['connectionProfiles'].set('selectMe', targetProfile);

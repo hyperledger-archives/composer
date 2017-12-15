@@ -461,7 +461,8 @@
                             <button type="button"
                                     class="certificate-button"
                                     [ngClass]="{'no-cert': !ca.tlsCACerts}"
-                                    (click)="openAddCertificateModal(0,'ca');">
+                                    (click)="openAddCertificateModal(0,'ca');"
+                                    [disabled]="!ca.httpOptions.verify">
                                 <svg class="standard-icon" aria-hidden="true">
                                     <use xlink:href="#icon-data-quality_16"></use>
                                 </svg>
@@ -476,7 +477,8 @@
                             <input
                                 [ngClass]="{'error-underline': caUrl.invalid && (caUrl.dirty || caUrl.touched)}"
                                 type="text"
-                                [(ngModel)]="ca.url" #caUrl="ngModel" name="caUrl" required>
+                                [(ngModel)]="ca.url" #caUrl="ngModel" (keyup)="setVerify()"
+                                name="caUrl" required>
                             <div *ngIf="caUrl.invalid && (caUrl.dirty || caUrl.touched)" class="error-message">
                                 Certificate authority url is required
                             </div>
@@ -487,7 +489,7 @@
                             Verify
                         </th>
                         <td>
-                            <input type="checkbox" [(ngModel)]="ca.httpOptions.verify" #caHttpOptionsVerify="ngModel" name="caHttpOptionsVerify" id="caHttpOptionsVerify" />
+                            <input type="checkbox" [(ngModel)]="ca.httpOptions.verify" #caHttpOptionsVerify="ngModel" name="caHttpOptionsVerify" id="caHttpOptionsVerify" [disabled]="ca.url.substring(ca.url.indexOf('://')-1, ca.url.indexOf('://')) !== 's'" />
                             <label for="caHttpOptionsVerify" class="checkbox-label" ></label>
                         </td>
                 </table>

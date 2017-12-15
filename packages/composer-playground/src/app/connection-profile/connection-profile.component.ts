@@ -88,10 +88,9 @@ export class ConnectionProfileComponent {
        url: 'http://localhost:7054',
        caName: null,
        httpOptions: {
-         verify: true
+         verify: false
        }
    };
-
 
     constructor(private connectionProfileService: ConnectionProfileService,
                 private modalService: NgbModal,
@@ -99,7 +98,6 @@ export class ConnectionProfileComponent {
     }
 
     startEditing() {
-        console.log('X-TYPE', this.connectionProfileData['x-type']);
         if (this.connectionProfileData['x-type'] === 'hlfv1') {
             this.basic.name = has(this.connectionProfileData, 'name') ? this.connectionProfileData.name : this.basic.name;
             this.basic.description = has(this.connectionProfileData, 'description') ? this.connectionProfileData.description : this.basic.description;
@@ -140,6 +138,16 @@ export class ConnectionProfileComponent {
         let caSortOfName = Object.keys(this.connectionProfileData.certificateAuthorities)[0];
 
         this.ca = this.connectionProfileData.certificateAuthorities[caSortOfName];
+
+        if (!has(this.ca, 'httpOptions.verify')) {
+          this.ca.httpOptions = {
+            verify: false
+          };
+        }
+
+        if (has(this.ca, 'tlsCACerts') && !this.ca.httpOptions.verify) {
+            delete this.ca.tlsCACerts;
+        }
     }
 
     initOrderers() {
@@ -371,8 +379,12 @@ export class ConnectionProfileComponent {
 
             let caName = this.ca.caName ? this.ca.caName : 'ca-org1';
 
-            // no certificates so don't add the section
-            if (!has(this.ca, 'tlsCACerts.pem')) {
+            if (!this.ca.httpOptions.verify) {
+              // no verify so don't need to add tlsCACerts
+              delete this.ca.tlsCACerts;
+              delete this.ca.httpOptions;
+            } else if (!has(this.ca, 'tlsCACerts.pem')) {
+                // no certs so delete field
                 delete this.ca.tlsCACerts;
             }
 
@@ -384,8 +396,7 @@ export class ConnectionProfileComponent {
                 certificateAuthorities: Object.keys(connectionProfile.certificateAuthorities)
             };
 
-
-            this.connectionProfileData = this.connectionProfile;
+            this.connectionProfileData = connectionProfile;
             this.profileUpdated.emit({updated: true, connectionProfile: connectionProfile});
         }
     }
@@ -395,6 +406,7 @@ export class ConnectionProfileComponent {
         let sslTargetNameOverride;
         let object;
         let priorState;
+
         if (type === 'orderers' || type === 'peers') {
             object = this[type][index];
 
@@ -458,7 +470,11 @@ export class ConnectionProfileComponent {
                     this.alertService.errorStatus$.next(reason);
                 } else if (!reason) {
                   // Cancel pressed
-                  object = priorState;
+                  if (type === 'orderers' || type === 'peers') {
+                      this[type][index] = clone(priorState);
+                  } else if (type === 'ca') {
+                      this[type] = clone(priorState);
+                  }
                 }
             });
     }
@@ -486,5 +502,11 @@ export class ConnectionProfileComponent {
           return false;
       }
       return form.valid;
+    }
+
+    setVerify() {
+      if (this.ca.url.substring(this.ca.url.indexOf('://') - 1, this.ca.url.indexOf('://')) !== 's') {
+        this.ca.httpOptions.verify = false;
+      }
     }
 }

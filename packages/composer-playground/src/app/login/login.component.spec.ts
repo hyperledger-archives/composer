@@ -302,7 +302,7 @@ describe(`LoginComponent`, () => {
         it('should load identity cards and ensure there is always a web connection profile', fakeAsync(() => {
             let mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('PeerAdmin');
-            mockIdCard1.getConnectionProfile.returns({name: '$default', 'x-type': 'web'});
+            mockIdCard1.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
             let mockIdCard2 = sinon.createStubInstance(IdCard);
             mockIdCard2.getUserName.returns('bob');
             mockIdCard2.getConnectionProfile.returns({name: 'bobProfile'});
@@ -526,7 +526,7 @@ describe(`LoginComponent`, () => {
         it('should undeploy and refresh the identity cards after successfully calling identityCardService.deleteIdentityCard()', fakeAsync(() => {
             let myMap = new Map<string, IdCard>();
 
-            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', 'x-type': 'web'});
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {'name': 'cp1', 'x-type': 'web'});
 
             myMap.set('idCardOne', idCardOne);
 
@@ -560,8 +560,8 @@ describe(`LoginComponent`, () => {
         it('should not undeploy if more than one identity', fakeAsync(() => {
             let myMap = new Map<string, IdCard>();
 
-            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {name: 'cp1', 'x-type': 'web'});
-            let idCardTwo = new IdCard({userName: 'fred', businessNetwork: 'bn'}, {name: 'cp1', 'x-type': 'web'});
+            let idCardOne = new IdCard({userName: 'bob', businessNetwork: 'bn'}, {'name': 'cp1', 'x-type': 'web'});
+            let idCardTwo = new IdCard({userName: 'fred', businessNetwork: 'bn'}, {'name': 'cp1', 'x-type': 'web'});
 
             myMap.set('myCardRef', idCardOne);
             myMap.set('idCardTwo', idCardTwo);

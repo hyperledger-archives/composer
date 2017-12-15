@@ -19,7 +19,7 @@ const defaultCardProperties = {
         roles: ['PeerAdmin', 'ChannelAdmin'],
     },
     connectionProfile: {
-        name: '$default',
+        'name': '$default',
         'x-type': 'web'
     },
     credentials: null

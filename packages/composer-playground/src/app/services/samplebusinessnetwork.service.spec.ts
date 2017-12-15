@@ -183,10 +183,10 @@ describe('SampleBusinessNetworkService', () => {
 
             identityCardMock.getIdentityCardRefsWithProfileAndRole.returns(['channelRef']);
 
-            peerCard = new IdCard({userName: 'peer'}, {'x-type': 'web', name: 'myProfile'});
+            peerCard = new IdCard({userName: 'peer'}, {'x-type': 'web', 'name': 'myProfile'});
             identityCardMock.getIdentityCard.withArgs('peerRef').returns(peerCard);
 
-            channelCard = new IdCard({userName: 'channel'}, {'x-type': 'web', name: 'myProfile'});
+            channelCard = new IdCard({userName: 'channel'}, {'x-type': 'web', 'name': 'myProfile'});
             identityCardMock.getIdentityCard.withArgs('channelRef').returns(channelCard);
         }));
 
@@ -196,7 +196,7 @@ describe('SampleBusinessNetworkService', () => {
                 userName: 'admin',
                 enrollmentSecret: 'adminpw',
                 businessNetwork: 'myNetwork'
-            }, {name: 'myProfile', 'x-type': 'hlfv1'});
+            }, {'name': 'myProfile', 'x-type': 'hlfv1'});
             createdCardMap.set('admin', createdCard);
             adminMock.start.returns(Promise.resolve(createdCardMap));
 
@@ -232,7 +232,7 @@ describe('SampleBusinessNetworkService', () => {
                 userName: 'myUserId',
                 enrollmentSecret: 'adminpw',
                 businessNetwork: 'myNetwork'
-            }, {name: 'myProfile', 'x-type': 'hlfv1'});
+            }, {'name': 'myProfile', 'x-type': 'hlfv1'});
             createdCardMap.set('myUserId', createdCard);
             adminMock.start.returns(Promise.resolve(createdCardMap));
 
@@ -268,7 +268,7 @@ describe('SampleBusinessNetworkService', () => {
             let createdCard = new IdCard({
                 userName: 'myUserId',
                 businessNetwork: 'myNetwork'
-            }, {name: 'myProfile', 'x-type': 'hlfv1'});
+            }, {'name': 'myProfile', 'x-type': 'hlfv1'});
 
             createdCard.setCredentials({
                 certificate: 'myCert',
@@ -348,7 +348,7 @@ describe('SampleBusinessNetworkService', () => {
         let idCard;
 
         beforeEach(() => {
-            idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', name: 'myProfile'});
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
             identityCardMock.getCurrentIdentityCard.returns(idCard);
             identityCardMock.getCurrentCardRef.returns('myCardRef');
         });

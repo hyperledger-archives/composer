@@ -471,7 +471,7 @@ describe('IdentityCardService', () => {
 
             mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getEnrollmentCredentials.returns({id: 'admin'});
-            mockIdCard1.getConnectionProfile.returns({name: '$default', 'x-type': 'web'});
+            mockIdCard1.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
 
             mockConnectionProfile2 = {name: 'hlfv1'};
             mockIdCard2 = sinon.createStubInstance(IdCard);
@@ -595,7 +595,7 @@ describe('IdentityCardService', () => {
     describe('getQualifiedProfileName', () => {
         it('should get a qualified profile name for a web connection profile', inject([IdentityCardService], (service: IdentityCardService) => {
             let connectionProfile = {
-                name: '$default',
+                'name': '$default',
                 'x-type': 'web'
             };
 
