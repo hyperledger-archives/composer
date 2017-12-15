@@ -105,7 +105,10 @@ describe('HLFConnectionManager', () => {
         let ccp;
         beforeEach(() => {
             ccp = {
-                cardName: 'acard'
+                cardName: 'acard',
+                client: {
+                    organization: 'org1'
+                }
             };
         });
 

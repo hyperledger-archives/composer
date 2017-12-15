@@ -405,7 +405,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
                 });
         });
@@ -486,7 +486,7 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: [goodResp], invalidResponseMsgs: [errorResp]});
 
             return connection.install(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/failed to install on 1/);
+        .should.be.rejectedWith(/failed to install on 1 .* not because it exists/);
         });
 
         it('should install chaincode on peers that still need chaincode to be installed', () => {
@@ -1126,7 +1126,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        targets: [mockPeer]
+                        channelNames: 'testchainid'
                     });
 
                     sinon.assert.calledOnce(connection._initializeChannel);
