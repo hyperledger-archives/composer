@@ -286,6 +286,7 @@ ga('send', 'pageview');
 ./stopFabric.sh
 ./teardownFabric.sh
 ./downloadFabric.sh
+export FABRIC_VERSION=hlfv11        
 ./startFabric.sh
 </code></pre></div></li>
 <li><p>Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
@@ -303,10 +304,10 @@ composer card delete -n admin@tutorial-network
 <p>The simple Hyperledger Fabric network provided in the development environment has been configured using the Hyperledger Fabric configuration tools <code>cryptogen</code> and <code>configtxgen</code>.</p>
 
 <p>The configuration for <code>cryptogen</code> is stored in the file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config.yaml
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config.yaml
 </code></pre></div>
 <p>The configuration for <code>configtxgen</code> is stored in the file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/configtx.yaml
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/configtx.yaml
 </code></pre></div>
 <p>You can find more information about these configuration tools, what they do, and how to use them by reading the Hyperledger Fabric documentation.</p>
 
@@ -346,7 +347,7 @@ composer card delete -n admin@tutorial-network
 <p>The organization <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator. Administrators for an organization have the permission to install the code for a blockchain business network onto their organization&#39;s peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user <code>Admin@org1.example.com</code>.</p>
 
 <p>The user <code>Admin@org1.example.com</code> has a set of certificates and private key files stored in the directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 </code></pre></div>
 <p>You will use some of these files later on to interact with the Hyperledger Fabric network.</p>
 
@@ -443,7 +444,7 @@ composer card delete -n admin@tutorial-network
 <p>In order to deploy a blockchain business network to this Hyperledger Fabric network, we must identify ourselves as an administrator with the permissions to perform this operation. In this step, you locate the files required to identify yourself as an administrator.</p>
 
 <p>The administrator for our Hyperledger Fabric network is a user called <code>Admin@org1.example.com</code>. The certificates and private key files for this user are stored in the directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv1/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 </code></pre></div>
 <p>You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the <code>signcerts</code> subdirectory and is named <code>Admin@org1.example.com-cert.pem</code>. If you look at the contents of this file, then you will find a PEM encoded certificate similar to the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE-----
