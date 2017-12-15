@@ -34,6 +34,10 @@ if [ ! -f ${DIR}/build.cfg ]; then
         elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
             BUILD_FOCUS="latest"
             BUILD_RELEASE="unstable"
+        elif [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
+            # personal repo build --> assuming this is next unstable
+            BUILD_FOCUS="next"
+            BUILD_RELEASE="unstable"
         else 
             _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
         fi

@@ -3,18 +3,18 @@
 # Exit on first error, print all commands.
 set -ev
 set -o pipefail
+env
 
 # Bring in the standard set of script utilities
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source ${DIR}/.travis/base.sh
-# ----
 
+# ----
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
 
 pip install --user linkchecker requests==2.9.2
 linkchecker --version
-
 npm install -g lerna@2 @alrra/travis-scripts asciify gnomon
 
 # Abort the fv/integration if this is a merge build
@@ -34,7 +34,6 @@ fi
 
 #
 cd ${DIR}
-
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome*.deb
 wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
