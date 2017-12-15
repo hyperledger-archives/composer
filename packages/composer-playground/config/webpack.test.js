@@ -2,14 +2,13 @@
  * @author: @AngularClass
  */
 
+'use strict';
+
 const webpack = require('webpack');
 const helpers = require('./helpers');
-const path = require('path');
-const webpackMerge = require('webpack-merge'); // used to merge webpack configs
 /**
  * Webpack Plugins
  */
-const ProvidePlugin = require('webpack/lib/ProvidePlugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
@@ -22,7 +21,7 @@ const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
 const PLAYGROUND_API = process.env.PLAYGROUND_API || 'playground-api';
 
-/**
+/*
  * Webpack configuration
  *
  * See: http://webpack.github.io/docs/configuration.html#cli
@@ -85,7 +84,7 @@ module.exports = function (options) {
                         {
                             loader : 'awesome-typescript-loader',
                             query : {
-                                // use inline sourcemaps for "karma-remap-coverage" reporter
+                                // use inline sourcemaps for 'karma-remap-coverage' reporter
                                 sourceMap : false,
                                 inlineSourceMap : true,
                                 compilerOptions : {
@@ -157,7 +156,7 @@ module.exports = function (options) {
                     exclude : [helpers.root('src/index.html')]
                 },
 
-                {test : /sinon.*\.js$/, loader : "imports-loader?define=>false,require=>false"},
+                {test : /sinon.*\.js$/, loader : 'imports-loader?define=>false,require=>false'},
 
                 /**
                  * Instruments JS files with Istanbul for subsequent code coverage reporting.
@@ -178,27 +177,27 @@ module.exports = function (options) {
 
                 {
                     test : /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/font-woff"
+                    loader : 'url-loader?limit=10000&minetype=application/font-woff'
                 },
                 {
                     test : /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/font-woff"
+                    loader : 'url-loader?limit=10000&minetype=application/font-woff'
                 },
                 {
                     test : /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/octet-stream"
+                    loader : 'url-loader?limit=10000&minetype=application/octet-stream'
                 },
                 {
                     test : /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "file-loader"
+                    loader : 'file-loader'
                 },
                 {
                     test : /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=image/svg+xml"
+                    loader : 'url-loader?limit=10000&minetype=image/svg+xml'
                 },
                 {
                     test : /\.bna$/,
-                    loader : "buffer-loader"
+                    loader : 'buffer-loader'
                 }
             ]
         },
@@ -265,7 +264,7 @@ module.exports = function (options) {
                 jquery : 'jquery'
             }),
         ],
-        
+
         node: {
             fs: 'empty'
         }
