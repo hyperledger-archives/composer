@@ -1219,12 +1219,6 @@ describe('HLFConnectionManager', () => {
             sandbox.reset();
         });
 
-        /*
-        it('should throw if wallet or cardname not specified', function() {
-
-        });
-        */
-
         it('should return credentials from Fabric Client for valid user', function() {
             mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
             return connectionManager.exportIdentity('connprof1', profile, userId)
