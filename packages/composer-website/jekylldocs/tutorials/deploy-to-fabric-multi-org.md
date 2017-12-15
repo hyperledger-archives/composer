@@ -49,7 +49,7 @@ Follow the [Building Your First Network tutorial](http://hyperledger-fabric.read
 
 In order to follow this tutorial, you must start a {{site.data.conrefs.hlf_full}} network.
 
-This tutorial will assume that you use the {{site.data.conrefs.hlf_full}} network provided in the {{site.data.conrefs.hlf_full}} [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html). We will refer to this {{site.data.conrefs.hlf_full}} network as the BYFN (Building Your First Network) network.
+This tutorial will assume that you use the {{site.data.conrefs.hlf_full}} network provided in the {{site.data.conrefs.hlf_full}} [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html). We will refer to this {{site.data.conrefs.hlf_full}} network as the BYFN (Building Your First Network) network.
 
 You can now start the BYFN network. You must specify additional flags that are not specified in the Building Your First Network tutorial. This is because we want to use CouchDB as the world state database, and we want to start a Certificate Authority (CA) for each organization.
 
