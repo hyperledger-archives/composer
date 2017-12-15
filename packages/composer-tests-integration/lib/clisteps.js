@@ -28,6 +28,14 @@ module.exports = function () {
         return this.composer.runCLI(table);
     });
 
+    this.When(/^I spawn the following background task (.+?), and wait for \/(.+?)\/$/, {timeout: 240 * 1000}, function (label, regex, table) {
+        return this.composer.runBackground(label, table, new RegExp(regex));
+    });
+
+    this.When(/^I kill task named (.+?)$/, {timeout: 240 * 1000}, function (label) {
+        return this.composer.killBackground(label);
+    });
+
     this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), false);
     });
