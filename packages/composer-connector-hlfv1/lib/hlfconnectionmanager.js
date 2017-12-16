@@ -249,8 +249,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('The peers array has not been specified in the connection profile');
         } else if (!profileDefinition.peers.length) {
             throw new Error('No peer URLs have been specified in the connection profile');
-        }  else if (!wallet && !profileDefinition.keyValStore && !profileDefinition.cardName) {
-            throw new Error('No key value store directory, wallet or card name has been specified');
+        }  else if (!wallet && !profileDefinition.cardName) {
+            throw new Error('No wallet or card name has been specified');
         } else if (!profileDefinition.ca) {
             throw new Error('The certificate authority URL has not been specified in the connection profile');
         } else if (!profileDefinition.channel) {
@@ -280,12 +280,7 @@ class HLFConnectionManager extends ConnectionManager {
             return this._setupWallet(client, wallet);
         }
 
-        let storePath;
-        if (profileData.cardName) {
-            storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
-        } else {
-            storePath = profileData.keyValStore;
-        }
+        let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
 
         return this._setupFileStore(client, storePath);
 
@@ -624,8 +619,6 @@ class HLFConnectionManager extends ConnectionManager {
                 .then(() => {
                     return exists;
                 });
-
-
         } else {
             return Promise.reject(new Error('Unable to remove identity as no card name provided'));
         }

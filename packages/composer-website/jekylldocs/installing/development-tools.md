@@ -86,6 +86,7 @@ You control your runtime using a set of scripts which you'll find in `~/fabric-t
 The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
 
         cd ~/fabric-tools
+        export FABRIC_VERSION=hlfv11        
         ./startFabric.sh
         ./createPeerAdminCard.sh
 

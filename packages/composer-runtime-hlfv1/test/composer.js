@@ -20,7 +20,6 @@ const NodeContainer = require('../lib/nodecontainer');
 const Engine = require('composer-runtime').Engine;
 const Context = require('composer-runtime').Context;
 const shim = require('fabric-shim');
-const fs = require('fs');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -105,29 +104,6 @@ describe('Composer', () => {
                     sinon.assert.calledWith(shim.error, error);
                 });
         });
-
-        it('handle composer develper mode', () => {
-            sandbox.stub(shim, 'success').returns();
-            sandbox.stub(fs, 'readFileSync').returns(new Buffer('filecontents'));
-            sinon.stub(composer.container, 'initLogging').resolves();
-            mockStub.getFunctionAndParameters.returns({fcn:'init', params:['afilename']});
-            mockEngine.init.resolves();
-            process.env.COMPOSER_DEV_MODE=true;
-            return composer.Init(mockStub)
-                .then(() => {
-                    sinon.assert.calledOnce(mockEngine.init);
-                    sinon.assert.calledWith(mockEngine.init, mockContext, 'init', ['ZmlsZWNvbnRlbnRz']);
-                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
-                    sinon.assert.calledOnce(shim.success);
-                    sinon.assert.calledOnce(fs.readFileSync);
-                    sinon.assert.calledWith(fs.readFileSync, 'afilename');
-                    delete process.env.COMPOSER_DEV_MODE;
-                });
-
-        });
-
-
-
     });
 
     describe('#Invoke', () => {

@@ -2,6 +2,8 @@
  * @author: @AngularClass
  */
 
+'use strict';
+
 const webpack = require('webpack');
 const helpers = require('./helpers');
 
@@ -10,7 +12,6 @@ const helpers = require('./helpers');
  */
 // problem with copy-webpack-plugin
 const AssetsPlugin = require('assets-webpack-plugin');
-const NormalModuleReplacementPlugin = require('webpack/lib/NormalModuleReplacementPlugin');
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
 const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -22,11 +23,10 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 /*
  * Webpack Constants
  */
-const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
-    title : 'Hyperledger Composer',
-    baseUrl : '/',
-    isDevServer : helpers.isWebpackDevServer()
+    title: 'Hyperledger Composer',
+    baseUrl: '/',
+    isDevServer: helpers.isWebpackDevServer()
 };
 
 /*
@@ -34,8 +34,8 @@ const METADATA = {
  *
  * See: http://webpack.github.io/docs/configuration.html#cli
  */
-module.exports = function (options) {
-    isProd = options.env === 'production';
+module.exports = function(options) {
+    let isProd = options.env === 'production';
     return {
 
         /*
@@ -53,11 +53,11 @@ module.exports = function (options) {
          *
          * See: http://webpack.github.io/docs/configuration.html#entry
          */
-        entry : {
+        entry: {
 
-            'polyfills' : './src/polyfills.browser.ts',
-            'vendor' : './src/vendor.browser.ts',
-            'main' : './src/main.browser.ts'
+            'polyfills': './src/polyfills.browser.ts',
+            'vendor': './src/vendor.browser.ts',
+            'main': './src/main.browser.ts'
 
         },
 
@@ -66,21 +66,21 @@ module.exports = function (options) {
          *
          * See: http://webpack.github.io/docs/configuration.html#resolve
          */
-        resolve : {
+        resolve: {
 
             /*
              * An array of extensions that should be used to resolve modules.
              *
              * See: http://webpack.github.io/docs/configuration.html#resolve-extensions
              */
-            extensions : ['.ts', '.js', '.json'],
+            extensions: ['.ts', '.js', '.json'],
 
             // An array of directory names to be resolved to the current directory
-            modules : [helpers.root('src'), 'node_modules'],
+            modules: [helpers.root('src'), 'node_modules'],
 
             // Use our versions of Node modules.
-            alias : {
-                request$ : require.resolve('xhr') // used for HTTP POST
+            alias: {
+                request$: require.resolve('xhr') // used for HTTP POST
             }
 
         },
@@ -90,9 +90,9 @@ module.exports = function (options) {
          *
          * See: http://webpack.github.io/docs/configuration.html#module
          */
-        module : {
+        module: {
 
-            rules : [
+            rules: [
 
                 /*
                  * Typescript loader support for .ts and Angular 2 async routes via .async.ts
@@ -102,14 +102,14 @@ module.exports = function (options) {
                  * See: https://github.com/TheLarkInn/angular2-template-loader
                  */
                 {
-                    test : /\.ts$/,
-                    use : [
+                    test: /\.ts$/,
+                    use: [
                         '@angularclass/hmr-loader?pretty=' + !isProd + '&prod=' + isProd,
                         'awesome-typescript-loader',
                         'angular2-template-loader',
                         'angular-router-loader'
                     ],
-                    exclude : [/\.(spec|e2e)\.ts$/]
+                    exclude: [/\.(spec|e2e)\.ts$/]
                 },
 
                 /*
@@ -118,8 +118,8 @@ module.exports = function (options) {
                  * See: https://github.com/webpack/json-loader
                  */
                 {
-                    test : /\.json$/,
-                    use : 'json-loader'
+                    test: /\.json$/,
+                    use: 'json-loader'
                 },
 
                 /*
@@ -128,8 +128,8 @@ module.exports = function (options) {
                  *
                  */
                 {
-                    test : /\.css$/,
-                    use : ['to-string-loader', 'css-loader']
+                    test: /\.css$/,
+                    use: ['to-string-loader', 'css-loader']
                 },
 
                 /* Raw loader support for *.html
@@ -138,68 +138,70 @@ module.exports = function (options) {
                  * See: https://github.com/webpack/raw-loader
                  */
                 {
-                    test : /\.html$/,
-                    use : 'raw-loader',
-                    exclude : [helpers.root('src/index.html')]
+                    test: /\.html$/,
+                    use: 'raw-loader',
+                    exclude: [helpers.root('src/index.html')]
                 },
 
                 /* File loader for supporting images, for example, in CSS files.
                  */
                 {
-                    test : /\.(jpg|png|gif)$/,
-                    use : 'file-loader'
+                    test: /\.(jpg|png|gif)$/,
+                    use: 'file-loader'
                 },
 
                 {
-                    test : /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/font-woff"
+                    test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+                    loader: 'url-loader?limit=10000&minetype=application/font-woff'
                 },
                 {
-                    test : /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/font-woff"
+                    test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+                    loader: 'url-loader?limit=10000&minetype=application/font-woff'
                 },
                 {
-                    test : /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "url-loader?limit=10000&minetype=application/octet-stream"
+                    test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                    loader: 'url-loader?limit=10000&minetype=application/octet-stream'
                 },
                 {
-                    test : /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                    loader : "file-loader"
+                    test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                    loader: 'file-loader'
                 },
                 {
-                    test : /\.svg$/,
-                    loader : 'svg-sprite-loader?' + JSON.stringify({
-                        name : 'icon-[1]',
-                        prefixize : true,
-                        regExp : './assets/svg/.*/(.*)\\.svg'
+                    test: /\.svg$/,
+                    loader: 'svg-sprite-loader?' + JSON.stringify({
+                        name: 'icon-[1]',
+                        prefixize: true,
+                        regExp: './assets/svg/.*/(.*)\\.svg'
                     })
                 },
                 {
-                    test : /\.js$/,
-                    exclude : /(node_modules(?!\/(composer|yallist|jsonata|uri-js))|bower_components)/,
-                    loader : 'babel-loader',
-                    query : {
-                        presets : [require.resolve('babel-preset-latest')]
+                    test: /\.js$/,
+                    exclude: /(node_modules(?!\/(composer|yallist|jsonata|uri-js))|bower_components)/,
+                    loader: 'babel-loader',
+                    query: {
+                        presets: [require.resolve('babel-preset-latest')]
                     }
                 },
                 {
-                    test : /\.scss$/,
-                    use : [{
-                        loader : "style-loader"
+                    test: /\.scss$/,
+                    use: [{
+                        loader: 'style-loader'
                     }, {
-                        loader : "css-loader", options : {
+                        loader: 'css-loader',
+                        options: {
                             //   sourceMap: true
                         }
                     }, {
-                        loader : "sass-loader", options : {
+                        loader: 'sass-loader',
+                        options: {
                             //   sourceMap: true
                         }
                     }]
                 },
 
                 {
-                    test : /\.bna$/,
-                    loader : "buffer-loader"
+                    test: /\.bna$/,
+                    loader: 'buffer-loader'
                 }
 
             ],
@@ -211,11 +213,11 @@ module.exports = function (options) {
          *
          * See: http://webpack.github.io/docs/configuration.html#plugins
          */
-        plugins : [
+        plugins: [
             new AssetsPlugin({
-                path : helpers.root('dist'),
-                filename : 'webpack-assets.json',
-                prettyPrint : true
+                path: helpers.root('dist'),
+                filename: 'webpack-assets.json',
+                prettyPrint: true
             }),
 
             /*
@@ -227,7 +229,7 @@ module.exports = function (options) {
              * See: https://github.com/webpack/docs/wiki/optimization#multi-page-app
              */
             new CommonsChunkPlugin({
-                name : ['polyfills', 'vendor'].reverse()
+                name: ['polyfills', 'vendor'].reverse()
             }),
 
             /**
@@ -254,10 +256,16 @@ module.exports = function (options) {
              *
              * See: https://www.npmjs.com/package/copy-webpack-plugin
              */
-            new CopyWebpackPlugin([
-                {from : 'src/assets', to : 'assets'},
-                {from : 'src/meta'},
-                {from : 'src/config'}
+            new CopyWebpackPlugin([{
+                from: 'src/assets',
+                to: 'assets'
+            },
+            {
+                from: 'src/meta'
+            },
+            {
+                from: 'src/config'
+            }
             ]),
 
 
@@ -270,11 +278,11 @@ module.exports = function (options) {
              * See: https://github.com/ampedandwired/html-webpack-plugin
              */
             new HtmlWebpackPlugin({
-                template : 'src/index.html',
-                title : METADATA.title,
-                chunksSortMode : 'dependency',
-                metadata : METADATA,
-                inject : 'head'
+                template: 'src/index.html',
+                title: METADATA.title,
+                chunksSortMode: 'dependency',
+                metadata: METADATA,
+                inject: 'head'
             }),
 
             /*
@@ -285,7 +293,7 @@ module.exports = function (options) {
              * See: https://github.com/numical/script-ext-html-webpack-plugin
              */
             new ScriptExtHtmlWebpackPlugin({
-                defaultAttribute : 'defer'
+                defaultAttribute: 'defer'
             }),
 
             /*
@@ -293,8 +301,8 @@ module.exports = function (options) {
              * Description: Generate html tags based on javascript maps.
              *
              * If a publicPath is set in the webpack output configuration, it will be automatically added to
-             * href attributes, you can disable that by adding a "=href": false property.
-             * You can also enable it to other attribute by settings "=attName": true.
+             * href attributes, you can disable that by adding a '=href': false property.
+             * You can also enable it to other attribute by settings '=attName': true.
              *
              * The configuration supplied is map between a location (key) and an element definition object (value)
              * The location (key) is then exported to the template under then htmlElements property in webpack configuration.
@@ -311,7 +319,7 @@ module.exports = function (options) {
              * Dependencies: HtmlWebpackPlugin
              */
             new HtmlElementsPlugin({
-                headTags : require('./head-config.common')
+                headTags: require('./head-config.common')
             }),
 
             /**
@@ -322,9 +330,9 @@ module.exports = function (options) {
             new LoaderOptionsPlugin({}),
 
             new webpack.ProvidePlugin({
-                jQuery : 'jquery',
-                $ : 'jquery',
-                jquery : 'jquery'
+                jQuery: 'jquery',
+                $: 'jquery',
+                jquery: 'jquery'
             }),
         ],
 
