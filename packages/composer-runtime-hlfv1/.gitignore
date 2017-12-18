@@ -45,3 +45,6 @@ out
 *.swp
 
 # Build generated files should be ignored by git, but not by npm.
+
+# ignore this for now as it there shouldn't be one
+.npmrc

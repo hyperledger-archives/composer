@@ -381,6 +381,51 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should install the runtime and include an npmrc file if specified', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').resolves();
+            return connection.install(mockSecurityContext, 'org-acme-biznet', {npmrcFile: '/some/file'})
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, '/some/file', runtimeModulePath + '/.npmrc');
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        channelNames: 'testchainid'
+                    });
+                });
+        });
+
+        it('should throw an error if specified npmrcFile doesn\'t exist', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
+            return connection.install(mockSecurityContext, 'org-acme-biznet', {npmrcFile: '/some/file'})
+                .should.be.rejectedWith(/ENOENT/);
+        });
 
         it('should throw error if peer rejects installation', () => {
 
@@ -427,7 +472,6 @@ describe('HLFConnection', () => {
             });
         });
 
-
         it('should throw an error if it only installs chaincode on some of the peers that need chaincode installed', () => {
             const goodResp = {
                 response: {
@@ -442,7 +486,7 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: [goodResp], invalidResponseMsgs: [errorResp]});
 
             return connection.install(mockSecurityContext, mockBusinessNetwork)
-                .should.be.rejectedWith(/failed to install on 1/);
+        .should.be.rejectedWith(/failed to install on 1 .* not because it exists/);
         });
 
         it('should install chaincode on peers that still need chaincode to be installed', () => {
@@ -1049,6 +1093,73 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
                 });
         });
+
+        it('should deploy and include an npmrc file if specified', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').resolves();
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {npmrcFile: '/some/file'})
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, '/some/file', runtimeModulePath + '/.npmrc');
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        channelNames: 'testchainid'
+                    });
+
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['{"start":"json"}']
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should throw an error if specified npmrcFile doesn\'t exist', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {npmrcFile: '/some/file'})
+                .should.be.rejectedWith(/ENOENT/);
+        });
+
 
         it('should deploy the business network with endorsement policy object', () => {
             sandbox.stub(global, 'setTimeout');
@@ -1897,6 +2008,55 @@ describe('HLFConnection', () => {
                     result.equals(response).should.be.true;
                 });
         });
+
+        it('should choose a valid peer from a list of peers in the same org', async () => {
+            let mockPeer1 = sinon.createStubInstance(Peer);
+            let mockPeer2 = sinon.createStubInstance(Peer);
+            let mockPeer3 = sinon.createStubInstance(Peer);
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(true);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
+            let mockPeers = [mockPeer1, mockPeer2, mockPeer3];
+            mockClient.getPeersForOrg.returns(mockPeers);
+            const response = Buffer.from('hello world');
+            mockChannel.queryByChaincode.resolves([response]);
+            let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(mockChannel.queryByChaincode);
+            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                chaincodeVersion: connectorPackageJSON.version,
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            result.equals(response).should.be.true;
+        });
+
+        it('should choose a valid peer from all peers if no suitable one in same org', async () => {
+            let mockPeer1 = sinon.createStubInstance(Peer);
+            let mockPeer2 = sinon.createStubInstance(Peer);
+            let mockPeer3 = sinon.createStubInstance(Peer);
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
+            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer2]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer3, mockPeer2]);
+            const response = Buffer.from('hello world');
+            mockChannel.queryByChaincode.resolves([response]);
+            let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(mockChannel.queryByChaincode);
+            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                chaincodeVersion: connectorPackageJSON.version,
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer3]
+            });
+            result.equals(response).should.be.true;
+        });
+
 
         it('should throw if no responses are returned', () => {
             mockChannel.queryByChaincode.resolves([]);

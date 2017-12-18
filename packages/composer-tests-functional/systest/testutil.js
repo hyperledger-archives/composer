@@ -607,8 +607,8 @@ class TestUtil {
                     return adminConnection.connect('composer-systests-org1-PeerAdmin');
                 })
                 .then(() => {
-                    console.log('Connecting to install');
-                    return adminConnection.install(businessNetworkDefinition.getName());
+                    console.log('installing to Org1');
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -619,8 +619,8 @@ class TestUtil {
                     return adminConnection.connect('composer-systests-org2-PeerAdmin');
                 })
                 .then(() => {
-                    console.log('Connecting to install org2');
-                    return adminConnection.install(businessNetworkDefinition.getName());
+                    console.log('installing to Org2');
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -699,7 +699,7 @@ class TestUtil {
                     return adminConnection.connect(deployCardName);
                 })
                 .then(() => {
-                    return adminConnection.install(businessNetworkDefinition.getName());
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     console.log('deploying new '+businessNetworkDefinition.getName());
