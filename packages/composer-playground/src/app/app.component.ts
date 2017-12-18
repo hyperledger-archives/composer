@@ -117,17 +117,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.fileService.deleteAllFiles();
                 this.showWelcome = false;
 
-                try {
-                  this.config = this.configService.getConfig();
-                  this.composerBanner = this.config['banner'];
-                } catch (err) {
-                  this.configService.loadConfig()
-                  .then((config) => {
-                      this.config = config;
-                      this.composerBanner = config['banner'];
-                  });
-                }
-
                 return this.router.navigate(['/login']);
             });
     }
@@ -145,6 +134,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
             this.showHeaderLinks = false;
+            try {
+              this.config = this.configService.getConfig();
+              this.composerBanner = this.config['banner'];
+            } catch (err) {
+              this.configService.loadConfig()
+              .then((config) => {
+                  this.config = config;
+                  this.composerBanner = config['banner'];
+              });
+            }
+
         } else {
             this.showHeaderLinks = true;
             this.clientService.ensureConnected()
