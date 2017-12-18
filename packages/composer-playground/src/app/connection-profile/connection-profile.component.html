@@ -457,17 +457,6 @@
                         <td>
                             <input type="text" [(ngModel)]="ca.caName" name="caName">
                         </td>
-                        <td>
-                            <button type="button"
-                                    class="certificate-button"
-                                    [ngClass]="{'no-cert': !ca.tlsCACerts}"
-                                    (click)="openAddCertificateModal(0,'ca');"
-                                    [disabled]="!ca.httpOptions.verify">
-                                <svg class="standard-icon" aria-hidden="true">
-                                    <use xlink:href="#icon-data-quality_16"></use>
-                                </svg>
-                            </button>
-                        </td>
                     </tr>
                     <tr>
                         <th>
@@ -489,9 +478,19 @@
                             Verify
                         </th>
                         <td>
-                            <input type="checkbox" [(ngModel)]="ca.httpOptions.verify" #caHttpOptionsVerify="ngModel" name="caHttpOptionsVerify" id="caHttpOptionsVerify" [disabled]="ca.url.substring(ca.url.indexOf('://')-1, ca.url.indexOf('://')) !== 's'" />
-                            <label for="caHttpOptionsVerify" class="checkbox-label" ></label>
+                            <input type="checkbox" (click)="clearCaTls()" [(ngModel)]="ca.httpOptions.verify" #caHttpOptionsVerify="ngModel" name="caHttpOptionsVerify" id="caHttpOptionsVerify" [disabled]="ca.url.substring(ca.url.indexOf('://')-1, ca.url.indexOf('://')) !== 's'" />
+                            <label for="caHttpOptionsVerify" class="checkbox-label ca" ></label>
+                            <button type="button"
+                                    class="certificate-button ca"
+                                    [ngClass]="{'no-cert': !ca.tlsCACerts}"
+                                    (click)="openAddCertificateModal(0,'ca');"
+                                    [disabled]="!ca.httpOptions.verify">
+                                <svg class="standard-icon" aria-hidden="true">
+                                    <use xlink:href="#icon-data-quality_16"></use>
+                                </svg>
+                            </button>
                         </td>
+                    </tr>
                 </table>
             </div>
         </section>

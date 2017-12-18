@@ -507,6 +507,11 @@ export class ConnectionProfileComponent {
     setVerify() {
       if (this.ca.url.substring(this.ca.url.indexOf('://') - 1, this.ca.url.indexOf('://')) !== 's') {
         this.ca.httpOptions.verify = false;
+        delete this.ca.tlsCACerts;
       }
+    }
+
+    clearCaTls() {
+      delete this.ca.tlsCACerts;
     }
 }

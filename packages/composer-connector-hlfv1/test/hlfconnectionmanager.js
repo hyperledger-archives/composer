@@ -462,8 +462,6 @@ describe('HLFConnectionManager', () => {
             const mockSigner = sinon.createStubInstance(idModule.Signer);
             const mockSignerKey = sinon.createStubInstance(api.Key);
 
-            //mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
-            //mockClient.initCredentialStores.resolves();
             mockUser.getIdentity.returns(mockIdentity);
             mockUser.getSigningIdentity.returns(mockSigningIdentity);
             mockSigningIdentity._signer = mockSigner;

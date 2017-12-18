@@ -73,6 +73,10 @@ connection-profile {
             }
 
         }
+
+        &.ca {
+          margin-left: 50px;
+        }
     }
 
     .profile-buttons {
@@ -125,5 +129,16 @@ connection-profile {
             padding-bottom: $space-large;
             border-bottom: 1px solid $fourth-highlight;
         }
+    }
+
+    .checkbox-label {
+      &.ca {
+        top: 15px;
+      }
+    }
+
+    .help {
+      color: #19273C;
+      font-weight: 300;
     }
 }

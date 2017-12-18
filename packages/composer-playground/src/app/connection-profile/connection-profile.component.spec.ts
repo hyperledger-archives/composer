@@ -1960,12 +1960,15 @@ describe('ConnectionProfileComponent', () => {
     });
 
     describe('setVerify', () => {
-        it('should set httpOption.verify to false for the CA if the url is not secure', () => {
+        it('should set httpOption.verify to false and remove tlsCACerts for the CA if the url is not secure', () => {
           component['ca'] = {
              url: 'http://localhost:7054',
              caName: null,
              httpOptions: {
                verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
              }
           };
 
@@ -1986,6 +1989,9 @@ describe('ConnectionProfileComponent', () => {
              caName: null,
              httpOptions: {
                verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
              }
           };
 
@@ -1996,8 +2002,36 @@ describe('ConnectionProfileComponent', () => {
              caName: null,
              httpOptions: {
                verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
              }
           });
         });
+    });
+
+    describe('clearCaTls', () => {
+      it('should delete the tlsCACerts field from the CA', () => {
+        component['ca'] = {
+           url: 'https://localhost:7054',
+           caName: null,
+           httpOptions: {
+             verify: true
+           },
+           tlsCACerts: {
+             pem: 'CERT'
+           }
+        };
+
+        component.clearCaTls();
+
+        component['ca'].should.deep.equal({
+           url: 'https://localhost:7054',
+           caName: null,
+           httpOptions: {
+             verify: true
+           }
+        });
+      });
     });
 });
