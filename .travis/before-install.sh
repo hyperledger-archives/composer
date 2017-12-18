@@ -9,6 +9,7 @@ env
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source ${DIR}/.travis/base.sh
 
+# ----
 # Install using pip as apt-get pulls the wrong version on Travis' trusty image
 # python requests 2.9.2 is essential prereq for linkchecker
 
@@ -22,7 +23,7 @@ npm install -g lerna@2 @alrra/travis-scripts asciify gnomon
 if [ "${FC_TASK}" = "systest" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ -z "${TRAVIS_TAG}" ]; then
   if [[ "${TRAVIS_REPO_SLUG}" = hyperledger* ]]; then
     _abortBuild 0
-    _exit "Merge build from non release PR: ergo not running fv/integration tests"   
+    _exit "Merge build from non release PR: ergo not running fv/integration tests" 0
   fi
 fi
 
