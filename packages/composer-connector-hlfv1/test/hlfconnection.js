@@ -417,6 +417,51 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should install the runtime and include an npmrc file if specified', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').resolves();
+            return connection.install(mockSecurityContext, 'org-acme-biznet', {npmrcFile: '/some/file'})
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, '/some/file', runtimeModulePath + '/.npmrc');
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+                });
+        });
+
+        it('should throw an error if specified npmrcFile doesn\'t exist', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
+            return connection.install(mockSecurityContext, 'org-acme-biznet', {npmrcFile: '/some/file'})
+                .should.be.rejectedWith(/ENOENT/);
+        });
 
         it('should throw error if peer rejects installation', () => {
 
@@ -462,7 +507,6 @@ describe('HLFConnection', () => {
                 sinon.assert.calledOnce(mockClient.installChaincode);
             });
         });
-
 
         it('should throw an error if it only installs chaincode on some of the peers that need chaincode installed', () => {
             const goodResp = {
@@ -1105,6 +1149,73 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
                 });
         });
+
+        it('should deploy and include an npmrc file if specified', () => {
+            sandbox.stub(global, 'setTimeout');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').resolves();
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {npmrcFile: '/some/file'})
+                .then(() => {
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, '/some/file', runtimeModulePath + '/.npmrc');
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
+                        chaincodeType: 'node',
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
+                    });
+
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        fcn: 'init',
+                        args: ['{"start":"json"}']
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should throw an error if specified npmrcFile doesn\'t exist', () => {
+
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
+            return connection.deploy(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {npmrcFile: '/some/file'})
+                .should.be.rejectedWith(/ENOENT/);
+        });
+
 
         it('should deploy the business network with endorsement policy object', () => {
             sandbox.stub(global, 'setTimeout');

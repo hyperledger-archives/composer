@@ -22,7 +22,6 @@ const HLFTxEventHandler = require('./hlftxeventhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
-const temp = require('temp').track();
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
 const EventHub = require('fabric-client/lib/EventHub');
@@ -106,7 +105,6 @@ class HLFConnection extends Connection {
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
-        this.temp = thenifyAll(temp);
         LOG.exit(method);
     }
 
@@ -311,10 +309,11 @@ class HLFConnection extends Connection {
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
+     * @param {object} installOptions.npmrcFile location of npmrc file to include in package
      * @returns {Promise} a promise which resolves to true if chaincode was installed, false otherwise (if ignoring installed errors)
      * @throws {Error} if chaincode was not installed and told not to ignore this scenario
      */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
+    async install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
         LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
 
@@ -323,6 +322,16 @@ class HLFConnection extends Connection {
         }
 
         let txId = this.client.newTransactionID();
+
+        if (installOptions && installOptions.npmrcFile) {
+            try {
+                await this.fs.copy(installOptions.npmrcFile, runtimeModulePath + '/.npmrc');
+            } catch(error) {
+                const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
+                LOG.error(method, newError);
+                throw newError;
+            }
+        }
 
         const request = {
             chaincodeType: 'node',
@@ -333,36 +342,39 @@ class HLFConnection extends Connection {
             targets: this.channel.getPeers()
         };
 
-        return this.client.installChaincode(request)
-            .then((results) => {
-                LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
-                const CCAlreadyInstalledPattern = /chaincode .+ exists/;
-                let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
+        try {
+            let results = await this.client.installChaincode(request);
+            LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
+            const CCAlreadyInstalledPattern = /chaincode .+ exists/;
+            let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
-                // is the composer runtime already installed on all the peers ?
-                let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
-                if (ignoredErrors === results[0].length && !calledFromDeploy) {
-                    const errorMsg = 'The Composer runtime is already installed on all the peers';
-                    throw new Error(errorMsg);
-                }
+            // is the composer runtime already installed on all the peers ?
+            let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
+            if (ignoredErrors === results[0].length && !calledFromDeploy) {
+                const errorMsg = 'The Composer runtime is already installed on all the peers';
+                throw new Error(errorMsg);
+            }
 
-                // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
-                if ((validResponses.length + ignoredErrors) !== results[0].length) {
-                    const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
-                    throw new Error(errorMsg);
-                }
-                LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
+            // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
+            if ((validResponses.length + ignoredErrors) !== results[0].length) {
+                const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
+                throw new Error(errorMsg);
+            }
+            LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
 
-                // return a boolean to indicate if any composer runtime was installed.
-                const chaincodeInstalled = validResponses.length !== 0;
-                LOG.exit(method, chaincodeInstalled);
-                return chaincodeInstalled;
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying install composer runtime. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
+            // return a boolean to indicate if any composer runtime was installed.
+            const chaincodeInstalled = validResponses.length !== 0;
+            LOG.exit(method, chaincodeInstalled);
+            return chaincodeInstalled;
+        } catch(error) {
+            const newError = new Error(`Error trying install composer runtime. ${error}`);
+            LOG.error(method, newError);
+            throw newError;
+        } finally {
+            if (installOptions && installOptions.npmrcFile) {
+                await this.fs.remove(runtimeModulePath + '/.npmrc');
+            }
+        }
     }
 
     /**
@@ -508,7 +520,9 @@ class HLFConnection extends Connection {
 
         LOG.debug(method, 'installing composer runtime chaincode');
         let chaincodeInstalled;
-        return this.install(securityContext, businessNetworkIdentifier, {calledFromDeploy: true})
+        let installOptions = {calledFromDeploy: true};
+        Object.assign(installOptions, deployOptions);
+        return this.install(securityContext, businessNetworkIdentifier, installOptions)
             .then((chaincodeInstalled_) => {
                 chaincodeInstalled = chaincodeInstalled_;
                 // check to see if the chaincode is already instantiated

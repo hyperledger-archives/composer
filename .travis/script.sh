@@ -4,19 +4,11 @@
 set -ev
 set -o pipefail
 
-# Grab the parent (root) directory.
+# Bring in the standard set of script utilities
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-ME=`basename "$0"`
-
-echo ${ME} `date`
-
-source ${DIR}/build.cfg
-
-if [ "${ABORT_BUILD}" = "true" ]; then
-  echo "-#- exiting early from ${ME}"
-  exit ${ABORT_CODE}
-fi
-
+source ${DIR}/.travis/base.sh
+# ----
+env | grep TRAVIS
 
 # Start the X virtual frame buffer used by Karma.
 if [ -r "/etc/init.d/xvfb" ]; then
@@ -36,19 +28,33 @@ if [ "${DOCS}" != "" ]; then
 
     # Build the documentation.
     npm run doc
-    echo ${TRAVIS_BRANCH}
-    if [ -n "${TRAVIS_TAG}" ]; then
-        export JEKYLL_ENV=production
-        if [ "${TRAVIS_BRANCH}" = "master" ]; then
+
+    if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
+
+        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+            npm run full:unstable
+            npm run linkcheck:unstable
+        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+            npm run full:next-unstable
+            npm run linkcheck:next-unstable
+        else 
+            _exit "Unknown build focus" 1 
+        fi
+
+    elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
+
+        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
-            npm run full:stable
-            npm run linkcheck:stable
+        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+            npm run full:next
+            npm run linkcheck:next
+        else 
+            _exit "Unknown build focus" 1 
         fi
+
     else
-       npm run full:unstable
-       npm run linkcheck:unstable
+       _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
     fi
 
 # Are we running functional verification tests?
@@ -84,4 +90,4 @@ else
 
 fi
 
-echo ${ME} `date`
+_exit "All complete" 0

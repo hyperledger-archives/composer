@@ -4,9 +4,11 @@
 set -ev
 set -o pipefail
 
-# Grab the parent (root) directory.
+# Bring in the standard set of script utilities
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-date
+source ${DIR}/.travis/base.sh
+# ----
+
 # Set the GitHub deploy key we will use to publish.
 set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
            --iv "$encrypted_17b59ce72ad7_iv" \
@@ -27,15 +29,42 @@ export TODIR="${DIR}/packages/composer-website/out/gh-pages"
 # Load the GitHub repository using the gh-pages branch.
 git clone -b gh-pages git@github.com:${TRAVIS_REPO_SLUG}.git ${TODIR}
 
+
+if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
+
+    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        DOCS_DIR="unstable"
+    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        DOCS_DIR="next-unstable"
+    else 
+        _exit "Unknown build focus" 1 
+    fi
+
+elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
+
+    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        DOCS_DIR="latest"
+    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        DOCS_DIR="next"
+    else 
+        _exit "Unknown build focus" 1 
+    fi
+
+else
+    _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
+fi
+
+echo "--I-- Pushing docs to the ${TODIR}/${DOCS_DIR} sub-folder"
+
 # Should be able to copy all the docs as needed
-mkdir -p ${TODIR}/${DOCS}
-rm -rf ${TODIR}/${DOCS}/*
-cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/${DOCS}/
+mkdir -p ${TODIR}/${DOCS_DIR}
+rm -rf ${TODIR}/${DOCS_DIR}/*
+cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/${DOCS_DIR}/
 
-echo "<meta http-equiv=\"refresh\" content=\"0; url=stable/index.html\" />" > ${TODIR}/index.html
-
+# Add all the changes, commit, and push to the GitHub repository.
 cd ${TODIR}
 git add .
 git commit -m "Automatic deployment of website"
 git push origin gh-pages
-date
+
+_exit "All complete" 0

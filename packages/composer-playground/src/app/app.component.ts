@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private dropListActive = false;
 
     private config = new Config();
+    private composerBanner = new Config()['banner'];
 
     private busyModalRef = null;
 
@@ -99,6 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }).then((config) => {
             this.config = config;
             this.setTitle(this.config['title']);
+            this.composerBanner = config['banner'];
         });
     }
 
@@ -117,10 +119,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
                 try {
                   this.config = this.configService.getConfig();
+                  this.composerBanner = this.config['banner'];
                 } catch (err) {
                   this.configService.loadConfig()
                   .then((config) => {
                       this.config = config;
+                      this.composerBanner = config['banner'];
                   });
                 }
 
@@ -149,7 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     let connectionProfile = card.getConnectionProfile();
                     let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
                     let busNetName = this.clientService.getBusinessNetwork().getName();
-                    this.config['banner'] = [profileName, busNetName];
+                    this.composerBanner = [profileName, busNetName];
                 });
         }
 
