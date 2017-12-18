@@ -122,8 +122,10 @@ cf start "composer-playground${PLAYGROUND_SUFFIX}"
 popd
 
 
+
 ## Stable releases only; both latest and next then clean up git, and bump version number
 if [[ "${BUILD_RELEASE}" = "stable" ]]; then
+
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"

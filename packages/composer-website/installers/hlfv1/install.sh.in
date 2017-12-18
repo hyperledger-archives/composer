@@ -79,7 +79,7 @@ mkdir /tmp/onelinecard/client-data/PeerAdmin@hlfv1
 mkdir /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials
 
 # copy the various material into the local card store
-cd fabric-dev-servers/fabric-scripts/hlfv1/composer
+cd fabric-dev-servers/fabric-scripts/hlfv11/composer
 cp creds/* /tmp/onelinecard/client-data/PeerAdmin@hlfv1
 cp crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials/certificate
 cp crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk /tmp/onelinecard/cards/PeerAdmin@hlfv1/credentials/privateKey

@@ -25,6 +25,7 @@ const http = require('http');
 const matchPattern = require('lodash-match-pattern');
 
 let generated = false;
+let savedId;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -252,13 +253,18 @@ class Composer {
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     killBackground(label) {
-        if(this.tasks[label]) {
-            this.tasks[label].kill();
-            delete this.tasks[label];
-            return Promise.resolve();
-        } else {
-            return Promise.reject('No such task: ' + label);
-        }
+        return new Promise( (resolve, reject) => {
+            if (this.tasks[label]) {
+                this.tasks[label].kill();
+                delete this.tasks[label];
+                // delay, ensure child process is really gone!
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
+            } else {
+                reject('No such task: ' + label);
+            }
+        });
     }
 
     /**
@@ -341,12 +347,28 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
+            // match BOBSID for revoking test
+            if(savedId && savedId!=='') {
+                command = command.replace(/BOBSID/, savedId);
+            }
+
             return new Promise( (resolve, reject) => {
 
                 let childCliProcess = childProcess.exec(command);
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
+
+                // Save Bobs identityId so that we can revoke it
+                let regex = /^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$/g;
+                childCliProcess.stdout.on('data', (data) => {
+                    let match = regex.exec(data);
+                    if(match && match.length===2) {
+                        savedId = match[1];
+                    }
+                    stdout += data;
+                });
+
 
                 childCliProcess.stdout.on('data', (data) => {
                     stdout += data;
@@ -364,7 +386,7 @@ class Composer {
                 childCliProcess.on('close', (code) => {
                     if (code && code !== 0) {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
-                        reject(this.lastResp);
+                        resolve(this.lastResp);
                     } else {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
@@ -392,7 +414,10 @@ class Composer {
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command);
+                let args = command.split(' ');
+                let file = args.shift();
+
+                let childCliProcess = childProcess.spawn(file, args);
 
                 self.tasks[label] = childCliProcess;
 
