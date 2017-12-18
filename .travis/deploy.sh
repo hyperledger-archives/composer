@@ -77,11 +77,11 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 elif  [[ "${BUILD_RELEASE}" = "stable" ]]; then
     if [[ "${BUILD_FOCUS}" = "latest" ]]; then
         PLAYGROUND_SUFFIX=""      
-        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}'"
+        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
         TAG="latest"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         PLAYGROUND_SUFFIX="-next"
-        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}'"
+        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}"
         TAG="next"
     else 
         _exit "Unknown build focus" 1 
