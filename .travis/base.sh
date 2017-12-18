@@ -12,7 +12,7 @@ function _exit(){
 
 function _abortBuild(){
     echo "ABORT_BUILD=true" > ${DIR}/build.cfg
-    echo "ABORT_CODE=$" >> ${DIR}/build.cfg
+    echo "ABORT_CODE=$1" >> ${DIR}/build.cfg
     echo "BUILD_FOCUS=${BUILD_FOCUS}" >> ${DIR}/build.cfg
     echo "BUILD_RELEASE=${BUILD_RELEASE}" >> ${DIR}/build.cfg
 }
