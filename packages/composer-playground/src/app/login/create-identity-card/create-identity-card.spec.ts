@@ -94,32 +94,8 @@ describe('CreateIdentityCardComponent', () => {
 
             tick();
 
-            let profile = { 'description': 'A description for a V1 Profile',
-                            'x-type': 'hlfv1',
-                            'orderers': [{
-                                        url: 'grpc://localhost:7050',
-                                        cert: ''
-                                        }],
-                            'ca': {
-                                    url: 'http://localhost:7054',
-                                    name: ''
-                                },
-                            'peers': [{
-                                        requestURL: 'grpc://localhost:7051',
-                                        eventURL: 'grpc://localhost:7053',
-                                        cert: ''
-                                    }],
-                            'keyValStore': '/tmp/keyValStore',
-                            'channel': 'composerchannel',
-                            'mspID': 'Org1MSP',
-                            'timeout': 300
-                        };
-
-            let expectedConstruct = {name: 'New Connection Profile',
-                                     profile: profile,
-                                     default: false };
-
-            component['wrappedConnectionProfile'].should.deep.equal(expectedConstruct);
+            component['newConnection'].should.deep.equal(true);
+            component['profileChosen'].should.deep.equal(true);
         }));
 
         it('should be able to set named profile', fakeAsync(() => {
@@ -136,11 +112,7 @@ describe('CreateIdentityCardComponent', () => {
 
             tick();
 
-            let expectedConstruct = {name: 'captainConga',
-                                     profile: targetProfile,
-                                     default: true };
-
-            component['wrappedConnectionProfile'].should.deep.equal(expectedConstruct);
+            component['wrappedConnectionProfile'].should.deep.equal(targetProfile);
         }));
     });
 

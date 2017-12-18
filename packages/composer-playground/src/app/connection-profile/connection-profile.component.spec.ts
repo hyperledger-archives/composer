@@ -14,7 +14,7 @@ import * as sinon from 'sinon';
 
 let util = require('util');
 
-fdescribe('ConnectionProfileComponent', () => {
+describe('ConnectionProfileComponent', () => {
     let component: ConnectionProfileComponent;
     let fixture: ComponentFixture<ConnectionProfileComponent>;
 
@@ -1094,7 +1094,7 @@ fdescribe('ConnectionProfileComponent', () => {
             component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
 
-        it('should submit v1 profile with no description, no certs, no grpc options, no caName and no commitTimeout', fakeAsync(() => {
+        it('should submit v1 profile with no description, no certs, no grpc options, no caName, no ca httpOptions, no ca tlsCACerts and no commitTimeout', fakeAsync(() => {
             let completedProfile = {
                 'x-type': 'hlfv1',
                 'x-commitTimeout': 100,
@@ -1237,6 +1237,198 @@ fdescribe('ConnectionProfileComponent', () => {
 
             component.onSubmit(null);
 
+            component['connectionProfileData'].should.deep.equal(completedProfile);
+        }));
+
+        it('should submit v1 profile form with httpOptions verify for the CA but no certs', fakeAsync(() => {
+            let completedProfile = {
+                'x-type': 'hlfv1',
+                'x-commitTimeout': 100,
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCaOrg1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myOrderer',
+                            'grpc-max-send-message-length': 15,
+                            'grpc.http2.keepalive_time': 20
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer1',
+                            'grpc-max-send-message-length': 25,
+                            'grpc.http2.keepalive_time': 30
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer2',
+                            'grpc-max-send-message-length': 35,
+                            'grpc.http2.keepalive_time': 40
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        httpOptions: {
+                          verify: true
+                        },
+                        caName: 'myCaOrg1'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData'] = {
+                'x-type': 'hlfv1'
+            };
+
+            component['basic'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            };
+
+            component['orderers'] = [{
+                url: 'myUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOrderer',
+                    grpcMaxSendMessageLength: 15,
+                    grpcHttp2KeepAliveTime: 20
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            }];
+
+            component['ordererTimeout'] = '5';
+
+            component['peers'] = [];
+
+            component['peers'].push({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer1',
+                    grpcMaxSendMessageLength: 25,
+                    grpcHttp2KeepAliveTime: 30
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peers'].push({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer2',
+                    grpcMaxSendMessageLength: 35,
+                    grpcHttp2KeepAliveTime: 40
+                },
+                tlsCACerts: {
+                    pem: 'myCert2'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peerTimeOut'] = {
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            };
+
+            component['ca'] = {
+                url: 'myUrl',
+                caName: 'myCaOrg1',
+                httpOptions: {
+                  verify: true
+                }
+            };
+
+            let profileUpdatedSpy = sinon.spy(component.profileUpdated, 'emit');
+
+            component.profileUpdated.subscribe((data) => {
+                data.should.deep.equal({updated: true, connectionProfile: completedProfile});
+            });
+
+            component.onSubmit(null);
             component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
 
@@ -1509,7 +1701,7 @@ fdescribe('ConnectionProfileComponent', () => {
             });
         }));
 
-        it('should revert object to prior state when cancel pressed', fakeAsync(() => {
+        it('should revert object to prior state when cancel pressed for a peer', fakeAsync(() => {
             component['peers'] = [{
                 tlsCACerts: {
                   pem: 'myCert'
@@ -1547,6 +1739,46 @@ fdescribe('ConnectionProfileComponent', () => {
                   sslTargetNameOverride: 'myOverride'
                 }
             }];
+        }));
+
+        it('should revert object to prior state when cancel pressed for a ca', fakeAsync(() => {
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               }
+            };
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               },
+               tlsCACerts: {
+                 pem: 'ENTERED CERT'
+               }
+            };
+
+            component.openAddCertificateModal(0, 'ca');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               }
+            };
         }));
 
         it('should error on unrecognized type', (() => {
@@ -1726,5 +1958,46 @@ fdescribe('ConnectionProfileComponent', () => {
         component.formValid(form).should.deep.equal(false);
       });
     });
-})
-;
+
+    describe('setVerify', () => {
+        it('should set httpOption.verify to false for the CA if the url is not secure', () => {
+          component['ca'] = {
+             url: 'http://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             }
+          };
+
+          component.setVerify();
+
+          component['ca'].should.deep.equal({
+             url: 'http://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: false
+             }
+          });
+        });
+
+        it('should leave httpOption.verify as is for the CA if the url is secure', () => {
+          component['ca'] = {
+             url: 'https://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             }
+          };
+
+          component.setVerify();
+
+          component['ca'].should.deep.equal({
+             url: 'https://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             }
+          });
+        });
+    });
+});
