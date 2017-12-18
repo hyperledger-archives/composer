@@ -1,66 +1,40 @@
 #!/bin/bash
 
+# Script for the deploy phase, to push NPM modules, docker images and
+# cloud playground images
+
 # Exit on first error, print all commands.
 set -ev
 set -o pipefail
 
-# Grab the parent (root) directory.
+# Bring in the standard set of script utilities
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-date
-ME=`basename "$0"`
+source ${DIR}/.travis/base.sh
 
-source ${DIR}/build.cfg
-
-if [ "${ABORT_BUILD}" = "true" ]; then
-  echo exiting early from ${ME}
-  exit ${ABORT_CODE}
-fi
-
-# Check that this is the right node.js version.
-if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "8" ]; then
-    echo Not executing as not running primary node.js version.
-    exit 0
-fi
+# ----
 
 # Check that this is not the functional verification tests.
 if [ "${FVTEST}" != "" ]; then
-    echo Not executing as running fv tests.
-    exit 0
+    _exit "Not executing as running fv tests." 0
 fi
 
 # Check that this is not the integration tests.
 if [ "${INTEST}" != "" ]; then
-    echo Not executing as running integration tests.
-    exit 0
+    _exit "Not executing as running integration tests." 0
 fi
 
 # Check that this is the main repository.
 if [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
-    echo "Skipping deploy; wrong repository slug."
-    exit 0
-fi
-
-# Check that if this is not a tagged build, then we only deploy master.
-if [ "${TRAVIS_TAG}" = "" -a "${TRAVIS_BRANCH}" != "master" ]; then
-    echo Not executing as not building a tag and not building from master
-    exit 0
+    _exit "Skipping deploy; wrong repository slug." 0
 fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-  if [ -z "${TRAVIS_TAG}" ]; then
-    DOCS="unstable"
-  else
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        DOCS="latest"
-    elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
-        DOCS="stable"
-    fi
-  fi
   ./.travis/deploy_docs.sh
-  exit 0
+  _exit "Run the docs build" $?
 fi
 
+## Start of release process
 
 # Set the NPM access token we will use to publish.
 npm config set registry https://registry.npmjs.org/
@@ -83,89 +57,75 @@ docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 # This is the list of Docker images to build.
 export DOCKER_IMAGES="composer-playground composer-rest-server composer-cli"
 
-# Push the code to npm.
-if [ -z "${TRAVIS_TAG}" ]; then
+# Determine the details of the suffixes for playground and NPM/docker tags
+if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 
     # Set the prerelease version.
     npm run pkgstamp
-    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
-
-    # Publish with unstable tag. These are development builds.
-    echo "Pushing with tag unstable"
-    lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag=unstable 2>&1
-
-	# quick check to see if the latest npm module has been published
-	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-	  sleep 10
-	done
-
-    # Build, tag, and publish Docker images.
-    for i in ${DOCKER_IMAGES}; do
-
-        # Build the image and tag it with the version and unstable.
-        docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
-        docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:unstable
-
-        # Push both the version and unstable.
-        docker push hyperledger/${i}:${VERSION}
-        docker push hyperledger/${i}:unstable
-
-    done
-
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-playground
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push composer-playground-unstable -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env composer-playground-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
-    cf set-env composer-playground-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
-    cf set-env composer-playground-unstable COMPOSER_CONFIG '{"webonly":true}'
-    cf start composer-playground-unstable
-    popd
-
-else
-
-    # Grab the current version.
-    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
-
-    # Publish with latest tag (default). These are release builds.
-    echo "Pushing with tag latest"
-    lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish 2>&1
-
-	# quick check to see if the latest npm module has been published
-	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-	  sleep 10
-	done
-
-    # Build, tag, and publish Docker images.
-    for i in ${DOCKER_IMAGES}; do
-
-        # Build the image and tag it with the version and latest.
-        docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
-        docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:latest
-
-        # Push both the version and latest.
-        docker push hyperledger/${i}:${VERSION}
-        docker push hyperledger/${i}:latest
-
-    done
-
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-playground
-
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        PLAYGROUND_SUFFIX="-latest"      
-        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-4\"}'"
-    elif [ "${TRAVIS_BRANCH}" = "v0.16.x" ]; then
-        PLAYGROUND_SUFFIX=""
-        WEB_CFG="'{\"webonly\":true,  \"analyticsID\" : \"UA-91314349-3\"}'"      
+   
+    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        PLAYGROUND_SUFFIX="-unstable"      
+        WEB_CFG="'{\"webonly\":true}'"
+        TAG="unstable"
+    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        PLAYGROUND_SUFFIX="-next-unstable"
+        WEB_CFG="'{\"webonly\":true}'"      
+        TAG="next-unstable"
+    else 
+        _exit "Unknown build focus" 1 
     fi
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push composer-playground${PLAYGROUND_SUFFIX} -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env composer-playground${PLAYGROUND_SUFFIX} CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
-    cf set-env composer-playground${PLAYGROUND_SUFFIX} CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
-    cf set-env composer-playground${PLAYGROUND_SUFFIX} COMPOSER_CONFIG ${WEB_CFG}
-    cf start composer-playground${PLAYGROUND_SUFFIX} 
-    popd
+elif  [[ "${BUILD_RELEASE}" = "stable" ]]; then
+    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        PLAYGROUND_SUFFIX=""      
+        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}'"
+        TAG="latest"
+    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        PLAYGROUND_SUFFIX="-next"
+        WEB_CFG="'{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}'"
+        TAG="next"
+    else 
+        _exit "Unknown build focus" 1 
+    fi
+fi
+
+# Hold onto the version number
+export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
+
+# Publish with tag
+echo "Pushing with tag ${TAG}"
+lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag="${TAG}" 2>&1
+
+# quick check to see if the latest npm module has been published
+while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+  sleep 10
+done
+
+# Build, tag, and publish Docker images.
+for i in ${DOCKER_IMAGES}; do
+
+    # Build the image and tag it with the version and unstable.
+    docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
+    docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:"${TAG}"
+
+    # Push both the version and unstable.
+    docker push hyperledger/${i}:${VERSION}
+    docker push hyperledger/${i}:${TAG}
+
+done
+
+# Push to public Bluemix.
+pushd ${DIR}/packages/composer-playground
+cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
+cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
+cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
+cf start "composer-playground${PLAYGROUND_SUFFIX}"
+popd
+
+
+
+## Stable releases only; both latest and next then clean up git, and bump version number
+if [[ "${BUILD_RELEASE}" = "stable" ]]; then
+
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"
@@ -184,4 +144,6 @@ else
     git push origin master
 
 fi
-date
+
+
+_exit "All complete" 0
