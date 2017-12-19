@@ -57,7 +57,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /Command succeeded/
         Then I have the following files
             | ../tmp/basic-sample-network-update.bna |
-            
+
     Scenario: Using the CLI, I can perform a business network start
         Given I have the following files
             | ../tmp/basic-sample-network.bna |
@@ -86,19 +86,15 @@ Feature: Cli steps
             """
         Then The stdout information should include text matching /The following Business Network Cards are available:/
         Then The stdout information should include text matching /Connection Profile: hlfv1/
-        Then The stdout information should include text matching /┌────────────────────────────┬─────────────────────────┬──────────────────────┐/
-        Then The stdout information should include text matching /│ Card Name                  │ UserId                  │ Business Network     │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ admin@basic-sample-network │ admin                   │ basic-sample-network │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org1         │ TestPeerAdmin@org1      │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org1-only    │ TestPeerAdmin@org1-only │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org2-only    │ TestPeerAdmin@org2-only │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org2         │ TestPeerAdmin@org2      │                      │/
-        Then The stdout information should include text matching /└────────────────────────────┴─────────────────────────┴──────────────────────┘/
+        Then The stdout information should include text matching /┌────────────────────────────┬────────────────────┬──────────────────────┐/
+        Then The stdout information should include text matching /│ Card Name                  │ UserId             │ Business Network     │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ admin@basic-sample-network │ admin              │ basic-sample-network │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ TestPeerAdmin@org1         │ TestPeerAdmin@org1 │                      │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ TestPeerAdmin@org2         │ TestPeerAdmin@org2 │                      │/
+        Then The stdout information should include text matching /└────────────────────────────┴────────────────────┴──────────────────────┘/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can ping the network that I just started
@@ -121,7 +117,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /- org.acme.sample/
         Then The stdout information should include text matching /scripts:/
         Then The stdout information should include text matching /- lib/sample.js/
-        Then The stdout information should include text matching /registries:/ 
+        Then The stdout information should include text matching /registries:/
         Then The stdout information should include text matching /org.acme.sample.SampleAsset:/
         Then The stdout information should include text matching /id:           org.acme.sample.SampleAsset/
         Then The stdout information should include text matching /name:         Asset registry for org.acme.sample.SampleAsset/
@@ -134,7 +130,7 @@ Feature: Cli steps
 
         When I run the following CLI command
             """
-            composer network update --card admin@basic-sample-network -a ./tmp/basic-sample-network-update.bna 
+            composer network update --card admin@basic-sample-network -a ./tmp/basic-sample-network-update.bna
             """
         Then The stdout information should include text matching /Command succeeded/
 
@@ -163,7 +159,7 @@ Feature: Cli steps
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"sal","firstName":"sally","lastName":"sallyington"}'
             """
         Then The stdout information should include text matching /Command succeeded/
-    
+
     Scenario: Using the CLI, I can check that my new Participants were created
         When I run the following CLI command
             """
@@ -231,7 +227,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /value:       101/
         Then The stdout information should include text matching /description: Description/
         Then The stdout information should include text matching /Command succeeded/
-    
+
     Scenario: Using the CLI, I can list all the current Identities
         When I run the following CLI command
             """
@@ -241,8 +237,8 @@ Feature: Cli steps
         Then The stdout information should include text matching /name:        admin/
         Then The stdout information should include text matching /issuer:/
         Then The stdout information should include text matching /Command succeeded/
-        
-    Scenario: Using the CLI, I can issue an Identity to the participant called Bob 
+
+    Scenario: Using the CLI, I can issue an Identity to the participant called Bob
         When I run the following CLI command
             """
             composer identity issue --card admin@basic-sample-network -u bob -a org.acme.sample.SampleParticipant#bob -f ./tmp/bob@basic-sample-network.card
@@ -276,7 +272,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /Card file: ./tmp/bob@basic-sample-network.card/
         Then The stdout information should include text matching /Card name: bob@basic-sample-network/
         Then The stdout information should include text matching /Command succeeded/
-    
+
     Scenario: Using the CLI, I can verify that Bob's card was imported
         When I run the following CLI command
             """
@@ -284,21 +280,17 @@ Feature: Cli steps
             """
         Then The stdout information should include text matching /The following Business Network Cards are available:/
         Then The stdout information should include text matching /Connection Profile: hlfv1/
-        Then The stdout information should include text matching /┌────────────────────────────┬─────────────────────────┬──────────────────────┐/
-        Then The stdout information should include text matching /│ Card Name                  │ UserId                  │ Business Network     │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ admin@basic-sample-network │ admin                   │ basic-sample-network │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ bob@basic-sample-network   │ bob                     │ basic-sample-network │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org1         │ TestPeerAdmin@org1      │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org1-only    │ TestPeerAdmin@org1-only │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org2-only    │ TestPeerAdmin@org2-only │                      │/
-        Then The stdout information should include text matching /├────────────────────────────┼─────────────────────────┼──────────────────────┤/
-        Then The stdout information should include text matching /│ TestPeerAdmin@org2         │ TestPeerAdmin@org2      │                      │/
-        Then The stdout information should include text matching /└────────────────────────────┴─────────────────────────┴──────────────────────┘/
+        Then The stdout information should include text matching /┌────────────────────────────┬────────────────────┬──────────────────────┐/
+        Then The stdout information should include text matching /│ Card Name                  │ UserId             │ Business Network     │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ admin@basic-sample-network │ admin              │ basic-sample-network │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ bob@basic-sample-network   │ bob                │ basic-sample-network │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ TestPeerAdmin@org1         │ TestPeerAdmin@org1 │                      │/
+        Then The stdout information should include text matching /├────────────────────────────┼────────────────────┼──────────────────────┤/
+        Then The stdout information should include text matching /│ TestPeerAdmin@org2         │ TestPeerAdmin@org2 │                      │/
+        Then The stdout information should include text matching /└────────────────────────────┴────────────────────┴──────────────────────┘/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can connect to the business network using the newly imported card
@@ -311,7 +303,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /- org.acme.sample/
         Then The stdout information should include text matching /scripts:/
         Then The stdout information should include text matching /- lib/sample.js/
-        Then The stdout information should include text matching /registries:/ 
+        Then The stdout information should include text matching /registries:/
         Then The stdout information should include text matching /org.acme.sample.SampleAsset:/
         Then The stdout information should include text matching /id:           org.acme.sample.SampleAsset/
         Then The stdout information should include text matching /name:         Asset registry for org.acme.sample.SampleAsset/
@@ -361,6 +353,6 @@ Feature: Cli steps
             """
         Then The stdout information should include text matching /The current identity has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
-    
+
 
 

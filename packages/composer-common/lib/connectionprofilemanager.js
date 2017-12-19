@@ -65,7 +65,7 @@ class ConnectionProfileManager {
     /**
      * Retrieves the ConnectionManager for the given connection type.
      *
-     * @param {object} connectionType The connection type
+     * @param {String} connectionType The connection type
      * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
      * object once the connection is established, or rejected with a connection error.
      */

@@ -27,7 +27,6 @@ const thenifyMkdirp = thenifyAll(mkdirp);
 const Logger = require('./log/logger');
 const LOG = Logger.getLog('IdCard');
 
-//const CONNECTION_FILENAME = 'connection.json';
 const CONNECTION_FILE_JSON = 'connection.json';
 const CONNECTION_FILE_YAML = 'connection.yaml';
 const METADATA_FILENAME = 'metadata.json';
