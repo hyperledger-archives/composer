@@ -12,7 +12,7 @@ excerpt: By deploying a REST server for a business network, you can [**integrate
 
 ---
 
-When deploying the {{site.data.conrefs.composer_full}} REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as connection profiles, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.
+When deploying the {{site.data.conrefs.composer_full}} REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as business network cards, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.
 
 ## Business network cards and the business network card store
 
