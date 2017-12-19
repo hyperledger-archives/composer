@@ -186,6 +186,9 @@ class HLFConnectionManager extends ConnectionManager {
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         const client = await HLFConnectionManager.createClient(connectionOptions, false);
+
+        //TODO: Need sdk to allow this or we get rid of requestIdentity
+        client._cryptoSuite = Client.newCryptoSuite();
         const caClient = client.getCertificateAuthority();
 
         let caName = caClient.getCaName();
