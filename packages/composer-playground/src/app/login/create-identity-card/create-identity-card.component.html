@@ -6,7 +6,7 @@
     </div>
     <div *ngIf="editingCredentials">
         <edit-card-credentials (idCardAdded)="completeCardAddition($event)"
-                      [connectionProfile]="wrappedConnectionProfile.profile"></edit-card-credentials>
+                      [connectionProfile]="wrappedConnectionProfile"></edit-card-credentials>
     </div>
     <div *ngIf="creatingIdCard" class="create-card">
         <h1>Create A Business Network Card</h1>
@@ -17,7 +17,7 @@
                     <div class="create-route" *ngIf="connectionProfileRefs.length>=2">
                         <p>Create a business network card for a Blockchain you already use with Composer:</p>
                         <div class="file-types-list">
-                            <div class="file-types-list-item" *ngFor="let profileRef of connectionProfileRefs | slice:0: connectionProfileRefs.length-1; let i=index">
+                            <div class="file-types-list-item" *ngFor="let profileRef of connectionProfileRefs | slice:0:-1; let i=index">
                                     <input type="radio" id="{{ i }}" name="file-type"
                                         (change)="setConnectionProfile(profileRef)"/>
                                     <label class="radio-label" for="{{ i }}"><h3>{{connectionProfileNames.get(profileRef)}}</h3></label>
@@ -43,10 +43,10 @@
             <button type="button" class="secondary" (click)="cancelCreate();">
                 <span>Cancel</span>
             </button>
-            <button *ngIf = "newConnection" type="button" class="primary" (click)="createWithNewProfile()" [disabled]="!wrappedConnectionProfile">
+            <button *ngIf = "newConnection" type="button" class="primary" (click)="createWithNewProfile()" [disabled]="!profileChosen">
                 <span>Next</span>
             </button>
-            <button *ngIf = "!newConnection" type="button" class="primary" (click)="createWithExistingProfile()" [disabled]="!wrappedConnectionProfile">
+            <button *ngIf = "!newConnection" type="button" class="primary" (click)="createWithExistingProfile()" [disabled]="!profileChosen">
                 <span>Next</span>
             </button>
         </footer>
