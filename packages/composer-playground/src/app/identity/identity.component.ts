@@ -83,7 +83,7 @@ export class IdentityComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
-                    if (connectionProfile.type === 'web') {
+                    if (connectionProfile['x-type'] === 'web') {
                         return this.addIdentityToWallet(result);
                     } else {
                         return this.showNewId(result);

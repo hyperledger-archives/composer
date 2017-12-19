@@ -49,7 +49,6 @@ describe('composer identity list CLI unit tests', () => {
         mockBusinessNetworkDefinition.getSerializer.returns(serializer);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
-        mockBusinessNetworkConnection.connectWithDetails.resolves(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
         mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
