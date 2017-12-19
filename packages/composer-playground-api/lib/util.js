@@ -50,7 +50,6 @@ class Util {
 
         // Return the new instance of express.
         return app;
-
     }
 }
 
