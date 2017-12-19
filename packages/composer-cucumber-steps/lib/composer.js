@@ -162,7 +162,7 @@ class Composer {
             metaData.businessNetwork = businessNetworkIdentifier;
         }
 
-        let idCard = new IdCard(metaData, {name : 'defaultProfile', type : 'embedded'});
+        let idCard = new IdCard(metaData, {name : 'defaultProfile', 'x-type' : 'embedded'});
 
         return idCard;
     }

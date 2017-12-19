@@ -25,14 +25,14 @@ Feature: Cli steps
     Scenario: Using the CLI, I can perform a runtime install on org1
         When I run the following CLI command
             """
-            composer runtime install --card TestPeerAdmin@org1-only --businessNetworkName basic-sample-network
+            composer runtime install --card TestPeerAdmin@org1 --businessNetworkName basic-sample-network
             """
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can perform a runtime install on org2
         When I run the following CLI command
             """
-            composer runtime install --card TestPeerAdmin@org2-only --businessNetworkName basic-sample-network
+            composer runtime install --card TestPeerAdmin@org2 --businessNetworkName basic-sample-network
             """
         Then The stdout information should include text matching /Command succeeded/
 
