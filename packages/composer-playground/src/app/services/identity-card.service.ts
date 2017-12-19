@@ -19,8 +19,8 @@ const defaultCardProperties = {
         roles: ['PeerAdmin', 'ChannelAdmin'],
     },
     connectionProfile: {
-        name: '$default',
-        type: 'web'
+        'name': '$default',
+        'x-type': 'web'
     },
     credentials: null
 };
@@ -200,7 +200,7 @@ export class IdentityCardService {
     public getQualifiedProfileName(connectionProfile: any): string {
         let prefix = hash(connectionProfile);
 
-        if ('web' === connectionProfile.type) {
+        if ('web' === connectionProfile['x-type']) {
             return 'web-' + connectionProfile.name;
         } else {
             return prefix + '-' + connectionProfile.name;

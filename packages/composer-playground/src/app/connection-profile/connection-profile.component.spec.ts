@@ -2,16 +2,17 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
+/* tslint:disable:object-literal-key-quotes */
 import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
-import { ReactiveFormsModule, FormArray, Validators, FormBuilder } from '@angular/forms';
+import { EventEmitter } from '@angular/core';
+import { FormsModule, Validators } from '@angular/forms';
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { AlertService } from '../basic-modals/alert.service';
 import * as sinon from 'sinon';
-import * as chai from 'chai';
 
-let should = chai.should();
+let util = require('util');
 
 describe('ConnectionProfileComponent', () => {
     let component: ConnectionProfileComponent;
@@ -35,12 +36,11 @@ describe('ConnectionProfileComponent', () => {
         };
 
         TestBed.configureTestingModule({
+            imports: [FormsModule],
             declarations: [ConnectionProfileComponent],
             providers: [{provide: NgbModal, useValue: mockNgbModal},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-                {provide: AlertService, useValue: mockAlertService},
-                FormBuilder],
-            imports: [ReactiveFormsModule]
+                {provide: AlertService, useValue: mockAlertService}],
         });
         fixture = TestBed.createComponent(ConnectionProfileComponent);
         component = fixture.componentInstance;
@@ -50,380 +50,1390 @@ describe('ConnectionProfileComponent', () => {
         component.should.be.ok;
     });
 
-    describe('expandSection', () => {
-        it('should error on unknown profile type', () => {
-            let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'invalidType'}};
-            component['expandedSection'] = ['Basic Configuration', 'Security Settings', 'Advanced'];
-            (() => {
-                component.expandSection(sectionToExpand);
-            }).should.throw('Invalid connection profile type');
-        });
-
-        it('should close all expanded sections for a v1 profile', () => {
-            let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component['expandedSection'] = ['Basic Configuration', 'Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].length.should.equal(0);
-        });
-
-        it('should open all collapsed sections for a v1 profile', () => {
-            let sectionToExpand = 'All';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component['expandedSection'] = [];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].length.should.equal(2);
-        });
-
-        it('should close a single section for a v1 profile', () => {
-            let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component['expandedSection'] = ['Basic Configuration', 'Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].should.deep.equal(['Advanced']);
-        });
-
-        it('should open a single section for a v1 profile', () => {
-            let sectionToExpand = 'Basic Configuration';
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component['expandedSection'] = ['Advanced'];
-            component.expandSection(sectionToExpand);
-
-            component['expandedSection'].should.deep.equal(['Advanced', 'Basic Configuration']);
-        });
-    });
-
     describe('startEditing', () => {
-        it('should be able to edit a v1 form', () => {
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
+        it('should be able to create a v1 connection profile', () => {
+            component['connectionProfileData'] = {};
+            component['connectionProfileData']['x-type'] = 'hlfv1';
 
             component.startEditing();
-            mockOnValueChanged.should.have.been.called;
+
+            component['basic'].should.deep.equal({
+                name: null,
+                description: null,
+                version: '1.0.0',
+                organization: 'Org1',
+                mspid: 'Org1MSP',
+                channel: 'composerchannel',
+                commitTimeout: null
+            });
+
+            component['orderers'].should.deep.equal([{
+                name: 'orderer.example.com',
+                url: 'grpc://localhost:7050',
+                grpcOptions: {
+                  sslTargetNameOverride: null,
+                  grpcMaxSendMessageLength: null,
+                  grpcHttp2KeepAliveTime: null
+                }
+            }]);
+
+            component['ordererTimeout'].should.equal('30');
+
+            component['peers'].should.deep.equal([{
+                name: 'peer.example.com',
+                url: 'grpc://localhost:7051',
+                eventUrl: 'grpc://localhost:7053',
+                grpcOptions: {
+                    sslTargetNameOverride: null,
+                    grpcMaxSendMessageLength: null,
+                    grpcHttp2KeepAliveTime: null
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            }]);
+
+            component['peerTimeOut'].should.deep.equal({
+                endorser: '30',
+                eventHub: '30',
+                eventReg: '30'
+            });
+
+            component['ca'].should.deep.equal({
+                url: 'http://localhost:7054',
+                caName: null,
+                httpOptions: {
+                  verify: false
+                }
+            });
+        });
+
+        it('should set none defaults', () => {
+            component['connectionProfileData'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    },
+                    myOrg2: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myOrderer',
+                          'grpc-max-send-message-length': 15,
+                          'grpc.http2.keepalive_time': 20
+                        }
+                        ,
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myPeer1',
+                          'grpc-max-send-message-length': 25,
+                          'grpc.http2.keepalive_time': 30
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    },
+                    myPeer2: {
+                        url: 'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myPeer2',
+                          'grpc-max-send-message-length': 35,
+                          'grpc.http2.keepalive_time': 40
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        }
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        httpOptions: {
+                          verify: true
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        caName: 'myName'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData']['x-type'] = 'hlfv1';
+            component['connectionProfileData']['x-commitTimeout'] = 100;
+
+            component.startEditing();
+
+            component['basic'].should.deep.equal({
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            });
+
+            component['orderers'].length.should.equal(1);
+
+            component['orderers'][0].should.deep.equal({
+                url: 'myUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOrderer',
+                    grpcMaxSendMessageLength: 15,
+                    grpcHttp2KeepAliveTime: 20
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            });
+
+            component['ordererTimeout'].should.equal('5');
+
+            component['peers'].length.should.equal(2);
+
+            component['peers'][0].should.deep.equal({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer1',
+                    grpcMaxSendMessageLength: 25,
+                    grpcHttp2KeepAliveTime: 30
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+            });
+
+            component['peers'][1].should.deep.equal({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {
+                  sslTargetNameOverride: 'myPeer2',
+                  grpcMaxSendMessageLength: 35,
+                  grpcHttp2KeepAliveTime: 40
+                },
+                tlsCACerts: {
+                    pem: 'myCert2'
+                }
+            });
+
+            component['peerTimeOut'].should.deep.equal({
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            });
+
+            component['ca'].should.deep.equal({
+                url: 'myUrl',
+                caName: 'myName',
+                httpOptions: {
+                  verify: true
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            });
+        });
+
+        it('should set none defaults without include grpc options', () => {
+            component['connectionProfileData'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    },
+                    myOrg2: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        }
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        httpOptions: {
+                          verify: true
+                        },
+                        caName: 'myName'
+
+                    },
+                    myCaOrg2: {
+                        url: 'myUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        caName: 'myName2'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData']['x-type'] = 'hlfv1';
+            component['connectionProfileData']['x-commitTimeout'] = 100;
+
+            component.startEditing();
+
+            component['basic'].should.deep.equal({
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            });
+
+            component['orderers'].length.should.equal(1);
+
+            component['orderers'][0].should.deep.equal({
+                url: 'myUrl',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            });
+
+            component['ordererTimeout'].should.equal('5');
+
+            component['peers'].length.should.equal(2);
+
+            component['peers'][0].should.deep.equal({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+            });
+
+            component['peers'][1].should.deep.equal({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert2'
+                }
+            });
+
+            component['peerTimeOut'].should.deep.equal({
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            });
+
+            component['ca'].should.deep.equal({
+                url: 'myUrl',
+                caName: 'myName',
+                httpOptions: {
+                  verify: true
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            });
+        });
+
+        it('should set none defaults without include grpc sub options', () => {
+            component['connectionProfileData'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    },
+                    myOrg2: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {}
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {}
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        grpcOptions: {}
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        httpOptions: {
+                          verify: true
+                        },
+                        caName: 'myName'
+
+                    },
+                    myCaOrg2: {
+                        url: 'myUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        caName: 'myName2'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData']['x-type'] = 'hlfv1';
+            component['connectionProfileData']['x-commitTimeout'] = 100;
+
+            component.startEditing();
+
+            component['basic'].should.deep.equal({
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            });
+
+            component['orderers'].length.should.equal(1);
+
+            component['orderers'][0].should.deep.equal({
+                url: 'myUrl',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            });
+
+            component['ordererTimeout'].should.equal('5');
+
+            component['peers'].length.should.equal(2);
+
+            component['peers'][0].should.deep.equal({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+            });
+
+            component['peers'][1].should.deep.equal({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {},
+                tlsCACerts: {
+                    pem: 'myCert2'
+                }
+            });
+
+            component['peerTimeOut'].should.deep.equal({
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            });
+
+            component['ca'].should.deep.equal({
+                url: 'myUrl',
+                caName: 'myName',
+                httpOptions: {
+                  verify: true
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            });
+        });
+
+        it('should set none to their defaults but assign httpOptions verify if not passed and remove tlsCACerts if assigned for the CA', () => {
+            component['connectionProfileData'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    },
+                    myOrg2: {
+                        mspid: 'myOrg1MSP',
+
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCa-org1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myOrderer',
+                          'grpc-max-send-message-length': 15,
+                          'grpc.http2.keepalive_time': 20
+                        }
+                        ,
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myPeer1',
+                          'grpc-max-send-message-length': 25,
+                          'grpc.http2.keepalive_time': 30
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        }
+                    },
+                    myPeer2: {
+                        url: 'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        grpcOptions: {
+                          'ssl-target-name-override': 'myPeer2',
+                          'grpc-max-send-message-length': 35,
+                          'grpc.http2.keepalive_time': 40
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        }
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        caName: 'myName'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData']['x-type'] = 'hlfv1';
+            component['connectionProfileData']['x-commitTimeout'] = 100;
+
+            component.startEditing();
+
+            component['basic'].should.deep.equal({
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            });
+
+            component['orderers'].length.should.equal(1);
+
+            component['orderers'][0].should.deep.equal({
+                url: 'myUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOrderer',
+                    grpcMaxSendMessageLength: 15,
+                    grpcHttp2KeepAliveTime: 20
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            });
+
+            component['ordererTimeout'].should.equal('5');
+
+            component['peers'].length.should.equal(2);
+
+            component['peers'][0].should.deep.equal({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer1',
+                    grpcMaxSendMessageLength: 25,
+                    grpcHttp2KeepAliveTime: 30
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+            });
+
+            component['peers'][1].should.deep.equal({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {
+                  sslTargetNameOverride: 'myPeer2',
+                  grpcMaxSendMessageLength: 35,
+                  grpcHttp2KeepAliveTime: 40
+                },
+                tlsCACerts: {
+                    pem: 'myCert2'
+                }
+            });
+
+            component['peerTimeOut'].should.deep.equal({
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            });
+
+            component['ca'].should.deep.equal({
+                url: 'myUrl',
+                caName: 'myName',
+                httpOptions: {
+                  verify: false
+                }
+            });
         });
 
         it('should error if unknown form type', () => {
-            component['connectionProfileData'] = {profile: {type: 'test'}};
-            let mockOnValueChanged = sinon.stub(component, 'onValueChanged');
+            component['connectionProfileData'] = {};
+            component['connectionProfileData']['x-type'] = 'hlfv10000';
 
             (() => {
                 component.startEditing();
             }).should.throw('Unknown connection profile type');
-
-            mockOnValueChanged.should.not.have.been.called;
-        });
-    });
-
-    describe('initOrderers', () => {
-        it('should initialize orderers if theres connection profile data', () => {
-            component['connectionProfileData'] = {
-                profile: {
-                    orderers: [
-                        {url: 'ordererURL_1', cert: 'ordererCert_1', hostnameOverride: 'ordererHostname_1'},
-                        {url: 'ordererURL_2', cert: 'ordererCert_2'}]
-                }
-            };
-
-            let groupSpy = sinon.spy(component['fb'], 'group');
-
-            let result = component.initOrderers();
-            result.length.should.equal(2);
-            groupSpy.firstCall.should.have.been.calledWith(
-                {
-                    url: ['ordererURL_1', Validators.required],
-                    cert: ['ordererCert_1'],
-                    hostnameOverride: ['ordererHostname_1'],
-                }
-            );
-
-            groupSpy.secondCall.should.have.been.calledWith(
-                {
-                    url: ['ordererURL_2', Validators.required],
-                    cert: ['ordererCert_2']
-                }
-            );
-        });
-
-        it('should initialize orderers if there is no connection profile data', () => {
-            // component['connectionProfileData'] = undefined;
-
-            let groupSpy = sinon.spy(component['fb'], 'group');
-
-            let result = component.initOrderers();
-            result.length.should.equal(1);
-            groupSpy.firstCall.should.have.been.calledWith(
-                {
-                    url: ['grpc://localhost:7050', Validators.required],
-                    cert: ['']
-                }
-            );
         });
     });
 
     describe('addOrderer', () => {
         it('should add an orderer', () => {
-            component['v1Form'] = component['fb'].group(
-                {
-                    orderers: component['fb'].array([component['fb'].group({
-                        url: 'ordererURL_2',
-                        cert: 'ordererCert_2'
-                    })])
-                });
+
+            component['orderers'].push(component['defaultOrderer']);
 
             component.addOrderer();
-            (<FormArray> component['v1Form'].controls['orderers']).length.should.equal(2);
 
+            component['orderers'].length.should.equal(2);
+
+            component['orderers'][0].should.deep.equal(component['defaultOrderer']);
+
+            component['orderers'][1].should.deep.equal({
+                name: 'orderer1.example.com',
+                url: 'grpc://localhost:7050',
+                grpcOptions: {
+                    sslTargetNameOverride: null,
+                    grpcMaxSendMessageLength: null,
+                    grpcHttp2KeepAliveTime: null
+                }
+            });
         });
+
     });
 
     describe('removeOrderer', () => {
         it('should remove an orderer', () => {
-            component['v1Form'] = component['fb'].group(
-                {
-                    orderers: component['fb'].array([component['fb'].group({
-                        url: 'ordererURL_2',
-                        cert: 'ordererCert_2'
-                    })])
-                });
+            component['orderers'].push(component['defaultOrderer']);
 
-            component.removeOrderer(0);
-            (<FormArray> component['v1Form'].controls['orderers']).length.should.equal(0);
-        });
-    });
+            component.addOrderer();
 
-    describe('initPeers', () => {
-        it('should initialize peers if theres connection profile data', () => {
-            component['connectionProfileData'] = {
-                profile: {
-                    peers: [
-                        {
-                            requestURL: 'requestURL_1',
-                            eventURL: 'eventURL_1',
-                            cert: 'peerCert_1',
-                            hostnameOverride: 'peerHostname_1'
-                        },
-                        {
-                            requestURL: 'requestURL_2',
-                            eventURL: 'eventURL_2',
-                            cert: 'peerCert_2'
-                        }]
-                }
-            };
+            component['orderers'].length.should.equal(2);
 
-            let groupSpy = sinon.spy(component['fb'], 'group');
+            component.removeOrderer(1);
 
-            let result = component.initPeers();
-            result.length.should.equal(2);
-            groupSpy.firstCall.should.have.been.calledWith(
-                {
-                    requestURL: ['requestURL_1', Validators.required],
-                    eventURL: ['eventURL_1'],
-                    cert: ['peerCert_1'],
-                    hostnameOverride: ['peerHostname_1']
-                }
-            );
-
-            groupSpy.secondCall.should.have.been.calledWith(
-                {
-                    requestURL: ['requestURL_2', Validators.required],
-                    eventURL: ['eventURL_2'],
-                    cert: ['peerCert_2']
-                }
-            );
-        });
-
-        it('should initialize orderers if there is no connection profile data', () => {
-            let groupSpy = sinon.spy(component['fb'], 'group');
-
-            let result = component.initPeers();
-            result.length.should.equal(1);
-            groupSpy.firstCall.should.have.been.calledWith(
-                {
-                    requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053'],
-                    cert: ['']
-                }
-            );
+            component['orderers'][0].should.deep.equal(component['defaultOrderer']);
         });
     });
 
     describe('addPeer', () => {
         it('should add a peer', () => {
-
-            component['v1Form'] = component['fb'].group(
-                {
-                    peers: component['fb'].array([component['fb'].group({
-                        requestURL: 'requestURL_1',
-                        eventURL: 'eventURL_1',
-                        cert: 'peerCert_1'
-                    })])
-                });
+            component['peers'].push(component['defaultPeer']);
 
             component.addPeer();
-            (<FormArray> component['v1Form'].controls['peers']).length.should.equal(2);
 
+            component['peers'].length.should.equal(2);
+
+            component['peers'][0].should.deep.equal(component['defaultPeer']);
+
+            component['peers'][1].should.deep.equal({
+              name: 'peer1.example.com',
+              url: 'grpc://localhost:7051',
+              eventUrl: 'grpc://localhost:7053',
+              grpcOptions: {
+                  sslTargetNameOverride: null,
+                  grpcMaxSendMessageLength: null,
+                  grpcHttp2KeepAliveTime: null
+              },
+              organization: true,
+              endorsingPeer: true,
+              chaincodeQuery: true,
+              ledgerQuery: true,
+              eventSource: true
+            });
         });
     });
 
     describe('removePeer', () => {
         it('should remove a peer', () => {
+            component['peers'].push(component['defaultPeer']);
 
-            component['v1Form'] = component['fb'].group(
-                {
-                    peers: component['fb'].array([component['fb'].group({
-                        requestURL: 'requestURL_1',
-                        eventURL: 'eventURL_1',
-                        cert: 'peerCert_1'
-                    })])
-                });
+            component.addPeer();
 
-            component.removePeer(0);
-            (<FormArray> component['v1Form'].controls['peers']).length.should.equal(0);
+            component['peers'].length.should.equal(2);
 
-        });
-    });
+            component.removePeer(1);
 
-    describe('onValueChanged', () => {
-        it('should error if profile type is invalid', () => {
-            component['connectionProfileData'] = {profile: {type: 'invalidType'}};
-            (() => {
-                component.onValueChanged();
-            }).should.throw('Invalid connection profile type');
-        });
-
-        it('should validate v1 profile if no form is defined', () => {
-            let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component.onValueChanged();
-            onValueChangedSpy.should.be.called;
-        });
-
-        it('should validate v1 profile if a form is defined', () => {
-            let onValueChangedSpy = sinon.spy(component, 'onValueChanged');
-            component['connectionProfileData'] = {profile: {type: 'hlfv1'}};
-            component['v1Form'] = component['fb'].group({
-                name: ['v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peers: component['fb'].array([component['fb'].group({
-                    requestURL: ['', Validators.required],
-                    eventURL: [''],
-                    cert: ['']
-                })]),
-                orderers: component['fb'].array([component['fb'].group({
-                    url: ['grpc://localhost:7050', Validators.required],
-                    cert: ['']
-                })]),
-                channel: ['composerchannel', [Validators.required]],
-                mspID: ['Org1MSP', [Validators.required]],
-                ca: ['http://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053'],
-                timeout: [300, [Validators.pattern('[0-9]+')]]
-            });
-
-            component.onValueChanged();
-            component['v1FormErrors'].peers['requestURL'].should.equal('Every Peer Request URL is required.');
-            onValueChangedSpy.should.be.called;
+            component['peers'][0].should.deep.equal(component['defaultPeer']);
         });
     });
 
     describe('onSubmit', () => {
+        it('should ignore all other key presses apart from enter', () => {
+
+            let event = {
+                keyCode: 12
+            };
+
+            let eventEmitterStub = sinon.stub(component['profileUpdated'], 'emit');
+
+            component.onSubmit(event);
+
+            eventEmitterStub.should.not.have.been.called;
+
+        });
 
         it('should submit v1 profile form', fakeAsync(() => {
-            let profileOne = {
-                name: 'new v1 Profile',
-                description: 'A description for a V1 Profile',
-                type: 'hlfv1',
-                orderers: [{
-                    url: 'grpc://localhost:7050',
-                    cert: ''
-                }],
-                channel: 'composerchannel',
-                mspID: 'Org1MSP',
-                ca: {
-                    url: 'http://localhost:7054',
-                    name: ''
+            let completedProfile = {
+                'x-type': 'hlfv1',
+                'x-commitTimeout': 100,
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
                 },
-                peers: [{
-                    requestURL: 'grpc://localhost:7051',
-                    eventURL: 'grpc://localhost:7053',
-                    cert: ''
-                }],
-                timeout: 300
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCaOrg1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myOrderer',
+                            'grpc-max-send-message-length': 15,
+                            'grpc.http2.keepalive_time': 20
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer1',
+                            'grpc-max-send-message-length': 25,
+                            'grpc.http2.keepalive_time': 30
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer2',
+                            'grpc-max-send-message-length': 35,
+                            'grpc.http2.keepalive_time': 40
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        httpOptions: {
+                          verify: true
+                        },
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        caName: 'myCaOrg1'
+
+                    }
+                }
             };
 
-            let profileTwo = {
-                name: 'v1 Profile',
-                description: 'A description for a V1 Profile',
-                type: 'hlfv1',
-                orderers: [{
-                    url: 'grpc://localhost:7050',
-                    cert: ''
-                }],
-                channel: 'composerchannel',
-                mspID: 'Org1MSP',
-                ca: {
-                    url: 'http://localhost:7054',
-                    name: ''
-                },
-                peers: [{
-                    requestURL: 'grpc://localhost:7051',
-                    eventURL: 'grpc://localhost:7053',
-                    cert: ''
-                }],
-                timeout: 300
+            component['connectionProfileData'] = {
+                'x-type': 'hlfv1'
             };
 
-            component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
+            component['basic'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            };
 
-            component['v1Form'] = component['fb'].group({
-                name: ['new v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                description: ['A description for a V1 Profile'],
-                peers: component['fb'].array([component['fb'].group({
-                    requestURL: ['grpc://localhost:7051', Validators.required],
-                    eventURL: ['grpc://localhost:7053'],
-                    cert: ['']
-                })]),
-                orderers: component['fb'].array([component['fb'].group({
-                    url: ['grpc://localhost:7050', Validators.required],
-                    cert: ['']
-                })]),
-                channel: ['composerchannel', [Validators.required]],
-                mspID: ['Org1MSP', [Validators.required]],
-                ca: component['fb'].group({
-                    url: ['http://localhost:7054', [Validators.required]],
-                    name: ['']
-                }),
-                timeout: [300, [Validators.pattern('[0-9]+')]],
+            component['orderers'] = [{
+                url: 'myUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOrderer',
+                    grpcMaxSendMessageLength: 15,
+                    grpcHttp2KeepAliveTime: 20
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            }];
+
+            component['ordererTimeout'] = '5';
+
+            component['peers'] = [];
+
+            component['peers'].push({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer1',
+                    grpcMaxSendMessageLength: 25,
+                    grpcHttp2KeepAliveTime: 30
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peers'].push({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer2',
+                    grpcMaxSendMessageLength: 35,
+                    grpcHttp2KeepAliveTime: 40
+                },
+                tlsCACerts: {
+                    pem: 'myCert2'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peerTimeOut'] = {
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            };
+
+            component['ca'] = {
+                url: 'myUrl',
+                caName: 'myCaOrg1',
+                httpOptions: {
+                  verify: true
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            };
+
+            let profileUpdatedSpy = sinon.spy(component.profileUpdated, 'emit');
+
+            component.profileUpdated.subscribe((data) => {
+                data.should.deep.equal({updated: true, connectionProfile: completedProfile});
             });
 
             component.onSubmit(null);
-            tick();
+            component['connectionProfileData'].should.deep.equal(completedProfile);
+        }));
+
+        it('should submit v1 profile with no description, no certs, no grpc options, no caName, no ca httpOptions, no ca tlsCACerts and no commitTimeout', fakeAsync(() => {
+            let completedProfile = {
+                'x-type': 'hlfv1',
+                'x-commitTimeout': 100,
+                name: 'myProfile',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['ca-org1']
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        grpcOptions: {}
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        grpcOptions: {},
+                        endorsingPeer: true,
+                        chaincodeQuery: true,
+                        ledgerQuery: true,
+                        eventSource: true
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        grpcOptions: {},
+                        endorsingPeer: true,
+                        chaincodeQuery: true,
+                        ledgerQuery: true,
+                        eventSource: true
+                    }
+                },
+                certificateAuthorities: {
+                    'ca-org1': {
+                        url: 'myUrl'
+                    }
+                }
+            };
+
+            component['connectionProfileData'] = {
+                'x-type': 'hlfv1'
+            };
+
+            component['basic'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            };
+
+            delete component['basic'].commitTimeout;
+            delete component['basic'].description;
+
+            component['orderers'] = [{
+                url: 'myUrl',
+                name: 'myOrderer',
+                grpcOptions: {}
+            }];
+
+            component['ordererTimeout'] = '5';
+
+            component['peers'] = [];
+
+            component['peers'].push({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {},
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peers'].push({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {},
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peerTimeOut'] = {
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            };
+
+            component['ca'] = {
+                url: 'myUrl',
+                httpOptions: {
+                  verify: false
+                }
+            };
+
+            let profileUpdatedSpy = sinon.spy(component.profileUpdated, 'emit');
+
+            component.profileUpdated.subscribe((data) => {
+                data.should.deep.equal({updated: true, connectionProfile: completedProfile});
+            });
+
+            component.onSubmit(null);
+
+            component['connectionProfileData'].should.deep.equal(completedProfile);
+        }));
+
+        it('should submit v1 profile form with httpOptions verify for the CA but no certs', fakeAsync(() => {
+            let completedProfile = {
+                'x-type': 'hlfv1',
+                'x-commitTimeout': 100,
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                client: {
+                    organization: 'myOrg',
+                    connection: {
+                        timeout: {
+                            peer: {
+                                endorser: '5',
+                                eventHub: '5',
+                                eventReg: '5'
+                            },
+                            orderer: '5'
+                        }
+                    }
+                },
+                channels: {
+                    myChannel: {
+                        orderers: [
+                            'myOrderer'
+                        ],
+                        peers: {
+                            myPeer1: {},
+                            myPeer2: {}
+                        },
+                    }
+                },
+                organizations: {
+                    myOrg: {
+                        mspid: 'myOrg1MSP',
+                        peers: ['myPeer1', 'myPeer2'],
+                        certificateAuthorities: ['myCaOrg1'],
+
+                    }
+                },
+                orderers: {
+                    myOrderer: {
+                        url: 'myUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myOrderer',
+                            'grpc-max-send-message-length': 15,
+                            'grpc.http2.keepalive_time': 20
+                        }
+                    }
+                },
+                peers: {
+                    myPeer1: {
+                        url: 'myUrl',
+                        eventUrl: 'myEventUrl',
+                        tlsCACerts: {
+                            pem: 'myCert'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer1',
+                            'grpc-max-send-message-length': 25,
+                            'grpc.http2.keepalive_time': 30
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    },
+                    myPeer2: {
+                        url:
+                            'myUrl2',
+                        eventUrl: 'myEventUrl2',
+                        tlsCACerts: {
+                            pem: 'myCert2'
+                        },
+                        grpcOptions: {
+                            'ssl-target-name-override': 'myPeer2',
+                            'grpc-max-send-message-length': 35,
+                            'grpc.http2.keepalive_time': 40
+                        },
+                        endorsingPeer: true,
+                        ledgerQuery: true,
+                        chaincodeQuery: true,
+                        eventSource: true
+                    }
+                },
+                certificateAuthorities: {
+                    myCaOrg1: {
+                        url: 'myUrl',
+                        httpOptions: {
+                          verify: true
+                        },
+                        caName: 'myCaOrg1'
+
+                    }
+                }
+            };
+
+            component['connectionProfileData'] = {
+                'x-type': 'hlfv1'
+            };
+
+            component['basic'] = {
+                name: 'myProfile',
+                description: 'myDescription',
+                version: '2.8',
+                organization: 'myOrg',
+                mspid: 'myOrg1MSP',
+                channel: 'myChannel',
+                commitTimeout: 100
+            };
+
+            component['orderers'] = [{
+                url: 'myUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOrderer',
+                    grpcMaxSendMessageLength: 15,
+                    grpcHttp2KeepAliveTime: 20
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                name: 'myOrderer'
+            }];
+
+            component['ordererTimeout'] = '5';
+
+            component['peers'] = [];
+
+            component['peers'].push({
+                name: 'myPeer1',
+                url: 'myUrl',
+                eventUrl: 'myEventUrl',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer1',
+                    grpcMaxSendMessageLength: 25,
+                    grpcHttp2KeepAliveTime: 30
+                },
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peers'].push({
+                name: 'myPeer2',
+                url: 'myUrl2',
+                eventUrl: 'myEventUrl2',
+                grpcOptions: {
+                    sslTargetNameOverride: 'myPeer2',
+                    grpcMaxSendMessageLength: 35,
+                    grpcHttp2KeepAliveTime: 40
+                },
+                tlsCACerts: {
+                    pem: 'myCert2'
+                },
+                organization: true,
+                endorsingPeer: true,
+                chaincodeQuery: true,
+                ledgerQuery: true,
+                eventSource: true
+            });
+
+            component['peerTimeOut'] = {
+                endorser: '5',
+                eventHub: '5',
+                eventReg: '5'
+            };
+
+            component['ca'] = {
+                url: 'myUrl',
+                caName: 'myCaOrg1',
+                httpOptions: {
+                  verify: true
+                }
+            };
+
+            let profileUpdatedSpy = sinon.spy(component.profileUpdated, 'emit');
+
+            component.profileUpdated.subscribe((data) => {
+                data.should.deep.equal({updated: true, connectionProfile: completedProfile});
+            });
+
+            component.onSubmit(null);
+            component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
 
         it('should throw error on unknown profile type', fakeAsync(() => {
-            let profileOne = {
-                deployWaitTime: 300,
-                eventHubURL: 'grpc://localhost:7053',
-                invokeWaitTime: 30,
-                membershipServicesURL: 'grpc://localhost:7054',
-                name: 'new v06 Profile',
-                peerURL: 'grpc://localhost:7051',
-                type: 'hlf'
-            };
-
             component['connectionProfileData'] = {name: 'unknown profile', profile: {type: 'unknown type'}};
-
-            component['v06Form'] = component['fb'].group({
-                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
-                peerURL: ['grpc://localhost:7051', [Validators.required]],
-                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
-                eventHubURL: ['grpc://localhost:7053'],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
-            });
 
             (() => {
                 component.onSubmit(null);
@@ -434,144 +1444,394 @@ describe('ConnectionProfileComponent', () => {
     });
 
     describe('openAddCertificateModal', () => {
-        it('should open orderers certificate modal if hostname set', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                orderers: component['fb'].array([component['fb'].group({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['orderers']['controls'][0], 'patchValue');
+        it('should open orderers certificate modal', fakeAsync(() => {
+            component['orderers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
 
             mockNgbModal.open.returns({
-                result: Promise.resolve({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })
+                componentInstance: {},
+                result: Promise.resolve({cert: 'ordererCert_2', sslTargetNameOverride: 'myOverride_2'})
             });
 
             component.openAddCertificateModal(0, 'orderers');
 
             tick();
 
-            mockConnectionProfileService.setCertificate.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2'});
+            component['orderers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'ordererCert_2'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride_2'
+                }
+            });
         }));
 
-        it('should open orderers certificate modal if hostname not set', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                orderers: component['fb'].array([component['fb'].group({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['orderers']['controls'][0], 'patchValue');
-
-            mockNgbModal.open.returns({
-                result: Promise.resolve({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })
-            });
-
-            component.openAddCertificateModal(0, 'orderers');
-
-            tick();
-
-            mockConnectionProfileService.setCertificate.should.be.called;
-            mockNgbModal.open.should.have.been.called;
-
-            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2'});
-        }));
-
-        it('should open peers certificate modal if hostname set', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                peers: component['fb'].array([component['fb'].group({
-                    requestURL: 'requestURL_1',
-                    eventURL: 'eventURL_1',
-                    cert: 'peerCert_1'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['peers']['controls'][0], 'patchValue');
+        it('should open peer certificate modal', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
 
             mockNgbModal.open.returns({
-                result: Promise.resolve({
-                    requestURL: 'requestURL_1',
-                    eventURL: 'eventURL_1',
-                    cert: 'peerCert_1'
-                })
+                componentInstance: {},
+                result: Promise.resolve({cert: 'peerCert_2', sslTargetNameOverride: 'myOverride_2'})
             });
 
             component.openAddCertificateModal(0, 'peers');
 
             tick();
 
-            mockConnectionProfileService.setCertificate.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'peerCert_1'});
+            component['peers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'peerCert_2'
+                },
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOverride_2'
+                }
+            });
         }));
 
-        it('should open peers certificate modal if hostname not set', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                peers: component['fb'].array([component['fb'].group({
-                    requestURL: 'requestURL_1',
-                    eventURL: 'eventURL_1',
-                    cert: 'peerCert_1'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['peers']['controls'][0], 'patchValue');
+        it('should open ca certificate modal', fakeAsync(() => {
+            component['ca'] = {
+                url: 'myUrl',
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            };
 
             mockNgbModal.open.returns({
-                result: Promise.resolve({
-                    requestURL: 'requestURL_1',
-                    eventURL: 'eventURL_1',
-                    cert: 'peerCert_1'
-                })
+                componentInstance: {},
+                result: Promise.resolve({cert: 'caCert_2', sslTargetNameOverride: null})
+            });
+
+            component.openAddCertificateModal(0, 'ca');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['ca'].should.deep.equal({
+                url: 'myUrl',
+                tlsCACerts: {
+                    pem: 'caCert_2'
+                }
+            });
+        }));
+
+        it('should open certificate modal and create sslTargetNameOverride when grpcOptions does not exist', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                }
+            }];
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({cert: 'peerCert_2', sslTargetNameOverride: 'myOverride_2'})
             });
 
             component.openAddCertificateModal(0, 'peers');
 
             tick();
 
-            mockConnectionProfileService.setCertificate.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'peerCert_1'});
+            component['peers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'peerCert_2'
+                },
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOverride_2'
+                }
+            });
         }));
 
-        it('should error on unrecognized type', fakeAsync(() => {
+        it('should open certificate modal and create sslTargetNameOverride when it does not exist', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                grpcOptions: {}
+            }];
 
-            mockNgbModal.open.returns({result: Promise.resolve()});
-            component.openAddCertificateModal(0, 'test').then(() => {
-                throw new Error('should not get here');
-            })
-                .catch((error) => {
-                    error.message.should.equal('Unrecognized type test');
-                });
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({cert: 'peerCert_2', sslTargetNameOverride: 'myOverride_2'})
+            });
+
+            component.openAddCertificateModal(0, 'peers');
 
             tick();
 
             mockNgbModal.open.should.have.been.called;
+
+            component['peers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'peerCert_2'
+                },
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOverride_2'
+                }
+            });
+        }));
+
+        it('should open certificate modal and create tlsCACerts object when it does not exist', fakeAsync(() => {
+            component['peers'] = [{
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({cert: 'peerCert_2', sslTargetNameOverride: 'myOverride_2'})
+            });
+
+            component.openAddCertificateModal(0, 'peers');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['peers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'peerCert_2'
+                },
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOverride_2'
+                }
+            });
+        }));
+
+        it('should open certificate modal and create pem field when it does not exist in tlsCACerts', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {},
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve({cert: 'peerCert_2', sslTargetNameOverride: 'myOverride_2'})
+            });
+
+            component.openAddCertificateModal(0, 'peers');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['peers'][0].should.deep.equal({
+                tlsCACerts: {
+                    pem: 'peerCert_2'
+                },
+                grpcOptions: {
+                    sslTargetNameOverride: 'myOverride_2'
+                }
+            });
+        }));
+
+        it('should remove the tlsCACerts and sslTargetNameOverride fields when remove button is pressed', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {
+                  pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve(null)
+            });
+
+            component.openAddCertificateModal(0, 'peers');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['peers'][0].should.deep.equal({
+              grpcOptions: {}
+            });
+        }));
+
+        it('should remove only the tlsCACerts when remove button is pressed and type ca', fakeAsync(() => {
+            component['ca'] = {
+                tlsCACerts: {
+                  pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'I do not normally exist for CA but do for this test'
+                }
+            };
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.resolve(null)
+            });
+
+            component.openAddCertificateModal(0, 'ca');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['ca'].should.deep.equal({
+              grpcOptions: {
+                sslTargetNameOverride: 'I do not normally exist for CA but do for this test'
+              }
+            });
+        }));
+
+        it('should revert object to prior state when cancel pressed for a peer', fakeAsync(() => {
+            component['peers'] = [{
+                tlsCACerts: {
+                  pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            component['peers'] = [{
+                tlsCACerts: {
+                  pem: 'myCert_new'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride_new'
+                }
+            }];
+
+            component.openAddCertificateModal(0, 'peers');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['peers'] = [{
+                tlsCACerts: {
+                  pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
+        }));
+
+        it('should revert object to prior state when cancel pressed for a ca', fakeAsync(() => {
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               }
+            };
+
+            mockNgbModal.open.returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               },
+               tlsCACerts: {
+                 pem: 'ENTERED CERT'
+               }
+            };
+
+            component.openAddCertificateModal(0, 'ca');
+
+            tick();
+
+            mockNgbModal.open.should.have.been.called;
+
+            component['ca'] = {
+               url: 'https://localhost:7054',
+               caName: null,
+               httpOptions: {
+                 verify: true
+               }
+            };
+        }));
+
+        it('should error on unrecognized type', (() => {
+            try {
+                component.openAddCertificateModal(0, 'test');
+                throw new Error('Open add certificate should have thrown an error');
+            } catch (err) {
+                err.message.should.deep.equal('Unrecognized type test');
+            }
+        }));
+
+        it('should error if object of type orderer at the index does not exist', (() => {
+          component['orderers'] = [];
+          try {
+              component.openAddCertificateModal(0, 'orderers');
+              throw new Error('Open add certificate should have thrown an error');
+          } catch (err) {
+              err.message.should.deep.equal('Orderer at index 0 does not exist.');
+          }
+        }));
+
+        it('should error if object of type peer at the index does not exist', (() => {
+          component['peers'] = [];
+          try {
+              component.openAddCertificateModal(0, 'peers');
+              throw new Error('Open add certificate should have thrown an error');
+          } catch (err) {
+              err.message.should.deep.equal('Peer at index 0 does not exist.');
+          }
+        }));
+
+        it('should error if object of type ca does not exist', (() => {
+          component['ca'] = undefined;
+          try {
+              component.openAddCertificateModal(0, 'ca');
+              throw new Error('Open add certificate should have thrown an error');
+          } catch (err) {
+              err.message.should.deep.equal('CA does not exist.');
+          }
         }));
 
         it('should open orderers certificate modal and handle error', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                orderers: component['fb'].array([component['fb'].group({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['orderers']['controls'][0], 'patchValue');
+            component['orderers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
 
             mockNgbModal.open.returns({
+                componentInstance: {},
                 result: Promise.reject('some error')
             });
 
@@ -579,25 +1839,23 @@ describe('ConnectionProfileComponent', () => {
 
             tick();
 
-            mockConnectionProfileService.setCertificate.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
-
-            patchSpy.should.not.have.been.called;
 
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
 
         it('should open orderers certificate modal and handle cancel', fakeAsync(() => {
-            component['v1Form'] = component['fb'].group({
-                orderers: component['fb'].array([component['fb'].group({
-                    url: 'ordererURL_2',
-                    cert: 'ordererCert_2'
-                })])
-            });
-
-            let patchSpy = sinon.spy(component['v1Form'].controls['orderers']['controls'][0], 'patchValue');
+            component['orderers'] = [{
+                tlsCACerts: {
+                    pem: 'myCert'
+                },
+                grpcOptions: {
+                  sslTargetNameOverride: 'myOverride'
+                }
+            }];
 
             mockNgbModal.open.returns({
+                componentInstance: {},
                 result: Promise.reject(1)
             });
 
@@ -605,13 +1863,9 @@ describe('ConnectionProfileComponent', () => {
 
             tick();
 
-            mockConnectionProfileService.setCertificate.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.not.have.been.called;
-
             mockAlertService.errorStatus$.next.should.not.have.been.called;
-
         }));
     });
 
@@ -624,20 +1878,18 @@ describe('ConnectionProfileComponent', () => {
     });
 
     describe('component input', () => {
-        it('should change profile if an existing profile is selected', () => {
+        it('should use the data passed in if set', () => {
             let startEditingStub = sinon.stub(component, 'startEditing');
-            component.connectionProfile = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
+            component.connectionProfile = {name: 'v1 Profile'};
             startEditingStub.should.have.been.called;
-            component['connectionProfileData'].should.deep.equal({name: 'v1 Profile', profile: {type: 'hlfv1'}});
+            component['connectionProfileData'].should.deep.equal({name: 'v1 Profile'});
         });
 
-        it('should not change if no profile', () => {
+        it('should set initial data if nothing passed in', () => {
             let startEditingStub = sinon.stub(component, 'startEditing');
-            component.connectionProfile = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
-            startEditingStub.reset();
             component.connectionProfile = null;
-            startEditingStub.should.not.have.been.called;
-            should.not.exist(component['connectionProfileData']);
+            startEditingStub.should.have.been.called;
+            component['connectionProfileData'].should.deep.equal({'x-type': 'hlfv1'});
         });
     });
 
@@ -648,5 +1900,138 @@ describe('ConnectionProfileComponent', () => {
             });
             component.stopEditing();
         });
+    });
+
+    describe('isNumber', () => {
+      it('should return true if value passed is whole number', () => {
+        component.isNumber('123').should.deep.equal(true);
+      });
+
+      it('should return true if value passed is decimal number', () => {
+        component.isNumber('1.23').should.deep.equal(true);
+      });
+
+      it('should return true if value passed is null', () => {
+        component.isNumber(null).should.deep.equal(true);
+      });
+
+      it('should return true if value passed is empty string', () => {
+        component.isNumber('').should.deep.equal(true);
+      });
+
+      it('should return false if value passed is undefined', () => {
+        component.isNumber(undefined).should.deep.equal(false);
+      });
+
+      it('should return false if value passed contains a letter', () => {
+        component.isNumber('1a23').should.deep.equal(false);
+      });
+
+      it('should return false if value passed is valid javascript number but not whole or decimal formatted', () => {
+        component.isNumber('1e1000').should.deep.equal(false);
+      });
+    });
+
+    describe('formValid', () => {
+      let getEls = sinon.stub(document, 'getElementsByClassName');
+      it('should return true if no error messages and form is valid', () => {
+        getEls.withArgs('error-message').returns([]);
+        let form = {
+          valid: true
+        };
+        component.formValid(form).should.deep.equal(true);
+      });
+
+      it('should return false if error messages and form is valid', () => {
+        getEls.withArgs('error-message').returns(['HTML DOM OBJECT']);
+        let form = {
+          valid: true
+        };
+        component.formValid(form).should.deep.equal(false);
+      });
+
+      it('should return false if no error messages and form is invalid', () => {
+        getEls.withArgs('error-message').returns([]);
+        let form = {
+          valid: false
+        };
+        component.formValid(form).should.deep.equal(false);
+      });
+    });
+
+    describe('setVerify', () => {
+        it('should set httpOption.verify to false and remove tlsCACerts for the CA if the url is not secure', () => {
+          component['ca'] = {
+             url: 'http://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
+             }
+          };
+
+          component.setVerify();
+
+          component['ca'].should.deep.equal({
+             url: 'http://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: false
+             }
+          });
+        });
+
+        it('should leave httpOption.verify as is for the CA if the url is secure', () => {
+          component['ca'] = {
+             url: 'https://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
+             }
+          };
+
+          component.setVerify();
+
+          component['ca'].should.deep.equal({
+             url: 'https://localhost:7054',
+             caName: null,
+             httpOptions: {
+               verify: true
+             },
+             tlsCACerts: {
+               pem: 'CERT'
+             }
+          });
+        });
+    });
+
+    describe('clearCaTls', () => {
+      it('should delete the tlsCACerts field from the CA', () => {
+        component['ca'] = {
+           url: 'https://localhost:7054',
+           caName: null,
+           httpOptions: {
+             verify: true
+           },
+           tlsCACerts: {
+             pem: 'CERT'
+           }
+        };
+
+        component.clearCaTls();
+
+        component['ca'].should.deep.equal({
+           url: 'https://localhost:7054',
+           caName: null,
+           httpOptions: {
+             verify: true
+           }
+        });
+      });
     });
 });
