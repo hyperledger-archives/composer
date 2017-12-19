@@ -21,7 +21,7 @@ import { Config } from '../services/config/configStructure.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { BusinessNetworkDefinition } from 'composer-common';
 
-import { DrawerService } from '../common/drawer';
+import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 import { IdCard } from 'composer-common';
 import { LoginComponent } from './login.component';
 
@@ -690,6 +690,20 @@ describe(`LoginComponent`, () => {
 
             loadIdentityCardsStub.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should handle dismiss by esc key without showing an error modal', fakeAsync(() => {
+          mockDrawer.open.returns({
+              result: Promise.reject(DrawerDismissReasons.ESC)
+          });
+          let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+
+          component.importIdentity();
+
+          tick();
+
+          loadIdentityCardsStub.should.not.have.been.called;
+          mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
     });
 

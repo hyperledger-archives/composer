@@ -9,7 +9,7 @@ import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DrawerService } from '../common/drawer';
+import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
 
 import { IdCard } from 'composer-common';
@@ -250,7 +250,9 @@ export class LoginComponent implements OnInit {
         }).then(() => {
             return this.loadIdentityCards();
         }).catch((reason) => {
-            this.alertService.errorStatus$.next(reason);
+            if (reason !== DrawerDismissReasons.ESC) {
+                this.alertService.errorStatus$.next(reason);
+            }
         });
     }
 
