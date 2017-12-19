@@ -87,7 +87,7 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
 
     describe('#put', () => {
         it('should save web cards to the browser card store', (done) => {
-            let idCardOne = new IdCard({userName: 'banana'}, {type: 'web', name: 'webProfile'});
+            let idCardOne = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'webProfile'});
             mockBrowserBusinessNetworkCardStore.put.resolves();
             mockProxyBusinessNetworkCardStore.put.rejects(new Error('such error'));
             return businessNetworkCardStore.put('web-card', idCardOne)
@@ -101,7 +101,7 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
 
         it('should save other cards to the proxy card store', (done) => {
             mockBrowserBusinessNetworkCardStore.put.rejects(new Error('such error'));
-            let idCardOne = new IdCard({userName: 'banana'}, {type: 'hlfv1', name: 'hlfv1'});
+            let idCardOne = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'hlfv1'});
             mockProxyBusinessNetworkCardStore.put.resolves();
             return businessNetworkCardStore.put('myCard', idCardOne)
                 .then((result) => {
@@ -115,15 +115,15 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
 
     describe('#getAll', () => {
         it('should get from both the browser and proxy card stores', (done) => {
-            let idCardOne = new IdCard({userName: 'banana'}, {type: 'web', name: 'webProfile'});
-            let idCardTwo = new IdCard({userName: 'bob'}, {type: 'web', name: 'webProfile'});
+            let idCardOne = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'webProfile'});
+            let idCardTwo = new IdCard({userName: 'bob'}, {'x-type': 'web', 'name': 'webProfile'});
 
             let browserMap: Map<string, IdCard> = new Map<string, IdCard>();
             browserMap.set('browserCard1', idCardOne);
             browserMap.set('browserCard2', idCardTwo);
 
-            let idCardThree = new IdCard({userName: 'fish'}, {type: 'hlfv1', name: 'hlfv1'});
-            let idCardFour = new IdCard({userName: 'fred'}, {type: 'hlfv1', name: 'hlfv1'});
+            let idCardThree = new IdCard({userName: 'fish'}, {'x-type': 'hlfv1', 'name': 'hlfv1'});
+            let idCardFour = new IdCard({userName: 'fred'}, {'x-type': 'hlfv1', 'name': 'hlfv1'});
 
             let proxyMap: Map<string, IdCard> = new Map<string, IdCard>();
             proxyMap.set('proxyCard1', idCardThree);
@@ -160,7 +160,7 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
         });
 
         it('should delete web cards from the browser cards store', (done) => {
-            sinon.stub(businessNetworkCardStore, 'get').resolves({userName: 'bob', connectionProfile: {type: 'web'}});
+            sinon.stub(businessNetworkCardStore, 'get').resolves({userName: 'bob', connectionProfile: {'x-type': 'web'}});
             mockBrowserBusinessNetworkCardStore.delete.withArgs('web-card').resolves();
             mockProxyBusinessNetworkCardStore.delete.rejects(new Error('such error'));
             return businessNetworkCardStore.delete('web-card')
@@ -173,7 +173,7 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
         });
 
         it('should delete other cards from the proxy card store', (done) => {
-            sinon.stub(businessNetworkCardStore, 'get').resolves({userName: 'bob', connectionProfile: {type: 'hlfv1'}});
+            sinon.stub(businessNetworkCardStore, 'get').resolves({userName: 'bob', connectionProfile: {'x-type': 'hlfv1'}});
             mockBrowserBusinessNetworkCardStore.delete.rejects(new Error('such error'));
             mockProxyBusinessNetworkCardStore.delete.withArgs('myCard').resolves();
             return businessNetworkCardStore.delete('myCard')

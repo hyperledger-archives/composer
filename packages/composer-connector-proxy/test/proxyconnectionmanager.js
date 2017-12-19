@@ -30,7 +30,7 @@ describe('ProxyConnectionManager', () => {
     const connectionProfile = 'defaultProfile';
     const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionOptions = {
-        type: 'embedded'
+        'x-type': 'embedded'
     };
     const connectionID = '3d382385-47a5-4be9-99b0-6b10166b9497';
     const serializedError = serializerr(new TypeError('such type error'));
