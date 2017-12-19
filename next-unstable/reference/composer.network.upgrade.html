@@ -267,7 +267,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network upgrade</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-archive&gt; -p &lt;connection-profile-Name&gt; -i &lt;upgrade-Id&gt; -s &lt;upgrade-Secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -c &lt;business-network-card&gt;
 </code></pre></div>
 <p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been deployed to a blockchain node by using the <code>composer runtime install</code> command.</p>
 

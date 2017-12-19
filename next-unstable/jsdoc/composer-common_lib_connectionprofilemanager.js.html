@@ -151,12 +151,19 @@ class ConnectionProfileManager {
     /**
      * Retrieves the ConnectionManager for the given connection type.
      *
-     * @param {string} connectionType The type of the connection type
+     * @param {String} connectionType The connection type
      * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
      * object once the connection is established, or rejected with a connection error.
      */
     getConnectionManagerByType (connectionType) {
         const METHOD = 'getConnectionManagerByType';
+
+        if (!connectionType) {
+            let err = new Error('No connection type provided, probably because the connection profile has no \'x-type\' property defined.');
+            LOG.error(METHOD, err);
+            return Promise.reject(err);
+        }
+
         LOG.info(METHOD, 'Looking up a connection manager for type', connectionType);
         let errorList = [];
 
@@ -233,25 +240,24 @@ class ConnectionProfileManager {
      * Establish a connection to the business network, using connection information
      * from the connection profile.
      *
-     * @param {string} connectionProfile The name of the connection profile
+     * @param {string} connectionProfileName The name of the connection profile
      * @param {string} businessNetworkIdentifier The identifier of the business network, or null if this is an admin connection
-     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * at runtime that override options set in the connection profile.
+     * @param {Object} connectionProfileData the actual connection profile
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connect (connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
-        LOG.info('connect', 'Connecting using ' + connectionProfile, businessNetworkIdentifier);
+    connect(connectionProfileName, businessNetworkIdentifier, connectionProfileData) {
+        LOG.info('connect', 'Connecting using ' + connectionProfileName, businessNetworkIdentifier);
 
-        return this.getConnectionManagerByType(additionalConnectOptions.type)
+        return this.getConnectionManagerByType(connectionProfileData['x-type'])
             .then((connectionManager) => {
-                return connectionManager.connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions);
+                return connectionManager.connect(connectionProfileName, businessNetworkIdentifier, connectionProfileData);
             });
     }
 
 
     /**
-     * Connect with the actuall connection profile data, so the look up of the connection profile
+     * Connect with the actual connection profile data, so the look up of the connection profile
      * is by passed as this has come direct from the business network card.
      *
      * @param {Object} connectionProfileData object representing of the connection profile
@@ -260,14 +266,14 @@ class ConnectionProfileManager {
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connectWithData (connectionProfileData, businessNetworkIdentifier, additionalConnectOptions) {
+    connectWithData(connectionProfileData, businessNetworkIdentifier, additionalConnectOptions) {
         let connectOptions = connectionProfileData;
 
         return Promise.resolve().then(() => {
             if (additionalConnectOptions) {
                 connectOptions = Object.assign(connectOptions, additionalConnectOptions);
             }
-            return this.getConnectionManagerByType(connectOptions.type);
+            return this.getConnectionManagerByType(connectOptions['x-type']);
         })
             .then((connectionManager) => {
                 // todo - this connect is duplicating values

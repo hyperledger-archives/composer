@@ -268,76 +268,282 @@ ga('send', 'pageview');
 
 <p>A Connection Profile is used by Hyperledger Composer to connect to a runtime.</p>
 
-<h2 id="creating-a-connection-profile">Creating a Connection Profile</h2>
+<h2 id="creating-a-connection-profile-for-hyperledger-fabric-v1-1">Creating a Connection Profile for Hyperledger Fabric v1.1</h2>
 
-<ol>
-<li>Create a new file called <code>connection.json</code> that contains the following information for Hyperledger Fabric v1.0.
-    }</li>
-</ol>
-
-<p>Create a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    {
-        "type": "hlfv1",
-        "orderers": [
-           { "url" : "grpc://localhost:7050" }
-        ],
-        "ca": { "url": "http://localhost:7054",
-                "name": "ca.org1.example.com"
-        },
-        "peers": [
-            {
-                "requestURL": "grpc://localhost:7051",
-                "eventURL": "grpc://localhost:7053"
+<p>Hyperledger Fabric defines the format of the connection profile. The following is an example of a single organisation fabric network</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "hlfv1",
+    "x-type": "hlfv1",
+    "x-commitTimeout": 300,
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
             }
-        ],
-        "keyValStore": "${HOME}/.composer-credentials",
-        "channel": "composerchannel",
-        "mspID": "Org1MSP",
-        "timeout": "300"
+        }
+    },
+    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {
+                    "endorsingPeer": true
+                    "chaincodeQuery": true
+                    "ledgerQuery": true
+                    "eventSource": true
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://orderer.example.com:7050"
+        }
+    },
+    "peers": {
+        "peer0.org1.example.com": {
+            "url": "grpc://peer0.org1.example.com:7051",
+            "eventUrl": "grpc://peer0.org1.example.com:7053"
+        }
+    },
+    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "url": "http://ca.org1.example.com:7054",
+            "caName": "ca.org1.example.com"
+        }
     }
+}
+</code></pre></div>
+<p>Official documentation for this structure can be found here <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.
+This is a big change from the orginal connection profile used by Hyperledger Composer. This connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all the channels defined. We will walk through the above example sections providing more detail as necessary. The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
+- orderers
+- peers
+- certificateAuthorities
+which define all the servers involved. We will then look at
+- organizations
+- channels
+and finally the
+- client section</p>
 
-If you are connecting to Hyperledger Fabric v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
-
-_Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
-
-    {
-      type: 'hlfv1',
-      name: 'hlfv1org1',
-      orderers: [
-        'grpc://localhost:7050'
-      ],
-      ca: {
-        url: 'http://localhost:7054',
-        name: 'ca.org1.example.com'
-      },
-      peers: [
-        {
-          requestURL: 'grpc://localhost:7051',
-          eventURL: 'grpc://localhost:7053'
-        },
-        ],
-      channel: 'composerchannel',
-      mspID: 'Org1MSP',
-      timeout: '300',
-    };
+<h3 id="general-information">General information</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">"name": "hlfv1",
+"x-type": "hlfv1",
+"x-commitTimeout": 300,
+"version": "1.0.0",
 </code></pre></div>
 <ul>
 <li><code>name</code> is a name used to refer to the connection profile, and is required.</li>
-<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0 is must be <code>hlfv1</code>.</li>
-<li><code>ca</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of <code>ca</code> as shown in the first Hyperledger Fabric v1.0 example above.</li>
-<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
-<li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
-<li><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</li>
-<li><code>hostnameOverride</code> is used in a test environment only, when the server certificate&#39;s hostname does not match the actual host endpoint that the server process runs at, the application can work around the client TLS verify failure by setting this property to the value of the server certificate&#39;s hostname.</li>
-<li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
-<div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----
-</code></pre></div></li>
-<li><p><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p></li>
-<li><p><code>timeout</code> is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.</p></li>
-<li><p><code>globalCert</code> defines the TLS certificate which is used for all peers and orderers if no <code>cert</code> property is specified. If a <code>cert</code> property is specified, it overrides the <code>globalCert</code> property only for the peer or orderer it is specified for.</p></li>
-<li><p><code>maxSendSize</code> is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
-<li><p><code>maxRecvSize</code> is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
+<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.1 must be <code>hlfv1</code>.</li>
+<li><code>x-commitTimeout</code> defines the number of seconds to wait for a commit response to be received for a transaction.</li>
+<li><code>version</code> defines the version of a connection profile and currently only a version of <code>1.0.0</code> is supported</li>
 </ul>
+
+<h3 id="orderers">orderers</h3>
+
+<p>Here we define all the orderers that are part of the network. The name &quot;orderer.example.com&quot; is a label allowing us to reference this definition later.
+<code>
+&quot;orderers&quot;: {
+    &quot;orderer.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://orderer.example.com:7050&quot;
+    }
+},
+</code>
+In this section you would define all the available orderers, the example here provides the a basic configuration for a non-tls orderer. An example of a orderer using tls would be
+<code>
+&quot;orderers&quot;: {
+    &quot;orderer.example.com&quot;: {
+        &quot;url&quot;: &quot;grpcs://orderer.example.com:7050&quot;,
+        &quot;grpcOptions&quot;: {
+            &quot;ssl-target-name-override&quot;: &quot;orderer.example.com&quot;
+        },
+        &quot;tlsCACerts&quot;: {
+            pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+        }
+    }
+},
+</code>
+In order to guarantee portability it is highly recommended to embed the certificate(s) into the connection profile using the <code>pem</code> option, although the alternative <code>path</code> option will work this is not a recommended use.</p>
+
+<h3 id="peers">peers</h3>
+
+<p>Here we define all the peers in the network and it would include peers in all organizations. Again each one has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.
+<code>
+&quot;peers&quot;: {
+    &quot;peer0.org1.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
+        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
+    }
+},
+</code>
+Peer definitions are similar to orderer definitions in structure but you should define both the url and eventUrl of a peer. The old connection profile format required that you only define the eventUrl for peers in your organisation. This is now not the case and you provide complete information about the peer. Defining TLS for a peer is similar to orderers
+<code>
+&quot;peers&quot;: {
+    &quot;peer0.org1.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
+        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
+        &quot;grpcOptions&quot;: {
+            &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;
+        },
+        &quot;tlsCACerts&quot;: {
+            pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+        }        
+    }
+},
+</code>
+Also to define more peers in this section
+<code>
+&quot;peers&quot;: {
+    &quot;peer0.org1.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
+        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
+    },
+    &quot;peer1.org1.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://peer1.org1.example.com:7051&quot;,
+        &quot;eventUrl&quot;: &quot;grpc://peer1.org1.example.com:7053&quot;
+    },
+    &quot;peer0.org2.example.com&quot;: {
+        &quot;url&quot;: &quot;grpc://peer0.org2.example.com:7051&quot;,
+        &quot;eventUrl&quot;: &quot;grpc://peer0.org2.example.com:7053&quot;
+    },
+},
+</code></p>
+
+<h3 id="certificateauthorities">certificateAuthorities</h3>
+
+<p>Here you define all the certificate authorities
+<code>
+&quot;certificateAuthorities&quot;: {
+    &quot;ca.org1.example.com&quot;: {
+        &quot;url&quot;: &quot;http://ca.org1.example.com:7054&quot;,
+        &quot;caName&quot;: &quot;ca.org1.example.com&quot;
+    }
+}
+</code>
+- <code>url</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined in <code>caName</code>.
+- <code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></p>
+
+<p>(TBD verify and trustedroots etc)</p>
+
+<h3 id="organizations">Organizations</h3>
+
+<p>Here you define all the various servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
+In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a single certificate authority and label our organization <code>Org1</code>. Note the referencing of the peer and certificate authority.
+<code>
+    &quot;organizations&quot;: {
+        &quot;Org1&quot;: {
+            &quot;mspid&quot;: &quot;Org1MSP&quot;,
+            &quot;peers&quot;: [
+                &quot;peer0.org1.example.com&quot;
+            ],
+            &quot;certificateAuthorities&quot;: [
+                &quot;ca.org1.example.com&quot;
+            ]
+        }
+    },
+</code>
+- <code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p>
+
+<h3 id="channels">Channels</h3>
+
+<p>This defines the various Hyperledger Fabric peers and orderers that are participanting on a specific channel as well as the role of the peers.
+<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions
+<code>
+&quot;channels&quot;: {
+    &quot;composerchannel&quot;: {
+        &quot;orderers&quot;: [
+            &quot;orderer.example.com&quot;
+        ],
+        &quot;peers&quot;: {
+            &quot;peer0.org1.example.com&quot;: {
+                &quot;endorsingPeer&quot;: true
+                &quot;chaincodeQuery&quot;: true
+                &quot;ledgerQuery&quot;: true
+                &quot;eventSource&quot;: true
+            }
+        }
+    }
+},
+</code>
+A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
+- endorsingPeer means that peer is there to endorse transactions and must have chaincode instantiated
+- chaincodeQuery means that peer is able to handle chaincode query requests and must have chaincode instantiated
+- ledgerQuery means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer
+- eventSource means that this peer will generate events.</p>
+
+<h3 id="client">client</h3>
+
+<p>This section will be unique for each organization and defines configuration information specific to your client application
+<code>
+&quot;client&quot;: {
+    &quot;organization&quot;: &quot;Org1&quot;,
+    &quot;connection&quot;: {
+        &quot;timeout&quot;: {
+            &quot;peer&quot;: {
+                &quot;endorser&quot;: &quot;300&quot;,
+                &quot;eventHub&quot;: &quot;300&quot;,
+                &quot;eventReg&quot;: &quot;300&quot;
+            },
+            &quot;orderer&quot;: &quot;300&quot;
+        }
+    }
+},
+</code>
+In this section you define the <code>organization</code> you belong to in the example about this is <code>Org1</code> which references the Org1 organization in the profile. You also definee timeouts in seconds for each of the various possible interactions.</p>
+
+<h3 id="common-properties">Common properties</h3>
+
+<p>When defining a peer or orderer there are some common options you can use. These are
+- grpcOptions
+- tlsCACerts</p>
+
+<p>For example a peer defition might look like
+<code>
+&quot;peer0.org1.example.com&quot;: {
+    &quot;url&quot;: &quot;grpcs://peer0.org1.example.com:7051&quot;,
+    &quot;eventUrl&quot;: &quot;grpcs://peer0.org1.example.com:7053&quot;
+    &quot;grpcOptions&quot;: {
+        &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;,
+        &quot;grpc-max-send-message-length&quot;: 15        
+    },
+    &quot;tlsCACerts&quot;: {
+        pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+    }
+}
+</code>
+A similar thing could be done for an orderer definition
+<code>
+&quot;orderer.example.com&quot;: {
+    &quot;url&quot;: &quot;grpcs://orderer.example.com:7050&quot;,
+    &quot;grpcOptions&quot;: {
+        &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;,
+        &quot;grpc-max-send-message-length&quot;: 15
+    },
+    &quot;tlsCACerts&quot;: {
+        pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+    }
+}
+</code>
+There are other grpcOptions available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
 
             
           </section>

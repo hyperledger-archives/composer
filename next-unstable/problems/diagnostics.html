@@ -318,30 +318,25 @@ ga('send', 'pageview');
 
 <p>For example</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "gettingstarted": {
-       "participantId" : "WebAppAdmin",
-       "participantPwd" :"DJY27pEnl16d",
-       "businessNetworkIdentifier" : "digitalproperty-network",
-       "connectionProfile" :"defaultProfile"
+    "gettingstarted": {
+       "cardname": "admin@digitalproperty-network"
     },
     "ComposerConfig": {
-       "debug": {
-         "logger": "default",
-         "config": {
-           "console": {
-             "enabledLevel": "info",
-             "alwaysLevel": "none"
-
-           },
-           "file": {
-             "filename": "./trace_PID.log",
-             "enabledLevel": "silly",
-             "alwaysLevel": "info"
-           }
-         }
-       }
-      }
-
+        "debug": {
+            "logger": "default",
+            "config": {
+                "console": {
+                    "enabledLevel": "info",
+                    "alwaysLevel": "none"
+                },
+                "file": {
+                    "filename": "./trace_PID.log",
+                    "enabledLevel": "silly",
+                    "alwaysLevel": "info"
+                }
+            }
+        }
+    }
 }
 </code></pre></div>
 <p>The first section is specific to the Getting Started application, the second <code>ComposerConfig</code> section is for the Hyperledger Composer.</p>
