@@ -375,40 +375,6 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Connects to a business network using a connection profile, and authenticates to the Hyperledger Fabric.
-     * @example
-     * // Connect and log in to HLF
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     // Connected
-     * });
-     * @param {string} connectionProfile - The name of the connection profile
-     * @param {string} businessNetwork - The identifier of the business network
-     * @param {string} enrollmentID the enrolment ID of the user
-     * @param {string} enrollmentSecret the enrolment secret of the user
-     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * at runtime that override options set in the connection profile.
-     * which will override those in the specified connection profile.
-     * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
-     * @private
-     */
-    /* TODO: THIS SHOULD BE REMOVED
-    connectWithDetails (connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
-        const method = '_connect';
-        LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
-
-        //TODO: DAVE, ok how the hell does this work ? if no additional connection options, who calls this anyway ?
-        return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
-            .then((connection) => {
-                LOG.exit(method);
-                return this._connectionLogin(connection, enrollmentID, enrollmentSecret);
-            });
-
-    }
-    */
-
-    /**
      * Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.
      * @example
      * // Connect and log in to HLF
