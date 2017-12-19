@@ -15,7 +15,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueIdentityComponent } from './issue-identity.component';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ClientService } from '../../services/client.service';
-import { BusinessNetworkConnection, ParticipantRegisty } from 'composer-client';
+import { BusinessNetworkConnection, ParticipantRegistry } from 'composer-client';
 import { Resource } from 'composer-common';
 
 @Directive({
