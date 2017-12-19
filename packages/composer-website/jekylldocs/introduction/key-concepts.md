@@ -32,7 +32,7 @@ All transactions submitted through a business network are stored on the blockcha
 
 ### Connection Profiles
 
-{{site.data.conrefs.composer_full}} uses _Connection Profiles_ to connect to a runtime. A Connection Profile is a JSON document that lives in the user's home directory (or may come from an environment variable) and is referenced by name when using the {{site.data.conrefs.composer_short}} APIs or the Command Line tools. Using connection profiles ensures that code and scripts are easily portable from one runtime instance to another. You can read more about Connection Profiles in the reference section.
+{{site.data.conrefs.composer_full}} uses _Connection Profiles_ to define the system to connect to. A connection profile is a JSON document the is part of a business network card. These profiles are usually provded by the creator of the system they refer to and should be used to create business network cards in order to be able to connect to that system.
 
 ---
 
@@ -50,9 +50,9 @@ Participants are members of a business network. They may own assets and submit t
 
 ---
 
-### Identities and ID cards
+### Identities and Business Network cards
 
-Within a business network, participants can be associated with an identity. ID cards are a combination of an identity, a connection profile, and metadata. ID cards simplify the process of connecting to a business network, and extend the concept of an identity outside the business network to a 'wallet' of identities, each associated with a specific business network and connection profile.
+Within a business network, participants can be associated with an identity. Business network cards are a combination of an identity, a connection profile, and metadata. Business network cards simplify the process of connecting to a business network, and extend the concept of an identity outside the business network to a 'wallet' of identities, each associated with a specific business network and connection profile.
 
 ---
 

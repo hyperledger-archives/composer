@@ -132,6 +132,7 @@
         "babel-preset-latest": "6.24.1",
         "buffer-loader": "0.0.1",
         "chai": "3.5.0",
+        "clone": "2.1.1",
         "codelyzer": "2.0.1",
         "codemirror": "5.26.0",
         "composer-admin": "0.17.0",

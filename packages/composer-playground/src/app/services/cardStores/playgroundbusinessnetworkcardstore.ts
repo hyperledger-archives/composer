@@ -48,7 +48,7 @@ export class PlaygroundBusinessNetworkCardStore extends BusinessNetworkCardStore
      * @return {Promise} A promise that resolves once the data is written
      */
     put(cardName, card): Promise<void> {
-        if (card.connectionProfile.type === 'web') {
+        if (card.connectionProfile['x-type'] === 'web') {
             // Web card - save to the browser.
             return this.browserBusinessNetworkCardStore.put(cardName, card);
         } else {
@@ -111,7 +111,7 @@ export class PlaygroundBusinessNetworkCardStore extends BusinessNetworkCardStore
             .then((card) => {
                 if (!card) {
                     // Don't do anything - card doesn't exist.
-                } else if (card.connectionProfile.type === 'web') {
+                } else if (card.connectionProfile['x-type'] === 'web') {
                     // Web card - remove from the browser.
                     return this.browserBusinessNetworkCardStore.delete(cardName);
                 } else {

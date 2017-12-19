@@ -122,3 +122,6 @@ For example to issue an identity that has issuer authority
 ```
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
 ```
+
+## Connection Profiles
+(TBD: Link required to connection profiles reference section)
