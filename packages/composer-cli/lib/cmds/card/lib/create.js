@@ -20,6 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const cmdUtil = require('../../utils/cmdutils');
 const chalk = require('chalk');
+const yaml = require('js-yaml');
 /**
  * Composer "card import" command
  * @private
@@ -56,8 +57,22 @@ class Create {
         // start the promise chain to all sync errors are converted to rejected promises
         return Promise.resolve()
             .then( ()=>{
+
+                // assume files ending in json are json files otherwise are yaml files.
+                // if we really wanted to we could try each method to see if one or the
+                // other works, but I think that is overkill for this. I chose json check
+                // as yaml files could be yaml, or yml.
+                const isJSON = argv.connectionProfileFile.toLowerCase().endsWith('json');
                 const filePath = path.resolve(argv.connectionProfileFile);
-                let profileData = JSON.parse(this.readFile(filePath));
+
+                let profileData;
+
+                if (isJSON) {
+                    profileData = JSON.parse(this.readFile(filePath));
+                }
+                else {
+                    profileData = yaml.safeLoad(this.readFile(filePath));
+                }
 
                 return this.createCard(metadata,profileData,argv);
             })
