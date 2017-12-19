@@ -87,6 +87,7 @@ class HLFConnection extends Connection {
         this.caClient = caClient;
         this.initialized = false;
         this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
+        this.queryPeer;
         LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
@@ -321,8 +322,11 @@ class HLFConnection extends Connection {
             chaincodeVersion: runtimePackageJSON.version,
             chaincodeId: businessNetworkIdentifier,
             txId: txId,
-            channelNames: this.channel.getName() // this will drive getting all the Peers to install on
+            targets: this.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery'])
         };
+        // the following should have been used for request but the node sdk is broken
+        // channelNames: this.channel.getName() // this will drive getting all the Peers to install on
+
 
         try {
             let results = await this.client.installChaincode(request);
@@ -748,33 +752,35 @@ class HLFConnection extends Connection {
 
         let txId = this.client.newTransactionID();
 
-        // determine a peer to use for querying.
-        let queryPeer;
-        let peersForOrg = this.client.getPeersForOrg();
-        if (peersForOrg) {
-            for (let i = 0; i < peersForOrg.length; i++) {
-                if (peersForOrg[i].isInRole('chaincodeQuery')) {
-                    queryPeer = peersForOrg[i];
-                    break;
+        // determine a peer to use for querying if we haven't before
+        if (!this.queryPeer) {
+
+            const availablePeers = this.getChannelPeersInOrg(['chaincodeQuery']);
+            if (availablePeers.length > 0) {
+                this.queryPeer = availablePeers[0];
+            }
+            else {
+                let allPeersInChannel = this.channel.getPeers();
+
+                for (let i in allPeersInChannel) {
+                    let peer = allPeersInChannel[i];
+                    if (peer.isInRole('chaincodeQuery')) {
+                        this.queryPeer = peer;
+                        break;
+                    }
                 }
             }
-        }
+            if (!this.queryPeer) {
 
-        // fallback if cannot find a suitable peer in callers organisation,
-        // try all the peers in the channel.
-        if (!queryPeer) {
-            let allPeers = this.channel.getPeers();
-            for (let i = 0; i < allPeers.length; i++) {
-                if (allPeers[i].isInRole('chaincodeQuery')) {
-                    queryPeer = allPeers[i];
-                    break;
-                }
+                const newError = new Error('Unable to determine a peer to query');
+                LOG.error(method, newError);
+                return Promise.reject(newError);
             }
         }
 
         // Submit the query request.
         const request = {
-            targets: [queryPeer],
+            targets: [this.queryPeer],
             chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
@@ -1129,6 +1135,39 @@ class HLFConnection extends Connection {
         });
     }
 
+
+    /**
+     * return the Channel peers that are in the organisation which matches the requested roles
+     * @param {Array} peerRoles the peer roles that the returned list of peers need to satisfy
+     * @returns {Array} the list of any peers that satisfy all the criteria.
+     */
+    getChannelPeersInOrg(peerRoles) {
+        const channelPeers = this.channel.getPeers();
+        const orgPeers = this.client.getPeersForOrg();
+
+        let orgPeersInChannel = [];
+        for (let cpIndex in channelPeers) {
+            const cPeer = channelPeers[cpIndex];
+
+            const hasRole = peerRoles.every((peerRole) => {
+                return cPeer.isInRole(peerRole);
+            });
+
+            if (hasRole) {
+                const inOrgPeer = orgPeers.some((orgPeer) => {
+                    return cPeer.getName() === orgPeer.getName();
+                });
+                const inOrgPeersInChannel = orgPeersInChannel.some((orgPeer) => {
+                    cPeer.getName() === orgPeer.getName();
+                });
+
+                if (inOrgPeer && !inOrgPeersInChannel) {
+                    orgPeersInChannel.push(cPeer);
+                }
+            }
+        }
+        return orgPeersInChannel;
+    }
 }
 
 module.exports = HLFConnection;

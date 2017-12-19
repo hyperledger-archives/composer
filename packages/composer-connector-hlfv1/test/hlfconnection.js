@@ -49,7 +49,7 @@ const runtimeModulePath = path.resolve(path.dirname(require.resolve('composer-ru
 describe('HLFConnection', () => {
 
     let sandbox;
-    let mockConnectionManager, mockChannel, mockClient, mockEventHub, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork, mockPeer;
+    let mockConnectionManager, mockChannel, mockClient, mockEventHub, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork, mockPeer1, mockPeer2, mockPeer3;
     let connectOptions;
     let connection;
     let mockEventHubDef, mockTransactionID, logWarnSpy;
@@ -59,13 +59,11 @@ describe('HLFConnection', () => {
         const LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
-        mockPeer = sinon.createStubInstance(Peer);
         mockChannel = sinon.createStubInstance(Channel);
         mockClient = sinon.createStubInstance(Client);
         mockEventHub = sinon.createStubInstance(EventHub);
         mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
         mockUser = sinon.createStubInstance(User);
-        mockChannel.getPeers.returns([mockPeer]);
         mockTransactionID = sinon.createStubInstance(TransactionID);
         mockTransactionID.getTransactionID.returns('00000000-0000-0000-0000-000000000000');
         mockClient.newTransactionID.returns(mockTransactionID);
@@ -74,6 +72,12 @@ describe('HLFConnection', () => {
         mockBusinessNetwork.getName.returns('org-acme-biznet');
         mockBusinessNetwork.toArchive.resolves(Buffer.from('hello world'));
         mockChannel.getName.returns('testchainid');
+        mockPeer1 = sinon.createStubInstance(Peer);
+        mockPeer1.getName.returns('Peer1');
+        mockPeer2 = sinon.createStubInstance(Peer);
+        mockPeer2.getName.returns('Peer2');
+        mockPeer3 = sinon.createStubInstance(Peer);
+        mockPeer3.getName.returns('Peer3');
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', {}, mockClient, mockChannel, mockCAClient);
     });
 
@@ -348,6 +352,7 @@ describe('HLFConnection', () => {
             mockClient.getEventHubsForOrg.returns([mockEventHub]);
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
+            sandbox.stub(connection,'getChannelPeersInOrg').returns([mockPeer1]);
         });
 
         it('should reject if businessNetworkIdentifier not specified', () => {
@@ -376,7 +381,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                 });
         });
@@ -405,7 +410,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                 });
         });
@@ -1048,7 +1053,7 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: validResponses});
             mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
-            mockClient.getPeersForOrg.returns([mockPeer]);
+            sandbox.stub(connection,'getChannelPeersInOrg').returns([mockPeer1]);
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
@@ -1126,7 +1131,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
 
                     sinon.assert.calledOnce(connection._initializeChannel);
@@ -1210,7 +1215,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: runtimeModulePath,
@@ -1263,7 +1268,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: runtimeModulePath,
@@ -1316,7 +1321,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: runtimeModulePath,
@@ -1428,7 +1433,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: runtimeModulePath,
@@ -1477,7 +1482,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: runtimeModulePath,
@@ -1534,7 +1539,7 @@ describe('HLFConnection', () => {
                         chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org-acme-biznet',
                         txId: mockTransactionID,
-                        channelNames: 'testchainid'
+                        targets: [mockPeer1]
                     });
                     sinon.assert.notCalled(connection._initializeChannel);
                     sinon.assert.notCalled(mockChannel.sendInstantiateProposal);
@@ -1965,9 +1970,6 @@ describe('HLFConnection', () => {
             sandbox.stub(process, 'on').withArgs('exit').yields();
             mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
-            mockClient.getPeersForOrgOnChannel.withArgs('testchainid').returns([mockPeer]);
-            mockPeer.isInRole.withArgs('chaincodeQuery').returns(true);
-
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
@@ -1991,33 +1993,9 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/invalid arg specified: 3.142/);
         });
 
-        it('should submit a query request to the chaincode', () => {
-            const response = Buffer.from('hello world');
-            mockChannel.queryByChaincode.resolves([response]);
-            return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then((result) => {
-                    sinon.assert.calledOnce(mockChannel.queryByChaincode);
-                    sinon.assert.calledWith(mockChannel.queryByChaincode, {
-                        chaincodeId: 'org-acme-biznet',
-                        chaincodeVersion: connectorPackageJSON.version,
-                        txId: mockTransactionID,
-                        fcn: 'myfunc',
-                        args: ['arg1', 'arg2'],
-                        targets: [mockPeer]
-                    });
-                    result.equals(response).should.be.true;
-                });
-        });
+        it('should choose a valid peer from the same org', async () => {
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([mockPeer2, mockPeer3]);
 
-        it('should choose a valid peer from a list of peers in the same org', async () => {
-            let mockPeer1 = sinon.createStubInstance(Peer);
-            let mockPeer2 = sinon.createStubInstance(Peer);
-            let mockPeer3 = sinon.createStubInstance(Peer);
-            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
-            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(true);
-            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
-            let mockPeers = [mockPeer1, mockPeer2, mockPeer3];
-            mockClient.getPeersForOrg.returns(mockPeers);
             const response = Buffer.from('hello world');
             mockChannel.queryByChaincode.resolves([response]);
             let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
@@ -2033,15 +2011,34 @@ describe('HLFConnection', () => {
             result.equals(response).should.be.true;
         });
 
+        it('should cache a valid peer', async () => {
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([mockPeer2, mockPeer3]);
+
+            const response = Buffer.from('hello world');
+            mockChannel.queryByChaincode.resolves([response]);
+            await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledTwice(mockChannel.queryByChaincode);
+            sinon.assert.alwaysCalledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                chaincodeVersion: connectorPackageJSON.version,
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            sinon.assert.calledOnce(connection.getChannelPeersInOrg);
+            sinon.assert.notCalled(mockChannel.getPeers);
+        });
+
+
         it('should choose a valid peer from all peers if no suitable one in same org', async () => {
-            let mockPeer1 = sinon.createStubInstance(Peer);
-            let mockPeer2 = sinon.createStubInstance(Peer);
-            let mockPeer3 = sinon.createStubInstance(Peer);
             mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
             mockPeer2.isInRole.withArgs('chaincodeQuery').returns(false);
             mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
-            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer2]);
-            mockChannel.getPeers.returns([mockPeer1, mockPeer3, mockPeer2]);
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
+
             const response = Buffer.from('hello world');
             mockChannel.queryByChaincode.resolves([response]);
             let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
@@ -2057,17 +2054,31 @@ describe('HLFConnection', () => {
             result.equals(response).should.be.true;
         });
 
+        it('should throw if no suitable peers to query', () => {
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(false);
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([]);
+            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
+
+            mockChannel.queryByChaincode.resolves([]);
+            return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Unable to determine/);
+        });
+
 
         it('should throw if no responses are returned', () => {
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([mockPeer2, mockPeer3]);
+
             mockChannel.queryByChaincode.resolves([]);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
         it('should throw any responses that are errors', () => {
-            // This is the transaction proposal and response (from the peers).
+            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs(['chaincodeQuery']).returns([mockPeer2, mockPeer3]);
+
             const response = [ new Error('such error') ];
-            // This is the response from the chaincode.
             mockChannel.queryByChaincode.resolves(response);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/such error/);
@@ -2536,7 +2547,7 @@ describe('HLFConnection', () => {
         });
     });
 
-    describe('#createTransactionID', ()=>{
+    describe('#createTransactionID', ()=> {
         it('should create a transaction id', () => {
             return connection.createTransactionId()
                 .then((result) =>{
@@ -2549,4 +2560,57 @@ describe('HLFConnection', () => {
         });
     });
 
+    describe('#getChannelPeersInOrg', ()=> {
+        let mockPeer4, mockPeer5, mockPeer6;
+        beforeEach(() => {
+            mockPeer1.isInRole.withArgs('endorsingPeer').returns(false);
+            mockPeer1.isInRole.withArgs('chaincodeQuery').returns(false);
+            mockPeer2.isInRole.withArgs('endorsingPeer').returns(false);
+            mockPeer2.isInRole.withArgs('chaincodeQuery').returns(true);
+            mockPeer3.isInRole.withArgs('endorsingPeer').returns(true);
+            mockPeer3.isInRole.withArgs('chaincodeQuery').returns(true);
+
+            mockPeer4 = sinon.createStubInstance(Peer);
+            mockPeer4.getName.returns('Peer4');
+            mockPeer4.isInRole.withArgs('endorsingPeer').returns(false);
+            mockPeer4.isInRole.withArgs('chaincodeQuery').returns(false);
+
+            mockPeer5 = sinon.createStubInstance(Peer);
+            mockPeer5.getName.returns('Peer5');
+            mockPeer5.isInRole.withArgs('endorsingPeer').returns(true);
+            mockPeer5.isInRole.withArgs('chaincodeQuery').returns(false);
+
+            mockPeer6 = sinon.createStubInstance(Peer);
+            mockPeer6.getName.returns('Peer6');
+            mockPeer6.isInRole.withArgs('endorsingPeer').returns(true);
+            mockPeer6.isInRole.withArgs('chaincodeQuery').returns(true);
+
+        });
+
+        it('Should find the correct set of Peers #1', () => {
+            mockClient.getPeersForOrg.returns([mockPeer4, mockPeer6]);
+            mockChannel.getPeers.returns([mockPeer4, mockPeer5, mockPeer6]);
+            connection.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery']).should.deep.equal([mockPeer6]);
+        });
+
+        it('Should find the correct set of Peers #2', () => {
+            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer2, mockPeer3]);
+            mockChannel.getPeers.returns([mockPeer2, mockPeer4, mockPeer5, mockPeer6, mockPeer3]);
+            connection.getChannelPeersInOrg(['chaincodeQuery']).should.deep.equal([mockPeer2, mockPeer3]);
+            connection.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery']).should.deep.equal([mockPeer3]);
+        });
+
+        it('should return an empty array if no peers found #1', () => {
+            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer2, mockPeer3]);
+            mockChannel.getPeers.returns([mockPeer4, mockPeer5, mockPeer6]);
+            connection.getChannelPeersInOrg(['chaincodeQuery']).should.deep.equal([]);
+        });
+
+        it('should return an empty array if no peers found #2', () => {
+            mockClient.getPeersForOrg.returns([mockPeer1, mockPeer4]);
+            mockChannel.getPeers.returns([mockPeer4, mockPeer1]);
+            connection.getChannelPeersInOrg(['chaincodeQuery']).should.deep.equal([]);
+        });
+
+    });
 });
