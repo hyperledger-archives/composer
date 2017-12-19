@@ -159,32 +159,6 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Configure the Fabric client with a file-based store.
-     * @param {Client} client The Fabric client
-     * @param {String} keyValStorePath File system location to use for the store
-     * @returns {Promise} resolves to a client configured with the required stores
-     */
-    /*
-    static _setupFileStore(client, keyValStorePath) {
-        //TODO: could we use client.initCredentialStores() ?
-        const method = '_setupFileStore';
-        LOG.entry(method, client, keyValStorePath);
-        return Client.newDefaultKeyValueStore({path: keyValStorePath}).then((store) => {
-            client.setStateStore(store);
-            const cryptoSuite = Client.newCryptoSuite();
-            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
-            client.setCryptoSuite(cryptoSuite);
-            return store;
-        })
-        .catch((error) => {
-            LOG.error(method, error);
-            const newError = new Error('error trying to setup a keystore path. ' + error);
-            throw newError;
-        });
-    }
-    */
-
-    /**
      * Request an identity's certificates.
      *
      * @param {string} connectionProfile The name of the connection profile
