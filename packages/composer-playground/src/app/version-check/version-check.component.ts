@@ -21,7 +21,7 @@ export class VersionCheckComponent {
         this.identityCardService.getIdentityCards(true).then((idCards: Map<string, IdCard>) => {
             let cardRefs = Array.from(idCards.keys())
                 .filter((cardRef) => {
-                    return idCards.get(cardRef).getConnectionProfile().type === 'web';
+                    return idCards.get(cardRef).getConnectionProfile()['x-type'] === 'web';
                 });
 
             return cardRefs.reduce((promise, cardRef) => {

@@ -80,10 +80,10 @@ describe('AdminService', () => {
         let mockIdCard1;
         beforeEach(() => {
             mockIdCard = new IdCard({userName: 'banana', businessNetwork: 'myNetwork'}, {
-                type: 'web',
-                name: 'myProfile'
+                'x-type': 'web',
+                'name': 'myProfile'
             });
-            mockIdCard1 = new IdCard({userName: 'banana'}, {type: 'web', name: 'myProfile'});
+            mockIdCard1 = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
         });
 
         it('should return if connected', fakeAsync(inject([AdminService], (service: AdminService) => {
