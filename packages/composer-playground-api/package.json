@@ -75,7 +75,11 @@
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "config/environment/**",
+      "index.js",
+      "lib/util.js",
+      "cli.js"
     ],
     "reporter": [
       "text-summary",
