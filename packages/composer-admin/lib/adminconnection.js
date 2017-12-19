@@ -79,7 +79,7 @@ class AdminConnection {
         let connectionManager;
         connectionProfileData.cardName = name;
         let updated = false;
-        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
             .then((connectionManager_) => {
                 connectionManager = connectionManager_;
                 return this.cardStore.has(name);
@@ -126,7 +126,7 @@ class AdminConnection {
                     // check to make sure the credentials are present and if not then extract them.
                     let connectionProfileData = card.getConnectionProfile();
                     connectionProfileData.cardName = cardName;
-                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
                         .then((connectionManager) => {
                             return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
                         })
@@ -166,7 +166,7 @@ class AdminConnection {
             connectionProfileData = card.getConnectionProfile();
             cardUserName = card.getUserName();
             connectionProfileData.cardName = name;
-            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
         })
         .then((connectionManager_) => {
             connectionManager = connectionManager_;
@@ -221,6 +221,7 @@ class AdminConnection {
      * @deprecated
      * @private
      */
+    /* TODO: DAVE THIS SHOULD BE REMOVED
     connectWithDetails (connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
             .then((connection) => {
@@ -234,6 +235,7 @@ class AdminConnection {
                 }
             });
     }
+    */
 
     /**
      * Connects and logs in to the Hyperledger Fabric using a named connection
@@ -925,7 +927,7 @@ class AdminConnection {
             .then((result) => {
                 card = result;
                 connectionProfileData = card.getConnectionProfile();
-                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
             })
             .then((connectionManager) => {
 

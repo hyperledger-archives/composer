@@ -198,7 +198,7 @@ describe('IdCard', function() {
             return readIdCardAsync('valid').then((readBuffer) => {
                 return IdCard.fromArchive(readBuffer);
             }).then(card => {
-                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1' });
+                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1org1' });
             });
         });
 
@@ -334,13 +334,18 @@ describe('IdCard', function() {
             });
         });
 
-        it('should throw on missing connection.json', function() {
+        it('should throw on missing connection profile', function() {
             const cardDir = path.join(CARD_DIRECTORY_ROOT, 'missing-connection');
-            return IdCard.fromDirectory(cardDir).should.be.rejectedWith('Unable to read required file: connection.json');
+            return IdCard.fromDirectory(cardDir).should.be.rejectedWith(/Unable to read required file connection.json .* or connection.yaml/);
         });
 
         it('should throw on missing name field in connection.json', function() {
             const cardDir = path.join(CARD_DIRECTORY_ROOT, 'missing-connection-name');
+            return IdCard.fromDirectory(cardDir).should.be.rejectedWith(/name/);
+        });
+
+        it('should throw on missing name field in connection.json', function() {
+            const cardDir = path.join(CARD_DIRECTORY_ROOT, 'missing-connection-name-yaml');
             return IdCard.fromDirectory(cardDir).should.be.rejectedWith(/name/);
         });
 
@@ -375,12 +380,20 @@ describe('IdCard', function() {
             });
         });
 
-        it('should load connection profile', function() {
+        it('should load connection.json', function() {
             const cardDir = path.join(CARD_DIRECTORY_ROOT, 'valid');
             return IdCard.fromDirectory(cardDir).then(card => {
-                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1'});
+                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1org1'});
             });
         });
+
+        it('should load connection.yaml', function() {
+            const cardDir = path.join(CARD_DIRECTORY_ROOT, 'valid-with-yaml');
+            return IdCard.fromDirectory(cardDir).then(card => {
+                card.getConnectionProfile().should.be.an('Object').that.includes({ name: 'hlfv1org1'});
+            });
+        });
+
 
         it('should load credentials', function() {
             const cardDir = path.join(CARD_DIRECTORY_ROOT, 'valid');

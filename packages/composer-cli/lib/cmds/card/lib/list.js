@@ -91,7 +91,7 @@ class List {
         .then((card)=>{
 
             let cp = card.getConnectionProfile();
-            let cpData = { name :cp.name , type: cp.type, channel:cp.channel };
+            let cpData = { name :cp.name , 'x-type': cp['x-type'], channel:cp.channel };
 
             let listOutput={
                 userName:this.handleArray(card.getUserName()),
