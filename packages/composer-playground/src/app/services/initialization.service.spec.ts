@@ -38,23 +38,23 @@ describe('InitializationService', () => {
                     ]
                 },
                 connectionProfile: {
-                    name: 'hlfabric',
-                    description: 'Hyperledger Fabric v1.0',
-                    type: 'hlfv1',
-                    keyValStore: '/home/composer/.composer-credentials',
-                    timeout: 300,
-                    orderers: [
+                    'name': 'hlfabric',
+                    'description': 'Hyperledger Fabric v1.0',
+                    'x-type': 'hlfv1',
+                    'keyValStore': '/home/composer/.composer-credentials',
+                    'timeout': 300,
+                    'orderers': [
                         {
                             url: 'grpc://orderer.example.com:7050'
                         }
                     ],
-                    channel: 'composerchannel',
-                    mspID: 'Org1MSP',
-                    ca: {
+                    'channel': 'composerchannel',
+                    'mspID': 'Org1MSP',
+                    'ca': {
                         url: 'http://ca.org1.example.com:7054',
                         name: 'ca.org1.example.com'
                     },
-                    peers: [
+                    'peers': [
                         {
                             requestURL: 'grpc://peer0.org1.example.com:7051',
                             eventURL: 'grpc://peer0.org1.example.com:7053'
