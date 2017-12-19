@@ -51,9 +51,9 @@ When a participant uses an identity to submit a transaction to the deployed busi
 
 If and when an identity is revoked, the entry in the identity registry for that identity is updated to change the status to `Revoked`. After an identity is revoked, if a participant tries to use that identity to submit a transaction to the deployed business network, that transaction will be rejected.
 
-## Identities and ID cards in the {{site.data.conrefs.composer_full}} Playground
+## Identities and Business network cards in the {{site.data.conrefs.composer_full}} Playground
 
-In the {{site.data.conrefs.composer_full}} Playground, there is a wallet containing locally stored ID cards. An ID card is an access card to a business network, comprising identity data, a connection profile, and the correct certificates for business network access. ID cards can be exported to allow the assignment of identities to others.
+In the {{site.data.conrefs.composer_full}} Playground, there is a wallet containing locally stored Business network cards. A Business network card is an access card to a business network, comprising identity data, a connection profile, and the correct certificates for business network access. ID cards can be exported to allow the assignment of identities to others.
 
 
 ## Performing identity management tasks in {{site.data.conrefs.composer_full}}
