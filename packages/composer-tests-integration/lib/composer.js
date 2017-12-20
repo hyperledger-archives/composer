@@ -25,7 +25,7 @@ const http = require('http');
 const matchPattern = require('lodash-match-pattern');
 
 let generated = false;
-let savedId;
+let savedValues = new Map();
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -198,10 +198,40 @@ class Composer {
     }
 
     /**
+     * Check that a value exists in the savedValue map for the label that has been specified
+     * @param {String} label -  type (folder or file) that is being considered
+     * @return {Promise} - Promise that will be resolved or rejected with an error if not exist
+     */
+    savedValueExists(label) {
+        if ( savedValues.has(label) ) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject('The following item(s) do not exist: '+label);
+        }
+    }
+
+    /**
+     * Saves the string that matches the specified regex in the Map keyed by the specified label.
+     * @param {String} regex - the regex to match
+     * @param {String} label - the alias/lable to save any data under
+     * @return {Promise} resolved if successful match and save, rejected otherwise
+     */
+    saveDataFromOutput(regex, label) {
+        let regexp = new RegExp(regex, 'g');
+        let match = regexp.exec(this.lastResp.stdout);
+        if(match && match.length===2) {
+            savedValues.set(label, match[1]);
+            return Promise.resolve();
+        } else {
+            return Promise.reject('No output matched the regular expression: ' + regex);
+        }
+    }
+
+    /**
      * Check that the provided list of items (files or folders) exist
      * @param {String} type -  type (folder or file) that is being considered
      * @param {DataTable} table -  DataTable listing the items expeted to exist
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkExists(type, table) {
         const rows = table.raw();
@@ -345,29 +375,13 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
-            // match BOBSID for revoking test
-            if(savedId && savedId!=='') {
-                command = command.replace(/BOBSID/, savedId);
-            }
-
             return new Promise( (resolve, reject) => {
+                command = this._preProcessCommand(command);
 
                 let childCliProcess = childProcess.exec(command);
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
-
-                // Save Bobs identityId so that we can revoke it
-                let regex = /^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$/g;
-                childCliProcess.stdout.on('data', (data) => {
-                    let match = regex.exec(data);
-                    if(match && match.length===2) {
-                        savedId = match[1];
-                    }
-                    stdout += data;
-                });
-
-
                 childCliProcess.stdout.on('data', (data) => {
                     stdout += data;
                 });
@@ -392,6 +406,27 @@ class Composer {
                 });
             });
         }
+    }
+
+    /**
+     * Perform any required variable substitution
+     * @param {String} command - the command to pre-process
+     * @return {String} command - the pre-processed command
+     */
+    _preProcessCommand(command) {
+        let regexp = new RegExp(/^.*? (\[.*\]) .*?$/, 'g');
+        let match = regexp.exec(command);
+        if(match && match.length===2) {
+
+            command.replace(/\[.*?\]/g, function (mStr, index, input) {
+                let varName = mStr.substr(1, mStr.length-2);
+                if(savedValues.has(varName)) {
+                    let savedVal = savedValues.get(varName);
+                    command = command.replace(mStr, savedVal);
+                }
+            });
+        }
+        return command;
     }
 
     /**
@@ -454,7 +489,7 @@ class Composer {
      * Check the last message with regex
      * @param {RegExp} [regex] Optional regular expression.
      * @param {boolean} isError boolean to indicate if testing error or not
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkConsoleOutput(regex, isError) {
         let type;
@@ -481,7 +516,7 @@ class Composer {
     /**
      * Check the HTTP response status
      * @param {Number} code expected HTTP response code.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseCode(code) {
         return new Promise( (resolve, reject) => {
@@ -498,7 +533,7 @@ class Composer {
     /**
      * Check the last message with regex
      * @param {RegExp} [regex] Optional regular expression.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseBody(regex) {
         return new Promise( (resolve, reject) => {
@@ -517,7 +552,7 @@ class Composer {
     /**
      * Check the last message matches JSON
      * @param {*} pattern Expected json
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseJSON(pattern) {
         return new Promise( (resolve, reject) => {

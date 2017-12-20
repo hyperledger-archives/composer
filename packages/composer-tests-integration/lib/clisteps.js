@@ -24,6 +24,10 @@ module.exports = function () {
         return this.composer.checkExists(type, table);
     });
 
+    this.Given(/^I have a saved value labelled (.*)$/, function(label) {
+        return this.composer.savedValueExists(label);
+    });
+
     this.When(/^I run the following CLI command/, {timeout: 240 * 1000}, function (table) {
         return this.composer.runCLI(table);
     });
@@ -42,5 +46,9 @@ module.exports = function () {
 
     this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), true);
+    });
+
+    this.Then(/^I can save output matching (.+?) into a label called (.+?)$/, function (regex, label) {
+        return this.composer.saveDataFromOutput(regex, label);
     });
 };
