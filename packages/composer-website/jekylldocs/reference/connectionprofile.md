@@ -93,12 +93,14 @@ and finally the
 - client section
 
 ### General information
+
 ```    
 "name": "hlfv1",
 "x-type": "hlfv1",
 "x-commitTimeout": 300,
 "version": "1.0.0",
-````
+```
+
 - `name` is a name used to refer to the connection profile, and is required.
 - `x-type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.1 must be `hlfv1`.
 - `x-commitTimeout` defines the number of seconds to wait for a commit response to be received for a transaction.
@@ -106,6 +108,7 @@ and finally the
 
 ### orderers
 Here we define all the orderers that are part of the network. The name "orderer.example.com" is a label allowing us to reference this definition later.
+
 ```
 "orderers": {
     "orderer.example.com": {
@@ -113,7 +116,9 @@ Here we define all the orderers that are part of the network. The name "orderer.
     }
 },
 ```
+
 In this section you would define all the available orderers, the example here provides the a basic configuration for a non-tls orderer. An example of a orderer using tls would be
+
 ```
 "orderers": {
     "orderer.example.com": {
@@ -127,9 +132,11 @@ In this section you would define all the available orderers, the example here pr
     }
 },
 ```
+
 In order to guarantee portability it is highly recommended to embed the certificate(s) into the connection profile using the `pem` option, although the alternative `path` option will work this is not a recommended use.
 ### peers
 Here we define all the peers in the network and it would include peers in all organizations. Again each one has a unique label so it can be referenced later. In the example the label is `peer0.org1.example.com`.
+
 ```
 "peers": {
     "peer0.org1.example.com": {
@@ -138,7 +145,9 @@ Here we define all the peers in the network and it would include peers in all or
     }
 },
 ```
+
 Peer definitions are similar to orderer definitions in structure but you should define both the url and eventUrl of a peer. The old connection profile format required that you only define the eventUrl for peers in your organisation. This is now not the case and you provide complete information about the peer. Defining TLS for a peer is similar to orderers
+
 ```
 "peers": {
     "peer0.org1.example.com": {
@@ -153,7 +162,9 @@ Peer definitions are similar to orderer definitions in structure but you should 
     }
 },
 ```
+
 Also to define more peers in this section
+
 ```
 "peers": {
     "peer0.org1.example.com": {
@@ -170,8 +181,10 @@ Also to define more peers in this section
     },
 },
 ```
+
 ### certificateAuthorities
 Here you define all the certificate authorities
+
 ```
 "certificateAuthorities": {
     "ca.org1.example.com": {
@@ -180,6 +193,7 @@ Here you define all the certificate authorities
     }
 }
 ```
+
 - `url` defines the url of a {{site.data.conrefs.hlf_full}} certificate authority to connect to. If your certificate authority requires a name, it must be defined in `caName`.
 - `trustedRoots` and `verify` options for the Certificate Authority are described here https://fabric-sdk-node.github.io/global.html#TLSOptions
   
@@ -189,6 +203,7 @@ Here you define all the certificate authorities
 
 Here you define all the various servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
 In the example our MSPid is `Org1MSP` and we have a single peer and a single certificate authority and label our organization `Org1`. Note the referencing of the peer and certificate authority.
+
 ```
     "organizations": {
         "Org1": {
@@ -202,11 +217,13 @@ In the example our MSPid is `Org1MSP` and we have a single peer and a single cer
         }
     },
 ```
+
 - `mspid` is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.
 
 ### Channels
 This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that are participanting on a specific channel as well as the role of the peers.
 **IMPORTANT** {{site.data.conrefs.composer_full}} can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions
+
 ```
 "channels": {
     "composerchannel": {
@@ -224,6 +241,7 @@ This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that 
     }
 },
 ```
+
 A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
 - endorsingPeer means that peer is there to endorse transactions and must have chaincode instantiated
 - chaincodeQuery means that peer is able to handle chaincode query requests and must have chaincode instantiated
@@ -232,6 +250,7 @@ A peer has 4 possible roles. If a role is not specified then it is assumed to be
 
 ### client
 This section will be unique for each organization and defines configuration information specific to your client application
+
 ```
 "client": {
     "organization": "Org1",
@@ -247,6 +266,7 @@ This section will be unique for each organization and defines configuration info
     }
 },
 ```
+
 In this section you define the `organization` you belong to in the example about this is `Org1` which references the Org1 organization in the profile. You also definee timeouts in seconds for each of the various possible interactions.
 
 ### Common properties
@@ -254,7 +274,8 @@ When defining a peer or orderer there are some common options you can use. These
 - grpcOptions
 - tlsCACerts
 
-For example a peer defition might look like
+For example a peer definition might look like
+
 ```
 "peer0.org1.example.com": {
     "url": "grpcs://peer0.org1.example.com:7051",
@@ -268,7 +289,9 @@ For example a peer defition might look like
     }
 }
 ```
+
 A similar thing could be done for an orderer definition
+
 ```
 "orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
@@ -281,4 +304,5 @@ A similar thing could be done for an orderer definition
     }
 }
 ```
+
 There are other grpcOptions available, please refer to the https://fabric-sdk-node.github.io/tutorial-network-config.html for more information

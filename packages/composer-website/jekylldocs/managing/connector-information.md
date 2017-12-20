@@ -5,7 +5,7 @@ category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
 excerpt: {{site.data.conrefs.composer_full}} is designed to be platform-agnostic. This section is about specifics in relation to interacting with {{site.data.conrefs.hlf_full}}.
-index-order: 809
+index-order: 810
 ---
 
 # {{site.data.conrefs.hlf_full}}
