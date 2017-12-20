@@ -360,131 +360,126 @@ and finally the
 
 <h3 id="orderers">orderers</h3>
 
-<p>Here we define all the orderers that are part of the network. The name &quot;orderer.example.com&quot; is a label allowing us to reference this definition later.
-<code>
-&quot;orderers&quot;: {
-    &quot;orderer.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://orderer.example.com:7050&quot;
+<p>Here we define all the orderers that are part of the network. The name &quot;orderer.example.com&quot; is a label allowing us to reference this definition later.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
+    "orderer.example.com": {
+        "url": "grpc://orderer.example.com:7050"
     }
 },
-</code>
-In this section you would define all the available orderers, the example here provides the a basic configuration for a non-tls orderer. An example of a orderer using tls would be
-<code>
-&quot;orderers&quot;: {
-    &quot;orderer.example.com&quot;: {
-        &quot;url&quot;: &quot;grpcs://orderer.example.com:7050&quot;,
-        &quot;grpcOptions&quot;: {
-            &quot;ssl-target-name-override&quot;: &quot;orderer.example.com&quot;
+</code></pre></div>
+<p>In this section you would define all the available orderers, the example here provides the a basic configuration for a non-tls orderer. An example of a orderer using tls would be</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
+    "orderer.example.com": {
+        "url": "grpcs://orderer.example.com:7050",
+        "grpcOptions": {
+            "ssl-target-name-override": "orderer.example.com"
         },
-        &quot;tlsCACerts&quot;: {
-            pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+        "tlsCACerts": {
+            pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
         }
     }
 },
-</code>
-In order to guarantee portability it is highly recommended to embed the certificate(s) into the connection profile using the <code>pem</code> option, although the alternative <code>path</code> option will work this is not a recommended use.</p>
+</code></pre></div>
+<p>In order to guarantee portability it is highly recommended to embed the certificate(s) into the connection profile using the <code>pem</code> option, although the alternative <code>path</code> option will work this is not a recommended use.</p>
 
 <h3 id="peers">peers</h3>
 
-<p>Here we define all the peers in the network and it would include peers in all organizations. Again each one has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.
-<code>
-&quot;peers&quot;: {
-    &quot;peer0.org1.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
-        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
+<p>Here we define all the peers in the network and it would include peers in all organizations. Again each one has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
     }
 },
-</code>
-Peer definitions are similar to orderer definitions in structure but you should define both the url and eventUrl of a peer. The old connection profile format required that you only define the eventUrl for peers in your organisation. This is now not the case and you provide complete information about the peer. Defining TLS for a peer is similar to orderers
-<code>
-&quot;peers&quot;: {
-    &quot;peer0.org1.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
-        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
-        &quot;grpcOptions&quot;: {
-            &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;
+</code></pre></div>
+<p>Peer definitions are similar to orderer definitions in structure but you should define both the url and eventUrl of a peer. The old connection profile format required that you only define the eventUrl for peers in your organisation. This is now not the case and you provide complete information about the peer. Defining TLS for a peer is similar to orderers</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "grpcOptions": {
+            "ssl-target-name-override": "peer.org1.example.com"
         },
-        &quot;tlsCACerts&quot;: {
-            pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+        "tlsCACerts": {
+            pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
         }        
     }
 },
-</code>
-Also to define more peers in this section
-<code>
-&quot;peers&quot;: {
-    &quot;peer0.org1.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://peer0.org1.example.com:7051&quot;,
-        &quot;eventUrl&quot;: &quot;grpc://peer0.org1.example.com:7053&quot;
+</code></pre></div>
+<p>Also to define more peers in this section</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
     },
-    &quot;peer1.org1.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://peer1.org1.example.com:7051&quot;,
-        &quot;eventUrl&quot;: &quot;grpc://peer1.org1.example.com:7053&quot;
+    "peer1.org1.example.com": {
+        "url": "grpc://peer1.org1.example.com:7051",
+        "eventUrl": "grpc://peer1.org1.example.com:7053"
     },
-    &quot;peer0.org2.example.com&quot;: {
-        &quot;url&quot;: &quot;grpc://peer0.org2.example.com:7051&quot;,
-        &quot;eventUrl&quot;: &quot;grpc://peer0.org2.example.com:7053&quot;
+    "peer0.org2.example.com": {
+        "url": "grpc://peer0.org2.example.com:7051",
+        "eventUrl": "grpc://peer0.org2.example.com:7053"
     },
 },
-</code></p>
-
+</code></pre></div>
 <h3 id="certificateauthorities">certificateAuthorities</h3>
 
-<p>Here you define all the certificate authorities
-<code>
-&quot;certificateAuthorities&quot;: {
-    &quot;ca.org1.example.com&quot;: {
-        &quot;url&quot;: &quot;http://ca.org1.example.com:7054&quot;,
-        &quot;caName&quot;: &quot;ca.org1.example.com&quot;
+<p>Here you define all the certificate authorities</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"certificateAuthorities": {
+    "ca.org1.example.com": {
+        "url": "http://ca.org1.example.com:7054",
+        "caName": "ca.org1.example.com"
     }
 }
-</code>
-- <code>url</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined in <code>caName</code>.
-- <code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></p>
+</code></pre></div>
+<ul>
+<li><code>url</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined in <code>caName</code>.</li>
+<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
+</ul>
 
 <p>(TBD verify and trustedroots etc)</p>
 
 <h3 id="organizations">Organizations</h3>
 
 <p>Here you define all the various servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
-In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a single certificate authority and label our organization <code>Org1</code>. Note the referencing of the peer and certificate authority.
-<code>
-    &quot;organizations&quot;: {
-        &quot;Org1&quot;: {
-            &quot;mspid&quot;: &quot;Org1MSP&quot;,
-            &quot;peers&quot;: [
-                &quot;peer0.org1.example.com&quot;
+In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a single certificate authority and label our organization <code>Org1</code>. Note the referencing of the peer and certificate authority.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
             ],
-            &quot;certificateAuthorities&quot;: [
-                &quot;ca.org1.example.com&quot;
+            "certificateAuthorities": [
+                "ca.org1.example.com"
             ]
         }
     },
-</code>
-- <code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p>
+</code></pre></div>
+<ul>
+<li><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</li>
+</ul>
 
 <h3 id="channels">Channels</h3>
 
 <p>This defines the various Hyperledger Fabric peers and orderers that are participanting on a specific channel as well as the role of the peers.
-<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions
-<code>
-&quot;channels&quot;: {
-    &quot;composerchannel&quot;: {
-        &quot;orderers&quot;: [
-            &quot;orderer.example.com&quot;
+<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"channels": {
+    "composerchannel": {
+        "orderers": [
+            "orderer.example.com"
         ],
-        &quot;peers&quot;: {
-            &quot;peer0.org1.example.com&quot;: {
-                &quot;endorsingPeer&quot;: true
-                &quot;chaincodeQuery&quot;: true
-                &quot;ledgerQuery&quot;: true
-                &quot;eventSource&quot;: true
+        "peers": {
+            "peer0.org1.example.com": {
+                "endorsingPeer": true
+                "chaincodeQuery": true
+                "ledgerQuery": true
+                "eventSource": true
             }
         }
     }
 },
-</code>
-A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
+</code></pre></div>
+<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
 - endorsingPeer means that peer is there to endorse transactions and must have chaincode instantiated
 - chaincodeQuery means that peer is able to handle chaincode query requests and must have chaincode instantiated
 - ledgerQuery means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer
@@ -492,23 +487,22 @@ A peer has 4 possible roles. If a role is not specified then it is assumed to be
 
 <h3 id="client">client</h3>
 
-<p>This section will be unique for each organization and defines configuration information specific to your client application
-<code>
-&quot;client&quot;: {
-    &quot;organization&quot;: &quot;Org1&quot;,
-    &quot;connection&quot;: {
-        &quot;timeout&quot;: {
-            &quot;peer&quot;: {
-                &quot;endorser&quot;: &quot;300&quot;,
-                &quot;eventHub&quot;: &quot;300&quot;,
-                &quot;eventReg&quot;: &quot;300&quot;
+<p>This section will be unique for each organization and defines configuration information specific to your client application</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
             },
-            &quot;orderer&quot;: &quot;300&quot;
+            "orderer": "300"
         }
     }
 },
-</code>
-In this section you define the <code>organization</code> you belong to in the example about this is <code>Org1</code> which references the Org1 organization in the profile. You also definee timeouts in seconds for each of the various possible interactions.</p>
+</code></pre></div>
+<p>In this section you define the <code>organization</code> you belong to in the example about this is <code>Org1</code> which references the Org1 organization in the profile. You also definee timeouts in seconds for each of the various possible interactions.</p>
 
 <h3 id="common-properties">Common properties</h3>
 
@@ -516,34 +510,32 @@ In this section you define the <code>organization</code> you belong to in the ex
 - grpcOptions
 - tlsCACerts</p>
 
-<p>For example a peer defition might look like
-<code>
-&quot;peer0.org1.example.com&quot;: {
-    &quot;url&quot;: &quot;grpcs://peer0.org1.example.com:7051&quot;,
-    &quot;eventUrl&quot;: &quot;grpcs://peer0.org1.example.com:7053&quot;
-    &quot;grpcOptions&quot;: {
-        &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;,
-        &quot;grpc-max-send-message-length&quot;: 15        
+<p>For example a peer definition might look like</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
+    "url": "grpcs://peer0.org1.example.com:7051",
+    "eventUrl": "grpcs://peer0.org1.example.com:7053"
+    "grpcOptions": {
+        "ssl-target-name-override": "peer.org1.example.com",
+        "grpc-max-send-message-length": 15        
     },
-    &quot;tlsCACerts&quot;: {
-        pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+    "tlsCACerts": {
+        pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
-</code>
-A similar thing could be done for an orderer definition
-<code>
-&quot;orderer.example.com&quot;: {
-    &quot;url&quot;: &quot;grpcs://orderer.example.com:7050&quot;,
-    &quot;grpcOptions&quot;: {
-        &quot;ssl-target-name-override&quot;: &quot;peer.org1.example.com&quot;,
-        &quot;grpc-max-send-message-length&quot;: 15
+</code></pre></div>
+<p>A similar thing could be done for an orderer definition</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderer.example.com": {
+    "url": "grpcs://orderer.example.com:7050",
+    "grpcOptions": {
+        "ssl-target-name-override": "peer.org1.example.com",
+        "grpc-max-send-message-length": 15
     },
-    &quot;tlsCACerts&quot;: {
-        pem: &quot;-----BEGIN CERTIFICATE----- &lt;etc&gt; &quot;
+    "tlsCACerts": {
+        pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
-</code>
-There are other grpcOptions available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
+</code></pre></div>
+<p>There are other grpcOptions available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
 
             
           </section>
