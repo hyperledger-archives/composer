@@ -167,6 +167,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/next-unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/next-unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/next-unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/next-unstable/reference/reference-index"><b>Reference</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -286,7 +287,7 @@ ga('send', 'pageview');
 ./stopFabric.sh
 ./teardownFabric.sh
 ./downloadFabric.sh
-export FABRIC_VERSION=hlfv11        
+export FABRIC_VERSION=hlfv11
 ./startFabric.sh
 </code></pre></div></li>
 <li><p>Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
@@ -295,6 +296,9 @@ composer card delete -n admin@tutorial-network
 </code></pre></div></li>
 </ol>
 
+<p>If these commands fail, then you have network cards from a previous version and you will have to delete the file system card store.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    rm -fr ~/.composer
+</code></pre></div>
 <h2 id="step-two-exploring-the-hyperledger-fabric-network">Step Two: Exploring the Hyperledger Fabric network</h2>
 
 <p>This step will explore the Hyperledger Fabric network that you have just started, so that you can understand how it has been configured, and what components it consists of. You will use all of the information in this section to configure Hyperledger Composer in subsequent steps.</p>
@@ -363,79 +367,164 @@ composer card delete -n admin@tutorial-network
 
 <ol>
 <li><p>Create a connection profile file called <code>connection.json</code>.</p></li>
-<li><p>Give the connection profile <code>name</code> and <code>type</code> properties by adding the following three lines to the top of <code>connection.json</code>:</p>
+<li><p>Give the connection profile <code>name</code>, <code>version</code> and <code>x-type</code> properties by adding the following three lines to the top of <code>connection.json</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "name": "fabric-network",
-  "type": "hlfv1",
+    "name": "fabric-network",
+    "x-type": "hlfv1",
+    "version": "1.0.0",
 </code></pre></div>
 <p>The <code>name</code> property in a connection profile gives a name to the Hyperledger Fabric network, so we can reference it later on. In the connection profile you have just created, the name is <code>fabric-network</code>. You can use any name you like for the Hyperledger Fabric network.</p>
 
-<p>Hyperledger Composer is designed to be compatible with different types blockchain networks. Currently, only Hyperledger Fabric v1.0 is supported, but you must specify the type of blockchain network to use. The type for Hyperledger Fabric v1.0 is <code>hlfv1</code>.</p></li>
-<li><p>The name of the MSP that is used to connect to the Hyperledger Fabric network must be specified:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">"mspID": "Org1MSP",
-</code></pre></div>
-<p>We are connecting as <code>Org1</code>, and the MSP for <code>Org1</code> is called <code>Org1MSP</code>.</p></li>
-<li><p>We must specify the host names and ports of all of the peer nodes in the Hyperledger Fabric network that we want to connect to.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">"peers": [
-    {
-        "requestURL": "grpc://localhost:7051",
-        "eventURL": "grpc://localhost:7053"
-    }
-],
+<p>Hyperledger Composer is designed to be compatible with different types blockchain networks. Currently, only Hyperledger Fabric v1.0 is supported, but you must specify the type of blockchain network to use. The x-type for Hyperledger Fabric v1.0 is <code>hlfv1</code>.</p>
+
+<p>The version number is the version of this connection profile format. Currently there is only 1 version of <code>1.0.0</code>.</p>
+
+<p>There is also an optional property <code>x-commitTimeout</code> which can also be specified with defines how long Hyperledger Composer should wait for a submitted transaction to be committed to your organization&#39;s peer before
+  giving up waiting. The default if not specified is <code>300 seconds</code>.</p></li>
+<li><p>We must specify the host names and ports of all of the peer nodes in the Hyperledger Fabric network. There is only 1 peer and we give it a label of <code>peer0.org1.example.com</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "peers": {
+        "peer0.org1.example.com": {
+            "url": "grpc://localhost:7051",
+            "eventUrl": "grpc://localhost:7053"
+        }
+    },
 </code></pre></div>
 <p>Here, we have specified our single peer node <code>peer0.org1.example.com</code> (using the host name <code>localhost</code>), the request port 7051, and the event hub port 7053.</p>
 
-<p>The <code>peers</code> array can contain multiple peer nodes. If you have multiple peer nodes, you should add them all to the <code>peers</code> array so that Hyperledger Composer can interact with them.</p>
-
-<p>The blockchain business network will be deployed to all of the specified peer nodes. Once the blockchain business network has been deployed, the specified peer nodes will be used for querying the blockchain business network, endorsing transactions, and subscribing to events.</p></li>
+<p>The <code>peers</code> array can contain multiple peer nodes. If you have multiple peer nodes, you should add them all to the <code>peers</code> object.</p></li>
 <li><p>We must specify the host name and port of the certificate authority (CA) in the Hyperledger Fabric network that we want to use for enrolling existing users and registering new users.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">"ca": {
-    "url": "http://localhost:7054",
-    "name": "ca.org1.example.com"
-},
+<div class="highlight"><pre><code class="language-" data-lang="">    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "url": "http://localhost:7054",
+            "caName": "ca.org1.example.com"
+        }
+    },
 </code></pre></div>
-<p>Here we have specified our single CA <code>ca.or1.example.com</code> (using the hostname <code>localhost</code>) and the CA port 7054.</p></li>
+<p>Here we have specified our single CA <code>ca.org1.example.com</code> (using the hostname <code>localhost</code>) and the CA port 7054, and we also label this entry as <code>ca-org1.example.com</code></p></li>
 <li><p>We must specify the host names and ports of all of the ordering nodes in the Hyperledger Fabric that we want to connect to.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">"orderers": [
-    {
-        "url" : "grpc://localhost:7050"
-    }
-],
+<div class="highlight"><pre><code class="language-" data-lang="">    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
 </code></pre></div>
-<p>Here, we have specified our single orderer node <code>orderer.example.com</code> (using the hostname <code>localhost</code>) and the orderer port 7050.</p>
+<p>Here, we have specified our single orderer node <code>orderer.example.com</code> (using the hostname <code>localhost</code>) and the orderer port 7050 and we also label this as <code>orderer.example.com</code>.</p>
 
-<p>The <code>orderers</code> array can contain multiple orderer nodes. If you have multiple orderer nodes, you should add them all to the <code>orderers</code> array so that Hyperledger Composer can interact with them.</p></li>
-<li><p>We must specify the name of an existing channel. We will deploy our blockchain business network into the channel <code>composerchannel</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">"channel": "composerchannel",
-</code></pre></div></li>
-<li><p>Finally, we can optionally specify a timeout for endorsing transactions when interacting with a blockchain business network.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  "timeout": 300
-}
+<p>The <code>orderers</code> object can contain multiple orderer nodes. If you have multiple orderer nodes, you should add them all to the <code>orderers</code> object.</p></li>
+<li><p>We now must specify all the organizations in the network. In this tutorial there is only 1 organization, <code>Org1</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        }
+    },
 </code></pre></div>
-<p>Here, we have specified a timeout of 300 seconds. If a transaction takes longer than 300 seconds to endorse, then a timeout error will be thrown.</p></li>
+<p>Here we are describing the owners of the peers and who their certificate authority is plus we also declare the MSP id that has been defined for this organisation. In this tutorial it has been defined as <code>Org1MSP</code>.</p></li>
+<li><p>We must specify the name of an existing channel. We will deploy our blockchain business network into the channel <code>composerchannel</code>. This is defined in the channels object.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    },
+</code></pre></div>
+<p>Here we are defined the channel <code>composerchannel</code> and also the orderers and peers that are part of that channel. We also specify the roles the peer will perform in this channel. In this tutorial we have added the single orderer and single peer defined earlier referenced using their labels. The peer will have the business network installed so will be a transaction endorser, able to handle chaincode queries and also generate events.
+The blockchain business network will be deployed to all of the specified peer nodes. Once the blockchain business network has been deployed, the specified peer nodes will be used for querying the blockchain business network, endorsing transactions, and subscribing to events.</p></li>
+<li><p>The final section this is required is the client section. This is used by client applications (such as Hyperledger Composer) to know what organization it is representing when interacting and also some extra optional timeouts.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    }
+}
+</code></pre></div></li>
+</ol>
+
+<p>Here we are specifying that we are in <code>Org1</code>. The timeouts are used to determine how long to wait for a response when interacting with a peer or orderer and the values are specified in seconds. If you don&#39;t specify anything then the default is <code>45 seconds</code>.</p>
+
+<ol>
 <li><p>Save your changes to <code>connection.json</code>. The completed connection profile should look like the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "name": "fabric-network",
-  "type": "hlfv1",
-  "mspID": "Org1MSP",
-  "peers": [
-      {
-          "requestURL": "grpc://localhost:7051",
-          "eventURL": "grpc://localhost:7053"
-      }
-  ],
-  "ca": {
-      "url": "http://localhost:7054",
-      "name": "ca.org1.example.com"
-  },
-  "orderers": [
-      {
-          "url" : "grpc://localhost:7050"
-      }
-  ],
-  "channel": "composerchannel",
-  "timeout": 300
-}
+    "name": "fabric-network",
+    "x-type": "hlfv1",
+    "version": "1.0.0",
+    "peers": {
+        "peer0.org1.example.com": {
+            "url": "grpc://localhost:7051",
+            "eventUrl": "grpc://localhost:7053"
+        }
+    },
+    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "url": "http://localhost:7054",
+            "caName": "ca.org1.example.com"
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        }
+    },
+    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    },
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    }
+} 
 </code></pre></div></li>
 </ol>
 
