@@ -45,7 +45,7 @@ describe('PlantUMLVisitor', function(){
             fs.accessSync('./out/animaltracking/model.uml', fs.F_OK);
         });
 
-        it('should generate PlantUML code from the ModelManager for animaltracking BusinessNetworkDefinition', function() {
+        it('should generate PlantUML from the ModelManager for animaltracking BusinessNetworkDefinition', function() {
 
             const animaltrackingModel = fs.readFileSync(path.resolve(__dirname, '../data/model/animaltracking.cto'), 'utf8');
             const animaltrackingScript = fs.readFileSync(path.resolve(__dirname, '../data/model/animaltracking.cto.js'), 'utf8');
