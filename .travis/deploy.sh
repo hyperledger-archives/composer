@@ -65,11 +65,11 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
    
     if [[ "${BUILD_FOCUS}" = "latest" ]]; then
         PLAYGROUND_SUFFIX="-unstable"      
-        WEB_CFG="'{\"webonly\":true}'"
+        WEB_CFG="{\"webonly\":true}"
         TAG="unstable"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         PLAYGROUND_SUFFIX="-next-unstable"
-        WEB_CFG="'{\"webonly\":true}'"      
+        WEB_CFG="{\"webonly\":true}"      
         TAG="next-unstable"
     else 
         _exit "Unknown build focus" 1 
