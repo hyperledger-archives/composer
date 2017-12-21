@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Interacting with {{site.data.conrefs.hlf_full}}
+title: Interacting with Hyperledger Fabric
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
-excerpt: {{site.data.conrefs.composer_full}} is designed to be platform-agnostic. This section is about specifics in relation to interacting with {{site.data.conrefs.hlf_full}}.
+excerpt: Hyperledger Composer is designed to be platform-agnostic. This section is about specifics in relation to interacting with Hyperledger Fabric.
 index-order: 810
 ---
 
