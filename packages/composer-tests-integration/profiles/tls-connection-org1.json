@@ -1,32 +1,99 @@
 {
-    "type": "hlfv1",
     "name": "hlfv1",
-    "orderers": [
-        {
-            "url": "grpcs://localhost:7050",
-            "hostnameOverride": "orderer.example.com",
-            "cert": "./hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+    "x-type": "hlfv1",
+    "x-commitTimeout": 300,
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
         }
-    ],
-    "ca": {
-        "url": "https://localhost:7054",
-        "name": "ca.org1.example.com"
     },
-    "peers": [
-        {
-            "requestURL": "grpcs://localhost:7051",
-            "eventURL": "grpcs://localhost:7053",
-            "hostnameOverride": "peer0.org1.example.com",
-            "cert": "./hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
-        },
-        {
-            "requestURL": "grpcs://localhost:8051",
-            "hostnameOverride": "peer0.org2.example.com",
-            "cert": "./hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"
+    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {},
+                "peer0.org2.example.com": {}
+            }
         }
-    ],
-    "keyValStore": "keyValStoreOrg1",
-    "channel": "composerchannel",
-    "mspID": "Org1MSP",
-    "timeout": "300"
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        },
+        "Org2": {
+            "mspid": "Org2MSP",
+            "peers": [
+                "peer0.org2.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org2.example.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpcs://localhost:7050",
+            "grpcOptions": {
+                "ssl-target-name-override": "orderer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "./hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+            }
+        }
+    },
+    "peers": {
+        "peer0.org1.example.com": {
+            "url": "grpcs://localhost:7051",
+            "eventUrl": "grpcs://localhost:7053",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.org1.example.com"
+            },
+            "tlsCACerts": {
+                "path": "./hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+            }
+        },
+        "peer0.org2.example.com": {
+            "url": "grpcs://localhost:8051",
+            "eventUrl": "grpcs://localhost:8053",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.org2.example.com"
+            },
+            "tlsCACerts": {
+                "path": "./hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "url": "https://localhost:7054",
+            "httpOptions": {
+                "verify": false
+            },
+            "caName": "ca.org1.example.com"
+        },
+        "ca.org2.example.com": {
+            "url": "https://localhost:8054",
+            "httpOptions": {
+                "verify": false
+            },
+            "caName": "ca.org2.example.com"
+        }
+    }
 }

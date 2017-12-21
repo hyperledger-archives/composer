@@ -42,10 +42,12 @@ describe('composer start network CLI unit tests', function () {
 
     let sandbox;
     let testCard;
+    let adminCard;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
+        testCard = new IdCard({ userName: 'conga', businessNetwork : 'a' }, { name: 'profileName' });
+        adminCard = new IdCard({ userName: 'admin' }, { name: 'profileName' }, {file : '/tmp/adminCardFile'});
         businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
@@ -55,7 +57,8 @@ describe('composer start network CLI unit tests', function () {
         mockAdminConnection.update.resolves();
         mockAdminConnection.exportCard.resolves(testCard);
         let mapCards = new Map();
-        mapCards.set('conga',testCard);
+        mapCards.set('conga', testCard);
+        mapCards.set('admin', adminCard);
         mockAdminConnection.start.resolves(mapCards);
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
