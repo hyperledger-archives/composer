@@ -4,3 +4,4 @@ go
 node_modules
 out
 resources/sample-networks/basic-sample-network
+resources/sample-networks/basic-sample-network-update

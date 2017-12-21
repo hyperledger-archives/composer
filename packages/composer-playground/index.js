@@ -37,7 +37,6 @@ function createServer (port, testMode, config) {
             res.json(config);
         });
     }
-    
     const dist = path.resolve(__dirname, 'dist');
     app.use(express.static(dist));
     app.all('/*', (req, res, next) => {

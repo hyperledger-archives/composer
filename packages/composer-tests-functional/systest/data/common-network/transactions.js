@@ -161,17 +161,14 @@ function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
         });
 }
 
-function onGetAssetFromAssetRegistryTransaction(transaction) {
+// example using async/await
+async function onGetAssetFromAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
-        .then(function (ar) {
-            return ar.get('stringAsset1');
-        })
-        .then(function (a) {
-            if (typeof a !== 'object') { return new Error('asset is not an object'); }
-            if (a.assetId !== 'stringAsset1') { return new Error('asset has invalid value'); }
-            if (a.stringValue !== 'party parrot in hursley') { return new Error('asset has invalid value'); }
-        });
+    let ar = await getAssetRegistry('systest.transactions.SimpleStringAsset');
+    let a = await ar.get('stringAsset1');
+    if (typeof a !== 'object') { return new Error('asset is not an object'); }
+    if (a.assetId !== 'stringAsset1') { return new Error('asset has invalid value'); }
+    if (a.stringValue !== 'party parrot in hursley') { return new Error('asset has invalid value'); }
 }
 
 function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {

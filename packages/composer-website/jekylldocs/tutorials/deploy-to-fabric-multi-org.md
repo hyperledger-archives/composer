@@ -43,13 +43,13 @@ Clone the following GitHub repository:
 
     git clone -b issue-6978 https://github.com/sstone1/fabric-samples.git
 
-Follow the [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html), ensuring that you use the GitHub repository cloned in the previous step. You must not clone and use the Hyperledger Fabric version of the GitHub repository as it is currently missing changes that are required for this tutorial.
+Follow the [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html), ensuring that you use the GitHub repository cloned in the previous step. You must not clone and use the Hyperledger Fabric version of the GitHub repository as it is currently missing changes that are required for this tutorial. **IMPORTANT** Make sure you are using the `latest` in the url to ensure you are using the preview of {{site.data.conrefs.hlf_full}} 1.1
 
 <h2 class='everybody'>Step One: Starting a {{site.data.conrefs.hlf_full}} network</h2>
 
 In order to follow this tutorial, you must start a {{site.data.conrefs.hlf_full}} network.
 
-This tutorial will assume that you use the {{site.data.conrefs.hlf_full}} network provided in the {{site.data.conrefs.hlf_full}} [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html). We will refer to this {{site.data.conrefs.hlf_full}} network as the BYFN (Building Your First Network) network.
+This tutorial will assume that you use the {{site.data.conrefs.hlf_full}} network provided in the {{site.data.conrefs.hlf_full}} [Building Your First Network tutorial](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html). We will refer to this {{site.data.conrefs.hlf_full}} network as the BYFN (Building Your First Network) network.
 
 You can now start the BYFN network. You must specify additional flags that are not specified in the Building Your First Network tutorial. This is because we want to use CouchDB as the world state database, and we want to start a Certificate Authority (CA) for each organization.
 
@@ -61,22 +61,24 @@ If the command works successfully, the BYFN network is started, and you will see
     ========= All GOOD, BYFN execution completed ===========
 
 
-    _____   _   _   ____   
-    | ____| | \ | | |  _ \  
+    _____   _   _   ____
+    | ____| | \ | | |  _ \
     |  _|   |  \| | | | | |
     | |___  | |\  | | |_| |
     |_____| |_| \_| |____/
 
 Next, delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
 
-    composer card delete -n PeerAdmin@byfn-network-org1-only
     composer card delete -n PeerAdmin@byfn-network-org1
-    composer card delete -n PeerAdmin@byfn-network-org2-only
     composer card delete -n PeerAdmin@byfn-network-org2
     composer card delete -n alice@tutorial-network
     composer card delete -n bob@tutorial-network
     composer card delete -n admin@tutorial-network
     composer card delete -n PeerAdmin@fabric-network
+
+However any other types of failure could indicate you have cards in the card store which are from an older version of {{site.data.conrefs.composer_full}} and you will then have to delete your file system card store as follows
+
+    rm -fr ~/.composer
 
 <h2 class='everybody'>Step Two: Exploring the {{site.data.conrefs.hlf_full}} network</h2>
 
@@ -149,225 +151,215 @@ In addition to the administrator, the CAs (Certificate Authorities) for `Org1` a
 
 A channel named `mychannel` has been created. All four peer nodes - `peer0.org1.example.com`, `peer1.org1.example.com`, `peer0.org2.example.com`, and `peer1.org2.example.com` have been joined to this channel.
 
-<h2 class='alice'>Step Three: Building connection profiles for Org1</h2>
+#### Connection Profiles
 
-`Org1` requires two connection profiles. One connection profile will contain just the peer nodes that belong to `Org1`, and the other connection profile will contain the peer nodes that belong to `Org1` and `Org2`.
-
-Create a connection profile file called `connection-org1-only.json` with the following contents and save it to disk. This connection profile will contain just the peer nodes that belong to `Org1`. You will use this file in later steps, so remember where you place it!
+We need a base connection profile that describes this fabric network which can then be given to `alice` and `bob` to customize for their organization.
 
     {
-        "name": "byfn-network-org1-only",
-        "type": "hlfv1",
-        "mspID": "Org1MSP",
-        "peers": [
-            {
-                "requestURL": "grpcs://localhost:7051",
-                "eventURL": "grpcs://localhost:7053",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org1.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:8051",
-                "eventURL": "grpcs://localhost:8053",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org1.example.com"
+        "name": "hlfv1",
+        "x-type": "hlfv1",
+        "version": "1.0.0",
+        "channels": {
+            "mychannel": {
+                "orderers": [
+                    "orderer.example.com"
+                ],
+                "peers": {
+                    "peer0.org1.example.com": {
+                        "endorsingPeer": true,
+                        "chaincodeQuery": true,
+                        "eventSource": true
+                    },
+                    "peer1.org1.example.com": {
+                        "endorsingPeer": true,
+                        "chaincodeQuery": true,
+                        "eventSource": true
+                    },
+                    "peer0.org2.example.com": {
+                        "endorsingPeer": true,
+                        "chaincodeQuery": true,
+                        "eventSource": true
+                    },
+                    "peer0.org2.example.com": {
+                        "endorsingPeer": true,
+                        "chaincodeQuery": true,
+                        "eventSource": true
+                    }
+                }
             }
-        ],
-        "ca": {
-            "url": "https://localhost:7054",
-            "name": "ca-org1",
-            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-            "hostnameOverride": "ca.org1.example.com"
         },
-        "orderers": [
-            {
-                "url" : "grpcs://localhost:7050",
-                "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
-                "hostnameOverride": "orderer.example.com"
+        "organizations": {
+            "Org1": {
+                "mspid": "Org1MSP",
+                "peers": [
+                    "peer0.org1.example.com",
+                    "peer1.org1.example.com",
+                ],
+                "certificateAuthorities": [
+                    "ca.org1.example.com"
+                ]
+            },
+            "Org2": {
+                "mspid": "Org2MSP",
+                "peers": [
+                    "peer0.org2.example.com",
+                    "peer1.org2.example.com",
+                ],
+                "certificateAuthorities": [
+                    "ca.org2.example.com"
+                ]
             }
-        ],
-        "channel": "mychannel",
-        "timeout": 300
+        },
+        "orderers": {
+            "orderer.example.com": {
+                "url": "grpcs://localhost:7050",
+                "grpcOptions": {
+                    "ssl-target-name-override": "orderer.example.com"
+                },
+                "tlsCACerts": {
+                    "pem": "INSERT_ORDERER_CA_CERT"
+                }
+            }
+        },
+        "peers": {
+            "peer0.org1.example.com": {
+                "url": "grpcs://localhost:7051",
+                "eventUrl": "grpcs://localhost:7053",
+                "grpcOptions": {
+                    "ssl-target-name-override": "peer0.org1.example.com"
+                },
+                "tlsCACerts": {
+                    "pem": "INSERT_ORG1_CA_CERT"
+                }
+            },
+            "peer1.org1.example.com": {
+                "url": "grpcs://localhost:8051",
+                "eventUrl": "grpcs://localhost:8053",
+                "grpcOptions": {
+                    "ssl-target-name-override": "peer1.org1.example.com"
+                },
+                "tlsCACerts": {
+                    "pem": "INSERT_ORG1_CA_CERT"
+                }
+            },
+            "peer0.org2.example.com": {
+                "url": "grpcs://localhost:9051",
+                "eventUrl": "grpcs://localhost:9053",
+                "grpcOptions": {
+                    "ssl-target-name-override": "peer0.org2.example.com"
+                },
+                "tlsCACerts": {
+                    "pem": "INSERT_ORG2_CA_CERT"
+                }
+            },
+            "peer0.org1.example.com": {
+                "url": "grpcs://localhost:10051",
+                "eventUrl": "grpcs://localhost:10053",
+                "grpcOptions": {
+                    "ssl-target-name-override": "peer1.org2.example.com"
+                },
+                "tlsCACerts": {
+                    "pem": "INSERT_ORG2_CA_CERT"
+                }
+            }
+        },
+        "certificateAuthorities": {
+            "ca.org1.example.com": {
+                "url": "https://localhost:7054",
+                "caName": "ca-org1"
+            },
+            "ca.org2.example.com": {
+                "url": "https://localhost:8054",
+                "caName": "ca-org2"
+            }
+        }
     }
 
-Replace all instances of the text `INSERT_ORG1_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org1`:
+You need to replace all instances of the text `INSERT_ORG1_CA_CERT` with the CA certificate for the peer nodes for `Org1`:
+Use the following command to convert the pem file to something that can be embedded into the above connection profile.
 
-    crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt > /tmp/ca-org1.txt
 
-Replace all instances of the text `INSERT_ORDERER_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the orderer node:
+copy the contents of the file `/tmp/ca-org1.txt` and replace the text `INSERT_ORG1_CA_CERT`. It should now look something like this
+    "pem": "-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n"
 
-    crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+You need to replace all instances of the text `INSERT_ORG2_CA_CERT` with the CA certificate for the peer nodes for `Org2`:
+Use the following command to convert the pem file to something that can be embedded into the above connection profile.
 
-Create another connection profile file called `connection-org1.json` with the following contents and save it to disk.  This connection profile will contain the peer nodes that belong to `Org1` and `Org2`. You will use this file in later steps, so remember where you place it!
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt > /tmp/ca-org2.txt
 
-    {
-        "name": "byfn-network-org1",
-        "type": "hlfv1",
-        "mspID": "Org1MSP",
-        "peers": [
-            {
-                "requestURL": "grpcs://localhost:7051",
-                "eventURL": "grpcs://localhost:7053",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org1.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:8051",
-                "eventURL": "grpcs://localhost:8053",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org1.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:9051",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org2.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:10051",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org2.example.com"
+copy the contents of the file `/tmp/ca-org2.txt` and replace the text `INSERT_ORG2_CA_CERT`.
+
+You need to replace all instances of the text `INSERT_ORDERER_CA_CERT` with the CA certificate for the orderer node:
+Use the following command to convert the pem file to something that can be embedded into the above connection profile.
+
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt > /tmp/ca-orderer.txt
+
+copy the contents of the file `/tmp/ca-orderer.txt` and replace the text `INSERT_ORDERER_CA_CERT`.
+
+Once done, save this file as `connection-network.json`.
+
+This connection profile now describes the fabric network setup, all the peers, orderers and certificate authorities that are part of the network, it defines all the organizations that are participating in the network and also defines the channel's on this network. {{site.data.conrefs.composer_full}} can only interact with a single channel so only one channel should be defined.
+
+<h2 class='alice'>Step Three: Customizing the connection profile for Org1</h2>
+
+This is just a case of now specifying the organization that `alice` belongs to in a client section with optional timeouts, so add the following block into the above connection profile `connection-network.json` after the `version` property and before the `channel` property and save it as `connection-org1.json`.
+
+        "client": {
+            "organization": "Org1",
+            "connection": {
+                "timeout": {
+                    "peer": {
+                        "endorser": "300",
+                        "eventHub": "300",
+                        "eventReg": "300"
+                    },
+                    "orderer": "300"
+                }
             }
-        ],
-        "ca": {
-            "url": "https://localhost:7054",
-            "name": "ca-org1",
-            "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-            "hostnameOverride": "ca.org1.example.com"
         },
-        "orderers": [
-            {
-                "url" : "grpcs://localhost:7050",
-                "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
-                "hostnameOverride": "orderer.example.com"
+
+So the section of the profile should look like
+
+        ...
+        "version": "1.0.0",
+        "client": {
+            "organization": "Org1",
+            "connection": {
+                "timeout": {
+                    "peer": {
+                        "endorser": "300",
+                        "eventHub": "300",
+                        "eventReg": "300"
+                    },
+                    "orderer": "300"
+                }
             }
-        ],
-        "channel": "mychannel",
-        "timeout": 300
-    }
-
-Replace all instances of the text `INSERT_ORG1_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org1`:
-
-    crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-
-Replace all instances of the text `INSERT_ORG2_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org2`:
-
-    crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-
-Replace all instances of the text `INSERT_ORDERER_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the orderer node:
-
-    crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
-
-Note that where this connection profile contains details of the peer nodes for `Org2`, it only includes the request port and does not contain the event hub port. This is because one organization cannot access another organizations event hub port.
-
-<h2 class='bob'>Step Four: Building connection profiles for Org2</h2>
-
-`Org2` requires two connection profiles. One connection profile will contain just the peer nodes that belong to `Org2`, and the other connection profile will contain the peer nodes that belong to `Org2` and `Org1`.
-
-Create a connection profile file called `connection-org2-only.json` with the following contents and save it to disk. This connection profile will contain just the peer nodes that belong to `Org2`. You will use this file in later steps, so remember where you place it!
-
-    {
-        "name": "byfn-network-org2-only",
-        "type": "hlfv1",
-        "mspID": "Org2MSP",
-        "peers": [
-            {
-                "requestURL": "grpcs://localhost:9051",
-                "eventURL": "grpcs://localhost:9053",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org2.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:10051",
-                "eventURL": "grpcs://localhost:10053",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org2.example.com"
-            }
-        ],
-        "ca": {
-            "url": "https://localhost:8054",
-            "name": "ca-org2",
-            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-            "hostnameOverride": "ca.org2.example.com"
         },
-        "orderers": [
-            {
-                "url" : "grpcs://localhost:7050",
-                "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
-                "hostnameOverride": "orderer.example.com"
+        "channel": {
+        ...
+
+<h2 class='bob'>Step Four: Building a connection profile for Org2</h2>
+
+Repeat the same process for `bob` but this time specify the organization as `Org2` and save the file as `connection-org2.json`, it should have a section similar to
+
+        ...
+        "version": "1.0.0",
+        "client": {
+            "organization": "Org2",
+            "connection": {
+                "timeout": {
+                    "peer": {
+                        "endorser": "300",
+                        "eventHub": "300",
+                        "eventReg": "300"
+                    },
+                    "orderer": "300"
+                }
             }
-        ],
-        "channel": "mychannel",
-        "timeout": 300
-    }
-
-Replace all instances of the text `INSERT_ORG2_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org2`:
-
-    crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-
-Replace all instances of the text `INSERT_ORDERER_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the orderer node:
-
-    crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
-
-Create another connection profile file called `connection-org2.json` with the following contents and save it to disk.  This connection profile will contain the peer nodes that belong to `Org2` and `Org1`. You will use this file in later steps, so remember where you place it!
-
-    {
-        "name": "byfn-network-org2",
-        "type": "hlfv1",
-        "mspID": "Org2MSP",
-        "peers": [
-            {
-                "requestURL": "grpcs://localhost:9051",
-                "eventURL": "grpcs://localhost:9053",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org2.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:10051",
-                "eventURL": "grpcs://localhost:10053",
-                "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org2.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:7051",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer0.org1.example.com"
-            },
-            {
-                "requestURL": "grpcs://localhost:8051",
-                "cert": "INSERT_ORG1_CA_CERT_FILE_PATH",
-                "hostnameOverride": "peer1.org1.example.com"
-            }
-        ],
-        "ca": {
-            "url": "https://localhost:8054",
-            "name": "ca-org2",
-            "cert": "INSERT_ORG2_CA_CERT_FILE_PATH",
-            "hostnameOverride": "ca.org2.example.com"
         },
-        "orderers": [
-            {
-                "url" : "grpcs://localhost:7050",
-                "cert": "INSERT_ORDERER_CA_CERT_FILE_PATH",
-                "hostnameOverride": "orderer.example.com"
-            }
-        ],
-        "channel": "mychannel",
-        "timeout": 300
-    }
-
-Replace all instances of the text `INSERT_ORG2_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org2`:
-
-    crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-
-Replace all instances of the text `INSERT_ORG1_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the peer nodes for `Org1`:
-
-    crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-
-Replace all instances of the text `INSERT_ORDERER_CA_CERT_FILE_PATH` with the fully qualified path to the file containing the CA certificate for the orderer node:
-
-    crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
-
-Note that where this connection profile contains details of the peer nodes for `Org1`, it only includes the request port and does not contain the event hub port. This is because one organization cannot access another organizations event hub port.
+        "channel": {
+        ...
 
 <h2 class='alice'>Step Five: Locating the certificate and private key for the {{site.data.conrefs.hlf_full}} administrator for Org1</h2>
 
@@ -397,13 +389,7 @@ Remember the path to both of these files, or copy them into the same directory a
 
 In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the {{site.data.conrefs.hlf_full}} network.
 
-Run the `composer card create` command to create a business network card using the connection profile that just contains the peers for `Org1`. You must specify the path to all three files that you either created or located in the previous steps: (note: the _sk_ file will differ.)
-
-    composer card create -p connection-org1-only.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
-
-If the command works successfully, a business network card file called `PeerAdmin@byfn-network-org1-only.card` will have been written to the current directory.
-
-Run the `composer card create` command to create a business network card using the connection profile that contains the peers for `Org1` and `Org2`. You must specify the path to all three files that you either created or located in the previous steps:
+Run the `composer card create` command to create a business network card using the connection profile for `Org1`. You must specify the path to all three files that you either created or located in the previous steps: (note: the _sk_ file will differ.)
 
     composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
 
@@ -413,13 +399,7 @@ If the command works successfully, a business network card file called `PeerAdmi
 
 In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the {{site.data.conrefs.hlf_full}} network.
 
-Run the `composer card create` command to create a business network card using the connection profile that just contains the peers for `Org2`. You must specify the path to all three files that you either created or located in the previous steps:
-
-    composer card create -p connection-org2-only.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
-
-If the command works successfully, a business network card file called `PeerAdmin@byfn-network-org2-only.card` will have been written to the current directory.
-
-Run the `composer card create` command to create a business network card using the connection profile that contains the peers for `Org2` and `Org1`. You must specify the path to all three files that you either created or located in the previous steps:
+Run the `composer card create` command to create a business network card using the connection profile for `Org2`. You must specify the path to all three files that you either created or located in the previous steps:
 
     composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
 
@@ -427,13 +407,7 @@ If the command works successfully, a business network card file called `PeerAdmi
 
 <h2 class='alice'>Step Nine: Importing the business network cards for the {{site.data.conrefs.hlf_full}} administrator for Org1</h2>
 
-Run the `composer card import` command to import the business network card that just contains the peers for `Org1` into the wallet:
-
-    composer card import -f PeerAdmin@byfn-network-org1-only.card
-
-If the command works successfully, a business network card called `PeerAdmin@byfn-network-org1-only` will have been imported into the wallet.
-
-Run the `composer card import` command to import the business network card that contains the peers for `Org1` and `Org2` into the wallet:
+Run the `composer card import` command to import the business network card for `Org1` into the wallet:
 
     composer card import -f PeerAdmin@byfn-network-org1.card
 
@@ -441,13 +415,7 @@ If the command works successfully, a business network card called `PeerAdmin@byf
 
 <h2 class='bob'>Step Ten: Importing the business network cards for the {{site.data.conrefs.hlf_full}} administrator for Org2</h2>
 
-Run the `composer card import` command to import the business network card that just contains the peers for `Org2` into the wallet:
-
-    composer card import -f PeerAdmin@byfn-network-org2-only.card
-
-If the command works successfully, a business network card called `PeerAdmin@byfn-network-org2-only` will have been imported into the wallet.
-
-Run the `composer card import` command to import the business network card that contains the peers for `Org2` and `Org1` into the wallet:
+Run the `composer card import` command to import the business network card for `Org2` into the wallet:
 
     composer card import -f PeerAdmin@byfn-network-org2.card
 
@@ -457,13 +425,13 @@ If the command works successfully, a business network card called `PeerAdmin@byf
 
 Run the `composer runtime install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes for `Org1` that you specified in the connection profile file you created in step three:
 
-    composer runtime install -c PeerAdmin@byfn-network-org1-only -n tutorial-network
+    composer runtime install -c PeerAdmin@byfn-network-org1 -n tutorial-network
 
 <h2 class='bob'>Step Twelve: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes for Org2</h2>
 
 Run the `composer runtime install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes for `Org2` that you specified in the connection profile file you created in step four:
 
-    composer runtime install -c PeerAdmin@byfn-network-org2-only -n tutorial-network
+    composer runtime install -c PeerAdmin@byfn-network-org2 -n tutorial-network
 
 <h2 class='everybody'>Step Thirteen: Defining the endorsement policy for the business network</h2>
 
@@ -520,7 +488,7 @@ You can find more information on business network administrators in [Deploying B
 
 Run the `composer identity request` command to retrieve certificates for Alice to use as the business network administrator for `Org1`:
 
-    composer identity request -c PeerAdmin@byfn-network-org1-only -u admin -s adminpw -d alice
+    composer identity request -c PeerAdmin@byfn-network-org1 -u admin -s adminpw -d alice
 
 The `-u admin` and the `-s adminpw` options to this command correspond to the default user registered with the {{site.data.conrefs.hlf_full}} CA (Certificate Authority).
 
@@ -530,7 +498,7 @@ The certficates will be placed into a directory called `alice` in the current wo
 
 Run the `composer identity request` command to retrieve certificates for Bob to use as the business network administrator for `Org2`:
 
-    composer identity request -c PeerAdmin@byfn-network-org2-only -u admin -s adminpw -d bob
+    composer identity request -c PeerAdmin@byfn-network-org2 -u admin -s adminpw -d bob
 
 The `-u admin` and the `-s adminpw` options to this command correspond to the default user registered with the {{site.data.conrefs.hlf_full}} CA (Certificate Authority).
 

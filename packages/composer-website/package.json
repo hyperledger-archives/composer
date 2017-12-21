@@ -14,11 +14,15 @@
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
-    "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
+    "full:latest": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_latest.yml",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
+    "full:next": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_next.yml",
+    "full:next-unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_next-unstable.yml",
     "changelog": "./scripts/changelog.sh",
-    "linkcheck:prod": "./scripts/linkcheck.sh prod",
-    "linkcheck:unstable": "./scripts/linkcheck.sh unstable"
+    "linkcheck:latest": "./scripts/linkcheck.sh latest",
+    "linkcheck:unstable": "./scripts/linkcheck.sh unstable",
+    "linkcheck:next": "./scripts/linkcheck.sh next",
+    "linkcheck:next-unstable": "./scripts/linkcheck.sh next-unstable"
   },
   "repository": {
     "type": "git",
@@ -42,7 +46,6 @@
     "sanitize-html": "1.14.1"
   },
   "dependencies": {
-    "github-changes": "1.0.4",
     "jekyll": "3.0.0-beta1"
   }
 }

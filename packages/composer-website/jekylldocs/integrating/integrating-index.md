@@ -5,7 +5,7 @@ category: concepts
 section: integrating
 index-order: 700
 sidebar: sidebars/accordion-toc0.md
-excerpt: How to create a new Connection Profile
+excerpt: How to integrate existing systems
 ---
 
 # Integrating existing systems
