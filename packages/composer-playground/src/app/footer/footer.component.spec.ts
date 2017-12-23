@@ -106,7 +106,7 @@ describe('FooterComponent', () => {
             fixture.detectChanges();
             tick();
             fixture.detectChanges();
-            component['playgroundVersion'].should.equal('1');
+            component['playgroundVersion'].should.match(/[0-9]+.[0-9]+.[0-9]+/);
             component['config'].should.deep.equal(myConfig);
 
             fixture.detectChanges();
