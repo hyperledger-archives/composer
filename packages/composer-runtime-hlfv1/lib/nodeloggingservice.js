@@ -52,7 +52,13 @@ class NodeLoggingService extends LoggingService {
     _outputMessage(message, logLevel) {
         const timestamp = new Date().toISOString();
         const logStr = LOOKUP_LOG_LEVELS[logLevel].padEnd(8);
-        console.log(timestamp, `[${logStr}]`, message);
+        if (this.stub) {
+            const shortTxId = this.stub.getTxID().substring(0, 8);
+            console.log(timestamp, `[${shortTxId}]`, `[${logStr}]`, message);
+
+        } else {
+            console.log(timestamp, `[${logStr}]`, message);
+        }
     }
 
     /**
