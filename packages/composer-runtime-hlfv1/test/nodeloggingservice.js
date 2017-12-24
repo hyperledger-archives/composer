@@ -321,7 +321,7 @@ describe('NodeLoggingService', () => {
     describe('#_outputMessage', () => {
 
         it('should output a message', () => {
-            loggingService._outputMessage();
+            loggingService._outputMessage('a message', 500);
         });
     });
 });
