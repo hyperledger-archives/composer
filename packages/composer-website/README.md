@@ -91,3 +91,4 @@ The jekyll template and files are stored in this tree
 * \_includes has files that are pulled into the templates at key points. This is primary the header, sidebars, and the footer.
 * \_layouts are the liquid templates that control the overall structure of each page. There are a few here and I believe that only the base and default are used
 * \_plugins this is where the plugins to the jekyll engine are held. These are in ruby; we have a very simple one that converts any markdown reference page  eg  `[Concepts Outline](../concepts/outline.md)` will be converted into a link that refers to `../concepts/outline.html`
+
