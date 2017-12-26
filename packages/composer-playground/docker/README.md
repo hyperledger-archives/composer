@@ -14,7 +14,7 @@ Hyperledger Composer offers tutorials and getting started guides designed to hel
 
 You can run a local version of the Hyperledger Composer Playground using this image by running the following command:
 
-`docker run --name composer-playground --publish 8080:8080 --detach hyperledger/composer-playground`
+`docker run --name composer-playground --publish 8080:8080 --detach hyperledger/composer-playground:next`
 
 Once the container has started, you can access the Hyperledger Composer Playground in a web browser by using this link: [http://localhost:8080/](http://localhost:8080/)
 
