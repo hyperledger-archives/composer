@@ -40,7 +40,7 @@ In order to deploy the REST server as a Docker container with additional LoopBac
 
 Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:
 
-    FROM hyperledger/composer-rest-server
+    FROM hyperledger/composer-rest-server:next
     RUN npm install --production loopback-connector-mongodb passport-github && \
         npm cache clean --force && \
         ln -s node_modules .node_modules
