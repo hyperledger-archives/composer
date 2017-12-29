@@ -49,8 +49,16 @@ class NodeLoggingService extends LoggingService {
         this.currentLogLevel = -1;
     }
 
-    _outputMessage(message) {
-        console.log(message);
+    _outputMessage(message, logLevel) {
+        const timestamp = new Date().toISOString();
+        const logStr = LOOKUP_LOG_LEVELS[logLevel].padEnd(8);
+        if (this.stub) {
+            const shortTxId = this.stub.getTxID().substring(0, 8);
+            console.log(timestamp, `[${shortTxId}]`, `[${logStr}]`, message);
+
+        } else {
+            console.log(timestamp, `[${logStr}]`, message);
+        }
     }
 
     /**
@@ -97,7 +105,7 @@ class NodeLoggingService extends LoggingService {
      */
     logCritical(message) {
         if (this.currentLogLevel >= LOG_LEVELS.CRITICAL) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.CRITICAL);
         }
     }
 
@@ -107,7 +115,7 @@ class NodeLoggingService extends LoggingService {
      */
     logDebug(message) {
         if (this.currentLogLevel >= LOG_LEVELS.DEBUG) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.DEBUG);
         }
     }
 
@@ -117,7 +125,7 @@ class NodeLoggingService extends LoggingService {
      */
     logError(message) {
         if (this.currentLogLevel >= LOG_LEVELS.ERROR) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.ERROR);
         }
     }
 
@@ -127,7 +135,7 @@ class NodeLoggingService extends LoggingService {
      */
     logInfo(message) {
         if (this.currentLogLevel >= LOG_LEVELS.INFO) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.INFO);
         }
     }
 
@@ -137,7 +145,7 @@ class NodeLoggingService extends LoggingService {
      */
     logNotice(message) {
         if (this.currentLogLevel >= LOG_LEVELS.NOTICE) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.NOTICE);
         }
     }
 
@@ -147,7 +155,7 @@ class NodeLoggingService extends LoggingService {
      */
     logWarning(message) {
         if (this.currentLogLevel >= LOG_LEVELS.WARNING) {
-            this._outputMessage(message);
+            this._outputMessage(message, LOG_LEVELS.WARNING);
         }
     }
 
