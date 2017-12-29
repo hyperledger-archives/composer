@@ -95,7 +95,7 @@ describe('IssueIdentityComponent', () => {
         it('should create a sorted list of participantFQIs', fakeAsync(() => {
 
             // Set up mocked/known items to test against
-            let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegisty);
+            let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegistry);
             let mockParticipant1 = sinon.createStubInstance(Resource);
             mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
             let mockParticipant2 = sinon.createStubInstance(Resource);
