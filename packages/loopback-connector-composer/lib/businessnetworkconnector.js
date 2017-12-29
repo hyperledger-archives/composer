@@ -1127,12 +1127,6 @@ class BusinessNetworkConnector extends Connector {
                     })
                     .filter((classDeclaration) => {
 
-                        // Filter out any abstract types.
-                        return !classDeclaration.isAbstract();
-
-                    })
-                    .filter((classDeclaration) => {
-
                         // Filter out any system types.
                         return !classDeclaration.isSystemType();
 
