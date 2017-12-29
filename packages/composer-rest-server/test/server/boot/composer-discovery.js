@@ -99,6 +99,10 @@ describe('composer-discovery boot script', () => {
                 app.models.org_acme_bond_Bond.should.exist;
                 app.models.org_acme_bond_BondAsset.should.exist;
                 app.models.org_acme_bond_PublishBond.should.exist;
+                app.models.org_acme_bond_BaseAsset.should.exist;
+                app.models.org_acme_bond_BaseConcept.should.exist;
+                app.models.org_acme_bond_BaseParticipant.should.exist;
+                app.models.org_acme_bond_BaseTransaction.should.exist;
             });
     });
 
@@ -114,6 +118,10 @@ describe('composer-discovery boot script', () => {
                 app.models.Bond.should.exist;
                 app.models.BondAsset.should.exist;
                 app.models.PublishBond.should.exist;
+                app.models.BaseAsset.should.exist;
+                app.models.BaseConcept.should.exist;
+                app.models.BaseParticipant.should.exist;
+                app.models.BaseTransaction.should.exist;
             });
     });
 
