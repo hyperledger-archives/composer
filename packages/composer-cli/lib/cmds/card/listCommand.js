@@ -19,7 +19,8 @@ const List = require ('./lib/list.js');
 module.exports.command = 'list';
 module.exports.describe = 'List all business network cards';
 module.exports.builder = {
-    name: {alias: 'n', required: false, describe: 'The name used to identify the card', type: 'string' }
+    name: {alias: 'n', required: false, describe: 'The name used to identify the card', type: 'string' },
+    quiet: { alias: 'q', required: false, describe: 'Only display the card name', type: 'boolean' }
 };
 
 module.exports.handler = (argv) => {
