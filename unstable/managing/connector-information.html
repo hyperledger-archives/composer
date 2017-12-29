@@ -1,103 +1,332 @@
-<h1 id="hyperledger-fabric">Hyperledger Fabric</h1>
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Connector Specific Information | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Connector Specific Information</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/unstable/introduction/introduction"><b>Introduction</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/unstable/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/installing/installing-index"><b>Installing</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/unstable/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/unstable/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/unstable/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/unstable/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/unstable/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/unstable/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/unstable/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/unstable/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/unstable/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/unstable/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/unstable/reference/query-language">Query Language</a></li>
+<li><a href="/composer/unstable/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/unstable/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/unstable/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/unstable/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/unstable/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/unstable/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/support/support-index"><b>Support</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/unstable/api/api-doc-index"><b>API Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/api/allData">API Class Index</a></li>
+<li><a href="/composer/unstable/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/unstable/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/unstable/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="connector-specific-information">Connector Specific Information</h1>
+
+<p>Hyperledger Composer is designed to be platform-agnostic</p>
+
+<h2 id="hyperledger-fabric">Hyperledger Fabric</h2>
 
 <p>There are several cases where information specific to Hyperledger Fabric must be included in Hyperledger Composer commands, including <code>composer network deploy</code>, and <code>composer identity issue</code>.</p>
 
-<p>The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option available on the certain commands allow connection specific information to be sent.</p>
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
 
-<p>You can specify multiple options using the <code>--option, -o</code> by repeating the tag, for example 
-<code>
-composer somecmd -o thisOpt=value2 -o thatOpt=value2
-</code></p>
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
 
-<p>Alternatively you can create a single file to contain multiple options, for example a file called someCmdOpts.txt could contain</p>
-<div class="highlight"><pre><code class="language-" data-lang="">thisOpt=value1
-thatOpt=value2
-</code></pre></div>
-<p>and use this file
-<code>
-composer somecmd --optionsFile=someCmdOpts.txt
-</code></p>
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
 
-<p>Some API&#39;s will also include the option to pass a generic options object including AdminConnection.start() and AdminConnection.install()</p>
-
-<h2 id="providing-npm-config-settings-for-install-deploy">providing npm config settings for install/deploy</h2>
-
-<h3 id="cli">CLI</h3>
-
-<p>The following option is available is available on the <code>composer runtime install</code> and <code>composer network start</code> commands.
-- npmrcFile
-Allows you to specify npm configuration information when Hyperledger Fabric builds the chaincode image
-for the Hyperledger Composer runtime. 
-For example you may not want to go directly to the default npm registry, you may want to go to an internal one within your organsation. To do this, create a file with the following
-contents</p>
-<div class="highlight"><pre><code class="language-" data-lang="">registry=http://mycompanynpmregistry.com:4873
-</code></pre></div>
-<p>Pass the fully qualified filename as part of an install or deploy option, for example if the file was called npmConfig
-in your /home/user1/config directory
-<code>
-composer runtime install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
-</code>
-the file contents can be anything that are permitted in the <code>.npmrc</code> configuration files of npm.</p>
-
-<h3 id="admin-api">Admin API</h3>
-
-<p>You can pass the name of the file as part of the AdminConnection api on either the install or deploy methods by specifying the <code>npmrcFile</code> property on the installOptions or deployOptions object. For example to pass the name of the npm configuration options file to be provided on install you might do</p>
-<div class="highlight"><pre><code class="language-" data-lang="">await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
-</code></pre></div>
-<h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
-
-<h3 id="composer-network-start-deploy-cli">composer network start/deploy CLI</h3>
-
-<p>Hyperledger Fabric endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
-
-<ul>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicy='{"identities": [.... }'
-</code></pre></div></li>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
-</code></pre></div>
-<p>In this case, the endorsement policy file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
-    "policy": {...}}
-</code></pre></div></li>
-<li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -O /path/to/file/options.json
-</code></pre></div>
-<p>In this case, the options file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].
-            "policy: {...}"
-          },
-          "someOtherOption": "A Value"
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
         }
-</code></pre></div></li>
-</ul>
+        new Clipboard('.copy-btn');
+    };
 
-<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric Node.js SDK documentation</a>.</p>
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
 
-<h3 id="admin-api">Admin API</h3>
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
 
-<p>To be able to send an endorsement policy via the Admin api, you include this as part of the startOptions or deployOptions object when calling start or deploy respectively. To pass an endorsement policy file you specify it in the object property <code>endorsementPolicyFile</code> and if you want to pass a JSON object of the policy you specify the object property <code>endorsementPolicy</code>. So for example to send a endorsement policy file on a start request I might do</p>
-<div class="highlight"><pre><code class="language-" data-lang="">await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
-</code></pre></div>
-<h2 id="identity-issue">Identity Issue</h2>
+    
 
-<p>You can specify whether the identity you issue has issuer authority, ie that identity can also register new identities on a fabric-ca server. </p>
+    
 
-<h3 id="cli">CLI</h3>
 
-<p>The available option is
-- issuer</p>
-
-<p>For example to issue an identity that itself have issuer authority and bind it to an existing participant you might do
-<code>
-composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
-</code></p>
-
-<h2 id="api">API</h2>
-
-<p>To specify the issuer property you set it in an object and pass this object as part of the issueOptions on issueIdentity.
-For example to issue an identity that has issuer authority
-<code>
-await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
-</code></p>
+  </div>
+</body>
+</html>
