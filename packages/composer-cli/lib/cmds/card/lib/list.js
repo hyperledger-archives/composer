@@ -34,9 +34,23 @@ class List {
             return this.showCardDetails(args.name);
         } else {
             return cmdUtil.createAdminConnection().getAllCards().then(cardMap => {
-                this.showtable(cardMap);
+                if (args.quiet) {
+                    this.showNames(cardMap);
+                } else {
+                    this.showtable(cardMap);
+                }
             });
         }
+    }
+
+    /** Show the name of each card
+      * @param {Map} cardMap Map of the cards currently held
+      */
+    static showNames(cardMap){
+        const cardNames = Array.from(cardMap.keys());
+        cardNames.forEach(function(card){
+            cmdUtil.log(card);
+        });
     }
 
     /** Show summary table
