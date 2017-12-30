@@ -15,6 +15,8 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('../../../businessnetworkdefinition');
+const ModelFile = require('../../../introspect/modelfile');
+const ModelManager = require('../../../modelmanager');
 const ScriptManager = require('../../../scriptmanager');
 const ClassDeclaration = require('../../../introspect/classdeclaration');
 const Script = require('../../../introspect/script');
@@ -48,6 +50,10 @@ class PlantUMLVisitor {
     visit(thing, parameters) {
         if (thing instanceof BusinessNetworkDefinition) {
             return this.visitBusinessNetwork(thing, parameters);
+        } else if (thing instanceof ModelManager) {
+            return this.visitModelManager(thing, parameters);
+        } else if (thing instanceof ModelFile) {
+            return this.visitModelFile(thing, parameters);
         } else if (thing instanceof ScriptManager) {
             return this.visitScriptManager(thing, parameters);
         } else if (thing instanceof Script) {
@@ -101,6 +107,44 @@ class PlantUMLVisitor {
         parameters.fileWriter.writeLine(0, '@enduml');
         parameters.fileWriter.closeFile();
 
+        return null;
+    }
+
+        /**
+     * Visitor design pattern
+     * @param {ModelManager} modelManager - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitModelManager(modelManager, parameters) {
+        parameters.fileWriter.openFile('model.uml');
+        parameters.fileWriter.writeLine(0, '@startuml');
+        parameters.fileWriter.writeLine(0, 'title' );
+        parameters.fileWriter.writeLine(0, 'Model' );
+        parameters.fileWriter.writeLine(0, 'endtitle' );
+
+        modelManager.getModelFiles().forEach((decl) => {
+            decl.accept(this, parameters);
+        });
+
+        parameters.fileWriter.writeLine(0, '@enduml');
+        parameters.fileWriter.closeFile();
+
+        return null;
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {ModelFile} modelFile - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitModelFile(modelFile, parameters) {
+        modelFile.getAllDeclarations().forEach((decl) => {
+            decl.accept(this, parameters);
+        });
         return null;
     }
 
