@@ -31,9 +31,9 @@ module.exports = function () {
                 throw new Error(response);
             }
         };
-        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1-only --businessNetworkName ${name}`);
+        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1-only --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
         checkOutput(response);
         response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
         checkOutput(response);

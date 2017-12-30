@@ -690,7 +690,9 @@ function restrictModelMethods(modelSchema, model) {
     // We now want to filter out methods that we haven't implemented or don't want.
     // We use a whitelist of method names to do this.
     let whitelist;
-    if (modelSchema.options.composer.type === 'concept') {
+    if (modelSchema.options.composer.abstract) {
+        whitelist = [ ];
+    } else if (modelSchema.options.composer.type === 'concept') {
         whitelist = [ ];
     } else if (modelSchema.options.composer.type === 'transaction') {
         whitelist = [ 'create' ,'find', 'findById'];
@@ -740,7 +742,7 @@ module.exports = function (app, callback) {
         createQueryModel(app, dataSource);
 
         // Discover the model definitions (types) from the connector.
-        // This will go and find all of the non-abstract types in the business network definition.
+        // This will go and find all of the types in the business network definition.
         console.log('Discovering types from business network definition ...');
         return discoverModelDefinitions(dataSource);
 

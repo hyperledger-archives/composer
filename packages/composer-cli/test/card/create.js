@@ -18,6 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const Export = require('../../lib/cmds/card/lib/export.js');
 const fs = require('fs');
+const yaml = require('js-yaml');
 
 const IdCard = require('composer-common').IdCard;
 const CreateCmd = require('../../lib/cmds/card/createCommand.js');
@@ -58,8 +59,8 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
-            file: 'filename',
+            connectionProfileFile: 'filename.json',
+            file: 'filename.json',
             enrollSecret:'password',
             user:'fred'
         };
@@ -81,7 +82,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             user:'fred'
         };
 
@@ -93,12 +94,30 @@ describe('composer card create CLI', function() {
         });
     });
 
+    it('should handle a yaml file rather than json file',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
+        sandbox.stub(yaml, 'safeLoad').returns({name:'network'});
+        const args = {
+            connectionProfileFile: 'filename.yaml',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync,sinon.match(/filename/));
+            sinon.assert.calledOnce(fs.writeFileSync);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
+        });
+    });
+
+
     it('create card with minimal options & with the profile having no name',()=>{
         sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({anonymus:'network'});
         const args = {
-            connectionProfileFile: '/fred/filename',
+            connectionProfileFile: '/fred/filename.json',
             user:'fred'
         };
 
@@ -115,7 +134,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             certificate : 'certfile',
             privateKey:'keyfile',
             user:'fred'
@@ -140,7 +159,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             privateKey:'keyfile',
             user:'fred'
         };
@@ -163,7 +182,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             certificate : 'certfile',
             user:'fred'
         };
@@ -187,7 +206,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             role : ['PeerAdmin', 'Issuer', 'ChannelAdmin'],
             user:'fred'
         };
@@ -203,7 +222,7 @@ describe('composer card create CLI', function() {
         });
     });
 
-    it('create card with one  role',()=>{
+    it('create card with one role',()=>{
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/certfile/)).returns('I am certificate');
@@ -211,7 +230,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const exportSpy = sandbox.spy(Export, 'writeCardToFile');
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             role : 'PeerAdmin',
             user:'fred'
         };
@@ -232,15 +251,26 @@ describe('composer card create CLI', function() {
         sandbox.stub(fs, 'writeFileSync');
         let readFileStub = sandbox.stub(fs, 'readFileSync');
         readFileStub.withArgs(sinon.match(/notexist/)).throws(new Error('read failure'));
-
-        sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileFile: 'notexist',
+            connectionProfileFile: 'notexist.json',
             user:'fred'
         };
 
         return CreateCmd.handler(args).should.be.rejectedWith(/Unable to read/);
     });
+
+    it('error case - check with connection profile file read fail',()=>{
+        sandbox.stub(fs, 'writeFileSync');
+        let readFileStub = sandbox.stub(fs, 'readFileSync');
+        readFileStub.withArgs(sinon.match(/notexist/)).throws(new Error('read failure'));
+        const args = {
+            connectionProfileFile: 'notexist.yaml',
+            user:'fred'
+        };
+
+        return CreateCmd.handler(args).should.be.rejectedWith(/Unable to read/);
+    });
+
 
     it('error case - check with certificate file read fail',()=>{
         sandbox.stub(fs, 'writeFileSync');
@@ -249,7 +279,7 @@ describe('composer card create CLI', function() {
         readFileStub.withArgs(sinon.match(/keyfile/)).returns('I am keyfile');
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             certificate : 'certfile',
             privateKey:'keyfile',
             user:'fred'
@@ -265,7 +295,7 @@ describe('composer card create CLI', function() {
         readFileStub.withArgs(sinon.match(/keyfile/)).throws(new Error('read failure'));
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             certificate : 'certfile',
             privateKey:'keyfile',
             user:'fred'
@@ -279,7 +309,7 @@ describe('composer card create CLI', function() {
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
 
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             businessNetworkName: 'penguin-network',
             user:'fred'
         };
@@ -290,12 +320,13 @@ describe('composer card create CLI', function() {
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Successfully created business network card/));
         });
     });
+
     it('write valid card with default filename - based on profile name',()=>{
         sandbox.stub(fs, 'writeFileSync');
         sandbox.stub(fs, 'readFileSync').returns(cardBuffer);
         sandbox.stub(JSON, 'parse').returns({name:'network'});
         const args = {
-            connectionProfileFile: 'filename',
+            connectionProfileFile: 'filename.json',
             user:'fred'
         };
 
