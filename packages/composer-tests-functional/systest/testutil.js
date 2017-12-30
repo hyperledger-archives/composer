@@ -59,7 +59,7 @@ class TestUtil {
      * @return {boolean} True if running in embedded mode, false if not.
      */
     static isEmbedded() {
-        return process.env.npm_lifecycle_event === 'systest:embedded';
+        return process.env.npm_lifecycle_event === 'systest:embedded'  || process.env.FVTEST==='embedded';
     }
 
     /**
