@@ -323,11 +323,12 @@ Feature: Cli steps
         Then The stdout information should include text matching /issuer:/
         Then The stdout information should include text matching /state:       ACTIVATED/
         Then The stdout information should include text matching /Command succeeded/
+        Then I save group 1 from the console output matching pattern ^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$ as alias BOBID
 
     Scenario: Using the CLI, I can revoke Bob's identity
-        When I run the following CLI command
+        When I substitue the alias BOBID and run the following CLI command
             """
-            composer identity revoke --identityId BOBSID --card admin@basic-sample-network
+            composer identity revoke --identityId BOBID --card admin@basic-sample-network
             """
         Then The stdout information should include text matching /was revoked and can no longer be used to connect to the business network./
         Then The stdout information should include text matching /Command succeeded/
@@ -351,7 +352,7 @@ Feature: Cli steps
             """
             composer network list --card bob@basic-sample-network
             """
-        Then The stdout information should include text matching /The current identity has been revoked/
+        Then The stdout information should include text matching /The current identity, with the name '.+?' and the identifier '.+?', has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
 
 

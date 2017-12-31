@@ -5,6 +5,9 @@ set -ev
 set -o pipefail
 env
 
+#  Workaround for the mongodb cert expiry
+sudo rm /etc/apt/sources.list.d/mongodb-3.4.list  || echo "ok if does not exist"
+
 # Bring in the standard set of script utilities
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source ${DIR}/.travis/base.sh
