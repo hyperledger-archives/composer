@@ -71,7 +71,14 @@ connection-profile {
             svg {
                 fill: #FFF
             }
+        }
 
+        &:focus {
+            background-color: $second-highlight;
+            border-color: $second-highlight;
+            svg {
+                fill: #FFF
+            }
         }
 
         &.ca {

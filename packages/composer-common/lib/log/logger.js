@@ -90,7 +90,7 @@ class Logger {
      * @param {string} logLevel The new log level.
      */
     static setLogLevel(logLevel) {
-        const newLogLevel = _logLevelAsString[logLevel];
+        const newLogLevel = _logLevelAsString[logLevel.toLowerCase()];
         if (newLogLevel === undefined) {
             throw new Error(`Unrecognized log level ${logLevel}`);
         }

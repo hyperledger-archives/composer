@@ -35,9 +35,11 @@ module.exports.builder = function (yargs){
     yargs.options({
         'archiveFile' : {alias: 'a', required: false, describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' },
         'sourceType'  : {alias: 't', required: true, describe:'The type of the input containing the files used to create the archive', choices: ['module','dir']},
-        'sourceName'  : {alias: 'n', required: true, describe:'The Location to create the archive from e.g. NPM module directory or Name of the npm module to use'}
+        'sourceName'  : {alias: 'n', required: true, describe:'The Location to create the archive from e.g. NPM module directory or Name of the npm module to use'},
+        'updateExternalModels'  : {alias: 'u', required: false, describe:'Downloads external model dependencies', type: 'boolean', default: false},
+        'optionsFile': { alias: 'O', required: false, describe: 'A file containing options', type: 'string' }
     });
-    yargs.usage('composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network');
+    yargs.usage('composer archive create --updateExternalModels --optionsFile myoptions.json --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network');
 
     // enforce the option after these options
     yargs.requiresArg(['archiveFile','sourceType','sourceName']);

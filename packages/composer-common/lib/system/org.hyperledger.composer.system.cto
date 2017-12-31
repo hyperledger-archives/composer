@@ -95,7 +95,7 @@ participant NetworkAdmin identified by participantId {
  * @param {Transaction} transactionInvoked Relationship to transaction
  * @param {Participant} participantInvoking Participant who invoked this transaction
  * @param {Identity} identityUsed The identity that was used by the participant
- * @param {Event[]} eventsEmitted The events that where emitted by this transactionId
+ * @param {Event[]} eventsEmitted The events that were emitted by this transactionId
  * @param {DateTime} transactionTimestamp Use the transaction's timestamp
  */
 asset HistorianRecord identified by transactionId {

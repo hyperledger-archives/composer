@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.17.0 {205addc32fc3286a787edec70c6a952f} 2018-01-13
+- Added ability to load model file imports from URLs
+
 Version 0.15.2 {fcb7a3866eb7f9d0b3c46924ae932824} 2017-11-22
 - Extend ParseException with file name
 - Make private number of constructors and removed exceptions from formally documented API

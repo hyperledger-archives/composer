@@ -20,7 +20,7 @@ The REST server uses a business network card specified during startup to connect
 
 In order to use a discovery business network card, that business network card must first be imported into a business network card store available to the REST server. The default business network card store is a local file system directory with the path `~/.composer` (where `~` is the current users home directory). When using the Docker image for the REST server, you must mount a volume into place of the default business network card store that contains an imported discovery business network card. In the Docker image for the REST server, the business network card store used by the REST server is in the directory `/home/composer/.composer` (because the REST server in the Docker image always runs under the `composer` user).
 
-A business network card contains a connection profile that describes how to connect to the Hyperledger Fabric network where the deployed business network is running. Note that the connection profile must be valid for use within the Docker image for the REST server, and the hostnames must be correct and accessible by this Docker image.
+A business network card contains a connection profile that describes how to connect to the {{site.data.conrefs.hlf_full}} network where the deployed business network is running. Note that the connection profile must be valid for use within the Docker image for the REST server, and the hostnames must be correct and accessible by this Docker image.
 
 ## Configuring the REST server with a persistent data store
 
@@ -55,7 +55,7 @@ You may need to publish this Docker image to a Docker image repository, for exam
 
 The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.
 
-The examples are based on the business network that is deployed to Hyperledger Fabric v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
+The examples are based on the business network that is deployed to {{site.data.conrefs.hlf_full}} v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
 
 1. Ensure that a valid business network card for your business network is in your local business network card store by running the following `composer network ping` command. This example uses a business network card for the `admin` user on the `my-network` business network:
 
@@ -76,7 +76,7 @@ The examples are based on the business network that is deployed to Hyperledger F
 3. Extend the Docker image for the REST server by adding the LoopBack connector for MongoDB and the Passport strategy for GitHub authentication. Create a new, empty directory on your local file system, and create a new file named `Dockerfile` in the new directory, with the following contents:
 
     ```
-    FROM hyperledger/composer-rest-server
+    FROM hyperledger/composer-rest-server:next
     RUN npm install --production loopback-connector-mongodb passport-github && \
         npm cache clean --force && \
         ln -s node_modules .node_modules
@@ -157,7 +157,7 @@ The examples are based on the business network that is deployed to Hyperledger F
     We have mounted our local business network card store into the REST server Docker container by specifying `-v ~/.composer:/home/composer/.composer`. This permits the REST server to access and use our local business network card store when trying to load the discovery business network card specified using the `COMPOSER_CARD` environment variable.
 
     We have also specified the Docker network name `composer_default`, and name of the Docker container as `rest`. This means that the REST server instance will be available on the Docker network named `composer_default` using the hostname `rest`. The REST server port `3000` is also exposed on the host network using port `3000`.
-    
+
     You can check that the REST server has started successfully by using the `docker logs` command, for example:
 
     ```
@@ -165,8 +165,8 @@ The examples are based on the business network that is deployed to Hyperledger F
     ```
 
     If the REST server has started successfully, then you will see it output a log message similar to `Browse your REST API at http://localhost:3000/explorer`.
-    
-Now that the REST server has started successfully, you can access the REST server running inside the Docker container by using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/). 
+
+Now that the REST server has started successfully, you can access the REST server running inside the Docker container by using the following URL: [http://localhost:3000/explorer/](http://localhost:3000/explorer/).
 
 ## Final notes
 

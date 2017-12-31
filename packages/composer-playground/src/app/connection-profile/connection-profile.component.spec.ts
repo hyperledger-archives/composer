@@ -881,20 +881,105 @@ describe('ConnectionProfileComponent', () => {
         });
     });
 
-    describe('onSubmit', () => {
+    describe('handleKeyPress', () => {
+        let mockEvent;
+        beforeEach(() => {
+            mockEvent = {
+                keyCode: 13,
+                preventDefault: () => { return; }
+            };
+        });
+
         it('should ignore all other key presses apart from enter', () => {
 
             let event = {
                 keyCode: 12
             };
 
-            let eventEmitterStub = sinon.stub(component['profileUpdated'], 'emit');
+            let onSubmitStub = sinon.stub(component, 'onSubmit');
 
-            component.onSubmit(event);
+            component.handleKeyPress(event);
 
-            eventEmitterStub.should.not.have.been.called;
+            onSubmitStub.should.not.have.been.called;
 
         });
+
+        it('should run on submit when the form is valid', () => {
+
+            let onSubmitStub = sinon.stub(component, 'onSubmit');
+            let formValidStub = sinon.stub(component, 'formValid');
+            formValidStub.returns(true);
+
+            component['connectionProfileForm'] = {
+                form: {}
+            };
+
+            component.handleKeyPress(mockEvent);
+
+            onSubmitStub.should.have.been.called;
+        });
+
+        it('shouldn\'t run on submit when the form is not valid and mark elements as dirty', () => {
+
+            let spyFnc = sinon.spy();
+            let onSubmitStub = sinon.stub(component, 'onSubmit');
+            let formValidStub = sinon.stub(component, 'formValid');
+            formValidStub.returns(false);
+
+            component['connectionProfileForm'] = {
+                form: {
+                    controls: {
+                        control1: {
+                            markAsDirty: () => {
+                                return spyFnc();
+                            }
+                        }
+                    }
+                }
+            };
+
+            component.handleKeyPress(mockEvent);
+
+            onSubmitStub.should.not.have.been.called;
+            spyFnc.should.have.been.called;
+        });
+
+        it('should run the default action for a button when a button selected', () => {
+
+            let spyFnc = sinon.spy();
+            let onSubmitStub = sinon.stub(component, 'onSubmit');
+            let getActiveElementStub = sinon.stub(component, 'getActiveElement');
+            getActiveElementStub.returns({
+                tagName: 'BUTTON',
+                click: () => { return spyFnc(); }
+            });
+
+            component.handleKeyPress(mockEvent);
+
+            onSubmitStub.should.not.have.been.called;
+            spyFnc.should.have.been.called;
+        });
+
+        it('should check and uncheck the checkbox when a checkbox is selected', () => {
+
+            let spyFnc = sinon.spy();
+            let onSubmitStub = sinon.stub(component, 'onSubmit');
+            let getActiveElementStub = sinon.stub(component, 'getActiveElement');
+            let activeElement = {
+                tagName: 'INPUT',
+                type: 'CHECKBOX',
+                click: () => { return spyFnc(); }
+            };
+            getActiveElementStub.returns(activeElement);
+
+            component.handleKeyPress(mockEvent);
+
+            onSubmitStub.should.not.have.been.called;
+            spyFnc.should.have.been.called;
+        });
+    });
+
+    describe('onSubmit', () => {
 
         it('should submit v1 profile form', fakeAsync(() => {
             let completedProfile = {
@@ -1090,7 +1175,7 @@ describe('ConnectionProfileComponent', () => {
                 data.should.deep.equal({updated: true, connectionProfile: completedProfile});
             });
 
-            component.onSubmit(null);
+            component.onSubmit();
             component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
 
@@ -1235,7 +1320,7 @@ describe('ConnectionProfileComponent', () => {
                 data.should.deep.equal({updated: true, connectionProfile: completedProfile});
             });
 
-            component.onSubmit(null);
+            component.onSubmit();
 
             component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
@@ -1428,7 +1513,7 @@ describe('ConnectionProfileComponent', () => {
                 data.should.deep.equal({updated: true, connectionProfile: completedProfile});
             });
 
-            component.onSubmit(null);
+            component.onSubmit();
             component['connectionProfileData'].should.deep.equal(completedProfile);
         }));
 
@@ -1436,7 +1521,7 @@ describe('ConnectionProfileComponent', () => {
             component['connectionProfileData'] = {name: 'unknown profile', profile: {type: 'unknown type'}};
 
             (() => {
-                component.onSubmit(null);
+                component.onSubmit();
             }).should.throw('Unknown profile type');
             tick();
         }));
@@ -2033,5 +2118,11 @@ describe('ConnectionProfileComponent', () => {
            }
         });
       });
+    });
+
+    describe('getActiveElement', () => {
+        it('should return the active element', () => {
+            component.getActiveElement().should.deep.equal(document.activeElement);
+        });
     });
 });

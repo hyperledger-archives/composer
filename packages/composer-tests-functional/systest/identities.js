@@ -165,7 +165,7 @@ describe('Identity system tests', function() {
             .then(() => {
                 return client.ping();
             })
-            .should.be.rejectedWith(/The current identity has been revoked/);
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', has been revoked/);
     });
 
     it('should throw an exception for a ping request using a identity that is mapped to a non-existent participant', () => {
@@ -184,7 +184,7 @@ describe('Identity system tests', function() {
                 client = result;
                 return client.ping();
             })
-            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', is bound to a participant \'resource:systest.identities.SampleParticipant#bob@uk.ibm.com\' that does not exist/);
     });
 
     it('should issue an identity and make the participant available for transaction processor functions', () => {
@@ -261,7 +261,7 @@ describe('Identity system tests', function() {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The current identity has been revoked/);
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', has been revoked/);
     });
 
     it('should throw an exception for a transaction processor function using a identity that is mapped to a non-existent participant', () => {
@@ -282,7 +282,7 @@ describe('Identity system tests', function() {
                 let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
                 return client.submitTransaction(transaction);
             })
-            .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', is bound to a participant \'resource:systest.identities.SampleParticipant#bob@uk.ibm.com\' that does not exist/);
     });
 
     xit('should export credentials for previously imported identity', function () {

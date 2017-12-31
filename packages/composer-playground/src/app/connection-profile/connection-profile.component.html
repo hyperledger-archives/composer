@@ -1,5 +1,5 @@
 <div *ngIf="connectionProfileData">
-    <form (ngSubmit)="onSubmit()" #connectionProfileForm="ngForm" (keydown)="onSubmit($event)">
+    <form (ngSubmit)="onSubmit()" #connectionProfileForm="ngForm" (keydown)="handleKeyPress($event)">
         <section class="profile-section delimited">
             <div class="description upper">Basic Configuration</div>
             <div class="data">
@@ -417,7 +417,7 @@
                                 <input type="text" [(ngModel)]="peerTimeOut.eventHub" #peerTimeoutEventHub="ngModel"
                                        name="peerTimeoutEventHub"
                                        [ngClass]="{'error-underline': !isNumber(peerTimeOut.eventHub) && (peerTimeoutEventHub.dirty || peerTimeoutEventHub.touched)}" >
-                                <div *ngIf="!isNumber(peerTimeoutEventHub.eventHub) && (peerTimeoutEventHub.dirty || peerTimeoutEventHub.touched)"
+                                <div *ngIf="!isNumber(peerTimeOut.eventHub) && (peerTimeoutEventHub.dirty || peerTimeoutEventHub.touched)"
                                        class="error-message">
                                        Value must be a number
                                 </div>
@@ -431,7 +431,7 @@
                                 <input type="text" [(ngModel)]="peerTimeOut.eventReg" #peerTimeoutEventReg="ngModel"
                                        name="peerTimeoutEventReg"
                                        [ngClass]="{'error-underline': !isNumber(peerTimeOut.eventReg) && (peerTimeoutEventReg.dirty || peerTimeoutEventReg.touched)}" >
-                                <div *ngIf="!isNumber(peerTimeoutEventReg.eventReg) && (peerTimeoutEventReg.dirty || peerTimeoutEventReg.touched)"
+                                <div *ngIf="!isNumber(peerTimeOut.eventReg) && (peerTimeoutEventReg.dirty || peerTimeoutEventReg.touched)"
                                        class="error-message">
                                        Value must be a number
                                 </div>
