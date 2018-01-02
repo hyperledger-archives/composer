@@ -75,3 +75,19 @@ transaction EmitBondEvent {
 transaction EmitMultipleBondEvents {
 
 }
+
+abstract asset BaseAsset {
+
+}
+
+abstract concept BaseConcept {
+  
+}
+
+abstract participant BaseParticipant {
+  
+}
+
+abstract transaction BaseTransaction {
+  
+}

@@ -52,6 +52,15 @@ describe('Logger', () => {
             }).should.throw(/Unrecognized log level BLAH/);
         });
 
+        ['info', 'debug', 'warn', 'error', 'verbose', 'INFO', 'DEBUG', 'WARN', 'ERROR', 'VERBOSE'].forEach((logLevel) => {
+            it(`should not fail for a recognized log level ${logLevel}`, () => {
+                (() => {
+                    Logger.setLogLevel(logLevel);
+                }).should.not.throw();
+            });
+        });
+
+
     });
 
     ['info', 'debug', 'warn', 'error', 'verbose'].forEach((logLevel) => {

@@ -37,10 +37,12 @@ describe('ConnectorServer', () => {
     const connectionProfile = 'defaultProfile';
     const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionOptions = {
-        type : 'embedded',
+        'x-type' : 'embedded',
         prop1 : 'value1',
         prop2 : 'value2'
     };
+
+    const connectionType = connectionOptions['x-type'];
 
     const connectionID = 'f93cb63a-ba19-40c7-b68e-dad0959d9e8b';
     const enrollmentID = 'alice1';
@@ -299,7 +301,7 @@ describe('ConnectorServer', () => {
     describe('#connectionManagerImportIdentity', () => {
 
         it('should import an identity', () => {
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.resolves();
             const cb = sinon.stub();
             return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
@@ -312,7 +314,7 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle errors importing an identity', () => {
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
             return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
@@ -331,7 +333,7 @@ describe('ConnectorServer', () => {
         it('should export an identity', function () {
             const id = 'bob1';
             const expected = {key : 'value'};
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.exportIdentity.withArgs(connectionProfile, connectionOptions, id).resolves(expected);
             const callback = sinon.stub();
             return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, id, callback)
@@ -343,7 +345,7 @@ describe('ConnectorServer', () => {
 
         it('should handle errors exporting an identity', function () {
             const expected = new Error('export error');
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.exportIdentity.rejects(expected);
             const callback = sinon.stub();
             return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, 'bob1', callback)
@@ -357,7 +359,7 @@ describe('ConnectorServer', () => {
     describe('#connectionManagerRemoveIdentity', () => {
 
         it('should remove an identity', () => {
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.removeIdentity.resolves(true);
             const cb = sinon.stub();
             return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
@@ -370,7 +372,7 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle errors removing an identity', () => {
-            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionOptions.type).resolves(mockConnectionManager);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.removeIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
             return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)

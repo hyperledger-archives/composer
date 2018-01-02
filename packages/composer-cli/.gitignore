@@ -50,3 +50,5 @@ chaincode/pkg
 *.swp
 
 .vscode
+
+conga@profileName.card

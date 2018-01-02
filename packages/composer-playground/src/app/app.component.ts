@@ -151,7 +151,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 .then(() => {
                     let card: IdCard = this.identityCardService.getCurrentIdentityCard();
                     let connectionProfile = card.getConnectionProfile();
-                    let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
+                    let profileName = 'web' === connectionProfile['x-type'] ? 'Web' : connectionProfile.name;
                     let busNetName = this.clientService.getBusinessNetwork().getName();
                     this.composerBanner = [profileName, busNetName];
                 });
@@ -190,7 +190,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (busyStatus && !busyStatus.force) {
             let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-            if (!card || (card && card.getConnectionProfile().type === 'web')) {
+            if (!card || (card && card.getConnectionProfile()['x-type'] === 'web')) {
                 // Don't show the modal for the web runtime, as it's too fast to care.
                 return;
             }
