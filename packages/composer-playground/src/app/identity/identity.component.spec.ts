@@ -211,7 +211,7 @@ describe(`IdentityComponent`, () => {
 
         it('should show the new id', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'hlfv1'
+                'x-type': 'hlfv1'
             });
 
             mockModal.open.returns({
@@ -229,7 +229,7 @@ describe(`IdentityComponent`, () => {
 
         it('should add id to wallet when using the web profile', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'web'
+                'x-type': 'web'
             });
 
             mockModal.open.returns({
@@ -265,7 +265,7 @@ describe(`IdentityComponent`, () => {
 
         it('should handle error showing new identity', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'hlfv1'
+                'x-type': 'hlfv1'
             });
 
             mockModal.open.returns({
@@ -290,7 +290,7 @@ describe(`IdentityComponent`, () => {
 
         it('should handle error adding identity to wallet', fakeAsync(() => {
             mockGetConnectionProfile.returns({
-                type: 'web'
+                'x-type': 'web'
             });
 
             mockModal.open.returns({

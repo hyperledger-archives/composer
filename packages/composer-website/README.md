@@ -11,9 +11,9 @@ This directory ( composer/packages/composer-website ) hold the documentation for
 ./scripts/setup-jekyll.sh
 ```
 
-- Next step is to run or rerun the `lerna bootstrap` in the root of the composer repoistory.
-- Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template files.
-- Issue `npm run jeykllserve` and then go to the url that you get given at the end.
+- Next step is to run or rerun the `lerna bootstrap` in the root of the composer repository.
+- Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifying anything in a directory starting with an underscore. Those are the template files.
+- Issue `npm run jekyllserve` in the composer-website directory and then go to the url that you get given at the end.
 - What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser).
 - Then push your changes as per usual.
 
@@ -47,7 +47,7 @@ _to write... note that a Java Runtime is required for the plantuml even though i
 
  The template for the jsdocs is within the jsdoc-template directory, along with the all the jsdoc configuration files.
 
-1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the Hyperledger Composer npms are dependancies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
+1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the Hyperledger Composer npms are dependencies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
 2.
     ```
     "composer-admin": "latest",

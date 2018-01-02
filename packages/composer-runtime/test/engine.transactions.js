@@ -186,6 +186,13 @@ describe('EngineTransactions', () => {
                 });
         });
 
+        it('should execute the transaction using a user handler - but with an error', () => {
+            mockCompiledScriptBundle.execute.resolves(1);
+            mockRegistry.testAdd.resolves(new Error('uh-oh'));
+            return engine.invoke(mockContext, 'submitTransaction', [ JSON.stringify(fakeJSON)])
+                .should.be.rejectedWith(/uh-oh/);
+        });
+
         it('should execute the transaction using multiple system handlers and a user handler', () => {
             mockTransactionHandler1.execute.resolves(1);
             mockTransactionHandler2.execute.resolves(1);

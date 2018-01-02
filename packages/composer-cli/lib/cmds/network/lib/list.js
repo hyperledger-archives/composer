@@ -86,7 +86,7 @@ class List {
                         ,assets : {}
                         };
                     listOutput.registries[registry.id] = entry;
-                    return List.getMatchingAssets(registry, argv, businessNetworkConnection)
+                    return List.getMatchingAssets(registry, argv)
                     .then ((result) => {
                         let assetSet = result;
                         for (let j=0; j<assetSet.length;j++) {
@@ -185,10 +185,9 @@ class List {
       * Get required assets from a specific registry
       * @param {Registry} registry to search for assets
       * @param {argv} argv program arguments
-      * @param {BusinessNetworkConnection} businessNetworkConnection program arguments
       * @return {Promise} promise with array of registries matching the requested registry
       */
-    static getMatchingAssets(registry, argv, businessNetworkConnection) {
+    static getMatchingAssets(registry, argv) {
         if (!argv.asset) {
             return registry.getAll();
         } else {
@@ -197,7 +196,7 @@ class List {
                 if (asset) {
                     return [asset];
                 } else {
-                    throw new Error('Asset '+registry.id+' does not exist');
+                    throw new Error('Asset in '+registry.id+' does not exist');
                 }
             });
         }

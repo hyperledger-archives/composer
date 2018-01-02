@@ -39,7 +39,7 @@ if [ ! -f ${DIR}/build.cfg ]; then
             BUILD_FOCUS="next"
             BUILD_RELEASE="unstable"
         else 
-            _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
+            _exit "unable to determine build focus branch=${TRAVIS_BRANCH} tag=${TRAVIS_TAG}" 1
         fi
     else
         if [[ "${TRAVIS_BRANCH}" =~ ${NEXT_REGEXP} ]]; then
@@ -49,7 +49,7 @@ if [ ! -f ${DIR}/build.cfg ]; then
             BUILD_FOCUS="latest"
             BUILD_RELEASE="stable"
         else 
-            _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
+            _exit "unable to determine build focus branch=${TRAVIS_BRANCH} tag=${TRAVIS_TAG}" 1
         fi
     fi
 
