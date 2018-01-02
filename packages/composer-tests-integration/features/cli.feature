@@ -351,7 +351,7 @@ Feature: Cli steps
             """
             composer network list --card bob@basic-sample-network
             """
-        Then The stdout information should include text matching /The current identity has been revoked/
+        Then The stdout information should include text matching /The current identity, with the name '.+?' and the identifier '.+?', has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
 
 
