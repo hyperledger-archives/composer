@@ -29,7 +29,7 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 - **Docker** Essential for the running of the tests and for running the HyperLedger Fabric.
     - Ubuntu: Firstly the Docker Engine needs to be [installed](https://docs.docker.com/engine/installation/linux/ubuntulinux/), then the [docker-compose tool](https://docs.docker.com/compose/install/) is required with these instructions. Some initial notes on administering docker are [here](https://docs.docker.com/engine/admin/)
 
-- **Node.js v8.9 or higher (but not node v9) ** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
+- **Node.js v8.9 or higher (but not node v9)** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
     - Ubuntu: Simply installed [follow these notes](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions).
 
 - **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
