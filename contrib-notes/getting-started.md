@@ -75,7 +75,7 @@ You must bootstrap the repository so that all of the dependencies are installed 
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
 
-For example, inorder to run Playground UI locally you can run:
+For example, in order to run Playground UI locally you can run:
 
     $ npm start
 
