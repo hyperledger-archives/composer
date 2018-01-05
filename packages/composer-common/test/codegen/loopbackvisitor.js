@@ -75,6 +75,7 @@ describe('LoopbackVisitor', () => {
                         expectedFiles = [
                             'org.acme.base.SimpleAsset.json',
                             'org.acme.base.BaseAsset.json',
+                            'org.acme.base.AbstractAsset.json',
                             'org.acme.base.DerivedAsset.json',
                             'org.acme.base.DerivedDerivedAsset.json',
                             'org.acme.base.MyBasicTransaction.json',
@@ -87,6 +88,7 @@ describe('LoopbackVisitor', () => {
                         expectedTypes = [
                             'org_acme_base_SimpleAsset',
                             'org_acme_base_BaseAsset',
+                            'org_acme_base_AbstractAsset',
                             'org_acme_base_DerivedAsset',
                             'org_acme_base_DerivedDerivedAsset',
                             'org_acme_base_MyBasicTransaction',
@@ -100,6 +102,7 @@ describe('LoopbackVisitor', () => {
                         expectedFiles = [
                             'SimpleAsset.json',
                             'BaseAsset.json',
+                            'AbstractAsset.json',
                             'DerivedAsset.json',
                             'DerivedDerivedAsset.json',
                             'MyBasicTransaction.json',
@@ -111,6 +114,7 @@ describe('LoopbackVisitor', () => {
                         expectedTypes = [
                             'SimpleAsset',
                             'BaseAsset',
+                            'AbstractAsset',
                             'DerivedAsset',
                             'DerivedDerivedAsset',
                             'MyBasicTransaction',
@@ -145,6 +149,8 @@ describe('LoopbackVisitor', () => {
                         expectedFiles = [
                             'org.acme.base.SimpleAsset.json',
                             'org.acme.base.BaseAsset.json',
+                            'org.acme.base.AbstractAsset.json',
+                            'org.acme.base.Address.json',
                             'org.acme.base.DerivedAsset.json',
                             'org.acme.base.DerivedDerivedAsset.json',
                             'org.acme.base.MyBasicTransaction.json',
@@ -158,6 +164,8 @@ describe('LoopbackVisitor', () => {
                         expectedFiles = [
                             'SimpleAsset.json',
                             'BaseAsset.json',
+                            'AbstractAsset.json',
+                            'Address.json',
                             'DerivedAsset.json',
                             'DerivedDerivedAsset.json',
                             'MyBasicTransaction.json',
@@ -197,7 +205,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'asset',
                                 namespace: 'org.acme',
                                 name: 'MyAsset',
-                                fqn: 'org.acme.MyAsset'
+                                fqn: 'org.acme.MyAsset',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -244,7 +253,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'asset',
                                 namespace: 'org.acme',
                                 name: 'MyBaseAsset',
-                                fqn: 'org.acme.MyBaseAsset'
+                                fqn: 'org.acme.MyBaseAsset',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -277,7 +287,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'asset',
                                 namespace: 'org.acme',
                                 name: 'MyAsset',
-                                fqn: 'org.acme.MyAsset'
+                                fqn: 'org.acme.MyAsset',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -305,7 +316,7 @@ describe('LoopbackVisitor', () => {
                     }]);
                 });
 
-                it('should generate one schema for an asset that extends an abstract asset', () => {
+                it('should generate two schemas for an asset that extends an abstract asset', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     abstract asset MyBaseAsset identified by assetId {
@@ -319,6 +330,40 @@ describe('LoopbackVisitor', () => {
                     schemas.should.deep.equal([{
                         acls: [],
                         base: 'PersistedModel',
+                        description: 'An asset named MyBaseAsset',
+                        idInjection: false,
+                        methods: [],
+                        name: namespaces ? 'org_acme_MyBaseAsset' : 'MyBaseAsset',
+                        options: {
+                            composer: {
+                                type: 'asset',
+                                namespace: 'org.acme',
+                                name: 'MyBaseAsset',
+                                fqn: 'org.acme.MyBaseAsset',
+                                abstract: true
+                            },
+                            validateUpsert: true
+                        },
+                        plural: namespaces ? 'org.acme.MyBaseAsset' : 'MyBaseAsset',
+                        properties: {
+                            $class: {
+                                default: 'org.acme.MyBaseAsset',
+                                description: 'The class identifier for this type',
+                                required: false,
+                                type: 'string'
+                            },
+                            assetId: {
+                                description: 'The instance identifier for this type',
+                                id: true,
+                                required: true,
+                                type: 'string'
+                            }
+                        },
+                        relations: {},
+                        validations: []
+                    }, {
+                        acls: [],
+                        base: 'PersistedModel',
                         description: 'An asset named MyAsset',
                         idInjection: false,
                         methods: [],
@@ -328,7 +373,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'asset',
                                 namespace: 'org.acme',
                                 name: 'MyAsset',
-                                fqn: 'org.acme.MyAsset'
+                                fqn: 'org.acme.MyAsset',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -376,7 +422,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'participant',
                                 namespace: 'org.acme',
                                 name: 'MyParticipant',
-                                fqn: 'org.acme.MyParticipant'
+                                fqn: 'org.acme.MyParticipant',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -423,7 +470,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'participant',
                                 namespace: 'org.acme',
                                 name: 'MyBaseParticipant',
-                                fqn: 'org.acme.MyBaseParticipant'
+                                fqn: 'org.acme.MyBaseParticipant',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -456,7 +504,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'participant',
                                 namespace: 'org.acme',
                                 name: 'MyParticipant',
-                                fqn: 'org.acme.MyParticipant'
+                                fqn: 'org.acme.MyParticipant',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -484,7 +533,7 @@ describe('LoopbackVisitor', () => {
                     }]);
                 });
 
-                it('should generate one schema for a participant that extends an abstract participant', () => {
+                it('should generate two schemas for a participant that extends an abstract participant', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     abstract participant MyBaseParticipant identified by participantId {
@@ -498,6 +547,40 @@ describe('LoopbackVisitor', () => {
                     schemas.should.deep.equal([{
                         acls: [],
                         base: 'PersistedModel',
+                        description: 'A participant named MyBaseParticipant',
+                        idInjection: false,
+                        methods: [],
+                        name: namespaces ? 'org_acme_MyBaseParticipant' : 'MyBaseParticipant',
+                        options: {
+                            composer: {
+                                type: 'participant',
+                                namespace: 'org.acme',
+                                name: 'MyBaseParticipant',
+                                fqn: 'org.acme.MyBaseParticipant',
+                                abstract: true
+                            },
+                            validateUpsert: true
+                        },
+                        plural: namespaces ? 'org.acme.MyBaseParticipant' : 'MyBaseParticipant',
+                        properties: {
+                            $class: {
+                                default: 'org.acme.MyBaseParticipant',
+                                description: 'The class identifier for this type',
+                                required: false,
+                                type: 'string'
+                            },
+                            participantId: {
+                                description: 'The instance identifier for this type',
+                                id: true,
+                                required: true,
+                                type: 'string'
+                            }
+                        },
+                        relations: {},
+                        validations: []
+                    }, {
+                        acls: [],
+                        base: 'PersistedModel',
                         description: 'A participant named MyParticipant',
                         idInjection: false,
                         methods: [],
@@ -507,7 +590,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'participant',
                                 namespace: 'org.acme',
                                 name: 'MyParticipant',
-                                fqn: 'org.acme.MyParticipant'
+                                fqn: 'org.acme.MyParticipant',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -559,7 +643,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'transaction',
                                 namespace: 'org.acme',
                                 name: 'MyTransaction',
-                                fqn: 'org.acme.MyTransaction'
+                                fqn: 'org.acme.MyTransaction',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -617,7 +702,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'transaction',
                                 namespace: 'org.acme',
                                 name: 'MyBaseTransaction',
-                                fqn: 'org.acme.MyBaseTransaction'
+                                fqn: 'org.acme.MyBaseTransaction',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -656,7 +742,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'transaction',
                                 namespace: 'org.acme',
                                 name: 'MyTransaction',
-                                fqn: 'org.acme.MyTransaction'
+                                fqn: 'org.acme.MyTransaction',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -692,7 +779,7 @@ describe('LoopbackVisitor', () => {
                 // TODO: Added a timestamp here as that is now added most model parse...
                 // when System models are ready remove this.
                 // GITHUB: composer/issues/920
-                it('should generate one schema for a transaction that extends an abstract transaction', () => {
+                it('should generate two schemas for a transaction that extends an abstract transaction', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     abstract transaction MyBaseTransaction {
@@ -706,6 +793,46 @@ describe('LoopbackVisitor', () => {
                     schemas.should.deep.equal([{
                         acls: [],
                         base: 'PersistedModel',
+                        description: 'A transaction named MyBaseTransaction',
+                        forceId: true,
+                        idInjection: false,
+                        methods: [],
+                        name: namespaces ? 'org_acme_MyBaseTransaction' : 'MyBaseTransaction',
+                        options: {
+                            composer: {
+                                type: 'transaction',
+                                namespace: 'org.acme',
+                                name: 'MyBaseTransaction',
+                                fqn: 'org.acme.MyBaseTransaction',
+                                abstract: true
+                            },
+                            validateUpsert: true
+                        },
+                        plural: namespaces ? 'org.acme.MyBaseTransaction' : 'MyBaseTransaction',
+                        properties: {
+                            $class: {
+                                default: 'org.acme.MyBaseTransaction',
+                                description: 'The class identifier for this type',
+                                required: false,
+                                type: 'string'
+                            },
+                            transactionId: {
+                                description: 'The instance identifier for this type',
+                                id: true,
+                                generated: true,
+                                required: false,
+                                type: 'string'
+                            },
+                            timestamp: {
+                                required: false,
+                                type: 'date'
+                            }
+                        },
+                        relations: {},
+                        validations: []
+                    }, {
+                        acls: [],
+                        base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
                         forceId: true,
                         idInjection: false,
@@ -716,7 +843,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'transaction',
                                 namespace: 'org.acme',
                                 name: 'MyTransaction',
-                                fqn: 'org.acme.MyTransaction'
+                                fqn: 'org.acme.MyTransaction',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -769,7 +897,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'concept',
                                 namespace: 'org.acme',
                                 name: 'MyConcept',
-                                fqn: 'org.acme.MyConcept'
+                                fqn: 'org.acme.MyConcept',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -814,7 +943,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'concept',
                                 namespace: 'org.acme',
                                 name: 'MyBaseConcept',
-                                fqn: 'org.acme.MyBaseConcept'
+                                fqn: 'org.acme.MyBaseConcept',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -845,7 +975,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'concept',
                                 namespace: 'org.acme',
                                 name: 'MyConcept',
-                                fqn: 'org.acme.MyConcept'
+                                fqn: 'org.acme.MyConcept',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -894,7 +1025,8 @@ describe('LoopbackVisitor', () => {
                                 type: 'concept',
                                 namespace: 'org.acme',
                                 name: 'MyConcept',
-                                fqn: 'org.acme.MyConcept'
+                                fqn: 'org.acme.MyConcept',
+                                abstract: false
                             },
                             validateUpsert: true
                         },
@@ -952,7 +1084,8 @@ describe('LoopbackVisitor', () => {
                                     type: 'asset',
                                     namespace: 'org.acme.base',
                                     name: 'MyAsset',
-                                    fqn: 'org.acme.base.MyAsset'
+                                    fqn: 'org.acme.base.MyAsset',
+                                    abstract: false
                                 }
                             },
                             properties: {
@@ -994,7 +1127,8 @@ describe('LoopbackVisitor', () => {
                                     type: 'asset',
                                     namespace: 'org.acme.ext',
                                     name: 'MyOtherAsset',
-                                    fqn: 'org.acme.ext.MyOtherAsset'
+                                    fqn: 'org.acme.ext.MyOtherAsset',
+                                    abstract: false
                                 }
                             },
                             properties: {
@@ -1056,7 +1190,8 @@ describe('LoopbackVisitor', () => {
                                     type: 'asset',
                                     namespace: 'org.acme.base',
                                     name: 'MyInlineAsset',
-                                    fqn: 'org.acme.base.MyInlineAsset'
+                                    fqn: 'org.acme.base.MyInlineAsset',
+                                    abstract: false
                                 }
                             },
                             properties: {
@@ -1090,7 +1225,8 @@ describe('LoopbackVisitor', () => {
                                     type: 'asset',
                                     namespace: 'org.acme.base',
                                     name: 'MyAsset',
-                                    fqn: 'org.acme.base.MyAsset'
+                                    fqn: 'org.acme.base.MyAsset',
+                                    abstract: false
                                 }
                             },
                             properties: {
@@ -1128,7 +1264,8 @@ describe('LoopbackVisitor', () => {
                                     type: 'asset',
                                     namespace: 'org.acme.ext',
                                     name: 'MyOtherAsset',
-                                    fqn: 'org.acme.ext.MyOtherAsset'
+                                    fqn: 'org.acme.ext.MyOtherAsset',
+                                    abstract: false
                                 }
                             },
                             properties: {

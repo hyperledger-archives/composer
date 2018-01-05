@@ -134,9 +134,6 @@ class LoopbackVisitor {
             .concat(modelFile.getConceptDeclarations())
             .concat(modelFile.getParticipantDeclarations())
             .concat(modelFile.getTransactionDeclarations())
-            .filter((declaration) => {
-                return !declaration.isAbstract();
-            })
             .forEach((declaration) => {
                 parameters.first = true;
                 jsonSchemas.push(declaration.accept(this, parameters));
@@ -347,9 +344,12 @@ class LoopbackVisitor {
 
         // Add information from the class declaration into the composer section.
         if (jsonSchema.options && jsonSchema.options.composer) {
-            jsonSchema.options.composer.namespace = classDeclaration.getNamespace();
-            jsonSchema.options.composer.name = classDeclaration.getName();
-            jsonSchema.options.composer.fqn = classDeclaration.getFullyQualifiedName();
+            Object.assign(jsonSchema.options.composer, {
+                namespace: classDeclaration.getNamespace(),
+                name: classDeclaration.getName(),
+                fqn: classDeclaration.getFullyQualifiedName(),
+                abstract: classDeclaration.isAbstract()
+            });
         }
 
         // Set the required properties into the schema.

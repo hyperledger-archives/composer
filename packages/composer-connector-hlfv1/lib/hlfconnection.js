@@ -22,10 +22,8 @@ const HLFTxEventHandler = require('./hlftxeventhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
-const temp = require('temp').track();
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
-const EventHub = require('fabric-client/lib/EventHub');
 const TransactionID = require('fabric-client/lib/TransactionID');
 
 const LOG = Logger.getLog('HLFConnection');
@@ -53,16 +51,6 @@ class HLFConnection extends Connection {
         return user;
     }
 
-  /**
-     * Create a new event hub.
-     *
-     * @param {hfc} clientContext client context
-     * @return {EventHub} A new event hub.
-     */
-    static createEventHub(clientContext) {
-        return new EventHub(clientContext);
-    }
-
     /**
      * Constructor.
      * @param {ConnectionManager} connectionManager The owning connection manager.
@@ -72,13 +60,12 @@ class HLFConnection extends Connection {
      * @param {object} connectOptions The connection options in use by this connection.
      * @param {Client} client A configured and connected {@link Client} object.
      * @param {Chain} channel A configured and connected {@link Chain} object.
-     * @param {array} eventHubDefs An array of event hub definitions
      * @param {FabricCAClientImpl} caClient A configured and connected {@link FabricCAClientImpl} object.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, caClient);
 
         // Validate all the arguments.
         if (!connectOptions) {
@@ -87,8 +74,6 @@ class HLFConnection extends Connection {
             throw new Error('client not specified');
         } else if (!channel) {
             throw new Error('channel not specified');
-        } else if (!eventHubDefs || !Array.isArray(eventHubDefs)) {
-            throw new Error('eventHubDefs not specified or not an array');
         } else if (!caClient) {
             throw new Error('caClient not specified');
         }
@@ -97,25 +82,17 @@ class HLFConnection extends Connection {
         this.connectOptions = connectOptions;
         this.client = client;
         this.channel = channel;
-        this.eventHubDefs = eventHubDefs;
         this.eventHubs = [];
         this.ccEvents = [];
         this.caClient = caClient;
         this.initialized = false;
-        this.commitTimeout = this.connectOptions.timeout * 1000;
+        this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
+        this.queryPeer;
+        LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
-        this.temp = thenifyAll(temp);
         LOG.exit(method);
-    }
-
-    /**
-     * Get the connection options for this connection.
-     * @return {object} The connection options for this connection.
-     */
-    getConnectionOptions() {
-        return this.connectOptions;
     }
 
     /**
@@ -182,7 +159,7 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspID);
+                return user.setEnrollment(enrollment.key, enrollment.certificate, this.client.getMspid());
             })
             .then(() => {
 
@@ -213,11 +190,15 @@ class HLFConnection extends Connection {
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
-        this.eventHubDefs.forEach((eventHubDef) => {
-            const eventHub = HLFConnection.createEventHub(this.client);  //TODO: Change this.
-            eventHub.setPeerAddr(eventHubDef.eventURL, eventHubDef.opts);
+
+        //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
+        //we want the eventhubs for all peers in a channel that have the eventSource role
+        //This will change with channel based event messages, so have to leave it like this for now.
+        //basically even though we could get all the event hubs for a channel, you would receive all events
+        //from those peers regardless of business network.
+        this.eventHubs = this.client.getEventHubsForOrg();
+        this.eventHubs.forEach((eventHub) => {
             eventHub.connect();
-            this.eventHubs.push(eventHub);
         });
 
         if (this.businessNetworkIdentifier) {
@@ -311,10 +292,11 @@ class HLFConnection extends Connection {
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier the business network name
      * @param {object} installOptions any relevant install options
+     * @param {object} installOptions.npmrcFile location of npmrc file to include in package
      * @returns {Promise} a promise which resolves to true if chaincode was installed, false otherwise (if ignoring installed errors)
      * @throws {Error} if chaincode was not installed and told not to ignore this scenario
      */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
+    async install(securityContext, businessNetworkIdentifier, installOptions) {
         const method = 'install';
         LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
 
@@ -324,45 +306,70 @@ class HLFConnection extends Connection {
 
         let txId = this.client.newTransactionID();
 
+        if (installOptions && installOptions.npmrcFile) {
+            try {
+                await this.fs.copy(installOptions.npmrcFile, runtimeModulePath + '/.npmrc');
+            } catch(error) {
+                const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
+                LOG.error(method, newError);
+                throw newError;
+            }
+        }
+
         const request = {
             chaincodeType: 'node',
             chaincodePath: runtimeModulePath,
             chaincodeVersion: runtimePackageJSON.version,
             chaincodeId: businessNetworkIdentifier,
             txId: txId,
-            targets: this.channel.getPeers()
+            targets: this.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery'])
         };
+        // the following should have been used for request but the node sdk is broken
+        // channelNames: this.channel.getName() // this will drive getting all the Peers to install on
 
-        return this.client.installChaincode(request)
-            .then((results) => {
-                LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
-                const CCAlreadyInstalledPattern = /chaincode .+ exists/;
-                let {ignoredErrors, validResponses} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
-                // is the composer runtime already installed on all the peers ?
-                let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
-                if (ignoredErrors === results[0].length && !calledFromDeploy) {
-                    const errorMsg = 'The Composer runtime is already installed on all the peers';
-                    throw new Error(errorMsg);
+        try {
+            let results = await this.client.installChaincode(request);
+            LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
+            const CCAlreadyInstalledPattern = /chaincode .+ exists/;
+            let {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
+
+            // is the composer runtime already installed on all the peers ?
+            let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
+            if (ignoredErrors === results[0].length && !calledFromDeploy) {
+                const errorMsg = 'The Composer runtime is already installed on all the peers';
+                throw new Error(errorMsg);
+            }
+
+            // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
+            if ((validResponses.length + ignoredErrors) !== results[0].length) {
+                let allRespMsgs = '';
+                invalidResponseMsgs.forEach((invalidResponse) => {
+                    allRespMsgs += invalidResponse;
+                    allRespMsgs += '\n';
+                });
+                const errorMsg = `The Composer runtime failed to install on 1 or more peers: ${allRespMsgs}`;
+                throw new Error(errorMsg);
+            }
+            LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
+
+            // return a boolean to indicate if any composer runtime was installed.
+            const chaincodeInstalled = validResponses.length !== 0;
+            LOG.exit(method, chaincodeInstalled);
+            return chaincodeInstalled;
+        } catch(error) {
+            const newError = new Error(`Error trying install composer runtime. ${error}`);
+            LOG.error(method, newError);
+            throw newError;
+        } finally {
+            if (installOptions && installOptions.npmrcFile) {
+                try {
+                    await this.fs.remove(runtimeModulePath + '/.npmrc');
+                } catch(error) {
+                    // Ignore any error to try to remove, it could be file not there
                 }
-
-                // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
-                if ((validResponses.length + ignoredErrors) !== results[0].length) {
-                    const errorMsg = 'The Composer runtime failed to install on 1 or more peers';
-                    throw new Error(errorMsg);
-                }
-                LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
-
-                // return a boolean to indicate if any composer runtime was installed.
-                const chaincodeInstalled = validResponses.length !== 0;
-                LOG.exit(method, chaincodeInstalled);
-                return chaincodeInstalled;
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying install composer runtime. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
+            }
+        }
     }
 
     /**
@@ -508,7 +515,9 @@ class HLFConnection extends Connection {
 
         LOG.debug(method, 'installing composer runtime chaincode');
         let chaincodeInstalled;
-        return this.install(securityContext, businessNetworkIdentifier, {calledFromDeploy: true})
+        let installOptions = {calledFromDeploy: true};
+        Object.assign(installOptions, deployOptions);
+        return this.install(securityContext, businessNetworkIdentifier, installOptions)
             .then((chaincodeInstalled_) => {
                 chaincodeInstalled = chaincodeInstalled_;
                 // check to see if the chaincode is already instantiated
@@ -605,10 +614,12 @@ class HLFConnection extends Connection {
         // and if we did this would allow a malicious peer to stop transactions so we
         // issue a warning so that it get's logged, but we don't know which peer(s) it was
         if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
-            LOG.warn('Peers do not agree, Read Write sets differ');
+            const warning = 'Peers do not agree, Read Write sets differ';
+            LOG.warn(warning);
+            invalidResponseMsgs.push(warning);
         }
         LOG.exit(method, ignoredErrors);
-        return {ignoredErrors, validResponses};
+        return {ignoredErrors, validResponses, invalidResponseMsgs};
     }
 
     /**
@@ -740,11 +751,36 @@ class HLFConnection extends Connection {
         }
 
         let txId = this.client.newTransactionID();
-        let peerArray = [this.channel.getPeers()[0]];
+
+        // determine a peer to use for querying if we haven't before
+        if (!this.queryPeer) {
+
+            const availablePeers = this.getChannelPeersInOrg(['chaincodeQuery']);
+            if (availablePeers.length > 0) {
+                this.queryPeer = availablePeers[0];
+            }
+            else {
+                let allPeersInChannel = this.channel.getPeers();
+
+                for (let i in allPeersInChannel) {
+                    let peer = allPeersInChannel[i];
+                    if (peer.isInRole('chaincodeQuery')) {
+                        this.queryPeer = peer;
+                        break;
+                    }
+                }
+            }
+            if (!this.queryPeer) {
+
+                const newError = new Error('Unable to determine a peer to query');
+                LOG.error(method, newError);
+                return Promise.reject(newError);
+            }
+        }
 
         // Submit the query request.
         const request = {
-            targets: peerArray,
+            targets: [this.queryPeer],
             chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
@@ -762,7 +798,7 @@ class HLFConnection extends Connection {
                     // will be handled by the catch block
                     throw payload;
                 }
-                LOG.exit(payload);
+                LOG.exit(method, payload);
                 return payload;
             })
             .catch((error) => {
@@ -839,7 +875,7 @@ class HLFConnection extends Connection {
                     fcn: functionName,
                     args: args
                 };
-                return this.channel.sendTransactionProposal(request);
+                return this.channel.sendTransactionProposal(request); // node sdk will target all peers on the channel that are endorsingPeer
             })
             .then((results) => {
                 // Validate the endorsement results.
@@ -1099,6 +1135,39 @@ class HLFConnection extends Connection {
         });
     }
 
+
+    /**
+     * return the Channel peers that are in the organisation which matches the requested roles
+     * @param {Array} peerRoles the peer roles that the returned list of peers need to satisfy
+     * @returns {Array} the list of any peers that satisfy all the criteria.
+     */
+    getChannelPeersInOrg(peerRoles) {
+        const channelPeers = this.channel.getPeers();
+        const orgPeers = this.client.getPeersForOrg();
+
+        let orgPeersInChannel = [];
+        for (let cpIndex in channelPeers) {
+            const cPeer = channelPeers[cpIndex];
+
+            const hasRole = peerRoles.every((peerRole) => {
+                return cPeer.isInRole(peerRole);
+            });
+
+            if (hasRole) {
+                const inOrgPeer = orgPeers.some((orgPeer) => {
+                    return cPeer.getName() === orgPeer.getName();
+                });
+                const inOrgPeersInChannel = orgPeersInChannel.some((orgPeer) => {
+                    cPeer.getName() === orgPeer.getName();
+                });
+
+                if (inOrgPeer && !inOrgPeersInChannel) {
+                    orgPeersInChannel.push(cPeer);
+                }
+            }
+        }
+        return orgPeersInChannel;
+    }
 }
 
 module.exports = HLFConnection;

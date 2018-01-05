@@ -9,6 +9,7 @@
     "bin": {
         "composer-playground": "cli.js"
     },
+    "main": "index.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/hyperledger/composer.git"
@@ -36,14 +37,14 @@
         "e2e": "npm run protractor",
         "e2e:nobuild": "node ./e2e/test.js",
         "e2e:main": "npm run build:prod && node ./e2e/test.js",
+        "eslint": "eslint",
         "github-deploy:dev": "webpack --config config/webpack.github-deploy.js --progress --profile --env.githubDev",
         "github-deploy:prod": "webpack --config config/webpack.github-deploy.js --progress --profile --env.githubProd",
         "github-deploy": "npm run github-deploy:dev",
-        "lint": "npm run tslint \"src/**/*.ts\"",
+        "lint": "npm run tslint \"src/**/*.ts\" && eslint .",
         "postversion": "git push && git push --tags",
         "pretest": "npm run lint",
         "posttest": "istanbul check-coverage",
-        "postinstall": "npm list -json --depth=0 2>&1 | grep -iv ERR > ./src/assets/npmlist.json",
         "prebuild:dev": "npm run clean:dist",
         "prebuild:prod": "npm run clean:dist",
         "preclean:install": "npm run clean",
@@ -130,6 +131,7 @@
         "babel-preset-latest": "6.24.1",
         "buffer-loader": "0.0.1",
         "chai": "3.5.0",
+        "clone": "2.1.1",
         "codelyzer": "2.0.1",
         "codemirror": "5.26.0",
         "composer-admin": "0.17.0",
@@ -145,6 +147,7 @@
         "doctrine": "2.0.0",
         "exports-loader": "0.6.3",
         "expose-loader": "0.7.1",
+        "eslint": "3.17.1",
         "fast-json-patch": "1.1.4",
         "file-loader": "0.10.0",
         "gh-pages": "0.12.0",

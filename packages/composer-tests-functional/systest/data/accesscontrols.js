@@ -30,3 +30,31 @@ function handleSampleTransaction(transaction) {
         throw new Error('wrong participant');
     }
 }
+
+/**
+ * basic update transactions
+ * @param {systest.accesscontrols.UpdateAssetValue} transaction The transaction
+ * @transaction
+ */
+function update(transaction) {
+    transaction.theAsset.theValue = transaction.newValue;
+
+    return getAssetRegistry('systest.accesscontrols.txAsset')
+        .then(function(registry){
+            return registry.update(transaction.theAsset);
+        });
+}
+
+/**
+ * check answer
+ * @param {systest.accesscontrols.MarkQuestion} transaction The transaction
+ * @transaction
+ */
+function MarkQuestion(transaction) {
+    console.log('...marking question now.....'+transaction.text);
+    if (transaction.question.correctAnswer.text === transaction.text){
+        // all good
+    } else {
+        throw new Error('uh-oh');
+    }
+}

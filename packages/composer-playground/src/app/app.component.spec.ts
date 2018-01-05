@@ -177,7 +177,7 @@ describe('AppComponent', () => {
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
+        mockIdCard.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
@@ -1161,6 +1161,7 @@ describe('AppComponent', () => {
             tick();
 
             component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(myConfig['banner']);
         }));
 
         it('should set the config using load config if getConfig fails', fakeAsync(() => {
@@ -1190,6 +1191,7 @@ describe('AppComponent', () => {
             tick();
 
             component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(myConfig['banner']);
         }));
     });
 

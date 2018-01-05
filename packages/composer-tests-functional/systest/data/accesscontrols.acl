@@ -1,3 +1,80 @@
+rule txtesting_1 {
+    description: "alice should be able to create txAssets"
+    participant: "systest.accesscontrols.SampleParticipant#alice@mailcorp.com"
+    operation: ALL
+    resource: "systest.accesscontrols.txAsset"
+    action: ALLOW
+}
+
+rule txtesting_2 {
+    description: "alice should be able to create txAssets"
+    participant: "systest.accesscontrols.SampleParticipant#alice@mailcorp.com"
+    operation: CREATE
+    resource: "org.hyperledger.composer.system.AddAsset"
+    action: ALLOW
+}
+
+rule txtesting_3 {
+    description: "bob should NOT be able to hit the UpdateAssetValue tx"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: CREATE
+    resource: "systest.accesscontrols.UpdateAssetValue"
+    action: DENY
+}
+
+
+/* Alice can not see the answer to the question, but can submit a transaction to check her answer is correct or not */
+
+rule txtesting_4 {
+    description: "Alice should be able to access the question registries etc"
+    participant: "systest.accesscontrols.SampleParticipant#alice@mailcorp.com"
+    operation: ALL
+    resource: "systest.accesscontrols.Question"
+    action: ALLOW
+}
+
+rule txtesting_5 {
+    description: "Alice should be able to access the question registries etc"
+    participant: "systest.accesscontrols.SampleParticipant#alice@mailcorp.com"
+    operation: ALL
+    resource: "systest.accesscontrols.Answer"
+    action: ALLOW
+}
+
+rule txtesting_6 {
+    description: "bob should be able to submit MarkQuestion"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: CREATE
+    resource: "systest.accesscontrols.MarkQuestion"
+    action: ALLOW
+}
+
+rule txtesting_7 {
+    description: "bob should be able to see the questions"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: READ
+    resource: "systest.accesscontrols.Question"
+    action: ALLOW
+}
+
+rule txtesting_8a {
+    description: "bob should  be able to see the answers in the MarkQuestion Transactions"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: READ
+    resource: "systest.accesscontrols.Answer"
+    transaction: "systest.accesscontrols.MarkQuestion"
+    action: ALLOW
+}
+
+rule txtesting_8b {
+    description: "bob should NOT be able to see the answers"
+    participant: "systest.accesscontrols.SampleParticipant#bob@mailcorp.com"
+    operation: ALL
+    resource: "systest.accesscontrols.Answer"
+    action: DENY
+}
+
+/*  */
 rule R1 {
     description: "The owner of a vehicle can read the vehicle"
     participant(p): "systest.accesscontrols.SampleParticipant"
@@ -125,3 +202,5 @@ rule NetworkAdminSystem {
     resource: "org.hyperledger.composer.system.*"
     action: ALLOW
 }
+
+

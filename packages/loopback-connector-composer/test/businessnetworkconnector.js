@@ -536,7 +536,7 @@ describe('BusinessNetworkConnector', () => {
             mockSerializer.toJSON.onFirstCall().returns({theValue : 'myId'});
 
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -557,7 +557,7 @@ describe('BusinessNetworkConnector', () => {
             mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
             mockSerializer.toJSON.onFirstCall().returns({theString: 'myString'});
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theString:'mockString'}}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -577,7 +577,7 @@ describe('BusinessNetworkConnector', () => {
             mockAssetRegistry.resolve.resolves({theValue : 'mockId', member: {theValue:'member1'}});
 
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}, include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -602,7 +602,7 @@ describe('BusinessNetworkConnector', () => {
             mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
 
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theString:'mockString'}, include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -630,7 +630,7 @@ describe('BusinessNetworkConnector', () => {
             mockBusinessNetworkConnection.buildQuery.returns({id :'mockQuery'});
 
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theString':'mockString'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theString:'mockString'}, include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -656,7 +656,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error when an invalid model name is specified', () => {
             mockAssetRegistry.get.rejects(new Error('expected test error'));
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.WrongBaseAsset', {'where':{'theValue':'mockId'}}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.WrongBaseAsset', {where:{theValue:'mockId'}}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -668,7 +668,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error when trying to retrieve a specific Asset for a given id in a where clause', () => {
             mockAssetRegistry.get.rejects(new Error('expected test error'));
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -680,7 +680,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error when trying to retrieve a fully resolved specific Asset for a given id in a where clause', () => {
             mockAssetRegistry.resolve.rejects(new Error('expected test error'));
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}, include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -691,7 +691,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should handle an error when trying to retrieve a fully resolved specific Asset for a given non-existing id in a where clause', () => {
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theInvalidValue':'mockId'}, 'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theInvalidValue:'mockId'}, include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -703,7 +703,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
             mockAssetRegistry.get.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -721,7 +721,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return an empty list after an error when trying to retrieve a fully resolved specific Asset by id if the error just indicates that the asset does not exist', () => {
             mockAssetRegistry.resolve.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve' }, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {where:{theValue:'mockId'}, include : 'resolve' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -766,7 +766,7 @@ describe('BusinessNetworkConnector', () => {
 
             mockAssetRegistry.resolveAll.resolves([{assetId : 'mockId', stringValue : 'a big car'}, {assetId : 'mockId2', stringValue : 'a big fox'}]);
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -790,7 +790,7 @@ describe('BusinessNetworkConnector', () => {
             mockAssetRegistry.resolveAll.rejects(new Error('expected error'));
 
             return new Promise((resolve, reject) => {
-                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, { test: 'options' }, (error, result) => {
+                testConnector.all('org.acme.base.BaseAsset', {include : 'resolve'}, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -855,17 +855,17 @@ describe('BusinessNetworkConnector', () => {
     describe('#isResolveSet', () => {
 
         it('should return true if resolve is set to be true in a filter include', () => {
-            let FILTER = {'include' : 'resolve'};
+            let FILTER = {include : 'resolve'};
             testConnector.isResolveSet(FILTER).should.equal(true);
         });
 
         it('should return false if resolve is set to be true in a filter include', () => {
-            let FILTER = {'where' : { 'vin' : '1234' }, 'include' : 'noresolve'};
+            let FILTER = {where : { vin : '1234' }, include : 'noresolve'};
             testConnector.isResolveSet(FILTER).should.equal(false);
         });
 
         it('should return false if resolve is not set in a filter include', () => {
-            let FILTER = {'where' : { 'vin' : '1234' } };
+            let FILTER = {where : { vin : '1234' } };
             testConnector.isResolveSet(FILTER).should.equal(false);
         });
     });
@@ -911,7 +911,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return count of 1 if the object exists', () => {
             mockAssetRegistry.exists.resolves(true);
             return new Promise((resolve, reject) => {
-                testConnector.count('org.acme.base.BaseAsset', { 'theValue':'mockId' }, { test: 'options' }, (error, result) => {
+                testConnector.count('org.acme.base.BaseAsset', { theValue:'mockId' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -927,7 +927,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return count of 0 if the object exists', () => {
             mockAssetRegistry.exists.resolves(false);
             return new Promise((resolve, reject) => {
-                testConnector.count('org.acme.base.BaseAsset', { 'theValue':'mockId' }, { test: 'options' }, (error, result) => {
+                testConnector.count('org.acme.base.BaseAsset', { theValue:'mockId' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -944,7 +944,7 @@ describe('BusinessNetworkConnector', () => {
             mockBusinessNetworkConnection.query.resolves([{theString:'mockString'}, {theString:'mockString'}]);
             mockBusinessNetworkConnection.buildQuery.returns({id: 'mockQuery'});
             return new Promise((resolve, reject) => {
-                testConnector.count('org.acme.base.BaseAsset', { 'theString':'mockString' }, { test: 'options' }, (error, result) => {
+                testConnector.count('org.acme.base.BaseAsset', { theString:'mockString' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -962,7 +962,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error thrown from the build query', () => {
             mockBusinessNetworkConnection.buildQuery.throws(new Error('Test error'));
             return new Promise((resolve, reject) => {
-                testConnector.count('org.acme.base.BaseAsset', { 'theString':'mockString' }, { test: 'options' }, (error, result) => {
+                testConnector.count('org.acme.base.BaseAsset', { theString:'mockString' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -1007,7 +1007,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return true if the object exists', () => {
             mockAssetRegistry.exists.resolves(true);
             return new Promise((resolve, reject) => {
-                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, { test: 'options' }, (error, result) => {
+                testConnector.exists('org.acme.base.BaseAsset', { theValue:'mockId' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -1023,7 +1023,7 @@ describe('BusinessNetworkConnector', () => {
         it('should return false if the object does not exist', () => {
             mockAssetRegistry.exists.resolves(false);
             return new Promise((resolve, reject) => {
-                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, { test: 'options' }, (error, result) => {
+                testConnector.exists('org.acme.base.BaseAsset', { theValue:'mockId' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -1039,7 +1039,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error from the composer registry.exists API', () => {
             mockAssetRegistry.exists.rejects(new Error('existence test error'));
             return new Promise((resolve, reject) => {
-                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, { test: 'options' }, (error, result) => {
+                testConnector.exists('org.acme.base.BaseAsset', { theValue:'mockId' }, { test: 'options' }, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -1074,7 +1074,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
                 mockAssetRegistry.update.resolves();
-                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1082,7 +1082,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
-                sinon.assert.calledWith(mockSerializer.fromJSON, { '$class': 'org.acme.base.BaseAsset', 'theValue' : 'updated', prop1: 'woohoo' });
+                sinon.assert.calledWith(mockSerializer.fromJSON, { $class: 'org.acme.base.BaseAsset', theValue : 'updated', prop1: 'woohoo' });
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(testConnector.getRegistryForModel);
@@ -1095,7 +1095,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
                 mockAssetRegistry.update.resolves();
-                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { '$class': 'org.acme.base.BaseAsset', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { $class: 'org.acme.base.BaseAsset', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1103,7 +1103,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
-                sinon.assert.calledWith(mockSerializer.fromJSON, { '$class': 'org.acme.base.BaseAsset', 'theValue' : 'updated', prop1: 'woohoo' });
+                sinon.assert.calledWith(mockSerializer.fromJSON, { $class: 'org.acme.base.BaseAsset', theValue : 'updated', prop1: 'woohoo' });
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(testConnector.getRegistryForModel);
@@ -1116,7 +1116,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
                 mockAssetRegistry.update.resolves();
-                testConnector.updateAttributes('org.acme.base.WrongBaseAsset', 'theId', { 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.updateAttributes('org.acme.base.WrongBaseAsset', 'theId', { theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1135,7 +1135,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
                 mockAssetRegistry.update.rejects(new Error('Update error from Composer'));
-                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1155,7 +1155,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(resource);
                 mockAssetRegistry.update.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
-                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.updateAttributes('org.acme.base.BaseAsset', 'theId', { theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1197,7 +1197,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
                 mockAssetRegistry.update.resolves();
-                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { assetId: '1', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1205,7 +1205,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
-                sinon.assert.calledWith(mockSerializer.fromJSON, { '$class': 'org.acme.base.BaseAsset', 'assetId': '1', 'theValue' : 'updated' });
+                sinon.assert.calledWith(mockSerializer.fromJSON, { $class: 'org.acme.base.BaseAsset', assetId: '1', theValue : 'updated' });
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(testConnector.getRegistryForModel);
@@ -1218,7 +1218,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
                 mockAssetRegistry.update.resolves();
-                testConnector.replaceById('org.acme.base.BaseAsset', '1', { '$class': 'org.acme.base.BaseAsset', 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { $class: 'org.acme.base.BaseAsset', assetId: '1', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1226,7 +1226,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
-                sinon.assert.calledWith(mockSerializer.fromJSON, { '$class': 'org.acme.base.BaseAsset', 'assetId': '1', 'theValue' : 'updated' });
+                sinon.assert.calledWith(mockSerializer.fromJSON, { $class: 'org.acme.base.BaseAsset', assetId: '1', theValue : 'updated' });
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 sinon.assert.calledOnce(testConnector.getRegistryForModel);
@@ -1239,7 +1239,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
                 mockAssetRegistry.update.resolves();
-                testConnector.replaceById('org.acme.base.WrongBaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.replaceById('org.acme.base.WrongBaseAsset', '1', { assetId: '1', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1258,7 +1258,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
                 mockAssetRegistry.update.rejects(new Error('Update error from Composer'));
-                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { assetId: '1', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1278,7 +1278,7 @@ describe('BusinessNetworkConnector', () => {
             return new Promise((resolve, reject) => {
                 mockSerializer.fromJSON.returns(asset);
                 mockAssetRegistry.update.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
-                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, { test: 'options' }, (error) => {
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { assetId: '1', theValue : 'updated' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1887,7 +1887,7 @@ describe('BusinessNetworkConnector', () => {
             mockAssetRegistry.get.resolves(resourceToDelete);
             mockAssetRegistry.remove.resolves();
             return new Promise((resolve, reject) => {
-                testConnector.destroyAll('org.acme.base.BaseAsset', { 'theValue' : 'foo' }, { test: 'options' }, (error) => {
+                testConnector.destroyAll('org.acme.base.BaseAsset', { theValue : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1922,7 +1922,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error when an invalid Object identifier is specified', () => {
             mockAssetRegistry.get.rejects(new Error('get error'));
             return new Promise((resolve, reject) => {
-                testConnector.destroyAll('org.acme.base.BaseAsset', { 'theWrongValue' : 'foo' }, { test: 'options' }, (error) => {
+                testConnector.destroyAll('org.acme.base.BaseAsset', { theWrongValue : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1939,7 +1939,7 @@ describe('BusinessNetworkConnector', () => {
         it('should handle an error when calling composer get for the given id', () => {
             mockAssetRegistry.get.rejects(new Error('get error'));
             return new Promise((resolve, reject) => {
-                testConnector.destroyAll('org.acme.base.BaseAsset', { 'theValue' : 'foo' }, { test: 'options' }, (error) => {
+                testConnector.destroyAll('org.acme.base.BaseAsset', { theValue : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1958,7 +1958,7 @@ describe('BusinessNetworkConnector', () => {
             mockAssetRegistry.get.resolves(resourceToDelete);
             mockAssetRegistry.remove.rejects(new Error('removal error'));
             return new Promise((resolve, reject) => {
-                testConnector.destroyAll('org.acme.base.BaseAsset', { 'theValue' : 'foo' }, { test: 'options' }, (error) => {
+                testConnector.destroyAll('org.acme.base.BaseAsset', { theValue : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -1978,7 +1978,7 @@ describe('BusinessNetworkConnector', () => {
             mockAssetRegistry.get.resolves(resourceToDelete);
             mockAssetRegistry.remove.rejects(new Error('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
-                testConnector.destroyAll('org.acme.base.BaseAsset', { 'theValue' : 'foo' }, { test: 'options' }, (error) => {
+                testConnector.destroyAll('org.acme.base.BaseAsset', { theValue : 'foo' }, { test: 'options' }, (error) => {
                     if(error) {
                         return reject(error);
                     }
@@ -2341,17 +2341,19 @@ describe('BusinessNetworkConnector', () => {
             testConnector.serializer = mockSerializer;
             testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
             mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
-            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
-            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
+
         });
 
         it('should call the executeQuery with an expected string result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theValue: 'my value'}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theValue: 'my value'});
             const cb = sinon.stub();
             return testConnector.executeQuery( 'stringQuery', { param1: 'blue' }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'stringQuery', { param1: 'blue' });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
@@ -2363,82 +2365,119 @@ describe('BusinessNetworkConnector', () => {
 
         it('should call the executeQuery with an expected double result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theDouble: 10.5}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theDouble: 10.5});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'doubleQuery', { param1: '10.2' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'doubleQuery', { param1: 10.2 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'doubleQuery', { param1: 10.2 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theDouble: 10.5
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected long result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theLong: 1000}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theLong: 1000});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'longQuery', { param1: '100' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'longQuery', { param1: 100 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'longQuery', { param1: 100 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theLong: 1000
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected integer result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theInteger: 15}]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theInteger: 15});
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'integerQuery', { param1: '100' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'integerQuery', { param1: 10 }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'integerQuery', { param1: 10 });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theInteger: 15
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected dateTime result', () => {
 
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theDateTime: '2007-12-05T14:30' }]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theDateTime: '2007-12-05T14:30'});
             const cb = sinon.stub();
             return testConnector.executeQuery( 'dateTimeQuery', { param1: '2007-04-05T14:30' }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'dateTimeQuery', { param1: '2007-04-05T14:30' });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theDateTime: '2007-12-05T14:30'
                     }]);
                 });
         });
 
         it('should call the executeQuery with an expected boolean result', () => {
+            mockBusinessNetworkConnection.query.resolves([{$class: 'org.acme.base.BaseAsset', theBoolean: true }]);
+            mockSerializer.toJSON.returns({$class: 'org.acme.base.BaseAsset', theBoolean: true});
 
             const cb = sinon.stub();
-            return testConnector.executeQuery( 'booleanQuery', { param1: 'false' }, {test: 'options' }, cb)
+            return testConnector.executeQuery( 'booleanQuery', { param1: false }, {test: 'options' }, cb)
                 .then(( queryResult) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.query, 'booleanQuery', { param1: false });
 
                     const result = cb.args[0][1]; // First call, second argument (error, queryResult)
                     result.should.deep.equal([{
                         $class: 'org.acme.base.BaseAsset',
-                        theValue: 'my value'
+                        theBoolean: true
                     }]);
                 });
+        });
+
+        it('should throw the executeQuery with an null parameter value', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'booleanQuery', { param1: null }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/The value of the parameter type: Boolean is null or undefined./);
+        });
+
+        it('should throw the executeQuery with an undefined parameter value', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.executeQuery( 'dateTimeQuery', { param1: undefined }, {test: 'options' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            }).should.be.rejectedWith(/The value of the parameter type: DateTime is null or undefined./);
         });
 
         it('should throw when executing a query that does not exist', () => {
@@ -2796,67 +2835,68 @@ describe('BusinessNetworkConnector', () => {
     describe('#discoverSchemas', () => {
 
         const modelSchema = {
-            'acls' : [],
-            'base' : 'PersistedModel',
-            'description' : 'An asset named BaseAsset',
-            'idInjection' : false,
-            'methods' : [],
-            'name' : 'org_acme_base_BaseAsset',
-            'options' : {
-                'validateUpsert' : true,
-                'composer': {
-                    'type': 'asset',
-                    'namespace': 'org.acme.base',
-                    'name': 'BaseAsset',
-                    'fqn': 'org.acme.base.BaseAsset'
+            acls : [],
+            base : 'PersistedModel',
+            description : 'An asset named BaseAsset',
+            idInjection : false,
+            methods : [],
+            name : 'org_acme_base_BaseAsset',
+            options : {
+                validateUpsert : true,
+                composer: {
+                    type: 'asset',
+                    namespace: 'org.acme.base',
+                    name: 'BaseAsset',
+                    fqn: 'org.acme.base.BaseAsset',
+                    abstract: false
                 }
             },
-            'plural' : 'org.acme.base.BaseAsset',
-            'properties' : {
-                '$class' : {
-                    'default': 'org.acme.base.BaseAsset',
-                    'description': 'The class identifier for this type',
-                    'required': false,
-                    'type': 'string'
+            plural : 'org.acme.base.BaseAsset',
+            properties : {
+                $class : {
+                    default: 'org.acme.base.BaseAsset',
+                    description: 'The class identifier for this type',
+                    required: false,
+                    type: 'string'
                 },
-                'theValue' : {
-                    'description': 'The instance identifier for this type',
-                    'id': true,
-                    'required' : true,
-                    'type' : 'string'
+                theValue : {
+                    description: 'The instance identifier for this type',
+                    id: true,
+                    required : true,
+                    type : 'string'
                 },
-                'theString' : {
-                    'required' : false,
-                    'type' : 'string'
+                theString : {
+                    required : false,
+                    type : 'string'
                 },
-                'theInteger' : {
-                    'required' : false,
-                    'type' : 'number'
+                theInteger : {
+                    required : false,
+                    type : 'number'
                 },
-                'theDouble' : {
-                    'required' : false,
-                    'type' : 'number'
+                theDouble : {
+                    required : false,
+                    type : 'number'
                 },
-                'theLong' : {
-                    'required' : false,
-                    'type' : 'number'
+                theLong : {
+                    required : false,
+                    type : 'number'
                 },
-                'theDateTime' : {
-                    'required' : false,
-                    'type' : 'date'
+                theDateTime : {
+                    required : false,
+                    type : 'date'
                 },
-                'theBoolean' : {
-                    'required' : false,
-                    'type' : 'boolean'
+                theBoolean : {
+                    required : false,
+                    type : 'boolean'
                 },
-                'theMember': {
-                    'description': 'The identifier of an instance of theMember',
-                    'required': false,
-                    'type': 'any'
+                theMember: {
+                    description: 'The identifier of an instance of theMember',
+                    required: false,
+                    type: 'any'
                 }
             },
-            'relations' : {},
-            'validations' : []
+            relations : {},
+            validations : []
         };
 
         beforeEach(() => {

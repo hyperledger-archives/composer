@@ -18,15 +18,9 @@ const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
 const Engine = require('composer-runtime').Engine;
 const NodeContainer = require('./nodecontainer');
-const fs = require('fs');
 
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Composer');
-
-//TODO: Good idea to have ? stops the chaincode container from abending.
-process.on('unhandledRejection', (...args) => {
-    console.log(args);
-});
 
 /**
  * This is the composer chaincode that implements the
@@ -66,11 +60,6 @@ class Composer {
         const method = 'Init';
         LOG.entry(method, stub);
         let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
-        if (process.env.COMPOSER_DEV_MODE) {
-            let archiveFileContents = fs.readFileSync(params[0]);
-            params[0] = archiveFileContents.toString('base64');
-        }
-
         let engine = this._createEngine();
         let nodeContext = this._createContext(engine, stub);
         try {

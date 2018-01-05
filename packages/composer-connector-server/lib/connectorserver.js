@@ -192,7 +192,7 @@ class ConnectorServer {
     connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
         LOG.entry(method, connectionProfile, id, certificate, privateKey);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
             })
@@ -218,7 +218,7 @@ class ConnectorServer {
     connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
         const method = 'connectionManagerRemoveIdentity';
         LOG.entry(method, connectionProfile, id);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
             })
@@ -245,7 +245,7 @@ class ConnectorServer {
     connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
         const method = 'connectionManagerExportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions.type)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
             })
