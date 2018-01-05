@@ -119,6 +119,10 @@ func (loggingService *LoggingService) setStub(stub shim.ChaincodeStubInterface) 
 // getLogInserts extracts the list of JavaScript arguments and converts them into a Go array.
 func (loggingService *LoggingService) getLogInserts(vm *duktape.Context) (result []interface{}) {
 	result = []interface{}{}
+	// if we have a stub, log the TxId
+	if loggingService.Stub != nil {
+		result = append(result, "[" + loggingService.Stub.GetTxID()[0:8] + "] ")
+	}	
 	for i := 0; i < vm.GetTop(); i++ {
 		str := vm.ToString(i)
 		result = append(result, str)
