@@ -281,7 +281,7 @@ class Connection extends EventEmitter {
         .then((businessNetwork) => {
             currentDeployedNetwork = businessNetwork;
             // Serialize the business network.
-            return businessNetworkDefinition.toArchive();
+            return businessNetworkDefinition.toArchive({ date: new Date(545184000000) });
         })
         .then((businessNetworkArchive) => {
             // Send an update request to the chaincode.

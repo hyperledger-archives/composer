@@ -392,7 +392,7 @@ class AdminConnection {
         // identity to a network admin participant.
         return Promise.resolve()
             .then(() => {
-                return businessNetworkDefinition.toArchive();
+                return businessNetworkDefinition.toArchive({ date: new Date(545184000000) });
             })
             .then((businessNetworkArchive) => {
 
