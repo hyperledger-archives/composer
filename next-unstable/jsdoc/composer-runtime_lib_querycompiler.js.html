@@ -247,7 +247,6 @@ class QueryCompiler {
         // If there are no required parameters, then we can use a trivial generator function.
         let compiledQueryGenerator;
         if (requiredParameters.length === 0) {
-
             // Serialize the compiled query string and always return that.
             compiledQueryGenerator = this.buildTrivialCompiledQueryGenerator(compiledQuery);
 
@@ -322,6 +321,7 @@ class QueryCompiler {
             // Note that this will fire all the functions which look up parameters
             // from the parameters to use object.
             Object.assign(parametersToUse, inputParameters);
+
             return JSON.stringify(compiledQuery);
 
         };
@@ -380,6 +380,7 @@ class QueryCompiler {
         // Handle the where clause, if it exists.
         const where = select.getWhere();
         if (where) {
+
             const queryAdditions = where.accept(this, parameters);
             Object.assign(query.selector, queryAdditions.selector);
         }
@@ -427,6 +428,7 @@ class QueryCompiler {
     visitWhere(where, parameters) {
         const method = 'visitWhere';
         LOG.entry(method, where, parameters);
+
 
         // Simply visit the AST, which will generate a selector.
         // The root of the AST is probably a binary expression.
@@ -546,6 +548,7 @@ class QueryCompiler {
         let result;
         if (arrayCombinationOperators.indexOf(ast.operator) !== -1) {
             result = this.visitArrayCombinationOperator(ast, parameters);
+
         } else if (ast.operator === 'CONTAINS') {
             result = this.visitContainsOperator(ast, parameters);
         } else if (conditionOperators.indexOf(ast.operator) !== -1) {
@@ -587,18 +590,49 @@ class QueryCompiler {
 
         // Build the Mango selector for this operator.
         let result = {};
-
-        let leftKey = Object.keys(left)[0];
-        let rightKey = Object.keys(right)[0];
-        if(operator === '$and' &amp;&amp; leftKey !== '$or' &amp;&amp; rightKey !=='$or' &amp;&amp; leftKey !== rightKey){
-            result[leftKey] = left[leftKey];
-            result[rightKey] = right[rightKey];
+        // use the implicit format of $and format in mangodb query to support both couchdb and pounchdb
+        // as the explicit format of the $and is not fully supported in pouchdb.
+        let leftKeys = Object.keys(left);
+        let rightKeys = Object.keys(right);
+        let leftKeyValue = left[leftKeys[0]];
+        let nLeftKeys = leftKeys.length;
+        let nRightKeys = rightKeys.length;
+        if(operator === '$and' ){
+            if (nLeftKeys === 1 &amp;&amp; leftKeys[0]=== '$or'){ // using explicit $and format when the left side first key is $or
+                result[operator] = [left, right];
+            } else if (nLeftKeys === 1 &amp;&amp; leftKeys[0] === '$and'  ) { // add the right side to the left value array
+                leftKeyValue.push(right);
+                result[leftKeys[0]] = Object.assign(leftKeyValue);
+            } else if (nRightKeys === 1 &amp;&amp; rightKeys[0] === '$or'){
+                result = Object.assign(left, right);
+            } else if( nLeftKeys >= 1 &amp;&amp; nRightKeys >= 1 &amp;&amp; leftKeys[0] !== '$or'){
+                // merge the same property values
+                result = Object.assign(left);
+                for( let i = 0; i &lt; nRightKeys; i++ ){
+                    let rightKey = rightKeys[i];
+                    if( typeof(left[rightKey]) !== 'undefined' ){
+                       // find a matching key between left and right, merge the right key value to the left key
+                        result[rightKey] = Object.assign(left[rightKey], right[rightKey]);
+                    }else{
+                        // add the right item to the result
+                        result[rightKey] = right[rightKey];
+                    }
+                }
+            } else {  // like left= true, right = false
+                result[operator] = [
+                    left,
+                    right
+                ];
+            }
         } else {
+            // when operator is $or or the $and with the same property name eg. a&lt;x&lt;b,
+            // use the explicit format with an array of the left and right elements as the value
             result[operator] = [
                 left,
                 right
             ];
         }
+
         LOG.exit(method, result);
         return result;
     }
