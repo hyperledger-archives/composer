@@ -457,6 +457,19 @@ chai.use(require('chai-http'));
                         ]);
                     });
             });
+            it('should return all of the assets with a specific currency OR a specific dayCount and after a mature date, OR no more than a specific multiplier', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyORTheDayCountAndMaturityORMultiplier?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z&periodMultiplier=1')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2],
+                            assetData[3],
+                            assetData[4],
+                            assetData[5]
+                        ]);
+                    });
+            });
             it('should return all of the assets by currency AND the dayCount or after a mature date', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByCurrencyANDTheDayCountOrMaturity?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z')
@@ -500,6 +513,18 @@ chai.use(require('chai-http'));
                         ]);
                     });
             });
+
+            it('should return all of the assets by currency and the dayCount and after a mature date and a specific multiplier', () => {
+                return chai.request(app)
+                    .get('/api/queries/findBondByCurrencyAndDayCountAndMaturityAndMultiplier?currency=GBP&dayCount=2000000&maturity=2017-09-06T21:03:52.000Z&periodMultiplier=8')
+                    .then((res) => {
+                        res.should.be.json;
+                        res.body.should.deep.equal([
+                            assetData[2]
+                        ]);
+                    });
+            });
+
             it('should return an empty if one of the variable type is unsupported', () => {
                 return chai.request(app)
                     .get('/api/queries/findBondByCurrencyAndUnsupportedType?currency=GBP&instrumentId[]=BobCorp')

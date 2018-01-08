@@ -100,7 +100,7 @@ describe('IdentityManager', () => {
             mockIdentityService.getIssuer.returns('26341f1fc63f30886c54abeba3aca520601126ae2a57869d1ec1a3f854ebc417');
             mockIdentityRegistry.get.withArgs('9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50').rejects();
             return identityManager.getIdentity()
-                .should.be.rejectedWith(/The current identity has not been registered/);
+                .should.be.rejectedWith(/The current identity, with the name \'admin\' and the identifier \'7d85a9672abea0dfa45705eed99a536b8470d192e2a17e50c1fb86cb4bccae63\', has not been registered/);
         });
 
     });
@@ -111,34 +111,35 @@ describe('IdentityManager', () => {
 
         beforeEach(() => {
             identity = factory.newResource('org.hyperledger.composer.system', 'Identity', '9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50');
+            identity.name = 'admin';
         });
 
         it('should throw for a revoked identity', () => {
             identity.state = 'REVOKED';
             (() => {
                 identityManager.validateIdentity(identity);
-            }).should.throw(/The current identity has been revoked/);
+            }).should.throw(/The current identity, with the name \'admin\' and the identifier \'9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50\', has been revoked/);
         });
 
         it('should throw for an issued identity that requires activation', () => {
             identity.state = 'ISSUED';
             (() => {
                 identityManager.validateIdentity(identity);
-            }).should.throw(/The current identity must be activated \(ACTIVATION_REQUIRED\)/);
+            }).should.throw(/The current identity, with the name \'admin\' and the identifier \'9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50\', must be activated \(ACTIVATION_REQUIRED\)/);
         });
 
         it('should throw for a bound identity that requires activation', () => {
             identity.state = 'BOUND';
             (() => {
                 identityManager.validateIdentity(identity);
-            }).should.throw(/The current identity must be activated \(ACTIVATION_REQUIRED\)/);
+            }).should.throw(/The current identity, with the name \'admin\' and the identifier \'9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50\', must be activated \(ACTIVATION_REQUIRED\)/);
         });
 
         it('should throw for an identity in an unknown state', () => {
             identity.state = 'WOOPWOOP';
             (() => {
                 identityManager.validateIdentity(identity);
-            }).should.throw(/The current identity is in an unknown state/);
+            }).should.throw(/The current identity, with the name \'admin\' and the identifier \'9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50\', is in an unknown state/);
         });
 
         it('should not throw for an activated identity', () => {
@@ -156,6 +157,7 @@ describe('IdentityManager', () => {
 
         beforeEach(() => {
             identity = factory.newResource('org.hyperledger.composer.system', 'Identity', '9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50');
+            identity.name = 'admin';
             participant = factory.newResource('org.acme', 'SampleParticipant', 'alice@email.com');
             identity.participant = factory.newRelationship('org.acme', 'SampleParticipant', 'alice@email.com');
             mockParticipantRegistry = sinon.createStubInstance(Registry);
@@ -171,7 +173,7 @@ describe('IdentityManager', () => {
         it('should throw if the participant does not exist', () => {
             mockParticipantRegistry.get.withArgs('alice@email.com').rejects(new Error('such error'));
             return identityManager.getParticipant(identity)
-                .should.be.rejectedWith(/The current identity is bound to a participant that does not exist/);
+                .should.be.rejectedWith(/The current identity, with the name \'admin\' and the identifier \'9f8b1a1e7280d40f4f14577ee4329473c60f04db3ea0f40c91f9684558c6ab50\', is bound to a participant \'resource:org.acme.SampleParticipant#alice@email.com\' that does not exist/);
         });
 
     });
@@ -276,7 +278,7 @@ describe('IdentityManager', () => {
             identity.participant = factory.newRelationship('org.acme', 'SampleParticipant', 'alice@email.com');
             sinon.stub(identityManager, 'getIdentity').resolves(identity);
             return identityManager.activateCurrentIdentity(mockApi, tx)
-                .should.be.rejectedWith(/The current identity cannot be activated because it is in an unknown state/);
+                .should.be.rejectedWith(/The current identity, with the name \'alice1\' and the identifier \'e38b9db5b7167f8033fb48f04efe5d5fd7ec36c8d7be51ed019f81e1ac66657f\', cannot be activated because it is in an unknown state \'ACTIVATED\'/);
         });
 
     });
@@ -305,7 +307,7 @@ describe('IdentityManager', () => {
             mockIdentityRegistry.add.resolves();
             (() => {
                 identityManager.activateIssuedIdentity(mockIdentityRegistry, identity);
-            }).should.throw(/The current identity cannot be activated because the issuer is invalid/);
+            }).should.throw(/The current identity, with the name \'alice1\' and the identifier \'e38b9db5b7167f8033fb48f04efe5d5fd7ec36c8d7be51ed019f81e1ac66657f\', cannot be activated because the issuer is invalid/);
         });
 
         it('should remove and add the updated identity in the identity registry', () => {

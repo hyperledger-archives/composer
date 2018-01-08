@@ -21,4 +21,5 @@ Options:
   --help         Show help  [boolean]
   -v, --version  Show version number  [boolean]
   --name, -n     The name used to identify the card  [string]
+  --quiet, -q    Only display the card name  [boolean]
 ```
