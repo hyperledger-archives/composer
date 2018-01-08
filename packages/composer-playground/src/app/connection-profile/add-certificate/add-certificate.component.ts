@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConnectionProfileService } from '../../services/connectionprofile.service';
 import { AlertService } from '../../basic-modals/alert.service';
 
 @Component({
@@ -10,17 +9,19 @@ import { AlertService } from '../../basic-modals/alert.service';
 })
 
 export class AddCertificateComponent {
-    fileType = '';
     expandInput: boolean = false;
     maxFileSize: number = 5242880;
     supportedFileTypes: string[] = ['.pem'];
-    addedCertificate: string = '';
+    certAdded: boolean = false;
+    removeDisabled: boolean = true;
+
+    @Input()
+    cert: string = null;
+    sslTargetNameOverride: string = null;
+    type: string = null;
 
     constructor(private alertService: AlertService,
-                public activeModal: NgbActiveModal,
-                private connectionProfileService: ConnectionProfileService) {
-
-        this.addedCertificate = this.connectionProfileService.getCertificate();
+                public activeModal: NgbActiveModal) {
     }
 
     fileDetected() {
@@ -32,22 +33,16 @@ export class AddCertificateComponent {
     }
 
     fileAccepted(file: File) {
+        this.certAdded = true;
         let type = file.name.substring(file.name.lastIndexOf('.'));
 
         this.getDataBuffer(file)
-        .then((data) => {
-            if (this.supportedFileTypes.indexOf(type) > -1) {
-                // Is supported
-                this.expandInput = true;
-                this.createCertificate(type, data);
-            } else {
-                // Not supported
-                throw new Error('Unsupported File Type');
-            }
-        })
-        .catch((err) => {
-            this.fileRejected(err);
-        });
+            .then((data) => {
+                this.cert = data.toString();
+            })
+            .catch((err) => {
+                this.fileRejected(err);
+            });
     }
 
     getDataBuffer(file: File) {
@@ -65,18 +60,16 @@ export class AddCertificateComponent {
         });
     }
 
-    createCertificate(type: string, dataBuffer) {
-        this.fileType = type;
-        this.addedCertificate = dataBuffer.toString();
-    }
-
     fileRejected(reason: string) {
         this.alertService.errorStatus$.next(reason);
     }
 
     addCertificate(): void {
-      let additionalData = {};
-      additionalData['cert'] = this.addedCertificate.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
-      this.activeModal.close(additionalData);
+        let newCert = this.cert.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
+        this.activeModal.close({cert: newCert, sslTargetNameOverride: this.sslTargetNameOverride});
+    }
+
+    removeCertificate(): void {
+      this.activeModal.close(null);
     }
 }

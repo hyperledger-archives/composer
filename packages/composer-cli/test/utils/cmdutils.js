@@ -374,4 +374,28 @@ describe('composer transaction cmdutils unit tests', () => {
         });
     });
 
+    describe('#getArchiveFileContents', () => {
+
+        beforeEach(() => {
+            sandbox.stub(fs, 'existsSync');
+        });
+
+        let PATH = '/test/file/path';
+        let CONTENTS = 'This is a stub response';
+        it('should get the contents of the specified archive file', () => {
+            fs.existsSync.withArgs(PATH).returns(true);
+            fs.readFileSync.withArgs(PATH).returns(CONTENTS);
+            const result = CmdUtil.getArchiveFileContents(PATH);
+            result.should.be.a('String').that.equals(CONTENTS);
+        });
+
+        it('should throw an error when trying to get the contents of the specified archive file which is invalid', () => {
+            let errString = 'Archive file '+PATH+' does not exist.';
+            (() => {
+                fs.existsSync.withArgs(PATH).returns(false);
+                CmdUtil.getArchiveFileContents(PATH);
+            }).should.throw(errString);
+        });
+    });
+
 });

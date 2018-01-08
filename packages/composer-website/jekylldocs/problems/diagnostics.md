@@ -60,30 +60,25 @@ For example
 
 ```
 {
-  "gettingstarted": {
-       "participantId" : "WebAppAdmin",
-       "participantPwd" :"DJY27pEnl16d",
-       "businessNetworkIdentifier" : "digitalproperty-network",
-       "connectionProfile" :"defaultProfile"
+    "gettingstarted": {
+       "cardname": "admin@digitalproperty-network"
     },
     "ComposerConfig": {
-       "debug": {
-         "logger": "default",
-         "config": {
-           "console": {
-             "enabledLevel": "info",
-             "alwaysLevel": "none"
-
-           },
-           "file": {
-             "filename": "./trace_PID.log",
-             "enabledLevel": "silly",
-             "alwaysLevel": "info"
-           }
-         }
-       }
-      }
-
+        "debug": {
+            "logger": "default",
+            "config": {
+                "console": {
+                    "enabledLevel": "info",
+                    "alwaysLevel": "none"
+                },
+                "file": {
+                    "filename": "./trace_PID.log",
+                    "enabledLevel": "silly",
+                    "alwaysLevel": "info"
+                }
+            }
+        }
+    }
 }
 ```
 The first section is specific to the Getting Started application, the second `ComposerConfig` section is for the {{site.data.conrefs.composer_full}}.
