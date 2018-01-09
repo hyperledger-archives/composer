@@ -13,7 +13,7 @@
                 <div class="id">ID Name</div>
                 <div class="status">Status</div>
             </div>
-            <div class="identity" *ngFor="let cardRef of cardRefs" (dblclick)="setCurrentIdentity(cardRef)">
+            <div class="identity" *ngFor="let cardRef of cardRefs" (dblclick)="setCurrentIdentity(cardRef, true)">
                 <div class="selected-border"
                      [ngClass]="{'selected-border--selected': cardRef === currentIdentity}"></div>
                 <div class="id">
@@ -26,7 +26,7 @@
                     <i>In my wallet</i>
                 </div>
                 <div class="actions" *ngIf="cardRef!==currentIdentity">
-                    <button class="clear" (click)="setCurrentIdentity(cardRef)">Use now</button>
+                    <button class="clear" (click)="setCurrentIdentity(cardRef, true)">Use now</button>
                     <button class="clear" (click)="openRemoveModal(cardRef); $event.stopPropagation()">Remove</button>
                 </div>
             </div>

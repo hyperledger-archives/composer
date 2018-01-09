@@ -44,7 +44,7 @@ export class ResourceComponent implements OnInit {
         lineNumbers: true,
         lineWrapping: true,
         readOnly: false,
-        mode: 'javascript',
+        mode: 'application/ld+json',
         autofocus: true,
         extraKeys: {
             'Ctrl-Q': (cm) => {
