@@ -104,6 +104,7 @@ chai.use(require('chai-http'));
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOM',
                 description: 'C',
+                currency: 'RMB',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -127,6 +128,7 @@ chai.use(require('chai-http'));
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOY',
                 description: 'D',
+                currency: 'EURO',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -151,6 +153,7 @@ chai.use(require('chai-http'));
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOY',
                 description: 'E',
+                currency: 'Pound',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -175,6 +178,7 @@ chai.use(require('chai-http'));
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOY',
                 description: 'F',
+                currency: 'USD',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -199,6 +203,7 @@ chai.use(require('chai-http'));
                 $class: 'org.acme.bond.Bond',
                 dayCountFraction: 'EOY',
                 description: 'A',
+                currency: 'USD',
                 exchangeId: [
                     'NYSE'
                 ],
@@ -667,8 +672,7 @@ chai.use(require('chai-http'));
                     res.should.be.json;
                     res.should.have.status(200);
                     res.body.should.deep.equal([
-                        assetData[0],
-                        assetData[2]
+                        assetData[0]
                     ]);
                 });
             });
@@ -863,7 +867,7 @@ chai.use(require('chai-http'));
                 });
             });
 
-            it('should return matches when filtering with compound AND/OR clauses on properties, using json format', () => {
+            it('should return matches when filtering with compound OR/AND clauses on properties, using json format', () => {
                 // (PROPERTY AND PROPERTY) OR (PROPERTY AND PROPERTY) OR (PROPERTY AND PROPERTY)
                 return chai.request(app)
                 .get(`/api/${prefix}BondAsset?filter={"where":{"or":[{"and":[{"bond.description":"A"},{"bond.currency":"Sterling"}]},{"and":[{"bond.dayCountFraction":"EOM"},{"bond.paymentFrequency.periodMultiplier":1}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"bond.faceAmount":{"gte":1000}}]}]}}`)
@@ -891,7 +895,7 @@ chai.use(require('chai-http'));
                 });
             });
 
-            xit('should return matches when filtering with nested AND/OR clauses on properties, using json format', () => {
+            it('should return matches when filtering with nested AND/OR clauses on properties, using json format', () => {
                 // (PROPERTY OR (PROPERTY AND PROPERTY)) AND (PROPERTY AND (PROPERTY OR PROPERTY))
                 return chai.request(app)
                 .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"or":[{"bond.description":"A"},{"and":[{"bond.currency":"Sterling"},{"bond.dayCountFraction":"EOM"}]}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"or":[{"bond.paymentFrequency.periodMultiplier":1}, {"bond.faceAmount":{"gte":1000}}]}]}]}}`)
@@ -899,21 +903,6 @@ chai.use(require('chai-http'));
                     res.should.be.json;
                     res.should.have.status(200);
                     res.body.should.deep.equal([
-                        assetData[0],
-                        assetData[1]
-                    ]);
-                });
-            });
-
-            xit('should return matches when filtering with nested AND/OR clauses on properties, using json format', () => {
-                // (PROPERTY OR (PROPERTY AND PROPERTY)) AND (PROPERTY AND (PROPERTY OR PROPERTY))
-                return chai.request(app)
-                .get(`/api/${prefix}BondAsset?filter={"where":{"and":[{"or":[{"bond.description":"A"},{"and":[{"bond.currency":"Sterling"},{"bond.dayCountFraction":"EOM"}]}]},{"and":[{"bond.maturity":"2018-12-27T21:03:52.000Z"}, {"or":[{"bond.paymentFrequency.periodMultiplier":1}, {"bond.faceAmount":{"gte":1000}}]}]}]}}`)
-                .then((res) => {
-                    res.should.be.json;
-                    res.should.have.status(200);
-                    res.body.should.deep.equal([
-                        assetData[0],
                         assetData[1]
                     ]);
                 });
