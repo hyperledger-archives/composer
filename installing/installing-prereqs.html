@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>IdentityRegistry (Client API) | Hyperledger Composer</title>
+    <title>Installing pre-requisites | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>IdentityRegistry (Client API)</p>
+          <p>Installing pre-requisites</p>
           </div>
 
           <nav class="context-nav">
@@ -259,458 +259,134 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <p><a href="api-doc-index">Overview</a>  -  <a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+              <h1 id="installing-pre-requisites">Installing pre-requisites</h1>
 
-<h1 id="identityregistry">IdentityRegistry</h1>
+<p>The Hyperledger Composer pre-requisites can be installed on Ubuntu or MacOS.  Choose your operating system to jump to the appropriate section, or scroll down to find the instructions:</p>
 
-<p>The IdentityRegistry is used to store a set of identities on the blockchain.</p>
+<p><a href=#ubuntu><button class="secondary">Ubuntu</button></a> <a href=#macos><button class="secondary">Mac OS</button></a></p>
 
-<h3 id="details">Details</h3>
+<p><a name="ubuntu"></a></p>
+
+<h1 id="ubuntu">Ubuntu</h1>
+
+<p>To run Hyperledger Composer and Hyperledger Fabric, we recommend you have at least 4Gb of memory.</p>
+
+<p>The following are prerequisites for installing the required development tools:</p>
 
 <ul>
-<li><p><strong>Extends</strong> Registry</p></li>
-<li><p><strong>Module</strong> client</p></li>
+<li>Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12</li>
+<li>Docker Engine: Version 17.03 or higher</li>
+<li>Docker-Compose: Version 1.8 or higher</li>
+<li>Node: 8.9 or higher (note version 9 is not supported)</li>
+<li>npm: v5.x</li>
+<li>git: 2.9.x or higher</li>
+<li>Python: 2.7.x</li>
+<li>A code editor of your choice, we recommend VSCode.</li>
 </ul>
 
-<h3 id="see-also">See also</h3>
+<p>**If installing Hyperledger Composer using Linux, be aware of the following advice:</p>
 
 <ul>
-<li>See <a href="client-registry">Registry</a></li>
+<li>Login as a normal user, rather than root.</li>
+<li>Do not <code>su</code> to root.</li>
+<li>When installing prerequisites, use curl, then unzip using sudo.</li>
+<li>Run prereqs-ubuntu.sh as a normal user. It may prompt for root password as some of it&#39;s actions are required to be run as root.</li>
+<li>Do not use npm with <code>sudo</code> or <code>su</code> to root to use it.</li>
+<li>Avoid installing node globally as root.**</li>
 </ul>
 
-<h2 id="method-summary">Method Summary</h2>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Returns</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><a href="#add">add</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot add an identity to an identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#addall">addAll</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot add an identity to an identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#getidentityregistry">getIdentityRegistry</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get an existing identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#remove">remove</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot remove an identity from an identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#removeall">removeAll</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot remove an identity from an identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#update">update</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot update an identity in an identity registry</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#updateall">updateAll</a></td>
-<td style="text-align: left"><code>void</code></td>
-<td style="text-align: left">Unsupported operation; you cannot update an identity in an identity registry</td>
-</tr>
-</tbody></table>
-
-<h2 id="inherited-method-summary">Inherited Method Summary</h2>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Supertype</th>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Returns</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Registry</td>
-<td style="text-align: left"><a href="#getall">getAll</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get all of the resources in the registry</td>
-</tr>
-<tr>
-<td style="text-align: left">Registry</td>
-<td style="text-align: left"><a href="#get">get</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get a specific resource in the registry</td>
-</tr>
-<tr>
-<td style="text-align: left">Registry</td>
-<td style="text-align: left"><a href="#exists">exists</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Determines whether a specific resource exists in the registry</td>
-</tr>
-<tr>
-<td style="text-align: left">Registry</td>
-<td style="text-align: left"><a href="#resolveall">resolveAll</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get all of the resources in the registry, and resolve all of their relationships to other assets, participants, and transactions</td>
-</tr>
-<tr>
-<td style="text-align: left">Registry</td>
-<td style="text-align: left"><a href="#resolve">resolve</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Get a specific resource in the registry, and resolve all of its relationships to other assets, participants, and transactions</td>
-</tr>
-</tbody></table>
-
-<h1 id="method-details">Method Details</h1>
-
-<h2 id="getidentityregistry">getIdentityRegistry</h2>
-
-<p><em>Promise getIdentityRegistry( SecurityContext securitycontext, ModelManager modelmanager, Factory factory, Serializer serializer )</em></p>
-
-<p>Get an existing identity registry.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a <a href="client-identityregistry">IdentityRegistry</a> instance representing the identity registry.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>securityContext</strong></td>
-<td style="text-align: left">SecurityContext</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The user&#39;s security context.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>modelManager</strong></td>
-<td style="text-align: left">ModelManager</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The ModelManager to use for this identity registry.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>factory</strong></td>
-<td style="text-align: left">Factory</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The factory to use for this identity registry.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>serializer</strong></td>
-<td style="text-align: left">Serializer</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The Serializer to use for this identity registry.</td>
-</tr>
-</tbody></table>
-
-<h2 id="add">add</h2>
-
-<p>_ add( Resource resource, string data )_</p>
-
-<p>Unsupported operation; you cannot add an identity to an identity registry.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resource</strong></td>
-<td style="text-align: left">Resource</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resource to be added to the registry.</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>data</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The data for the resource.</td>
-</tr>
-</tbody></table>
-
-<h2 id="addall">addAll</h2>
-
-<p>_ addAll(  resources )_</p>
-
-<p>Unsupported operation; you cannot add an identity to an identity registry.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resources</strong></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resources to be added to the registry.</td>
-</tr>
-</tbody></table>
-
-<h2 id="update">update</h2>
-
-<p>_ update( Resource resource )_</p>
-
-<p>Unsupported operation; you cannot update an identity in an identity registry. This method will always throw an exception when called.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resource</strong></td>
-<td style="text-align: left">Resource</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resource to be updated in the registry.</td>
-</tr>
-</tbody></table>
-
-<h2 id="updateall">updateAll</h2>
-
-<p>_ updateAll(  resources )_</p>
-
-<p>Unsupported operation; you cannot update an identity in an identity registry.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resources</strong></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resources to be updated in the asset registry.</td>
-</tr>
-</tbody></table>
-
-<h2 id="remove">remove</h2>
-
-<p>_ remove( Resource; string resource )_</p>
-
-<p>Unsupported operation; you cannot remove an identity from an identity registry. This method will always throw an exception when called.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resource</strong></td>
-<td style="text-align: left">Resource; string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resource, or the unique identifier of the resource.</td>
-</tr>
-</tbody></table>
-
-<h2 id="removeall">removeAll</h2>
-
-<p>_ removeAll( ;  resources )_</p>
-
-<p>Unsupported operation; you cannot remove an identity from an identity registry. This method will always throw an exception when called.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>resources</strong></td>
-<td style="text-align: left">;</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The resources, or the unique identifiers of the resources.</td>
-</tr>
-</tbody></table>
-
-<h2 id="inherited-methods">Inherited methods</h2>
-
-<h2 id="getall">getAll</h2>
+<p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">curl <span class="nt">-O</span> https://hyperledger.github.io/composer/prereqs-ubuntu.sh
 
-<p><em>Promise getAll(  )</em></p>
+<span class="nb">chmod </span>u+x prereqs-ubuntu.sh
+</code></pre></div>
+<p>Next run the script - as this briefly uses sudo during its execution, you will be prompted for your password.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">./prereqs-ubuntu.sh
+</code></pre></div>
+<h2 id="what-next">What next?</h2>
 
-<p><strong>Inherited from:</strong>  Registry</p>
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
 
-<p>Get all of the resources in the registry.</p>
+<p><a name="macos"></a></p>
 
-<h3 id="returns">Returns</h3>
+<h1 id="mac-os">Mac OS</h1>
 
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with an array of JSON objects representing the resources.</p>
+<p>Follow these instructions to install the pre-requsities for installing Hyperledger Composer on a local Mac OS X machine. You need to install these tools <em>before</em> you attempt to install Hyperledger Composer.</p>
 
-<h3 id="see-also">See also</h3>
+<blockquote>
+<p>Note Mac OS X version <code>10.12.6</code> was used for these instructions.</p>
+</blockquote>
 
-<h3 id="parameters">Parameters</h3>
+<h2 id="install-nvm-and-apple-xcode">Install nvm and Apple Xcode</h2>
 
-<p>No parameters</p>
+<p>First install nvm (the Node version manager). nvm is a tool that allows you to easily install, update and switch between versions of Node.js.</p>
 
-<h2 id="get">get</h2>
+<p>Open the terminal (command line) by clicking on the magnifier in the menu bar at the top right of your screen. Type <code>terminal</code> and press enter.</p>
 
-<p><em>Promise get( string id )</em></p>
+<p>In the terminal window paste the text below and press enter:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+</code></pre></div>
+<p>More information on this script and the Node install process is available <a href="https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/">here</a>.</p>
 
-<p><strong>Inherited from:</strong>  Registry</p>
+<p>When you hit enter you should see the pop-up below, prompting you to install <code>git</code>. Press the <code>Get Xcode</code> button to install the full Apple Xcode IDE, including a C++ compiler, used to install native Node.js modules.</p>
 
-<p>Get a specific resource in the registry.</p>
+<p><img src="../installing/install_xcode.png" alt="Image of prompt to install xCode"></p>
 
-<h3 id="returns">Returns</h3>
+<p>The download and install process for Xcode may take 20 minutes or more. Be patient!</p>
 
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with a JSON object representing the resource.</p>
+<p>After the installation of Xcode has completed launch Xcode. Accept the license agreement. It will prompt you for your username and password and will install additional components.</p>
 
-<h3 id="see-also">See also</h3>
+<p>After Xcode finishes installing additional components and launches, simply quit Xcode.</p>
 
-<h3 id="parameters">Parameters</h3>
+<p>Switch back to the terminal and create your bash profile (stores user preferences for bash):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">touch .bash_profile
+</code></pre></div>
+<p>Then rerun the original curl command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+</code></pre></div>
+<p>Close the terminal and reopen it.</p>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The unique identifier of the resource.</td>
-</tr>
-</tbody></table>
+<p>Check that nvm is installed and is accessible:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm —-version
+</code></pre></div>
+<h2 id="install-node">Install Node</h2>
 
-<h2 id="exists">exists</h2>
+<p>Install the latest (long term support) version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm install --lts
+</code></pre></div>
+<p>Switch to the LTS version of Node:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">nvm use --lts
+</code></pre></div>
+<p>Check that Node is installed:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">node --version
+</code></pre></div>
+<h2 id="install-docker">Install Docker</h2>
 
-<p><em>Promise exists( string id )</em></p>
+<p>Follow the instructions here to install Docker for Max (stable):
+<a href="https://docs.docker.com/docker-for-mac/install/">https://docs.docker.com/docker-for-mac/install/</a></p>
 
-<p><strong>Inherited from:</strong>  Registry</p>
+<p>After running the installed Docker application you should have the whale icon in your menu bar, with a green “Docker is running” status.</p>
 
-<p>Determines whether a specific resource exists in the registry.</p>
+<h2 id="install-vscode">Install VSCode</h2>
 
-<h3 id="returns">Returns</h3>
+<p>Install VSCode by visiting:
+<a href="https://code.visualstudio.com">https://code.visualstudio.com</a></p>
 
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with true/false depending on whether the resource exists.</p>
+<p>Press the “Download for Mac” button and copy the downloaded application into your Applications folder.</p>
 
-<h3 id="see-also">See also</h3>
+<h2 id="install-the-hyperledger-composer-extension-for-vscode">Install the Hyperledger Composer Extension for VSCode</h2>
 
-<h3 id="parameters">Parameters</h3>
+<p>Launch VSCode and then press the “Extensions” button on the vertical left toolbar.</p>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The unique identifier of the resource.</td>
-</tr>
-</tbody></table>
+<p>Type <code>composer</code> into the search bar and then press the <code>Install</code> button next to the <code>Hyperleger Composer</code> extension. Once the install completes you need to press the <code>Reload</code> button to activate the extension.</p>
 
-<h2 id="resolveall">resolveAll</h2>
+<h2 id="what-next">What next?</h2>
 
-<p><em>Promise resolveAll(  )</em></p>
-
-<p><strong>Inherited from:</strong>  Registry</p>
-
-<p>Get all of the resources in the registry, and resolve all of their relationships to other assets, participants, and transactions. The result is a JavaScript object, and should only be used for visualization purposes. You cannot use the <a href="#add">add</a> or <a href="#update">update</a> functions with a resolved resource.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with an array of JavaScript objects representing the resources and all of their resolved relationships.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<p>No parameters</p>
-
-<h2 id="resolve">resolve</h2>
-
-<p><em>Promise resolve( string id )</em></p>
-
-<p><strong>Inherited from:</strong>  Registry</p>
-
-<p>Get a specific resource in the registry, and resolve all of its relationships to other assets, participants, and transactions. The result is a JavaScript object, and should only be used for visualization purposes. You cannot use the  <a href="#add">add</a> or <a href="#update">update</a> functions with a resolved resource.</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> - A promise that will be resolved with a JavaScript object representing the resource and all of its resolved relationships.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>id</strong></td>
-<td style="text-align: left">string</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The unique identifier of the asset.</td>
-</tr>
-</tbody></table>
+<blockquote>
+<p>Congratulations, the installation of the pre-requisites for Hyperledger Composer is complete! You can now proceed with <a href="../installing/development-tools.html">Installing the development environment</a>.</p>
+</blockquote>
 
             
           </section>
