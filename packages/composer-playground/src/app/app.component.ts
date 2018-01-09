@@ -117,17 +117,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.fileService.deleteAllFiles();
                 this.showWelcome = false;
 
-                try {
-                  this.config = this.configService.getConfig();
-                  this.composerBanner = this.config['banner'];
-                } catch (err) {
-                  this.configService.loadConfig()
-                  .then((config) => {
-                      this.config = config;
-                      this.composerBanner = config['banner'];
-                  });
-                }
-
                 return this.router.navigate(['/login']);
             });
     }
@@ -145,13 +134,24 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
             this.showHeaderLinks = false;
+            try {
+              this.config = this.configService.getConfig();
+              this.composerBanner = this.config['banner'];
+            } catch (err) {
+              this.configService.loadConfig()
+              .then((config) => {
+                  this.config = config;
+                  this.composerBanner = config['banner'];
+              });
+            }
+
         } else {
             this.showHeaderLinks = true;
             this.clientService.ensureConnected()
                 .then(() => {
                     let card: IdCard = this.identityCardService.getCurrentIdentityCard();
                     let connectionProfile = card.getConnectionProfile();
-                    let profileName = 'web' === connectionProfile.type ? 'Web' : connectionProfile.name;
+                    let profileName = 'web' === connectionProfile['x-type'] ? 'Web' : connectionProfile.name;
                     let busNetName = this.clientService.getBusinessNetwork().getName();
                     this.composerBanner = [profileName, busNetName];
                 });
@@ -190,7 +190,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (busyStatus && !busyStatus.force) {
             let card: IdCard = this.identityCardService.getCurrentIdentityCard();
-            if (!card || (card && card.getConnectionProfile().type === 'web')) {
+            if (!card || (card && card.getConnectionProfile()['x-type'] === 'web')) {
                 // Don't show the modal for the web runtime, as it's too fast to care.
                 return;
             }

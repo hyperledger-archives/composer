@@ -30,13 +30,17 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
         ./stopFabric.sh
         ./teardownFabric.sh
         ./downloadFabric.sh
-        export FABRIC_VERSION=hlfv11        
+        export FABRIC_VERSION=hlfv11
         ./startFabric.sh
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
 
         composer card delete -n PeerAdmin@fabric-network
         composer card delete -n admin@tutorial-network
+
+If these commands fail, then you have network cards from a previous version and you will have to delete the file system card store.
+
+        rm -fr ~/.composer
 
 ## Step Two: Exploring the {{site.data.conrefs.hlf_full}} network
 
@@ -98,93 +102,177 @@ A connection profile specifies all of the information required to locate and con
 
 1. Create a connection profile file called `connection.json`.
 
-2. Give the connection profile `name` and `type` properties by adding the following three lines to the top of `connection.json`:
+2. Give the connection profile `name`, `version` and `x-type` properties by adding the following three lines to the top of `connection.json`:
 
         {
-          "name": "fabric-network",
-          "type": "hlfv1",
+            "name": "fabric-network",
+            "x-type": "hlfv1",
+            "version": "1.0.0",
 
       The `name` property in a connection profile gives a name to the {{site.data.conrefs.hlf_full}} network, so we can reference it later on. In the connection profile you have just created, the name is `fabric-network`. You can use any name you like for the {{site.data.conrefs.hlf_full}} network.
 
-      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.0 is supported, but you must specify the type of blockchain network to use. The type for {{site.data.conrefs.hlf_full}} v1.0 is `hlfv1`.
+      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.0 is supported, but you must specify the type of blockchain network to use. The x-type for {{site.data.conrefs.hlf_full}} v1.0 is `hlfv1`.
 
-3. The name of the MSP that is used to connect to the {{site.data.conrefs.hlf_full}} network must be specified:
+      The version number is the version of this connection profile format. Currently there is only 1 version of `1.0.0`.
 
-        "mspID": "Org1MSP",
+      There is also an optional property `x-commitTimeout` which can also be specified with defines how long {{site.data.conrefs.composer_full}} should wait for a submitted transaction to be committed to your organization's peer before
+      giving up waiting. The default if not specified is `300 seconds`.
 
-     We are connecting as `Org1`, and the MSP for `Org1` is called `Org1MSP`.
+3. We must specify the host names and ports of all of the peer nodes in the {{site.data.conrefs.hlf_full}} network. There is only 1 peer and we give it a label of `peer0.org1.example.com`.
 
-4. We must specify the host names and ports of all of the peer nodes in the {{site.data.conrefs.hlf_full}} network that we want to connect to.
-
-        "peers": [
-            {
-                "requestURL": "grpc://localhost:7051",
-                "eventURL": "grpc://localhost:7053"
-            }
-        ],
+            "peers": {
+                "peer0.org1.example.com": {
+                    "url": "grpc://localhost:7051",
+                    "eventUrl": "grpc://localhost:7053"
+                }
+            },
 
     Here, we have specified our single peer node `peer0.org1.example.com` (using the host name `localhost`), the request port 7051, and the event hub port 7053.
 
-    The `peers` array can contain multiple peer nodes. If you have multiple peer nodes, you should add them all to the `peers` array so that {{site.data.conrefs.composer_full}} can interact with them.
+    The `peers` array can contain multiple peer nodes. If you have multiple peer nodes, you should add them all to the `peers` object.
 
+4. We must specify the host name and port of the certificate authority (CA) in the {{site.data.conrefs.hlf_full}} network that we want to use for enrolling existing users and registering new users.
+
+            "certificateAuthorities": {
+                "ca.org1.example.com": {
+                    "url": "http://localhost:7054",
+                    "caName": "ca.org1.example.com"
+                }
+            },
+
+    Here we have specified our single CA `ca.org1.example.com` (using the hostname `localhost`) and the CA port 7054, and we also label this entry as `ca-org1.example.com`
+
+5. We must specify the host names and ports of all of the ordering nodes in the {{site.data.conrefs.hlf_full}} that we want to connect to.
+
+            "orderers": {
+                "orderer.example.com": {
+                    "url": "grpc://localhost:7050"
+                }
+            },
+
+
+    Here, we have specified our single orderer node `orderer.example.com` (using the hostname `localhost`) and the orderer port 7050 and we also label this as `orderer.example.com`.
+
+    The `orderers` object can contain multiple orderer nodes. If you have multiple orderer nodes, you should add them all to the `orderers` object.
+
+6. We now must specify all the organizations in the network. In this tutorial there is only 1 organization, `Org1`.
+
+            "organizations": {
+                "Org1": {
+                    "mspid": "Org1MSP",
+                    "peers": [
+                        "peer0.org1.example.com"
+                    ],
+                    "certificateAuthorities": [
+                        "ca.org1.example.com"
+                    ]
+                }
+            },
+
+    Here we are describing the owners of the peers and who their certificate authority is plus we also declare the MSP id that has been defined for this organisation. In this tutorial it has been defined as `Org1MSP`.
+
+7. We must specify the name of an existing channel. We will deploy our blockchain business network into the channel `composerchannel`. This is defined in the channels object.
+
+            "channels": {
+                "composerchannel": {
+                    "orderers": [
+                        "orderer.example.com"
+                    ],
+                    "peers": {
+                        "peer0.org1.example.com": {
+                            "endorsingPeer": true,
+                            "chaincodeQuery": true,
+                            "eventSource": true
+                        }
+                    }
+                }
+            },
+
+    Here we are defined the channel `composerchannel` and also the orderers and peers that are part of that channel. We also specify the roles the peer will perform in this channel. In this tutorial we have added the single orderer and single peer defined earlier referenced using their labels. The peer will have the business network installed so will be a transaction endorser, able to handle chaincode queries and also generate events.
     The blockchain business network will be deployed to all of the specified peer nodes. Once the blockchain business network has been deployed, the specified peer nodes will be used for querying the blockchain business network, endorsing transactions, and subscribing to events.
 
-5. We must specify the host name and port of the certificate authority (CA) in the {{site.data.conrefs.hlf_full}} network that we want to use for enrolling existing users and registering new users.
+8. The final section this is required is the client section. This is used by client applications (such as {{site.data.conrefs.composer_full}}) to know what organization it is representing when interacting and also some extra optional timeouts.
 
-        "ca": {
-            "url": "http://localhost:7054",
-            "name": "ca.org1.example.com"
-        },
-
-    Here we have specified our single CA `ca.or1.example.com` (using the hostname `localhost`) and the CA port 7054.
-
-6. We must specify the host names and ports of all of the ordering nodes in the {{site.data.conrefs.hlf_full}} that we want to connect to.
-
-        "orderers": [
-            {
-                "url" : "grpc://localhost:7050"
+            "client": {
+                "organization": "Org1",
+                "connection": {
+                    "timeout": {
+                        "peer": {
+                            "endorser": "300",
+                            "eventHub": "300",
+                            "eventReg": "300"
+                        },
+                        "orderer": "300"
+                    }
+                }
             }
-        ],
-
-    Here, we have specified our single orderer node `orderer.example.com` (using the hostname `localhost`) and the orderer port 7050.
-
-    The `orderers` array can contain multiple orderer nodes. If you have multiple orderer nodes, you should add them all to the `orderers` array so that {{site.data.conrefs.composer_full}} can interact with them.
-
-7. We must specify the name of an existing channel. We will deploy our blockchain business network into the channel `composerchannel`.
-
-        "channel": "composerchannel",
-
-8. Finally, we can optionally specify a timeout for endorsing transactions when interacting with a blockchain business network.
-
-          "timeout": 300
         }
 
-    Here, we have specified a timeout of 300 seconds. If a transaction takes longer than 300 seconds to endorse, then a timeout error will be thrown.
+Here we are specifying that we are in `Org1`. The timeouts are used to determine how long to wait for a response when interacting with a peer or orderer and the values are specified in seconds. If you don't specify anything then the default is `45 seconds`.
+
 
 9. Save your changes to `connection.json`. The completed connection profile should look like the following:
 
         {
-          "name": "fabric-network",
-          "type": "hlfv1",
-          "mspID": "Org1MSP",
-          "peers": [
-              {
-                  "requestURL": "grpc://localhost:7051",
-                  "eventURL": "grpc://localhost:7053"
-              }
-          ],
-          "ca": {
-              "url": "http://localhost:7054",
-              "name": "ca.org1.example.com"
-          },
-          "orderers": [
-              {
-                  "url" : "grpc://localhost:7050"
-              }
-          ],
-          "channel": "composerchannel",
-          "timeout": 300
-        }
+            "name": "fabric-network",
+            "x-type": "hlfv1",
+            "version": "1.0.0",
+            "peers": {
+                "peer0.org1.example.com": {
+                    "url": "grpc://localhost:7051",
+                    "eventUrl": "grpc://localhost:7053"
+                }
+            },
+            "certificateAuthorities": {
+                "ca.org1.example.com": {
+                    "url": "http://localhost:7054",
+                    "caName": "ca.org1.example.com"
+                }
+            },
+            "orderers": {
+                "orderer.example.com": {
+                    "url": "grpc://localhost:7050"
+                }
+            },
+            "organizations": {
+                "Org1": {
+                    "mspid": "Org1MSP",
+                    "peers": [
+                        "peer0.org1.example.com"
+                    ],
+                    "certificateAuthorities": [
+                        "ca.org1.example.com"
+                    ]
+                }
+            },
+            "channels": {
+                "composerchannel": {
+                    "orderers": [
+                        "orderer.example.com"
+                    ],
+                    "peers": {
+                        "peer0.org1.example.com": {
+                            "endorsingPeer": true,
+                            "chaincodeQuery": true,
+                            "eventSource": true
+                        }
+                    }
+                }
+            },
+            "client": {
+                "organization": "Org1",
+                "connection": {
+                    "timeout": {
+                        "peer": {
+                            "endorser": "300",
+                            "eventHub": "300",
+                            "eventReg": "300"
+                        },
+                        "orderer": "300"
+                    }
+                }
+            }
+        } 
 
 ## Step Four: Locating the certificate and private key for the {{site.data.conrefs.hlf_full}} administrator
 

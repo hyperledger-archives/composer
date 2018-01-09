@@ -380,6 +380,7 @@ describe('Connection', () => {
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
+                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
             });
 
         });
@@ -411,6 +412,7 @@ describe('Connection', () => {
             .then(()=>{
                 sinon.assert.called(Util.invokeChainCode);
                 sinon.assert.called(Util.queryChainCode);
+                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
             });
 
         });

@@ -83,7 +83,7 @@ export class IdentityComponent implements OnInit {
             .then((result) => {
                 if (result) {
                     let connectionProfile = this.identityCardService.getCurrentIdentityCard().getConnectionProfile();
-                    if (connectionProfile.type === 'web') {
+                    if (connectionProfile['x-type'] === 'web') {
                         return this.addIdentityToWallet(result);
                     } else {
                         return this.showNewId(result);
@@ -150,7 +150,9 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    setCurrentIdentity(cardRef: string): Promise<void> {
+    setCurrentIdentity(cardRef: string, revertOnError: boolean): Promise<void> {
+        let startIdentity = this.currentIdentity;
+
         if (this.currentIdentity === cardRef) {
             return Promise.resolve();
         }
@@ -171,6 +173,9 @@ export class IdentityComponent implements OnInit {
             .catch((error) => {
                 this.alertService.busyStatus$.next(null);
                 this.alertService.errorStatus$.next(error);
+                if (revertOnError) {
+                    this.setCurrentIdentity(startIdentity, false);
+                }
             });
     }
 

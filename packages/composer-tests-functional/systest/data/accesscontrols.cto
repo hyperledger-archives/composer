@@ -13,6 +13,35 @@ participant SampleParticipant identified by email {
   --> SampleAsset asset
 }
 
-transaction SampleTransaction {
 
+transaction SampleTransaction {
+   
+}
+
+asset txAsset identified by assetId {
+  o String assetId
+  o String theValue
+}
+
+transaction UpdateAssetValue {
+  o txAsset  theAsset
+  o String   newValue 
+}
+
+
+
+asset Answer identified by aid {
+  o String aid
+  o String text
+}
+
+asset Question identified by qid {
+  o String qid
+  o String question
+  --> Answer correctAnswer
+}
+
+transaction MarkQuestion {
+  o String text
+  --> Question question
 }

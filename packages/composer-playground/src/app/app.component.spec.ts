@@ -177,7 +177,7 @@ describe('AppComponent', () => {
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockAdminService = sinon.createStubInstance(AdminService);
         mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getConnectionProfile.returns({name: '$default', type: 'web'});
+        mockIdCard.getConnectionProfile.returns({'name': '$default', 'x-type': 'web'});
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
         mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
@@ -245,6 +245,7 @@ describe('AppComponent', () => {
         let busyStatusSubscribeSpy;
         let errorStatusSubscribeSpy;
         let eventSubscribeSpy;
+        let myConfig;
 
         beforeEach(async(() => {
             mockOnBusy = sinon.stub(component, 'onBusyStatus');
@@ -254,6 +255,21 @@ describe('AppComponent', () => {
             busyStatusSubscribeSpy = sinon.spy(mockAlertService.busyStatus$, 'subscribe');
             errorStatusSubscribeSpy = sinon.spy(mockAlertService.errorStatus$, 'subscribe');
             eventSubscribeSpy = sinon.spy(mockAlertService.transactionEvent$, 'subscribe');
+
+            myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockConfigService.getConfig.returns(myConfig);
         }));
 
         it('should create', () => {
@@ -430,20 +446,6 @@ describe('AppComponent', () => {
         }));
 
         it('should set the config using get config if config is loaded', fakeAsync(() => {
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-
-            mockConfigService.getConfig.returns(myConfig);
-
             let myTitleSpy = sinon.spy(component, 'setTitle');
 
             updateComponent();
@@ -455,18 +457,6 @@ describe('AppComponent', () => {
         }));
 
         it('should set the config using load config if getConfig fails', fakeAsync(() => {
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-
             mockConfigService.getConfig.throws(new Error('error'));
             mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
 
@@ -577,6 +567,63 @@ describe('AppComponent', () => {
 
             testLink.navigatedTo.should.deep.equal(['identity']);
         });
+
+        it('should reset the config when hitting /login', fakeAsync(() => {
+            component['config'] = new Config();
+            component['composerBanner'] = ['Business Network', 'Name'];
+
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockConfigService.getConfig.returns(myConfig);
+
+            routerStub.eventParams = {url: '/login', nav: 'end', urlAfterRedirects: '/login'};
+
+            updateComponent();
+
+            tick();
+            component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(['My', 'Banner']);
+        }));
+
+        it('should reset the config when hitting /login using loadConfig when getConfig fails', fakeAsync(() => {
+            component['config'] = new Config();
+            component['composerBanner'] = ['Business Network', 'Name'];
+
+            let myConfig = new Config();
+            myConfig.webonly = true;
+            myConfig.title = 'My Title';
+            myConfig.banner = ['My', 'Banner'];
+            myConfig.links = {
+              docs: 'My Docs',
+              tutorial: 'My Tutorial',
+              community: 'My Community',
+              github: 'My Github',
+              install: 'My Install'
+            };
+            myConfig.analyticsID = 'myID';
+
+            mockConfigService.getConfig.throws(new Error('error'));
+            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
+
+            routerStub.eventParams = {url: '/login', nav: 'end', urlAfterRedirects: '/login'};
+
+            updateComponent();
+
+            tick();
+            component['config'].should.deep.equal(myConfig);
+            component['composerBanner'].should.deep.equal(['My', 'Banner']);
+        }));
     });
 
     describe('queryParamsUpdated', () => {
@@ -1133,65 +1180,6 @@ describe('AppComponent', () => {
             mockClientService.disconnect.should.have.been.called;
             mockFileService.deleteAllFiles.should.have.been.called;
             routerStub.navigate.should.have.been.calledWith(['/login']);
-        }));
-
-        it('should set the config using get config if config is loaded', fakeAsync(() => {
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-            myConfig.analyticsID = 'myID';
-
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            routerStub.navigate.returns(Promise.resolve(true));
-            activatedRoute.testParams = {};
-            mockConfigService.getConfig.returns(myConfig);
-
-            updateComponent();
-
-            component.logout();
-
-            tick();
-
-            component['config'].should.deep.equal(myConfig);
-            component['composerBanner'].should.deep.equal(myConfig['banner']);
-        }));
-
-        it('should set the config using load config if getConfig fails', fakeAsync(() => {
-            let myConfig = new Config();
-            myConfig.webonly = true;
-            myConfig.title = 'My Title';
-            myConfig.banner = ['My', 'Banner'];
-            myConfig.links = {
-              docs: 'My Docs',
-              tutorial: 'My Tutorial',
-              community: 'My Community',
-              github: 'My Github',
-              install: 'My Install'
-            };
-            myConfig.analyticsID = 'myID';
-
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            routerStub.navigate.returns(Promise.resolve(true));
-            activatedRoute.testParams = {};
-            mockConfigService.getConfig.throws(new Error('error'));
-            mockConfigService.loadConfig.returns(Promise.resolve(myConfig));
-
-            updateComponent();
-
-            component.logout();
-
-            tick();
-
-            component['config'].should.deep.equal(myConfig);
-            component['composerBanner'].should.deep.equal(myConfig['banner']);
         }));
     });
 

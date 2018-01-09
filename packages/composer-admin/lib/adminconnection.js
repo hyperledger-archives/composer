@@ -79,7 +79,7 @@ class AdminConnection {
         let connectionManager;
         connectionProfileData.cardName = name;
         let updated = false;
-        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
             .then((connectionManager_) => {
                 connectionManager = connectionManager_;
                 return this.cardStore.has(name);
@@ -126,7 +126,7 @@ class AdminConnection {
                     // check to make sure the credentials are present and if not then extract them.
                     let connectionProfileData = card.getConnectionProfile();
                     connectionProfileData.cardName = cardName;
-                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type)
+                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
                         .then((connectionManager) => {
                             return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
                         })
@@ -166,7 +166,7 @@ class AdminConnection {
             connectionProfileData = card.getConnectionProfile();
             cardUserName = card.getUserName();
             connectionProfileData.cardName = name;
-            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
         })
         .then((connectionManager_) => {
             connectionManager = connectionManager_;
@@ -204,35 +204,6 @@ class AdminConnection {
      */
     hasCard (name) {
         return this.cardStore.has(name);
-    }
-
-    /**
-     * THIS METHOD SHOULD NOT BE USED
-     * Connects and logs in to the Hyperledger Fabric using a named connection
-     * profile.
-     * @example
-     * asd
-     * The connection profile must exist in the profile store.
-     * @param {String} connectionProfile - The name of the connection profile
-     * @param {String} enrollmentID the enrollment ID of the user
-     * @param {String} enrollmentSecret the enrollment secret of the user
-     * @param {String} businessNetworkIdentifier the id of the network (for update) or null
-     * @return {Promise} A promise that indicates the connection is complete
-     * @deprecated
-     * @private
-     */
-    connectWithDetails (connectionProfile, enrollmentID, enrollmentSecret, businessNetworkIdentifier) {
-        return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier)
-            .then((connection) => {
-                this.connection = connection;
-                return connection.login(enrollmentID, enrollmentSecret);
-            })
-            .then((securityContext) => {
-                this.securityContext = securityContext;
-                if (businessNetworkIdentifier) {
-                    return this.ping(this.securityContext);
-                }
-            });
     }
 
     /**
@@ -392,7 +363,7 @@ class AdminConnection {
         // identity to a network admin participant.
         return Promise.resolve()
             .then(() => {
-                return businessNetworkDefinition.toArchive();
+                return businessNetworkDefinition.toArchive({ date: new Date(545184000000) });
             })
             .then((businessNetworkArchive) => {
 
@@ -925,7 +896,7 @@ class AdminConnection {
             .then((result) => {
                 card = result;
                 connectionProfileData = card.getConnectionProfile();
-                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData.type);
+                return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
             })
             .then((connectionManager) => {
 
