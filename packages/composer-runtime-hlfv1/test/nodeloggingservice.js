@@ -33,6 +33,7 @@ describe('NodeLoggingService', () => {
         loggingService = new NodeLoggingService();
         sandbox = sinon.sandbox.create();
         mockStub = sinon.createStubInstance(MockStub);
+        mockStub.getTxID.returns('1548a95f57863bce4566');
         loggingService.stub = mockStub;
         mockStub.putState.resolves();
     });
@@ -321,7 +322,7 @@ describe('NodeLoggingService', () => {
     describe('#_outputMessage', () => {
 
         it('should output a message', () => {
-            loggingService._outputMessage();
+            loggingService._outputMessage('a message', 500);
         });
     });
 });

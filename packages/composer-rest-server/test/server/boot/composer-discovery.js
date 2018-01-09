@@ -43,7 +43,7 @@ describe('composer-discovery boot script', () => {
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
 
-        let idCard_PeerAdmin = new IdCard(metadata, {type : 'embedded',name:'defaultProfile'});
+        let idCard_PeerAdmin = new IdCard(metadata, {'x-type' : 'embedded',name:'defaultProfile'});
         let businessNetworkDefinition;
 
         return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
@@ -61,7 +61,7 @@ describe('composer-discovery boot script', () => {
             return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
         })
         .then(() => {
-            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', type: 'embedded' });
+            idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
             return adminConnection.importCard('admin@bond-network', idCard);
         });
     });
@@ -99,6 +99,10 @@ describe('composer-discovery boot script', () => {
                 app.models.org_acme_bond_Bond.should.exist;
                 app.models.org_acme_bond_BondAsset.should.exist;
                 app.models.org_acme_bond_PublishBond.should.exist;
+                app.models.org_acme_bond_BaseAsset.should.exist;
+                app.models.org_acme_bond_BaseConcept.should.exist;
+                app.models.org_acme_bond_BaseParticipant.should.exist;
+                app.models.org_acme_bond_BaseTransaction.should.exist;
             });
     });
 
@@ -114,6 +118,10 @@ describe('composer-discovery boot script', () => {
                 app.models.Bond.should.exist;
                 app.models.BondAsset.should.exist;
                 app.models.PublishBond.should.exist;
+                app.models.BaseAsset.should.exist;
+                app.models.BaseConcept.should.exist;
+                app.models.BaseParticipant.should.exist;
+                app.models.BaseTransaction.should.exist;
             });
     });
 

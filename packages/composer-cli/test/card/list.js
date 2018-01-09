@@ -66,6 +66,25 @@ describe('composer card list CLI', function() {
         });
     });
 
+    it('should succeed for some cards when using the "quiet" flag', function() {
+        const cardName1 = 'BlueCard';
+        const cardName2a= 'GreenCard=a';
+        const cardName2b = 'GreenCard=b';
+        let testCard1 = new IdCard({ userName: 'conga1' }, { name: 'blue-profileName' });
+
+        let testCard2a = new IdCard({ userName: 'conga2' }, { name: 'green-profileName' });
+        let testCard2b = new IdCard({ userName: 'conga3' }, { name: 'green-profileName' });
+        const cardMap = new Map([[cardName1, testCard1],[cardName2a, testCard2a],[cardName2b, testCard2b]]);
+
+        adminConnectionStub.getAllCards.resolves(cardMap);
+        const args = {'quiet': true};
+        return ListCmd.handler(args).then(() => {
+            sinon.assert.calledWith(consoleLogSpy, cardName1);
+            sinon.assert.calledWith(consoleLogSpy, cardName2a);
+            sinon.assert.calledWith(consoleLogSpy, cardName2b);
+        });
+    });
+
     describe('should handle the information for one card',()=>{
         it('show card details for one card',()=>{
             let x;
