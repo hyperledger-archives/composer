@@ -10,52 +10,54 @@ index-order: 810
 
 # {{site.data.conrefs.hlf_full}}
 
-There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network deploy`, and `composer identity issue`.
+There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network deploy`, and `composer identity issue`. The `--option, -o` option and the `--optionsFile, -O` option allow connector specific information to be sent.
 
-The `--option, -o` option and the `--optionsFile, -O` option available on the certain commands allow connection specific information to be sent.
+Multiple options can be specified using the `--option, -o` by repeating the tag, for example:
 
-You can specify multiple options using the `--option, -o` by repeating the tag, for example 
 ```
 composer somecmd -o thisOpt=value2 -o thatOpt=value2
 ```
 
-Alternatively you can create a single file to contain multiple options, for example a file called someCmdOpts.txt could contain
+Alternatively you can create a single file to contain multiple options, for example a file called `someCmdOpts.txt` could contain:
 
 ```
 thisOpt=value1
 thatOpt=value2
 ```
 
-and use this file
+To reference an options file, use the following format:
+
 ```
 composer somecmd --optionsFile=someCmdOpts.txt
 ```
 
-Some API's will also include the option to pass a generic options object including AdminConnection.start() and AdminConnection.install()
+Some API's will also include the option to pass a generic options object including `AdminConnection.start()` and `AdminConnection.install()`
 
-## providing npm config settings for install/deploy
+## Providing npm config settings for install and deploy
 
 ### CLI
-The following option is available is available on the `composer runtime install` and `composer network start` commands.
-- npmrcFile
-Allows you to specify npm configuration information when {{site.data.conrefs.hlf_full}} builds the chaincode image
-for the {{site.data.conrefs.composer_full}} runtime. 
-For example you may not want to go directly to the default npm registry, you may want to go to an internal one within your organsation. To do this, create a file with the following
-contents
+The `npmrcFile` option is available is available on the `composer runtime install` and `composer network start` commands.
+
+The `npmrcFile` option allows you to specify npm configuration information when {{site.data.conrefs.hlf_full}} builds the chaincode image for the {{site.data.conrefs.composer_full}} runtime.
+
+For example rather than using the default npm registry, you can specify an internal registry within your organization by including the `registry` option in an options file:
 
 ```
 registry=http://mycompanynpmregistry.com:4873
 ```
-Pass the fully qualified filename as part of an install or deploy option, for example if the file was called npmConfig
-in your /home/user1/config directory
+
+Supply the fully qualified filename as part of an install or deploy command, for example if the file was called npmConfig
+in your /home/user1/config directory:
+
 ```
 composer runtime install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
 ```
-the file contents can be anything that are permitted in the `.npmrc` configuration files of npm.
+
+The file contents can be anything that permitted in the `.npmrc` configuration files of npm.
 
 ### Admin API
 
-You can pass the name of the file as part of the AdminConnection api on either the install or deploy methods by specifying the `npmrcFile` property on the installOptions or deployOptions object. For example to pass the name of the npm configuration options file to be provided on install you might do
+You can supply the name of the file as part of the AdminConnection api on the install or deploy methods by specifying the `npmrcFile` property on the `installOptions` or `deployOptions` object. For example to pass the name of the npm configuration options file to be provided on install:
 
 ```
 await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
@@ -68,20 +70,22 @@ await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '
 
 {{site.data.conrefs.hlf_full}} endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
-- Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
+- Using the `-o` option, the endorsement policy can be sent either as a single-line JSON string or as a fully qualified file path:
 
-        composer network start -o endorsementPolicy='{"identities": [.... }'
+```
+composer network start -o endorsementPolicy='{"identities": [.... }'
+```
 
-- Using the `-o` option, the endorsement policy can be sent as a file path as follows:
+```
+composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+```
 
-        composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
-
-	In this case, the endorsement policy file should follow this format:
+When a file path is specified, the endorsement policy file should follow this format:
 
 		{"identities":[...],
 			"policy": {...}}
 
-- Using the `-O` option, the endorsement policy can be sent as a file path as follows:
+- Using the `-O` option, the endorsement policy must be sent as a file path as follows:
 
         composer network start -O /path/to/file/options.json
 
@@ -97,7 +101,7 @@ For more information on writing {{site.data.conrefs.hlf_full}} endorsement polic
 
 ### Admin API
 
-To be able to send an endorsement policy via the Admin api, you include this as part of the startOptions or deployOptions object when calling start or deploy respectively. To pass an endorsement policy file you specify it in the object property `endorsementPolicyFile` and if you want to pass a JSON object of the policy you specify the object property `endorsementPolicy`. So for example to send a endorsement policy file on a start request I might do
+To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the `startOptions` or `deployOptions` objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property `endorsementPolicyFile`. To supply the policy as a JSON object, the `endorsementPolicy` object property must be specified.
 
 ```
 await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
@@ -105,19 +109,19 @@ await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkA
 
 ## Identity Issue
 
-You can specify whether the identity you issue has issuer authority, ie that identity can also register new identities on a fabric-ca server. 
+When a new identity is issued, the `-o` option can be used to specify whether the issued identity has the authority to register new identities with a {{site.data.conrefs.hlf_full}} certificate authority server.
 
 ### CLI
-The available option is
-- issuer
 
-For example to issue an identity that itself have issuer authority and bind it to an existing participant you might do
+To grant an identity the authority to register new identities with a certificate authority from the command line, the `issuer` option must be supplied after the `-o` option in the following format:
+
 ```
 composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
 ```
 
 ## API
-To specify the issuer property you set it in an object and pass this object as part of the issueOptions on issueIdentity.
+
+To specify the issuer property you set it in an object and pass this object as part of the `issueOptions` on `issueIdentity`.
 For example to issue an identity that has issuer authority
 ```
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});

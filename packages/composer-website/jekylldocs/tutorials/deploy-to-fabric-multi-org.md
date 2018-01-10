@@ -193,7 +193,7 @@ We need a base connection profile that describes this fabric network which can t
                 "mspid": "Org1MSP",
                 "peers": [
                     "peer0.org1.example.com",
-                    "peer1.org1.example.com",
+                    "peer1.org1.example.com"
                 ],
                 "certificateAuthorities": [
                     "ca.org1.example.com"
@@ -203,7 +203,7 @@ We need a base connection profile that describes this fabric network which can t
                 "mspid": "Org2MSP",
                 "peers": [
                     "peer0.org2.example.com",
-                    "peer1.org2.example.com",
+                    "peer1.org2.example.com"
                 ],
                 "certificateAuthorities": [
                     "ca.org2.example.com"
@@ -275,29 +275,43 @@ We need a base connection profile that describes this fabric network which can t
         }
     }
 
+When working with the certificates it is recommended to create a temporary working directory to create the Composer connection profiles:
+
+    mkdir -p /tmp/composer/org1
+    mkdir -p /tmp/composer/org2
+
 You need to replace all instances of the text `INSERT_ORG1_CA_CERT` with the CA certificate for the peer nodes for `Org1`:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.
 
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt > /tmp/ca-org1.txt
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt > /tmp/composer/org1/ca-org1.txt
 
 copy the contents of the file `/tmp/ca-org1.txt` and replace the text `INSERT_ORG1_CA_CERT`. It should now look something like this
-    "pem": "-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n"
+
+```
+"pem": "-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n"
+```
 
 You need to replace all instances of the text `INSERT_ORG2_CA_CERT` with the CA certificate for the peer nodes for `Org2`:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.
 
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt > /tmp/ca-org2.txt
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt > /tmp/composer/org2/ca-org2.txt
 
-copy the contents of the file `/tmp/ca-org2.txt` and replace the text `INSERT_ORG2_CA_CERT`.
+Copy the contents of the file `/tmp/ca-org2.txt` and replace the text `INSERT_ORG2_CA_CERT`.
 
 You need to replace all instances of the text `INSERT_ORDERER_CA_CERT` with the CA certificate for the orderer node:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.
 
-    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt > /tmp/ca-orderer.txt
+    awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt > /tmp/composer/ca-orderer.txt
 
 copy the contents of the file `/tmp/ca-orderer.txt` and replace the text `INSERT_ORDERER_CA_CERT`.
 
 Once done, save this file as `connection-network.json`.
+
+Run the following commands to create connection profiles for Org1 and Org2:
+
+    cd /tmp/composer
+    cp connection-network.json ./org1/connection-org1.json
+    cp connection-network.json ./org2/connection-org2.json
 
 This connection profile now describes the fabric network setup, all the peers, orderers and certificate authorities that are part of the network, it defines all the organizations that are participating in the network and also defines the channel's on this network. {{site.data.conrefs.composer_full}} can only interact with a single channel so only one channel should be defined.
 
@@ -409,7 +423,7 @@ If the command works successfully, a business network card file called `PeerAdmi
 
 Run the `composer card import` command to import the business network card for `Org1` into the wallet:
 
-    composer card import -f PeerAdmin@byfn-network-org1.card
+    composer card import -f PeerAdmin@byfn-network-org1.card --name PeerAdmin@byfn-network-org1
 
 If the command works successfully, a business network card called `PeerAdmin@byfn-network-org1` will have been imported into the wallet.
 
@@ -417,7 +431,7 @@ If the command works successfully, a business network card called `PeerAdmin@byf
 
 Run the `composer card import` command to import the business network card for `Org2` into the wallet:
 
-    composer card import -f PeerAdmin@byfn-network-org2.card
+    composer card import -f PeerAdmin@byfn-network-org2.card --name PeerAdmin@byfn-network-org2
 
 If the command works successfully, a business network card called `PeerAdmin@byfn-network-org2` will have been imported into the wallet.
 
