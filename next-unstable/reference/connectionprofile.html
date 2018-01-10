@@ -334,16 +334,24 @@ ga('send', 'pageview');
     }
 }
 </code></pre></div>
-<p>Official documentation for this structure can be found here <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.
-This is a big change from the orginal connection profile used by Hyperledger Composer. This connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all the channels defined. We will walk through the above example sections providing more detail as necessary. The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
-- orderers
-- peers
-- certificateAuthorities
-which define all the servers involved. We will then look at
-- organizations
-- channels
-and finally the
-- client section</p>
+<p>Official documentation for this structure can be found here:  <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.</p>
+
+<p>The Hyperledger Fabric v1.1 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The v1.1 connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.</p>
+
+<p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
+
+<p>The following sections define the server details:
+- Orderers
+- Peers
+- Certificate Authorities</p>
+
+<p>Organizational details are defined in:</p>
+
+<ul>
+<li>Organizations</li>
+<li>Channels</li>
+<li>Client section</li>
+</ul>
 
 <h3 id="general-information">General information</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">"name": "hlfv1",
@@ -353,12 +361,12 @@ and finally the
 </code></pre></div>
 <ul>
 <li><code>name</code> is a name used to refer to the connection profile, and is required.</li>
-<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.1 must be <code>hlfv1</code>.</li>
+<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.1, <code>x-type</code> must be <code>hlfv1</code>.</li>
 <li><code>x-commitTimeout</code> defines the number of seconds to wait for a commit response to be received for a transaction.</li>
-<li><code>version</code> defines the version of a connection profile and currently only a version of <code>1.0.0</code> is supported</li>
+<li><code>version</code> defines the version of a connection profile and currently only a version of <code>1.0.0</code> is supported.</li>
 </ul>
 
-<h3 id="orderers">orderers</h3>
+<h3 id="orderers">Orderers</h3>
 
 <p>Here we define all the orderers that are part of the network. The name &quot;orderer.example.com&quot; is a label allowing us to reference this definition later.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
@@ -367,7 +375,7 @@ and finally the
     }
 },
 </code></pre></div>
-<p>In this section you would define all the available orderers, the example here provides the a basic configuration for a non-tls orderer. An example of a orderer using tls would be</p>
+<p>This section defines all the available orderers, the example here provides a basic configuration for a non-tls orderer. To configure an orderer to use TLS, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
     "orderer.example.com": {
         "url": "grpcs://orderer.example.com:7050",
@@ -380,11 +388,13 @@ and finally the
     }
 },
 </code></pre></div>
-<p>In order to guarantee portability it is highly recommended to embed the certificate(s) into the connection profile using the <code>pem</code> option, although the alternative <code>path</code> option will work this is not a recommended use.</p>
+<p>In order to guarantee portability it is highly recommended to embed required certificate(s) into the connection profile using the <code>pem</code> option.</p>
 
-<h3 id="peers">peers</h3>
+<p>Certificates can also be defined using a file path, but this is not recommended.</p>
 
-<p>Here we define all the peers in the network and it would include peers in all organizations. Again each one has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.</p>
+<h3 id="peers">Peers</h3>
+
+<p>Here we define all the peers in all organizations in the network. Each has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
         "url": "grpc://peer0.org1.example.com:7051",
@@ -392,7 +402,7 @@ and finally the
     }
 },
 </code></pre></div>
-<p>Peer definitions are similar to orderer definitions in structure but you should define both the url and eventUrl of a peer. The old connection profile format required that you only define the eventUrl for peers in your organisation. This is now not the case and you provide complete information about the peer. Defining TLS for a peer is similar to orderers</p>
+<p>Peer definitions are similar to orderer definitions in structure, but you should define both the <code>url</code> and <code>eventUrl</code> of a peer. Older connection profile formats required that you only define the eventUrl for peers in your organization. Defining TLS for a peer is similar to orderers</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
         "url": "grpc://peer0.org1.example.com:7051",
@@ -406,7 +416,7 @@ and finally the
     }
 },
 </code></pre></div>
-<p>Also to define more peers in this section</p>
+<p>To define multiple peers, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peers": {
     "peer0.org1.example.com": {
         "url": "grpc://peer0.org1.example.com:7051",
@@ -422,7 +432,7 @@ and finally the
     },
 },
 </code></pre></div>
-<h3 id="certificateauthorities">certificateAuthorities</h3>
+<h3 id="certificate-authorities">Certificate Authorities</h3>
 
 <p>Here you define all the certificate authorities</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"certificateAuthorities": {
@@ -437,11 +447,9 @@ and finally the
 <li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
 </ul>
 
-<p>(TBD verify and trustedroots etc)</p>
-
 <h3 id="organizations">Organizations</h3>
 
-<p>Here you define all the various servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
+<p>Here you define the servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
 In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a single certificate authority and label our organization <code>Org1</code>. Note the referencing of the peer and certificate authority.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    "organizations": {
         "Org1": {
@@ -456,13 +464,13 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     },
 </code></pre></div>
 <ul>
-<li><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</li>
+<li><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrolment id that you will use to interact with the business network.</li>
 </ul>
 
 <h3 id="channels">Channels</h3>
 
-<p>This defines the various Hyperledger Fabric peers and orderers that are participanting on a specific channel as well as the role of the peers.
-<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions</p>
+<p>This defines the various Hyperledger Fabric peers and orderers that are participating on a specific channel as well as the role of the peers.
+<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"channels": {
     "composerchannel": {
         "orderers": [
@@ -480,14 +488,14 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 },
 </code></pre></div>
 <p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
-- endorsingPeer means that peer is there to endorse transactions and must have chaincode instantiated
-- chaincodeQuery means that peer is able to handle chaincode query requests and must have chaincode instantiated
-- ledgerQuery means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer
-- eventSource means that this peer will generate events.</p>
+- <code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.
+- <code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.
+- <code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
+- <code>eventSource</code> means that this peer will generate events.</p>
 
-<h3 id="client">client</h3>
+<h3 id="client">Client</h3>
 
-<p>This section will be unique for each organization and defines configuration information specific to your client application</p>
+<p>This section will be unique for each organization and defines configuration information specific to your client application.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"client": {
     "organization": "Org1",
     "connection": {
@@ -502,15 +510,15 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     }
 },
 </code></pre></div>
-<p>In this section you define the <code>organization</code> you belong to in the example about this is <code>Org1</code> which references the Org1 organization in the profile. You also definee timeouts in seconds for each of the various possible interactions.</p>
+<p>In this section you define the <code>organization</code> you belong to, in the example this is <code>Org1</code> which references the Org1 organization in the profile. You also define timeouts in seconds for each of the possible interactions.</p>
 
 <h3 id="common-properties">Common properties</h3>
 
-<p>When defining a peer or orderer there are some common options you can use. These are
-- grpcOptions
-- tlsCACerts</p>
+<p>When defining a peer or orderer there are some common options you can use. These are:
+- <code>grpcOptions</code>
+- <code>tlsCACerts</code></p>
 
-<p>For example a peer definition might look like</p>
+<p>For example a peer definition might look like:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
     "url": "grpcs://peer0.org1.example.com:7051",
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
@@ -523,7 +531,7 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     }
 }
 </code></pre></div>
-<p>A similar thing could be done for an orderer definition</p>
+<p>A similar thing could be done for an orderer definition:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
     "grpcOptions": {
@@ -535,7 +543,7 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     }
 }
 </code></pre></div>
-<p>There are other grpcOptions available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
+<p>There are other <code>grpcOptions</code> available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
 
             
           </section>

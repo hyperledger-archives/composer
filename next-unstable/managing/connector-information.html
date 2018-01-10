@@ -264,48 +264,40 @@ ga('send', 'pageview');
             
               <h1 id="hyperledger-fabric">Hyperledger Fabric</h1>
 
-<p>There are several cases where information specific to Hyperledger Fabric must be included in Hyperledger Composer commands, including <code>composer network deploy</code>, and <code>composer identity issue</code>.</p>
+<p>There are several cases where information specific to Hyperledger Fabric must be included in Hyperledger Composer commands, including <code>composer network deploy</code>, and <code>composer identity issue</code>. The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option allow connector specific information to be sent.</p>
 
-<p>The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option available on the certain commands allow connection specific information to be sent.</p>
-
-<p>You can specify multiple options using the <code>--option, -o</code> by repeating the tag, for example 
-<code>
-composer somecmd -o thisOpt=value2 -o thatOpt=value2
-</code></p>
-
-<p>Alternatively you can create a single file to contain multiple options, for example a file called someCmdOpts.txt could contain</p>
+<p>Multiple options can be specified using the <code>--option, -o</code> by repeating the tag, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer somecmd -o thisOpt=value2 -o thatOpt=value2
+</code></pre></div>
+<p>Alternatively you can create a single file to contain multiple options, for example a file called <code>someCmdOpts.txt</code> could contain:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">thisOpt=value1
 thatOpt=value2
 </code></pre></div>
-<p>and use this file
-<code>
-composer somecmd --optionsFile=someCmdOpts.txt
-</code></p>
+<p>To reference an options file, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer somecmd --optionsFile=someCmdOpts.txt
+</code></pre></div>
+<p>Some API&#39;s will also include the option to pass a generic options object including <code>AdminConnection.start()</code> and <code>AdminConnection.install()</code></p>
 
-<p>Some API&#39;s will also include the option to pass a generic options object including AdminConnection.start() and AdminConnection.install()</p>
-
-<h2 id="providing-npm-config-settings-for-install-deploy">providing npm config settings for install/deploy</h2>
+<h2 id="providing-npm-config-settings-for-install-and-deploy">Providing npm config settings for install and deploy</h2>
 
 <h3 id="cli">CLI</h3>
 
-<p>The following option is available is available on the <code>composer runtime install</code> and <code>composer network start</code> commands.
-- npmrcFile
-Allows you to specify npm configuration information when Hyperledger Fabric builds the chaincode image
-for the Hyperledger Composer runtime. 
-For example you may not want to go directly to the default npm registry, you may want to go to an internal one within your organsation. To do this, create a file with the following
-contents</p>
+<p>The <code>npmrcFile</code> option is available is available on the <code>composer runtime install</code> and <code>composer network start</code> commands.</p>
+
+<p>The <code>npmrcFile</code> option allows you to specify npm configuration information when Hyperledger Fabric builds the chaincode image for the Hyperledger Composer runtime.</p>
+
+<p>For example rather than using the default npm registry, you can specify an internal registry within your organization by including the <code>registry</code> option in an options file:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">registry=http://mycompanynpmregistry.com:4873
 </code></pre></div>
-<p>Pass the fully qualified filename as part of an install or deploy option, for example if the file was called npmConfig
-in your /home/user1/config directory
-<code>
-composer runtime install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
-</code>
-the file contents can be anything that are permitted in the <code>.npmrc</code> configuration files of npm.</p>
+<p>Supply the fully qualified filename as part of an install or deploy command, for example if the file was called npmConfig
+in your /home/user1/config directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
+</code></pre></div>
+<p>The file contents can be anything that permitted in the <code>.npmrc</code> configuration files of npm.</p>
 
 <h3 id="admin-api">Admin API</h3>
 
-<p>You can pass the name of the file as part of the AdminConnection api on either the install or deploy methods by specifying the <code>npmrcFile</code> property on the installOptions or deployOptions object. For example to pass the name of the npm configuration options file to be provided on install you might do</p>
+<p>You can supply the name of the file as part of the AdminConnection api on the install or deploy methods by specifying the <code>npmrcFile</code> property on the <code>installOptions</code> or <code>deployOptions</code> object. For example to pass the name of the npm configuration options file to be provided on install:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
 </code></pre></div>
 <h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
@@ -315,17 +307,17 @@ the file contents can be anything that are permitted in the <code>.npmrc</code> 
 <p>Hyperledger Fabric endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
 
 <ul>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
+<li>Using the <code>-o</code> option, the endorsement policy can be sent either as a single-line JSON string or as a fully qualified file path:</li>
+</ul>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicy='{"identities": [.... }'
-</code></pre></div></li>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 </code></pre></div>
-<p>In this case, the endorsement policy file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
-    "policy": {...}}
-</code></pre></div></li>
-<li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
+<p>When a file path is specified, the endorsement policy file should follow this format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    {"identities":[...],
+        "policy": {...}}
+</code></pre></div>
+<ul>
+<li><p>Using the <code>-O</code> option, the endorsement policy must be sent as a file path as follows:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start -O /path/to/file/options.json
 </code></pre></div>
 <p>In this case, the options file should follow this format:</p>
@@ -341,26 +333,21 @@ the file contents can be anything that are permitted in the <code>.npmrc</code> 
 
 <h3 id="admin-api">Admin API</h3>
 
-<p>To be able to send an endorsement policy via the Admin api, you include this as part of the startOptions or deployOptions object when calling start or deploy respectively. To pass an endorsement policy file you specify it in the object property <code>endorsementPolicyFile</code> and if you want to pass a JSON object of the policy you specify the object property <code>endorsementPolicy</code>. So for example to send a endorsement policy file on a start request I might do</p>
+<p>To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the <code>startOptions</code> or <code>deployOptions</code> objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property <code>endorsementPolicyFile</code>. To supply the policy as a JSON object, the <code>endorsementPolicy</code> object property must be specified.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
 </code></pre></div>
 <h2 id="identity-issue">Identity Issue</h2>
 
-<p>You can specify whether the identity you issue has issuer authority, ie that identity can also register new identities on a fabric-ca server. </p>
+<p>When a new identity is issued, the <code>-o</code> option can be used to specify whether the issued identity has the authority to register new identities with a Hyperledger Fabric certificate authority server.</p>
 
 <h3 id="cli">CLI</h3>
 
-<p>The available option is
-- issuer</p>
-
-<p>For example to issue an identity that itself have issuer authority and bind it to an existing participant you might do
-<code>
-composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
-</code></p>
-
+<p>To grant an identity the authority to register new identities with a certificate authority from the command line, the <code>issuer</code> option must be supplied after the <code>-o</code> option in the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
+</code></pre></div>
 <h2 id="api">API</h2>
 
-<p>To specify the issuer property you set it in an object and pass this object as part of the issueOptions on issueIdentity.
+<p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
 For example to issue an identity that has issuer authority
 <code>
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});

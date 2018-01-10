@@ -453,7 +453,7 @@ composer card delete -n PeerAdmin@fabric-network
             "mspid": "Org1MSP",
             "peers": [
                 "peer0.org1.example.com",
-                "peer1.org1.example.com",
+                "peer1.org1.example.com"
             ],
             "certificateAuthorities": [
                 "ca.org1.example.com"
@@ -463,7 +463,7 @@ composer card delete -n PeerAdmin@fabric-network
             "mspid": "Org2MSP",
             "peers": [
                 "peer0.org2.example.com",
-                "peer1.org2.example.com",
+                "peer1.org2.example.com"
             ],
             "certificateAuthorities": [
                 "ca.org2.example.com"
@@ -535,27 +535,36 @@ composer card delete -n PeerAdmin@fabric-network
     }
 }
 </code></pre></div>
+<p>When working with the certificates it is recommended to create a temporary working directory to create the Composer connection profiles:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">mkdir -p /tmp/composer/org1
+mkdir -p /tmp/composer/org2
+</code></pre></div>
 <p>You need to replace all instances of the text <code>INSERT_ORG1_CA_CERT</code> with the CA certificate for the peer nodes for <code>Org1</code>:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt &gt; /tmp/ca-org1.txt
+<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt &gt; /tmp/composer/org1/ca-org1.txt
 </code></pre></div>
-<p>copy the contents of the file <code>/tmp/ca-org1.txt</code> and replace the text <code>INSERT_ORG1_CA_CERT</code>. It should now look something like this
-    &quot;pem&quot;: &quot;-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n&quot;</p>
-
+<p>copy the contents of the file <code>/tmp/ca-org1.txt</code> and replace the text <code>INSERT_ORG1_CA_CERT</code>. It should now look something like this</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"pem": "-----BEGIN CERTIFICATE-----\nMIICNTCCAdygAwIBAgIRAMNvmQpnXi7uM19BLdha3MwwCgYIKoZIzj0EAwIwbDEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l\neGFtcGxlLmNvbTAeFw0xNzA2MjYxMjQ5MjZaFw0yNzA2MjQxMjQ5MjZaMGwxCzAJ\nBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh\nbmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh\nbXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASJn3QUVcKCp+s6lSPE\nP5KlWmE9rEG0kpECsAfW28vZQSIg2Ez+Tp1alA9SYN/5BtL1N6lUUoVhG3lz8uvi\n8zhro18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB\nAf8EBTADAQH/MCkGA1UdDgQiBCB7ULYTq3+BQqnzwae1RsnwQgJv/HQ5+je2xcDr\nka4MHTAKBggqhkjOPQQDAgNHADBEAiB2hLiS8B1g4J5Qbxu15dVWAZTAXX9xPAvm\n4l25e1oS+gIgBiU/aBwSxY0uambwMB6xtQz0ZE/D4lyTZZcW9SODlOE=\n-----END CERTIFICATE-----\n"
+</code></pre></div>
 <p>You need to replace all instances of the text <code>INSERT_ORG2_CA_CERT</code> with the CA certificate for the peer nodes for <code>Org2</code>:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt &gt; /tmp/ca-org2.txt
+<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt &gt; /tmp/composer/org2/ca-org2.txt
 </code></pre></div>
-<p>copy the contents of the file <code>/tmp/ca-org2.txt</code> and replace the text <code>INSERT_ORG2_CA_CERT</code>.</p>
+<p>Copy the contents of the file <code>/tmp/ca-org2.txt</code> and replace the text <code>INSERT_ORG2_CA_CERT</code>.</p>
 
 <p>You need to replace all instances of the text <code>INSERT_ORDERER_CA_CERT</code> with the CA certificate for the orderer node:
 Use the following command to convert the pem file to something that can be embedded into the above connection profile.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt &gt; /tmp/ca-orderer.txt
+<div class="highlight"><pre><code class="language-" data-lang="">awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt &gt; /tmp/composer/ca-orderer.txt
 </code></pre></div>
 <p>copy the contents of the file <code>/tmp/ca-orderer.txt</code> and replace the text <code>INSERT_ORDERER_CA_CERT</code>.</p>
 
 <p>Once done, save this file as <code>connection-network.json</code>.</p>
 
+<p>Run the following commands to create connection profiles for Org1 and Org2:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd /tmp/composer
+cp connection-network.json ./org1/connection-org1.json
+cp connection-network.json ./org2/connection-org2.json
+</code></pre></div>
 <p>This connection profile now describes the fabric network setup, all the peers, orderers and certificate authorities that are part of the network, it defines all the organizations that are participating in the network and also defines the channel&#39;s on this network. Hyperledger Composer can only interact with a single channel so only one channel should be defined.</p>
 
 <h2 class='alice'>Step Three: Customizing the connection profile for Org1</h2>
@@ -658,14 +667,14 @@ Use the following command to convert the pem file to something that can be embed
 <h2 class='alice'>Step Nine: Importing the business network cards for the Hyperledger Fabric administrator for Org1</h2>
 
 <p>Run the <code>composer card import</code> command to import the business network card for <code>Org1</code> into the wallet:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1.card
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1.card --name PeerAdmin@byfn-network-org1
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org1</code> will have been imported into the wallet.</p>
 
 <h2 class='bob'>Step Ten: Importing the business network cards for the Hyperledger Fabric administrator for Org2</h2>
 
 <p>Run the <code>composer card import</code> command to import the business network card for <code>Org2</code> into the wallet:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2.card
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2.card --name PeerAdmin@byfn-network-org2
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2</code> will have been imported into the wallet.</p>
 
