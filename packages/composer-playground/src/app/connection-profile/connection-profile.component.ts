@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
@@ -32,6 +32,8 @@ export class ConnectionProfileComponent {
        }
        this.startEditing();
    }
+
+   @ViewChild('connectionProfileForm') connectionProfileForm;
 
    @Output() profileUpdated = new EventEmitter<any>();
 
@@ -259,10 +261,27 @@ export class ConnectionProfileComponent {
         this.profileUpdated.emit({update: false});
     }
 
-    onSubmit(event) {
-        if (event && event.keyCode !== 13) {
-            return;
+    handleKeyPress(event) {
+        if (event && event.keyCode === 13) {
+            event.preventDefault();
+            let el = this.getActiveElement();
+            if (el.tagName.toLowerCase() === 'button') {
+                (<HTMLButtonElement> el).click();
+            } else if (el.tagName.toLowerCase() === 'input' && (<HTMLInputElement> el).type.toLowerCase() === 'checkbox') {
+                (<HTMLInputElement> el).click();
+            } else if (!this.formValid(this.connectionProfileForm.form)) {
+                let controls = this.connectionProfileForm.form.controls;
+                for (let key in controls) {
+                    controls[key].markAsDirty();
+                }
+                return;
+            } else {
+                this.onSubmit();
+            }
         }
+    }
+
+    onSubmit() {
 
         let connectionProfile = {
             name: null,
@@ -505,13 +524,18 @@ export class ConnectionProfileComponent {
     }
 
     setVerify() {
-      if (this.ca.url.substring(this.ca.url.indexOf('://') - 1, this.ca.url.indexOf('://')) !== 's') {
-        this.ca.httpOptions.verify = false;
-        delete this.ca.tlsCACerts;
-      }
+        if (this.ca.url.substring(this.ca.url.indexOf('://') - 1, this.ca.url.indexOf('://')) !== 's') {
+            this.ca.httpOptions.verify = false;
+            delete this.ca.tlsCACerts;
+        }
     }
 
     clearCaTls() {
-      delete this.ca.tlsCACerts;
+        delete this.ca.tlsCACerts;
+    }
+
+    // function needed for testing
+    getActiveElement() {
+        return document.activeElement;
     }
 }

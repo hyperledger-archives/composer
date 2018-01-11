@@ -25,11 +25,16 @@
         opacity: 0;
     }
 
-    input[type=checkbox] + .checkbox-label,
-    input[type=checkbox]:focus + .checkbox-label {
+    input[type=checkbox] + .checkbox-label {
         &::before {
             border: 1px solid $first-highlight;
-            transition: all 0.2s ease-in-out;
+        }
+    }
+    input[type=checkbox]:focus + .checkbox-label {
+        &::before {
+            border: 2px solid $first-highlight !important;
+            left: -1px !important;
+            top: -2px !important;
         }
     }
 
@@ -88,4 +93,3 @@
         }
     }
 }
-
