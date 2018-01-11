@@ -8,7 +8,7 @@ resource-modal {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
-        height: 450px;
+        min-height: 500px;
     }
 
     .resource-component {

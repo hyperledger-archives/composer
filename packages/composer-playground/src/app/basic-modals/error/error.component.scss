@@ -2,8 +2,8 @@
 
 .error {
   .modal-header {
-    svg {
-      fill: $error-colour-1
+    & > svg {
+      fill: $error-colour-1;
     }
   }
 }
