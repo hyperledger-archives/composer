@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Deploying the REST server for a business network | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/next/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/next/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/next/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/next/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/next/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/next/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/next/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/next/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Deploying the REST server for a business network</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/next/introduction/introduction"><b>Introduction</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/next/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/next/installing/installing-index"><b>Installing</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/next/installing/development-tools">Installing the development environment</a></li>
+</ul></li>
+<li><p><a href="/composer/next/tutorials/tutorials"><b>Tutorials</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/next/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/next/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/next/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/next/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/next/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/next/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/next/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/next/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/next/business-network/historian">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="/composer/next/applications/applications-index"><b>Developing Applications</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/next/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/next/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/next/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/next/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/next/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/next/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/next/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/next/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/next/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/next/integrating/call-out">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/next/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/next/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/next/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/next/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/next/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/next/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/next/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/next/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/next/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/next/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/next/reference/reference-index"><b>Reference</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/next/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/next/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/next/reference/query-language">Query Language</a></li>
+<li><a href="/composer/next/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/next/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/next/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/next/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/next/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/next/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/next/support/support-index"><b>Support</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/next/api/api-doc-index"><b>API Reference</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next/api/allData">API Class Index</a></li>
+<li><a href="/composer/next/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/next/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/next/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/next/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/next/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/next/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/next/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/next/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/next/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/next/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/next/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/next/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/next/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/next/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/next/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
+<li><a href="/composer/next/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/next/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/next/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/next/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
+<li><a href="/composer/next/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/next/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/next/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/next/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/next/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/next/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/next/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/next/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/next/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/next/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/next/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/next/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/next/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/next/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/next/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/next/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="deploying-the-rest-server-for-a-business-network">Deploying the REST server for a business network</h1>
+
+<hr>
+
+<p>When deploying the Hyperledger Composer REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as business network cards, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.</p>
+
+<h2 id="business-network-cards-and-the-business-network-card-store">Business network cards and the business network card store</h2>
+
+<p>The REST server uses a business network card specified during startup to connect to and discover the assets, participants, and transactions within a deployed business network. This information is required in order to generate the REST API. This business network card is known as the discovery business network card. By default, the discovery business network card is also used to handle all requests to the REST API. However the REST server can also be configured to multiple user mode, which allows authenticated users to supply their own business network cards for handling requests to the REST API.</p>
+
+<p>In order to use a discovery business network card, that business network card must first be imported into a business network card store available to the REST server. The default business network card store is a local file system directory with the path <code>~/.composer</code> (where <code>~</code> is the current users home directory). When using the Docker image for the REST server, you must mount a volume into place of the default business network card store that contains an imported discovery business network card. In the Docker image for the REST server, the business network card store used by the REST server is in the directory <code>/home/composer/.composer</code> (because the REST server in the Docker image always runs under the <code>composer</code> user).</p>
+
+<p>A business network card contains a connection profile that describes how to connect to the Hyperledger Fabric network where the deployed business network is running. Note that the connection profile must be valid for use within the Docker image for the REST server, and the hostnames must be correct and accessible by this Docker image.</p>
+
+<h2 id="configuring-the-rest-server-with-a-persistent-data-store">Configuring the REST server with a persistent data store</h2>
+
+<p>All information regarding authenticated users and their wallets (containing that users business network cards when multiple user mode is enabled) is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database.</p>
+
+<p>You should be able to use any LoopBack connector, but we recommend that you use a LoopBack connector for a NoSQL database. For example, MongoDB or Apache CouchDB.</p>
+
+<p>The LoopBack connector needs to be installed in order for the REST server to locate and use it. You can install additional LoopBack connectors by using <code>npm</code>, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g loopback-connector-mongodb
+</code></pre></div>
+<p>Finally, you need to supply the REST server with the connection information required by the LoopBack connector. This connection information should be supplied by using the <code>COMPOSER_DATASOURCES</code> environment variable. For more information on the environment variables that can be used to configure the REST server, see the reference documentation: <a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></p>
+
+<h2 id="extending-the-docker-image-for-the-rest-server-with-additional-node-js-modules">Extending the Docker image for the REST server with additional Node.js modules</h2>
+
+<p>In order to deploy the REST server as a Docker container with additional LoopBack connectors and Passport strategies, you must extend the <code>hyperledger/composer-rest-server</code> Docker image.</p>
+
+<p>Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server:next
+RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
+    npm cache clean --force &amp;&amp; \
+    ln -s node_modules .node_modules
+</code></pre></div>
+<p>You can build this Docker image by placing the Dockerfile above into a directory and using the <code>docker build</code> command, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
+</code></pre></div>
+<p>You may need to publish this Docker image to a Docker image repository, for example Docker Hub, in order to use it with cloud based Docker deployment services.</p>
+
+<h2 id="deploying-a-persistent-and-secured-rest-server-using-docker">Deploying a persistent and secured REST server using Docker</h2>
+
+<p>The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.</p>
+
+<p>The examples are based on the business network that is deployed to Hyperledger Fabric v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.</p>
+
+<ol>
+<li><p>Ensure that a valid business network card for your business network is in your local business network card store by running the following <code>composer network ping</code> command. This example uses a business network card for the <code>admin</code> user on the <code>my-network</code> business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@my-network
+</code></pre></div>
+<p>Note that you <strong>must</strong> use the <code>composer network ping</code> command to test the connection to the business network before proceeding. If the business network card only contains a user ID and enrollment secret, then the <code>composer network ping</code> command will trigger the enrollment process to occur and certificates to be stored in the business network card. It is <strong>not</strong> advisable to use a business network card with only a user ID and enrollment secret when using the Docker image for the REST server.</p></li>
+<li><p>Start an instance of the Docker image for MongoDB named <code>mongo</code>. This MongoDB instance will be used to persist all information regarding authenticated users and their wallets (containing that users business network cards when multiple user mode is enabled) for the REST server.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker run -d --name mongo --network composer_default -p 27017:27017 mongo
+</code></pre></div>
+<p>Note that the MongoDB instance is attached to the Docker network named <code>composer_default</code>. This means that the MongoDB instance will be available on the Docker network named <code>composer_default</code> using the hostname <code>mongo</code>. We will use the hostname <code>mongo</code> to configure the REST server in a subsequent step. Depending on your Docker networking configuration, you may need to specify a different Docker network name. The MongoDB port <code>27017</code> is also exposed on the host network using port <code>27017</code>, so you can use other MongoDB client applications to interact with this MongoDB instance if desired.</p></li>
+<li><p>Extend the Docker image for the REST server by adding the LoopBack connector for MongoDB and the Passport strategy for GitHub authentication. Create a new, empty directory on your local file system, and create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server:next
+RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
+    npm cache clean --force &amp;&amp; \
+    ln -s node_modules .node_modules
+</code></pre></div>
+<p>Build the extended Docker image by running the following <code>docker build</code> command in the directory containing the file named <code>Dockerfile</code> that you just created:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
+</code></pre></div>
+<p>If this command completes successfully, a new Docker image called <code>myorg/my-composer-rest-server</code> has been built and stored in the local Docker registry on your system. If you wish to use this Docker image on other systems, you may need to push the Docker image into a Docker registry, such as Docker Hub.</p></li>
+<li><p>The Docker image for the REST server is configured using environment variables rather than command line options. Create a new file named <code>envvars.txt</code> to store the environment variables for our REST server, with the following contents:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CARD=admin@my-network
+COMPOSER_NAMESPACES=never
+COMPOSER_AUTHENTICATION=true
+COMPOSER_MULTIUSER=true
+COMPOSER_PROVIDERS='{
+    "github": {
+        "provider": "github",
+        "module": "passport-github",
+        "clientID": "REPLACE_WITH_CLIENT_ID",
+        "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
+        "authPath": "/auth/github",
+        "callbackURL": "/auth/github/callback",
+        "successRedirect": "/",
+        "failureRedirect": "/"
+    }
+}'
+COMPOSER_DATASOURCES='{
+    "db": {
+        "name": "db",
+        "connector": "mongodb",
+        "host": "mongo"
+    }
+}'
+</code></pre></div>
+<p>Note that the name of the discovery business network card <code>admin@my-network</code> has been set as the value of the <code>COMPOSER_CARD</code> environment variable. We have disabled namespaces in the generated REST API by specifying <code>never</code> as the value of the <code>COMPOSER_NAMESPACES</code> environment variable. We have enabled authentication of REST API clients by setting the <code>COMPOSER_AUTHENTICATION</code> environment variable to <code>true</code>, and also enabled multi-user mode by setting the <code>COMPOSER_MULTIUSER</code> environment variable to <code>true</code>.</p>
+
+<p>We have configured our REST server to use GitHub authentication by configuring the Passport strategy for GitHub in the <code>COMPOSER_PROVIDERS</code> environment variable. Note that you must replace both <code>REPLACE_WITH_CLIENT_ID</code> and <code>REPLACE_WITH_CLIENT_SECRET</code> with the appropriate configuration from GitHub in order for this configuration to work successfully.</p>
+
+<p>We have configured our REST server to use our MongoDB instance by configuring the LoopBack connector for MongoDB in the <code>COMPOSER_DATASOURCES</code> environment variable. Note that the host name of the MongoDB instance, <code>mongo</code>, has been specified in the <code>host</code> property of the LoopBack data source named <code>db</code>.</p>
+
+<p>Load the environment variables into your current shell by running the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">source envvars.txt
+</code></pre></div>
+<p>If you open a new shell, for example a new terminal window or tab, then you must run the same <code>source</code> command again to load the environment variables into the new shell.</p>
+
+<p>For more information on the environment variables that can be used to configure the REST server, see the reference documentation: <a href="../reference/rest-server.html">Hyperledger Composer REST Server</a></p></li>
+<li><p>Start a new instance of the extended Docker image for the REST server that you created in step 3 by running the following <code>docker run</code> command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker run \
+    -d \
+    -e COMPOSER_CARD=${COMPOSER_CARD} \
+    -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+    -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+    -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
+    -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+    -v ~/.composer:/home/composer/.composer \
+    --name rest \
+    --network composer_default \
+    -p 3000:3000 \
+    myorg/my-composer-rest-server
+</code></pre></div>
+<p>Note that we have passed through all of the environment variables that we set in previous steps by using multiple <code>-e</code> options. If you need to add or remove any additional environment variables to configure the REST server, then you must add or remove the appropriate <code>-e</code> options as well.</p>
+
+<p>We have mounted our local business network card store into the REST server Docker container by specifying <code>-v ~/.composer:/home/composer/.composer</code>. This permits the REST server to access and use our local business network card store when trying to load the discovery business network card specified using the <code>COMPOSER_CARD</code> environment variable.</p>
+
+<p>We have also specified the Docker network name <code>composer_default</code>, and name of the Docker container as <code>rest</code>. This means that the REST server instance will be available on the Docker network named <code>composer_default</code> using the hostname <code>rest</code>. The REST server port <code>3000</code> is also exposed on the host network using port <code>3000</code>.</p>
+
+<p>You can check that the REST server has started successfully by using the <code>docker logs</code> command, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker logs -f rest
+</code></pre></div>
+<p>If the REST server has started successfully, then you will see it output a log message similar to <code>Browse your REST API at http://localhost:3000/explorer</code>.</p></li>
+</ol>
+
+<p>Now that the REST server has started successfully, you can access the REST server running inside the Docker container by using the following URL: <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</p>
+
+<h2 id="final-notes">Final notes</h2>
+
+<p>In this guide, you have seen how to start a single instance of the REST server using Docker, where that single instance is configured to use MongoDB as a persistent data store. For a true highly available, production deployment of the REST server, you will need to:</p>
+
+<ul>
+<li>Configure a highly available instance of the persistent data store, for example a MongoDB replica set.</li>
+<li>Run multiple instances of the REST server Docker image. This is easy to do by changing the name of the Docker container using the <code>--name</code> argument, and updating or removing the host port mapping for subsequent REST server instances using the <code>-p 3000:3000</code> argument.</li>
+<li>Deploy a load balancer, for example Nginx, to distribute REST requests from clients across all of the instances of the REST server.</li>
+</ul>
+
+<p>Once you have performed these three tasks, you should be able to stop, restart, or remove any of the REST server instances (but not all!) without losing access to the deployed business network over REST.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/next/assets/js/nav.js"></script>
+<script src="/composer/next/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
