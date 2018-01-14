@@ -323,11 +323,13 @@ Feature: Cli steps
         Then The stdout information should include text matching /issuer:/
         Then The stdout information should include text matching /state:       ACTIVATED/
         Then The stdout information should include text matching /Command succeeded/
+        Then I can save output matching ^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$ into a label called BOBSID
 
     Scenario: Using the CLI, I can revoke Bob's identity
+        Given I have a saved value labelled BOBSID
         When I run the following CLI command
             """
-            composer identity revoke --identityId BOBSID --card admin@basic-sample-network
+            composer identity revoke --identityId [BOBSID] --card admin@basic-sample-network
             """
         Then The stdout information should include text matching /was revoked and can no longer be used to connect to the business network./
         Then The stdout information should include text matching /Command succeeded/
