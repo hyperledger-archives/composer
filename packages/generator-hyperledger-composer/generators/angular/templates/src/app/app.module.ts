@@ -39,7 +39,7 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
       useClass: NoopInterceptor,
       multi: true,
     },
-    DataService
+    CookieService
   ],
   bootstrap: [AppComponent]
 })
