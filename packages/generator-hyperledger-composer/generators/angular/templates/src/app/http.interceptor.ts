@@ -33,13 +33,13 @@ export class NoopInterceptor implements HttpInterceptor {
           this.headers.append('Accept', 'application/json');
           const changedReq = req.clone({
               withCredentials : true,
-              headers: req.headers.set('Cookie', cookiesValue)
+              headers: req.headers.set('Cookie', cookiesValue).set('Content-Type','application/json').set('Accept','application/json')
           });
         <% }else{ %>
-
-          this.headers.append('Content-Type', 'application/json');
-          this.headers.append('Accept', 'application/json');
-
+          const changedReq = req.clone({
+                 withCredentials : true,
+                 headers: req.headers.set('Content-Type','application/json').set('Accept','application/json')
+             });
         <% } %>
 
         return next.handle(changedReq);
