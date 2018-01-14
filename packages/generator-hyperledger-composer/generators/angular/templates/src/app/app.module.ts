@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NoopInterceptor } from './http.interceptor';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 // import { TransactionComponent } from './Transaction/Transaction.component'
 <% for(var x=0;x<assetComponentNames.length;x++){ %>
