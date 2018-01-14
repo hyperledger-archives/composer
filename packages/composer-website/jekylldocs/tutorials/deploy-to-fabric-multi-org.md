@@ -405,7 +405,7 @@ In this step you will create business network cards for the administrator to use
 
 Run the `composer card create` command to create a business network card using the connection profile for `Org1`. You must specify the path to all three files that you either created or located in the previous steps: (note: the _sk_ file will differ.)
 
-    composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
+    composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org1.card
 
 If the command works successfully, a business network card file called `PeerAdmin@byfn-network-org1.card` will have been written to the current directory.
 
@@ -415,7 +415,7 @@ In this step you will create business network cards for the administrator to use
 
 Run the `composer card create` command to create a business network card using the connection profile for `Org2`. You must specify the path to all three files that you either created or located in the previous steps:
 
-    composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
+    composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org2.card
 
 If the command works successfully, a business network card file called `PeerAdmin@byfn-network-org2.card` will have been written to the current directory.
 
