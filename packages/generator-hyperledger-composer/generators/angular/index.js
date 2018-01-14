@@ -134,6 +134,12 @@ module.exports = yeoman.Base.extend({
                         validate: Util.cardName
                     },
                     {
+                        type: 'input',
+                        name: 'authentication',
+                        message: "write authentication url or keep it blank if you don't have authentication",
+                        store: true
+                    },
+                    {
                         type: 'list',
                         name: 'apiServer',
                         message: 'Do you want to generate a new REST API or connect to an existing REST API? ',
