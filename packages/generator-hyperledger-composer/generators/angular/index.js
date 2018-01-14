@@ -232,6 +232,7 @@ module.exports = yeoman.Base.extend({
                         apiServer = answers.apiServer;
                         authentication = answers.authentication;
 
+
                         if (apiServer === 'generate') {
 
                             apiIP = 'http://localhost';
