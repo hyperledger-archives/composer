@@ -50,6 +50,7 @@ let connectionProfileName;
 let enrollmentId;
 let enrollmentSecret;
 let apiServer;
+let authentication;
 let apiIP;
 let apiPort;
 let apiNamespace;
@@ -229,6 +230,7 @@ module.exports = yeoman.Base.extend({
                     if (liveNetwork) {
                         cardName = answers.cardName;
                         apiServer = answers.apiServer;
+                        authentication = answers.authentication;
 
                         if (apiServer === 'generate') {
 
