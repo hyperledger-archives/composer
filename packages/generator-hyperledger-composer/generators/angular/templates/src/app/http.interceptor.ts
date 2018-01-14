@@ -26,7 +26,7 @@ export class NoopInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.headers = new Headers();
 
-        <% if(authentication != ''){ %>
+        <% if(authentication != 'N'){ %>
           var cookiesValue = this.createKey(this.connect_sid) + this.createKey(this.access_token) + this.createKey(this.userId);
 
           this.headers.append('Content-Type', 'application/json');

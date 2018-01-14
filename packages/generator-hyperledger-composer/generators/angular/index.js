@@ -137,7 +137,7 @@ module.exports = yeoman.Base.extend({
                     {
                         type: 'input',
                         name: 'authentication',
-                        message: "write authentication url or keep it blank if you don't have authentication",
+                        message: "write authentication url or write N if you don't use authentication",
                         store: true
                     },
                     {
