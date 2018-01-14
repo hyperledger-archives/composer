@@ -572,6 +572,7 @@ module.exports = yeoman.Base.extend({
             enrollmentId: enrollmentId,
             enrollmentSecret: enrollmentSecret,
             apiServer: apiServer,
+            authentication: authentication,
             apiIP: apiIP,
             apiPort: apiPort,
             apiNamespace: apiNamespace,
