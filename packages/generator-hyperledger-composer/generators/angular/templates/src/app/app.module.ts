@@ -5,9 +5,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { DataService }     from './data.service';
 import { Configuration }     from './configuration';
-import { DataService }     from './data.service';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { NoopInterceptor } from './http.interceptor';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // import { TransactionComponent } from './Transaction/Transaction.component'
