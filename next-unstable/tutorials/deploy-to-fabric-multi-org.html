@@ -651,7 +651,7 @@ cp connection-network.json ./org2/connection-org2.json
 <p>In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the Hyperledger Fabric network.</p>
 
 <p>Run the <code>composer card create</code> command to create a business network card using the connection profile for <code>Org1</code>. You must specify the path to all three files that you either created or located in the previous steps: (note: the <em>sk</em> file will differ.)</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org1.json -u PeerAdmin -c Admin@org1.example.com-cert.pem -k 78f2139bfcfc0edc7ada0801650ed785a11cfcdef3f9c36f3c8ca2ebfa00a59c_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org1.card
 </code></pre></div>
 <p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org1.card</code> will have been written to the current directory.</p>
 
@@ -660,7 +660,7 @@ cp connection-network.json ./org2/connection-org2.json
 <p>In this step you will create business network cards for the administrator to use to deploy the blockchain business network to the Hyperledger Fabric network.</p>
 
 <p>Run the <code>composer card create</code> command to create a business network card using the connection profile for <code>Org2</code>. You must specify the path to all three files that you either created or located in the previous steps:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p connection-org2.json -u PeerAdmin -c Admin@org2.example.com-cert.pem -k d4889cb2a32e167bf7aeced872a214673ee5976b63a94a6a4e61c135ca2f2dbb_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org2.card
 </code></pre></div>
 <p>If the command works successfully, a business network card file called <code>PeerAdmin@byfn-network-org2.card</code> will have been written to the current directory.</p>
 
