@@ -223,7 +223,7 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
     # Add the version number changes and push them to Git.
     git add .
     git commit -m "Automatic version bump to ${NEW_VERSION}"
-    git push origin master
+    git push origin v0.16.x
 
 else
    _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
