@@ -26,7 +26,7 @@ Before beginning this tutorial:
 
 ## Step One: Creating a business network structure
 
-The key concept for {{site.data.conrefs.composer}} is the **business network definition (BND)**. It defines the data model, transaction logic and access control rules for your blockchain solution. To create a BND,  we need to create a suitable project structure on disk.
+The key concept for {{site.data.conrefs.composer_full}} is the **business network definition (BND)**. It defines the data model, transaction logic and access control rules for your blockchain solution. To create a BND,  we need to create a suitable project structure on disk.
 
 The easiest way to get started is to use the Yeoman generator to create a skeleton business network. This will create a directory containing all of the components of a business network.
 
