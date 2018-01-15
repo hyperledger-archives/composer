@@ -28,12 +28,20 @@ module.exports = function () {
         return this.composer.runCLI(table);
     });
 
+    this.When(/^I substitue the alias (.*?) and run the following CLI command$/, {timeout: 240 * 1000}, function (alias, table) {
+        return this.composer.runCLIWithAlias(alias, table);
+    });
+
     this.When(/^I spawn the following background task (.+?), and wait for \/(.+?)\/$/, {timeout: 240 * 1000}, function (label, regex, table) {
         return this.composer.runBackground(label, table, new RegExp(regex));
     });
 
     this.When(/^I kill task named (.+?)$/, {timeout: 240 * 1000}, function (label) {
         return this.composer.killBackground(label);
+    });
+
+    this.When(/^I save group (.+?) from the console output matching pattern (.+?) as alias (.*?)$/, function (group, regex, alias) {
+        return this.composer.saveMatchingGroupAsAlias(new RegExp(regex, 'g'), group, alias);
     });
 
     this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {

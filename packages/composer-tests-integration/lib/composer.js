@@ -25,7 +25,6 @@ const http = require('http');
 const matchPattern = require('lodash-match-pattern');
 
 let generated = false;
-let savedId;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -47,13 +46,15 @@ class Composer {
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
      * @param {Object} tasks - current background tasks accessible to all scenarios
+     * @param {Object} aliasMap - current map of alias names to functional items
      */
-    constructor(uri, errorExpected, tasks) {
+    constructor(uri, errorExpected, tasks, aliasMap) {
         this.uri = uri;
         this.errorExpected = errorExpected;
         this.error = null;
         this.lastResp = null;
         this.tasks = tasks;
+        this.aliasMap = aliasMap;
     }
 
     /**
@@ -231,6 +232,25 @@ class Composer {
     }
 
     /**
+     * Run a CLI Command with a substituted alias
+     * @param {*} alias -  The alias to substitue in the command
+     * @param {*} table -  Information listing the CLI command and parameters to be run
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    runCLIWithAlias(alias, table) {
+        if (typeof table !== 'string') {
+            return Promise.reject('Command passed to function was not a string');
+        } else {
+            if (!this.aliasMap.has(alias)) {
+                return Promise.reject('Unable to use passed Alias: ' + alias + ' does not exist');
+            } else {
+                let command = table.replace(alias, this.aliasMap.get(alias));
+                return this._runCLI(command);
+            }
+        }
+    }
+
+    /**
      * Prepare CLI Command to run
      * @param {String} label - name associated with task
      * @param {DataTable} table -  Information listing the CLI command and parameters to be run
@@ -345,28 +365,12 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
-            // match BOBSID for revoking test
-            if(savedId && savedId!=='') {
-                command = command.replace(/BOBSID/, savedId);
-            }
-
             return new Promise( (resolve, reject) => {
 
                 let childCliProcess = childProcess.exec(command);
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
-
-                // Save Bobs identityId so that we can revoke it
-                let regex = /^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$/g;
-                childCliProcess.stdout.on('data', (data) => {
-                    let match = regex.exec(data);
-                    if(match && match.length===2) {
-                        savedId = match[1];
-                    }
-                    stdout += data;
-                });
-
 
                 childCliProcess.stdout.on('data', (data) => {
                     stdout += data;
@@ -504,7 +508,7 @@ class Composer {
         return new Promise( (resolve, reject) => {
             if (!this.lastResp || !this.lastResp.response) {
                 reject('a response was expected, but no response messages have been generated');
-            } else if (regex) {
+            } else {
                 if(this.lastResp.response.match(regex)) {
                     resolve();
                 } else {
@@ -523,7 +527,7 @@ class Composer {
         return new Promise( (resolve, reject) => {
             if (!this.lastResp || !this.lastResp.response) {
                 reject('a response was expected, but no response messages have been generated');
-            } else if (pattern) {
+            } else {
                 const result = matchPattern(JSON.parse(this.lastResp.response), pattern);
                 if(result === null) {
                     resolve();
@@ -534,7 +538,33 @@ class Composer {
         });
     }
 
-
+    /**
+     * Save a matched pattern from the current console stdout as an alias in an internal map
+     * @param {*} regex The regex to match on
+     * @param {*} group The matched regex group to save
+     * @param {*} alias The alias to save the matched regex under
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    saveMatchingGroupAsAlias(regex, group, alias) {
+        let type = 'stdout';
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a response is required, but no response messages have been generated');
+            } else {
+                // match and save as alias, if no match then reject
+                let match = regex.exec(this.lastResp[type]);
+                if (match && match.length===2) {
+                    this.aliasMap.set(alias, match[group]);
+                    resolve();
+                } else {
+                    reject('regex match failed: unable to add alias to map');
+                }
+            }
+        })
+        .catch((err) => {
+            return Promise.reject(err);
+        });
+    }
 }
 
 module.exports = Composer;
