@@ -54,11 +54,10 @@ class EngineBusinessNetworks {
             })
             .then(() => {
                 // convert to resource and then check pmerssions.
-                return sysdata.get('businessnetwork');
-            })
-            .then((result) => {
-                LOG.exit(method, result);
-                return result;
+                LOG.exit(method);
+                return {
+                    data: context.getBusinessNetworkArchive()
+                };
             });
     }
 

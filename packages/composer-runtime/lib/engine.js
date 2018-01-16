@@ -14,9 +14,9 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+//const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Context = require('./context');
-const createHash = require('sha.js');
+//const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const util = require('util');
 
@@ -118,12 +118,6 @@ class Engine {
             throw new Error('The transaction data specified is not valid');
         }
 
-        // Extract and validate the required business network archive property.
-        const businessNetworkBase64 = transactionData.businessNetworkArchive;
-        if (!businessNetworkBase64) {
-            throw new Error('The business network archive specified is not valid');
-        }
-
         // Extract and validate the optional log level property.
         const logLevel = transactionData.logLevel;
         if (logLevel) {
@@ -131,8 +125,6 @@ class Engine {
         }
 
         let dataService = context.getDataService();
-        let businessNetworkHash, businessNetworkRecord, businessNetworkDefinition;
-        let compiledScriptBundle, compiledQueryBundle, compiledAclBundle;
         let sysregistries, sysdata;
         return Promise.resolve()
             .then(() => {
@@ -142,55 +134,6 @@ class Engine {
 
             })
             .then(() => {
-
-                // Load, validate, and hash the business network definition.
-                LOG.debug(method, 'Loading business network definition');
-                let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-                let sha256 = createHash('sha256');
-                businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
-                LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
-
-                // Create the business network record.
-                businessNetworkRecord = {
-                    data: businessNetworkBase64,
-                    hash: businessNetworkHash
-                };
-
-                // Load the business network.
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-
-            })
-            .then((businessNetworkDefinition_) => {
-
-                // Cache the business network.
-                businessNetworkDefinition = businessNetworkDefinition_;
-                LOG.debug(method, 'Loaded business network definition, storing in cache');
-                Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
-
-                // Cache the compiled script bundle.
-                compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
-                if (!compiledScriptBundle) {
-                    compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
-                    LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
-                    Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
-                }
-
-                // Cache the compiled query bundle.
-                compiledQueryBundle = Context.getCachedCompiledQueryBundle(businessNetworkHash);
-                if (!compiledQueryBundle) {
-                    compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
-                    LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
-                    Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
-                }
-
-                // Cache the compiled ACL bundle.
-                compiledAclBundle = Context.getCachedCompiledAclBundle(businessNetworkHash);
-                if (!compiledAclBundle) {
-                    compiledAclBundle = context.getAclCompiler().compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
-                    LOG.debug(method, 'Loaded compiled ACL bundle, storing in cache');
-                    Context.cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle);
-                }
-
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
                 return dataService.ensureCollection('$sysdata');
@@ -200,11 +143,11 @@ class Engine {
 
                 // Add the business network definition to the sysdata collection.
                 sysdata = sysdata_;
-                return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })
             .then(() => {
-                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': businessNetworkDefinition.getIdentifier() });
+                //TODO: need to get the businessNetworkDefinition from the context.
+                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': context.getBusinessNetworkDefinition().getIdentifier() });
             })
             .then(() => {
 
@@ -224,10 +167,6 @@ class Engine {
                 return context.initialize({
                     function: fcn,
                     arguments: args,
-                    businessNetworkDefinition: businessNetworkDefinition,
-                    compiledScriptBundle: compiledScriptBundle,
-                    compiledQueryBundle: compiledQueryBundle,
-                    compiledAclBundle: compiledAclBundle,
                     sysregistries: sysregistries,
                     container: this.getContainer()
                 });
@@ -310,6 +249,7 @@ class Engine {
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @param {function} callback The callback function to call when complete.
      */
+    /*
     _init(context, fcn, args, callback) {
         this.init(context, fcn, args)
             .then((result) => {
@@ -319,6 +259,7 @@ class Engine {
                 callback(error, null);
             });
     }
+    */
 
     /**
      * Handle an invoke request.
@@ -381,6 +322,7 @@ class Engine {
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @param {function} callback The callback function to call when complete.
      */
+    /*
     _invoke(context, fcn, args, callback) {
         this.invoke(context, fcn, args)
             .then((result) => {
@@ -390,6 +332,7 @@ class Engine {
                 callback(error, null);
             });
     }
+    */
 
     /**
      * Handle a query request.
@@ -452,6 +395,7 @@ class Engine {
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @param {function} callback The callback function to call when complete.
      */
+    /*
     _query(context, fcn, args, callback) {
         this.query(context, fcn, args)
             .then((result) => {
@@ -461,6 +405,7 @@ class Engine {
                 callback(error, null);
             });
     }
+    */
 
     /**
      * Handle a ping request.

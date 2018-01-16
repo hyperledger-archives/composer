@@ -21,6 +21,7 @@ const HLFUtil = require('./hlfutil');
 const HLFTxEventHandler = require('./hlftxeventhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
+const temp = require('temp').track();
 const semver = require('semver');
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
@@ -92,6 +93,7 @@ class HLFConnection extends Connection {
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
+        this.temp = thenifyAll(temp);
         LOG.exit(method);
     }
 
@@ -292,25 +294,74 @@ class HLFConnection extends Connection {
      * Install the composer runtime chaincode.
      *
      * @param {any} securityContext the security context
-     * @param {string} businessNetworkIdentifier the business network name
+     * @param {string} businessNetworkDefinition the business network name
      * @param {object} installOptions any relevant install options
      * @param {object} installOptions.npmrcFile location of npmrc file to include in package
      * @returns {Promise} a promise which resolves to true if chaincode was installed, false otherwise (if ignoring installed errors)
      * @throws {Error} if chaincode was not installed and told not to ignore this scenario
      */
-    async install(securityContext, businessNetworkIdentifier, installOptions) {
+    async install(securityContext, businessNetworkDefinition, installOptions) {
         const method = 'install';
-        LOG.entry(method, securityContext, businessNetworkIdentifier, installOptions);
+        LOG.entry(method, securityContext, businessNetworkDefinition, installOptions);
 
-        if (!businessNetworkIdentifier) {
-            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
+        if (!businessNetworkDefinition) {
+            return Promise.reject(new Error('businessNetworkDefinition not specified'));
         }
 
-        let txId = this.client.newTransactionID();
+        // create the package.json
+        let bnaPackage = businessNetworkDefinition.getMetadata().getPackageJson();
+        let dependencies = bnaPackage.dependencies ? bnaPackage.dependencies : {};
+        if (!dependencies['composer-runtime-hlfv1']) {
+            //dependencies['composer-runtime-hlfv1'] = '^' + runtimeModulePath;
+            dependencies['composer-runtime-hlfv1'] = '../composer-runtime-hlfv1/composer-runtime-hlfv1-0.17.1.tgz';
+            dependencies['composer-runtime'] = '../composer-runtime/composer-runtime-0.17.1.tgz';
+            dependencies['composer-common'] = '../composer-common/composer-common-0.17.1.tgz';
+        }
 
+        let scripts = bnaPackage.scripts ? bnaPackage.scripts : {};
+        scripts.start = 'start-network';
+        bnaPackage.dependencies = dependencies;
+        bnaPackage.scripts = scripts;
+
+        // create a temp directory to hold
+        // 1. package.json
+        // 2. bna file
+        // 3. the tgz files referenced in the package.json
+        let tempDir = await this.temp.mkdir('businessnetwork');
+        //tempDir = '/tmp/bn';
+
+        // write the bna file
+        let bna = await businessNetworkDefinition.toArchive();
+        this.fs.writeFileSync(path.resolve(tempDir, bnaPackage.name + '.bna'), bna);
+
+        // copy any tgz files and update the package.json
+        for (let entry in dependencies) {
+            let dep = dependencies[entry];
+            console.log('looking at dep', entry);
+            if (dep.endsWith('.tgz')) {
+
+                let actualPath;
+                // look for them relative to the current working directory, if a relative path
+                path.isAbsolute(dep) ? actualPath = dep : actualPath = path.resolve(process.cwd(), dep);
+                console.log('actual path', actualPath, path.basename(actualPath));
+                let toWriteto = path.resolve(tempDir, path.basename(actualPath));
+                console.log(toWriteto);
+
+                // copy the tgz files to the temp directory
+                let fileToWrite = fs.readFileSync(actualPath);
+                fs.writeFileSync(toWriteto, fileToWrite);
+
+                // rewrite the dependency information
+                dependencies[entry] = './' + path.basename(actualPath);
+            }
+        }
+        // write the package.json
+        fs.writeFileSync(path.resolve(tempDir, 'package.json'), JSON.stringify(bnaPackage));
+
+        // copy over a .npmrc file, should be part of the business network definition.
         if (installOptions && installOptions.npmrcFile) {
             try {
-                await this.fs.copy(installOptions.npmrcFile, runtimeModulePath + '/.npmrc');
+                await this.fs.copy(installOptions.npmrcFile, tempDir + '/.npmrc');
             } catch(error) {
                 const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
                 LOG.error(method, newError);
@@ -318,11 +369,14 @@ class HLFConnection extends Connection {
             }
         }
 
+
+        let txId = this.client.newTransactionID();
+
         const request = {
             chaincodeType: 'node',
-            chaincodePath: runtimeModulePath,
-            chaincodeVersion: runtimePackageJSON.version,
-            chaincodeId: businessNetworkIdentifier,
+            chaincodePath: tempDir,
+            chaincodeVersion: businessNetworkDefinition.getVersion(),
+            chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,
             targets: this.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery'])
         };
@@ -428,7 +482,7 @@ class HLFConnection extends Connection {
      * @param {Object} startOptions connector specific installation options
      * @returns {Promise} a promise for instantiation completion
      */
-    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+    start(securityContext, businessNetworkIdentifier, businessNetworkVersion, startTransaction, startOptions) {
         const method = 'start';
         LOG.entry(method, securityContext, businessNetworkIdentifier, startTransaction, startOptions);
 
@@ -450,12 +504,13 @@ class HLFConnection extends Connection {
 
                 const request = {
                     chaincodePath: runtimeModulePath,
-                    chaincodeVersion: runtimePackageJSON.version,
+                    chaincodeVersion: businessNetworkVersion,
                     chaincodeId: businessNetworkIdentifier,
                     txId: finalTxId,
                     fcn: 'init',
                     args: [startTransaction]
                 };
+                console.log(request);
 
                 if (startOptions) {
                     this._addEndorsementPolicy(startOptions, request);

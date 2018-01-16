@@ -323,7 +323,10 @@ class AdminConnection {
                 const serializer = businessNetworkDefinition.getSerializer();
                 const startTransaction = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
                 const classDeclaration = startTransaction.getClassDeclaration();
-                startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
+                //startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
+                // have to put something here for now until we change the transaction as the businessNetworkArchive
+                // is mandatory and it fails validation if is isn't present.
+                startTransaction.businessNetworkArchive = '';
 
                 let hasNetworkAdmins = startOptions && startOptions.networkAdmins && startOptions.networkAdmins.length > 0;
                 let hasBootStrapTransactions = startOptions && startOptions.bootstrapTransactions && startOptions.bootstrapTransactions.length > 0;
@@ -484,7 +487,7 @@ class AdminConnection {
         return this._buildStartTransaction(businessNetworkDefinition, startOptions)
             .then((startTransactionJSON) => {
                 // Now we can start the business network.
-                return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
+                return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), JSON.stringify(startTransactionJSON), startOptions);
             })
             .then(() => {
 

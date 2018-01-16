@@ -14,9 +14,11 @@
 
 'use strict';
 
+const fs = require('fs');
 const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
 const Engine = require('composer-runtime').Engine;
+const Context = require('composer-runtime').Context;
 const NodeContainer = require('./nodecontainer');
 
 const Logger = require('composer-common').Logger;
@@ -30,6 +32,14 @@ const LOG = Logger.getLog('Composer');
  * @class Composer
  */
 class Composer {
+
+    async loadBusinessNetworkDefinition() {
+        //let busNetDef = await BusinessNetworkDefinition.fromDirectory('.');
+        console.log('load business network definition: reading package.json');
+        let pkgJSON = JSON.parse(fs.readFileSync('package.json'));
+        let archiveFileContents = fs.readFileSync(pkgJSON.name + '.bna');
+        await Context.parseBusinessNetworkDefinition(archiveFileContents);
+    }
 
     /**
      * Creates an instance of Composer chaincode.

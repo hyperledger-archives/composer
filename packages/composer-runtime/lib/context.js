@@ -20,7 +20,7 @@ const Api = require('./api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
-const LRU = require('lru-cache');
+//const LRU = require('lru-cache');
 const QueryCompiler = require('./querycompiler');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
@@ -30,10 +30,16 @@ const TransactionLogger = require('./transactionlogger');
 
 const LOG = Logger.getLog('Context');
 
-const businessNetworkCache = LRU(8);
-const compiledScriptBundleCache = LRU(8);
-const compiledQueryBundleCache = LRU(8);
-const compiledAclBundleCache = LRU(8);
+//const businessNetworkCache = LRU(8);
+//const compiledScriptBundleCache = LRU(8);
+//const compiledQueryBundleCache = LRU(8);
+//const compiledAclBundleCache = LRU(8);
+
+let compiledScriptBundle;
+let compiledQueryBundle;
+let compiledAclBundle;
+let businessNetworkDefinition;
+let businessNetworkArchive;
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -43,17 +49,38 @@ const compiledAclBundleCache = LRU(8);
  */
 class Context {
 
+    static async parseBusinessNetworkDefinition(archiveFileContents) {
+
+        console.log('parsing and storing the business network definition');
+        businessNetworkArchive = archiveFileContents;
+        let busNetDef = await BusinessNetworkDefinition.fromArchive(archiveFileContents);
+
+        businessNetworkDefinition = busNetDef;
+        let scriptCompiler = new ScriptCompiler();
+        compiledScriptBundle = scriptCompiler.compile(businessNetworkDefinition.getScriptManager());
+
+        let queryCompiler = new QueryCompiler();
+        compiledQueryBundle = queryCompiler.compile(businessNetworkDefinition.getQueryManager());
+
+        let aclCompiler = new AclCompiler();
+        compiledAclBundle = aclCompiler.compile(businessNetworkDefinition.getAclManager(), businessNetworkDefinition.getScriptManager());
+        console.log(businessNetworkDefinition);
+    }
+
+
     /**
      * Store a business network in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
      */
+    /*
     static cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition) {
         const method = 'cacheBusinessNetwork';
         LOG.entry(method, businessNetworkHash, businessNetworkDefinition);
         businessNetworkCache.set(businessNetworkHash, businessNetworkDefinition);
         LOG.exit(method);
     }
+    */
 
     /**
      * Get a compiled script bundle from the cache.
@@ -61,6 +88,7 @@ class Context {
      * @return {CompiledScriptBundle} The cached compiled script bundle, or null if
      * there is no entry in the cache for the specified business network definition.
      */
+    /*
     static getCachedCompiledScriptBundle(businessNetworkHash) {
         const method = 'getCachedCompiledScriptBundle';
         LOG.entry(method, businessNetworkHash);
@@ -68,25 +96,27 @@ class Context {
         LOG.exit(method, result);
         return result;
     }
-
+    */
     /**
      * Store a compiled script bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
      */
+    /*
     static cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle) {
         const method = 'cacheCompiledScriptBundle';
         LOG.entry(method, businessNetworkHash, compiledScriptBundle);
         compiledScriptBundleCache.set(businessNetworkHash, compiledScriptBundle);
         LOG.exit(method);
     }
-
+    */
     /**
      * Get a compiled query bundle from the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @return {CompiledQueryBundle} The cached compiled query bundle, or null if
      * there is no entry in the cache for the specified business network definition.
      */
+    /*
     static getCachedCompiledQueryBundle(businessNetworkHash) {
         const method = 'getCachedCompiledQueryBundle';
         LOG.entry(method, businessNetworkHash);
@@ -94,18 +124,21 @@ class Context {
         LOG.exit(method, result);
         return result;
     }
+    */
 
     /**
      * Store a compiled query bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
      */
+    /*
     static cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle) {
         const method = 'cacheCompiledQueryBundle';
         LOG.entry(method, businessNetworkHash, compiledQueryBundle);
         compiledQueryBundleCache.set(businessNetworkHash, compiledQueryBundle);
         LOG.exit(method);
     }
+    */
 
     /**
      * Get a compiled ACL bundle from the cache.
@@ -113,6 +146,7 @@ class Context {
      * @return {CompiledAclBundle} The cached compiled ACL bundle, or null if
      * there is no entry in the cache for the specified business network definition.
      */
+    /*
     static getCachedCompiledAclBundle(businessNetworkHash) {
         const method = 'getCachedCompiledAclBundle';
         LOG.entry(method, businessNetworkHash);
@@ -120,18 +154,21 @@ class Context {
         LOG.exit(method, result);
         return result;
     }
+    */
 
     /**
      * Store a compiled ACL bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledAclBundle} compiledAclBundle The compiled ACL bundle.
      */
+    /*
     static cacheCompiledAclBundle(businessNetworkHash, compiledAclBundle) {
         const method = 'cacheCompiledAclBundle';
         LOG.entry(method, businessNetworkHash, compiledAclBundle);
         compiledAclBundleCache.set(businessNetworkHash, compiledAclBundle);
         LOG.exit(method);
     }
+    */
 
     /**
      * Constructor.
@@ -142,7 +179,7 @@ class Context {
         this.function = null;
         this.arguments = null;
         this.businessNetworkRecord = null;
-        this.businessNetworkDefinition = null;
+        //this.businessNetworkDefinition = null;
         this.registryManager = null;
         this.resolver = null;
         this.api = null;
@@ -154,11 +191,11 @@ class Context {
         this.sysregistries = null;
         this.eventNumber = 0;
         this.scriptCompiler = null;
-        this.compiledScriptBundle = null;
+        //this.compiledScriptBundle = null;
         this.queryCompiler = null;
-        this.compiledQueryBundle = null;
+        //this.compiledQueryBundle = null;
         this.aclCompiler = null;
-        this.compiledAclBundle = null;
+        //this.compiledAclBundle = null;
         this.loggingService = null;
     }
 
@@ -183,6 +220,7 @@ class Context {
      * @return {Promise} A promise that will be resolved with the business network record
      * when complete, or rejected with an error.
      */
+    /*
     loadBusinessNetworkRecord() {
         const method = 'loadBusinessNetworkRecord';
         LOG.entry(method);
@@ -205,6 +243,7 @@ class Context {
                 return businessNetworkRecord;
             });
     }
+    */
 
     /**
      * Load the business network definition.
@@ -212,6 +251,7 @@ class Context {
      * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
      * when complete, or rejected with an error.
      */
+    /*
     loadBusinessNetworkDefinition(businessNetworkRecord) {
         const method = 'loadBusinessNetworkDefinition';
         LOG.entry(method);
@@ -234,6 +274,8 @@ class Context {
                 throw error;
             });
     }
+    */
+
 
     /**
      * Load or compile the compiled script bundle.
@@ -242,6 +284,7 @@ class Context {
      * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
      * when complete, or rejected with an error.
      */
+    /*
     loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition) {
         const method = 'loadCompiledScriptBundle';
         LOG.entry(method);
@@ -264,6 +307,7 @@ class Context {
                 throw error;
             });
     }
+    */
 
     /**
      * Load or compile the compiled query bundle.
@@ -272,6 +316,7 @@ class Context {
      * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
      * when complete, or rejected with an error.
      */
+    /*
     loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition) {
         const method = 'loadCompiledQueryBundle';
         LOG.entry(method);
@@ -294,6 +339,7 @@ class Context {
                 throw error;
             });
     }
+    */
 
     /**
      * Load or compile the compiled ACL bundle.
@@ -302,6 +348,7 @@ class Context {
      * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
      * when complete, or rejected with an error.
      */
+    /*
     loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition) {
         const method = 'loadCompiledAclBundle';
         LOG.entry(method);
@@ -324,6 +371,7 @@ class Context {
                 throw error;
             });
     }
+    */
 
     /**
      * Load the current participant.
@@ -386,6 +434,7 @@ class Context {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
+    /*
     findBusinessNetworkDefinition(options) {
         const method = 'findBusinessNetworkDefinition';
         LOG.entry(method, options);
@@ -408,6 +457,7 @@ class Context {
                 return businessNetworkDefinition;
             });
     }
+    */
 
     /**
      * Get the compiled script bundle to use.
@@ -417,6 +467,7 @@ class Context {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
+    /*
     findCompiledScriptBundle(businessNetworkDefinition, options) {
         const method = 'findCompiledScriptBundle';
         LOG.entry(method, options);
@@ -439,6 +490,7 @@ class Context {
                 return compiledScriptBundle;
             });
     }
+    */
 
     /**
      * Get the compiled query bundle to use.
@@ -448,6 +500,7 @@ class Context {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
+    /*
     findCompiledQueryBundle(businessNetworkDefinition, options) {
         const method = 'findCompiledQueryBundle';
         LOG.entry(method, options);
@@ -470,6 +523,7 @@ class Context {
                 return compiledQueryBundle;
             });
     }
+    */
 
     /**
      * Get the compiled ACL bundle to use.
@@ -479,6 +533,7 @@ class Context {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
+    /*
     findCompiledAclBundle(businessNetworkDefinition, options) {
         const method = 'findCompiledAclBundle';
         LOG.entry(method, options);
@@ -501,6 +556,7 @@ class Context {
                 return compiledAclBundle;
             });
     }
+    */
 
     /**
      * Initialize the context for use.
@@ -522,28 +578,10 @@ class Context {
         this.function = options.function || this.function;
         this.arguments = options.arguments || this.arguments;
         this.container = options.container;
+
+
         return Promise.resolve()
             .then(() => {
-                return this.findBusinessNetworkDefinition(options);
-            })
-            .then((businessNetworkDefinition) => {
-                LOG.debug(method, 'Got business network archive');
-                this.businessNetworkDefinition = businessNetworkDefinition;
-                return this.findCompiledScriptBundle(this.businessNetworkDefinition, options);
-            })
-            .then((compiledScriptBundle) => {
-                LOG.debug(method, 'Got compiled script bundle');
-                this.compiledScriptBundle = compiledScriptBundle;
-                return this.findCompiledQueryBundle(this.businessNetworkDefinition, options);
-            })
-            .then((compiledQueryBundle) => {
-                LOG.debug(method, 'Got compiled query bundle');
-                this.compiledQueryBundle = compiledQueryBundle;
-                return this.findCompiledAclBundle(this.businessNetworkDefinition, options);
-            })
-            .then((compiledAclBundle) => {
-                LOG.debug(method, 'Got compiled ACL bundle');
-                this.compiledAclBundle = compiledAclBundle;
                 LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
                 if (options.sysregistries) {
                     this.sysregistries = options.sysregistries;
@@ -678,10 +716,7 @@ class Context {
      * @return {Serializer} The serializer.
      */
     getSerializer() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getSerializer();
+        return businessNetworkDefinition.getSerializer();
     }
     /**
      * Get the event service provided by the chaincode container.
@@ -697,10 +732,7 @@ class Context {
      * @return {ModelManager} The model manager.
      */
     getModelManager() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getModelManager();
+        return businessNetworkDefinition.getModelManager();
     }
 
     /**
@@ -708,10 +740,7 @@ class Context {
      * @return {ScriptManager} The script manager.
      */
     getScriptManager() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getScriptManager();
+        return businessNetworkDefinition.getScriptManager();
     }
 
     /**
@@ -719,10 +748,7 @@ class Context {
      * @return {AclManager} The ACL manager.
      */
     getAclManager() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getAclManager();
+        return businessNetworkDefinition.getAclManager();
     }
 
     /**
@@ -730,10 +756,7 @@ class Context {
      * @return {Factory} The factory.
      */
     getFactory() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getFactory();
+        return businessNetworkDefinition.getFactory();
     }
 
 
@@ -742,10 +765,7 @@ class Context {
      * @return {Introspector} The serializer.
      */
     getIntrospector() {
-        if (!this.businessNetworkDefinition) {
-            throw new Error('must call initialize before calling this function');
-        }
-        return this.businessNetworkDefinition.getIntrospector();
+        return businessNetworkDefinition.getIntrospector();
     }
 
     /**
@@ -924,23 +944,34 @@ class Context {
         return this.eventNumber++;
     }
 
+    getBusinessNetworkDefinition() {
+        console.log('getting the business network definition', businessNetworkDefinition);
+        return businessNetworkDefinition;
+    }
+
+    getBusinessNetworkArchive() {
+        return businessNetworkArchive;
+    }
+
     /**
      * Get the script compiler.
      * @return {ScriptCompiler} scriptCompiler The script compiler.
      */
+    /*
     getScriptCompiler() {
         if (!this.scriptCompiler) {
             this.scriptCompiler = new ScriptCompiler();
         }
         return this.scriptCompiler;
     }
+    */
 
     /**
      * Get the compiled script bundle.
      * @return {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
      */
     getCompiledScriptBundle() {
-        return this.compiledScriptBundle;
+        return compiledScriptBundle;
     }
 
     /**
@@ -959,7 +990,7 @@ class Context {
      * @return {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
      */
     getCompiledQueryBundle() {
-        return this.compiledQueryBundle;
+        return compiledQueryBundle;
     }
 
     /**
@@ -978,7 +1009,7 @@ class Context {
      * @return {CompiledAclBundle} compiledAclBundle The compiled ACL bundle.
      */
     getCompiledAclBundle() {
-        return this.compiledAclBundle;
+        return compiledAclBundle;
     }
 
     /** Obtains the logging service

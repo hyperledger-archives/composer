@@ -15,6 +15,9 @@
 'use strict';
 
 const cmdUtil = require('../../utils/cmdutils');
+const Admin = require('composer-admin');
+const fs = require('fs');
+const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 
 const ora = require('ora');
 
@@ -39,13 +42,19 @@ class Install {
         let cardName = argv.card;
 
         return (() => {
-            spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
+            spinner = ora('Installing business network. This may take a minute...').start();
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.connect(cardName);
         })()
         .then((result) => {
+            let archiveFileContents = null;
+            // Read archive file contents
+            archiveFileContents = Install.getArchiveFileContents(argv.archiveFile);
+            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
+        })
+        .then((bnd) => {
             let installOptions = cmdUtil.parseOptions(argv);
-            return adminConnection.install(argv.businessNetworkName, installOptions);
+            return adminConnection.install(bnd, installOptions);
         }).then((result) => {
             spinner.succeed();
             cmdUtil.log();
@@ -57,6 +66,21 @@ class Install {
 
             throw error;
         });
+    }
+
+    /**
+      * Get contents from archive file
+      * @param {string} archiveFile connection profile name
+      * @return {String} archiveFileContents archive file contents
+      */
+    static getArchiveFileContents(archiveFile) {
+        let archiveFileContents;
+        if (fs.existsSync(archiveFile)) {
+            archiveFileContents = fs.readFileSync(archiveFile);
+        } else {
+            throw new Error('Archive file '+archiveFile+' does not exist.');
+        }
+        return archiveFileContents;
     }
 }
 
