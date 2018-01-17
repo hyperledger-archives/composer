@@ -15,17 +15,19 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const EventDeclaration = require('composer-common').EventDeclaration;
 const path = require('path');
 const RelationshipDeclaration = require('composer-common').RelationshipDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+// const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
+// const MemoryCardStore = require('composer-common').MemoryCardStore;
 const thenifyAll = require('thenify-all');
 const IdCard = require('composer-common').IdCard;
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
+
 require('chai').should();
 const fs = thenifyAll(require('fs'));
 
@@ -86,8 +88,8 @@ class Composer {
      * error.
      */
     initialize () {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        return this.createAdminConnection()
+        // NetworkCardStoreManager.setCardStore({ wallet : { type: 'composer-wallet-inmemory' } });
+        return this.createAdminConnection({ wallet : { type: 'composer-wallet-inmemory' } })
             .then((adminConnection) => {
                 this.adminConnection = adminConnection;
             });
@@ -173,7 +175,9 @@ class Composer {
      * error.
      */
     createAdminConnection () {
-        const adminConnection = new AdminConnection({fs : bfs_fs});
+
+
+        const adminConnection = new AdminConnection();
         let card = this.createBusinessNetworkCard();
         return adminConnection.importCard('PeerAdminCard', card)
             .then(() => {
@@ -214,7 +218,8 @@ class Composer {
      * error.
      */
     createBusinessNetworkConnection (cardName) {
-        const businessNetworkConnection = new BusinessNetworkConnection({fs : bfs_fs});
+
+        const businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.on('event', (event) => {
 
             this.events.push(event);
@@ -550,7 +555,7 @@ class Composer {
             })
             .then((hasCard) => {
                 if (!hasCard) {
-                    throw new Error('no such card for ' + userID);
+                    throw new Error('has not been registered');
                 }
                 return this.businessNetworkConnection.disconnect();
             })

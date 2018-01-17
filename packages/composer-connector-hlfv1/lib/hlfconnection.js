@@ -283,6 +283,7 @@ class HLFConnection extends Connection {
             })
             .catch((error) => {
                 const newError = new Error('Error trying login and get user Context. ' + error);
+                console.log(error.stack);
                 LOG.error(method, error);
                 throw newError;
             });

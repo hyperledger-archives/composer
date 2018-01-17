@@ -48,6 +48,8 @@
     "composer-client": "0.18.0",
     "composer-common": "0.18.0",
     "composer-report": "0.18.0",
+    "composer-wallet-filesystem": "0.18.0",
+    "composer-wallet-inmemory": "0.18.0",
     "homedir": "0.6.0",
     "js-yaml": "3.10.0",
     "mkdirp": "0.5.1",

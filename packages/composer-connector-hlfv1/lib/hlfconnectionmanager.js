@@ -25,6 +25,7 @@ const jsrsa = require('jsrsasign');
 const KEYUTIL = jsrsa.KEYUTIL;
 const ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 
+const cloneDeep = require('lodash').cloneDeep;
 const LOG = Logger.getLog('HLFConnectionManager');
 
 global.hfc = {
@@ -213,9 +214,11 @@ class HLFConnectionManager extends ConnectionManager {
                 }
             }
 
-            // create the client
-            client = Client.loadFromConfig(ccp);
-
+            let clientccp = cloneDeep(ccp);
+            if (clientccp.wallet){
+                delete clientccp.wallet;
+            }
+            client = Client.loadFromConfig(clientccp);
             if (setupStore) {
                 // setup the state store and cryptosuite
                 if (useHSM) {

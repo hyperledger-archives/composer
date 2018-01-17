@@ -27,22 +27,6 @@ class BusinessNetworkCardStore {
    + Promise getAll() 
    + Promise delete(String) 
 }
-class FileSystemCardStore extends BusinessNetworkCardStore {
-   + void constructor(Object,undefined,String) 
-   + void get() 
-   + void put() 
-   + void has() 
-   + void getAll() 
-   + void delete() 
-}
-class MemoryCardStore extends BusinessNetworkCardStore {
-   + void constructor() 
-   + void get() 
-   + void put() 
-   + void has() 
-   + void getAll() 
-   + void delete() 
-}
 class Certificate {
    + void constructor(string) 
    + string getCertificate() 
@@ -258,10 +242,9 @@ class Serializer {
 class Wallet {
    + Wallet getWallet() 
    + void setWallet(Wallet) 
-   + Promise list() 
+   + Promise listNames() 
    + Promise contains(string) 
    + Promise get(string) 
-   + Promise add(string,string) 
-   + Promise update(string,string) 
+   + Promise put(string,string,Object) 
    + Promise remove(string) 
 }

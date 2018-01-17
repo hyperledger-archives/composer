@@ -34,9 +34,9 @@ class CmdUtil {
      */
     static log(){
         Array.from(arguments).forEach((s)=>{
+            // eslint-disable-next-line no-console
             console.log(s);
         });
-
     }
 
     /**
@@ -177,7 +177,7 @@ class CmdUtil {
 
         // Not enough certificate files or enrollment secrets!
         else {
-            console.log(JSON.stringify(argv, null, 4));
+            CmdUtil.log(JSON.stringify(argv, null, 4));
             throw new Error('You must specify certificate files or enrollment secrets for all network administrators');
         }
 

@@ -19,7 +19,8 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
+// const cardStore = NetworkCardStoreManager.getCard( { type: 'composer-wallet-inmemory' } );
 const server = require('../server/server');
 
 const chai = require('chai');
@@ -176,7 +177,8 @@ const clone = require('clone');
         let idCard;
 
         before(() => {
-            const cardStore = new MemoryCardStore();
+
+            const cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
             adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';

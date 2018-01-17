@@ -30,12 +30,15 @@ rm -rf ${HOME}/.composer/client-data/ange*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
 rm -f ./networkadmin.card
+
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
     cd ../composer-runtime-hlfv1
     rm .npmrc
     cd "${DIR}"
 fi
+
+
 
 # Switch into the integration tests directory.
 cd "${DIR}"

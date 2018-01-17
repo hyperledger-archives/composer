@@ -16,7 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const { ConnectionProfileManager, IdCard, Logger, MemoryCardStore } = require('composer-common');
+const { ConnectionProfileManager, IdCard, NetworkCardStoreManager } = require('composer-common');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -27,9 +27,11 @@ let connectionProfileOrg1, connectionProfileOrg2, otherConnectionProfileOrg1, ot
 let docker;
 let forceDeploy = false;
 let testRetries = 4;
-let cardStore;
+
 let io;
 
+// hold on to the card store instance that was created in setup for use in deploy
+let cardStoreForDeploy;
 /**
  * Trick browserify by making the ID parameter to require dynamic.
  * @param {string} id The module ID.
@@ -45,6 +47,17 @@ function dynamicRequire(id) {
  * @private
  */
 class TestUtil {
+
+    /** Simple log method to output to the console
+     * Used to put a single console.log() here, so eslinting is easier.
+     * And if this needs to written to a file at some point it is also eaiser
+     */
+    static log(){
+        Array.from(arguments).forEach((s)=>{
+            // eslint-disable-next-line no-console
+            console.log(s);
+        });
+    }
 
     /**
      * Check to see if running under a web browser.
@@ -109,28 +122,28 @@ class TestUtil {
         let waitTime = 30;
         if (process.env.COMPOSER_PORT_WAIT_SECS) {
             waitTime = parseInt(process.env.COMPOSER_PORT_WAIT_SECS);
-            console.log('COMPOSER_PORT_WAIT_SECS set, using: ', waitTime);
+            TestUtil.log('COMPOSER_PORT_WAIT_SECS set, using: ', waitTime);
         }
         return new Promise(function (resolve, reject) {
             let testConnect = function (count) {
                 let s = new net.Socket();
                 s.on('error', function (error) {
                     if (count > waitTime) {
-                        console.error('Port has not started, giving up waiting');
+                        TestUtil.error('Port has not started, giving up waiting');
                         return reject(error);
                     } else {
-                        console.log('Port has not started, waiting 1 second ...');
+                        TestUtil.log('Port has not started, waiting 1 second ...');
                         setTimeout(function () {
                             testConnect(count + 1);
                         }, 1000);
                     }
                 });
                 s.on('connect', function () {
-                    console.log('Port has started');
+                    TestUtil.log('Port has started');
                     s.end();
                     return resolve();
                 });
-                console.log('Testing if port ' + port + ' on host ' + hostname + ' has started ...');
+                TestUtil.log('Testing if port ' + port + ' on host ' + hostname + ' has started ...');
                 s.connect(port, hostname);
             };
             testConnect(0);
@@ -174,14 +187,9 @@ class TestUtil {
      * @return {Promise} - a promise that wil be resolved with a configured and
      * connected instance of BusinessNetworkConnection.
      */
-    static setUp() {
-        Logger.setFunctionalLogger({
-            log: () => {
+    static setUp () {
 
-            }
-        });
-        cardStore = new MemoryCardStore();
-        let adminConnection = new AdminConnection({cardStore});
+        let adminConnection;
         forceDeploy = false;
         return TestUtil.waitForPorts()
             .then(() => {
@@ -189,21 +197,24 @@ class TestUtil {
                 // Create all necessary configuration for the web runtime.
                 if (TestUtil.isWeb()) {
 
-                    // Register the web connector.
                     ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
-
-                // Create all necessary configuration for the embedded runtime.
+                    const walletmodule = require('composer-wallet-inmemory');
+                    let cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory',walletmodule } );
+                    adminConnection = new AdminConnection({cardStore});
+                    cardStoreForDeploy = cardStore;
                 } else if (TestUtil.isEmbedded()) {
-
-                    // Nothing required.
-
+                    let cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
+                    adminConnection = new AdminConnection({cardStore});
+                    cardStoreForDeploy = cardStore;
                 } else if (TestUtil.isProxy()) {
+                    let cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
+                    adminConnection = new AdminConnection({cardStore});
+                    cardStoreForDeploy = cardStore;
+
 
                     // A whole bunch of dynamic requires to trick browserify.
                     const ConnectorServer = dynamicRequire('composer-connector-server');
                     const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
-
-                    cardStore = new MemoryCardStore();
 
                     const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
                     const socketIO = dynamicRequire('socket.io');
@@ -221,22 +232,24 @@ class TestUtil {
                     };
                     io = socketIO(15699);
                     io.on('connect', (socket) => {
-                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
+                        TestUtil.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
                         new ConnectorServer(cardStore, connectionProfileManager, socket);
+                        TestUtil.log('Connector Server created');
                     });
                     io.on('disconnect', (socket) => {
-                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
+                        TestUtil.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
                     });
+                    TestUtil.log('Calling AdminConnection.createProfile() ...');
                     return;
 
                     // Create all necessary configuration for Hyperledger Fabric v1.0.
                 } else if (TestUtil.isHyperledgerFabricV1()) {
-                    const FileSystemCardStore = dynamicRequire('composer-common').FileSystemCardStore;
-                    cardStore = new FileSystemCardStore();
+                    let cardStore = NetworkCardStoreManager.getCardStore( );
                     adminConnection = new AdminConnection({cardStore});
+                    cardStoreForDeploy = cardStore;
 
                     if (process.env.FVTEST.match('tls$')) {
-                        console.log('setting up TLS Connection Profile for HLF V1');
+                        TestUtil.log('setting up TLS Connection Profile for HLF V1');
                         // define ORG 1 CCP
                         connectionProfileOrg1 = {
                             'name': 'hlfv1org1',
@@ -471,7 +484,7 @@ class TestUtil {
                         };
 
                     } else {
-                        console.log('setting up Non-TLS Connection Profile for HLF V1');
+                        TestUtil.log('setting up Non-TLS Connection Profile for HLF V1');
                         // define ORG 1 CCP NON-TLS
                         connectionProfileOrg1 = {
                             'name': 'hlfv1org1',
@@ -664,7 +677,7 @@ class TestUtil {
                     currentCp = connectionProfileOrg1;
 
                     let fs = dynamicRequire('fs');
-                    console.log('Creating peer admin cards, and importing them into the card store');
+                    TestUtil.log('Creating peer admin cards, and import them to the card store');
                     const admins = [
                         { org: 'org1', keyFile: 'key.pem' },
                         { org: 'org2', keyFile: 'key.pem' }
@@ -701,7 +714,7 @@ class TestUtil {
                                     return adminConnection.importCard(`othercomposer-systests-${org}-PeerAdmin`, otherCard);
                                 })
                                 .then(() => {
-                                    console.log(`Imported cards for ${org} to the card store`);
+                                    TestUtil.log('Imported cards to the card store');
                                 });
 
                         });
@@ -749,7 +762,7 @@ class TestUtil {
                     };
                     let ccpToUse = currentCp;
                     if (process.env.FVTEST && process.env.FVTEST.match('hsm$')) {
-                        console.log(`defining a new card for ${enrollmentID} to use HSM`);
+                        TestUtil.log(`defining a new card for ${enrollmentID} to use HSM`);
                         ccpToUse = JSON.parse(JSON.stringify(currentCp));
                         ccpToUse.client['x-hsm'] = {
                             'library': '/usr/local/lib/softhsm/libsofthsm2.so',
@@ -786,10 +799,12 @@ class TestUtil {
             })
             .then(() => {
                 if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
+                    TestUtil.log('Connecting with ' + cardName);
                     return thisClient.connect(cardName);
                 } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                     throw new Error('force deploy is being called and that will not work now');
                 } else {
+                    TestUtil.log('Connecting with ' + cardName);
                     return thisClient.connect(cardName);
                 }
             })
@@ -812,13 +827,10 @@ class TestUtil {
             throw new Error('this should not be deploying');
         }
 
-        if (!cardStore) {
-            cardStore = new MemoryCardStore();
-        }
-
         cardName = cardName || 'admincard';
-        const adminConnection = new AdminConnection({cardStore});
+        let adminConnection = new AdminConnection({cardStore:cardStoreForDeploy});
         forceDeploy = forceDeploy_;
+
         const bootstrapTransactions = [
             {
                 $class: 'org.hyperledger.composer.system.AddParticipant',
@@ -837,11 +849,12 @@ class TestUtil {
             }
         ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
+
+            TestUtil.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return Promise.resolve()
                 .then(() => {
                     // Connect and install the runtime onto the peers for org1.
-                    console.log('Connecting to org1');
+                    TestUtil.log('Connecting to org1');
                     if(otherChannel) {
                         return adminConnection.connect('othercomposer-systests-org1-PeerAdmin');
                     } else {
@@ -849,7 +862,7 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    console.log('Installing network to org1');
+                    TestUtil.log('installing to Org1');
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
@@ -857,7 +870,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and install the runtime onto the peers for org2.
-                    console.log('Connecting to org2');
+                    TestUtil.log('Connecting to org2');
                     if(otherChannel) {
                         return adminConnection.connect('othercomposer-systests-org2-PeerAdmin');
                     } else {
@@ -865,7 +878,7 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    console.log('Installing network to org2');
+                    TestUtil.log('installing to Org2');
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
@@ -873,7 +886,7 @@ class TestUtil {
                 })
                 .then(() => {
                     // Connect and start the network on the peers for org1 and org2.
-                    console.log('Connecting to start the network');
+                    TestUtil.log('Connecting to start the network');
                     if(otherChannel) {
                         return adminConnection.connect('othercomposer-systests-org1-PeerAdmin');
                     } else {
@@ -881,7 +894,7 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    console.log('Starting the network');
+                    TestUtil.log('Starting the network');
                     return adminConnection.start(businessNetworkDefinition, {
                         bootstrapTransactions,
                         endorsementPolicy: {
@@ -918,10 +931,10 @@ class TestUtil {
                     } else {
                         currentCp = connectionProfileOrg1;
                     }
-                    console.log('Creating the network admin id card');
+                    TestUtil.log('Creating the network admin id card');
                     let ccpToUse = currentCp;
                     if (process.env.FVTEST.match('hsm$')) {
-                        console.log('defining network admin id card to use HSM');
+                        TestUtil.log('defining network admin id card to use HSM');
                         ccpToUse = JSON.parse(JSON.stringify(currentCp));
                         ccpToUse.client['x-hsm'] = {
                             'library': '/usr/local/lib/softhsm/libsofthsm2.so',
@@ -940,11 +953,10 @@ class TestUtil {
                 .then(() => {
                     return adminConnection.disconnect();
                 }).then(() => {
-                    return cardStore;
+                    return cardStoreForDeploy;
                 });
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             throw new Error('force deploy has been specified, this impl is not here anymore');
-            //console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network on the peers for org1.
         } else if (!forceDeploy) {
             let metadata = {version: 1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin']};
@@ -961,7 +973,7 @@ class TestUtil {
             currentCp = connectionprofile;
             let idCard_PeerAdmin = new IdCard(metadata, connectionprofile);
 
-            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
+            TestUtil.log(`Deploying business network ${businessNetworkDefinition.getName()} using install & start ...`);
             return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
                 .then(() => {
                     // Connect, install the runtime and start the network.
@@ -971,6 +983,7 @@ class TestUtil {
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
+                    TestUtil.log('deploying new ' + businessNetworkDefinition.getName());
                     return adminConnection.start(businessNetworkDefinition, {bootstrapTransactions});
                 })
                 .then(() => {
@@ -984,18 +997,19 @@ class TestUtil {
                 .then(() => {
                     return adminConnection.disconnect();
                 }).then(() => {
-                    return cardStore;
+                    return cardStoreForDeploy;
                 });
         } else if (forceDeploy) {
-            console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
-            // Connect and deploy the network.
-            return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
-                .then(() => {
-                    return adminConnection.deploy(businessNetworkDefinition, {bootstrapTransactions});
-                })
-                .then(() => {
-                    return adminConnection.disconnect();
-                });
+            throw new Error('should not be using ForceDeploy');
+            // TestUtil.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
+            // // Connect and deploy the network.
+            // return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
+            //     .then(() => {
+            //         return adminConnection.deploy(businessNetworkDefinition, {bootstrapTransactions});
+            //     })
+            //     .then(() => {
+            //         return adminConnection.disconnect();
+            //     });
         } else {
             throw new Error('I do not know what kind of deploy you want me to run!');
         }
@@ -1021,7 +1035,7 @@ class TestUtil {
                 });
                 return matchingContainers.reduce((promise, matchingContainer) => {
                     return promise.then(() => {
-                        console.log(`Stopping Docker container ${matchingContainer.id} ...`);
+                        TestUtil.log(`Stopping Docker container ${matchingContainer.id} ...`);
                         return matchingContainer.stop();
                     });
                 }, Promise.resolve());
@@ -1044,7 +1058,7 @@ class TestUtil {
         cardName = cardName || 'admincard';
 
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-            const adminConnection = new AdminConnection({cardStore});
+            const adminConnection = new AdminConnection();
             return adminConnection.connect(cardName)
                 .then(() => {
                     return adminConnection.reset(identifier);

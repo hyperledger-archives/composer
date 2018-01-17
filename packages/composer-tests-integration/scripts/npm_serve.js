@@ -58,6 +58,8 @@ let packages = [
     'composer-rest-server',
     'composer-report',
     'composer-cli',
+    'composer-wallet-inmemory',
+    'composer-wallet-filesystem',
     'generator-hyperledger-composer'];
 
 // Packages to be installed in integration test(s)
