@@ -14,50 +14,59 @@
 
 'use strict';
 
-const fs = require('fs');
-const FileSystemCardStore = require('./filesystemcardstore');
-process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
-const config = require('config');
+let cardStore;
+const cfg = require('../config/configmediator.js');
+const WalletBackedStore = require('./walletbackedcardstore');
 
+const loadModule = require('../module/loadModule');
+const path=require('path');
 
-let allCardstores = {};
-
+const moduleCache = {};
 /**
+ * Provides the loading mechanism for handling card stores.
+ * This uses system configuration to get the required type of the card store (a NPM module)
+ * This is then loaded and returned. This is currently set to be a singleton card store manager.
  *
+ * The name of the module must start with 'composer-wallet' to help separate concerns and prevent just anything
+ * from being used.
+ *
+ * Assumptions:
+ *   That the supplied module is installed gloabally
+ *   That the module is a subclass of BusinessNetworkCardStore
+ *
+ * This is a preview, therefore subject to change (potentially in breaking ways)
+ *
+ * @private
  */
 class NetworkCardStoreManager {
 
-    // will need init method to determine what the card store needs to be
-
-    /** Get the card store by name
-     * @param {String} name indexed name of the card store
-     */
-    static getCardStore(name = 'default', options = {}) {
-        let cardstore = allCardstores[name];
-        if (!cardstore) {
-            // create the default card store here
-            cardstore = NetworkCardStoreManager.createDefault(options);
-        }
-        return cardstore;
-    }
-
     /**
-     * Create the default based on the configuration options
-     * Defaulting to the file system store if needed
+     * @param {Object} options Any options to be passed to the card store
+     * @return {BusinessNetworkCardStore} instance of a BusinessNetworkCardStore to use
      */
-    static createDefault(options = {}) {
-        let defaults = {
-            'CardStore': {
-                'type': 'FileSystemCardStore',
-                'options': ''
-            }
-        };
+    static getCardStore(options = { 'type': 'composer-wallet-filesystem' }) {
+        let cardStoreCfg = cfg.get('wallet',options );
+        if (cardStoreCfg.type.match(/composer-wallet/)){
+            // the relative path here is to ensure that in a flat structure eg dev build the module can be found
 
-        config.util.setModuleDefaults(defaults);
-        let cardStoreData = config.get('Composer.CardStore');
-        let cardStore = require(cardStore.type)(cardStoreData.get('options'));
-        // need to create an instance of the type
+            let StoreModule = moduleCache[cardStoreCfg.type];
+            if (!StoreModule){
+                StoreModule = cardStoreCfg.walletmodule || loadModule(cardStoreCfg.type,{paths:[path.resolve(__dirname,'../../../')]});
+                moduleCache[cardStoreCfg.type] = StoreModule;
+            }
+            if (StoreModule.getStore){
+                let opts = cardStoreCfg.options || options;
+                opts.StoreModule = StoreModule;
+                cardStore = new WalletBackedStore(opts);
+            }else {
+                throw new Error(`Module loaded does not have correct interface ${cardStoreCfg.type}`);
+            }
+        } else {
+            throw new Error(`Module give does not have valid name ${cardStoreCfg.type}`);
+        }
+
         return cardStore;
+
     }
 
 }

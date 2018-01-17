@@ -76,4 +76,10 @@ describe('BusinessNetworkCardStore', function() {
         });
     });
 
+    describe('#getWallet', function() {
+        it('should throw as abstract method', function() {
+            const store = new BusinessNetworkCardStore();
+            return store.getWallet().should.be.rejectedWith(/Abstract/);
+        });
+    });
 });

@@ -21,7 +21,8 @@ const LOG = Logger.getLog('ConnectionProfileManager');
 const connectionManagerLoaders = [];
 const connectionManagerClasses = {};
 const connectionManagers = {};
-
+// const loadModule = require('./module/loadModule');
+// const path=require('path');
 /**
  * A connection profile manager that manages a set of connection profiles. Each
  * connection profile defines an arbitrary set of configuration data and is associated
@@ -87,6 +88,17 @@ class ConnectionProfileManager {
                 if (!connectionManager) {
                     const mod = `composer-connector-${connectionType}`;
                     LOG.debug(METHOD, 'Looking for module', mod);
+
+                    // try{
+                    //     let cmc = loadModule(mod,{paths:[path.resolve(__dirname,'../../')]});
+                    //     // console.log(`result found is ${cmc}`);
+                    //     if (cmc){
+                    //         connectionManagerClasses[connectionType] = cmc;
+                    //     }
+                    // } catch (error){
+                    //     LOG.debug(METHOD,'Attempted to special load the module but failed');
+                    // }
+
                     try {
                         // Check for the connection manager class registered using
                         // registerConnectionManager (used by the web connector).
@@ -131,6 +143,7 @@ class ConnectionProfileManager {
                                 // one last time.
                                 connectionManager = new (require(mod))(this);
                             }
+
                         }
 
                     } catch (e) {

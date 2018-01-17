@@ -47,7 +47,7 @@ function runCucumberTest (featureSource) {
         colorsEnabled : true,
         cwd : '/',
         log : (data) => {
-            // console.log(data);
+            console.log(data);
         },
         supportCodeLibrary : supportCodeLibrary
     };
@@ -81,7 +81,7 @@ describe('Cucumber', () => {
             .should.eventually.be.false;
     });
 
-    it('should handle any errors if errors are expected', () => {
+    it('should handle any errors if errors are expected', async () => {
         const featureSource = `
         Feature: test
             Background:
@@ -95,8 +95,10 @@ describe('Cucumber', () => {
                     | 1       | alice@email.com | 10    |
                 Then I should get an error
         `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.true;
+
+        let result = await runCucumberTest(featureSource);
+        return result.should.be.true;
+
     });
 
     it('should throw if multiple errors are caught when errors are expected', () => {

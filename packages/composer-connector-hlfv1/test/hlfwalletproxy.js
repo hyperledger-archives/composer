@@ -87,26 +87,17 @@ describe('HLFWalletProxy', () => {
     describe('#setValue', () => {
 
         it('should add the value to the wallet and call the callback', () => {
-            mockWallet.contains.withArgs('bob1').resolves(false);
+            mockWallet.put.resolves();
             return walletProxy.setValue('member.bob1', 'hello world')
                 .then(() => {
-                    sinon.assert.calledOnce(mockWallet.add);
-                    sinon.assert.calledWith(mockWallet.add, 'bob1', 'hello world');
-                });
-        });
-
-        it('should update the value in the wallet and call the callback', () => {
-            mockWallet.contains.withArgs('bob1').resolves(true);
-            return walletProxy.setValue('member.bob1', 'hello world')
-                .then(() => {
-                    sinon.assert.calledOnce(mockWallet.update);
-                    sinon.assert.calledWith(mockWallet.update, 'bob1', 'hello world');
+                    sinon.assert.calledOnce(mockWallet.put);
+                    sinon.assert.calledWith(mockWallet.put, 'bob1', 'hello world');
                 });
         });
 
         it('should pass back any errors from the wallet', () => {
-            mockWallet.contains.withArgs('bob1').resolves(true);
-            mockWallet.update.withArgs('bob1').rejects('Error', 'ENOPERM');
+
+            mockWallet.put.withArgs('bob1').rejects('Error', 'ENOPERM');
             return walletProxy.setValue('member.bob1', 'hello world')
                 .should.be.rejectedWith(/ENOPERM/);
         });

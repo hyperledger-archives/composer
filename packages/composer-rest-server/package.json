@@ -37,6 +37,8 @@
     "clui": "0.3.1",
     "composer-admin": "0.17.7",
     "composer-common": "0.17.7",
+    "composer-wallet-filesystem": "0.17.7",
+    "composer-wallet-inmemory": "0.17.7",
     "compression": "1.0.3",
     "connect-ensure-login": "0.1.1",
     "cookie-parser": "1.4.3",
