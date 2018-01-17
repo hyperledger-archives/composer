@@ -117,6 +117,12 @@ List all identities in a business network: [composer identity list](./composer.i
 
 Revoke an identity from a participant: [composer identity revoke](./composer.identity.revoke.html)
 
+## Support diagnostics
+
+`composer report`
+
+Create a diagnostic report: [composer report](./composer.report)
+
 ## Transaction execution
 
 `composer transaction submit`
