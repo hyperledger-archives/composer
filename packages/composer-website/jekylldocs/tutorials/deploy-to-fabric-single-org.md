@@ -29,8 +29,8 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
         cd ~/fabric-tools
         ./stopFabric.sh
         ./teardownFabric.sh
-        ./downloadFabric.sh
         export FABRIC_VERSION=hlfv11
+        ./downloadFabric.sh
         ./startFabric.sh
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
