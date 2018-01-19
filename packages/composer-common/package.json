@@ -99,7 +99,6 @@
     "exclude": [
       "coverage/**",
       "lib/codegen/**",
-
       "lib/tools/plantumltoimage.js",
       "lib/introspect/parser.js",
       "lib/acl/parser.js",
