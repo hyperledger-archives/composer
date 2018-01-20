@@ -60,6 +60,8 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   composer identity issue -c admin@network -f maeid1.card -u maeid1 -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
   ```
 
+  This will issue card for the user maeid1 and export a card file in your current directory.
+
 2. As the participant, test the connection to the business network
   * JavaScript API
 
@@ -83,5 +85,8 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   * Command line
 
   ```bash
+  composer card import -f maeid1@network.card
   composer network ping -c maeid1@network
   ```
+
+  You need to make sure to import the card into business network before pinging.
