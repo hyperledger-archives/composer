@@ -49,12 +49,15 @@
     "homedir": "0.6.0",
     "js-yaml": "3.10.0",
     "mkdirp": "0.5.1",
+    "moment":"2.19.3",
+    "node-report":"2.2.1",
     "npm-paths": "0.1.3",
     "nunjucks": "3.0.0",
     "ora": "1.2.0",
     "prettyjson": "1.2.1",
     "prompt": "1.0.0",
     "sanitize-filename": "1.6.1",
+    "tar":"4.3.0",
     "yargs": "10.0.3"
   },
   "license-check-config": {
