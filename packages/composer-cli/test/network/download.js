@@ -61,7 +61,7 @@ describe('composer network download CLI unit tests', function () {
 
     describe('Download handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
@@ -77,7 +77,7 @@ describe('composer network download CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified. No enroll secret', function () {
+        it('should correctly execute when all parms correctly specified. No enroll secret', function () {
 
             let argv = {enrollId: 'WebAppAdmin'
                                    ,archiveFile: 'testArchiveFile.zip'
@@ -92,7 +92,7 @@ describe('composer network download CLI unit tests', function () {
                         });
         });
 
-        it('Good path, all parms correctly specified with card.', function () {
+        it('should correctly execute when all parms correctly specified with card.', function () {
             let argv = {card: 'cardName'};
             return DownloadCmd.handler(argv)
             .then ((result) => {

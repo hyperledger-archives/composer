@@ -64,6 +64,8 @@ describe('composer start network CLI unit tests', function () {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
 
+        sandbox.stub(fs, 'writeFileSync');
+
         return businessNetworkDefinition.toArchive()
             .then((archive) => {
                 testBusinessNetworkArchive = archive;
@@ -76,7 +78,7 @@ describe('composer start network CLI unit tests', function () {
 
     describe('Deploy handler() method tests', function () {
 
-        it('Good path, optional parameter -O /path/to/options.json specified.', function () {
+        it('should correctly execute when optional parameter -O /path/to/options.json specified.', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -108,7 +110,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -119,7 +121,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, optional parameter -o endorsementPolicyFile= specified.', function () {
+        it('should correctly execute when optional parameter -o endorsementPolicyFile= specified.', function () {
 
             let argv = {card:'cardname'
                        ,option: 'endorsementPolicyFile=/path/to/some/file.json'
@@ -135,7 +137,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -147,7 +149,7 @@ describe('composer start network CLI unit tests', function () {
         });
 
 
-        it('Good path, optional parameter -o endorsementPolicy= specified.', function () {
+        it('should correctly execute when optional parameter -o endorsementPolicy= specified.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -165,7 +167,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -177,7 +179,7 @@ describe('composer start network CLI unit tests', function () {
         });
 
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -194,7 +196,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -203,7 +205,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified. with the certificate', function () {
+        it('should correctly execute when all parms correctly specified. with the certificate', function () {
 
             let argv = {card:'cardname'
                                    ,archiveFile: 'testArchiveFile.zip'
@@ -220,7 +222,7 @@ describe('composer start network CLI unit tests', function () {
                             sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                             sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                             sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                            sinon.assert.calledTwice(fs.writeFileSync);
                             sinon.assert.calledOnce(mockAdminConnection.connect);
                             sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                             sinon.assert.calledOnce(mockAdminConnection.start);
@@ -228,7 +230,7 @@ describe('composer start network CLI unit tests', function () {
 
                         });
         });
-        it('Good path, all parms correctly specified. File output set for the card', function () {
+        it('should correctly execute when all parms correctly specified. File output set for the card', function () {
 
             let argv = {card:'cardname'
                                    ,archiveFile: 'testArchiveFile.zip'
@@ -246,7 +248,7 @@ describe('composer start network CLI unit tests', function () {
                             sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                             sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                             sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                            sinon.assert.calledTwice(fs.writeFileSync);
                             sinon.assert.calledOnce(mockAdminConnection.connect);
                             sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                             sinon.assert.calledOnce(mockAdminConnection.start);
@@ -255,7 +257,7 @@ describe('composer start network CLI unit tests', function () {
                         }       );
         });
 
-        it('Good path, all parms correctly specified, including optional logLevel.', function () {
+        it('should correctly execute when all parms correctly specified, including optional logLevel.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -273,7 +275,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -281,7 +283,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, no secret, all other parms correctly specified.', function () {
+        it('should correctly execute when no secret, all other parms correctly specified.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -298,7 +300,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -316,7 +318,7 @@ describe('composer start network CLI unit tests', function () {
             });
         };
 
-        it('Good path, network administrator specified', function () {
+        it('should correctly execute when, network administrator specified', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -333,7 +335,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -341,7 +343,7 @@ describe('composer start network CLI unit tests', function () {
             });
         });
 
-        it('Good path, network administrator and bootstrap transactions specified', function () {
+        it('should correctly execute when network administrator and bootstrap transactions specified', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -370,7 +372,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                sinon.assert.calledTwice(fs.writeFileSync);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.start);
@@ -421,7 +423,7 @@ describe('composer start network CLI unit tests', function () {
                 });
         });
 
-        it('Good path, network administrator specified', function () {
+        it('should correctly execute when network administrator specified', function () {
 
             let argv = {card:'cardname'
                                     ,archiveFile: 'testArchiveFile.zip'
@@ -439,7 +441,7 @@ describe('composer start network CLI unit tests', function () {
                             sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                             sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
                             sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-
+                            sinon.assert.calledTwice(fs.writeFileSync);
                             sinon.assert.calledOnce(mockAdminConnection.connect);
                             sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
                             sinon.assert.calledOnce(mockAdminConnection.start);
@@ -451,7 +453,7 @@ describe('composer start network CLI unit tests', function () {
 
     describe('Deploy getArchiveFileContents() method tests', function () {
 
-        it('Archive file exists', function () {
+        it('Should correctly get the archive file contents if it exists', function () {
 
             sandbox.stub(fs, 'existsSync').returns(true);
             let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
@@ -464,7 +466,7 @@ describe('composer start network CLI unit tests', function () {
 
         });
 
-        it('Archive file does not exist', function () {
+        it('Should throw correct error if archive file does not exist', function () {
 
             sandbox.stub(fs, 'existsSync').returns(false);
             let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
@@ -474,7 +476,7 @@ describe('composer start network CLI unit tests', function () {
             (() => {Start.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
 
         });
-        it('Unexpected errror', function () {
+        it('Should handle correctly any unexpected errors', function () {
 
             let argv = {card:'cardname'
                                                ,archiveFile: 'testArchiveFile.zip'
