@@ -492,6 +492,51 @@ describe('Asset system tests', function() {
             });
     });
 
+    it('should store assets in the correct registry obtained from general get registry call', () => {
+        let assetRegistry;
+        let assetContainerRegistry;
+        return client
+            .getRegistry('systest.assets.SimpleAsset')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset2');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset3');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                return client.getRegistry('systest.assets.SimpleAssetRelationshipContainer');
+            })
+            .then(function (result) {
+                assetContainerRegistry = result;
+                let assetContainer = createAssetRelationshipContainer();
+                let factory = client.getBusinessNetwork().getFactory();
+                assetContainer.simpleAsset = factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAssets = [
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset3')
+                ];
+                return assetContainerRegistry.add(assetContainer);
+            })
+            .then(function () {
+                return assetContainerRegistry.getAll();
+            })
+            .then(function (assetContainers) {
+                assetContainers.length.should.equal(1);
+                validateAssetRelationshipContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.get('dogeAssetRelationshipContainer');
+            })
+            .then(function (assetContainer) {
+                validateAssetRelationshipContainer(assetContainer, 'dogeAssetRelationshipContainer');
+            });
+    });
+
     it('should resolve assets containing asset relationships from an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
