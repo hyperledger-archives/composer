@@ -3,7 +3,7 @@ layout: default
 title: Deploying to a multi-organization Hyperledger Fabric
 category: tutorials
 section: tutorials
-index-order: 305
+index-order: 306
 sidebar: sidebars/accordion-toc0.md
 ---
 
