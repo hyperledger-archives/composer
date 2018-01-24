@@ -3,7 +3,7 @@ layout: default
 title: Access Control Tutorial - Commodity Trading
 category: tutorials
 section: tutorials
-index-order: 306
+index-order: 304
 sidebar: sidebars/accordion-toc0.md
 excerpt: "The ACL tutorial enables you to get familiar with Access Control rules in {{site.data.conrefs.composer_full}}."
 ---
