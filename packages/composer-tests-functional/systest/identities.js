@@ -106,6 +106,44 @@ describe('Identity system tests', function() {
             });
     });
 
+    it('should issue an identity that can issue another identity and make it available for a ping request', () => {
+        let identity = uuid.v4();
+        let identity2 = uuid.v4();
+        let participant2;
+        return client.issueIdentity(participant, identity, {issuer: true})
+            .then((identity) => {
+                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+            })
+            .then((result) => {
+                client = result;
+                return client.ping();
+            })
+            .then((result) => {
+                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
+                let factory = client.getBusinessNetwork().getFactory();
+                participant2 = factory.newResource('systest.identities', 'SampleParticipant', 'frank@uk.ibm.com');
+                participant2.firstName = 'Frank';
+                participant2.lastName = 'Frankly';
+                return client.getParticipantRegistry('systest.identities.SampleParticipant');
+            })
+            .then((participantRegistry) => {
+                return participantRegistry.add(participant2);
+            })
+            .then(() => {
+                return client.issueIdentity(participant2, identity2, {issuer: true});
+            })
+            .then((identity) => {
+                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+            })
+            .then((result) => {
+                client = result;
+                return client.ping();
+            })
+            .then((result) => {
+                result.participant.should.equal(participant2.getFullyQualifiedIdentifier());
+            });
+    });
+
     xit('should bind an identity and make it available for a ping request', function () {
         let identity, certificate, privateKey;
         identity = uuid.v4();
