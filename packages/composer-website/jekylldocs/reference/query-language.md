@@ -33,6 +33,8 @@ The `statement` property contains the defining rules of the query, and can have 
 - `SKIP` is an optional operator which defines the number of results to skip.
 - `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
 
+> Note: If you're using Fabric v1 or Fabric v1.1, the `LIMIT` and `SKIP` won't work as there is an issue passing the params to couchdb from fabric. refere : [FAB-2809](https://jira.hyperledger.org/browse/FAB-2809)
+
 #### Example Query
 
 This query returns all drivers from the default registry whose age is less than the supplied parameter _or_ whose firstName is "Dan", as long as their lastName is not "Selman".
