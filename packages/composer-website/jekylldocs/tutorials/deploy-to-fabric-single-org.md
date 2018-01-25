@@ -3,7 +3,7 @@ layout: default
 title: Deploying to a single organization Hyperledger Fabric
 category: tutorials
 section: tutorials
-index-order: 304
+index-order: 305
 sidebar: sidebars/accordion-toc0.md
 excerpt: "This tutorial will walk you through the steps required to configure Composer for connection with a running Hyperledger Fabric instance."
 ---
