@@ -313,6 +313,8 @@ participant Person identified by personId {
 </ul>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity issue <span class="nt">-c</span> admin@network <span class="nt">-f</span> maeid1.card <span class="nt">-u</span> maeid1 <span class="nt">-a</span> <span class="s2">"resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
 </code></pre></div>
+<p>This will issue card for the user maeid1 and export a card file in your current directory.</p>
+
 <ol>
 <li>As the participant, test the connection to the business network
 
@@ -338,8 +340,11 @@ participant Person identified by personId {
 <ul>
 <li>Command line</li>
 </ul>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping <span class="nt">-c</span> maeid1@network
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer card import <span class="nt">-f</span> maeid1@network.card
+  composer network ping <span class="nt">-c</span> maeid1@network
 </code></pre></div>
+<p>You need to make sure to import the card into business network before pinging.</p>
+
             
           </section>
         </div>
