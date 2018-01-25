@@ -956,12 +956,12 @@ class HLFConnection extends Connection {
                     name: 'hf.Registrar.Roles',
                     value: 'client'
                 });
+
                 // Everyone we create can register clients that can register clients.
-                // Don't think this is needed anymore
-                //registerRequest.attrs.push({
-                //    name: 'hf.Registrar.DelegateRoles',
-                //    value: 'client'
-                //});
+                registerRequest.attrs.push({
+                    name: 'hf.Registrar.Attributes',
+                    value: 'hf.Registrar.Roles, hf.Registrar.Attributes'
+                });
             }
 
             let idAttributes = options.attributes;

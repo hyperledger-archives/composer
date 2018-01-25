@@ -157,6 +157,7 @@ Feature: Cli steps
             """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"bob","firstName":"bob","lastName":"bobbington"}'
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"sal","firstName":"sally","lastName":"sallyington"}'
+            composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"fra","firstName":"frank","lastName":"frankington"}'
             """
         Then The stdout information should include text matching /Command succeeded/
 
@@ -246,6 +247,17 @@ Feature: Cli steps
         Then The stdout information should include text matching /Command succeeded/
         Then I have the following files
             | ../tmp/bob@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can issue an Identity to the participant called Sally who can then issue and Identity to the participant called Frank
+        When I run the following CLI command
+            """
+            composer identity issue -x --card admin@basic-sample-network -u sal -a org.acme.sample.SampleParticipant#sal -f ./tmp/sally@basic-sample-network.card
+            composer identity issue -x --card admin@basic-sample-network -u fra -a org.acme.sample.SampleParticipant#fra -f ./tmp/frank@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/sally@basic-sample-network.card |
+            | ../tmp/frank@basic-sample-network.card |
 
     Scenario: Using the CLI, I can validate that Bob's identity was created and is in the ISSUED state
         When I run the following CLI command
