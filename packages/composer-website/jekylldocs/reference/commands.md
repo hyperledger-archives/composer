@@ -133,4 +133,4 @@ Submit a transaction for execution: [composer transaction submit](./composer.tra
 
 `composer report`
 
-Create a compressed archive report of the current composer environment: [composer report](https://hyperledger.github.io/composer/reference/composer.report)
+Create a compressed archive report of the current composer environment: [composer report](./composer.report.html)
