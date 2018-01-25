@@ -23,7 +23,7 @@ In some cases it is desirable to be able to call REST APIs from transaction proc
 
 The `post(url,data)` function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the `application/json` content encoding.
 
-The `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and {{site.data.conrefs.hlf_full}} v1.0.
+The `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and {{site.data.conrefs.hlf_full}}.
 
 ## Handling Results
 

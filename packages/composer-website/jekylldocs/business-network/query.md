@@ -14,7 +14,7 @@ Queries are used to return data about the blockchain world-state; for example, y
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
+Note: When using the {{site.data.conrefs.hlf_full}} runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
 
 Filters are similar to queries, but use the LoopBack filter syntax, and can only be sent using the {{site.data.conrefs.composer_full}} REST API. Currently, only the `WHERE` LoopBack filter is supported. The supported operators within `WHERE` are: **=**, **and**, **or**, **gt**, **gte**, **lt**, **lte**, **neq**. Filters are submitted using a `GET` call against an asset type, participant type, or transaction type; the filter is then supplied as a parameter. Filters return the results from the specified class, and will not return results from classes extending the specified class.
 

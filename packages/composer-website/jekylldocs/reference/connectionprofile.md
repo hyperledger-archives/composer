@@ -4,7 +4,7 @@ title: Connection Profiles
 section: reference
 index-order: 1006
 sidebar: sidebars/accordion-toc0.md
-excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0.
+excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v1.1.
 ---
 
 # Connection Profiles
@@ -13,9 +13,9 @@ excerpt: In order to connect your business network to a fabric, you must [**defi
 
 A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect to a runtime.
 
-## Creating a Connection Profile for {{site.data.conrefs.hlf_full}} v1.1
+## Creating a Connection Profile for {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}
 
-{{site.data.conrefs.hlf_full}} defines the format of the connection profile. The following is an example of a single organisation fabric network
+{{site.data.conrefs.hlf_full}} defines the format of the connection profile. The following is an example of a single organization fabric network
 
 ```
 {
@@ -84,7 +84,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 Official documentation for this structure can be found here:  https://fabric-sdk-node.github.io/tutorial-network-config.html.
 
-The {{site.data.conrefs.hlf_full}} v1.1 connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The v1.1 connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.
+The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.
 
 The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
 
@@ -109,7 +109,7 @@ Organizational details are defined in:
 ```
 
 - `name` is a name used to refer to the connection profile, and is required.
-- `x-type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.1, `x-type` must be `hlfv1`.
+- `x-type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}, `x-type` must be `hlfv1`.
 - `x-commitTimeout` defines the number of seconds to wait for a commit response to be received for a transaction.
 - `version` defines the version of a connection profile and currently only a version of `1.0.0` is supported.
 

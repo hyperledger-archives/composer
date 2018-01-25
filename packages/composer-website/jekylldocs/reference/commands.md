@@ -128,3 +128,9 @@ Create a diagnostic report: [composer report](./composer.report)
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.html)
+
+## Reporting
+
+`composer report`
+
+Create a compressed archive report of the current composer environment: [composer report](https://hyperledger.github.io/composer/reference/composer.report)

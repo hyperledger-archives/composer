@@ -23,7 +23,7 @@ These instructions assume that you've not installed the tools and used them befo
 > To provide flexibility and enable the maximum number of dev, test and deployment scenarios, {{site.data.conrefs.composer_short}} is delivered as a set of components you can install with `npm` and control from the CLI.  These instructions will tell you how to install everything first, then how to control your development environment.
 
 # Installing components
-Please note the `@next` in the npm install commands. This is important to ensure you install the appropriate version to work with {{site.data.conrefs.hlf_full}} v1.1.
+Please note the `@next` in the npm install commands. This is important to ensure you install the appropriate version to work with {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
 
 ### Step 1: Install the CLI tools
 There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
