@@ -711,7 +711,7 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -747,7 +747,7 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -794,7 +794,7 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879',
                         logLevel : 'DEBUG'
@@ -833,7 +833,7 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -867,7 +867,7 @@ describe('AdminConnection', () => {
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
                         '$class' : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        'businessNetworkArchive' : 'UEsDBAoAAAAAAAAAIex5auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAIewAAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAACHseWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAAAh7AAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAACHsAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
+                        'businessNetworkArchive' : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         'bootstrapTransactions' : [
                             {
                                 '$class' : 'org.hyperledger.composer.system.AddParticipant',
@@ -973,6 +973,35 @@ describe('AdminConnection', () => {
                 }]
             }).should.eventually.be.rejectedWith('Either a secret or a certificate must be specified for all network administrators');
         });
+
+        it('should serialize the same business network archive regardless of the current date', () => {
+            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
+                networkAdmins : [{
+                    userName : 'admin',
+                    enrollmentSecret  : 'adminpw'
+                }, {userName : 'adminc', certificate : 'certcertcert'}]
+            })
+                .then((startTransactionJSON) => {
+                    const originalBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
+                    let promise = Promise.resolve();
+                    for (let i = 0; i < 5; i++) {
+                        clock.tick(60000);
+                        promise = promise.then(() => {
+                            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
+                                networkAdmins : [{
+                                    userName : 'admin',
+                                    enrollmentSecret  : 'adminpw'
+                                }, {userName : 'adminc', certificate : 'certcertcert'}]
+                            });
+                        }).then((startTransactionJSON) => {
+                            const thisBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
+                            thisBusinessNetworkArchive.should.equal(originalBusinessNetworkArchive, `Failed to match serialized business network archive, iteration ${i + 1}/5`);
+                        });
+                    }
+                    return promise;
+                });
+        });
+
     });
 
     describe('Business Network Cards', function () {

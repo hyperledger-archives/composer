@@ -14,23 +14,11 @@
 
 'use strict';
 
-const Composer = require('./composer');
+const Report = require ('./lib/report.js');
 
-module.exports = function () {
-    let tasks = {};
-    let aliasMap = new Map();
+module.exports.command = 'report';
+module.exports.describe = 'Create a report of the current execution environment';
 
-    this.Before(function (scenarioResult) {
-        const uri = scenarioResult.scenario.uri;
-        const errorExpected = scenarioResult.scenario.steps.some((step) => {
-            return !!step.name.match(/^I should get an error/);
-        });
-        this.composer = new Composer(uri, errorExpected, tasks, aliasMap);
-        return Promise.resolve();
-    });
-
-    this.After(function () {
-        return Promise.resolve();
-    });
-
+module.exports.handler = (argv) => {
+    return argv.thePromise = Report.handler(argv);
 };

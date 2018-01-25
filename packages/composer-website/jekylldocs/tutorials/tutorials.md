@@ -18,7 +18,7 @@ We have two basic tutorial options, and one more advanced tutorial:
 
 The Playground tutorial runs through using the Playground to track the ownership of commodities in a business network.
 
-If you want to run the playground tutorial locally [install the Playground locally](../installing/using-playground-locally.html) first, then use the playground tutorial.
+This tutorial can be followed using the web Playground (no install necessary) or with your own Playground (acquired as part of the install instructions).
 
 [**Start Playground Tutorial**](../tutorials/playground-tutorial.html)
 

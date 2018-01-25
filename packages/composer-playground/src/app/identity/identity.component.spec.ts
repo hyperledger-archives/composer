@@ -495,7 +495,7 @@ describe(`IdentityComponent`, () => {
             mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
 
-            component.setCurrentIdentity('1234');
+            component.setCurrentIdentity('1234', false);
 
             tick();
 
@@ -510,7 +510,7 @@ describe(`IdentityComponent`, () => {
             let loadAllIdentities = sinon.stub(component, 'loadAllIdentities');
             component['currentIdentity'] = '1234';
 
-            component.setCurrentIdentity('1234');
+            component.setCurrentIdentity('1234', false);
 
             tick();
 
@@ -521,16 +521,36 @@ describe(`IdentityComponent`, () => {
             mockAlertService.busyStatus$.next.should.not.have.been.called;
         }));
 
-        it('should handle errors', fakeAsync(() => {
+        it('should handle errors and revert to previous on error', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.reject('Testing'));
             mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            component.setCurrentIdentity('1234');
+            component['currentIdentity'] = '12345';
+            component.setCurrentIdentity('1234', true);
+
+            let spy = sinon.spy(component, 'setCurrentIdentity');
+
+            tick();
+
+            mockAlertService.busyStatus$.next.callCount.should.deep.equal(4);
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.called;
+            spy.should.have.been.calledWith('12345');
+        }));
+
+        it('should handle errors and not revert to previous on error', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.reject('Testing'));
+            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
+            component['currentIdentity'] = '12345';
+            component.setCurrentIdentity('1234', false);
+
+            let spy = sinon.spy(component, 'setCurrentIdentity');
 
             tick();
 
             mockAlertService.busyStatus$.next.should.have.been.calledTwice;
             mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
             mockAlertService.errorStatus$.next.should.have.been.called;
+            spy.should.not.have.been.called;
         }));
     });
 

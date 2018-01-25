@@ -24,9 +24,10 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
  * Webpack Constants
  */
 const METADATA = {
-    title: 'Hyperledger Composer',
-    baseUrl: '/',
-    isDevServer: helpers.isWebpackDevServer()
+    baseUrl : '/',
+    isDevServer : helpers.isWebpackDevServer(),
+    title : process.env.COMPOSER_TITLE ? process.env.COMPOSER_TITLE : 'Hyperledger Composer',
+    message : process.env.COMPOSER_MESSAGE ? process.env.COMPOSER_MESSAGE : 'Prepare to Blockchain'
 };
 
 /*

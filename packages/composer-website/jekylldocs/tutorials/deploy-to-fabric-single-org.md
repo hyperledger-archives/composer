@@ -29,8 +29,8 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
         cd ~/fabric-tools
         ./stopFabric.sh
         ./teardownFabric.sh
-        ./downloadFabric.sh
         export FABRIC_VERSION=hlfv11
+        ./downloadFabric.sh
         ./startFabric.sh
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
@@ -111,7 +111,7 @@ A connection profile specifies all of the information required to locate and con
 
       The `name` property in a connection profile gives a name to the {{site.data.conrefs.hlf_full}} network, so we can reference it later on. In the connection profile you have just created, the name is `fabric-network`. You can use any name you like for the {{site.data.conrefs.hlf_full}} network.
 
-      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.0 is supported, but you must specify the type of blockchain network to use. The x-type for {{site.data.conrefs.hlf_full}} v1.0 is `hlfv1`.
+      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.x is supported, but you must specify the type of blockchain network to use. The x-type for {{site.data.conrefs.hlf_full}} v1.0 is `hlfv1`.
 
       The version number is the version of this connection profile format. Currently there is only 1 version of `1.0.0`.
 
@@ -272,7 +272,7 @@ Here we are specifying that we are in `Org1`. The timeouts are used to determine
                     }
                 }
             }
-        } 
+        }
 
 ## Step Four: Locating the certificate and private key for the {{site.data.conrefs.hlf_full}} administrator
 
