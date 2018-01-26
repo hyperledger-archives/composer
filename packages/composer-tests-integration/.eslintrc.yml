@@ -4,7 +4,7 @@ env:
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
-    ecmaVersion: 2015
+    ecmaVersion: 8
     sourceType:
         - script
 rules:

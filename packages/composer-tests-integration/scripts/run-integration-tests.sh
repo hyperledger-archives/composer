@@ -22,6 +22,28 @@ if [ "${INTEST}" = "" ]; then
     exit 1
 fi
 
+# Delete any existing configuration.
+rm -fr ./verdaccio
+rm -fr ./storage
+rm -fr ./scripts/storage
+rm -fr ${HOME}/.config/verdaccio
+rm -rf ${HOME}/.composer/cards/Test*
+rm -rf ${HOME}/.composer/client-data/Test*
+rm -rf ${HOME}/.composer/cards/bob*
+rm -rf ${HOME}/.composer/client-data/bob*
+rm -rf ${HOME}/.composer/cards/admin*
+rm -rf ${HOME}/.composer/client-data/admin*
+rm -rf ${HOME}/.composer/cards/fred*
+rm -rf ${HOME}/.composer/client-data/fred*
+rm -rf ./tmp/*
+rm -rf ./networkadmin
+rm -rf ${HOME}/.npmrc
+if [ "${DOCKER_FILE}" != "" ]; then
+    cd ../composer-runtime-hlfv1
+    rm .npmrc
+    cd "${DIR}"
+fi
+
 # Run for all specified configurations.
 for INTEST in $(echo ${INTEST} | tr "," " "); do
 
@@ -30,10 +52,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     export COMPOSER_DEPLOY_WAIT_SECS=500
     export COMPOSER_TIMEOUT_SECS=500
 
-    # Delete any existing configuration.
-    rm -rf ${HOME}/.composer-connection-profiles/composer-intests*
-    rm -rf ${HOME}/.composer-credentials/composer-intests*
-
     # Pull any required Docker images.
     if [[ ${INTEST} == hlfv1* ]]; then
         if [[ ${INTEST} == *tls ]]; then
@@ -41,11 +59,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.0.3
-        docker pull hyperledger/fabric-ca:$ARCH-1.0.3
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.0.3
-        docker pull hyperledger/fabric-orderer:$ARCH-1.0.3
-        docker pull hyperledger/fabric-couchdb:$ARCH-1.0.3
+        #docker pull hyperledger/fabric-peer:$ARCH-1.0.4
+        #docker pull hyperledger/fabric-ca:$ARCH-1.0.4
+        #docker pull hyperledger/fabric-ccenv:$ARCH-1.0.4
+        #docker pull hyperledger/fabric-orderer:$ARCH-1.0.4
+        #docker pull hyperledger/fabric-couchdb:$ARCH-1.0.4
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi

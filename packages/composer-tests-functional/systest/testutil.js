@@ -31,9 +31,6 @@ let forceDeploy = false;
 let testRetries = 4;
 let cardStore;
 
-
-const util = require('util');
-
 /**
  * Trick browserify by making the ID parameter to require dynamic.
  * @param {string} id The module ID.
@@ -176,18 +173,12 @@ class TestUtil {
 
                 // Create all necessary configuration for the web runtime.
                 if (TestUtil.isWeb()) {
-                    // const BrowserFS = require('browserfs');
-                    // BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
                     ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
-                    // console.log('Calling AdminConnection.createProfile() ...');
                     console.log('Used to call  AdminConnection.createProfile() ...');
 
                 // Create all necessary configuration for the embedded runtime.
                 } else if (TestUtil.isEmbedded()) {
                     console.log('Used to call  AdminConnection.createProfile() ...');
-                    // return adminConnection.createProfile('composer-systests', {
-                    //     type: 'embedded'
-                    // });
 
                 // Create all necessary configuration for the embedded runtime hosted via the connector server.
                 } else if (TestUtil.isProxy()) {
@@ -497,7 +488,6 @@ class TestUtil {
                             .then(()=>{
                                 return adminConnection.importCard(`composer-systests-${org}-solo-PeerAdmin`, cardsolo);
                             }).then(()=>{
-                                console.log(util.inspect(cardStore));
                                 console.log('Imported cards to the card store');
                             });
 
@@ -544,8 +534,20 @@ class TestUtil {
                     enrollmentSecret: enrollmentSecret,
                     businessNetwork : network
                 };
+                let ccpToUse = currentCp;
+                if (process.env.FVTEST.match('hsm$')) {
+                    console.log(`defining a new card for ${enrollmentID} to use HSM`);
+                    ccpToUse = {
+                    };
+                    Object.assign(ccpToUse, currentCp);
+                    ccpToUse.hsm = {
+                        'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                        'slot': 0,
+                        'pin': 98765432
+                    };
+                }
 
-                let idCard = new IdCard(metadata,currentCp);
+                let idCard = new IdCard(metadata,ccpToUse);
                 let adminConnection = new AdminConnection({cardStore});
                 return adminConnection.connect('admincard')
                 .then( ()=>{
@@ -572,17 +574,13 @@ class TestUtil {
             }
         })
         .then(() => {
-            enrollmentID = enrollmentID || 'admin';
-            let password = TestUtil.isHyperledgerFabricV1() ? 'adminpw' : 'Xurw3yU9zI0l';
-            enrollmentSecret = enrollmentSecret || password;
-            // console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
+                console.log('Connecting with ' + cardName);
                 return thisClient.connect(cardName);
-                // return thisClient.connect('composer-systests-org1', network, enrollmentID, enrollmentSecret);
             } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                 return thisClient.connect('composer-systests-org1-solo', network, enrollmentID, enrollmentSecret);
             } else {
-                console.log('Connecting with '+cardName);
+                console.log('Connecting with ' + cardName);
                 return thisClient.connect(cardName);
             }
         })
@@ -689,7 +687,20 @@ class TestUtil {
                 })
                 .then(()=>{
                     console.log('Creating the network admin id card');
-                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() },currentCp);
+                    let ccpToUse = currentCp;
+                    if (process.env.FVTEST.match('hsm$')) {
+                        console.log('defining network admin id card to use HSM');
+                        ccpToUse = {
+                        };
+                        Object.assign(ccpToUse, currentCp);
+                        ccpToUse.hsm = {
+                            'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                            'slot': 0,
+                            'pin': 98765432
+                        };
+                    }
+
+                    let adminidCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: businessNetworkDefinition.getName() },ccpToUse);
                     return adminConnection.importCard('admincard', adminidCard);
                 })
                 .then(() => {
@@ -710,7 +721,6 @@ class TestUtil {
         } else if (!forceDeploy) {
             let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
-            // currentCp = {type : 'embedded',name:'defaultProfile'};
             let connectionprofile;
 
             if (TestUtil.isEmbedded() || TestUtil.isProxy()){
@@ -812,7 +822,7 @@ class TestUtil {
                 if (retryCount >= this.retries) {
                     throw(err);
                 } else {
-                    this.resetBusinessNetwork(identifier, retryCount++);
+                    this.resetBusinessNetwork(cardStore, identifier, retryCount++);
                 }
             });
         } else if(TestUtil.isHyperledgerFabricV1() && forceDeploy){

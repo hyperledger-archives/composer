@@ -85,20 +85,23 @@ npmServer.on('close', (code) => {
 
 // Required packages for serving
 let packages = [
-    'composer-runtime',
-    'composer-common',
-    'composer-runtime-hlfv1',
-    'composer-connector-hlfv1',
-    'composer-admin',
-    'composer-client',
-    'loopback-connector-composer',
-    'composer-rest-server',
-    'composer-cli'];
+    'composer-runtime'//,
+//    'composer-common',
+//    'composer-runtime-hlfv1',
+//    'composer-connector-hlfv1',
+//    'composer-admin',
+//    'composer-client',
+//    'loopback-connector-composer',
+//    'composer-rest-server',
+//    'composer-cli'];
+];
 
 // Packages to be installed in integration test(s)
 let testPackages = [
     'composer-cli'
 ];
+
+testPackages = [];
 
 return packages.reduce((promiseChain, p) => {
     // Set registry and publish
