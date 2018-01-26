@@ -14,6 +14,8 @@
 
 'use strict';
 
+const Report = require('../../lib/cmds/report.js');
+
 const ReportCmd = require('../../lib/cmds/report/reportCommand.js');
 const chai = require('chai');
 const sinon = require('sinon');
@@ -23,8 +25,6 @@ const fs = require('fs');
 const os = require('os');
 const nodereport = require('node-report');
 const tar = require('tar');
-
-
 
 describe('composer report CLI', function() {
     const sandbox = sinon.sandbox.create();
@@ -88,4 +88,10 @@ describe('composer report CLI', function() {
             sinon.assert.calledWith(consoleLogSpy, sinon.match(/Output file: .*composer-report-\d{8}T\d{6}\.tgz$/));
         });
     });
+
+    it('should execute top level report command',()=>{
+        let result = Report.handler({some:'args'});
+        result.should.be.an.instanceOf(Promise);
+    });
+
 });
