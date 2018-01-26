@@ -98,7 +98,7 @@ describe('composer generator create unit tests', function () {
 
     describe('Deploy handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         ,format: 'Go'
@@ -116,7 +116,7 @@ describe('composer generator create unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         ,format: 'PlantUML'
@@ -132,7 +132,7 @@ describe('composer generator create unit tests', function () {
                 sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockPlantUML,parameters);
             });
         });
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         ,format: 'Typescript'
@@ -148,7 +148,7 @@ describe('composer generator create unit tests', function () {
                 sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockTypescript,parameters);
             });
         });
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         ,format: 'JSONSchema'
@@ -165,7 +165,7 @@ describe('composer generator create unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                                     ,format: 'Java'
@@ -182,7 +182,7 @@ describe('composer generator create unit tests', function () {
                         });
         });
 
-        it('Invalid generator specified', function () {
+        it('Should throw error when Invalid generator specified', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         ,format: 'I-do-not-exist'

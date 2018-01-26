@@ -76,7 +76,7 @@ describe('composer deploy network CLI unit tests', function () {
 
     describe('Deploy handler() method tests', function () {
 
-        it('Good path, optional parameter -O /path/to/options.json specified.', function () {
+        it('should correctly execute when optional parameter -O /path/to/options.json specified.', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -127,7 +127,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('Good path, optional parameter -o endorsementPolicyFile= specified.', function () {
+        it('should correctly execute when optional parameter -o endorsementPolicyFile= specified.', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -162,7 +162,7 @@ describe('composer deploy network CLI unit tests', function () {
         });
 
 
-        it('Good path, optional parameter -o endorsementPolicy= specified.', function () {
+        it('should correctly execute when optional parameter -o endorsementPolicy= specified.', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -192,7 +192,7 @@ describe('composer deploy network CLI unit tests', function () {
         });
 
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
                         ,networkAdmin: 'admin'
@@ -219,7 +219,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified, including optional logLevel.', function () {
+        it('should correctly execute when all parms correctly specified, including optional logLevel.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -250,7 +250,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified. with the certificate', function () {
+        it('should correctly execute when, all parms correctly specified. with the certificate', function () {
 
             let argv = {card:'cardname'
                         ,archiveFile: 'testArchiveFile.zip'
@@ -286,7 +286,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         };
 
-        it('Good path, network administrator specified', function () {
+        it('should correctly execute when network administrator specified', function () {
 
 
             let argv = {card:'cardname'
@@ -314,7 +314,7 @@ describe('composer deploy network CLI unit tests', function () {
             });
         });
 
-        it('Good path, network administrator and bootstrap transactions specified', function () {
+        it('should correctly execute when network administrator and bootstrap transactions specified', function () {
 
             let argv = {card:'cardname'
                         ,networkAdmin: 'admin1'

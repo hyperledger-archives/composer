@@ -50,7 +50,7 @@ describe('composer upgrade runtime CLI unit tests', function () {
 
     describe('Upgrade handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {card:'cardname'
                        ,businessNetworkName: 'org-acme-biznet'};
