@@ -57,7 +57,7 @@ describe('composer undeploy network CLI unit tests', function () {
 
     describe('Undeploy handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {card:'cardname'
                        ,archiveFile: 'testArchiveFile.zip'};

@@ -27,6 +27,7 @@ const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
+const ora = require('ora');
 
 const fs = require('fs');
 
@@ -64,6 +65,18 @@ describe('composer identity issue CLI unit tests', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    it('should handler error case when spinner might not have been created correctly', () => {
+        let argv = {
+            card:'cardname',
+            newUserId: 'dogeid1',
+            participantId: 'org.doge.Doge#DOGE_1'
+        };
+        sandbox.stub(CmdUtil,'log').throws(new Error());
+        sandbox.stub(ora,'start').returns();
+        return Issue.handler(argv)
+        .should.be.rejectedWith();
     });
 
     it('should issue a new identity using the specified profile', () => {
