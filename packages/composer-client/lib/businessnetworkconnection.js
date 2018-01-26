@@ -500,7 +500,8 @@ class BusinessNetworkConnection extends EventEmitter {
                                                    this.securityContext,
                                                    businessNetwork.getModelManager(),
                                                    businessNetwork.getFactory(),
-                                                   businessNetwork.getSerializer());
+                                                   businessNetwork.getSerializer(),
+                                                   this);
                 case 'Asset':
                     return new AssetRegistry(registry.id,
                                              registry.name,
@@ -515,7 +516,8 @@ class BusinessNetworkConnection extends EventEmitter {
                                                    this.securityContext,
                                                    businessNetwork.getModelManager(),
                                                    businessNetwork.getFactory(),
-                                                   businessNetwork.getSerializer());
+                                                   businessNetwork.getSerializer(),
+                                                   this);
                 }
             });
 
