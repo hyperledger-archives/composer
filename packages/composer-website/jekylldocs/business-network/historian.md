@@ -87,38 +87,34 @@ A GET call of `system/historian/{id}` using the REST API will return the `Histor
 
 Historian can be queried in the same manner as other registries. For example, a typical query to return all `HistorianRecord` assets would be as follows:
 
-```
-    .then(() => {       
-        return businessNetworkConnection.getHistorian();
-    }).then((historian) => {
-        return historian.getAll();
-    }).then((historianRecords) => {        
-        console.log(prettyoutput(historianRecords));
-    })
+```javascript
+    let historian = await businessNetworkConnection.getHistorian();
+    let historianRecords = await historian.getAll();
+    console.log(prettyoutput(historianRecords));
 ```
 
 As this is a 'getAll' call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in the same way.
 
-```
+```javascript
   let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
   let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
                                                 'WHERE (transactionTimestamp > _$justnow)');   
 
-  return businessNetworkConnection.query(q1,{justnow:now});
+  await businessNetworkConnection.query(q1,{justnow:now});
 ```
 
 More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.
 
-```
+```javascript
   // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
       `SELECT org.hyperledger.composer.system.HistorianRecord
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 
-  return businessNetworkConnection.query(q1);
+  await businessNetworkConnection.query(q1);
 
 ```
 

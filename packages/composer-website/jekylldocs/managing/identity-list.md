@@ -34,24 +34,22 @@ Otherwise the identity registry will be empty and you will not see any results.
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.getIdentityRegistry();
-      })
-      .then((identityRegistry) => {
-          return identityRegistry.getAll();
-      })
-      .then((identities) => {
+
+  async function identityList() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let identityRegistry = await businessNetworkConnection.getIdentityRegistry();
+          let identities = await identityRegistry.getAll();
           identities.forEach((identity) => {
             console.log(`identityId = ${identity.identityId}, name = ${identity.name}, state = ${identity.state}`);
           });
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
-          console.error(error);
+          await businessNetworkConnection.disconnect();
+      } catch(error) {
+          console.log(error);
           process.exit(1);
-      });
+      }
+  }
   ```
   * Command line
 
