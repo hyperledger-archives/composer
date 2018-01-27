@@ -3,9 +3,10 @@ env:
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
+    ecmaVersion: 8
     sourceType:
         - script
-globals: 
+globals:
     getFactory: true
     getSerializer: true
     getAssetRegistry: true
