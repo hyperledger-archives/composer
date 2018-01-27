@@ -101,7 +101,7 @@ Organizational details are defined in:
 
 ### General information
 
-```    
+```
 "name": "hlfv1",
 "x-type": "hlfv1",
 "x-commitTimeout": 300,
@@ -135,7 +135,7 @@ This section defines all the available orderers, the example here provides a bas
             "ssl-target-name-override": "orderer.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- <etc> "
+            "pem": "-----BEGIN CERTIFICATE----- <etc> "
         }
     }
 },
@@ -169,8 +169,8 @@ Peer definitions are similar to orderer definitions in structure, but you should
             "ssl-target-name-override": "peer.org1.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- <etc> "
-        }        
+            "pem": "-----BEGIN CERTIFICATE----- <etc> "
+        }
     }
 },
 ```
@@ -244,9 +244,9 @@ This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that 
         ],
         "peers": {
             "peer0.org1.example.com": {
-                "endorsingPeer": true
-                "chaincodeQuery": true
-                "ledgerQuery": true
+                "endorsingPeer": true,
+                "chaincodeQuery": true,
+                "ledgerQuery": true,
                 "eventSource": true
             }
         }
@@ -294,10 +294,10 @@ For example a peer definition might look like:
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15        
+        "grpc-max-send-message-length": 15
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- <etc> "
+        "pem": "-----BEGIN CERTIFICATE----- <etc> "
     }
 }
 ```
@@ -312,7 +312,7 @@ A similar thing could be done for an orderer definition:
         "grpc-max-send-message-length": 15
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- <etc> "
+        "pem": "-----BEGIN CERTIFICATE----- <etc> "
     }
 }
 ```

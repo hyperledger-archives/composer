@@ -62,7 +62,7 @@ describe('composer archive list unit tests', function () {
 
     describe('List handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'};
 

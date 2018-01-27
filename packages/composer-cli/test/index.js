@@ -38,7 +38,7 @@ describe('composer main cli fn', function () {
 
     describe('Main test', function () {
 
-        it('Good path', function () {
+        it('should correctly execute and return version', function () {
             let version = require('../index.js').version;
             version.should.not.be.null;
 

@@ -15,7 +15,7 @@
 'use strict';
 
 const fs = require('fs');
-const program = require('commander');
+const yargs = require('yargs');
 const VersionChecker = require('./versionchecker');
 
 /**
@@ -23,14 +23,15 @@ const VersionChecker = require('./versionchecker');
  * package.json and the public API signature
  * @private
  */
-program
-    .version('0.0.1')
-    .description('Checks changelog')
-    .usage('[options]')
-    .option('-p, --packageJSON <packageJSON>', 'package.json file', 'package.json')
-    .option('-c, --changelog <changelog>', 'Changelog file')
-    .option('-a, --api <api>', 'API signature file')
-    .parse(process.argv);
+console.log(process.argv);
+let program = yargs
+.usage('$0 [options]')
+.options({
+    'packageJSON' : {alias: 'p', required: true, describe: 'Path of the package.json file to check', type: 'string',default:'package.json' },
+    'changelog'  : {alias: 'c', required: true, describe:'Path of the chanhgelog file to check', type: 'string'},
+    'api'  : {alias: 'a', required: true, describe:'API Signature file',type:'string'}
+})
+.argv;
 
 const changelog = fs.readFileSync(program.changelog, 'utf8');
 const publicApi = fs.readFileSync(program.api, 'utf8');
