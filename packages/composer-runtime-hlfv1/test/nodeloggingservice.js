@@ -322,7 +322,18 @@ describe('NodeLoggingService', () => {
     describe('#_outputMessage', () => {
 
         it('should output a message', () => {
+            sandbox.stub(console, 'log');
+            mockStub.getTxID.returns('tx1');
             loggingService._outputMessage('a message', 500);
+            // should be called with timestamp, txn, loglevel, message
+            sinon.assert.calledWith(console.log, sinon.match.string, sinon.match(/tx1/), sinon.match(/DEBUG/), 'a message');
+        });
+
+        it('should output a message if no stub provided', () => {
+            delete loggingService.stub;
+            sandbox.stub(console, 'log');
+            loggingService._outputMessage('a message 2', 400);
+            sinon.assert.calledWith(console.log, sinon.match.string, sinon.match(/INFO/), 'a message 2');
         });
     });
 });

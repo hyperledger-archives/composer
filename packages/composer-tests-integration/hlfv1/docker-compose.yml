@@ -2,7 +2,7 @@ version: '2'
 
 services:
   ca.org1.example.com:
-    image: hyperledger/fabric-ca:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-ca:$ARCH-1.1.0-alpha
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.org1.example.com
@@ -14,7 +14,7 @@ services:
     container_name: ca.org1.example.com
 
   ca.org2.example.com:
-    image: hyperledger/fabric-ca:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-ca:$ARCH-1.1.0-alpha
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.org2.example.com
@@ -27,7 +27,7 @@ services:
 
   orderer.example.com:
     container_name: orderer.example.com
-    image: hyperledger/fabric-orderer:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-orderer:$ARCH-1.1.0-alpha
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -45,7 +45,7 @@ services:
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
-    image: hyperledger/fabric-peer:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-peer:$ARCH-1.1.0-alpha
     environment:
       - CORE_LOGGING_PEER=debug
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
@@ -58,7 +58,7 @@ services:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.org1.example.com:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer node start --peer-defaultchain=false
+    command: peer node start
     ports:
       - 7051:7051
       - 7053:7053
@@ -74,7 +74,7 @@ services:
 
   couchdb.org1.example.com:
     container_name: couchdb.org1.example.com
-    image: hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-couchdb:$ARCH-0.4.5
     ports:
       - 5984:5984
     environment:
@@ -82,7 +82,7 @@ services:
 
   peer0.org2.example.com:
     container_name: peer0.org2.example.com
-    image: hyperledger/fabric-peer:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-peer:$ARCH-1.1.0-alpha
     environment:
       - CORE_LOGGING_PEER=debug
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
@@ -95,7 +95,7 @@ services:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.org2.example.com:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer node start --peer-defaultchain=false
+    command: peer node start
     ports:
       - 8051:7051
       - 8053:7053
@@ -111,7 +111,7 @@ services:
 
   couchdb.org2.example.com:
     container_name: couchdb.org2.example.com
-    image: hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
+    image: hyperledger/fabric-couchdb:$ARCH-0.4.5
     ports:
       - 6984:5984
     environment:
