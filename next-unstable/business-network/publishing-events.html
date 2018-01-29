@@ -278,16 +278,16 @@ ga('send', 'pageview');
 }
 </code></pre></div></li>
 <li><p>In order for the event to be published the transaction which creates the event must call three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> defined in a specified namespace. Then the required properties on the event must be set. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * @param {org.namespace.BasicEventTransaction} basicEventTransaction
  * @transaction
- */
-function basicEventTransaction(basicEventTransaction) {
-    var factory = getFactory();
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">basicEventTransaction</span><span class="p">(</span><span class="nx">basicEventTransaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
 
-    var basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
-    emit(basicEvent);
-}
+    <span class="nx">let</span> <span class="nx">basicEvent</span> <span class="o">=</span> <span class="nx">factory</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.namespace'</span><span class="p">,</span> <span class="s1">'BasicEvent'</span><span class="p">);</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">basicEvent</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div></li>
 </ol>
 

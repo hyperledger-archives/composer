@@ -353,10 +353,8 @@ transaction Trade {
  */
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
-        .then(function (assetRegistry) {
-            return assetRegistry.update(trade.commodity);
-        });
+    let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
+    await assetRegistry.update(trade.commodity);
 }
 </code></pre></div>
 <p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p></li>
