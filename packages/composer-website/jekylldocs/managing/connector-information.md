@@ -14,4 +14,4 @@ excerpt:
 
 ## {{site.data.conrefs.hlf_full}}
 
-There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network deploy`, and `composer identity issue`.
+There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network start`, and `composer identity issue`.
