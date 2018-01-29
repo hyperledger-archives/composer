@@ -50,21 +50,23 @@ and the unique identifier for that identity is 'f1c5b9fe136d7f2d31b927e0dcb74549
 1. Connect to the business network and revoke an existing identity from a participant
   * JavaScript API
 
-    ```javascript
+```javascript
     const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-    let businessNetworkConnection = new BusinessNetworkConnection();
-    return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-        .then(() => {
-            return businessNetworkConnection.revokeIdentity('f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862')
-        })
-        .then(() => {
-            return businessNetworkConnection.disconnect();
-        })
-        .catch((error) => {
-            console.error(error);
+
+    async function revoke() {
+        let businessNetworkConnection = new BusinessNetworkConnection();
+
+        try {
+            await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+            await businessNetworkConnection.revokeIdentity('f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862')
+            await businessNetworkConnection.disconnect();
+        } catch(error) {
+            console.log(error);
             process.exit(1);
-        });
-    ```
+        } 
+    }
+    revoke();
+```
 
   * Command line
 

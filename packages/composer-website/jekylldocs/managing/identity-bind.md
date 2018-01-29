@@ -50,31 +50,33 @@ of that participant has been created and placed into a participant registry.
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  let certificate = `-----BEGIN CERTIFICATE-----
-    MIIB8DCCAZegAwIBAgIURanHh55fqrUecvHNHtcMKiHJRkwwCgYIKoZIzj0EAwIw
-    czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh
-    biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT
-    E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzI3MTc0MzAwWhcNMTgwNzI3MTc0
-    MzAwWjAQMQ4wDAYDVQQDEwVhZG1pbjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA
-    BAANIGFIrXXr5+h0NfUNJhx5YFQ4w6r182eZYRhc9KvYQhYo5D0ZbecfR9sGX2b6
-    0aW+C7bUaXc6DU3pJSD4fNijbDBqMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8E
-    AjAAMB0GA1UdDgQWBBRwuAyWrGlzVQFqRf0OqoTNuoq7QDArBgNVHSMEJDAigCAZ
-    q2WruwSAfa0S5MCpqqZknnCGjjq9AhejItieR+GmrjAKBggqhkjOPQQDAgNHADBE
-    AiBcj/JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx
-    rkM5DH3e5ECM7T+T1Ovr+1AK6bs=
-    -----END CERTIFICATE-----`
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.bindIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', certificate)
-      })
-      .then(() => {
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
-          console.error(error);
-          process.exit(1);
-      });
+
+  async function bind() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      let certificate = `-----BEGIN CERTIFICATE-----
+            MIIB8DCCAZegAwIBAgIURanHh55fqrUecvHNHtcMKiHJRkwwCgYIKoZIzj0EAwIw
+            czELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh
+            biBGcmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMT
+            E2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMTcwNzI3MTc0MzAwWhcNMTgwNzI3MTc0
+            MzAwWjAQMQ4wDAYDVQQDEwVhZG1pbjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA
+            BAANIGFIrXXr5+h0NfUNJhx5YFQ4w6r182eZYRhc9KvYQhYo5D0ZbecfR9sGX2b6
+            0aW+C7bUaXc6DU3pJSD4fNijbDBqMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8E
+            AjAAMB0GA1UdDgQWBBRwuAyWrGlzVQFqRf0OqoTNuoq7QDArBgNVHSMEJDAigCAZ
+            q2WruwSAfa0S5MCpqqZknnCGjjq9AhejItieR+GmrjAKBggqhkjOPQQDAgNHADBE
+            AiBcj/JvxmKHel4zQ3EmjITEFhdYku5ijIZEDuR5v9HK3gIgTUbVEfq3MuasVZKx
+            rkM5DH3e5ECM7T+T1Ovr+1AK6bs=
+            -----END CERTIFICATE-----`
+       try { 
+           await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+           await businessNetworkConnection.bindIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', certificate);
+           await businessNetworkConnection.disconnect();
+       } catch(error) {
+           console.error(error);
+           process.exit(1);
+       }
+  }
+
+  bind();
   ```
   * Command line
 
@@ -87,19 +89,22 @@ of that participant has been created and placed into a participant registry.
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.ping();
-      })
-      .then((result) => {
+
+  async function testConnection() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let result = await businessNetworkConnection.ping();
           console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
+          await businessNetworkConnection.disconnect();
+      } catch(error) {
           console.error(error);
           process.exit(1);
-      });
+      }
+  }
+
+  testConnection();
   ```
 
   * Command line

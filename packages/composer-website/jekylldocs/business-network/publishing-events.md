@@ -31,10 +31,10 @@ Before you begin adding events to your business network, you should have a good 
          * @param {org.namespace.BasicEventTransaction} basicEventTransaction
          * @transaction
          */
-        function basicEventTransaction(basicEventTransaction) {
-            var factory = getFactory();
+        async function basicEventTransaction(basicEventTransaction) {
+            let factory = getFactory();
 
-            var basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
+            let basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
             emit(basicEvent);
         }
 

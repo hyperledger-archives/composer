@@ -35,28 +35,29 @@ participant Person identified by personId {
 1. Add the participant to a participant registry
   * JavaScript API
 
-    ```javascript
+```javascript
     const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-    let businessNetworkConnection = new BusinessNetworkConnection();
-    return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-        .then(() => {
-            return businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork');
-        })
-        .then((participantRegistry) => {
+
+    async function addParticipant() {
+        let businessNetworkConnection = new BusinessNetworkConnection();
+
+        try {
+            await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+            let participantRegistry = await businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork');
             let factory = businessNetworkConnection.getFactory();
             let participant = factory.newResource('net.biz.digitalPropertyNetwork', 'Person', 'mae@biznet.org');
             participant.firstName = 'Mae';
             participant.lastName = 'Smith';
-            return participantRegistry.add(participant);
-        })
-        .then(() => {
-            return businessNetworkConnection.disconnect();
-        })
-        .catch((error) => {
+            await participantRegistry.add(participant);
+            await businessNetworkConnection.disconnect();
+        } catch(error) {
             console.error(error);
             process.exit(1);
-        });
-    ```
+        }
+    }
+
+    addParticipant();
+```
 
   * Command line
 
