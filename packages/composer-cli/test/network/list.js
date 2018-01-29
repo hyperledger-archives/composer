@@ -253,10 +253,6 @@ describe('composer network list CLI unit tests', function () {
 
     });
 
-
-
-
-
     describe('#getMatchingRegistries function tests', function () {
         const MOCK_ASSET_REGISTRIES = {'AssetRegistry' : 'FooAssetRegistry'};
         const MOCK_PARTICIPANT_REGISTRIES = {'ParticipantRegistry' : 'BarParticipantRegistry'};

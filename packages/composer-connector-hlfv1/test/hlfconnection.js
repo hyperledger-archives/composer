@@ -2356,7 +2356,8 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [
-                            {name: 'hf.Registrar.Roles', value: 'client'}
+                            {name: 'hf.Registrar.Roles', value: 'client'},
+                            {name: 'hf.Registrar.Attributes', value: 'hf.Registrar.Roles, hf.Registrar.Attributes'}
                         ],
                         maxEnrollments: 1,
                         role: 'client'

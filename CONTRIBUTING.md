@@ -12,7 +12,7 @@ These components are split across multiple Composer repositories within the Hype
 - [hyperledger/composer-sample-models](https://github.com/hyperledger/composer-sample-models) Sample Business Models
 - [hyperledger/composer-sample-networks](https://github.com/hyperledger/composer-sample-networks) Sample Business Networks
 - [hyperledger/composer-sample-applications](https://github.com/hyperledger/composer-sample-applications) Sample Applications using the Composer API (using v0.6 Hyperledger Fabric)
-- [hyperledger/composer-sample-applications-hlfv1](https://github.com/hyperledger/composer-sample-applications-hlfv1) Sample Applications using the Composer API (using v1.0.0-alpha Hyperledger Fabric).  **Note this is ALPHA**
+- [hyperledger/composer-sample-applications-hlfv1](https://github.com/hyperledger/composer-sample-applications-hlfv1) Sample Applications using the Composer API (using v1.0.0-alpha Hyperledger Fabric).  **Note this is now archived**
 - [hyperledger/composer-atom-plugin](https://github.com/hyperledger/composer-atom-plugin) Plugin for the Atom editor
 - [hyperledger/composer-vscode-plugin](https://github.com/hyperledger/composer-vscode-plugin) Plugin for the VS Code editor
 - [hyperledger/composer-tools](https://github.com/hyperledger/composer-tools) Additional tools to help working with Composer
