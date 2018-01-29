@@ -40,25 +40,21 @@ Transaction processor functions may optionally call the `getSerializer().fromJSO
 
 ## Examples
 
-```
+```javascript
 /**
  * Handle a POST transaction, calling Node-RED running on Bluemix
  * @param {org.example.sample.PostTransaction} postTransaction - the transaction to be processed
  * @transaction
  * @return {Promise} a promise that resolves when transaction processing is complete
  */
-function handlePost(postTransaction) {
-    var url = 'https://composer-node-red.mybluemix.net/compute';
+async function handlePost(postTransaction) {
+    let url = 'https://composer-node-red.mybluemix.net/compute';
 
-    return post( url, postTransaction)
-      .then(function (result) {
-        // alert(JSON.stringify(result));
-          postTransaction.asset.value = 'Count is ' + result.body.sum;
-          return getAssetRegistry('org.example.sample.SampleAsset')
-          .then(function (assetRegistry) {
-              return assetRegistry.update(postTransaction.asset);
-          });
-      });
+    let result = await post(url, postTransaction);
+    // alert(JSON.stringify(result));
+    postTransaction.asset.value = 'Count is ' + result.body.sum;
+    let assetRegistry = await getAssetRegistry('org.example.sample.SampleAsset')
+    await assetRegistry.update(postTransaction.asset);
 }
 ```
 

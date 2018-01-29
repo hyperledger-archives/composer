@@ -106,10 +106,8 @@ For more information on writing transaction processor functions, check our [docu
          */
         function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            return getAssetRegistry('org.acme.mynetwork.Commodity')
-                .then(function (assetRegistry) {
-                    return assetRegistry.update(trade.commodity);
-                });
+            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
+            await assetRegistry.update(trade.commodity);
         }
 
 

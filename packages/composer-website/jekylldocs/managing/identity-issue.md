@@ -39,20 +39,22 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
-      })
-      .then((result) => {
+
+  async function identityIssue() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let result = await businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
           console.log(`userID = ${result.userID}`);
           console.log(`userSecret = ${result.userSecret}`);
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
-          console.error(error);
+          await businessNetworkConnection.disconnect();
+      } catch(error) {
+          console.log(error);
           process.exit(1);
-      });
+      }
+  }
+  
+  identityIssue();
   ```
   * Command line
 
@@ -67,19 +69,21 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.ping();
-      })
-      .then((result) => {
+
+  async function testConnection() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let result = await businessNetworkConnection.ping();
           console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
+          await businessNetworkConnection.disconnect();
+      } catch((error) {
           console.error(error);
           process.exit(1);
-      });
+      }
+  }
+
+  testConnection();
   ```
 
   * Command line

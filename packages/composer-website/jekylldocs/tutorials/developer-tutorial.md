@@ -90,12 +90,10 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
          * @param {org.acme.biznet.Trade} trade - the trade to be processed
          * @transaction
          */
-        function tradeCommodity(trade) {
+        async function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            return getAssetRegistry('org.acme.biznet.Commodity')
-                .then(function (assetRegistry) {
-                    return assetRegistry.update(trade.commodity);
-                });
+            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            await assetRegistry.update(trade.commodity);
         }
 
 3. Save your changes to `logic.js`.
