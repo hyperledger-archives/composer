@@ -1,0 +1,11 @@
+namespace org.acme
+
+// test a real import from the Internet
+import org.accordproject.product.* from github://accordproject/models/master/product.cto
+
+participant Person identified by email {
+  o String email
+
+  // use one of the imported types
+  --> Product[] products
+}

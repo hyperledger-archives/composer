@@ -34,22 +34,22 @@ class Create {
      * @param {String} moduleName to load
      * @return {Object} loaded modules
      */
-    static loadModule(moduleName){
+    static loadModule(moduleName) {
         return require.resolve(moduleName);
     }
 
-  /**
-    * Command process for deploy command
-    * @param {string} argv argument list from composer command
+    /**
+      * Command process for deploy command
+      * @param {string} argv argument list from composer command
 
-    * @return {Promise} promise when command complete
-    */
+      * @return {Promise} promise when command complete
+      */
     static handler(argv) {
 
         let inputDir = '';
 
         cmdUtil.log(chalk.blue.bold('Creating Business Network Archive\n'));
-        if (argv.sourceType === 'module'){
+        if (argv.sourceType === 'module') {
             // using a npm module name
             //
             let moduleName = argv.sourceName;
@@ -57,15 +57,15 @@ class Create {
 
             let moduleIndexjs;
             try {
-                moduleIndexjs=this.loadModule(moduleName);
-            } catch (err){
+                moduleIndexjs = this.loadModule(moduleName);
+            } catch (err) {
                 console.log(err);
-                if (err.code==='MODULE_NOT_FOUND'){
-                    let localName = process.cwd()+'/node_modules/'+moduleName;
+                if (err.code === 'MODULE_NOT_FOUND') {
+                    let localName = process.cwd() + '/node_modules/' + moduleName;
                     cmdUtil.log(chalk.bold.yellow('Not found in main node_module search path, trying current directory'));
-                    cmdUtil.log(chalk.yellow('\tCurrent Directory: ')+localName);
-                    moduleIndexjs=this.loadModule(localName);
-                }else {
+                    cmdUtil.log(chalk.yellow('\tCurrent Directory: ') + localName);
+                    moduleIndexjs = this.loadModule(localName);
+                } else {
                     cmdUtil.log(chalk.blue.red('Unable to locate the npm module specified'));
                     return Promise.reject(err);
                 }
@@ -74,38 +74,39 @@ class Create {
 
             inputDir = path.dirname(moduleIndexjs);
 
-        }else {
-          // loading from a file directory given by user
-            if (argv.sourceName==='.'){
+        } else {
+            // loading from a file directory given by user
+            if (argv.sourceName === '.') {
                 inputDir = process.cwd();
             } else {
                 inputDir = argv.sourceName;
             }
         }
         cmdUtil.log(chalk.blue.bold('\nLooking for package.json of Business Network Definition'));
-        cmdUtil.log(chalk.blue('\tInput directory: ')+inputDir);
+        cmdUtil.log(chalk.blue('\tInput directory: ') + inputDir);
+        let createOptions = cmdUtil.parseOptions(argv);
+        createOptions.updateExternalModels = argv.updateExternalModels;
 
-        return BusinessNetworkDefinition.fromDirectory(inputDir).then( (result)=> {
+        return BusinessNetworkDefinition.fromDirectory(inputDir, createOptions).then((result) => {
             cmdUtil.log(chalk.blue.bold('\nFound:'));
-            cmdUtil.log(chalk.blue('\tDescription: ')+result.getDescription());
-            cmdUtil.log(chalk.blue('\tName: ')+result.getName());
-            cmdUtil.log(chalk.blue('\tIdentifier: ')+result.getIdentifier());
+            cmdUtil.log(chalk.blue('\tDescription: ') + result.getDescription());
+            cmdUtil.log(chalk.blue('\tName: ') + result.getName());
+            cmdUtil.log(chalk.blue('\tIdentifier: ') + result.getIdentifier());
 
-            if (!argv.archiveFile){
-                argv.archiveFile = sanitize(result.getIdentifier(),{replacement:'_'})+'.bna';
+            if (!argv.archiveFile) {
+                argv.archiveFile = sanitize(result.getIdentifier(), {
+                    replacement: '_'
+                }) + '.bna';
             }
-           // need to write this out to the required file now.
-            return result.toArchive().then (
-              (result) => {
-                //write the buffer to a file
-                  fs.writeFileSync(argv.archiveFile,result);
-                  cmdUtil.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to '));
-                  cmdUtil.log(chalk.blue('\tOutput file: ')+argv.archiveFile);
-                  return;
-              }
-
-            );
-
+            // need to write this out to the required file now.
+            return result.toArchive()
+                .then((result) => {
+                    //write the buffer to a file
+                    fs.writeFileSync(argv.archiveFile, result);
+                    cmdUtil.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to '));
+                    cmdUtil.log(chalk.blue('\tOutput file: ') + argv.archiveFile);
+                    return;
+                });
         });
 
     }

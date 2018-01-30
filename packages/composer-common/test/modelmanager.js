@@ -23,11 +23,14 @@ const EventDeclaration = require('../lib/introspect/eventdeclaration');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
 const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
+const ModelFileDownloader = require('../lib/introspect/loaders/modelfiledownloader');
+
 const fs = require('fs');
 
 const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 describe('ModelManager', () => {
@@ -193,6 +196,10 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([composerModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
+        });
+
+        it('should be able to add model files without validation', () => {
+            modelManager.addModelFiles([composerModel, new ModelFile(modelManager, 'namespace foo concept Foo{o Missing m}', 'invalid.cto')], ['1.cto', '2.cto'], true);
         });
 
         it('should add to existing model files from objects', () => {
@@ -470,6 +477,90 @@ describe('ModelManager', () => {
             }).should.throw(/Cannot delete system namespace/);
         });
 
+    });
+
+    describe('#updateExternalModels', () => {
+
+        it('should update external models', () => {
+
+            const externalModelFile = new ModelFile(modelManager, `namespace org.external
+concept Foo{ o String baz }`, '@external.cto');
+            const mfd = sinon.createStubInstance(ModelFileDownloader);
+            mfd.downloadExternalDependencies.returns(Promise.resolve([externalModelFile]));
+
+            // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Foo foo
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+            // import all external models
+            const options = {};
+            return modelManager.updateExternalModels(options, mfd)
+            .then(() => {
+                // model should be loaded and tagged as external
+                modelManager.getModelFile('org.external').isExternal().should.be.true;
+
+                // root model should still be there, and tagged as internal
+                modelManager.getModelFile('org.acme').isExternal().should.be.false;
+
+                // second update, with the external model already loaded
+                return modelManager.updateExternalModels(options, mfd)
+                .then(() => {
+                    // model should be loaded and tagged as external
+                    modelManager.getModelFile('org.acme').isExternal().should.be.false;
+
+                    // root model should still be there, and tagged as internal
+                    modelManager.getModelFile('org.external').isExternal().should.be.true;
+                });
+            });
+        });
+
+        it('should rollback changes on error', () => {
+
+            const externalModelFile = new ModelFile(modelManager, `namespace org.external
+concept Foo{ o String baz }`, '@external.cto');
+            const mfd = sinon.createStubInstance(ModelFileDownloader);
+            mfd.downloadExternalDependencies.returns(Promise.resolve([externalModelFile]));
+
+                // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Missing foo // this type is not defined in the external model
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+                // import all external models
+            const options = {};
+            return modelManager.updateExternalModels(options, mfd)
+                .catch((err) => {
+                    // external model should not be loaded (changes should have been rolled back)
+                    (!modelManager.getModelFile('org.external')).should.be.true;
+
+                    // root model should still be there, and tagged as internal
+                    modelManager.getModelFile('org.acme').isExternal().should.be.false;
+                });
+        });
+
+        it('should fail using bad URL and default model file loader', () => {
+
+            // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Foo foo
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+            // import all external models
+            return modelManager.updateExternalModels().should.be.rejectedWith(Error, 'Failed to load model file');
+        });
     });
 
     describe('#getNamespaces', () => {
