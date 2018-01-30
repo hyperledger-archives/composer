@@ -313,6 +313,12 @@ copy the contents of the file `/tmp/composer/ca-orderer.txt` and replace the tex
 
 Once done, save this file as `/tmp/composer/byfn-network.json`.
 
+Run the following commands to create connection profiles for Org1 and Org2:
+
+    cd /tmp/composer
+    cp connection-network.json ./org1/connection-org1.json
+    cp connection-network.json ./org2/connection-org2.json
+
 This connection profile now describes the fabric network setup, all the peers, orderers and certificate authorities that are part of the network, it defines all the organizations that are participating in the network and also defines the channel's on this network. {{site.data.conrefs.composer_full}} can only interact with a single channel so only one channel should be defined.
 
 <h2 class='alice'>Step Three: Customizing the connection profile for Org1</h2>
