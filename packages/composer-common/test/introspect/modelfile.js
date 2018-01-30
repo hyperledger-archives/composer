@@ -80,7 +80,7 @@ describe('ModelFile', () => {
         });
 
         it('should call the parser with the definitions and save any imports', () => {
-            const imports = [ 'org.freddos', 'org.doge' ];
+            const imports = [ {namespace: 'org.freddos'}, {namespace: 'org.doge'} ];
             const ast = {
                 namespace: 'org.acme',
                 imports: imports,
@@ -88,7 +88,21 @@ describe('ModelFile', () => {
             };
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new ModelFile(modelManager, 'fake definitions');
-            mf.imports.should.deep.equal(imports);
+            mf.imports.should.deep.equal(['org.hyperledger.composer.system.Event', 'org.hyperledger.composer.system.Transaction', 'org.hyperledger.composer.system.Participant', 'org.hyperledger.composer.system.Asset', 'org.freddos', 'org.doge']);
+        });
+
+        it('should call the parser with the definitions and save imports with uris', () => {
+            const imports = [ {namespace: 'org.doge'}, {namespace: 'org.freddos.*', uri: 'https://freddos.org/model.cto'} ];
+            const ast = {
+                namespace: 'org.acme',
+                imports: imports,
+                body: [ ]
+            };
+            sandbox.stub(parser, 'parse').returns(ast);
+            let mf = new ModelFile(modelManager, 'fake definitions');
+            mf.imports.should.deep.equal(['org.hyperledger.composer.system.Event', 'org.hyperledger.composer.system.Transaction', 'org.hyperledger.composer.system.Participant', 'org.hyperledger.composer.system.Asset', 'org.doge', 'org.freddos.*']);
+            mf.getImportURI('org.freddos.*').should.equal('https://freddos.org/model.cto');
+            (mf.getImportURI('org.doge') === null).should.be.true;
         });
 
         it('should handle a normal parsing exception', () => {

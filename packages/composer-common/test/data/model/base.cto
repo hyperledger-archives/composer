@@ -1,0 +1,30 @@
+namespace org.accordproject
+
+/**
+ * http://schema.org/Thing
+ */
+concept Thing {
+  o String alternateName optional
+  o String description optional
+  o String disambiguatingDescription optional
+  o String identifier optional
+  o String image optional
+  o String name optional
+  o String url optional
+  o String sameAs optional
+}
+
+/**
+ * http://schema.org/QuantitativeValue
+ */
+concept QualtativeValue {
+  o String unitCode
+  o String unitText optional
+  o Double value
+}
+
+concept MonetaryAmount extends Thing {
+  o String currency
+  o Integer whole
+  o Integer fractional
+}

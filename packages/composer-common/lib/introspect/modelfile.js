@@ -43,12 +43,15 @@ class ModelFile {
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
      * @param {string} [fileName] - The optional filename for this modelfile
+     * @param {boolean} [external] - The optional external attribute for this modelfile
      * @throws {IllegalModelException}
      */
     constructor(modelManager, definitions, fileName) {
         this.modelManager = modelManager;
+        this.external = false;
         this.declarations = [];
         this.imports = [];
+        this.importUriMap = {};
         this.fileName = 'UNKNOWN';
 
 
@@ -61,6 +64,10 @@ class ModelFile {
             throw new Error('ModelFile expects an (optional) filename as a string.');
         }
         this.fileName = fileName;
+
+        if(fileName) {
+            this.external = fileName.startsWith('@');
+        }
 
         try {
             this.ast = parser.parse(definitions);
@@ -78,7 +85,13 @@ class ModelFile {
         this.systemModelFile = (this.namespace === ModelUtil.getSystemNamespace());
 
         if(this.ast.imports) {
-            this.imports = this.ast.imports;
+            this.ast.imports.forEach((imp) => {
+                this.imports.push(imp.namespace);
+
+                if(imp.uri) {
+                    this.importUriMap[imp.namespace] = imp.uri;
+                }
+            });
         }
 
         // if we are not in the system namespace we add imports to all the system types
@@ -118,9 +131,39 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+    }
 
+    /**
+     * Returns true if this ModelFile was downloaded from an external URI.
+     * @return {boolean} true iff this ModelFile was downloaded from an external URI
+     */
+    isExternal() {
+        return this.external;
+    }
 
+    /**
+     * Returns the URI for an import, or null if the namespace was not associated with a URI.
+     * @param {string} namespace - the namespace for the import
+     * @return {string} the URI or null if the namespace was not associated with a URI.
+     * @private
+     */
+    getImportURI(namespace) {
+        const result = this.importUriMap[namespace];
+        if(result) {
+            return result;
+        }
+        else {
+            return null;
+        }
+    }
 
+    /**
+     * Returns an object that maps from the import declarations to the URIs specified
+     * @return {Object} keys are import declarations, values are URIs
+     * @private
+     */
+    getExternalImports() {
+        return this.importUriMap;
     }
 
     /**
