@@ -792,29 +792,43 @@ class BusinessNetworkConnection extends EventEmitter {
         } else {
             participant = Relationship.fromURI(this.getBusinessNetwork().getModelManager(), participant);
         }
+
         const transaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
         Object.assign(transaction, {
             participant,
             identityName
         });
+
         return this.getParticipantRegistry(participant.getFullyQualifiedType())
-            .then((participantRegistry) => {
-                return participantRegistry.exists(participant.getIdentifier());
-            })
-            .then((exists) => {
-                if (exists) {
-                    return this.connection.createIdentity(this.securityContext, identityName, options);
-                } else {
-                    throw new Error(`Participant '${participant.getFullyQualifiedIdentifier()}' does not exist `);
+        .then((participantRegistry) => {
+            return participantRegistry.exists(participant.getIdentifier());
+        })
+        .then((exists) => {
+            if (!exists) {
+                throw new Error(`Participant '${participant.getFullyQualifiedIdentifier()}' does not exist `);
+            }
+        })
+        .then(() => {
+            return this.getIdentityRegistry();
+        })
+        .then((identityRegistry) => {
+            return identityRegistry.getAll();
+        })
+        .then((ids) => {
+            ids.forEach((id) => {
+                if(id.name === identityName) {
+                    throw new Error(`Identity with name ${identityName} already exists`);
                 }
-            })
-            .then((identity) => {
-                return this.submitTransaction(transaction)
-                    .then(() => {
-                        LOG.exit(method, identity);
-                        return identity;
-                    });
             });
+            return this.connection.createIdentity(this.securityContext, identityName, options);
+        })
+        .then((identity) => {
+            return this.submitTransaction(transaction)
+                .then(() => {
+                    LOG.exit(method, identity);
+                    return identity;
+                });
+        });
     }
 
     /**

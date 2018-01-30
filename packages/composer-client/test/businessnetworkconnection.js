@@ -1146,7 +1146,45 @@ describe('BusinessNetworkConnection', () => {
                 });
         });
 
+        it('should throw if identity with same name exists', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([{name: 'dogeid1'}]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+                .catch((error) => {
+                    error.should.match(/Identity with name dogeid1 already exists/);
+                });
+        });
+
+        it('should not throw if identity with a different name exists', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([{name: 'dogeid2'}]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                    sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                    const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                    tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                    tx.participant.isRelationship().should.be.true;
+                    tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                    tx.identityName.should.equal('dogeid1');
+                    result.should.deep.equal({
+                        userID : 'dogeid1',
+                        userSecret : 'suchsecret'
+                    });
+                });
+        });
+
         it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
@@ -1166,6 +1204,10 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for a URI', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity('resource:org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
                 .then((result) => {
@@ -1185,6 +1227,10 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for an resource', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
             const participant = factory.newResource('org.acme.sample', 'SampleParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
@@ -1205,6 +1251,10 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode for an relationship', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
             const participant = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'dogeid1');
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity(participant, 'dogeid1')
@@ -1225,6 +1275,10 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should submit a request to the chaincode with additional options', () => {
+            let mockIdentityRegistry = sinon.createStubInstance(IdentityRegistry);
+            mockIdentityRegistry.getAll.returns([]);
+
+            sandbox.stub(businessNetworkConnection, 'getIdentityRegistry').resolves(mockIdentityRegistry);
             sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
             return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1', {
                 issuer : true,
