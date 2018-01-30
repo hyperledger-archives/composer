@@ -14,78 +14,45 @@
 
 'use strict';
 
-const Report = require('../../lib/cmds/report.js');
+const composerReport = require('composer-report');
 
+const Report = require('../../lib/cmds/report.js');
 const ReportCmd = require('../../lib/cmds/report/reportCommand.js');
+
 const chai = require('chai');
 const sinon = require('sinon');
-chai.should();
-chai.use(require('chai-as-promised'));
-const fs = require('fs');
-const os = require('os');
-const nodereport = require('node-report');
-const tar = require('tar');
+const assert = sinon.assert;
+const sinonChai = require('sinon-chai');
+chai.use(sinonChai);
 
 describe('composer report CLI', function() {
     const sandbox = sinon.sandbox.create();
     let consoleLogSpy;
-    let mkdtempSyncStub;
-    let triggerReportStub;
-    let setDirectoryStub;
-    let cStub;
+    let setupStub;
+    let reportStub;
+    let archiveStub;
 
     beforeEach(function() {
         consoleLogSpy = sandbox.spy(console, 'log');
-        sandbox.stub(process, 'exit');
-        mkdtempSyncStub = sandbox.stub(fs,'mkdtempSync').returns('COMPOSER_REPORT_TEMPDIR');
-        sandbox.stub(os, 'tmpdir').returns('OS_TEMPDIR');
-        triggerReportStub = sandbox.stub(nodereport, 'triggerReport');
-        setDirectoryStub = sandbox.stub(nodereport, 'setDirectory');
-        cStub = sandbox.stub(tar, 'c').returns(Promise.resolve());
+        setupStub = sandbox.stub(composerReport, 'setupReportDir').returns('DIR');
+        reportStub = sandbox.stub(composerReport, 'createNodeReport');
+        archiveStub = sandbox.stub(composerReport, 'archiveReport').returns('ARCHIVE');
     });
 
     afterEach(function() {
         sandbox.restore();
     });
 
-    it('should successfully run the composer report command with no arguments specified', function() {
+    it('should successfully run the composer report command', function() {
         const args = {};
         return ReportCmd.handler(args).then(() => {
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Creating Composer report'));
-        });
-    });
-
-    it('should create a temporary directory to store files to create the report archive from', function() {
-        const args = {};
-        return ReportCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(mkdtempSyncStub);
-            sinon.assert.calledWith(mkdtempSyncStub, 'OS_TEMPDIR/');
-        });
-    });
-
-    it('should successfully write a node-report report to the temporary directory', function() {
-        const args = { };
-        return ReportCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(setDirectoryStub);
-            sinon.assert.calledWith(setDirectoryStub, 'COMPOSER_REPORT_TEMPDIR');
-            sinon.assert.calledOnce(triggerReportStub);
-        });
-    });
-
-    it('should successfully create a zipped tar archive of the COMPOSER_REPORT_TEMPDIR in the current directory and log the output filename in the console', function() {
-        const args = { };
-        return ReportCmd.handler(args).then(() => {
-            sinon.assert.calledOnce(cStub);
-            sinon.assert.calledWith(cStub, {
-                cwd: 'COMPOSER_REPORT_TEMPDIR/',
-                prefix: sinon.match(/^composer-report-\d{8}T\d{6}$/),
-                gzip: true,
-                file: sinon.match(/^composer-report-\d{8}T\d{6}\.tgz$/)
-            }, ['.']);
-            sinon.assert.called(consoleLogSpy);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Triggering node report...'));
-            sinon.assert.calledWith(consoleLogSpy, sinon.match('Successfully created Composer report file to'));
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(/Output file: .*composer-report-\d{8}T\d{6}\.tgz$/));
+            assert.calledThrice(consoleLogSpy);
+            assert.calledWith(consoleLogSpy, sinon.match('Creating Composer report'));
+            assert.calledWith(consoleLogSpy, sinon.match('Triggering node report...'));
+            assert.calledWith(consoleLogSpy, sinon.match('Created archive file: ARCHIVE'));
+            assert.calledOnce(setupStub);
+            assert.calledWith(reportStub, 'DIR');
+            assert.calledWith(archiveStub, 'DIR');
         });
     });
 
