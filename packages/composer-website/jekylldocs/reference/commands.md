@@ -58,6 +58,8 @@ Lists all cards currently in your wallet: [composer card list](./composer.card.l
 
 Deploy a Business Network Definition: [composer network deploy](./composer.network.deploy.html)
 
+*Please note: It is recommended that users use the `composer network install` and `composer network start` commands instead of this command.*
+
 `composer network undeploy`
 
 Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.html)

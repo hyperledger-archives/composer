@@ -14,7 +14,7 @@ The `composer network deploy` utility is used to deploy a business network archi
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 ```
-composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
+composer network deploy -a digitalPropertyNetwork.bna -A admin -S adminpw -c PeerAdmin@hlfv1 -f admincard
 ```
 
 ### Options
@@ -39,7 +39,7 @@ Options:
 ## Example Output
 
 ```
-composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
+composer network deploy -a digitalPropertyNetwork.bna -A admin -S adminpw -c PeerAdmin@hlfv1 -f admincard
 
 Deploying business network from archive digitalPropertyNetwork.bna
 Business network definition:
