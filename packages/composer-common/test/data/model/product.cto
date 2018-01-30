@@ -1,0 +1,21 @@
+namespace org.accordproject.product
+
+import org.accordproject.* from github://accordproject/models/master/base.cto
+import org.accordproject.address.PostalAddress from github://accordproject/models/master/address.cto
+import org.accordproject.organization.Organization from github://accordproject/models/master/organization.cto
+
+/**
+ * http://schema.org/Product
+ */
+asset Product identified by identifier {
+  o String identifier
+  --> Organization Organization
+  o String category
+  o String color
+  o QualtativeValue depth
+  o String gtin12
+  o String gtin13
+  o String gtin14
+  o String gtin8
+  o QualtativeValue height
+}
