@@ -8,11 +8,10 @@ excerpt: Hyperledger Composer Report
 
 # Composer Report
 
-Creates a report archive containing system and environment information to assist with problem determination.
+---
 
-```
-composer report
-```
+The `composer report` command creates a compressed archive file in the directory where the command was issued. The archive file contains details of the current composer environment.
+
 
 ## Syntax
 
