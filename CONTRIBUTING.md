@@ -23,6 +23,9 @@ If you have a question or problem that relates to general support, please ask th
 
 If you find a bug in the source code, an error in any documentation, or would like a new feature, you can help us by [raising an issue](./contrib-notes/raising-issues.md) to our GitHub Repository or delivering a fix via a [pull request](./contrib-notes/submitting-pull-request.md).
 
+## Raising a Composer Improvement Proposal
+
+If you have a suggestion for a Composer Improvement Proposal (CIP), for a feature that is not yet present and you would like to have, please raise an issue using a [CIP template](./contrib-notes/cip-template.md) and tag the issue with the label `improvement proposal`. We endevour to have all CIP items discussed on community calls, so expect to have an invite once raised!
 
 ## Getting Started
 
