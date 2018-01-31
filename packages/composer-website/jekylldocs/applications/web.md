@@ -21,7 +21,7 @@ Please follow the [Developer Tutorial](../tutorials/developer-tutorial.html) for
 
 The flow for building an Angular application is as follows:
 
-<img src="../assets/img/Angular Generator Flow.svg" style="border: none;" alt="Angular Generator Flow">
+<img src="../assets/img/Angular.svg" style="border: none;" alt="Angular Generator Flow">
 
 If you already have a Business Network Archive and would like to build a skeleton Angular application, use the following reference instructions, if you would like to fully understand how to develop a BNA from scratch and build an application from there please see the [Developer Tutorial](../tutorials/developer-tutorial.html).
 
