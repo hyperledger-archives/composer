@@ -35,7 +35,7 @@ index-order: 102
 
 ### Connection Profiles
 
-Connection Profiles are used across {{site.data.conrefs.composer_full}} to specify how to connect to an execution runtime. There are different configuration options for each _type_ of execution runtime. For example, the connection profile for a {{site.data.conrefs.hlf_full}} runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.
+Connection Profiles are used across {{site.data.conrefs.composer_full}} to specify how to connect to an execution runtime. There are different configuration options for each _type_ of execution runtime. For example, the connection profile for a {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.
 
 Connection Profiles are part of Business Network cards.
 
