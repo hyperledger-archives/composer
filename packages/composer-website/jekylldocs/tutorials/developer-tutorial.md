@@ -8,13 +8,13 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: "The developer tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on {{site.data.conrefs.hlf_full}}."
 ---
 
-# Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
+# Developer tutorial for creating a {{site.data.conrefs.composer_full}} solution
 
 This tutorial will walk you through building a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a few hours you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network and generating/running a sample Angular 2 application that interacts with a blockchain network.
 
 This tutorial gives an overview of the techniques and resources available to apply to your own use case.
 
-*Note:* This tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment.
+*Note:* This tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} where referenced below and also tested for a Mac environment.
 
 
 ## Prerequisites
