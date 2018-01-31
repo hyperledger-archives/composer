@@ -268,7 +268,7 @@ ga('send', 'pageview');
 
 <p>The <code>composer network undeploy</code> command <strong>permanently disables a business network</strong>. Once a business network has been undeployed, it cannot be redeployed.</p>
 
-<p><strong>Please Note</strong>: When using the <code>undeploy</code> command with a business network running on Hyperledger Fabric v1.0, the business network remains running, but will become unresponsive. The business network <strong>cannot be redeployed or updated once the <code>undeploy</code> command has been issued.</strong> This is because the business network is already deployed, but has been set to be unresponsive.</p>
+<p><strong>Please Note</strong>: When using the <code>undeploy</code> command with a business network running on Hyperledger Fabric v1.1, the business network remains running, but will become unresponsive. The business network <strong>cannot be redeployed or updated once the <code>undeploy</code> command has been issued.</strong> This is because the business network is already deployed, but has been set to be unresponsive.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -c &lt;card-name&gt;
 </code></pre></div>
 <p>Note that <strong>after undeploy the business network definition can no longer be used</strong>, however the docker container
