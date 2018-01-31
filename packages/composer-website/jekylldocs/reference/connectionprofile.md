@@ -34,15 +34,14 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
                     "eventURL": "grpc://localhost:7053"
                 }
             ],
-            "keyValStore": "${HOME}/.composer-credentials",
             "channel": "composerchannel",
             "mspID": "Org1MSP",
             "timeout": "300"
         }
 
-    If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
+  If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
 
-    _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
+  _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
 
         {
           type: 'hlfv1',
