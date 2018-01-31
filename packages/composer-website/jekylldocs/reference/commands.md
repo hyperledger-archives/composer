@@ -121,16 +121,10 @@ Revoke an identity from a participant: [composer identity revoke](./composer.ide
 
 `composer report`
 
-Create a diagnostic report: [composer report](./composer.report)
+Create a diagnostic report: [composer report](./composer.report.html)
 
 ## Transaction execution
 
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.html)
-
-## Reporting
-
-`composer report`
-
-Create a compressed archive report of the current composer environment: [composer report](./composer.report.html)
