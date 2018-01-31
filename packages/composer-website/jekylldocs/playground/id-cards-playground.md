@@ -30,7 +30,7 @@ A peer admin business network card must be created in order to deploy a {{site.d
 
 1. From the **My Business Networks** screen, click **Create Business Network Card**.
 
-2. Select **{{site.data.conrefs.hlf_full}}** v1.1 and click **Next**.
+2. Select **{{site.data.conrefs.hlf_full}} v1.1** and click **Next**.
 
 3. Enter the details of your connection profile. For a better understanding of creating a connection profile, see [Deploying to {{site.data.conrefs.hlf_full}}](../tutorials/deploy-to-fabric-single-org.html) and click **Next**.
 
