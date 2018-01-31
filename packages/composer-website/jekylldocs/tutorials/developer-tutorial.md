@@ -14,7 +14,7 @@ This tutorial will walk you through building a {{site.data.conrefs.composer_full
 
 This tutorial gives an overview of the techniques and resources available to apply to your own use case.
 
-*Note:* This tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment.
+*Note:* This tutorial was written against the latest {{site.data.conrefs.composer_full}} build on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.1 where referenced below and also tested for a Mac environment.
 
 
 ## Prerequisites

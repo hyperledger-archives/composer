@@ -10,7 +10,7 @@ excerpt: Composer Network Start
 
 ---
 
-The `composer network start` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 network.
+The `composer network start` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.1 network.
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 _Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the {{site.data.conrefs.hlf_full}} peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
