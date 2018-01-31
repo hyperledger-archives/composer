@@ -167,17 +167,14 @@ class JobQueue extends EventEmitter {
         return this.jobs;
     }
 
-    /* eslint-disable class-methods-use-this */
-
-    /* istanbul ignore next */
     /**
      * Abstract method: must be overriden.
      * @param {any} job - data for the job
-     * @return {Promise} promise to the job results.
+     * @abstract
      */
-    runJob(job) { return Promise.resolve(job); }
-
-    /* eslint-enable class-methods-use-this */
+    runJob(job) {
+        throw new Error('runJob method must be subclassed.');
+    }
 }
 
 module.exports = JobQueue;

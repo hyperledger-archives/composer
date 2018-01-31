@@ -23,7 +23,7 @@ const sinonChai = require('sinon-chai');
 const JobQueue = require('../../../lib/introspect/loaders/jobqueue');
 
 const expect = chai.expect;
-
+require('chai').should();
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
@@ -76,6 +76,16 @@ describe('JobQueue', function () {
 
             spy = false;
             testJobs = false;
+        });
+
+        it('should throw if JobQueue is not subclassed', function () {
+
+            const jobQueue = new JobQueue();
+            jobQueue.on('jobAdd', spy);
+
+            (() => {
+                jobQueue.addJob('test job');
+            }).should.throw(/runJob method must be subclassed/);
         });
 
         it('should emit an event when a job is added.', function () {
