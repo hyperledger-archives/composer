@@ -10,7 +10,7 @@ excerpt: Composer Network Deploy CLI
 
 ---
 
-The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 network.
+The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} network.
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
 ```
@@ -51,7 +51,7 @@ Command completed successfully.
 
 ## {{site.data.conrefs.hlf_full}} Endorsement Policies
 
-The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} v1.0 endorsement policies can be sent using the `-o` and `-O` options in several ways.
+The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
 - Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
 
