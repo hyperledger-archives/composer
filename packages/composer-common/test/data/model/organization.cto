@@ -1,0 +1,8 @@
+namespace org.accordproject.organization
+
+import org.accordproject.address.PostalAddress from github://accordproject/models/master/address.cto
+
+participant Organization identified by identifier {
+  o String identifier
+  o PostalAddress postalAddress
+}
