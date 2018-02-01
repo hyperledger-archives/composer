@@ -102,6 +102,12 @@ describe('composer cli', () => {
             require('../cli.js');
             sinon.assert.calledWith(process.exit, 0);
         });
+        it('Should handle resolved promise, with the quiet setting', () => {
+            sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise(),quiet:true} });
+            delete require.cache[path.resolve(__dirname, '../cli.js')];
+            require('../cli.js');
+            sinon.assert.calledWith(process.exit, 0);
+        });
         it('Should handle rejected promise', () => {
             sandbox.stub(yargs, 'describe').returns({ argv: {thePromise: new fakePromise()} });
             delete require.cache[path.resolve(__dirname, '../cli.js')];
