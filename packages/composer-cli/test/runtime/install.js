@@ -50,7 +50,7 @@ describe('composer install runtime CLI unit tests', function () {
 
     describe('Install handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {card:'cardname'
                        ,connectionProfileName: 'testProfile'};
@@ -67,7 +67,7 @@ describe('composer install runtime CLI unit tests', function () {
             });
         });
 
-        it('Good path, all params correctly specified (card base)', function () {
+        it('hould correctly execute when all params correctly specified (card base)', function () {
 
             let argv = {card:'cardname'};
             return InstallCmd.handler(argv)
