@@ -242,6 +242,65 @@ Feature: Cli steps
         Then The stdout information should include text matching /issuer:/
         Then The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, I can issue an Identity to the participant called Sal
+        When I run the following CLI command
+            """
+            composer identity issue --card admin@basic-sample-network -u sal -a org.acme.sample.SampleParticipant#sal -f ./tmp/sal_DONOTIMPORT@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/sal_DONOTIMPORT@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can request the idenity for sal
+        Given I have saved the secret in file to SAL_SECRET
+           """
+           ./tmp/sal_DONOTIMPORT@basic-sample-network.card
+           """
+        When I substitue the alias SAL_SECRET and run the following CLI command
+           """
+           composer identity request --card admin@basic-sample-network -u sal -s SAL_SECRET -d ./tmp
+           """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/sal-pub.pem |
+            | ../tmp/sal-priv.pem |
+
+    Scenario: Using the CLI, I can create a card for the sal identity
+        When I run the following CLI command
+            | command | composer card create |
+            | -p | ./profiles/basic-connection-org1.json |
+            | -u | sal |
+            | -n | basic-sample-network |
+            | -c | ./tmp/sal-pub.pem |
+            | -k | ./tmp/sal-priv.pem |
+            | -f | ./tmp/sal@basic-sample-network.card |
+
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/sal@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can import the card that was just created
+        Given I have the following files
+            | ../tmp/sal@basic-sample-network.card |
+        When I run the following CLI command
+            """
+            composer card import --file ./tmp/sal@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Successfully imported business network card/
+        Then The stdout information should include text matching /Card file: ./tmp/sal@basic-sample-network.card/
+        Then The stdout information should include text matching /Card name: sal@basic-sample-network/
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can validate my user sal
+        When I run the following CLI command
+            """
+            composer network ping --card sal@basic-sample-network
+            """
+        Then The stdout information should include text matching /The connection to the network was successfully tested: basic-sample-network/
+        Then The stdout information should include text matching /version:/
+        Then The stdout information should include text matching /participant: org.acme.sample.SampleParticipant#sal/
+        Then The stdout information should include text matching /Command succeeded/
+
     Scenario: Using the CLI, I can issue an Identity to the participant called Bob
         When I run the following CLI command
             """
@@ -363,6 +422,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /The current identity, with the name '.+?' and the identifier '.+?', has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
 
+    @hsm
     Scenario: Using the CLI, I can issue another Identity to the participant called Bob
         When I run the following CLI command
             """
@@ -372,6 +432,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/bob2@basic-sample-network.card |
 
+    @hsm
     Scenario:
         Given I have the following items
             | ../tmp/bob2@basic-sample-network.card |
@@ -382,6 +443,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/bob2_hsm@basic-sample-network.card |
 
+    @hsm
     Scenario: Using the CLI, I can import the hsm managed card that was just created
         Given I have the following files
             | ../tmp/bob2_hsm@basic-sample-network.card |
@@ -394,6 +456,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /Card name: bob2@basic-sample-network/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can verify that Bob's card was imported
         When I run the following CLI command
 
@@ -419,6 +482,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /└────────────────────────────┴─────────────────────────┴──────────────────────┘/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can validate my user bob
         When I run the following CLI command
             """
@@ -429,6 +493,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /participant: org.acme.sample.SampleParticipant#bob/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can see the card that I just imported is now showing HSM managed
         When I run the following CLI command
             """
@@ -445,6 +510,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /credentialsSet:      Credentials set, HSM managed/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can export an HSM managed card
         When I run the following CLI command
             """
@@ -454,6 +520,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/bob2_exported@basic-sample-network.card |
 
+    @hsm
     Scenario: Using the CLI, I can delete an HSM managed card
         When I run the following CLI command
             """
@@ -461,6 +528,7 @@ Feature: Cli steps
             """
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can import an HSM managed card
         Given I have the following files
             | ../tmp/bob2_exported@basic-sample-network.card |
@@ -471,6 +539,7 @@ Feature: Cli steps
             """
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can validate my user bob again
         When I run the following CLI command
             """
@@ -481,6 +550,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /participant: org.acme.sample.SampleParticipant#bob/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can issue another Identity to the participant called Bob
         When I run the following CLI command
             """
@@ -490,6 +560,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/fred@basic-sample-network.card |
 
+    @hsm
     Scenario: Using the CLI, I can request this identity and it will be hsm managed
         Given I have saved the secret in file to FRED_SECRET
            """
@@ -503,6 +574,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/fred-pub.pem |
 
+    @hsm
     Scenario: Using the CLI, I can create an HSM managed card
         When I run the following CLI command
             | command | composer card create |
@@ -516,6 +588,7 @@ Feature: Cli steps
         Then I have the following files
             | ../tmp/fred_hsm@basic-sample-network.card |
 
+    @hsm
     Scenario: Using the CLI, I can import the hsm managed card that was just created
         Given I have the following files
             | ../tmp/fred_hsm@basic-sample-network.card |
@@ -528,6 +601,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /Card name: fred@basic-sample-network/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can see the card that I just imported is now showing HSM managed
         When I run the following CLI command
             """
@@ -544,6 +618,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /credentialsSet:      Credentials set, HSM managed/
         Then The stdout information should include text matching /Command succeeded/
 
+    @hsm
     Scenario: Using the CLI, I can validate my user fred
         When I run the following CLI command
             """

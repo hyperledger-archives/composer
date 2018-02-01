@@ -535,7 +535,7 @@ class TestUtil {
                     businessNetwork : network
                 };
                 let ccpToUse = currentCp;
-                if (process.env.FVTEST.match('hsm$')) {
+                if (process.env.FVTEST && process.env.FVTEST.match('hsm$')) {
                     console.log(`defining a new card for ${enrollmentID} to use HSM`);
                     ccpToUse = {
                     };

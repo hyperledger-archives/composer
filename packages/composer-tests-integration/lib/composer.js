@@ -571,7 +571,7 @@ class Composer {
     }
 
     /**
-     * Convert a card with a secret to use HSM to manage it's private keys and import it into the card store.
+     * Convert a card with a secret to use HSM to manage it's private keys.
      * @param {string} cardFile the card
      */
     async convertToHSM(cardFile) {
