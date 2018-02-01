@@ -55,7 +55,7 @@ You may need to publish this Docker image to a Docker image repository, for exam
 
 The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.
 
-The examples are based on the business network that is deployed to {{site.data.conrefs.hlf_full}} v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
+The examples are based on the business network that is deployed to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
 
 1. Ensure that a valid business network card for your business network is in your local business network card store by running the following `composer network ping` command. This example uses a business network card for the `admin` user on the `my-network` business network:
 

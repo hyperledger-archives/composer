@@ -44,3 +44,8 @@ This provides command line tools to provide the ability to deploy and managed bu
 npm install -g composer-cli
 ```
 If you wish however you can instgall this as a local dependancy, but you could need to access the cli.js node class directly rather than used the `composer` command.
+
+## composer-report
+This provides a basic command line tool to collect diagnostic reports. This would normally only be required if `composer-cli` could not be installed for any reason.
+
+See the [composer report](./composer.report) command for more information.
