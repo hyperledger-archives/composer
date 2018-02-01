@@ -7,3 +7,6 @@ composer_full:
 
 hlf_full:
   Hyperledger Fabric
+
+hlf_current_version:
+  v1.1
