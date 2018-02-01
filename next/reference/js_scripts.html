@@ -319,56 +319,49 @@ transaction SampleTransaction {
 <p>The transaction processor function relating to the <code>SampleTransaction</code> transaction is what makes the change both to the asset and to the registry where the asset is stored.</p>
 
 <p>The transaction processor function defines the <code>SampleTransaction</code> type as the associated transaction, and defines it as the parameter <code>tx</code>. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the <code>newValue</code> property in the transaction definition), updates the asset in the registry, and then emits an event.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
 
-    // Save the old value of the asset.
-    var oldValue = tx.asset.value;
+    <span class="c1">// Save the old value of the asset.</span>
+    <span class="kd">let</span> <span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
 
-    // Update the asset with the new value.
-    tx.asset.value = tx.newValue;
+    <span class="c1">// Update the asset with the new value.</span>
+    <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
 
-    // Get the asset registry for the asset.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
+    <span class="c1">// Get the asset registry for the asset.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
 
-            // Update the asset in the asset registry.
-            return assetRegistry.update(tx.asset);
+    <span class="c1">// Update the asset in the asset registry.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
 
-        })
-        .then(function () {
-
-            // Emit an event for the modified asset.
-            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
-            event.asset = tx.asset;
-            event.oldValue = oldValue;
-            event.newValue = tx.newValue;
-            emit(event);
-
-        });
-
-}
+    <span class="c1">// Emit an event for the modified asset.</span>
+    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">oldValue</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">newValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="error-handling-in-transaction-processor-functions">Error handling in transaction processor functions</h2>
 
 <p>Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Do something.
-    throw new Error('example error');
-    // Execution stops at this point; the transaction fails and rolls back.
-    // Any updates made by the transaction processor function are discarded.
-    // Transaction processor functions are atomic; all changes are committed,
-    // or no changes are committed.
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Do something.</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'example error'</span><span class="p">);</span>
+    <span class="c1">// Execution stops at this point; the transaction fails and rolls back.</span>
+    <span class="c1">// Any updates made by the transaction processor function are discarded.</span>
+    <span class="c1">// Transaction processor functions are atomic; all changes are committed,</span>
+    <span class="c1">// or no changes are committed.</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Changes made by transactions are atomic, either the transaction is successful and all changes are applied, or the transaction fails and no changes are applied.</p>
 
@@ -395,20 +388,20 @@ transaction SampleTransaction {
 }
 </code></pre></div>
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // The relationships in the transaction are automatically resolved.
-    // This means that the asset can be accessed in the transaction instance.
-    var asset = tx.asset;
-    // The relationships are fully or recursively resolved, so you can also
-    // access nested relationships. This means that you can also access the
-    // owner of the asset.
-    var owner = tx.asset.owner;
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// The relationships in the transaction are automatically resolved.</span>
+    <span class="c1">// This means that the asset can be accessed in the transaction instance.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="c1">// The relationships are fully or recursively resolved, so you can also</span>
+    <span class="c1">// access nested relationships. This means that you can also access the</span>
+    <span class="c1">// owner of the asset.</span>
+    <span class="kd">let</span> <span class="nx">owner</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
 
@@ -425,28 +418,42 @@ transaction SampleTransaction {
 
 }
 </code></pre></div>
+<p>Node 8 syntax is now supported which means that you can now use <code>async/await</code> syntax instead which is far
+more concise than using promise chains. This is the recommended style.</p>
+
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Transaction processor functions can return promises; Composer will wait
-    // for the promise to be resolved before committing the transaction.
-    // Do something that returns a promise.
-    return Promise.resolve()
-        .then(function () {
-            // Do something else that returns a promise.
-            return Promise.resolve();
-        })
-        .then(function () {
-            // Do something else that returns a promise.
-            // This transaction is complete only when this
-            // promise is resolved.
-            return Promise.resolve();
-        });
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(...);</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(...);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>however if you so wish you can still use old style promise chains</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Transaction processor functions can return promises; Composer will wait</span>
+    <span class="c1">// for the promise to be resolved before committing the transaction.</span>
+    <span class="c1">// Do something that returns a promise.</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="c1">// This transaction is complete only when this</span>
+            <span class="c1">// promise is resolved.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">});</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
 
@@ -466,26 +473,24 @@ transaction SampleTransaction {
 }
 </code></pre></div>
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Update the value in the asset.
-    var asset = tx.asset;
-    asset.value = tx.newValue;
-    // Get the asset registry that stores the assets. Note that
-    // getAssetRegistry() returns a promise, so we have to return
-    // the promise so that Composer waits for it to be resolved.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
-            // Update the asset in the asset registry. Again, note
-            // that update() returns a promise, so so we have to return
-            // the promise so that Composer waits for it to be resolved.
-            return assetRegistry.update(asset);
-        })
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Update the value in the asset.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="c1">// Get the asset registry that stores the assets. Note that</span>
+    <span class="c1">// getAssetRegistry() returns a promise, so we have to await for it.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
+
+    <span class="c1">// Update the asset in the asset registry. Again, note</span>
+    <span class="c1">// that update() returns a promise, so so we have to return</span>
+    <span class="c1">// the promise so that Composer waits for it to be resolved.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="what-next">What next?</h2>
 

@@ -278,7 +278,7 @@ ga('send', 'pageview');
 
 <p>The <code>post(url,data)</code> function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the <code>application/json</code> content encoding.</p>
 
-<p>The <code>post</code> function is supported in all runtime environments: web (playground), Node.js (embedded) and Hyperledger Fabric v1.0.</p>
+<p>The <code>post</code> function is supported in all runtime environments: web (playground), Node.js (embedded) and Hyperledger Fabric v1.1.</p>
 
 <h2 id="handling-results">Handling Results</h2>
 
@@ -296,25 +296,21 @@ ga('send', 'pageview');
 <p>Transaction processor functions may optionally call the <code>getSerializer().fromJSON(object)</code> function to convert a reponse body JS Object back into a Composer asset/participant/transaction.</p>
 
 <h2 id="examples">Examples</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Handle a POST transaction, calling Node-RED running on Bluemix
  * @param {org.example.sample.PostTransaction} postTransaction - the transaction to be processed
  * @transaction
  * @return [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) a promise that resolves when transaction processing is complete
- */
-function handlePost(postTransaction) {
-    var url = 'https://composer-node-red.mybluemix.net/compute';
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">handlePost</span><span class="p">(</span><span class="nx">postTransaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">'https://composer-node-red.mybluemix.net/compute'</span><span class="p">;</span>
 
-    return post( url, postTransaction)
-      .then(function (result) {
-        // alert(JSON.stringify(result));
-          postTransaction.asset.value = 'Count is ' + result.body.sum;
-          return getAssetRegistry('org.example.sample.SampleAsset')
-          .then(function (assetRegistry) {
-              return assetRegistry.update(postTransaction.asset);
-          });
-      });
-}
+    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">post</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">postTransaction</span><span class="p">);</span>
+    <span class="c1">// alert(JSON.stringify(result));</span>
+    <span class="nx">postTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'Count is '</span> <span class="o">+</span> <span class="nx">result</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">sum</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.sample.SampleAsset'</span><span class="p">)</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">postTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="idempotency-and-consensus">Idempotency and Consensus</h2>
 

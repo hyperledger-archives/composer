@@ -311,59 +311,46 @@ event RemoveNotification {
 <ol>
 <li><p>Open the transaction processor function file <code>lib/logic.js</code>.</p></li>
 <li><p>Replace the transaction logic with the following JavaScript:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.biznet.Trade} trade - the trade to be processed
  * @transaction
- */
-function tradeCommodity(trade) {
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
 
-    // set the new owner of the commodity
-    trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.biznet.Commodity')
-        .then(function (assetRegistry) {
+    <span class="c1">// set the new owner of the commodity</span>
+    <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
 
-            // emit a notification that a trade has occurred
-            var tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
-            tradeNotification.commodity = trade.commodity;
-            emit(tradeNotification);
+    <span class="c1">// emit a notification that a trade has occurred</span>
+    <span class="nx">let</span> <span class="nx">tradeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.biznet'</span><span class="p">,</span> <span class="s1">'TradeNotification'</span><span class="p">);</span>
+    <span class="nx">tradeNotification</span><span class="o">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">;</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">tradeNotification</span><span class="p">);</span>
 
-            // persist the state of the commodity
-            return assetRegistry.update(trade.commodity);
-        });
-}
+    <span class="c1">// persist the state of the commodity</span>
+    <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
+<span class="p">}</span>
 
-/**
+<span class="sd">/**
  * Remove all high volume commodities
  * @param {org.acme.biznet.RemoveHighQuantityCommodities} remove - the remove to be processed
  * @transaction
- */
-function removeHighQuantityCommodities(remove) {
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">removeHighQuantityCommodities</span><span class="p">(</span><span class="nx">remove</span><span class="p">)</span> <span class="p">{</span>
 
-    return getAssetRegistry('org.acme.biznet.Commodity')
-        .then(function (assetRegistry) {
-            return query('selectCommoditiesWithHighQuantity')
-                    .then(function (results) {
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'selectCommoditiesWithHighQuantity'</span><span class="p">);</span>
 
-                        var promises = [];
+    <span class="k">for</span> <span class="p">(</span><span class="nx">let</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;</span> <span class="nx">results</span><span class="o">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">n</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">let</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span>
 
-                        for (var n = 0; n &lt; results.length; n++) {
-                            var trade = results[n];
-
-                            // emit a notification that a trade was removed
-                            var removeNotification = getFactory().newEvent('org.acme.biznet', 'RemoveNotification');
-                            removeNotification.commodity = trade;
-                            emit(removeNotification);
-
-                            // remove the commodity
-                            promises.push(assetRegistry.remove(trade));
-                        }
-
-                        // we have to return all the promises
-                        return Promise.all(promises);
-                    });
-        });
-}
+        <span class="c1">// emit a notification that a trade was removed</span>
+        <span class="nx">let</span> <span class="nx">removeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.biznet'</span><span class="p">,</span><span class="s1">'RemoveNotification'</span><span class="p">);</span>
+        <span class="nx">removeNotification</span><span class="o">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">trade</span><span class="p">;</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">removeNotification</span><span class="p">);</span>
+        <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></li>
 <li><p>Save your changes to <code>logic.js</code>.</p></li>
 </ol>

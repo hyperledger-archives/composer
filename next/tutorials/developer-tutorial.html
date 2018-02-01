@@ -262,13 +262,13 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer Tutorial for creating a Hyperledger Composer solution</h1>
+              <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer tutorial for creating a Hyperledger Composer solution</h1>
 
 <p>This tutorial will walk you through building a Hyperledger Composer blockchain solution from scratch. In the space of a few hours you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network and generating/running a sample Angular 2 application that interacts with a blockchain network.</p>
 
 <p>This tutorial gives an overview of the techniques and resources available to apply to your own use case.</p>
 
-<p><em>Note:</em> This tutorial was written against the latest Hyperledger Composer build on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment.</p>
+<p><em>Note:</em> This tutorial was written against the latest Hyperledger Composer build on Ubuntu Linux running with Hyperledger Fabric v1.1 where referenced below and also tested for a Mac environment.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
@@ -338,18 +338,16 @@ transaction Trade {
 <ol>
 <li><p>Open the <code>logic.js</code> script file.</p></li>
 <li><p>Replace the contents with the following:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.biznet.Trade} trade - the trade to be processed
  * @transaction
- */
-function tradeCommodity(trade) {
-    trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.biznet.Commodity')
-        .then(function (assetRegistry) {
-            return assetRegistry.update(trade.commodity);
-        });
-}
+ */</span>
+<span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
+    <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div></li>
 <li><p>Save your changes to <code>logic.js</code>.</p></li>
 </ol>

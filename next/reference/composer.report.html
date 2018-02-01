@@ -264,14 +264,24 @@ ga('send', 'pageview');
             
               <h1 id="composer-report">Composer Report</h1>
 
-<p>Creates a report archive containing system and environment information to assist with problem determination.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer report
-</code></pre></div>
+<hr>
+
+<p>The <code>composer report</code> command creates a compressed archive file in the directory where the command was issued. The archive file contains details of the current composer environment.</p>
+
 <h2 id="syntax">Syntax</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">Options:
   --help         Show help  [boolean]
   -v, --version  Show version number  [boolean]
 </code></pre></div>
+<h2 id="stand-alone-command">Stand-alone command</h2>
+
+<p>An alternative stand-alone command is available for situations where the <code>composer</code> command is not working, or the <code>composer-cli</code> module could not be installed for any reason.</p>
+
+<p>This would normally be installed as a global module</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-report
+</code></pre></div>
+<p>Once installed, running <code>composer-report</code> will create a report archive in the current directory in the same way as the full <code>composer report</code> command.</p>
+
             
           </section>
         </div>

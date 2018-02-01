@@ -298,7 +298,7 @@ in your /home/user1/config directory:</p>
 <h3 id="admin-api">Admin API</h3>
 
 <p>You can supply the name of the file as part of the AdminConnection api on the install or deploy methods by specifying the <code>npmrcFile</code> property on the <code>installOptions</code> or <code>deployOptions</code> object. For example to pass the name of the npm configuration options file to be provided on install:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">AdminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getName</span><span class="p">(),</span> <span class="p">{</span><span class="na">npmrcFile</span><span class="p">:</span> <span class="s1">'/tmp/npmrc'</span><span class="p">});</span>
 </code></pre></div>
 <h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
 
@@ -334,7 +334,7 @@ in your /home/user1/config directory:</p>
 <h3 id="admin-api">Admin API</h3>
 
 <p>To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the <code>startOptions</code> or <code>deployOptions</code> objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property <code>endorsementPolicyFile</code>. To supply the policy as a JSON object, the <code>endorsementPolicy</code> object property must be specified.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span> <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span> <span class="nx">networkAdmins</span><span class="p">,</span>  <span class="na">endorsementPolicyFile</span><span class="p">:</span> <span class="s1">'endorsement-policy.json'</span><span class="p">}</span> <span class="p">);</span>
 </code></pre></div>
 <h2 id="identity-issue">Identity Issue</h2>
 
@@ -349,7 +349,7 @@ in your /home/user1/config directory:</p>
 
 <p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
 For example to issue an identity that has issuer authority
-<code>
+<code>javascript
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
 </code></p>
 

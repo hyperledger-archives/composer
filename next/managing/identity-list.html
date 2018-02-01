@@ -291,24 +291,22 @@ Otherwise the identity registry will be empty and you will not see any results.<
 </ul></li>
 </ol>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
-  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
-  <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@digitalPropertyNetwork'</span><span class="p">)</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getIdentityRegistry</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">identityRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="nx">identityRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">identities</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+  <span class="k">async</span> <span class="kd">function</span> <span class="nx">identityList</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+      <span class="k">try</span> <span class="p">{</span>
+          <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'admin@digitalPropertyNetwork'</span><span class="p">);</span>
+          <span class="kd">let</span> <span class="nx">identityRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getIdentityRegistry</span><span class="p">();</span>
+          <span class="kd">let</span> <span class="nx">identities</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">identityRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
           <span class="nx">identities</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">identity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`identityId = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">identityId</span><span class="p">}</span><span class="s2">, name = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2">, state = </span><span class="p">${</span><span class="nx">identity</span><span class="p">.</span><span class="nx">state</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
           <span class="p">});</span>
-          <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
-      <span class="p">})</span>
-      <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+          <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
+      <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
           <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-      <span class="p">});</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
 </code></pre></div>
 <ul>
 <li><p>Command line</p>

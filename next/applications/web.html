@@ -264,11 +264,111 @@ ga('send', 'pageview');
             
               <h1 id="writing-web-or-mobile-applications">Writing Web or mobile Applications</h1>
 
-<p>Web or mobile applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the <code>composer-rest-server</code> to dynamically generate a REST API from the deployed business network.</p>
+<p>To interact with a deployed business network, web or mobile applications should make REST API calls. To create a custom REST API for a business network, use the <code>composer-rest-server</code> command.</p>
 
-<p>In addition the <code>yo hyperledger-composer</code> command can be used to generate a skeleton Angular project that calls the <code>composer-rest-server</code> to interact with a business network.</p>
+<p>To create a skeleton Angular application that can interact with the REST API, use the <code>yo hyperledger-composer</code> command.</p>
 
-<p>Please follow the Developer Tutorial for an example of how to use the <code>composer-rest-server</code> and the Angular generator.</p>
+<p>Please follow the <a href="../tutorials/developer-tutorial.html">Developer Tutorial</a> for an example of how to use the <code>composer-rest-server</code> and the Angular generator.</p>
+
+<h2 id="generating-an-angular-application-from-a-business-network-archive-bna">Generating an Angular application from a Business Network Archive (.BNA)</h2>
+
+<p>The flow for building an Angular application is as follows:</p>
+
+<p><img src="../assets/img/Angular.svg" style="border: none;" alt="Angular Generator Flow"></p>
+
+<p>If you already have a Business Network Archive and would like to build a skeleton Angular application, use the following reference instructions, if you would like to fully understand how to develop a BNA from scratch and build an application from there please see the <a href="../tutorials/developer-tutorial.html">Developer Tutorial</a>.</p>
+
+<p><strong>Prerequisites</strong></p>
+
+<ul>
+<li>You will need the Hyperledger Composer <a href="../installing/development-tools.html">development tools</a> in order to run the Angular generator.</li>
+<li>A Business Network Archive (.BNA) you would like to deploy.</li>
+</ul>
+
+<h3 id="1-start-hyperledger-fabric-running-on-your-local-machine">1. Start Hyperledger Fabric running on your local machine</h3>
+
+<p>If you have already installed the development tools you will have Hyperledger Fabric already installed.</p>
+
+<p>Head to the <code>fabric-tools</code> directory and start Hyperledger Fabric. The following code is an example if you have used our development tools install guide:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> ~/fabric-tools
+./startFabric.sh
+./createPeerAdminCard.sh
+</code></pre></div>
+<p>This will also create a <code>PeerAdmin</code> .card file which is needed to modify code running on the peers of your deployment.</p>
+
+<p>You can list all of the cards you have installed at any time by running the following command:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer card list
+</code></pre></div>
+<h3 id="2-prepare-the-hyperledger-fabric-peers-for-your-bna">2. Prepare the Hyperledger Fabric peers for your BNA</h3>
+
+<p>In order to install the Business Network Archive onto the Hyperledger Fabric network you need to prepare the peers with the underlying Composer runtime.</p>
+
+<p>You will need to have the name of the Business Network to do this, below you can see an example with <code>tutorial-network</code> along with the &#39;PeerAdmin&#39; card for your deployment.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
+</code></pre></div>
+<h3 id="3-deploy-your-bna-onto-your-hyperledger-fabric">3. Deploy your BNA onto your Hyperledger Fabric</h3>
+
+<p>It is recommended you start with a clean directory. Move your BNA into that directory and change your terminal directory to it.</p>
+
+<p>We will use the <code>composer network start</code> command to deploy the BNA onto Hyperledger Fabric, we will need to use our <code>PeerAdmin</code> card to do this. We will also need to create a user on our network, we will use an &quot;Admin&quot; username and password to get started.</p>
+
+<p>Below is an example using a <code>tutorial-network</code> BNA.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network start <span class="nt">-a</span> tutorial-network.bna <span class="nt">-A</span> admin <span class="nt">-S</span> adminpw <span class="nt">-c</span> PeerAdmin@hlfv1
+</code></pre></div>
+<p>This will create an &#39;admin&#39; card for the business network, which for the above example is <code>admin@tutorial-network.card</code></p>
+
+<p><em>Please note: The <code>admin</code> username and <code>adminpw</code> secret are for a specific Hyperledger Fabric identity configured for the instance of Hyperledger Fabric deployed in the Developer Tutorial. If you have configured a Hyperledger Fabric instance from scratch these identity details will be different.</em></p>
+
+<h3 id="4-install-the-admin-card-ready-for-use">4. Install the &#39;admin&#39; card ready for use</h3>
+
+<p>We will next take the admin card we have just made and import it for use with your business network.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer card import <span class="nt">--file</span> admin@tutorial-network.card
+</code></pre></div>
+<h3 id="5-start-the-rest-server-generate-the-swagger-api-documentation">5. Start the REST server &amp; generate the Swagger API documentation</h3>
+
+<p>Navigate to your directory and run the <code>composer-rest-server</code> command.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer-rest-server
+</code></pre></div>
+<ul>
+<li>Enter admin@tutorial-network as the card name. Make sure not to add the <code>.card</code> extension.</li>
+<li>Select never use namespaces when asked whether to use namespaces in the generated API.</li>
+<li>Select No when asked whether to secure the generated API.</li>
+<li>Select Yes when asked whether to enable event publication.</li>
+<li>Select No when asked whether to enable TLS security.</li>
+</ul>
+
+<p>The rest server will then be generated and available on <a href="http://localhost:3000/explorer">http://localhost:3000/explorer</a></p>
+
+<h3 id="6-generate-the-angular-application">6. Generate the Angular application</h3>
+
+<p>The Angular application requires the rest server to be running to connect to the Fabric instance. Make sure you have the REST server running in the background when doing this. You will also need to be in the same directory as your .BNA file when running the Yeoman generator.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">yo hyperledger-composer
+</code></pre></div>
+<p>Follow the below so your output matches.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer project generator
+? Please select the type of project: Angular
+You can run this generator using: 'yo hyperledger-composer:angular'
+Welcome to the Hyperledger Composer Angular project generator
+? Do you want to connect to a running Business Network? Yes
+? Project name: [insert]
+? Description: Hyperledger Composer Angular project
+? Author name: [insert]
+? Author email: [insert]
+? License: Apache-2.0
+? Name of the Business Network card: admin@tutorial-network
+? Do you want to generate a new REST API or connect to an existing REST API?  Connect to an existing REST
+ API
+? REST server address: http://localhost
+? REST server port: 3000
+? Should namespaces be used in the generated REST API? Namespaces are not used
+Created application!
+</code></pre></div>
+<p>The generated application will be within a sub directory named after the <code>Project name</code> entered above.</p>
+
+<p>Finally enter this directory and to get the application running, run:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm start
+</code></pre></div>
+<p>It will be available on <a href="http://localhost:4200">http://localhost:4200</a></p>
 
 <h2 id="references">References</h2>
 

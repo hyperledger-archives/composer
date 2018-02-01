@@ -270,7 +270,7 @@ ga('send', 'pageview');
 
 <h2 id="creating-a-connection-profile-for-hyperledger-fabric-v1-1">Creating a Connection Profile for Hyperledger Fabric v1.1</h2>
 
-<p>Hyperledger Fabric defines the format of the connection profile. The following is an example of a single organisation fabric network</p>
+<p>Hyperledger Fabric defines the format of the connection profile. The following is an example of a single organization fabric network</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
     "name": "hlfv1",
     "x-type": "hlfv1",
@@ -336,7 +336,7 @@ ga('send', 'pageview');
 </code></pre></div>
 <p>Official documentation for this structure can be found here:  <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.</p>
 
-<p>The Hyperledger Fabric v1.1 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The v1.1 connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.</p>
+<p>The Hyperledger Fabric v1.1 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The Hyperledger Fabric v1.1 connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.</p>
 
 <p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
 
@@ -383,7 +383,7 @@ ga('send', 'pageview');
             "ssl-target-name-override": "orderer.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+            "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
         }
     }
 },
@@ -411,8 +411,8 @@ ga('send', 'pageview');
             "ssl-target-name-override": "peer.org1.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
-        }        
+            "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        }
     }
 },
 </code></pre></div>
@@ -478,9 +478,9 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
         ],
         "peers": {
             "peer0.org1.example.com": {
-                "endorsingPeer": true
-                "chaincodeQuery": true
-                "ledgerQuery": true
+                "endorsingPeer": true,
+                "chaincodeQuery": true,
+                "ledgerQuery": true,
                 "eventSource": true
             }
         }
@@ -524,10 +524,10 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15        
+        "grpc-max-send-message-length": 15
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
 </code></pre></div>
@@ -539,7 +539,7 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
         "grpc-max-send-message-length": 15
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
 </code></pre></div>
