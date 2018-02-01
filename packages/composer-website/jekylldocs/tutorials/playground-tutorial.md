@@ -104,7 +104,7 @@ For more information on writing transaction processor functions, check our [docu
          * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
-        function tradeCommodity(trade) {
+        async function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
             let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
             await assetRegistry.update(trade.commodity);
