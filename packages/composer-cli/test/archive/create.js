@@ -64,7 +64,7 @@ describe('composer archive create unit tests', function () {
 
 
 
-        it('Good path, all parms correctly specified.', function () {
+        it('should correctly execute when all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
                         , sourceType: 'dir'
@@ -79,7 +79,7 @@ describe('composer archive create unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified & cwd ', function () {
+        it('should correctly execute all parms correctly specified & cwd ', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
             ,sourceType: 'dir'
@@ -94,7 +94,7 @@ describe('composer archive create unit tests', function () {
             });
         });
 
-        it('Good path, all parms correctly specified - no archive', function () {
+        it('should correctly execute when all parms correctly specified - no archive', function () {
 
             let argv = {sourceType: 'dir'
            ,sourceName:  '/home/mwhite/biznet'};
@@ -108,7 +108,7 @@ describe('composer archive create unit tests', function () {
             });
         });
 
-        it('Good path, module name - archivefile & modulename that exists', function () {
+        it('should correctly execute when module name - archivefile & modulename that exists', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip',
                 moduleName: 'fs'};
@@ -122,7 +122,7 @@ describe('composer archive create unit tests', function () {
             });
         });
 
-        it('Good path, module name - archivefile & modulename that does not exists', function () {
+        it('should correctly execute when module name - archivefile & modulename that does not exists', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip',
                 sourceType: 'module', sourceName: 'fake'};

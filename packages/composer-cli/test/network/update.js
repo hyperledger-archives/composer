@@ -86,7 +86,7 @@ describe('composer update network CLI unit tests', function () {
     });
 
     describe('using network cards', ()=>{
-        it('Good path with update enabled', function () {
+        it('should correctly execute when with update enabled', function () {
             let businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
             let testBusinessNetworkArchive;

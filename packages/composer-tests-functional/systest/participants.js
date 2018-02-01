@@ -442,6 +442,50 @@ describe('Participant system tests', function() {
             });
     });
 
+    it('should store participants obtaining the registry from the generic call', () => {
+        let participantRegistry;
+        let participantContainerRegistry;
+        return client
+            .getRegistry('systest.participants.SimpleParticipant')
+            .then(function (result) {
+                participantRegistry = result;
+                let participant = createParticipant('dogeParticipant1');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                let participant = createParticipant('dogeParticipant2');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                let participant = createParticipant('dogeParticipant3');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                return client.getRegistry('systest.participants.SimpleParticipantContainer');
+            })
+            .then(function (result) {
+                participantContainerRegistry = result;
+                let participantContainer = createParticipantContainer();
+                participantContainer.simpleParticipant = createParticipant('dogeParticipant1');
+                participantContainer.simpleParticipants = [
+                    createParticipant('dogeParticipant2'),
+                    createParticipant('dogeParticipant3')
+                ];
+                return participantContainerRegistry.add(participantContainer);
+            })
+            .then(function () {
+                return participantContainerRegistry.getAll();
+            })
+            .then(function (participantContainers) {
+                participantContainers.length.should.equal(1);
+                validateParticipantContainer(participantContainers[0], 'dogeParticipantContainer');
+                return participantContainerRegistry.get('dogeParticipantContainer');
+            })
+            .then(function (participantContainer) {
+                validateParticipantContainer(participantContainer, 'dogeParticipantContainer');
+            });
+    });
+
     it('should store participants containing participant relationships in a participant registry', () => {
         let participantRegistry;
         let participantContainerRegistry;
