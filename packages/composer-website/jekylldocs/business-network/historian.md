@@ -73,7 +73,7 @@ rule historianAccess{
 
 ## Retrieving historian data
 
-Data from the historian registry can be retrieved using either an API call, or queries.
+Data from the historian registry can be retrieved using either an API call, or queries. All examples that follow make use of the async/await feature and assume that the code is encapsulated in a function with the `async` attribute.
 
 ### Using the client and REST APIs with historian
 
