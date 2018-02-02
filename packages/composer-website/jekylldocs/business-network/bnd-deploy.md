@@ -20,12 +20,12 @@ For example:
 
 To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
 
-## Deploying business networks to {{site.data.conrefs.hlf_full}} v1.0
+## Deploying business networks to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}
 
-In {{site.data.conrefs.hlf_full}} v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install {{site.data.conrefs.hlf_full}} chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.
+In {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}, peers enforce the concepts of administrators and members. Administrators have permission to install {{site.data.conrefs.hlf_full}} chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.
 
 To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
-{{site.data.conrefs.composer_full}} provides a sample {{site.data.conrefs.hlf_full}} v1.0 network. The peer administrator for this network is called `PeerAdmin`, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other {{site.data.conrefs.hlf_full}} v1.0 networks.
+{{site.data.conrefs.composer_full}} provides a sample {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} network. The peer administrator for this network is called `PeerAdmin`, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other {{site.data.conrefs.hlf_full}} networks.
 
 ## Business network administrators
 
@@ -65,7 +65,7 @@ If the business network administrator has an enrollment ID and enrollment secret
 
 ## Deploying business networks using Playground locally
 
-When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.
+When deploying a business network to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} using the Playground locally, you must follow the process above to connect using the peer admin identity.
 
 Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.
 

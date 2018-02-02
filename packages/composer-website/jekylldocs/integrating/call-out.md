@@ -23,7 +23,7 @@ In some cases it is desirable to be able to call REST APIs from transaction proc
 
 The `post(url,data)` function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the `application/json` content encoding.
 
-The `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and {{site.data.conrefs.hlf_full}} v1.0.
+The `post` function is supported in all runtime environments: web (playground), Node.js (embedded) and {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
 
 ## Handling Results
 
@@ -40,25 +40,21 @@ Transaction processor functions may optionally call the `getSerializer().fromJSO
 
 ## Examples
 
-```
+```javascript
 /**
  * Handle a POST transaction, calling Node-RED running on Bluemix
  * @param {org.example.sample.PostTransaction} postTransaction - the transaction to be processed
  * @transaction
  * @return {Promise} a promise that resolves when transaction processing is complete
  */
-function handlePost(postTransaction) {
-    var url = 'https://composer-node-red.mybluemix.net/compute';
+async function handlePost(postTransaction) {
+    let url = 'https://composer-node-red.mybluemix.net/compute';
 
-    return post( url, postTransaction)
-      .then(function (result) {
-        // alert(JSON.stringify(result));
-          postTransaction.asset.value = 'Count is ' + result.body.sum;
-          return getAssetRegistry('org.example.sample.SampleAsset')
-          .then(function (assetRegistry) {
-              return assetRegistry.update(postTransaction.asset);
-          });
-      });
+    let result = await post(url, postTransaction);
+    // alert(JSON.stringify(result));
+    postTransaction.asset.value = 'Count is ' + result.body.sum;
+    let assetRegistry = await getAssetRegistry('org.example.sample.SampleAsset')
+    await assetRegistry.update(postTransaction.asset);
 }
 ```
 
