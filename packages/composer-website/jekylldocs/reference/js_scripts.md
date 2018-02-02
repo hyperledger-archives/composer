@@ -78,39 +78,32 @@ The transaction processor function relating to the `SampleTransaction` transacti
 
 The transaction processor function defines the `SampleTransaction` type as the associated transaction, and defines it as the parameter `tx`. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the `newValue` property in the transaction definition), updates the asset in the registry, and then emits an event.
 
-```
+```javascript
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
-function sampleTransaction(tx) {
+async function sampleTransaction(tx) {
 
     // Save the old value of the asset.
-    var oldValue = tx.asset.value;
+    let oldValue = tx.asset.value;
 
     // Update the asset with the new value.
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
+    let assetRegistry = getAssetRegistry('org.acme.sample.SampleAsset');
 
-            // Update the asset in the asset registry.
-            return assetRegistry.update(tx.asset);
+    // Update the asset in the asset registry.
+    await assetRegistry.update(tx.asset);
 
-        })
-        .then(function () {
-
-            // Emit an event for the modified asset.
-            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
-            event.asset = tx.asset;
-            event.oldValue = oldValue;
-            event.newValue = tx.newValue;
-            emit(event);
-
-        });
-
+    // Emit an event for the modified asset.
+    let event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
+    event.asset = tx.asset;
+    event.oldValue = oldValue;
+    event.newValue = tx.newValue;
+    emit(event);
 }
 ```
 
@@ -118,13 +111,13 @@ function sampleTransaction(tx) {
 
 Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.
 
-```
+```javascript
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
-function sampleTransaction(tx) {
+async function sampleTransaction(tx) {
     // Do something.
     throw new Error('example error');
     // Execution stops at this point; the transaction fails and rolls back.
@@ -163,20 +156,20 @@ transaction SampleTransaction {
 
 Script file:
 
-```
+```javascript
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
-function sampleTransaction(tx) {
+async function sampleTransaction(tx) {
     // The relationships in the transaction are automatically resolved.
     // This means that the asset can be accessed in the transaction instance.
-    var asset = tx.asset;
+    let asset = tx.asset;
     // The relationships are fully or recursively resolved, so you can also
     // access nested relationships. This means that you can also access the
     // owner of the asset.
-    var owner = tx.asset.owner;
+    let owner = tx.asset.owner;
 }
 ```
 
@@ -198,9 +191,27 @@ transaction SampleTransaction {
 }
 ```
 
+Node 8 syntax is now supported which means that you can now use `async/await` syntax instead which is far
+more concise than using promise chains. This is the recommended style.
+
 Script file:
 
+
+```javascript
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */
+async function sampleTransaction(tx) {
+    let assetRegistry = await getAssetRegistry(...);
+    await assetRegistry.update(...);
+}
 ```
+
+however if you so wish you can still use old style promise chains
+
+```javascript
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
@@ -247,26 +258,24 @@ transaction SampleTransaction {
 
 Script file:
 
-```
+```javascript
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
-function sampleTransaction(tx) {
+async function sampleTransaction(tx) {
     // Update the value in the asset.
-    var asset = tx.asset;
+    let asset = tx.asset;
     asset.value = tx.newValue;
     // Get the asset registry that stores the assets. Note that
-    // getAssetRegistry() returns a promise, so we have to return
+    // getAssetRegistry() returns a promise, so we have to await for it.
+    let assetRegistry = await getAssetRegistry('org.acme.sample.SampleAsset');
+
+    // Update the asset in the asset registry. Again, note
+    // that update() returns a promise, so so we have to return
     // the promise so that Composer waits for it to be resolved.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
-            // Update the asset in the asset registry. Again, note
-            // that update() returns a promise, so so we have to return
-            // the promise so that Composer waits for it to be resolved.
-            return assetRegistry.update(asset);
-        })
+    await assetRegistry.update(asset);
 }
 ```
 

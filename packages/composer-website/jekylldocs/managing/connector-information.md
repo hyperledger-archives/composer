@@ -59,7 +59,7 @@ The file contents can be anything that permitted in the `.npmrc` configuration f
 
 You can supply the name of the file as part of the AdminConnection api on the install or deploy methods by specifying the `npmrcFile` property on the `installOptions` or `deployOptions` object. For example to pass the name of the npm configuration options file to be provided on install:
 
-```
+```javascript
 await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
 ```
 
@@ -103,7 +103,7 @@ For more information on writing {{site.data.conrefs.hlf_full}} endorsement polic
 
 To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the `startOptions` or `deployOptions` objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property `endorsementPolicyFile`. To supply the policy as a JSON object, the `endorsementPolicy` object property must be specified.
 
-```
+```javascript
 await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
 ```
 
@@ -123,7 +123,7 @@ composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw 
 
 To specify the issuer property you set it in an object and pass this object as part of the `issueOptions` on `issueIdentity`.
 For example to issue an identity that has issuer authority
-```
+```javascript
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
 ```
 
