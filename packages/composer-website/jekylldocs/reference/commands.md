@@ -121,7 +121,7 @@ Revoke an identity from a participant: [composer identity revoke](./composer.ide
 
 `composer report`
 
-Create a diagnostic report: [composer report](./composer.report)
+Create a diagnostic report: [composer report](./composer.report.html)
 
 ## Transaction execution
 

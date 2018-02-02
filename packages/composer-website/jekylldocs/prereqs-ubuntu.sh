@@ -107,6 +107,8 @@ then
    sudo apt-get install -y python-minimal
 fi
 
+# Install unzip, required to install hyperledger fabric.
+sudo apt-get -y install unzip
 
 # Print installation details for user
 echo ''

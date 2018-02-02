@@ -56,11 +56,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-preview
-        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-preview
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-preview
-        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-preview
-        docker pull hyperledger/fabric-couchdb:$ARCH-1.1.0-preview
+        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-alpha
+        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-alpha
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-alpha
+        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-alpha
+        docker pull hyperledger/fabric-couchdb:$ARCH-0.4.5
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
