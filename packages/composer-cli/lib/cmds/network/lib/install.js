@@ -21,49 +21,35 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 
 const ora = require('ora');
 
-
 /**
- * <p>
- * Composer install command
- * </p>
+ * Network install command
  * @private
  */
 class Install {
-
    /**
     * Command process for install command
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
+        const cardName = argv.card;
+        const installOptions = cmdUtil.parseOptions(argv);
+        const adminConnection = cmdUtil.createAdminConnection();
 
-        let adminConnection;
-        let spinner;
-        let cardName = argv.card;
+        const spinner = ora('Installing business network. This may take a minute...').start();
 
-        return (() => {
-            spinner = ora('Installing business network. This may take a minute...').start();
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(cardName);
-        })()
-        .then((result) => {
-            let archiveFileContents = null;
-            // Read archive file contents
-            archiveFileContents = Install.getArchiveFileContents(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })
-        .then((bnd) => {
-            let installOptions = cmdUtil.parseOptions(argv);
-            return adminConnection.install(bnd, installOptions);
+        return adminConnection.connect(cardName).then(() => {
+            const businessNetworkArchive = Install.getArchiveFileContents(argv.archiveFile);
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        }).then((definition) => {
+            return adminConnection.install(definition, installOptions);
         }).then((result) => {
             spinner.succeed();
             cmdUtil.log();
-
             return result;
         }).catch((error) => {
             spinner.fail();
             cmdUtil.log();
-
             throw error;
         });
     }
@@ -74,13 +60,11 @@ class Install {
       * @return {String} archiveFileContents archive file contents
       */
     static getArchiveFileContents(archiveFile) {
-        let archiveFileContents;
         if (fs.existsSync(archiveFile)) {
-            archiveFileContents = fs.readFileSync(archiveFile);
+            return fs.readFileSync(archiveFile);
         } else {
             throw new Error('Archive file '+archiveFile+' does not exist.');
         }
-        return archiveFileContents;
     }
 }
 

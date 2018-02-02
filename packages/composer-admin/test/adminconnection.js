@@ -258,7 +258,7 @@ describe('AdminConnection', () => {
 
                     });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '1.0.0', '{"start":"json"}', {
 
                     });
                 });
@@ -284,7 +284,7 @@ describe('AdminConnection', () => {
                         }]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '1.0.0', '{"start":"json"}', {
                         networkAdmins : [{
                             userName : 'admin',
                             enrollmentSecret  : 'adminpw'
@@ -313,7 +313,7 @@ describe('AdminConnection', () => {
                         }, {userName : 'admin', certificate : 'cert'}]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '1.0.0', '{"start":"json"}', {
                         networkAdmins : [{
                             userName : 'admin',
                             enrollmentSecret  : 'adminpw'
@@ -338,7 +338,7 @@ describe('AdminConnection', () => {
                         networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
                     });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '1.0.0', '{"start":"json"}', {
                         opt : 1,
                         networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
                     });
@@ -723,7 +723,6 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -759,7 +758,6 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -806,7 +804,6 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879',
                         logLevel : 'DEBUG'
@@ -845,7 +842,6 @@ describe('AdminConnection', () => {
                                 transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                             }
                         ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         timestamp : '1970-01-01T00:00:00.000Z',
                         transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
                     });
@@ -879,7 +875,6 @@ describe('AdminConnection', () => {
                 .then((startTransactionJSON) => {
                     startTransactionJSON.should.deep.equal({
                         '$class' : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        'businessNetworkArchive' : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
                         'bootstrapTransactions' : [
                             {
                                 '$class' : 'org.hyperledger.composer.system.AddParticipant',
@@ -984,34 +979,6 @@ describe('AdminConnection', () => {
                     userName : 'admin'
                 }]
             }).should.eventually.be.rejectedWith('Either a secret or a certificate must be specified for all network administrators');
-        });
-
-        it('should serialize the same business network archive regardless of the current date', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin',
-                    enrollmentSecret  : 'adminpw'
-                }, {userName : 'adminc', certificate : 'certcertcert'}]
-            })
-                .then((startTransactionJSON) => {
-                    const originalBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
-                    let promise = Promise.resolve();
-                    for (let i = 0; i < 5; i++) {
-                        clock.tick(60000);
-                        promise = promise.then(() => {
-                            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                                networkAdmins : [{
-                                    userName : 'admin',
-                                    enrollmentSecret  : 'adminpw'
-                                }, {userName : 'adminc', certificate : 'certcertcert'}]
-                            });
-                        }).then((startTransactionJSON) => {
-                            const thisBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
-                            thisBusinessNetworkArchive.should.equal(originalBusinessNetworkArchive, `Failed to match serialized business network archive, iteration ${i + 1}/5`);
-                        });
-                    }
-                    return promise;
-                });
         });
 
     });

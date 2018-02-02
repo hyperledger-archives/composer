@@ -171,7 +171,6 @@ transaction RevokeIdentity {
 
 // --------------------------------------------------------------------------
 transaction StartBusinessNetwork {
-  o String businessNetworkArchive
   o String logLevel optional
   o Transaction[] bootstrapTransactions optional
 }

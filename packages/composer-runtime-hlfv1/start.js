@@ -16,9 +16,4 @@
 const shim = require('fabric-shim');
 const Composer = require('./lib/composer');
 
-const composer = new Composer();
-
-composer.loadBusinessNetworkDefinition()
-    .then(() => {
-        shim.start(composer);
-    });
+Composer.start().then(shim.start);

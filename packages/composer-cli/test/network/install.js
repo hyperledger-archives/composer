@@ -1,3 +1,5 @@
+//import { BusinessNetworkDefinition } from '../../../composer-admin/index';
+
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +17,9 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const InstallCmd = require('../../lib/cmds/runtime/installCommand.js');
+const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+const fs = require('fs');
+const InstallCmd = require('../../lib/cmds/network/installCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 require('chai').should();
@@ -28,9 +32,12 @@ chai.use(require('chai-as-promised'));
 
 let mockAdminConnection;
 
-describe('composer install runtime CLI unit tests', function () {
+describe('composer network install CLI', function () {
 
     let sandbox;
+
+    const archiveFileName = 'archiveFileName';
+    const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
@@ -48,34 +55,37 @@ describe('composer install runtime CLI unit tests', function () {
         sandbox.restore();
     });
 
-    describe('Install handler() method tests', function () {
+    describe('Install handler()', function () {
 
-        it('should correctly execute when all parms correctly specified.', function () {
+        it('should correctly execute when mandatory parameters correctly specified', function () {
+            sandbox.stub(fs, 'existsSync').withArgs(archiveFileName).returns(true);
+            sandbox.stub(fs, 'readFileSync').withArgs(archiveFileName).returns(businessNetworkDefinition.toArchive());
 
-            let argv = {card:'cardname'
-                       ,connectionProfileName: 'testProfile'};
+            const argv = {
+                card: 'cardname',
+                archiveFile: 'archiveFileName'
+            };
 
-
-            return InstallCmd.handler(argv)
-            .then ((result) => {
+            return InstallCmd.handler(argv).then(result => {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
                 sinon.assert.calledOnce(mockAdminConnection.install);
-                sinon.assert.calledWith(mockAdminConnection.install, argv.businessNetworkName, {});
+                sinon.assert.calledWith(mockAdminConnection.install, sinon.match.instanceOf(BusinessNetworkDefinition), {});
             });
         });
 
-        it('hould correctly execute when all params correctly specified (card base)', function () {
+        it('should error if card archive file does not exist', function () {
+            sandbox.stub(fs, 'existsSync').withArgs(archiveFileName).returns(false);
+            sandbox.stub(fs, 'readFileSync').withArgs(archiveFileName).throws(new Error(archiveFileName));
 
-            let argv = {card:'cardname'};
-            return InstallCmd.handler(argv)
-                        .then ((result) => {
-                            argv.thePromise.should.be.a('promise');
-                            sinon.assert.calledOnce(mockAdminConnection.connect);
-                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                        });
+            const argv = {
+                card: 'cardname',
+                archiveFile: archiveFileName
+            };
+
+            return InstallCmd.handler(argv).should.be.rejectedWith(archiveFileName);
         });
 
         it('error path #1 - creating an adminConnection is rejected.. .', ()=>{

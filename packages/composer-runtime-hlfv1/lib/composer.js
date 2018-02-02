@@ -28,17 +28,17 @@ const LOG = Logger.getLog('Composer');
  * This is the composer chaincode that implements the
  * interface required by the chaincode shim.
  *
- *
  * @class Composer
  */
 class Composer {
 
-    async loadBusinessNetworkDefinition() {
+    static async start() {
         //let busNetDef = await BusinessNetworkDefinition.fromDirectory('.');
         console.log('load business network definition: reading package.json');
         let pkgJSON = JSON.parse(fs.readFileSync('package.json'));
         let archiveFileContents = fs.readFileSync(pkgJSON.name + '.bna');
         await Context.parseBusinessNetworkDefinition(archiveFileContents);
+        return new Composer();
     }
 
     /**

@@ -237,31 +237,30 @@ class AdminConnection {
     }
 
     /**
-     * Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation
-     * for the business network to be started. The connection must be connected for this method to succeed.
-     * You must pass the name of the business network that is defined in your archive that this
-     * runtime will be started with.
+     * Installs a business network as chaincode to Hyperledger Fabric in preparation
+     * for the business network to be started.
+     *
+     * The connection must be connected for this method to succeed.
+     *
      * @example
      * // Install the Hyperledger Composer runtime
      * let adminConnection = new AdminConnection();
      * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * try {
      *    await adminConnection.connect('adminCard@hlfv1')
-     *    await adminConnection.install(businessNetworkDefinition.getName());
-     *     // Business network definition installed
-     * } catch(error){
+     *    await adminConnection.install(businessNetworkDefinition;
+     *    // Business network installed
+     * } catch (error) {
      *     // Add optional error handling here.
      * }
-     * @param {String} businessNetworkName - The name of business network which will be used to start this runtime.
+     * @param {String} businessNetworkDefinition - The business network to be installed
      * @param {Object} installOptions connector specific install options
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * deployed.
-     *
+     * @return {Promise} A promise that will be fufilled when the business network has been installed
      */
-    install (businessNetworkName, installOptions) {
+    install (businessNetworkDefinition, installOptions) {
         return Promise.resolve().then(() => {
             Util.securityCheck(this.securityContext);
-            return this.connection.install(this.securityContext, businessNetworkName, installOptions);
+            return this.connection.install(this.securityContext, businessNetworkDefinition, installOptions);
         });
     }
 
@@ -323,10 +322,6 @@ class AdminConnection {
                 const serializer = businessNetworkDefinition.getSerializer();
                 const startTransaction = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
                 const classDeclaration = startTransaction.getClassDeclaration();
-                //startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
-                // have to put something here for now until we change the transaction as the businessNetworkArchive
-                // is mandatory and it fails validation if is isn't present.
-                startTransaction.businessNetworkArchive = '';
 
                 let hasNetworkAdmins = startOptions && startOptions.networkAdmins && startOptions.networkAdmins.length > 0;
                 let hasBootStrapTransactions = startOptions && startOptions.bootstrapTransactions && startOptions.bootstrapTransactions.length > 0;

@@ -337,15 +337,12 @@ class HLFConnection extends Connection {
         // copy any tgz files and update the package.json
         for (let entry in dependencies) {
             let dep = dependencies[entry];
-            console.log('looking at dep', entry);
             if (dep.endsWith('.tgz')) {
 
                 let actualPath;
                 // look for them relative to the current working directory, if a relative path
                 path.isAbsolute(dep) ? actualPath = dep : actualPath = path.resolve(process.cwd(), dep);
-                console.log('actual path', actualPath, path.basename(actualPath));
                 let toWriteto = path.resolve(tempDir, path.basename(actualPath));
-                console.log(toWriteto);
 
                 // copy the tgz files to the temp directory
                 let fileToWrite = fs.readFileSync(actualPath);
@@ -478,6 +475,7 @@ class HLFConnection extends Connection {
      *
      * @param {any} securityContext the security context
      * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {String} businessNetworkVersion The semantic version of the business network
      * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific installation options
      * @returns {Promise} a promise for instantiation completion
@@ -510,7 +508,6 @@ class HLFConnection extends Connection {
                     fcn: 'init',
                     args: [startTransaction]
                 };
-                console.log(request);
 
                 if (startOptions) {
                     this._addEndorsementPolicy(startOptions, request);
