@@ -42,8 +42,8 @@ participant PrivilegedPerson extends Person {
    meets the requirements by using the `getCurrentParticipant` function:
 
    ```javascript
-   function onPrivilegedTransaction(privilegedTransaction) {
-       var currentParticipant = getCurrentParticipant();
+   async function onPrivilegedTransaction(privilegedTransaction) {
+       let currentParticipant = getCurrentParticipant();
        if (currentParticipant.getFullyQualifiedType() !== 'net.biz.digitalPropertyNetwork.PrivilegedPerson') {
            throw new Error('Transaction can only be submitted by a privileged person');
        }
@@ -55,8 +55,8 @@ participant PrivilegedPerson extends Person {
    participant by using the `getCurrentParticipant` function:
 
    ```javascript
-   function onPrivilegedTransaction(privilegedTransaction) {
-       var currentParticipant = getCurrentParticipant();
+   async function onPrivilegedTransaction(privilegedTransaction) {
+       let currentParticipant = getCurrentParticipant();
        if (currentParticipant.getFullyQualifiedIdentifier() !== 'net.biz.digitalPropertyNetwork.Person#PERSON_1') {
            throw new Error('Transaction can only be submitted by person 1');
        }
@@ -69,10 +69,10 @@ participant PrivilegedPerson extends Person {
    participant has the authority to access or modify an asset:
 
    ```javascript
-   function onPrivilegedTransaction(privilegedTransaction) {
+   async function onPrivilegedTransaction(privilegedTransaction) {
        // Get the owner of the asset in the transaction.
-       var assetOwner = privilegedTransaction.asset.owner;
-       var currentParticipant = getCurrentParticipant();
+       let assetOwner = privilegedTransaction.asset.owner;
+       let currentParticipant = getCurrentParticipant();
        if (currentParticipant.getFullyQualifiedIdentifier() !== asset.owner.getFullyQualifiedIdentifier()) {
            throw new Error('Transaction can only be submitted by the owner of the asset');
        }

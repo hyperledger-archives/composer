@@ -23,9 +23,6 @@ if [ "${DOCS}" != "" ]; then
     # Change into the docs directory.
     cd "${DIR}/packages/composer-website"
 
-    # Build the installers.
-    ./build-installers.sh
-
     # Build the documentation.
     npm run doc
 
