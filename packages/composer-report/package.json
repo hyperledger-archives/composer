@@ -1,15 +1,9 @@
 {
-  "name": "composer-cli",
+  "name": "composer-report",
   "version": "0.17.3",
-  "description": "Hyperledger Composer command line interfaces (CLIs)",
-  "engines": {
-    "node": ">=8",
-    "npm": ">=5"
-  },
-  "bin": {
-    "composer": "cli.js"
-  },
-  "main": "index.js",
+  "description": "Hyperledger Composer diagnostics",
+  "bin": "bin/cmd.js",
+  "main": "lib/report.js",
   "scripts": {
     "pretest": "npm run lint",
     "lint": "eslint .",
@@ -41,30 +35,14 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "chalk": "1.1.3",
-    "cli-table": "0.3.1",
-    "composer-admin": "0.17.3",
-    "composer-client": "0.17.3",
-    "composer-common": "0.17.3",
-    "composer-report": "0.17.3",
-    "homedir": "0.6.0",
-    "js-yaml": "3.10.0",
-    "mkdirp": "0.5.1",
     "moment": "2.19.3",
     "node-report": "2.2.1",
-    "npm-paths": "0.1.3",
-    "nunjucks": "3.0.0",
-    "ora": "1.2.0",
-    "prettyjson": "1.2.1",
-    "prompt": "1.0.0",
-    "sanitize-filename": "1.6.1",
-    "tar": "4.3.0",
-    "yargs": "10.0.3"
+    "tar": "4.3.0"
   },
   "license-check-config": {
     "src": [
       "**/*.js",
-      "!./cli.js",
+      "!./bin/cmd.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
       "!./out/**/*"
@@ -78,11 +56,7 @@
     "exclude": [
       "coverage/**",
       "out/**",
-      "scripts/**",
-      "systest/**",
-      "test/**",
-      "lib/shellcmds/**",
-      "shell.js"
+      "test/**"
     ],
     "reporter": [
       "text-summary",

@@ -13,14 +13,9 @@
  */
 
 'use strict';
-const fs = require('fs');
-const os = require('os');
-const { sep } = require('path');
 const cmdUtil = require('../../utils/cmdutils');
+const report = require('composer-report');
 const chalk = require('chalk');
-const moment = require('moment');
-const nodereport = require('node-report');
-const tar = require('tar');
 
 /**
  * Composer "capture" command
@@ -33,61 +28,19 @@ class Report {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
-        return this.report(args.file);
+        return Promise.resolve(this.createReport(args.file));
     }
 
     /**
      * Get the current environment data
-     * @return {Promise} resolved/rejected promise when the command is complete
      */
-    static report() {
-        cmdUtil.log(chalk.blue.bold('Creating Composer report\n'));
-        let tmpDirectory = this._setupReportDir();
-        this._createNodeReport(tmpDirectory);
-        return this._archiveReportDir(tmpDirectory);
-    }
-
-    /**
-     * Sets up the temp directory for the report
-     * @return {String} the Path to the temporary directory
-     */
-    static _setupReportDir() {
-        const tmpDir = os.tmpdir();
-        return fs.mkdtempSync(`${tmpDir}${sep}`);
-    }
-
-    /**
-     * Trigger node-report to write report in the temp directory
-     * @param {String} tmpDirectory the temporary directory for collecting report output
-     */
-    static _createNodeReport(tmpDirectory) {
+    static createReport() {
+        cmdUtil.log(chalk.bold.blue('Creating Composer report'));
+        let tmpDirectory = report.setupReportDir();
         cmdUtil.log(chalk.blue('Triggering node report...'));
-        nodereport.setDirectory(tmpDirectory);
-        nodereport.triggerReport();
-    }
-
-   /**
-     * Creates an archive of the temp directory for the report
-     * @param {String} tmpDirectory the temporary directory for collecting report output
-     * @param {String} outputFilename the name of the file that was optionally passed in on the command line
-     * @return {Promise} resolved/rejected promise when the archive has been created
-     */
-    static _archiveReportDir(tmpDirectory) {
-        let timestamp = moment().format('YYYYMMDD[T]HHmmss');
-        let prefix = 'composer-report-' + timestamp;
-        let filename = prefix + '.tgz';
-        return tar.c(
-            {
-                cwd: tmpDirectory+'/',
-                prefix: prefix,
-                gzip: true,
-                file: filename
-            },
-            ['.']
-        ).then(() => {
-            cmdUtil.log(chalk.blue.bold('\nSuccessfully created Composer report file to '));
-            cmdUtil.log(chalk.blue('\tOutput file: ')+filename);
-        });
+        report.createNodeReport(tmpDirectory);
+        let outputFile = report.archiveReport(tmpDirectory);
+        cmdUtil.log(chalk.bold.blue('Created archive file: '+outputFile));
     }
 }
 module.exports = Report;

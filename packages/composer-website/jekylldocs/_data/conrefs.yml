@@ -8,5 +8,5 @@ composer_full:
 hlf_full:
   Hyperledger Fabric
 
-hlf_current_version:
+hlf_latest:
   v1.1
