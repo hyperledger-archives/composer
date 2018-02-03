@@ -202,13 +202,13 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
             sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
-            ccp.hsm.library = '{PKCS.LIBRARY}';
-            ccp.hsm.slot = '{PKCS.SLOT}';
-            ccp.hsm.pin = '{PKCS.PIN}';
+            ccp.hsm.library = '{PKCS_LIBRARY}';
+            ccp.hsm.slot = '{PKCS_SLOT}';
+            ccp.hsm.pin = '{PKCS_PIN}';
 
-            process.env['PKCS.LIBRARY'] = '/usr/local/lib/another.so';
-            process.env['PKCS.SLOT'] = '0';
-            process.env['PKCS.PIN'] = 98765432;
+            process.env.PKCS_LIBRARY = '/usr/local/lib/another.so';
+            process.env.PKCS_SLOT = '0';
+            process.env.PKCS_PIN = 98765432;
 
             await HLFConnectionManager.setupHSM(mockClient, 'apath', ccp);
 
@@ -228,7 +228,10 @@ describe('HLFConnectionManager', () => {
             sinon.assert.calledOnce(mockClient.setCryptoSuite);
             sinon.assert.calledWith(mockClient.setCryptoSuite, mockCryptoSuite);
             HLFConnectionManager.clearHSMCache();
-            delete process.env['PKCS.LIBRARY'];
+            delete process.env.PKCS_LIBRARY;
+            delete process.env.PKCS_SLOT;
+            delete process.env.PKCS_PIN;
+
         });
 
         it('should handle errors creating a new Cyptosuite', () => {
