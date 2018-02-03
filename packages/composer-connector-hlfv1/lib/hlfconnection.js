@@ -1047,17 +1047,18 @@ class HLFConnection extends Connection {
     /**
      * Upgrade runtime to a newer version
      * @param {any} securityContext security context
-     * @param {string} businessNetworkIdentifier The identifier of the business network to upgrade
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} upgradeOptions connector specific options
      * @return {Promise} A promise that is resolved when the runtime has been upgraded,
      * or rejected with an error.
      * @memberof HLFConnection
      */
-    upgrade(securityContext) {
+    upgrade(securityContext, businessNetworkName, upgradeOptions) {
         const method = 'upgrade';
-        LOG.entry(method, securityContext);
+        LOG.entry(method, securityContext, businessNetworkName, upgradeOptions);
 
-        if (!this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('No business network has been specified for this connection'));
+        if (!businessNetworkName) {
+            return Promise.reject(new Error('No business network has been specified for upgrade'));
         }
 
         let txId;
@@ -1077,7 +1078,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: this.businessNetworkIdentifier,
+                    chaincodeId: businessNetworkName,
                     txId: txId,
                     fcn: 'upgrade'
                 };

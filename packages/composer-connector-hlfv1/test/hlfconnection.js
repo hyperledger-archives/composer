@@ -1859,10 +1859,10 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: validResponses});
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
+            delete connection.businessNetworkIdentifier;
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            delete connection.businessNetworkIdentifier;
             return connection.upgrade(mockSecurityContext, null)
                 .should.be.rejectedWith(/No business network/);
         });
@@ -1886,14 +1886,14 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
                     sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
+                        chaincodeId: 'digitalproperty-network',
                         txId: mockTransactionID,
                         fcn: 'upgrade'
                     });
@@ -1904,7 +1904,7 @@ describe('HLFConnection', () => {
 
         it('should throw if runtime version check fails', () => {
             sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
@@ -1916,7 +1916,7 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -1936,7 +1936,7 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Failed to send/);
         });
 
@@ -1958,7 +1958,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
