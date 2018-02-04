@@ -717,7 +717,7 @@ class AdminConnection {
      * The connection must be connected specifying the business network identifier as part of the
      * connection for this method to succeed.
      * @param {string} businessNetworkName The name of the business network
-     * @param {object} upgradeOptions connector specific options
+     * @param {object} [upgradeOptions] connector specific options
      * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
      * or rejected otherwise.
      * @example
