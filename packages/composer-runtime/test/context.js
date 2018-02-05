@@ -1341,4 +1341,12 @@ describe('Context', () => {
 
     });
 
+    describe('#getNativeAPI', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getNativeAPI();
+            }).should.throw(/abstract function called/);
+        });
+    });
 });
