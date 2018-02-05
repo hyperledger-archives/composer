@@ -53,6 +53,7 @@ describe('Api', () => {
     let mockDataService;
     let mockAccessController;
     let mockCompiledQueryBundle;
+    let mockNativeAPI;
     let api;
 
     beforeEach(() => {
@@ -70,6 +71,11 @@ describe('Api', () => {
             o String assetId
             o String value
         }`);
+
+        mockNativeAPI = {
+            getTransactionID : sinon.stub().returns('1234')
+        };
+
         factory = new realFactory(modelManager);
         mockContext.getFactory.returns(factory);
         serializer = new realSerializer(factory, modelManager);
@@ -89,6 +95,7 @@ describe('Api', () => {
         mockContext.getAccessController.returns(mockAccessController);
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
         mockContext.getCompiledQueryBundle.returns(mockCompiledQueryBundle);
+        mockContext.getNativeAPI.returns(mockNativeAPI);
         api = new Api(mockContext);
     });
 
@@ -320,6 +327,14 @@ describe('Api', () => {
                 });
         });
 
+    });
+
+    describe('#getNativeAPI', () => {
+        it('should get the native api', () => {
+            const nativeAPI = api.getNativeAPI();
+            const result = nativeAPI.getTransactionID();
+            result.should.equal('1234');
+        });
     });
 
 });

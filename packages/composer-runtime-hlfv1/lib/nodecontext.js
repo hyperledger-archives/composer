@@ -100,6 +100,17 @@ class NodeContext extends Context {
         LOG.exit(method, this.httpService);
         return this.httpService;
     }
+
+    /**
+     * Get the native fabric api
+     * @returns {FabricChainCodeStub} The chain code stub to access the fabric api
+     */
+    getNativeAPI() {
+        const method = 'getNativeAPI';
+        LOG.entry(method);
+        LOG.exit(method, this.stub);
+        return this.stub;
+    }
 }
 
 module.exports = NodeContext;

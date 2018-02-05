@@ -150,3 +150,21 @@ transaction TransactionUsingUtilityFunctions  {
 
     o String stringValue
 }
+
+transaction SimpleNativePutStateTransaction {
+    o String assetId
+    o String stringValue
+}
+
+transaction SimpleNativeHistoryTransaction {
+    o String assetId
+    o Boolean nativeSupport
+}
+
+transaction AdvancedInvokeChainCodeTransaction {
+    o String assetId
+    o String channel
+    o String chainCodeName
+    o String expectedValue
+}
+
