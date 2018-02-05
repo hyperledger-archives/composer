@@ -77,6 +77,13 @@ class WebContext extends Context {
         return this.httpService;
     }
 
+    /**
+     * Get the native api
+     */
+    getNativeAPI() {
+        throw new Error('Native API not available in web runtime');
+    }
+
 }
 
 module.exports = WebContext;
