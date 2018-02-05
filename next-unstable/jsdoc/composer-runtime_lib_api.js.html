@@ -136,7 +136,8 @@ class Api {
             'post',
             'emit',
             'buildQuery',
-            'query'
+            'query',
+            'getNativeAPI'
         ];
     }
 
@@ -434,10 +435,31 @@ class Api {
                 });
         };
 
+        /**
+         * Get the native api for a runtime
+         *
+         * This functionality is blockchain specific
+         * and will throw an error if used with a runtime that doesn't support it
+         *
+         * @example
+         * // Get the native api
+         * getNativeAPI().getChannelID();
+         *
+         * @method module:composer-runtime#getNativeAPI
+         * @public
+         * @returns {NativeAPI} the native api for a runtime
+         */
+        this.getNativeAPI = function () {
+            const method = 'getNativeAPI';
+            LOG.entry(method);
+            const nativeAPI = context.getNativeAPI();
+            LOG.exit(method, nativeAPI);
+            return nativeAPI;
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }
-
 }
 
 module.exports = Api;
