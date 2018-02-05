@@ -1080,6 +1080,17 @@ describe('AdminConnection', () => {
                     );
                 });
             });
+
+            it('should not add card to card store if importIdentity fails', function() {
+                const cardName = 'conga';
+                const certificate = 'CERTIFICATE_DATA';
+                const privateKey = 'PRIVATE_KEY_DATA';
+                userCard.setCredentials({certificate : certificate, privateKey : privateKey});
+                mockConnectionManager.importIdentity.rejects(new Error('importIdentity'));
+                return adminConnection.importCard(cardName, userCard).should.be.rejected.then(() => {
+                    return cardStore.has(cardName).should.become(false);
+                });
+            });
         });
 
         describe('#getAllCards', function () {
