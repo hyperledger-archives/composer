@@ -237,8 +237,15 @@ function sampleTransaction(tx) {
 
 ## Using APIs in transaction processor functions
 
-The {{site.data.conrefs.composer_full}} APIs can be called within transaction processor functions, in the code example below, the `getAssetRegistry` call returns a promise which is resolved before the transaction is complete.
+The {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} APIs can be called within transaction processor functions.
 
+For more information on the {{site.data.conrefs.hlf_full}} API, see the [{{site.data.conrefs.hlf_full}} API documentation](https://fabric-shim.github.io/ChaincodeStub.html).
+
+### Calling the {{site.data.conrefs.composer_full}} APIs in transaction processor functions
+
+The {{site.data.conrefs.composer_full}} API can be called simply by calling API functions with the appropriate arguments in the transaction processor function.
+
+In the code example below, the `getAssetRegistry` call returns a promise which is resolved before the transaction is complete.
 
 Model file:
 
@@ -276,6 +283,41 @@ async function sampleTransaction(tx) {
     // that update() returns a promise, so so we have to return
     // the promise so that Composer waits for it to be resolved.
     await assetRegistry.update(asset);
+}
+```
+
+### Calling {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} APIs in transaction processor functions
+
+To call the {{site.data.conrefs.hlf_full}} API in a transaction processor function, the function `getNativeAPI` must be called, followed by a function from the {{site.data.conrefs.hlf_full}} API.
+
+In the example below, the **get description from caroline**
+
+```javascript
+async function simpleNativeHistoryTransaction (transaction) {    
+   const id = transaction.assetId;
+    const nativeSupport = transaction.nativeSupport;
+
+        const nativeKey = getNativeAPI().createCompositeKey('Asset:systest.transactions.SimpleStringAsset', [id]);
+        const iterator = await getNativeAPI().getHistoryForKey(nativeKey);
+        let results = [];
+        let res = {done : false};
+        while (!res.done) {
+            res = await iterator.next();
+
+            if (res && res.value && res.value.value) {
+                let val = res.value.value.toString('utf8');
+                if (val.length > 0) {
+                    results.push(JSON.parse(val));
+                }
+            }
+            if (res && res.done) {
+                try {
+                    iterator.close();
+                }
+                catch (err) {
+                }
+            }
+        }
 }
 ```
 
