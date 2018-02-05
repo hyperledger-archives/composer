@@ -1859,17 +1859,22 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: validResponses});
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
+            delete connection.businessNetworkIdentifier;
         });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
-            delete connection.businessNetworkIdentifier;
             return connection.upgrade(mockSecurityContext, null)
                 .should.be.rejectedWith(/No business network/);
         });
 
         it('should upgrade the business network', () => {
             sandbox.stub(global, 'setTimeout');
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the upgrade proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1886,14 +1891,14 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
                     sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
+                        chaincodeId: 'digitalproperty-network',
                         txId: mockTransactionID,
                         fcn: 'upgrade'
                     });
@@ -1902,26 +1907,49 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should throw if runtime version check fails', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
-            return connection.upgrade(mockSecurityContext)
+        it('should throw if no chaincode instantiated', () => {
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            sandbox.stub(semver, 'satisfies').returns(false);
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
+                .should.be.rejectedWith(/not been started/);
+        });
+
+
+        it('should throw if semver version check fails', () => {
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(false);
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
         it('should throw if upgrade response fails to validate', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             const errorResp = new Error('such error');
             const upgradeResponses = [ errorResp ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/such error/);
         });
 
         it('should throw an error if the orderer responds with an error', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1936,12 +1964,17 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1958,7 +1991,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
