@@ -392,6 +392,32 @@ class HLFConnection extends Connection {
     }
 
     /**
+     * Add endorsement policy if specified to a start or upgrade request.
+     *
+     * @param {object} options the start or upgrade options that may contain endorsement policy information
+     * @param {object} request the request to modify.
+     */
+    _addEndorsementPolicy(options, request) {
+        const method = '_addEndorsementPolicy';
+        LOG.entry(method, options, request);
+        // endorsementPolicy overrides endorsementPolicyFile
+        try {
+            if (options.endorsementPolicy) {
+                request['endorsement-policy'] =
+                    (typeof options.endorsementPolicy === 'string') ? JSON.parse(options.endorsementPolicy) : options.endorsementPolicy;
+            } else if (options.endorsementPolicyFile) {
+                // we don't check for existence so that the error handler will report the file not found
+                request['endorsement-policy'] = JSON.parse(fs.readFileSync(options.endorsementPolicyFile));
+            }
+            LOG.exit(method, request);
+        } catch (error) {
+            const newError = new Error('Error trying parse endorsement policy. ' + error);
+            LOG.error(method, newError);
+            throw newError;
+        }
+    }
+
+    /**
      * Instantiate the chaincode.
      *
      * @param {any} securityContext the security context
@@ -430,20 +456,7 @@ class HLFConnection extends Connection {
                 };
 
                 if (startOptions) {
-                    // endorsementPolicy overrides endorsementPolicyFile
-                    try {
-                        if (startOptions.endorsementPolicy) {
-                            request['endorsement-policy'] =
-                                (typeof startOptions.endorsementPolicy === 'string') ? JSON.parse(startOptions.endorsementPolicy) : startOptions.endorsementPolicy;
-                        } else if (startOptions.endorsementPolicyFile) {
-                            // we don't check for existence so that the error handler will report the file not found
-                            request['endorsement-policy'] = JSON.parse(fs.readFileSync(startOptions.endorsementPolicyFile));
-                        }
-                    } catch (error) {
-                        const newError = new Error('Error trying parse endorsement policy. ' + error);
-                        LOG.error(method, newError);
-                        throw newError;
-                    }
+                    this._addEndorsementPolicy(startOptions, request);
                 }
                 LOG.debug(method, 'sending instantiate proposal', request);
                 return this.channel.sendInstantiateProposal(request);
@@ -1043,27 +1056,39 @@ class HLFConnection extends Connection {
     /**
      * Upgrade runtime to a newer version
      * @param {any} securityContext security context
-     * @param {string} businessNetworkIdentifier The identifier of the business network to upgrade
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} upgradeOptions connector specific options
      * @return {Promise} A promise that is resolved when the runtime has been upgraded,
      * or rejected with an error.
      * @memberof HLFConnection
      */
-    upgrade(securityContext) {
+    upgrade(securityContext, businessNetworkName, upgradeOptions) {
         const method = 'upgrade';
-        LOG.entry(method, securityContext);
+        LOG.entry(method, securityContext, businessNetworkName, upgradeOptions);
 
-        if (!this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('No business network has been specified for this connection'));
+        if (!businessNetworkName) {
+            return Promise.reject(new Error('No business network has been specified for upgrade'));
         }
+        this.businessNetworkIdentifier = businessNetworkName;
 
         let txId;
         let eventHandler;
-        // check runtime versions to ensure only the micro version has changed, not minor or major.
-        return this._checkRuntimeVersions(securityContext)
+
+        return this.channel.queryInstantiatedChaincodes()
             .then((results) => {
-                if (!results.isCompatible) {
-                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${results.response.version}) has changed major or minor version and cannot be upgraded.`);
+                let result = results.chaincodes.filter((chaincode) => {
+                    return chaincode.path === 'composer' && chaincode.name === businessNetworkName;
+                });
+                if (result.length === 0) {
+                    throw new Error(`${businessNetworkName} has not been started so cannot be upgraded`);
                 }
+                const runtimeVersion = result[0].version;
+                // Check our new version should be greater than or equal but only a micro version change.
+                const range =  `^${runtimeVersion}`;
+                if (!semver.satisfies(connectorPackageJSON.version, range)) {
+                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${runtimeVersion}) has changed major or minor version and cannot be upgraded.`);
+                }
+
                 return this._initializeChannel();
             })
             .then(() => {
@@ -1073,11 +1098,14 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: runtimeModulePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: this.businessNetworkIdentifier,
+                    chaincodeId: businessNetworkName,
                     txId: txId,
                     fcn: 'upgrade'
                 };
 
+                if (upgradeOptions) {
+                    this._addEndorsementPolicy(upgradeOptions, request);
+                }
                 return this.channel.sendUpgradeProposal(request);
             })
             .then((results) => {
