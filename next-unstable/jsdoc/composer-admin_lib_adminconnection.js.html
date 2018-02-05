@@ -177,15 +177,15 @@ class AdminConnection {
                 }
             })
             .then(() => {
-                return this.cardStore.put(name, card);
-            })
-            .then(() => {
                 // if we have a certificate and privateKey we should ask the connection manager to import
                 let certificate = card.getCredentials().certificate;
                 let privateKey = card.getCredentials().privateKey;
                 if (certificate &amp;&amp; privateKey){
                     return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
                 }
+            })
+            .then(() => {
+                return this.cardStore.put(name, card);
             })
             .then(() => {
                 return updated;
