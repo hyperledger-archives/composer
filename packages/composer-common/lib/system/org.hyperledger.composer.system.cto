@@ -185,7 +185,7 @@ transaction UpdateBusinessNetwork {
 }
 
 /**
- * Sets the log level fo the Business Network runtime to that specified
+ * Sets the log level of the Business Network runtime to that specified
  * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR 
  */
 transaction SetLogLevel {
