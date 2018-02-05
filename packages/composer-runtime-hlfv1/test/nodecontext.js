@@ -111,4 +111,9 @@ XVMHPa0iyC497vdNURA=\
         });
     });
 
+    describe('#getNativeAPI', () => {
+        it('should return the native api', () => {
+            context.getNativeAPI().should.equal(mockStub);
+        });
+    });
 });

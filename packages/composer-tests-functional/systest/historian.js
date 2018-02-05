@@ -120,7 +120,7 @@ let deployCommon =  ()=> {
     const scriptFiles = [
        { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
     ];
-    let businessNetworkDefinition = new BusinessNetworkDefinition('common-network@0.0.1', 'The network for the access controls system tests');
+    let businessNetworkDefinition = new BusinessNetworkDefinition('common-historian-network@0.0.1', 'The network for the access controls system tests');
     modelFiles.forEach((modelFile) => {
         businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
     });
@@ -579,21 +579,21 @@ describe('Historian', function() {
                     return client.issueIdentity(alice, aliceIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     aliceClient = result;
                     return client.issueIdentity(bob, bobIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     bobClient = result;
                     return client.issueIdentity(charlie, charlieIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     charlieClient = result;
@@ -776,7 +776,4 @@ describe('Historian', function() {
                 client = result;
             });
     });
-
-
-
 });

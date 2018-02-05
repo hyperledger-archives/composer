@@ -1072,6 +1072,15 @@ class Context {
         }, Promise.resolve());
     }
 
+    /**
+     * Get the native api
+     * @abstract
+     * @return {NativeAPI} the native api for a particular runtime
+     */
+    getNativeAPI() {
+        throw new Error('abstract function called');
+    }
+
 }
 
 module.exports = Context;

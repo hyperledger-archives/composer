@@ -101,6 +101,15 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel fetch config -o orderer.example.com:7050 -c composerchannel composerchannel.block --tls --cafile /etc/hyperledger/orderer/tls/ca.crt
             # Join peer0 from org2 to the channel.
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel join -b composerchannel.block --tls true --cafile /etc/hyperledger/orderer/tls/ca.crt
+
+            # Create the other channel
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c othercomposerchannel -f /etc/hyperledger/configtx/othercomposer-channel.tx --tls true --cafile /etc/hyperledger/orderer/tls/ca.crt
+            # Join peer0 to the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b othercomposerchannel.block --tls true --cafile /etc/hyperledger/orderer/tls/ca.crt
+            # Fetch the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel fetch config -o orderer.example.com:7050 -c othercomposerchannel othercomposerchannel.block --tls --cafile /etc/hyperledger/orderer/tls/ca.crt
+            # Join peer0 from org2 to the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel join -b othercomposerchannel.block --tls true --cafile /etc/hyperledger/orderer/tls/ca.crt
         else
             # Create the channel
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c composerchannel -f /etc/hyperledger/configtx/composer-channel.tx
@@ -110,6 +119,15 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel fetch config -o orderer.example.com:7050 -c composerchannel composerchannel.block
             # Join peer0 from org2 to the channel.
             docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel join -b composerchannel.block
+
+            # Create the other channel
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c othercomposerchannel -f /etc/hyperledger/configtx/othercomposer-channel.tx
+            # Join peer0 from org1 to the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b othercomposerchannel.block
+            # Fetch the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel fetch config -o orderer.example.com:7050 -c othercomposerchannel othercomposerchannel.block
+            # Join peer0 from org2 to the channel.
+            docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org2.example.com/msp" peer0.org2.example.com peer channel join -b othercomposerchannel.block
         fi
     fi
 
