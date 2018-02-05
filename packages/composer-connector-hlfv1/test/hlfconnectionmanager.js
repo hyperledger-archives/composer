@@ -121,6 +121,45 @@ describe('HLFConnectionManager', () => {
 
     });
 
+    describe('#getHSMCryptoSuite', () => {
+        let ccp;
+        beforeEach(() => {
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+        });
+
+        it('should throw an error if the environment variables are not defined', () => {
+            ccp.hsm.library = '{PKCS_LIBRARY}';
+            ccp.hsm.slot = '{PKCS_SLOT}';
+            ccp.hsm.pin = '{PKCS_PIN}';
+
+            process.env.PKCS_LIBRARY = '/usr/local/lib/another.so';
+            process.env.PKCS_SLOT = '0';
+            process.env.PKCS_PIN = 98765432;
+
+            delete process.env.PKCS_PIN;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM pin property/);
+
+            delete process.env.PKCS_SLOT;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM slot property/);
+
+            delete process.env.PKCS_LIBRARY;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM library property/);
+        });
+
+    });
+
     describe('#setupHSM', () => {
 
         let ccp;
@@ -143,7 +182,7 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
 
-            await HLFConnectionManager.setupHSM(mockClient, 'apath', ccp);
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
 
             sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
             sinon.assert.calledWith(Client.newDefaultKeyValueStore, {path: 'apath'});
@@ -173,7 +212,7 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
 
-            await HLFConnectionManager.setupHSM(mockClient, 'apath', ccp);
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
             let mockClient2 = sinon.createStubInstance(Client);
             mockClient2._network_config = {
                 '_network_config': {
@@ -182,7 +221,7 @@ describe('HLFConnectionManager', () => {
                     }
                 }
             };
-            await HLFConnectionManager.setupHSM(mockClient2, 'apath', ccp);
+            await HLFConnectionManager.setupHSM(mockClient2, ccp, 'apath');
 
             sinon.assert.calledTwice(Client.newDefaultKeyValueStore);
             sinon.assert.calledOnce(mockClient2.setStateStore);
@@ -210,7 +249,7 @@ describe('HLFConnectionManager', () => {
             process.env.PKCS_SLOT = '0';
             process.env.PKCS_PIN = 98765432;
 
-            await HLFConnectionManager.setupHSM(mockClient, 'apath', ccp);
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
 
             sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
             sinon.assert.calledWith(Client.newDefaultKeyValueStore, {path: 'apath'});
@@ -231,7 +270,6 @@ describe('HLFConnectionManager', () => {
             delete process.env.PKCS_LIBRARY;
             delete process.env.PKCS_SLOT;
             delete process.env.PKCS_PIN;
-
         });
 
         it('should handle errors creating a new Cyptosuite', () => {
@@ -243,7 +281,7 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
             sandbox.stub(Client, 'newCryptoSuite').throws(new Error('bad request'));
 
-            HLFConnectionManager.setupHSM(mockClient, 'apath', ccp).should.be.rejectedWith(/bad request/);
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/bad request/);
 
         });
 
@@ -255,7 +293,7 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newCryptoKeyStore').throws(new Error('further bad request'));
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
 
-            HLFConnectionManager.setupHSM(mockClient, 'apath', ccp).should.be.rejectedWith(/further bad request/);
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/further bad request/);
 
         });
 
@@ -267,7 +305,7 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
 
-            HLFConnectionManager.setupHSM(mockClient, 'apath', ccp).should.be.rejectedWith(/more bad request/);
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/more bad request/);
 
         });
 
@@ -1223,7 +1261,7 @@ describe('HLFConnectionManager', () => {
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.setupHSM);
-                    sinon.assert.calledWith(HLFConnectionManager.setupHSM, mockClient, sinon.match(/CONGA_CARD/), connectOptions);
+                    sinon.assert.calledWith(HLFConnectionManager.setupHSM, mockClient, connectOptions, sinon.match(/CONGA_CARD/));
                 });
         });
 

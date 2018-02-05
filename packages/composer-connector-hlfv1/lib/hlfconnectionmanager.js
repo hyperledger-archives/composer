@@ -142,8 +142,19 @@ class HLFConnectionManager extends ConnectionManager {
         const hsmConfig = ccp.hsm;
 
         let library = HLFConnectionManager.getValueOrEnv(hsmConfig.library);
+        if (!library) {
+            throw new Error('no value provided for HSM library property');
+        }
+
         let slot = HLFConnectionManager.getValueOrEnv(hsmConfig.slot);
+        if (slot === null || slot === undefined) {
+            throw new Error('no value provided for HSM slot property');
+        }
+
         let pin = HLFConnectionManager.getValueOrEnv(hsmConfig.pin);
+        if (!pin) {
+            throw new Error('no value provided for HSM pin property');
+        }
 
         //check the cache for an HSM cryptosuite
         let key = '' + slot + '-' + pin;
@@ -166,12 +177,12 @@ class HLFConnectionManager extends ConnectionManager {
      * set up a cryptosuite and state store using HSM.
      * note there is no support for wallets for the state store
      * @param {Client} client  the fabric client
-     * @param {string} keyValStorePath the path for the state store
      * @param {object} ccp the profile with HSM specific details.
+     * @param {string} keyValStorePath the path for the state store
      */
-    static async setupHSM(client, keyValStorePath, ccp) {
+    static async setupHSM(client, ccp, keyValStorePath) {
         const method = 'setupHSM';
-        LOG.entry(method, client, keyValStorePath, ccp);
+        LOG.entry(method, client, ccp, keyValStorePath);
         try {
             let store = await Client.newDefaultKeyValueStore({path: keyValStorePath});
             client.setStateStore(store);
@@ -400,7 +411,7 @@ class HLFConnectionManager extends ConnectionManager {
         // Note that with HSM support, using wallets for the state store is NOT supported, we will
         // always be using a file system for this.
         if (HLFConnectionManager.useHSM(profileData)) {
-            return HLFConnectionManager.setupHSM(client, HLFConnectionManager.getStoreLocation(profileData), profileData);
+            return HLFConnectionManager.setupHSM(client, profileData, HLFConnectionManager.getStoreLocation(profileData));
         }
 
         if (wallet) {
