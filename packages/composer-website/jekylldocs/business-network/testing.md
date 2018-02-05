@@ -45,4 +45,4 @@ https://github.com/hyperledger/composer-sample-networks/blob/master/packages/bon
 * [**Mocha**](https://mochajs.org)
 * [**Chai**](http://chaijs.com)
 * [**Sinon**](http://sinonjs.org)
-* [**Istambul**](https://istanbul.js.org)
+* [**Istanbul**](https://istanbul.js.org)
