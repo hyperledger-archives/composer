@@ -43,9 +43,9 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             ],
             "peers": {
                 "peer0.org1.example.com": {
-                    "endorsingPeer": true
-                    "chaincodeQuery": true
-                    "ledgerQuery": true
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
                     "eventSource": true
                 }
             }
