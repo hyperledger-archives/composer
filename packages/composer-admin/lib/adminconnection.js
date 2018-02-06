@@ -716,14 +716,16 @@ class AdminConnection {
      * Upgrades an existing business network's composer runtime to a later level.
      * The connection must be connected specifying the business network identifier as part of the
      * connection for this method to succeed.
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} [upgradeOptions] connector specific options
      * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
      * or rejected otherwise.
      * @example
      * // Upgrade the Hyperledger Composer runtime
      * let adminConnection = new AdminConnection();
      * try {
-     *    await adminConnection.connect('userCard@networkName')
-     *    await adminConnection.upgrade();
+     *    await adminConnection.connect('adminCard@hlfv1')
+     *    await adminConnection.upgrade('digitalproperty-network');
      *
      *    // Business network definition upgraded
      * } catch(error) => {
@@ -731,10 +733,10 @@ class AdminConnection {
      * }
      * @memberof AdminConnection
      */
-    upgrade () {
+    upgrade(businessNetworkName, upgradeOptions) {
         return Promise.resolve().then(() => {
             Util.securityCheck(this.securityContext);
-            return this.connection.upgrade(this.securityContext);
+            return this.connection.upgrade(this.securityContext, businessNetworkName, upgradeOptions);
         });
     }
 

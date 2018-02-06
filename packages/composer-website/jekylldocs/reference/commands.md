@@ -92,11 +92,6 @@ Deploy a business network archive to a {{site.data.conrefs.hlf_full}} peer that 
 
 Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} peer: [composer runtime install](./composer.runtime.install.html)
 
-`composer network upgrade`
-
-Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.md)
-
-
 ## Participant and Identity management
 
 `composer participant add`
