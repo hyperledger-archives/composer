@@ -42,7 +42,7 @@ _Please note_: If cards are created from the wallet screen, or created from the 
 
 The **My Wallet** screen should now show the new business network card.
 
-### Creating a business network card using from the Wallet
+### Creating a business network card from the Wallet
 
 A business network card can be created from the **My Wallet** page, however, a corresponding identity must already have been created in the business network. Creating a business network card from the **My Wallet** page requires that you use the same _User ID_, _User Secret_ and the correct _Business network name_ credentials as when the identity was created within the business network.
 
