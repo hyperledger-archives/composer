@@ -125,7 +125,7 @@ participant Person identified by personId {
 ```
 You can see how the owner and title information are being accessed in a very simple manner.
 
-## Submitting a transactions
+## Submitting a transaction
 The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:
 
 ```
