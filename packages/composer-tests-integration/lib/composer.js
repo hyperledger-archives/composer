@@ -483,6 +483,27 @@ class Composer {
     }
 
     /**
+     * Check that a file with a name matching the regex has been created.
+     * @param {RegExp} [regex] regular expression.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkFileWasCreated(regex) {
+        return new Promise( (resolve, reject) => {
+            let fileExists = false;
+            fs.readdirSync('.').forEach((file) => {
+                if(file.match(regex)) {
+                    fileExists = true;
+                }
+            });
+            if(fileExists) {
+                resolve();
+            } else {
+                reject('could not find file with name matching ', regex);
+            }
+        });
+    }
+
+    /**
      * Check the HTTP response status
      * @param {Number} code expected HTTP response code.
      * @return {Promise} - Pomise that will be resolved or rejected with an error
