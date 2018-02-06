@@ -1798,8 +1798,8 @@ describe('HLFConnection', () => {
         it('should upgrade the business network', () => {
             sandbox.stub(global, 'setTimeout');
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -1838,8 +1838,8 @@ describe('HLFConnection', () => {
         it('should upgrade the business network with endorsement policy string', () => {
             sandbox.stub(global, 'setTimeout');
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1r'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -1886,8 +1886,8 @@ describe('HLFConnection', () => {
         it('should upgrade the business network with endorsement policy file', () => {
             sandbox.stub(global, 'setTimeout');
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -1934,8 +1934,8 @@ describe('HLFConnection', () => {
         it('should upgrade the business network with endorsement policy object', () => {
             sandbox.stub(global, 'setTimeout');
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -1999,8 +1999,8 @@ describe('HLFConnection', () => {
 
         it('should throw if semver version check fails', () => {
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(false);
@@ -2010,8 +2010,8 @@ describe('HLFConnection', () => {
 
         it('should throw if upgrade response fails to validate', () => {
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -2027,8 +2027,8 @@ describe('HLFConnection', () => {
 
         it('should throw an error if the orderer responds with an error', () => {
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);
@@ -2052,8 +2052,8 @@ describe('HLFConnection', () => {
 
         it('should throw an error if peer says transaction not valid', () => {
             const queryCCResp = [
-                {name: 'fred', version: '1', path: 'composer'},
-                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer'}
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
             ];
             mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
             sandbox.stub(semver, 'satisfies').returns(true);

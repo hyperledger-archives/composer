@@ -1077,7 +1077,7 @@ class HLFConnection extends Connection {
         return this.channel.queryInstantiatedChaincodes()
             .then((results) => {
                 let result = results.chaincodes.filter((chaincode) => {
-                    return chaincode.path === 'composer' && chaincode.name === businessNetworkName;
+                    return chaincode.path.includes('composer-runtime-hlfv1') && chaincode.name === businessNetworkName;
                 });
                 if (result.length === 0) {
                     throw new Error(`${businessNetworkName} has not been started so cannot be upgraded`);
