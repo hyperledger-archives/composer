@@ -41,7 +41,8 @@ class Upgrade {
         adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.connect(cardName)
         .then((result) => {
-            return adminConnection.upgrade();
+            let upgradeOptions = cmdUtil.parseOptions(argv);
+            return adminConnection.upgrade(argv.businessNetworkName, upgradeOptions);
         }).then((result) => {
             spinner.succeed();
             return result;
