@@ -516,6 +516,95 @@ describe('HLFConnection', () => {
 
     });
 
+    describe('#__addEndorsementPolicy', () => {
+        it('should handle an endorsement policy string', () => {
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            const policy = JSON.parse(policyString);
+            const options = {
+                endorsementPolicy : policyString
+            };
+            const request = {};
+
+            connection._addEndorsementPolicy(options, request);
+            request.should.deep.equal({
+                'endorsement-policy': policy
+            });
+        });
+
+        it('should handle an endorsement policy object', () => {
+            const policy = {
+                identities: [
+                    { role: { name: 'member', mspId: 'Org1MSP' }},
+                    { role: { name: 'member', mspId: 'Org2MSP' }},
+                    { role: { name: 'admin', mspId: 'Org1MSP' }}
+                ],
+                policy: {
+                    '1-of': [
+                        { 'signed-by': 2},
+                        { '2-of': [{ 'signed-by': 0}, { 'signed-by': 1 }]}
+                    ]
+                }
+            };
+            const options = {
+                endorsementPolicy : policy
+            };
+            const request = {};
+
+            connection._addEndorsementPolicy(options, request);
+            request.should.deep.equal({
+                'endorsement-policy': policy
+            });
+        });
+
+        it('should handle an endorsement policy in a file', () => {
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
+            const options = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            const request = {};
+
+            connection._addEndorsementPolicy(options, request);
+            request.should.deep.equal({
+                'endorsement-policy': JSON.parse(policyString)
+            });
+        });
+
+
+        it('should throw an error if the policy string isn\'t valid json', () => {
+            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
+            const options = {
+                endorsementPolicy : policyString
+            };
+            (() => {
+                connection._addEndorsementPolicy(options, {});
+            }).should.throw(/Error trying parse endorsement policy/);
+        });
+
+        it('should throw an error if the policy file doesn\'t exist', () => {
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').throws(new Error('ENOENT'));
+            const options = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            (() => {
+                connection._addEndorsementPolicy(options, {});
+            }).should.throw(/Error trying parse endorsement policy/);
+        });
+
+        it('should throw an error if the policy file isn\'t valid json', () => {
+            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
+            const options = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+            (() => {
+                connection._addEndorsementPolicy(options, {});
+            }).should.throw(/Error trying parse endorsement policy/);
+        });
+
+
+    });
+
     describe('#start', () => {
         // This is the instantiate proposal and response (from the peers).
         let validResponses = [{
@@ -1698,17 +1787,22 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_initializeChannel').resolves();
             mockClient.getEventHubsForOrg.returns([mockEventHub]);
             connection._connectToEventHubs();
+            delete connection.businessNetworkIdentifier;
         });
 
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            delete connection.businessNetworkIdentifier;
+        it('should throw if businessNetworkName not specified', () => {
             return connection.upgrade(mockSecurityContext, null)
                 .should.be.rejectedWith(/No business network/);
         });
 
         it('should upgrade the business network', () => {
             sandbox.stub(global, 'setTimeout');
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the upgrade proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1725,14 +1819,14 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .then(() => {
                     sinon.assert.calledOnce(connection._initializeChannel);
                     sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
                     sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
                         chaincodePath: runtimeModulePath,
                         chaincodeVersion: connectorPackageJSON.version,
-                        chaincodeId: 'org-acme-biznet',
+                        chaincodeId: 'digitalproperty-network',
                         txId: mockTransactionID,
                         fcn: 'upgrade'
                     });
@@ -1741,26 +1835,203 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should throw if runtime version check fails', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: false, response: {version: '1.0.0'}});
-            return connection.upgrade(mockSecurityContext)
+        it('should upgrade the business network with endorsement policy string', () => {
+            sandbox.stub(global, 'setTimeout');
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1r'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
+            // This is the upgrade proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            const policy = JSON.parse(policyString);
+            const options = {
+                endorsementPolicy : policyString
+            };
+
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', options)
+                .then(() => {
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
+                    sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'digitalproperty-network',
+                        txId: mockTransactionID,
+                        fcn: 'upgrade',
+                        'endorsement-policy' : policy
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should upgrade the business network with endorsement policy file', () => {
+            sandbox.stub(global, 'setTimeout');
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
+            // This is the upgrade proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
+            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
+            const options = {
+                endorsementPolicyFile : '/path/to/options.json'
+            };
+
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', options)
+                .then(() => {
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
+                    sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'digitalproperty-network',
+                        txId: mockTransactionID,
+                        fcn: 'upgrade',
+                        'endorsement-policy' : JSON.parse(policyString)
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should upgrade the business network with endorsement policy object', () => {
+            sandbox.stub(global, 'setTimeout');
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
+            // This is the upgrade proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChannel.sendUpgradeProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the orderer proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
+            const policy = {
+                identities: [
+                    { role: { name: 'member', mspId: 'Org1MSP' }},
+                    { role: { name: 'member', mspId: 'Org2MSP' }},
+                    { role: { name: 'admin', mspId: 'Org1MSP' }}
+                ],
+                policy: {
+                    '1-of': [
+                        { 'signed-by': 2},
+                        { '2-of': [{ 'signed-by': 0}, { 'signed-by': 1 }]}
+                    ]
+                }
+            };
+            const options = {
+                endorsementPolicy : policy
+            };
+
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', options)
+                .then(() => {
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendUpgradeProposal);
+                    sinon.assert.calledWith(mockChannel.sendUpgradeProposal, {
+                        chaincodePath: runtimeModulePath,
+                        chaincodeVersion: connectorPackageJSON.version,
+                        chaincodeId: 'digitalproperty-network',
+                        txId: mockTransactionID,
+                        fcn: 'upgrade',
+                        'endorsement-policy' : policy
+                    });
+
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
+                });
+        });
+
+        it('should throw if no chaincode instantiated', () => {
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            sandbox.stub(semver, 'satisfies').returns(false);
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
+                .should.be.rejectedWith(/not been started/);
+        });
+
+        it('should throw if semver version check fails', () => {
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(false);
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/cannot be upgraded/);
         });
 
         it('should throw if upgrade response fails to validate', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             const errorResp = new Error('such error');
             const upgradeResponses = [ errorResp ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             mockChannel.sendUpgradeProposal.resolves([ upgradeResponses, proposal, header ]);
             connection._validateResponses.withArgs(upgradeResponses).throws(errorResp);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/such error/);
         });
 
         it('should throw an error if the orderer responds with an error', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1775,12 +2046,17 @@ describe('HLFConnection', () => {
                 status: 'FAILURE'
             };
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Failed to send/);
         });
 
         it('should throw an error if peer says transaction not valid', () => {
-            sandbox.stub(connection, '_checkRuntimeVersions').resolves({isCompatible: true, response: {version: '1.0.0'}});
+            const queryCCResp = [
+                {name: 'fred', version: '1', path: 'composer-runtime-hlfv1'},
+                {name: 'digitalproperty-network', version: '0.15.0', path: 'composer-runtime-hlfv1'}
+            ];
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: queryCCResp});
+            sandbox.stub(semver, 'satisfies').returns(true);
             // This is the instantiate proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1797,7 +2073,7 @@ describe('HLFConnection', () => {
             mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response to indicate transaction not valid
             mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.upgrade(mockSecurityContext)
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network')
                 .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
