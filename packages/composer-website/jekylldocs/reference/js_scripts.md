@@ -289,9 +289,9 @@ async function sampleTransaction(tx) {
 
 To call the {{site.data.conrefs.hlf_full}} API in a transaction processor function, the function `getNativeAPI` must be called, followed by a function from the {{site.data.conrefs.hlf_full}} API. Using the {{site.data.conrefs.hlf_full}} API gives you access to functionality which is not available in the {{site.data.conrefs.composer_full}} API.
 
-*Please note: The `getState` and `putState` {{site.data.conrefs.hlf_full}} API functions will bypass the {{site.data.conrefs.composer_full}} access control rules and should not be used.*
+*Please note: The `getState` and `putState` {{site.data.conrefs.hlf_full}} API functions will bypass the {{site.data.conrefs.composer_full}} access control rules.*
 
-In the example below, the {{site.data.conrefs.hlf_full}} API function `getHistoryForKey` is called, which returns the history of a specified asset as an iterator stored in an array. This array can then be used in the transaction processor function.
+In the example below, the {{site.data.conrefs.hlf_full}} API function `getHistoryForKey` is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.
 
 For more information on the {{site.data.conrefs.hlf_full}} APIs you can call in a transaction processor function, see the [{{site.data.conrefs.hlf_full}} API documentation](https://fabric-shim.github.io/ChaincodeStub.html).
 
