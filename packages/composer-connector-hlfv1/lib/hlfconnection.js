@@ -291,7 +291,7 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Install the composer runtime chaincode.
+     * Install the business network chaincode.
      *
      * @param {any} securityContext the security context
      * @param {string} businessNetworkDefinition the business network name
@@ -328,7 +328,6 @@ class HLFConnection extends Connection {
         // 2. bna file
         // 3. the tgz files referenced in the package.json
         let tempDir = await this.temp.mkdir('businessnetwork');
-        //tempDir = '/tmp/bn';
 
         // write the bna file
         let bna = await businessNetworkDefinition.toArchive();

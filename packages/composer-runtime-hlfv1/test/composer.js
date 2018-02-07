@@ -14,6 +14,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const Composer = require('../lib/composer');
 const NodeContainer = require('../lib/nodecontainer');
 const Engine = require('composer-runtime').Engine;
@@ -40,6 +41,26 @@ describe('Composer', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('#start', () => {
+        beforeEach(() => {
+            sandbox.stub(fs, 'readFileSync').returns(JSON.stringify({}));
+            sandbox.stub(Context, 'parseBusinessNetworkDefinition').resolves();
+            sandbox.stub(shim, 'start').returns();
+        });
+
+        it('should call shim.start()', () => {
+            return Composer.start().then(() => {
+                sinon.assert.calledOnce(shim.start);
+            });
+        });
+
+        it('should call Context.parseBusinessNetworkDefinition()', () => {
+            return Composer.start().then(() => {
+                sinon.assert.calledOnce(Context.parseBusinessNetworkDefinition);
+            });
+        });
     });
 
     describe('#constructor', () => {

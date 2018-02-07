@@ -13,7 +13,6 @@
  */
 
 'use strict';
-const shim = require('fabric-shim');
 const Composer = require('./lib/composer');
 
-Composer.start().then(shim.start);
+Composer.start();

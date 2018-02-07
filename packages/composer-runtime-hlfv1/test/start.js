@@ -16,7 +16,6 @@
 
 require('chai').should();
 const sinon = require('sinon');
-const shim = require('fabric-shim');
 const Composer = require('../lib/composer');
 
 let sandbox;
@@ -29,13 +28,9 @@ afterEach(() => {
 });
 
 describe('start', () => {
-    it('should call shim start', () => {
-        sandbox.stub(Composer, 'start').resolves();
-        return new Promise((resolve, reject) => {
-            sandbox.stub(shim, 'start').callsFake(resolve);
-            require('../start');
-        }).then(() => {
-            sinon.assert.calledOnce(shim.start);
-        });
+    it('should call Composer start', () => {
+        sandbox.stub(Composer, 'start').returns();
+        require('../start');
+        sinon.assert.calledOnce(Composer.start);
     });
 });

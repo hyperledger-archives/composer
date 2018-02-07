@@ -32,13 +32,16 @@ const LOG = Logger.getLog('Composer');
  */
 class Composer {
 
+    /**
+     * Initial set up of Composer on a peer, including starting the Fabric shim.
+     * Should be called (only) from the peer startup script.
+     */
     static async start() {
         //let busNetDef = await BusinessNetworkDefinition.fromDirectory('.');
-        console.log('load business network definition: reading package.json');
         let pkgJSON = JSON.parse(fs.readFileSync('package.json'));
         let archiveFileContents = fs.readFileSync(pkgJSON.name + '.bna');
         await Context.parseBusinessNetworkDefinition(archiveFileContents);
-        return new Composer();
+        shim.start(new Composer());
     }
 
     /**
