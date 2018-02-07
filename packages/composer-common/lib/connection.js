@@ -402,12 +402,14 @@ class Connection extends EventEmitter {
      * Upgrade the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} upgradeOptions connector specific options
      * @return {Promise} A promise that is resolved once the business network
      * runtime has been upgraded, or rejected with an error.
      */
-    upgrade(securityContext) {
+    upgrade(securityContext, businessNetworkName, upgradeOptions) {
         return new Promise((resolve, reject) => {
-            this._upgrade(securityContext, (error) => {
+            this._upgrade(securityContext, businessNetworkName, upgradeOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -426,9 +428,11 @@ class Connection extends EventEmitter {
      * Upgrade the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} upgradeOptions connector specific options
      * @param {upgradeCallback} callback The callback function to call when complete.
      */
-    _upgrade(securityContext, callback) {
+    _upgrade(securityContext, businessNetworkName, upgradeOptions, callback) {
         throw new Error('abstract function called');
     }
 
