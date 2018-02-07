@@ -14,6 +14,8 @@ In the [development environment](../installing/development-tools.html), a simple
 
 This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for a single organization, including how to generate the necessary {{site.data.conrefs.composer_full}} configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for multiple organizations.
 
+During this tutorial, you may wish to refer to the [{{site.data.conrefs.hlf_full}} documentation](http://hyperledger-fabric.readthedocs.io).
+
 ## Prerequisites
 
 1. Before you continue, ensure that you have followed the steps in [installing a development environment](../installing/development-tools.html).
@@ -357,7 +359,7 @@ This is the path to the business network card file that we created in step five.
 
 You can now use this business network card by specifying the name `PeerAdmin@fabric-network`. You are now all set to deploy the blockchain business network to the {{site.data.conrefs.hlf_full}} network.
 
-We are going to deploy the blockchain business network `tutorial-network` that is created by following the [Developer Tutorial](./developer-tutorial.html).
+We are going to deploy the blockchain business network `tutorial-network` that is created by following the [Developer Tutorial](./developer-tutorial.html). If you haven't created a business network archive (.bna) file by following the developer tutorial, follow steps 1, 2, and 3 of the developer tutorial.
 
 ## Step Seven: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes
 
@@ -421,6 +423,7 @@ Run the `composer network ping` command to test the connection to the blockchain
 
     composer network ping -c admin@tutorial-network
 
+Check that the test result was successful, and there is a single participant listed for the business network with the name `NetworkAdmin`.
 
 ## Conclusion
 

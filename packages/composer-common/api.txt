@@ -6,7 +6,7 @@ class BusinessNetworkDefinition {
    + String getDescription() 
    + Promise fromArchive(Buffer) 
    + Buffer toArchive(Object) 
-   + Promise fromDirectory(String,Object,Object,boolean,boolean) 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
@@ -134,6 +134,7 @@ class Introspector {
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
 class ModelFile {
+   + boolean isExternal() 
    + ModelManager getModelManager() 
    + string[] getImports() 
    + boolean isDefined(string) 
@@ -222,10 +223,12 @@ class ValidatedResource extends Resource {
 }
 class ModelManager {
    + void validateModelFile(string,string) throws IllegalModelException
-   + Object addModelFile(string,string) throws IllegalModelException
-   + Object updateModelFile(string,string) throws IllegalModelException
+   + Object addModelFile(string,string,boolean) throws IllegalModelException
+   + Object updateModelFile(string,string,boolean) throws IllegalModelException
    + void deleteModelFile(string) 
-   + Object[] addModelFiles(string[],string[]) 
+   + Object[] addModelFiles(string[],undefined,boolean) 
+   + void validateModelFiles() 
+   + Promise updateExternalModels(Object,ModelFileDownloader) throws IllegalModelException
    + void clearModelFiles() 
    + string[] getNamespaces() 
    + ClassDeclaration[] getSystemTypes() 

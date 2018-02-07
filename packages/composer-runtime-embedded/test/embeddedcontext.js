@@ -31,11 +31,11 @@ const sinon = require('sinon');
 describe('EmbeddedContext', () => {
 
     const identity = {
-        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
-        name: 'bob1',
-        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
-        secret: 'suchsecret',
-        certificate: ''
+        identifier : 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+        name : 'bob1',
+        issuer : 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+        secret : 'suchsecret',
+        certificate : ''
     };
 
     let mockEmbeddedContainer;
@@ -115,7 +115,14 @@ describe('EmbeddedContext', () => {
             context.scriptCompiler = mockEmbeddedScriptCompiler;
             context.getScriptCompiler().should.equal(mockEmbeddedScriptCompiler);
         });
+    });
 
+    describe('#getNativeAPI', () => {
+        it('should throw an unsupported error', () => {
+            (() => {
+                context.getNativeAPI();
+            }).should.throw(/Native API not available in embedded runtime/);
+        });
     });
 
 });
