@@ -1,5 +1,5 @@
 # Contributing to Composer
-* [Step-by-step developement environment setup](./getting-started.md)
+* [Step-by-step development environment setup](./getting-started.md)
 * Currently reading ->  [Suggested IDE setup](./ide-setup.md)
 * [Coding Guidelines](./coding-guidelines.md)
 * [Pull Request Guidelines](./submitting-pull-request.md)
