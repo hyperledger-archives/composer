@@ -49,3 +49,18 @@ If you wish however you can instgall this as a local dependancy, but you could n
 This provides a basic command line tool to collect diagnostic reports. This would normally only be required if `composer-cli` could not be installed for any reason.
 
 See the [composer report](./composer.report) command for more information.
+
+## composer-validate-profile
+This provides a standalone command line utility to validate composer connection profiles with.
+It is easily installed with 
+
+```
+npm install -g composer-validate-profile
+```
+
+and then can be used from the command line by issuing
+
+```
+composer-validate-profile <filename.json>
+```
+

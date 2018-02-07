@@ -1,0 +1,57 @@
+{
+    "name": "%invalid%",
+    "version": "1.0.0",
+    "x-commitTimeout": 300,
+    "x-type": "hlfv1",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "orderer": "300",
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                }
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "caName": "ca.org1.example.com",
+            "url": "http://localhost:7054"
+        }
+    },
+    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {}
+            }
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ],
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ]
+        }
+    },
+    "peers": {
+        "peer0.org1.example.com": {
+            "eventUrl": "grpc://localhost:7053",
+            "url": "grpc://localhost:7051"
+        }
+    }
+}

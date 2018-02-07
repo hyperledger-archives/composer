@@ -1,0 +1,37 @@
+{ 
+    "$schema" : "http://json-schema.org/schema#",
+    "id" : "http://hyperledger.org/projects/composer/schemas/cccp.json",
+    "definitions" : {
+        "client" : {
+            "type" : "object"
+        },
+        "certificateAuthorities" : {
+            "type" : "object"
+        },
+        "channels" : {
+            "type" : "object"
+        },
+        "orderers" : {
+            "type" : "object"
+        },
+        "organizations" : {
+            "type" : "object"
+        }, 
+        "peers" : {
+            "type" : "object"
+        }
+    },
+    "type" : "object",
+    "properties" : {
+        "name" : { "type" : "stringy" },
+        "x-type" : { "enum" : [ "hlfv1", "hlfv11" ] },
+        "client" : { "$ref" : "#/definitions/client" },
+        "certificateAuthorities" : { "$ref": "#/definitions/certificateAuthorities" },
+        "channels" : { "$ref" : "#/definitions/channels" },
+        "orderers" : { "$ref" : "#/definitions/orderers" },
+        "organizations" : { "$ref" : "#/definitions/organizations" },
+        "peers" : { "$ref":  "#/definitions/peers" }
+    },
+    "required" : ["name", "x-type", "client", "certificateAuthorities", "channels", "orderers", "peers"] 
+
+}
