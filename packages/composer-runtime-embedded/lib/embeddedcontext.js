@@ -89,6 +89,13 @@ class EmbeddedContext extends Context {
         }
         return this.scriptCompiler;
     }
+
+    /**
+     * Get the native api
+     */
+    getNativeAPI() {
+        throw new Error('Native API not available in embedded runtime');
+    }
 }
 
 module.exports = EmbeddedContext;

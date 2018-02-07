@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.17.3 {2a7a1bab9acd373fcf0421b2c4cb88b0} 2018-2-5
+- Add business network name and upgrade options to upgrade API
+
 Version 0.15.2 {e884fc077830200cc28a41dc5110a8f2} 2017-11-24
 - Correct type of the BusinessNetworkName to string
 

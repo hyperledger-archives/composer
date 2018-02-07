@@ -18,6 +18,7 @@ const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const ModelFile = require('../lib/introspect/modelfile');
 const fs = require('fs');
 const JSZip = require('jszip');
+const moxios = require('moxios');
 
 const chai = require('chai');
 const should = chai.should();
@@ -28,13 +29,18 @@ let sandbox;
 describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
-    beforeEach(() => {
+    let productModel = fs.readFileSync('./test/data/model/product.cto', 'utf8');
+    let baseModel = fs.readFileSync('./test/data/model/base.cto', 'utf8');
+    let addressModel = fs.readFileSync('./test/data/model/address.cto', 'utf8');
+    let organizationModel = fs.readFileSync('./test/data/model/organization.cto', 'utf8');
 
+    beforeEach(() => {
         businessNetworkDefinition = new BusinessNetworkDefinition('id@1.0.0', 'description');
+        moxios.install();
     });
 
     afterEach(() => {
-
+        moxios.uninstall();
     });
 
     describe('#identifier format checking', () => {
@@ -139,6 +145,43 @@ describe('BusinessNetworkDefinition', () => {
         });
 
         afterEach( ()=>{sandbox.restore();});
+
+        it('should be able to create a business network using imports', () => {
+
+            // mock HTTP return values
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/product.cto', {
+                status: 200,
+                responseText: productModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/base.cto', {
+                status: 200,
+                responseText: baseModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/organization.cto', {
+                status: 200,
+                responseText: organizationModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/address.cto', {
+                status: 200,
+                responseText: addressModel
+            });
+
+            // this will download model files from the Internet
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-import-network', {updateExternalModels: true})
+            .then(businessNetwork => {
+                return businessNetwork.toArchive();
+            }).then ( (archive) => {
+                return BusinessNetworkDefinition.fromArchive(archive);
+            })
+            .then ( (businessNetwork) => {
+                // should include the external CTO files (4) plus the model (1) plus the system model (1)
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(6);
+            });
+        });
+
 
         it('should be able to correctly create a business network from a plain directory', () => {
 

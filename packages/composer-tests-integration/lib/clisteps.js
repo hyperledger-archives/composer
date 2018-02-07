@@ -51,4 +51,8 @@ module.exports = function () {
     this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), true);
     });
+
+    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (regex) {
+        return this.composer.checkFileWasCreated(new RegExp(regex));
+    });
 };

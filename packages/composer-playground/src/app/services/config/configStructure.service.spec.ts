@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Config } from './configStructure.service';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 
@@ -63,11 +76,11 @@ describe('Config', () => {
           };
 
           service.links = {
-                              docs: 'https://hyperledger.github.io/composer/introduction/introduction.html',
-                              tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
-                              community: 'https://hyperledger.github.io/composer/support/support-index.html',
+                              docs: 'https://hyperledger.github.io/composer/next/introduction/introduction.html',
+                              tutorial: 'https://hyperledger.github.io/composer/next/tutorials/playground-tutorial.html',
+                              community: 'https://hyperledger.github.io/composer/next/support/support-index.html',
                               github: 'https://github.com/hyperledger/composer',
-                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                              install: 'https://hyperledger.github.io/composer/next/installing/installing-index.html',
                               legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                           };
 
@@ -75,10 +88,10 @@ describe('Config', () => {
 
           service.links.should.deep.equal({
                                               docs: 'My Docs',
-                                              tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
-                                              community: 'https://hyperledger.github.io/composer/support/support-index.html',
+                                              tutorial: 'https://hyperledger.github.io/composer/next/tutorials/playground-tutorial.html',
+                                              community: 'https://hyperledger.github.io/composer/next/support/support-index.html',
                                               github: 'https://github.com/hyperledger/composer',
-                                              install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                                              install: 'https://hyperledger.github.io/composer/next/installing/installing-index.html',
                                               legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                                           });
       });
@@ -105,11 +118,11 @@ describe('Config', () => {
         service.title.should.deep.equal('Hyperledger Composer');
         service.banner.should.deep.equal(['Hyperledger', 'Composer Playground']);
         service.links.should.deep.equal({
-                                            docs: 'https://hyperledger.github.io/composer/introduction/introduction.html',
-                                            tutorial: 'https://hyperledger.github.io/composer/tutorials/playground-tutorial.html',
-                                            community: 'https://hyperledger.github.io/composer/support/support-index.html',
+                                            docs: 'https://hyperledger.github.io/composer/next/introduction/introduction.html',
+                                            tutorial: 'https://hyperledger.github.io/composer/next/tutorials/playground-tutorial.html',
+                                            community: 'https://hyperledger.github.io/composer/next/support/support-index.html',
                                             github: 'https://github.com/hyperledger/composer',
-                                            install: 'https://hyperledger.github.io/composer/installing/installing-index.html',
+                                            install: 'https://hyperledger.github.io/composer/next/installing/installing-index.html',
                                             legal: 'https://www.apache.org/licenses/LICENSE-2.0'
                                         });
 
