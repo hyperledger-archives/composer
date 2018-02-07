@@ -142,6 +142,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ./tmp/*
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
+    rm ./*.tgz
+    rm ./networkadmin.card
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm .npmrc
