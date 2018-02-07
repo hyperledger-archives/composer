@@ -367,5 +367,17 @@ Feature: Cli steps
         Then The stdout information should include text matching /The current identity, with the name '.+?' and the identifier '.+?', has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
 
+    @sams
+    Scenario: Using the CLI, I can run a composer report command to create a file about the current environment
+        When I run the following CLI command
+            """
+            composer report
+            """
+        Then The stdout information should include text matching /Creating Composer report/
+        Then The stdout information should include text matching /Triggering node report.../
+        Then The stdout information should include text matching /Created archive file: composer-report-/
+        Then The stdout information should include text matching /Command succeeded/
+        Then A new file matching this regex should be created /composer-report-/
+
 
 
