@@ -64,6 +64,20 @@ query Q17 {
 }
 ```
 
+#### Sample Contains queries
+
+The `CONTAINS` filter is used to search a array field in a node. The below query returns all the drivers who earned the punctual and steady-driving badges. Considering that the badges is of array type in driver participant.
+
+
+```
+query Q18 {
+    description: "Select all drivers who has the following interests"
+    statement:
+        SELECT org.acme.Driver
+            WHERE (badges CONTAINS ['punctual', 'steady-driving'])
+}
+```
+
 ## What next?
 
 - [Applying queries to a business network.](../business-network/query.html)
