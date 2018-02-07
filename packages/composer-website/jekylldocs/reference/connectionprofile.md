@@ -132,13 +132,13 @@ Support for HSM (Hardware Security Module) is now possible so long as you have P
   - `slot` is the configured slot number for the HSM
   - `pin` is the pin defined for access to that slot.
 
-To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define an environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
+To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
 
         export PKCS_LIBRARY=/usr/local/lib/myhsm.so
         export PKCS_SLOT=0
         export PKCS_PIN=98765432
 
-then you can reference this in the connection profile as follows
+then you can reference these in the connection profile as follows
 
             "hsm": {
                 "library": "{PKCS_LIBRARY}",
