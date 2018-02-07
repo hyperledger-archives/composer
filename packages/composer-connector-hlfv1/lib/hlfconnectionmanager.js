@@ -21,6 +21,9 @@ const fs = require('fs');
 const fsextra = require('fs-extra');
 const path = require('path');
 const thenifyAll = require('thenify-all');
+const jsrsa = require('jsrsasign');
+const KEYUTIL = jsrsa.KEYUTIL;
+const ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -56,6 +59,8 @@ const HLFConnection = require('./hlfconnection');
 const HLFWalletProxy = require('./hlfwalletproxy');
 const Wallet = require('composer-common').Wallet;
 
+let HSMSuite = new Map();
+
 /**
  * Class representing a connection manager that establishes and manages
  * connections to one or more business networks running on Hyperledger Fabric,
@@ -63,6 +68,133 @@ const Wallet = require('composer-common').Wallet;
  * @private
  */
 class HLFConnectionManager extends ConnectionManager {
+
+    /**
+     * Clear the HSM cache
+     */
+    static clearHSMCache() {
+        HSMSuite.clear();
+    }
+
+    /**
+     * Determine if we should be using HSM or not
+     * @param {object} ccp The Composer Connection Profile
+     * @return {boolean} true if to use HSM
+     */
+    static useHSM(ccp) {
+        const method = 'useHSM';
+        LOG.entry(method, ccp);
+
+        const hsmConfig = ccp.hsm;
+        let useHSM = false;
+        if (hsmConfig && hsmConfig.library && hsmConfig.library.trim().length !== 0 && hsmConfig.pin && hsmConfig.slot !== null && hsmConfig.slot !== undefined) {
+            useHSM = true;
+        }
+
+        LOG.exit(method, useHSM);
+        return useHSM;
+    }
+
+    /**
+     * Get a store location based on the cardname. If there is no card name then this means it is
+     * an identity request on HSM and we return some dummy location.
+     * @param {object} ccp The Composer Connection Profile
+     * @return {path} a path to use
+     */
+    static getStoreLocation(ccp) {
+        const method = 'getStoreLocation';
+        LOG.entry(method, ccp);
+        let pathToUse;
+        if (ccp.cardName) {
+            pathToUse = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', ccp.cardName);
+        } else {
+            pathToUse = path.join(composerUtil.homeDirectory(), '.composer', 'temp', 'transient');
+        }
+
+        LOG.exit(method, pathToUse);
+        return pathToUse;
+    }
+
+    /**
+     * return the value of an environment variable provided or the original value.
+     * @param {string} property the property value to see if it is a reference to an env var or not.
+     * @return {*} the value
+     */
+    static getValueOrEnv(property) {
+        let value = ('' + property).trim();
+        if (value.startsWith('{') && value.endsWith('}')) {
+            return process.env[value.substring(1, value.length - 1)];
+        }
+        return property;
+    }
+
+    /**
+     * get an appropriate HSM cryptosuite
+     * @param {object} ccp The Composer Connection Profile
+     * @param {path} keyValStorePath an appropriate path to use for the store
+     * @return {CryptoSuite} the HSM crypto suite to use
+     *
+     */
+    static getHSMCryptoSuite(ccp, keyValStorePath) {
+        const method = 'getHSMCryptoSuite';
+        LOG.entry(method, ccp, keyValStorePath);
+
+        const hsmConfig = ccp.hsm;
+
+        let library = HLFConnectionManager.getValueOrEnv(hsmConfig.library);
+        if (!library) {
+            throw new Error('no value provided for HSM library property');
+        }
+
+        let slot = HLFConnectionManager.getValueOrEnv(hsmConfig.slot);
+        if (slot === null || slot === undefined) {
+            throw new Error('no value provided for HSM slot property');
+        }
+
+        let pin = HLFConnectionManager.getValueOrEnv(hsmConfig.pin);
+        if (!pin) {
+            throw new Error('no value provided for HSM pin property');
+        }
+
+        //check the cache for an HSM cryptosuite
+        let key = '' + slot + '-' + pin;
+        let cryptoSuite = HSMSuite.get(key);
+        if (!cryptoSuite) {
+            LOG.debug(method, 'creating a new cryptosuite');
+            cryptoSuite = Client.newCryptoSuite({ software: false, lib: library, slot: slot * 1, pin: pin + '' });
+            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath})); // TODO: Do we need this yes, otherwise it makes it ephemeral and doesn't store the key in hsm
+            HSMSuite.set(key, cryptoSuite);
+        } else {
+            LOG.debug(method, 'reusing an new cryptosuite');
+        }
+
+        LOG.exit(method, cryptoSuite);
+        return cryptoSuite;
+
+    }
+
+    /**
+     * set up a cryptosuite and state store using HSM.
+     * note there is no support for wallets for the state store
+     * @param {Client} client  the fabric client
+     * @param {object} ccp the profile with HSM specific details.
+     * @param {string} keyValStorePath the path for the state store
+     */
+    static async setupHSM(client, ccp, keyValStorePath) {
+        const method = 'setupHSM';
+        LOG.entry(method, client, ccp, keyValStorePath);
+        try {
+            let store = await Client.newDefaultKeyValueStore({path: keyValStorePath});
+            client.setStateStore(store);
+            let hsmCryptoSuite = HLFConnectionManager.getHSMCryptoSuite(ccp, keyValStorePath);
+            client.setCryptoSuite(hsmCryptoSuite);
+            LOG.exit(method);
+        } catch(error) {
+            LOG.error(method, error);
+            const newError = new Error('error trying to setup a state store and HSM. ' + error);
+            throw newError;
+        }
+    }
 
     /**
      * Create a new client.
@@ -276,13 +408,19 @@ class HLFConnectionManager extends ConnectionManager {
         const method = '_setupClientStore';
         LOG.entry(method, client, wallet, profileData);
 
+        // Note that with HSM support, using wallets for the state store is NOT supported, we will
+        // always be using a file system for this.
+        if (HLFConnectionManager.useHSM(profileData)) {
+            return HLFConnectionManager.setupHSM(client, profileData, HLFConnectionManager.getStoreLocation(profileData));
+        }
+
         if (wallet) {
             return this._setupWallet(client, wallet);
         }
 
         let storePath;
         if (profileData.cardName) {
-            storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', profileData.cardName);
+            storePath = HLFConnectionManager.getStoreLocation(profileData);
         } else {
             storePath = profileData.keyValStore;
         }
@@ -366,7 +504,13 @@ class HLFConnectionManager extends ConnectionManager {
         // Submit the enrollment request to Fabric CA.
         LOG.debug(method, 'Submitting enrollment request');
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
-        const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, Client.newCryptoSuite());
+        let cryptoSuite;
+        if (HLFConnectionManager.useHSM(connectionOptions)) {
+            cryptoSuite = HLFConnectionManager.getHSMCryptoSuite(connectionOptions, HLFConnectionManager.getStoreLocation(connectionOptions));
+        } else {
+            cryptoSuite = Client.newCryptoSuite();
+        }
+        const caClient = HLFConnectionManager.parseCA(connectionOptions.ca, cryptoSuite);
 
         // determine the name of the ca.
         let caName = 'default';
@@ -376,7 +520,11 @@ class HLFConnectionManager extends ConnectionManager {
         return caClient.enroll(options)
             .then((enrollment) => {
                 enrollment.caName = caName;
-                enrollment.key = enrollment.key.toBytes();
+                if (!HLFConnectionManager.useHSM(connectionOptions)) {
+                    enrollment.key = enrollment.key.toBytes();
+                } else {
+                    delete enrollment.key;
+                }
                 LOG.exit(method);
                 return enrollment;
             })
@@ -398,7 +546,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
+    async importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
         const method = 'importIdentity';
         LOG.entry(method, connectionProfile, connectionOptions, id, publicCert);
 
@@ -411,40 +559,43 @@ class HLFConnectionManager extends ConnectionManager {
             return Promise.reject(new Error('id not specified or not a string'));
         } else if (!publicCert || typeof publicCert !== 'string') {
             return Promise.reject(new Error('publicCert not specified or not a string'));
-        } else if (!privateKey || typeof privateKey !== 'string') {
-            return Promise.reject(new Error('privateKey not specified or not a string'));
         }
 
         //default the optional wallet
         let wallet = connectionOptions.wallet || Wallet.getWallet();
 
         // validate the profile
-        try {
-            this.validateProfileDefinition(connectionOptions, wallet);
-        } catch(error) {
-            return Promise.reject(error);
-        }
+        this.validateProfileDefinition(connectionOptions, wallet);
 
         let mspID = connectionOptions.mspID;
         const client = HLFConnectionManager.createClient();
-        return this._setupClientStore(client, wallet, connectionOptions)
-            .then(() => {
-                return client.createUser({
-                    username: id,
-                    mspid: mspID,
-                    cryptoContent: {
-                        privateKeyPEM: privateKey,
-                        signedCertPEM: publicCert
-                    }
-                });
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+        try {
+            await this._setupClientStore(client, wallet, connectionOptions);
+            let cryptoContent = {
+                signedCertPEM: publicCert
+            };
+
+            if (HLFConnectionManager.useHSM(connectionOptions)) {
+                let publicKey = KEYUTIL.getKey(publicCert);
+                let ecdsakey = new ecdsaKey(publicKey);
+                cryptoContent.privateKeyObj = await client.getCryptoSuite().getKey(Buffer.from(ecdsakey.getSKI(), 'hex'));
+            } else {
+                if (!privateKey || typeof privateKey !== 'string') {
+                    throw new Error('privateKey not specified or not a string');
+                }
+                cryptoContent.privateKeyPEM = privateKey;
+            }
+
+            await client.createUser({
+                username: id,
+                mspid: mspID,
+                cryptoContent: cryptoContent
             });
+            LOG.exit(method);
+        } catch(error) {
+            LOG.error(method, error);
+            throw error;
+        }
     }
 
     /**
@@ -567,8 +718,10 @@ class HLFConnectionManager extends ConnectionManager {
                 if (user) {
                     result = {
                         certificate: user.getIdentity()._certificate,
-                        privateKey: user.getSigningIdentity()._signer._key.toBytes()
                     };
+                    if (!HLFConnectionManager.useHSM(connectionOptions)) {
+                        result.privateKey = user.getSigningIdentity()._signer._key.toBytes();
+                    }
                 }
                 LOG.exit(method, result);
                 return result;
@@ -610,7 +763,7 @@ class HLFConnectionManager extends ConnectionManager {
         // get and set and luckily we isolate the information based on the card name we can just forceably delete the directory.
         // we cannot support doing this for connection profiles that use keyValStore and no cardname provided.
         if (connectionOptions.cardName) {
-            let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', connectionOptions.cardName);
+            let storePath = HLFConnectionManager.getStoreLocation(connectionOptions);
             let exists;
 
             return HLFConnectionManager._exists(storePath)

@@ -91,10 +91,10 @@ class AdminConnection {
                 }
             })
             .then(() => {
-                // if we have a certificate and privateKey we should ask the connection manager to import
+                // if we have a certificate and optionally a privateKey we should ask the connection manager to import
                 let certificate = card.getCredentials().certificate;
                 let privateKey = card.getCredentials().privateKey;
-                if (certificate && privateKey){
+                if (certificate){
                     return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
                 }
             })

@@ -31,6 +31,9 @@ const Peer = require('fabric-client/lib/Peer');
 const User = require('fabric-client/lib/User');
 const Wallet = require('composer-common').Wallet;
 const fsextra = require('fs-extra');
+//const jsrsa = require('jsrsasign');
+//const KEYUTIL = jsrsa.KEYUTIL;
+//const ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 
 const chai = require('chai');
 chai.should();
@@ -66,11 +69,14 @@ describe('HLFConnectionManager', () => {
     let mockConnectionProfileManager;
     let sandbox;
     let connectionManager;
+    let mockClient;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         connectionManager = new HLFConnectionManager(mockConnectionProfileManager);
+        mockClient = sinon.createStubInstance(Client);
+
     });
 
     afterEach(() => {
@@ -111,6 +117,284 @@ describe('HLFConnectionManager', () => {
             global.hfc.logger.error('hello %s', 'world');
             global.hfc.logger.error('hello world');
             sinon.assert.alwaysCalledWith(logger, 'fabric-client', 'hello world');
+        });
+
+    });
+
+    describe('#getHSMCryptoSuite', () => {
+        let ccp;
+        beforeEach(() => {
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+        });
+
+        it('should throw an error if the environment variables are not defined', () => {
+            ccp.hsm.library = '{PKCS_LIBRARY}';
+            ccp.hsm.slot = '{PKCS_SLOT}';
+            ccp.hsm.pin = '{PKCS_PIN}';
+
+            process.env.PKCS_LIBRARY = '/usr/local/lib/another.so';
+            process.env.PKCS_SLOT = '0';
+            process.env.PKCS_PIN = 98765432;
+
+            delete process.env.PKCS_PIN;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM pin property/);
+
+            delete process.env.PKCS_SLOT;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM slot property/);
+
+            delete process.env.PKCS_LIBRARY;
+            (() => {
+                HLFConnectionManager.getHSMCryptoSuite(ccp, 'apath');
+            }).should.throw(/HSM library property/);
+        });
+
+    });
+
+    describe('#setupHSM', () => {
+
+        let ccp;
+        beforeEach(() => {
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+        });
+
+        it('should create a new cryptosuite', async () => {
+            let mockStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
+            sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
+
+            sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
+            sinon.assert.calledWith(Client.newDefaultKeyValueStore, {path: 'apath'});
+            sinon.assert.calledOnce(mockClient.setStateStore);
+            sinon.assert.calledWith(mockClient.setStateStore, mockStore);
+            sinon.assert.calledOnce(Client.newCryptoSuite);
+            sinon.assert.calledWith(Client.newCryptoSuite, {
+                software: false,
+                lib: '/usr/lib/lib.so',
+                slot: 0,
+                pin: '98765432'
+            });
+            sinon.assert.calledOnce(mockCryptoSuite.setCryptoKeyStore);
+            sinon.assert.calledWith(mockCryptoSuite.setCryptoKeyStore, mockCryptoStore);
+            sinon.assert.calledOnce(mockClient.setCryptoSuite);
+            sinon.assert.calledWith(mockClient.setCryptoSuite, mockCryptoSuite);
+            HLFConnectionManager.clearHSMCache();
+
+        });
+
+        it('should reuse an existing cryptosuite', async () => {
+            let mockStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
+            sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
+            let mockClient2 = sinon.createStubInstance(Client);
+            mockClient2._network_config = {
+                '_network_config': {
+                    channels: {
+                        composerchannel: {}
+                    }
+                }
+            };
+            await HLFConnectionManager.setupHSM(mockClient2, ccp, 'apath');
+
+            sinon.assert.calledTwice(Client.newDefaultKeyValueStore);
+            sinon.assert.calledOnce(mockClient2.setStateStore);
+            sinon.assert.calledWith(mockClient2.setStateStore, mockStore);
+            sinon.assert.calledOnce(Client.newCryptoSuite);
+            sinon.assert.calledOnce(mockCryptoSuite.setCryptoKeyStore);
+            sinon.assert.calledOnce(mockClient2.setCryptoSuite);
+            sinon.assert.calledWith(mockClient2.setCryptoSuite, mockCryptoSuite);
+            HLFConnectionManager.clearHSMCache();
+
+        });
+        it('should allow an environment variables to define pkcs config options', async () => {
+            let mockStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
+            sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+            ccp.hsm.library = '{PKCS_LIBRARY}';
+            ccp.hsm.slot = '{PKCS_SLOT}';
+            ccp.hsm.pin = '{PKCS_PIN}';
+
+            process.env.PKCS_LIBRARY = '/usr/local/lib/another.so';
+            process.env.PKCS_SLOT = '0';
+            process.env.PKCS_PIN = 98765432;
+
+            await HLFConnectionManager.setupHSM(mockClient, ccp, 'apath');
+
+            sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
+            sinon.assert.calledWith(Client.newDefaultKeyValueStore, {path: 'apath'});
+            sinon.assert.calledOnce(mockClient.setStateStore);
+            sinon.assert.calledWith(mockClient.setStateStore, mockStore);
+            sinon.assert.calledOnce(Client.newCryptoSuite);
+            sinon.assert.calledWith(Client.newCryptoSuite, {
+                software: false,
+                lib: '/usr/local/lib/another.so',
+                slot: 0,
+                pin: '98765432'
+            });
+            sinon.assert.calledOnce(mockCryptoSuite.setCryptoKeyStore);
+            sinon.assert.calledWith(mockCryptoSuite.setCryptoKeyStore, mockCryptoStore);
+            sinon.assert.calledOnce(mockClient.setCryptoSuite);
+            sinon.assert.calledWith(mockClient.setCryptoSuite, mockCryptoSuite);
+            HLFConnectionManager.clearHSMCache();
+            delete process.env.PKCS_LIBRARY;
+            delete process.env.PKCS_SLOT;
+            delete process.env.PKCS_PIN;
+        });
+
+        it('should handle errors creating a new Cyptosuite', () => {
+            let mockStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
+            sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
+            sandbox.stub(Client, 'newCryptoSuite').throws(new Error('bad request'));
+
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/bad request/);
+
+        });
+
+        it('should handle errors creating a new crypto keystore', () => {
+            let mockStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockStore);
+            sandbox.stub(Client, 'newCryptoKeyStore').throws(new Error('further bad request'));
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/further bad request/);
+
+        });
+
+        it('should handle errors creating a new default keyvalstore', () => {
+            let mockCryptoStore = sinon.createStubInstance(KeyValueStore);
+            let mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.spy();
+            sandbox.stub(Client, 'newDefaultKeyValueStore').rejects(new Error('more bad request'));
+            sandbox.stub(Client, 'newCryptoKeyStore').returns(mockCryptoStore);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+
+            HLFConnectionManager.setupHSM(mockClient, ccp, 'apath').should.be.rejectedWith(/more bad request/);
+
+        });
+
+
+
+    });
+
+    describe('#useHSM', () => {
+        it('return true if all HSM parameters are configured', () => {
+            const ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.true;
+            ccp.hsm.pin = '98765432';
+            HLFConnectionManager.useHSM(ccp).should.equal.true;
+            ccp.hsm.slot = '0';
+            HLFConnectionManager.useHSM(ccp).should.equal.true;
+        });
+        it('return false if no HSM parameters are configured', () => {
+            let ccp = {};
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    slot: 0
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    library: '',
+                    pin: 98765432,
+                    slot: 0
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: '',
+                    slot: 0
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+            ccp = {
+                'hsm': {
+                    library: '/usr/lib/lib.so',
+                    pin: 98765432,
+                    slot: ''
+                }
+            };
+            HLFConnectionManager.useHSM(ccp).should.equal.false;
+        });
+    });
+
+    describe('#getStoreLocation', () => {
+        it('return return an appropriate location if card name provided', () => {
+            const ccp = {
+                cardName: 'fredCard'
+            };
+            HLFConnectionManager.getStoreLocation(ccp).should.contain('fredCard');
+        });
+        it('return return an appropriate location if no card name provided', () => {
+            const ccp = {
+            };
+            HLFConnectionManager.getStoreLocation(ccp).should.contain('transient');
         });
 
     });
@@ -901,7 +1185,6 @@ describe('HLFConnectionManager', () => {
         it('should handle an error creating a store using keyValStore', () => {
             Client.newDefaultKeyValueStore.reset();
             Client.newDefaultKeyValueStore.rejects('wow such fail');
-            // sandbox.stub(Client, 'newDefaultKeyValueStore').rejects('wow such fail');
             return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
@@ -966,6 +1249,22 @@ describe('HLFConnectionManager', () => {
                     connection.getConnectionOptions().timeout.should.equal(30);
                 });
         });
+
+        it('should set up an HSM managed store', () => {
+            sandbox.stub(HLFConnectionManager, 'setupHSM').resolves();
+            connectOptions.hsm = {
+                'library': '/usr/lib/lib.so',
+                'slot': 0,
+                'pin': 98765432
+            };
+            connectOptions.cardName = 'CONGA_CARD';
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
+                .then((connection) => {
+                    sinon.assert.calledOnce(HLFConnectionManager.setupHSM);
+                    sinon.assert.calledWith(HLFConnectionManager.setupHSM, mockClient, connectOptions, sinon.match(/CONGA_CARD/));
+                });
+        });
+
     });
 
     describe('#importIdentity', () => {
@@ -978,6 +1277,7 @@ describe('HLFConnectionManager', () => {
             mockCryptoSuite.setCryptoKeyStore = sinon.stub();
             sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockKeyValueStore);
             sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
+            mockClient.getCryptoSuite.returns(mockCryptoSuite);
 
             profile = {
                 orderers: [
@@ -1017,6 +1317,30 @@ describe('HLFConnectionManager', () => {
                     });
                 });
         });
+
+        it('should successfully import an HSM managed identity', () => {
+            profile.hsm = {
+                library: '/usr/local/lib/lib.so',
+                slot: 0,
+                pin: 98765432
+            };
+            sandbox.stub(HLFConnectionManager, 'setupHSM').resolves();
+            mockCryptoSuite.getKey.returns('apkcs11key');
+
+            return connectionManager.importIdentity('connprof1', profile, 'anid', embeddedCert)
+                .then(() => {
+                    sinon.assert.calledOnce(mockClient.createUser);
+                    sinon.assert.calledWith(mockClient.createUser, {
+                        username: 'anid',
+                        mspid: 'MSP1Org',
+                        cryptoContent: {
+                            privateKeyObj: 'apkcs11key',
+                            signedCertPEM: embeddedCert
+                        }
+                    });
+                });
+        });
+
 
         it('should throw if connectionProfile not specified', () => {
             return connectionManager.importIdentity()
@@ -1143,6 +1467,24 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
+        it('should successfully request an identity managed by HSM', () => {
+            profile.hsm = {
+                library: '/usr/local/lib/lib.so',
+                slot: 0,
+                pin: 98765432
+            };
+            sandbox.stub(HLFConnectionManager, 'getHSMCryptoSuite').returns(mockCryptoSuite);
+            return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
+                .then((result) => {
+                    result.should.deep.equal({certificate: 'a', rootCertificate: 'b', caName: 'default'});
+                    sinon.assert.calledOnce(HLFConnectionManager.getHSMCryptoSuite);
+                    sinon.assert.calledWith(HLFConnectionManager.getHSMCryptoSuite, profile, sinon.match(/transient/));
+                    sinon.assert.calledOnce(mockCAClient.enroll);
+                    sinon.assert.calledWith(mockCAClient.enroll,{ enrollmentID: 'id', enrollmentSecret: 'secret' });
+                });
+        });
+
+
         it('should successfully request an identity with a named ca server', () => {
             profile.ca = {'url': 'http://localhost:7054', 'name': 'aName'};
             return connectionManager.requestIdentity('connprof1', profile, 'id', 'secret')
@@ -1254,6 +1596,25 @@ describe('HLFConnectionManager', () => {
                     privateKey: signerKey
                 });
         });
+
+        it('should return credentials from Fabric Client for valid HSM managed user', function() {
+            profile.hsm = {
+                library: '/usr/local/lib/lib.so',
+                slot: 0,
+                pin: 98765432
+            };
+            sandbox.stub(HLFConnectionManager, 'setupHSM').resolves();
+            mockClient.getUserContext.withArgs(userId, true).resolves(mockUser);
+            return connectionManager.exportIdentity('connprof1', profile, userId)
+                .should.eventually.deep.equal({
+                    certificate: certificate
+                })
+                .then(() => {
+                    sinon.assert.calledOnce(HLFConnectionManager.setupHSM);
+                });
+
+        });
+
 
         it('should return null for invalid user', function() {
             mockClient.getUserContext.withArgs(userId, true).resolves(null);

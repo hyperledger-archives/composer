@@ -22,6 +22,30 @@ if [ "${INTEST}" = "" ]; then
     exit 1
 fi
 
+# Delete any existing configuration.
+rm -fr ./verdaccio
+rm -fr ./storage
+rm -fr ./scripts/storage
+rm -fr ${HOME}/.config/verdaccio
+rm -rf ${HOME}/.composer/cards/Test*
+rm -rf ${HOME}/.composer/client-data/Test*
+rm -rf ${HOME}/.composer/cards/bob*
+rm -rf ${HOME}/.composer/client-data/bob*
+rm -rf ${HOME}/.composer/cards/admin*
+rm -rf ${HOME}/.composer/client-data/admin*
+rm -rf ${HOME}/.composer/cards/fred*
+rm -rf ${HOME}/.composer/client-data/fred*
+rm -rf ${HOME}/.composer/cards/sal*
+rm -rf ${HOME}/.composer/client-data/sal*
+rm -rf ./tmp/*
+rm -rf ./networkadmin
+rm -rf ${HOME}/.npmrc
+if [ "${DOCKER_FILE}" != "" ]; then
+    cd ../composer-runtime-hlfv1
+    rm .npmrc
+    cd "${DIR}"
+fi
+
 # Run for all specified configurations.
 for INTEST in $(echo ${INTEST} | tr "," " "); do
 
@@ -29,10 +53,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     export COMPOSER_PORT_WAIT_SECS=30
     export COMPOSER_DEPLOY_WAIT_SECS=500
     export COMPOSER_TIMEOUT_SECS=500
-
-    # Delete any existing configuration.
-    rm -rf ${HOME}/.composer-connection-profiles/composer-intests*
-    rm -rf ${HOME}/.composer-credentials/composer-intests*
 
     # Pull any required Docker images.
     if [[ ${INTEST} == hlfv1* ]]; then
@@ -98,7 +118,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
 
     # Run the integration tests.
-    npm run int-test 2>&1 | tee
+    if [[ ${INTEST} == *nohsm ]]; then
+        npm run int-test-nohsm 2>&1 | tee
+    else
+        npm run int-test 2>&1 | tee
+    fi
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
@@ -107,7 +131,19 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     fi
 
     # Delete any written configuration.
+    rm -fr ./verdaccio
+    rm -fr ./storage
+    rm -fr ${HOME}/.config/verdaccio
     rm -rf ${HOME}/.composer/cards/Test*
+    rm -rf ${HOME}/.composer/client-data/Test*
+    rm -rf ${HOME}/.composer/cards/bob*
+    rm -rf ${HOME}/.composer/client-data/bob*
+    rm -rf ${HOME}/.composer/cards/admin*
+    rm -rf ${HOME}/.composer/client-data/admin*
+    rm -rf ${HOME}/.composer/cards/fred*
+    rm -rf ${HOME}/.composer/client-data/fred*
+    rm -rf ${HOME}/.composer/cards/sal*
+    rm -rf ${HOME}/.composer/client-data/sal*
     rm -rf ./tmp/*
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
