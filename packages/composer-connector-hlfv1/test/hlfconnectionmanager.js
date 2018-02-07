@@ -31,7 +31,7 @@ const Wallet = require('composer-common').Wallet;
 const fsextra = require('fs-extra');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
@@ -166,12 +166,14 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(Client, 'loadFromConfig').withArgs(ccp).returns(mockClient);
             sandbox.stub(Wallet, 'getWallet').returns(null);
             sandbox.stub(HLFConnectionManager, 'setupWallet').resolves();
+            sandbox.stub(path, 'join').returns('something');
             let client = await HLFConnectionManager.createClient(ccp, true);
             client.should.be.an.instanceOf(Client);
+            should.not.exist(ccp.client.credentialStore);
 
             sinon.assert.calledOnce(Client.loadFromConfig);
-            sinon.assert.calledWith(Client.loadFromConfig, sinon.match.has('client', sinon.match.has('credentialStore', sinon.match.has('path', sinon.match(/composer\/client-data\/acard/)))));
-            sinon.assert.calledWith(Client.loadFromConfig, sinon.match.has('client', sinon.match.has('credentialStore', sinon.match.has('cryptoStore', sinon.match.has('path', sinon.match(/composer\/client-data\/acard/))))));
+            sinon.assert.calledOnce(path.join);
+            sinon.assert.calledWith(path.join, sinon.match.any, sinon.match.string, sinon.match.string, 'acard');
             sinon.assert.notCalled(HLFConnectionManager.setupWallet);
             sinon.assert.calledOnce(mockClient.initCredentialStores);
         });
