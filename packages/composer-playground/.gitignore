@@ -60,3 +60,6 @@ npm-debug.log
 # IDE #
 .idea/
 *.swp
+
+# Usabilla code template
+usabilla.html.template
