@@ -21,6 +21,7 @@ const chai = require('chai');
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const IdCard = require('composer-common').IdCard;
+const uuid = require('uuid');
 chai.should();
 chai.use(require('chai-as-promised'));
 process.setMaxListeners(Infinity);
@@ -117,7 +118,6 @@ let checkError = (error) => {
     }
 };
 
-
 describe('Native API', function () {
 
     this.retries(TestUtil.retries());
@@ -148,7 +148,9 @@ describe('Native API', function () {
         it('should get the history of an asset', async () => {
             const assetRegistry = await client.getAssetRegistry('systest.transactions.SimpleStringAsset');
 
-            const asset = createAsset('nativeAssetHistory');
+            const randomNumber = uuid.v4();
+            const assetId = 'nativeAssetHistory' + randomNumber;
+            const asset = createAsset(assetId);
             await assetRegistry.add(asset);
 
             asset.stringValue = 'hello bob';
@@ -156,7 +158,7 @@ describe('Native API', function () {
 
             let factory = client.getBusinessNetwork().getFactory();
             let transaction = factory.newTransaction('systest.transactions', 'SimpleNativeHistoryTransaction');
-            transaction.assetId = 'nativeAssetHistory';
+            transaction.assetId = assetId;
             transaction.nativeSupport = !!TestUtil.isHyperledgerFabricV1();
 
             try {

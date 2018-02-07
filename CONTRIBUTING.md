@@ -32,12 +32,12 @@ If you have a suggestion for a Composer Improvement Proposal (CIP), for a featur
 In order to assist anybody starting from scratch, we have produced guides on setting up a development environment.
 
 
-* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+* [Step-by-step development environment setup](./contrib-notes/getting-started.md)
 * [Suggested IDE setup](./contrib-notes/ide-setup.md)
 * [Coding Guidelines](./contrib-notes/coding-guidelines.md)
 * [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
 * [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
 
-Start with the [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+Start with the [Step-by-step development environment setup](./contrib-notes/getting-started.md)
 
 Everything installed and ready code? Great! Issues are tracked in GitHub, if you are looking for a place to start with the code then it might be worth tackling a [bug](https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22).
