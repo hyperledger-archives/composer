@@ -102,6 +102,9 @@ class AdminConnection {
                 }
             })
             .then(() => {
+                return this.cardStore.put(name, card);
+            })
+            .then(() => {
                 return updated;
             });
     }
