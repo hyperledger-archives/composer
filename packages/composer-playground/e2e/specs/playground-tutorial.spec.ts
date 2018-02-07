@@ -79,37 +79,37 @@ describe('Playground Tutorial Define', (() => {
   describe('Connecting to the business network', (() => {
       it('should let the user connect to their sample network', (() => {
         let expectedFiles = ['About\nREADME.md', 'Access Control\npermissions.acl'];
-          return Login.connectViaIdCard(profile, networkName)
-          .then(() => {
-              // Should now be on main editor page for the business network
-              return Editor.waitToAppear();
-          })
-          .then(() => {
-              // Should have the correct named busnet once loaded
-              return Editor.waitForProjectFilesToLoad()
-              .then(() => {
-                  return Editor.retrieveDeployedPackageName()
-              })
-              .then((packageName) => {
-                  expect(packageName).to.be.equal(networkName);
-                  return Editor.retrieveNavigatorFileNames()
-              })
-              .then((filelist: any) => {
-                  expect(filelist).to.be.an('array').lengthOf(2);
-                  filelist.forEach((file) => {
-                      expect(file).to.be.oneOf(expectedFiles);
-                  });
-                  return Editor.retrieveNavigatorFileActionButtons()
-                  .then((buttonlist: any) => {
-                      expect(buttonlist).to.be.an('array').lengthOf(2);
-                      expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                      expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
-                  });
-              });
-          })
-          .catch((err) => {
-              fail(err);
-          })
+        return Login.connectViaIdCard(profile, networkName)
+        .then(() => {
+            // Should now be on main editor page for the business network
+            return Editor.waitToAppear();
+        })
+        .then(() => {
+            // Should have the correct named busnet once loaded
+            return Editor.waitForProjectFilesToLoad()
+            .then(() => {
+                return Editor.retrieveDeployedPackageName()
+            })
+            .then((packageName) => {
+                expect(packageName).to.be.equal(networkName);
+                return Editor.retrieveNavigatorFileNames()
+            })
+            .then((filelist: any) => {
+                expect(filelist).to.be.an('array').lengthOf(2);
+                filelist.forEach((file) => {
+                    expect(file).to.be.oneOf(expectedFiles);
+                });
+                return Editor.retrieveNavigatorFileActionButtons()
+                .then((buttonlist: any) => {
+                    expect(buttonlist).to.be.an('array').lengthOf(2);
+                    expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
+                    expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                });
+            });
+        })
+        .catch((err) => {
+            fail(err);
+        })
       }));
   }));
 

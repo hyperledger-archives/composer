@@ -19,8 +19,12 @@ export class Deploy {
     }
 
     // Wait for disappear
-    static waitToDisappear() {
-        return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.choose-network'))), Constants.shortWait);
+    static waitToDisappear(fabric?) {
+        let wait = Constants.shortWait;
+        if (fabric) {
+            wait = null;
+        }
+        return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.choose-network'))), wait);
     }
 
     // Name the network
@@ -48,6 +52,29 @@ export class Deploy {
             return option.click();
         });
     }
+
+    static selectUsernameAndSecret(username, secret) {
+        let radioButton = element(by.css('.radio-label[for=noCert]'));
+        let userId = element(by.id('userId'));
+        let userSecret = element(by.id('userSecret'));
+
+        return browser.wait(ExpectedConditions.visibilityOf(radioButton), Constants.shortWait)
+        .then(() => {
+            return radioButton.click();
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(userId), Constants.shortWait);
+        })
+        .then(() => {
+            return userId.sendKeys(username);
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(userSecret), Constants.shortWait);
+        })
+        .then(() => {
+            return userSecret.sendKeys(secret);
+        })
+    };
 
     static retrieveBaseTileOptions() {
         this.waitToLoadDeployBasisOptions();

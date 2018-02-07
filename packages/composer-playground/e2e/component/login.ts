@@ -1,9 +1,12 @@
 import { browser, element, by, ElementFinder, WebElement } from 'protractor';
+import { dragDropFile } from '../utils/fileUtils';
 import { ExpectedConditions } from 'protractor';
 
 import { Constants } from '../utils/constants';
 import { OperationsHelper } from '../utils/operations-helper';
-import { BusyAlert } from "./alert";
+import { BusyAlert } from './alert';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class Login {
 
@@ -70,5 +73,70 @@ export class Login {
                     connect.click();
                     });
             });
+    }
+
+    static importBusinessNetworkCard(filePath: string) {
+        let cardName = path.basename(filePath, path.extname(filePath));
+        let importButton = element(by.id('importIdCard'));
+        let importElement;
+        return browser.wait(ExpectedConditions.elementToBeClickable(importButton), Constants.longWait)
+        .then(() => {
+            return OperationsHelper.click(importButton);
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait)
+        })
+        .then(() => {
+            let inputFileElement = element(by.id('file-importer_input'));
+            return dragDropFile(inputFileElement, filePath);
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(element(by.id('cardName'))), Constants.longWait);
+        })
+        .then(() => {
+            return element(by.id('cardName')).sendKeys(cardName);
+        })
+        .then(() => {
+            importElement = element(by.id('importBtn'));
+            return browser.wait(ExpectedConditions.elementToBeClickable(importElement), Constants.longWait);
+        })
+        .then(() => {
+            return importElement.click();
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.user-name[title=TestPeerAdmin]'))));
+        });
+    }
+
+    static exportBusinessNetworkCard(cardName: string) {
+        return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.connection-profile'))), Constants.longWait)
+        .then(() => {
+            return element.all(by.css('.identity-card')).filter((item) => {
+                return item.element(by.css('.user-name')).getText()
+                .then((text) => {
+                    if (text === cardName) {
+                        return true;
+                    }
+                });
+            })
+            .then((matchedItems: [ElementFinder]) => {
+                if (matchedItems.length > 1) {
+                    return Promise.reject('Multiple identity card name match occured');
+                } else {
+                    return matchedItems[0].element(by.css('button.export'));
+                }
+            })
+            .then((exportCard: ElementFinder) => {
+                return OperationsHelper.click(exportCard);
+            })
+            .then(() => {
+                return browser.driver.wait(() => {
+                    return fs.existsSync(__dirname + '/../downloads/' + cardName.split('@')[0] + '.card');
+                }, Constants.shortWait);
+            })
+            .then(() => {
+                return __dirname + '/../downloads/' + cardName.split('@')[0] + '.card';
+            });
+        });
     }
 }
