@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Historian | Hyperledger Composer</title>
+    <title>Invoking a Composer business network from another business network using Hyperledger Fabric | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Historian</p>
+          <p>Invoking a Composer business network from another business network using Hyperledger Fabric</p>
           </div>
 
           <nav class="context-nav">
@@ -263,87 +263,168 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-historian">Hyperledger Composer Historian</h1>
+              <h1 id="invoking-a-hyperledger-composer-business-network-from-another-business-network">Invoking a Hyperledger Composer business network from another business network</h1>
 
-<blockquote>
-<p><strong>Warning</strong>: This is the first part of the implementation of functionality to track the transactions and asset updates. There are additional use cases that are not a covered by this implementation. Details are being tracked in GitHub issue 55. There may be changes to the HistorianRecord (documented below) as a result.</p>
-</blockquote>
+<p>Hyperledger Composer includes functionality that can be used by a business network to access an asset, participant, or transaction that is recorded in another business network. </p>
 
-<p>The Historian is a registry populated with <code>HistorianRecords</code> that contains information about historical transactions.  When a transaction is submitted, the <code>HistorianRecord</code> is updated, and over time, maintains a history of transactions within a business network, and the participants and identities involved in submitting those transactions. <code>HistorianRecord</code> assets can be queried using Composer Queries to extract specific records or data. An example would be tracking the lifecycle of an asset such as a Land Title, from creation (with a Land Title ID) through update, through ownership changes carried out by different identities and/or participants. The transactions associated with this example can be queried in Historian, say, over a given time period.</p>
+<p>This tutorial will demonstrate the steps that a business network developer needs to take in order to invoke a Hyperledger Composer business network from a different business network. As part of the tutorial you will deploy the same business network twice. The business networks can be on the same channel or different channels. The business network used in this example will be the tutorial network that is outlined in the <a href="./developer-tutorial.html">developer tutorial</a>. This tutorial will refer to the business networks as &quot;A&quot; and &quot;B&quot;</p>
 
-<h2 id="historian-record">Historian Record</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 
-<p>A <code>HistorianRecord</code> is an &#39;asset&#39; defined in the Hyperledger Composer system namespace. <code>HistorianRecord</code>s are defined as follows.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">asset HistorianRecord identified by transactionId {
-  o String      transactionId
-  o String      transactionType
-  --&gt; Transaction transactionInvoked
-  --&gt; Participant participantInvoking  optional
-  --&gt; Identity    identityUsed         optional
-  o Event[]       eventsEmitted        optional
-  o DateTime      transactionTimestamp
-}
+<ol>
+<li>Before you continue, ensure that you have followed the steps in <a href="../installing/development-tools.html">installing a development environment</a>.</li>
+</ol>
+
+<h2 id="step-one-starting-a-hyperledger-fabric-network">Step One: Starting a Hyperledger Fabric network</h2>
+
+<p>In order to follow this tutorial, you must start a Hyperledger Fabric network. You can use the simple Hyperledger Fabric network provided in the development environment, or you can use your own Hyperledger Fabric network that you have built by following the Hyperledger Fabric documentation.</p>
+
+<p>The tutorial will assume that you use the simple Hyperledger Fabric network provided in the development environment. If you use your own Hyperledger Fabric network, then you must map between the configuration detailed below and your own configuration.</p>
+
+<ol>
+<li><p>Start a clean Hyperledger Fabric by running the following commands:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+./stopFabric.sh
+./teardownFabric.sh
+export FABRIC_VERSION=hlfv11
+./downloadFabric.sh
+./startFabric.sh
+</code></pre></div></li>
+<li><p>Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -n PeerAdmin@hlfv1
+</code></pre></div></li>
+</ol>
+
+<p>If these commands fail, then you have business network cards from a previous version and you will have to delete the file system card store.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    rm -fr ~/.composer
 </code></pre></div>
-<ul>
-<li><code>String transactionId</code> Using the transaction id as the uuid</li>
-<li><code>String transactionType</code> Type of the transaction that was submitted</li>
-<li><code>Transaction transactionInvoked</code> Relationship to transaction</li>
-<li><code>Participant participantInvoking</code> Participant who invoked this transaction</li>
-<li><code>Identity identityUsed</code> The identity that was used by the participant</li>
-<li><code>Event[] eventsEmitted</code> The events that where emitted by this transactionId</li>
-<li><code>DateTime transactionTimestamp</code> Use the transaction&#39;s timestamp</li>
-</ul>
+<ol>
+<li><p>Create the Peer Admin Card by running the following command        </p>
+<div class="highlight"><pre><code class="language-" data-lang="">./createPeerAdminCard.sh
+</code></pre></div></li>
+</ol>
 
-<p>It&#39;s important to note that the Transaction, Participant and Identity are relationships. Applications that wish to obtain these attributes must resolve this relationship.</p>
+<h2 id="step-two-create-a-second-channel-optional">Step Two: Create a second channel (Optional)</h2>
 
-<h2 id="tracking-transactions">Tracking Transactions</h2>
+<p>The simple network config used in the previous step only creates one channel by default. If business network B is to be deployed to a different channel, then the channel should be created now by using the Hyperledger Fabric operational tools.</p>
 
-<p>The historian registry is updated for each successful transaction, transactions which fail are not recorded. In addition, several operations that the Hyperledger Composer runtime makes are classed as transactions. These &#39;system transactions&#39; are defined in the Hyperledger Composer system model. The following will add <code>HistorianRecord</code> assets.</p>
+<p>After the channel has been created a business network card needs to be created to deploy to this channel.</p>
 
-<ul>
-<li>Add, Remove and Update of Assets</li>
-<li>Add, Remove and Update of Participants</li>
-<li>Issue, Bind, Activate and Revoke of Identities</li>
-</ul>
+<ol>
+<li><p>Create a connection profile that specifies the second channel</p></li>
+<li><p>To create the business network card run the following commands.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export PRIVATE_KEY=~/fabric-tools/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk
+export CERT=~/fabric-tools/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+composer card create -p &lt;Path to profile&gt; -u PeerAdmin -c ${CERT} -k ${PRIVATE_KEY} -r PeerAdmin -r ChannelAdmin --file otherPeerAdmin@hlfv1.card
+composer card import -f otherPeerAdmin@hlfv1.card -n otherPeerAdmin@hlfv1        
+</code></pre></div></li>
+</ol>
 
-<p>Note that the retrieval of assets and participants is not tracked.</p>
+<h2 id="step-three-define-the-business-networks">Step Three: Define the business networks</h2>
 
-<h2 id="querying-the-historian">Querying the Historian</h2>
+<ol>
+<li><p>Follow steps one and two in the <a href="./developer-tutorial.html">developer tutorial</a>. If business network A and business network B are being deployed to the same channel then a second business network will need to be created with a different name but with the same model, script and ACL files. This tutorial will assume this will be called <code>other-tutorial-network</code>.</p></li>
+<li><p>The transaction logic needs to be updated to query an asset in business network B and then update the quantity property of an asset in business network A.</p>
 
-<p>The established APIs for querying and working with resources and relationship are applicable. The historian is a registry containing assets (HistorianRecords) so can be queried.</p>
+<p>Replace the contents of the <code>logic.js</code> script file to update the transaction processor function to be the following. Where &lt;CHANNEL&gt; needs to be replaced with either the name of the channel created in step two, or <code>composerchannel</code> if the business networks are on the same channel; and where &lt;BUSINESS NEWORK NAME&gt; is either <code>tutorial-network</code> if the networks are on different channels, or <code>other-tutorial-network</code> if the network are on the same channel.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">        <span class="sd">/**
+         * Track the trade of a commodity from one trader to another
+         * @param {org.acme.biznet.Trade} trade - the trade to be processed
+         * @transaction
+         */</span>
+        <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
 
-<p>For example to get all the <code>HistorianRecord</code> assets a typical promise chain would be as follows.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="kd">let</span> <span class="nx">historian</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getHistorian</span><span class="p">();</span>
-    <span class="kd">let</span> <span class="nx">historianRecords</span> <span class="o">=</span> <span class="nx">historian</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">prettyoutput</span><span class="p">(</span><span class="nx">historianRecords</span><span class="p">));</span>
+            <span class="k">const</span> <span class="no">otherNetworkData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">()</span><span class="o">.</span><span class="nx">invokeChaincode</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">BUSINESS</span> <span class="nx">NETWORK</span> <span class="nx">NAME</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="s1">'getResourceInRegistry'</span><span class="p">,</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'org.acme.biznet.Commodity'</span><span class="p">,</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">tradingSymbol</span><span class="p">],</span> <span class="o">&lt;</span><span class="nx">CHANNEL</span><span class="o">&gt;</span><span class="p">);</span>                    
+            <span class="k">const</span> <span class="no">stringAsset</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">otherNetworkData</span><span class="o">.</span><span class="nx">payload</span><span class="o">.</span><span class="nx">toArrayBuffer</span><span class="p">())</span><span class="o">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+            <span class="k">const</span> <span class="no">asset</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">()</span><span class="o">.</span><span class="nx">fromJSON</span><span class="p">(</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">stringAsset</span><span class="p">));</span>
+
+            <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">quantity</span> <span class="o">=</span> <span class="nx">asset</span><span class="o">.</span><span class="nx">quantity</span><span class="p">;</span>
+
+            <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
+            <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
+        <span class="p">}</span>    
+</code></pre></div></li>
+<li><p>Follow step three in the <a href="./developer-tutorial.html">developer tutorial</a>.</p></li>
+<li><p>If business network B is going to be deployed on the same channel as business network A, then repeat steps 1-3 but create a network call <code>other-tutorial-network</code>.                        </p></li>
+</ol>
+
+<h2 id="step-four-deploy-the-business-networks">Step Four: Deploy the business networks</h2>
+
+<ol>
+<li><p>Install and start business network A using the following commands</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
+composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkA.card
+composer card import --file networkA.card --name networkA
+</code></pre></div></li>
+<li><p>Install and start business network B using the following commands    </p></li>
+</ol>
+
+<p>If business network B will be on a different channel:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    composer runtime install --card otherPeerAdmin@hlfv1 --businessNetworkName tutorial-network
+    composer network start --card otherPeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkB.card
+    composer card import --file networkB.card --name networkB
 </code></pre></div>
-<p>As this is a &#39;getAll&#39; call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in exactly the same way.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">let</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
-  <span class="nx">now</span><span class="p">.</span><span class="nx">setMinutes</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>  <span class="c1">// set the date to be time you want to query from</span>
-
-  <span class="kd">let</span> <span class="nx">q1</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.hyperledger.composer.system.HistorianRecord '</span> <span class="o">+</span>
-                                                <span class="s1">'WHERE (transactionTimestamp &gt; _$justnow)'</span><span class="p">);</span>   
-
-  <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">,{</span><span class="na">justnow</span><span class="p">:</span><span class="nx">now</span><span class="p">});</span>
+<p>If business network B will be on the same channel:    </p>
+<div class="highlight"><pre><code class="language-" data-lang="">    composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName other-tutorial-network
+    composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile other-tutorial-network@0.0.1.bna --file networkB.card
+    composer card import --file networkB.card --name networkB 
 </code></pre></div>
-<p>More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// build the special query for historian records</span>
-  <span class="kd">let</span> <span class="nx">q1</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">buildQuery</span><span class="p">(</span>
-      <span class="s2">`SELECT org.hyperledger.composer.system.HistorianRecord
-          WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`</span>
-  <span class="p">);</span>      
+<ol>
+<li><p>To check that the business networks have been deployed successfully run the following commands to ping the business networks</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card networkA
+composer network ping --card networkB
+</code></pre></div></li>
+</ol>
 
-  <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">q1</span><span class="p">);</span>
+<h2 id="step-five-create-the-assets">Step Five: Create the assets</h2>
 
+<ol>
+<li><p>Create a participant in business network A. Run the following command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkA -d '{"$class": "org.acme.biznet.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
+</code></pre></div></li>
+<li><p>Create an asset in business network  A</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.biznet.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.biznet.Commodity", "resources": [{"$class": "org.acme.biznet.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.biznet.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
+</code></pre></div></li>
+<li><p>Create a participant in business network B. Run the following command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkB -d '{"$class": "org.acme.biznet.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
+</code></pre></div></li>
+<li><p>Create an asset in business network B. Run the following command. Note the different quantity property.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.biznet.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.biznet.Commodity", "resources": [{"$class": "org.acme.biznet.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.biznet.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-six-bind-the-identity-on-network-a-to-the-participant-on-network-b">Step Six: Bind the identity on network A to the participant on network B</h2>
+
+<ol>
+<li><p>Export the networkA card to get the credentials</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card export -n networkA
+</code></pre></div></li>
+<li><p>Unzip the card</p></li>
+<li><p>Bind the identity to the participant. Run the following command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity bind --card networkB --participantId resource:org.hyperledger.composer.system.NetworkAdmin#admin --certificateFile ./networkA/credentials/certificate           
+</code></pre></div></li>
+<li><p>Create a card with the bound identity. Where &lt;PATH TO CONNECTION PROFILE FOR NETWORK B&gt; should be the one to connect to networkB and &lt;NAME OF BUSINESS NETWORK B&gt; should be the name of business network B</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card create -p \&lt;PATH TO CONNECTION PROFILE FOR NETWORK B\&gt; --businessNetworkName &lt;NAME OF BUSINESS NETWORK B&gt; -u admin -c ./networkA/credentials/certificate  -k ./networkA/credentials/privateKey -f newNetworkB.card
+</code></pre></div></li>
+<li><p>Import the card</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file newNetworkB.card --name newNetworkB
+</code></pre></div></li>
+<li><p>Ping the network to activate the identity</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card newNetworkB
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-seven-submit-a-transaction">Step Seven: Submit a transaction</h2>
+
+<p>Submit a transaction to see the effect of querying an asset on a different business network</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    composer transaction submit --card networkA -d '{"$class": "org.acme.biznet.Trade", "commodity": "resource:org.acme.biznet.Commodity#Ag", "newOwner": "resource:org.acme.biznet.Trader#bobId"}'
 </code></pre></div>
-<h2 id="what-next">What next?</h2>
+<h2 id="step-eight-check-the-updated-asset">Step Eight: Check the updated asset</h2>
 
-<ul>
-<li><a href="../business-network/query.html">Applying queries to a business network.</a></li>
-<li><a href="../business-network/publishing-events.html">Emitting events from transactions.</a></li>
-<li><a href="../api/api-doc-index.html">Hyperledger Composer API documentation.</a></li>
-</ul>
-
+<p>View the updated asset to check that the quantity was correctly updated to 500.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    composer network list --card networkA -r org.acme.biznet.Commodity -a Ag
+</code></pre></div>
             
           </section>
         </div>
