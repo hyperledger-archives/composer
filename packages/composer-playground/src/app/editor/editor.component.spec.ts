@@ -24,7 +24,7 @@ import * as chai from 'chai';
 
 import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
-import { DrawerService } from '../common/drawer/drawer.service';
+import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 
 let should = chai.should();
 
@@ -1124,6 +1124,29 @@ describe('EditorComponent', () => {
             finishedImport.next({deployed: false});
 
             tick();
+
+            mockUpdatePackage.should.not.have.been.called;
+            mockFileService.loadFiles.should.not.have.been.called;
+            drawerItem.close.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should open the import modal, and handle cancel by escape without throwing an error', fakeAsync(() => {
+            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
+
+            let finishedImport = new BehaviorSubject<any>(true);
+
+            let drawerItem = {
+                componentInstance: {
+                    finishedSampleImport: finishedImport
+                },
+                close: sinon.stub()
+            };
+            mockDrawer.open = sinon.stub().returns(drawerItem);
+
+            component.openImportModal();
+
+            finishedImport.next({deployed: false, error: DrawerDismissReasons.ESC});
 
             mockUpdatePackage.should.not.have.been.called;
             mockFileService.loadFiles.should.not.have.been.called;
