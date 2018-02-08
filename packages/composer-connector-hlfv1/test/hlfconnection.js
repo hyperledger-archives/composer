@@ -173,11 +173,19 @@ describe('HLFConnection', () => {
         });
 
         it('should not register any listeners for chaincode events if no business network is specified', () => {
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, [mockEventHub], mockCAClient);
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, {}, mockClient, mockChannel, mockCAClient);
             connection._connectToEventHubs();
             sinon.assert.notCalled(mockEventHub.registerChaincodeEvent);
             connection.ccEvents.length.should.equal(0);
 
+        });
+
+        it('should do nothing and not register an exit handler if there are no eventhubs', () => {
+            mockClient.getEventHubsForOrg.returns([]);
+            sandbox.stub(process, 'on');
+            connection._connectToEventHubs();
+            sinon.assert.notCalled(mockEventHub.registerChaincodeEvent);
+            sinon.assert.notCalled(process.on);
         });
 
     });

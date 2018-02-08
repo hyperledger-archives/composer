@@ -201,7 +201,7 @@ class HLFConnection extends Connection {
             eventHub.connect();
         });
 
-        if (this.businessNetworkIdentifier) {
+        if (this.businessNetworkIdentifier && this.eventHubs.length > 0) {
 
             // register a chaincode event listener on the first peer only.
             let ccid = this.businessNetworkIdentifier;
@@ -216,20 +216,22 @@ class HLFConnection extends Connection {
 
         LOG.debug(method, 'register exit listener for connector');
 
-        this.exitListener = () => {
-            this.eventHubs.forEach((eventHub, index) => {
-                if (eventHub.isconnected()) {
-                    eventHub.disconnect();
-                }
+        if (this.eventHubs.length > 0) {
+            this.exitListener = () => {
+                this.eventHubs.forEach((eventHub, index) => {
+                    if (eventHub.isconnected()) {
+                        eventHub.disconnect();
+                    }
 
-                // unregister any eventhub chaincode event registrations
-                if (this.ccEvents[index]) {
-                    this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
-                }
-            });
-        };
+                    // unregister any eventhub chaincode event registrations
+                    if (this.ccEvents[index]) {
+                        this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
+                    }
+                });
+            };
 
-        process.on('exit', this.exitListener);
+            process.on('exit', this.exitListener);
+        }
 
         LOG.exit(method);
     }

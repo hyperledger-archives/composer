@@ -2,7 +2,7 @@
 * [Step-by-step development environment setup](./getting-started.md)
 * [Suggested IDE setup](./ide-setup.md)
 * [Coding Guidelines](./coding-guidelines.md)
-* Currently reading -> [Pull Request Guidelines](./submitting-pull-request.md)
+* [Pull Request Guidelines](./submitting-pull-request.md)
 * [Release process](./release-process/weekly-qa-validation.md)
 
 
@@ -16,5 +16,3 @@
 - Commit any changes using a descriptive commit message.
 - Pull requests that have associated builds that are not 100% clean will be closed.
 
-# Next step
-Move on to read [Release process](./release-process/weekly-qa-validation.md)
