@@ -29,10 +29,37 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 - **Docker** Essential for the running of the tests and for running the HyperLedger Fabric.
     - Ubuntu: Firstly the Docker Engine needs to be [installed](https://docs.docker.com/engine/installation/linux/ubuntulinux/), then the [docker-compose tool](https://docs.docker.com/compose/install/) is required with these instructions. Some initial notes on administering docker are [here](https://docs.docker.com/engine/admin/)
 
-- **Node.js  v6** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
+- **Node.js v8** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
     - Ubuntu: Simply installed [follow these notes](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions).
 
 - **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
+
+- **softhsm 2.0.0** required for the complete integration tests to run as well as a specific set of functional tests. 
+   - If you are on Linux first you need to install the openssl headers if not already installed, for example on Ubuntu
+```
+# install the openssl headers
+sudo apt-get -y install libssl-dev
+```
+
+   - For Mac, you will need to use a solution like `homebrew` to achieve the same thing.
+   - To install softhsm itself
+
+```
+# install softhsm
+mkdir softhsm
+cd softhsm
+curl -O https://dist.opendnssec.org/source/softhsm-2.0.0.tar.gz
+tar -xvf softhsm-2.0.0.tar.gz
+cd softhsm-2.0.0
+./configure --disable-non-paged-memory --disable-gost
+make
+sudo make install
+
+# now configure slot 0 with pin
+sudo mkdir -p /var/lib/softhsm/tokens
+sudo chmod 777 /var/lib/softhsm/tokens
+softhsm2-util --init-token --slot 0 --label "ForComposer" --so-pin 1234 --pin 98765432
+```
 
 ## Forking and Cloning the Hyperledger Composer Repository
 
@@ -66,15 +93,13 @@ $ cd composer
 
 Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally so that their versions do not interfere with other projects you may be developing or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
 
-### Installing the npm Dependencies
+To install these dependencies, ensure you are in the top level directory of the composer repository you have just cloned and issue
 
-You must install [Lerna](https://lernajs.io) to build this multi-package repository:
+```bash
+$ npm install
+```
 
-    $ npm install -g lerna@2.0.0
-
-You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
-
-    $ lerna bootstrap
+### Individual packages
 
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
@@ -92,7 +117,7 @@ from your browser.
 Alternatively, you can execute npm commands across all of the packages at once using
 Lerna:
 
-    $ lerna run test
+    $ npm run test
 
 To clean the updates
 
@@ -107,7 +132,7 @@ You are now ready to try out your local clone of the Hyperledger Composer projec
 
 To verify that your local environment is ready for development and to confirm later that the updates are good, run the built-in unit tests provided with the Hyperledger Composer project.
 
-    $ lerna run test
+    $ npm run test
 
 This will run the unit tests that are associated with all the modules.
 
