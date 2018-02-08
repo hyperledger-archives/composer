@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -552,6 +554,18 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 <td style="text-align: left">boolean</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">specify the glob pattern used to match the script files to include. Defaults to <strong>\/lib/</strong>\/*.js</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options.updateExternalModels</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">if true then external models for the network are downloaded and updated.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options.updateExternalModelsOptions</strong></td>
+<td style="text-align: left">object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">options passed to ModelManager.updateExternalModels</td>
 </tr>
 </tbody></table>
 

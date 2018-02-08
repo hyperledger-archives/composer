@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -266,10 +268,10 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer network upgrade</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -c &lt;business-network-card&gt;
+<p>The <code>composer network upgrade</code> utility is used to upgrade the Hyperledger Composer runtime.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-name&gt; -c &lt;business-network-card&gt;
 </code></pre></div>
-<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been deployed to a blockchain node by using the <code>composer runtime install</code> command.</p>
+<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been installed to a blockchain node by using the <code>composer runtime install</code> command.</p>
 
 <p><em>Please Note</em>: <code>composer network upgrade</code> is only suitable for upgrading between micro versions of the Hyperledger Composer runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.</p>
 
@@ -279,7 +281,8 @@ ga('send', 'pageview');
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  -c, --card                   The business network card defining the network to upgrade. [string]
+  --card, -c                   The cardname to use to upgrade the network  [string] [required]
+  --businessNetworkName, -n    The business network name  [string] [required]
 </code></pre></div>
             
           </section>

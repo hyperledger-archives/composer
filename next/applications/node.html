@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -351,7 +353,7 @@ participant Person identified by personId {
 </code></pre></div>
 <p>You can see how the owner and title information are being accessed in a very simple manner.</p>
 
-<h2 id="submitting-a-transactions">Submitting a transactions</h2>
+<h2 id="submitting-a-transaction">Submitting a transaction</h2>
 
 <p>The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">transaction RegisterPropertyForSale identified by transactionId{

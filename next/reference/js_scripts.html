@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -457,7 +459,13 @@ more concise than using promise chains. This is the recommended style.</p>
 </code></pre></div>
 <h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
 
-<p>The Hyperledger Composer APIs can be called within transaction processor functions, in the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
+<p>The Hyperledger Composer and Hyperledger Fabric APIs can be called within transaction processor functions.</p>
+
+<h3 id="calling-the-hyperledger-composer-apis-in-transaction-processor-functions">Calling the Hyperledger Composer APIs in transaction processor functions</h3>
+
+<p>The Hyperledger Composer API can be called simply by calling API functions with the appropriate arguments in the transaction processor function.</p>
+
+<p>In the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
 
 <p>Model file:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
@@ -490,6 +498,42 @@ transaction SampleTransaction {
     <span class="c1">// that update() returns a promise, so so we have to return</span>
     <span class="c1">// the promise so that Composer waits for it to be resolved.</span>
     <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="calling-hyperledger-fabric-v1-1-apis-in-transaction-processor-functions">Calling Hyperledger Fabric v1.1 APIs in transaction processor functions</h3>
+
+<p>To call the Hyperledger Fabric API in a transaction processor function, the function <code>getNativeAPI</code> must be called, followed by a function from the Hyperledger Fabric API. Using the Hyperledger Fabric API gives you access to functionality which is not available in the Hyperledger Composer API.</p>
+
+<p><em>Please note: The <code>getState</code> and <code>putState</code> Hyperledger Fabric API functions will bypass the Hyperledger Composer access control rules.</em></p>
+
+<p>In the example below, the Hyperledger Fabric API function <code>getHistoryForKey</code> is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.</p>
+
+<p>For more information on the Hyperledger Fabric APIs you can call in a transaction processor function, see the <a href="https://fabric-shim.github.io/ChaincodeStub.html">Hyperledger Fabric API documentation</a>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">async</span> <span class="kd">function</span> <span class="nx">simpleNativeHistoryTransaction</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>    
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">assetId</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">nativeSupport</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">nativeSupport</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">nativeKey</span> <span class="o">=</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">createCompositeKey</span><span class="p">(</span><span class="s1">'Asset:systest.transactions.SimpleStringAsset'</span><span class="p">,</span> <span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">getHistoryForKey</span><span class="p">(</span><span class="nx">nativeKey</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">{</span><span class="na">done</span> <span class="p">:</span> <span class="kc">false</span><span class="p">};</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">iterator</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="what-next">What next?</h2>

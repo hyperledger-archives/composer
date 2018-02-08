@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -357,6 +359,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left">Get the TransactionDeclarations defined in this model manager</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#updateexternalmodels">updateExternalModels</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Downloads all ModelFiles that are external dependencies and adds or updates them in this ModelManager</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#updatemodelfile">updateModelFile</a></td>
 <td style="text-align: left"><code>Object</code></td>
 <td style="text-align: left">Updates a Composer file (as a string) on the ModelManager</td>
@@ -365,6 +372,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left"><a href="#validatemodelfile">validateModelFile</a></td>
 <td style="text-align: left"><code>void</code></td>
 <td style="text-align: left">Validates a Composer file (as a string) to the ModelManager</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#validatemodelfiles">validateModelFiles</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Validates all models files in this model manager</td>
 </tr>
 </tbody></table>
 
@@ -405,7 +417,7 @@ Note that if there are dependencies between multiple files the files must be add
 
 <h2 id="addmodelfile">addModelFile</h2>
 
-<p><em>Object addModelFile( string modelfile, string filename )</em></p>
+<p><em>Object addModelFile( string modelfile, string filename, [boolean disablevalidation] )</em></p>
 
 <p>Adds a Composer file (as a string) to the ModelManager. Composer files have a single namespace. If a Composer file with the same namespace has already been added to the ModelManager then it will be replaced. Note that if there are dependencies between multiple files the files must be added in dependency order, or the addModelFiles method can be used to add a set of files irrespective of dependencies.</p>
 
@@ -437,11 +449,17 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional file name to associate with the model file</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
 </tbody></table>
 
 <h2 id="updatemodelfile">updateModelFile</h2>
 
-<p><em>Object updateModelFile( string modelfile, string filename )</em></p>
+<p><em>Object updateModelFile( string modelfile, string filename, [boolean disablevalidation] )</em></p>
 
 <p>Updates a Composer file (as a string) on the ModelManager. Composer files have a single namespace. If a Composer file with the same namespace has already been added to the ModelManager then it will be replaced.</p>
 
@@ -473,6 +491,12 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional file name to associate with the model file</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
 </tbody></table>
 
 <h2 id="deletemodelfile">deleteModelFile</h2>
@@ -503,7 +527,7 @@ Note that if there are dependencies between multiple files the files must be add
 
 <h2 id="addmodelfiles">addModelFiles</h2>
 
-<p><em>Object[] addModelFiles(  modelfiles,  filenames )</em></p>
+<p><em>Object[] addModelFiles(  modelfiles, [ filenames], [boolean disablevalidation] )</em></p>
 
 <p>Add a set of Composer files to the model manager.</p>
 
@@ -534,6 +558,60 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"></td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">An optional array of file names to associate with the model files</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
+</tbody></table>
+
+<h2 id="validatemodelfiles">validateModelFiles</h2>
+
+<p>_ validateModelFiles(  )_</p>
+
+<p>Validates all models files in this model manager</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="updateexternalmodels">updateExternalModels</h2>
+
+<p><em>Promise updateExternalModels( [Object options], [ModelFileDownloader modelfiledownloader] )</em></p>
+
+<p>Downloads all ModelFiles that are external dependencies and adds or updates them in this ModelManager.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - a promise when the download and update operation is completed.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Options object passed to ModelFileLoaders</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>modelFileDownloader</strong></td>
+<td style="text-align: left">ModelFileDownloader</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">an optional ModelFileDownloader</td>
 </tr>
 </tbody></table>
 

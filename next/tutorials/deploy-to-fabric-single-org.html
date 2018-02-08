@@ -117,6 +117,8 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -267,6 +269,8 @@ ga('send', 'pageview');
 <p>In the <a href="../installing/development-tools.html">development environment</a>, a simple Hyperledger Fabric network is created for you (<code>fabric-dev-servers</code>), along with all of the Hyperledger Composer configuration that you need in order to deploy a blockchain business network.</p>
 
 <p>This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organization, including how to generate the necessary Hyperledger Composer configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of Hyperledger Fabric for multiple organizations.</p>
+
+<p>During this tutorial, you may wish to refer to the <a href="http://hyperledger-fabric.readthedocs.io">Hyperledger Fabric documentation</a>.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
@@ -599,7 +603,7 @@ ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
 
 <p>You can now use this business network card by specifying the name <code>PeerAdmin@fabric-network</code>. You are now all set to deploy the blockchain business network to the Hyperledger Fabric network.</p>
 
-<p>We are going to deploy the blockchain business network <code>tutorial-network</code> that is created by following the <a href="./developer-tutorial.html">Developer Tutorial</a>.</p>
+<p>We are going to deploy the blockchain business network <code>tutorial-network</code> that is created by following the <a href="./developer-tutorial.html">Developer Tutorial</a>. If you haven&#39;t created a business network archive (.bna) file by following the developer tutorial, follow steps 1, 2, and 3 of the developer tutorial.</p>
 
 <h2 id="step-seven-installing-the-hyperledger-composer-runtime-onto-the-hyperledger-fabric-peer-nodes">Step Seven: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes</h2>
 
@@ -653,6 +657,8 @@ ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
 <p>Run the <code>composer network ping</code> command to test the connection to the blockchain business network:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@tutorial-network
 </code></pre></div>
+<p>Check that the test result was successful, and there is a single participant listed for the business network with the name <code>NetworkAdmin</code>.</p>
+
 <h2 id="conclusion">Conclusion</h2>
 
 <p>In this tutorial you have seen how to configure Hyperledger Composer with all of the information required to connect to a Hyperledger Fabric network, and how to deploy a blockchain business network to that Hyperledger Fabric network.</p>
