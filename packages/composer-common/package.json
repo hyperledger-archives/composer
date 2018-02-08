@@ -102,7 +102,6 @@
       "coverage/**",
       "lib/codegen/**",
       "lib/tools/changelog.js",
-      "lib/tools/plantumltoimage.js",
       "lib/introspect/parser.js",
       "lib/acl/parser.js",
       "lib/query/parser.js",
