@@ -27,6 +27,8 @@ In {{site.data.conrefs.hlf_full}} v1.0, peers enforce the concepts of administra
 To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
 {{site.data.conrefs.composer_full}} provides a sample {{site.data.conrefs.hlf_full}} v1.0 network. The peer administrator for this network is called `PeerAdmin`, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other {{site.data.conrefs.hlf_full}} v1.0 networks.
 
+**Important**: When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 a bootstrap registrar is defined in the {{site.data.conrefs.hlf_full}} Certificate Authority (CA) configuration. The {{site.data.conrefs.composer_full}} development environment contains a preconfigured instance of {{site.data.conrefs.hlf_full}} with a specific enrollment ID and enrollment secret for the bootstrap registrar.
+
 ## Business network administrators
 
 When you deploy a business network, access controls are enforced as per the access control rules specified in the business network definition. Each business network must have at least one participant, and that participant must have a valid identity for accessing the business network. Otherwise, client applications cannot interact with the business network.
@@ -65,11 +67,16 @@ If the business network administrator has an enrollment ID and enrollment secret
 
 ## Deploying business networks using Playground locally
 
+**Please note**: When using a local Playground instance to deploy a business network to {{site.data.conrefs.hlf_full}} v1.0, as part of the deployment process you must choose how to provide credentials for the initial business network participant. This initial participant uses the credentials set for the bootstrap registrar in the {{site.data.conrefs.hlf_full}} Certificate Authority (CA), and will be a [**NetworkAdmin**](https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto).
+
+If you are using the instance of {{site.data.conrefs.hlf_full}} set up in the {{site.data.conrefs.composer_full}} development environment, the bootstrap registrar enrollment ID is `admin` and the bootstrap registrar enrollment secret is `adminpw`.
+
 When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.
 
 Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.
 
 When deploying a business network using Playground locally, you must have at least one business network card with the `PeerAdmin` role and at least one business network card with the `ChannelAdmin` role. Each of these business network cards must contain the correct admin certificates.
+
 
 ## Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
 

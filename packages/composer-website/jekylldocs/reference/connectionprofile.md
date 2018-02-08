@@ -15,10 +15,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 ## Creating a Connection Profile
 
-1. Create a new file called `connection.json` that contains the following information for {{site.data.conrefs.hlf_full}} v1.0.
-        }
-
-  Create a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
+A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following format:
 
         {
             "type": "hlfv1",
@@ -40,9 +37,11 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "timeout": "300"
         }
 
-    If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
 
-    _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
+  If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
+
+  _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
+
 
         {
           type: 'hlfv1',
