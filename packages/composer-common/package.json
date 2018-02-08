@@ -100,7 +100,8 @@
   "nyc": {
     "exclude": [
       "coverage/**",
-      "lib/codegen/**",
+      "lib/codegen/javascriptparser.js",
+      "lib/codegen/parsejs.js",
       "lib/introspect/parser.js",
       "lib/acl/parser.js",
       "lib/query/parser.js",
