@@ -5,10 +5,10 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 Automatic installations scripts are available for [Ubuntu](./prerequisites-ubuntu.md)
 
 The recommended *minimum* versions are:
-*Docker*: v1.12.3
-*Docker-compose*: v1.10.0
-*npm*: v4.6.0
-*node.js*: v6.9.5
+*Docker*: 17.09.0-ce
+*Docker-compose*: v1.17.1
+*npm*: v5.6.0
+*node.js*: v8.9.4
 
 ## Manual Installation
 

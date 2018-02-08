@@ -3,10 +3,10 @@
 The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
 
 The recommended *minimum* versions are:
-*Docker*: v1.12.3
-*Docker-compose*: v1.10.0
-*npm*: v4.6.0
-*node.js*: v6.9.5
+*Docker*: 17.09.0-ce
+*Docker-compose*: v1.17.1
+*npm*: v5.6.0
+*node.js*: v8.9.4
 
 
 ## Installation for Ubuntu
@@ -34,11 +34,11 @@ The script will print out the versions installed, if you wish to check here are 
 
 ```bash
 $ node --version
-v6.9.5
+v8.9.4
 $ docker --version
-Docker version 1.12.3
+Docker version 17.09.0-ce, build afdb6d4
 $ docker-compose --version
-docker-compose version 1.10.0
+docker-compose version 1.17.1, build 6d101fb
 ```
 
 ### 2. Installing Git

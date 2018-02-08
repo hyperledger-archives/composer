@@ -98,7 +98,7 @@ A more complete example of a connection profile with all possible properties def
 
 ### HSM Support
 
-Support for HSM (Hardware Security Module) is now possible so long as you have PKCS#11 support for your HSM. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup for example
+Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup e.g.
 
         {
             "name": "my-fabric-with-hsm",

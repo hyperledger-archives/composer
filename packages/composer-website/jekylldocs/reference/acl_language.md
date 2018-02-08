@@ -26,7 +26,7 @@ Network access control affects the following CLI commands:
 
 #### Composer Network
 
-**composer network deploy**
+**composer network start**
 
 Network access is required to use the CREATE operation for registries and networks.
 
