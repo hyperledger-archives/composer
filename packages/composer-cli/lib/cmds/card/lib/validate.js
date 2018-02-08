@@ -17,7 +17,7 @@ const ajv = require('ajv');
 
 /**
  * Validate connection profile
- * * @private
+ * @private
  */
 class Validate {
     /**
@@ -30,7 +30,6 @@ class Validate {
         let schema = require('./schema/ccpschema.json');
         let validate = new ajv({ allErrors : true }).compile(schema);
         validate(profile);
-        console.log(validate.errors);
         if(validate.errors) {
             return validate.errors;
         } else {

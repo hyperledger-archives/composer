@@ -13,7 +13,7 @@ class AdminConnection {
    + Promise undeploy(String) 
    + Promise update(BusinessNetworkDefinition) 
    + Promise reset(String) 
-   + Promise upgrade() 
+   + Promise upgrade(string,object) 
    + Promise ping() 
    + Promise setLogLevel(any) 
    + Promise getLogLevel() 
