@@ -438,47 +438,6 @@ class ConnectorServer {
     }
 
     /**
-     * Handle a request from the client to deploy a business network.
-     * @param {string} connectionID The connection ID.
-     * @param {string} securityContextID The security context ID.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deployment options.
-     * @param {function} callback The callback to call when complete.
-     * @return {Promise} A promise that is resolved when complete.
-     */
-    connectionDeploy (connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
-        const method = 'connectionDeploy';
-        LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions);
-        let connection = this.connections[connectionID];
-        if (!connection) {
-            let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
-            callback(ConnectorServer.serializerr(error));
-            LOG.exit(method, null);
-            return Promise.resolve();
-        }
-        let securityContext = this.securityContexts[securityContextID];
-        if (!securityContext) {
-            let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
-            callback(ConnectorServer.serializerr(error));
-            LOG.exit(method, null);
-            return Promise.resolve();
-        }
-        return connection.deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions)
-            .then(() => {
-                callback(null);
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                LOG.error(error);
-                callback(ConnectorServer.serializerr(error));
-                LOG.exit(method);
-            });
-    }
-
-    /**
      * Handle a request from the client to update a deployed business network.
      * @param {string} connectionID The connection ID.
      * @param {string} securityContextID The security context ID.

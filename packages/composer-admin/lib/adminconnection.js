@@ -518,44 +518,6 @@ class AdminConnection {
     }
 
     /**
-     * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
-     * be connected for this method to succeed.
-     * @example
-     * // Deploy a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.deploy(businessNetworkDefinition)
-     *    // Business network definition deployed
-     * } catch(error) {
-     *     // Add error handling here.
-     * }
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
-     * @param {Object} deployOptions connector specific deployment options
-     *                deployOptions.card the card to use for the NetworkAdmin
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * deployed.
-     * @deprecated Please install() and start()
-     */
-    deploy (businessNetworkDefinition, deployOptions) {
-        const method = 'deploy';
-        LOG.entry(method, businessNetworkDefinition, deployOptions);
-        Util.securityCheck(this.securityContext);
-
-        // Build the start transaction.
-
-        return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
-            .then((startTransactionJSON) => {
-                // Now we can deploy the business network.
-                return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
-
-    /**
      * Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no
      * longer be able to process transactions.
      * @example

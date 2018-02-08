@@ -38,11 +38,12 @@ const sinon = require('sinon');
 
 describe('AdminConnection', () => {
     const testProfileName = 'profile';
+    const sandbox = sinon.sandbox.create();
+
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
     let adminConnection;
-    let sandbox;
     let clock;
     let cardStore;
     let mockAdminIdCard;
@@ -66,7 +67,6 @@ describe('AdminConnection', () => {
         mockConnection.getIdentifier.returns('BNI@CP');
         mockConnection.disconnect.resolves();
         mockConnection.login.resolves(mockSecurityContext);
-        mockConnection.deploy.resolves();
         mockConnection.install.resolves();
         mockConnection.start.resolves();
         mockConnection.ping.resolves();
@@ -92,7 +92,6 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
         delete process.env.COMPOSER_CONFIG;
-        sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
         let faultyMetaData = { userName: 'fred',
 
@@ -371,44 +370,6 @@ describe('AdminConnection', () => {
                     sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
                 });
         });
-    });
-
-    describe('#deploy', () => {
-
-        it('should be able to deploy a business network definition', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.deploy(businessNetworkDefinition, {card : mockAdminIdCard})
-                .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card : mockAdminIdCard});
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {card : mockAdminIdCard});
-                });
-        });
-
-        it('should be able to deploy a business network definition with deploy options', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.deploy(businessNetworkDefinition, {opt : 1, card : mockAdminIdCard})
-                .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-                        opt : 1,
-                        card : mockAdminIdCard
-                    });
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {
-                        opt : 1,
-                        card : mockAdminIdCard
-                    });
-                });
-        });
-
     });
 
     describe('#undeploy', () => {

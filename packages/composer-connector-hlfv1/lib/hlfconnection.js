@@ -31,7 +31,14 @@ const LOG = Logger.getLog('HLFConnection');
 
 const connectorPackageJSON = require('../package.json');
 const runtimeModulePath = path.resolve(path.dirname(require.resolve('composer-runtime-hlfv1')));
-const runtimePackageJSON = require('composer-runtime-hlfv1/package.json');
+const runtimeHlfPackageJson = require('composer-runtime-hlfv1/package.json');
+const composerVersion = runtimeHlfPackageJson.version;
+
+const installDependencies = {
+    'composer-runtime-hlfv1': composerVersion,
+    'composer-runtime': composerVersion,
+    'composer-common': composerVersion
+};
 
 /**
  * Class representing a connection to a business network running on Hyperledger
@@ -309,18 +316,10 @@ class HLFConnection extends Connection {
         }
 
         // create the package.json
-        let bnaPackage = businessNetworkDefinition.getMetadata().getPackageJson();
-        let dependencies = bnaPackage.dependencies ? bnaPackage.dependencies : {};
-        if (!dependencies['composer-runtime-hlfv1']) {
-            //dependencies['composer-runtime-hlfv1'] = '^' + runtimeModulePath;
-            dependencies['composer-runtime-hlfv1'] = '../composer-runtime-hlfv1/composer-runtime-hlfv1-0.17.1.tgz';
-            dependencies['composer-runtime'] = '../composer-runtime/composer-runtime-0.17.1.tgz';
-            dependencies['composer-common'] = '../composer-common/composer-common-0.17.1.tgz';
-        }
-
-        let scripts = bnaPackage.scripts ? bnaPackage.scripts : {};
+        const bnaPackage = businessNetworkDefinition.getMetadata().getPackageJson();
+        bnaPackage.dependencies = this._createPackageDependencies(bnaPackage.dependencies);
+        const scripts = bnaPackage.scripts || {};
         scripts.start = 'start-network';
-        bnaPackage.dependencies = dependencies;
         bnaPackage.scripts = scripts;
 
         // create a temp directory to hold
@@ -333,22 +332,15 @@ class HLFConnection extends Connection {
         let bna = await businessNetworkDefinition.toArchive();
         this.fs.writeFileSync(path.resolve(tempDir, bnaPackage.name + '.bna'), bna);
 
-        // copy any tgz files and update the package.json
-        for (let entry in dependencies) {
-            let dep = dependencies[entry];
+        // copy any tgz files to the tmp directory and update the package.json
+        for (let entry in bnaPackage.dependencies) {
+            let dep = bnaPackage.dependencies[entry];
             if (dep.endsWith('.tgz')) {
-
-                let actualPath;
-                // look for them relative to the current working directory, if a relative path
-                path.isAbsolute(dep) ? actualPath = dep : actualPath = path.resolve(process.cwd(), dep);
-                let toWriteto = path.resolve(tempDir, path.basename(actualPath));
-
-                // copy the tgz files to the temp directory
-                let fileToWrite = fs.readFileSync(actualPath);
-                fs.writeFileSync(toWriteto, fileToWrite);
-
-                // rewrite the dependency information
-                dependencies[entry] = './' + path.basename(actualPath);
+                const fromPath = path.resolve(process.cwd(), dep);
+                const basename = path.basename(fromPath);
+                const toPath = path.resolve(tempDir, basename);
+                await this.fs.copy(fromPath, toPath);
+                bnaPackage.dependencies[entry] = './' + basename;
             }
         }
         // write the package.json
@@ -422,6 +414,38 @@ class HLFConnection extends Connection {
                 }
             }
         }
+    }
+
+    /**
+     * Create valid package dependencies for installation to Fabric, based on existing package dependencies.
+     * @param {Object} dependencies package.json dependencies.
+     * @return {Object} Updated dependencies.
+     * @private
+     */
+    _createPackageDependencies(dependencies) {
+        const result = dependencies || { };
+
+        if (!this._hasAllRequiredDependencies(result)) {
+            Object.assign(result, installDependencies);
+        }
+
+        return result;
+    }
+
+    /**
+     * Check if the required Composer package dependencies exist.
+     * @param {Object} dependencies package.json dependencies.
+     * @return {Boolean} true if the required dependencies exist; otherwise false.
+     * @private
+     */
+    _hasAllRequiredDependencies(dependencies) {
+        for (let property in installDependencies) {
+            if (!dependencies[property]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -551,68 +575,6 @@ class HLFConnection extends Connection {
                 LOG.error(method, newError);
                 throw newError;
             });
-    }
-
-    /**
-     * Deploy all business network artifacts.
-     * @param {HLFSecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deployment options
-     * @param {string} deployOptions.logLevel the level of logging for the composer runtime
-     * @param {any} deployOptions.endorsementPolicy the endorsement policy (either a JSON string or Object) as defined by fabric node sdk
-     * @param {String} deployOptions.endorsementPolicyFile the endorsement policy json file containing the endorsement policy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
-     */
-    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        const method = 'deploy';
-        LOG.entry(method, securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
-
-        // Check that a valid security context has been specified.
-        HLFUtil.securityCheck(securityContext);
-
-        // Validate all the arguments.
-        if (!businessNetworkIdentifier) {
-            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
-        } else if (!deployTransaction) {
-            return Promise.reject(new Error('deployTransaction not specified'));
-        }
-
-        LOG.debug(method, 'installing composer runtime chaincode');
-        let chaincodeInstalled;
-        let installOptions = {calledFromDeploy: true};
-        Object.assign(installOptions, deployOptions);
-        return this.install(securityContext, businessNetworkIdentifier, installOptions)
-            .then((chaincodeInstalled_) => {
-                chaincodeInstalled = chaincodeInstalled_;
-                // check to see if the chaincode is already instantiated
-                return this.channel.queryInstantiatedChaincodes();
-            })
-            .then((queryResults) => {
-                LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
-                let alreadyInstantiated = queryResults.chaincodes.some((chaincode) => {
-                    return chaincode.path === 'composer' && chaincode.name === businessNetworkIdentifier;
-                });
-                if (alreadyInstantiated) {
-                    LOG.debug(method, 'chaincode already instantiated');
-                    if (!chaincodeInstalled) {
-                        // chaincode was not installed so must have been installed already.
-                        throw new Error('Business network has already been deployed or undeployed and cannot be deployed again.');
-                    }
-                    return Promise.resolve();
-                }
-                return this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying deploy. ' + error);
-                LOG.error(method, error);
-                throw newError;
-            });
-
     }
 
     /**
@@ -848,7 +810,7 @@ class HLFConnection extends Connection {
         const request = {
             targets: [this.queryPeer],
             chaincodeId: this.businessNetworkIdentifier,
-            chaincodeVersion: runtimePackageJSON.version,
+            chaincodeVersion: runtimeHlfPackageJson.version,
             txId: txId,
             fcn: functionName,
             args: args
@@ -936,7 +898,7 @@ class HLFConnection extends Connection {
                 // Submit the transaction to the endorsers.
                 const request = {
                     chaincodeId: this.businessNetworkIdentifier,
-                    chaincodeVersion: runtimePackageJSON.version,
+                    chaincodeVersion: runtimeHlfPackageJson.version,
                     txId: txId,
                     fcn: functionName,
                     args: args
@@ -1150,7 +1112,7 @@ class HLFConnection extends Connection {
                 // Submit the upgrade proposal
                 const request = {
                     chaincodePath: runtimeModulePath,
-                    chaincodeVersion: runtimePackageJSON.version,
+                    chaincodeVersion: runtimeHlfPackageJson.version,
                     chaincodeId: businessNetworkName,
                     txId: txId,
                     fcn: 'upgrade'

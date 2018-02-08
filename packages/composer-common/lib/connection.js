@@ -217,46 +217,6 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * Deploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deployment options
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been deployed, or rejected with an error.
-     */
-    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        return new Promise((resolve, reject) => {
-            this._deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback deployCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Deploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deployment options
-     * @param {deployCallback} callback The callback function to call when complete.
-     */
-    _deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions, callback) {
-        throw new Error('abstract function called');
-    }
-
-    /**
      * Updates an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.

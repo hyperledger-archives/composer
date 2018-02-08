@@ -168,18 +168,6 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * Deploy a business network. For the embedded connector this just translates to
-     * a start request as no install is required.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deploy options
-     */
-    async deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        await this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
-    }
-
-    /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime

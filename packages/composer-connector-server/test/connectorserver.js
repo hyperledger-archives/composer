@@ -118,7 +118,6 @@ describe('ConnectorServer', () => {
                 '/api/businessNetworkCardStorePut',
                 '/api/businessNetworkCardStoreDelete',
                 '/api/connectionCreateIdentity',
-                '/api/connectionDeploy',
                 '/api/connectionDisconnect',
                 '/api/connectionInstall',
                 '/api/connectionInvokeChainCode',
@@ -669,65 +668,6 @@ describe('ConnectorServer', () => {
             mockConnection.start.rejects(new Error('such error'));
             const cb = sinon.stub();
             return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.equal('such error');
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-    });
-
-    describe('#connectionDeploy', () => {
-
-        beforeEach(() => {
-            connectorServer.connections[connectionID] = mockConnection;
-            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
-        });
-
-        it('should deploy', () => {
-            mockConnection.deploy.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
-            sandbox.stub(uuid, 'v4').returns(securityContextID);
-            const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should handle an invalid connection ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionDeploy(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No connection found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle an invalid security context ID ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No security context found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle deploy errors', () => {
-            mockConnection.deploy.rejects(new Error('such error'));
-            const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];

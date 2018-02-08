@@ -16,6 +16,7 @@
 const sinon = require('sinon');
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
 const Logger = require('composer-common').Logger;
 
 const Channel = require('fabric-client/lib/Channel');
@@ -56,7 +57,6 @@ describe('HLFConnection', () => {
     let mockEventHubDef, mockTransactionID, logWarnSpy;
 
     beforeEach(() => {
-        // sandbox = sinon.sandbox.create();
         const LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
@@ -69,9 +69,6 @@ describe('HLFConnection', () => {
         mockTransactionID.getTransactionID.returns('00000000-0000-0000-0000-000000000000');
         mockClient.newTransactionID.returns(mockTransactionID);
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
-        // mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-        // mockBusinessNetwork.getName.returns(mockBusinessNetwork.getName());
-        // mockBusinessNetwork.toArchive.resolves(Buffer.from('hello world'));
         mockBusinessNetwork = new BusinessNetworkDefinition('org-acme-biznet@1.0.0');
         sandbox.stub(mockBusinessNetwork, 'toArchive').resolves(Buffer.from('hello world'));
         mockChannel.getName.returns('testchainid');
@@ -364,9 +361,8 @@ describe('HLFConnection', () => {
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
             sandbox.stub(connection,'getChannelPeersInOrg').returns([mockPeer1]);
-
-            sandbox.stub(fs, 'readFileSync').returns('readFileSync');
-            sandbox.stub(fs, 'writeFileSyn').returns();
+            sandbox.stub(connection.fs, 'copy').resolves();
+            sandbox.stub(connection.fs, 'writeFileSync').returns();
         });
 
         it('should reject if businessNetworkDefinition not specified', () => {
@@ -410,11 +406,57 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
-            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', sinon.match(/\/.npmrc$/)).resolves();
             return connection.install(mockSecurityContext, mockBusinessNetwork, {npmrcFile: '/some/file'})
                 .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, '/some/file', sinon.match(/\/.npmrc$/));
+                });
+        });
+
+        it('should copy .tgz package dependencies', () => {
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+
+            const tgzFileName = 'XYZ.tgz';
+            const tgzDependency = { 'testDependency': tgzFileName };
+
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            const stubMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
+            stubMetadata.getPackageJson.returns({ dependencies: tgzDependency });
+            sandbox.stub(mockBusinessNetwork, 'getMetadata').returns(stubMetadata);
+
+            return connection.install(mockSecurityContext, mockBusinessNetwork)
+                .then(() => {
+                    const expected = (value => path.basename(value) === tgzFileName);
+                    sinon.assert.calledWithMatch(connection.fs.copy, expected, expected);
+                });
+        });
+
+        it('should not copy any .tgz dependencies if none included', () => {
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            const stubMetadata = sinon.createStubInstance(BusinessNetworkMetadata);
+            stubMetadata.getPackageJson.returns({ dependencies: { } });
+            sandbox.stub(mockBusinessNetwork, 'getMetadata').returns(stubMetadata);
+            return connection.install(mockSecurityContext, mockBusinessNetwork)
+                .then(() => {
+                    const unexpected = /.tgz$/;
+                    sinon.assert.neverCalledWithMatch(connection.fs.copy, unexpected, unexpected);
                 });
         });
 
@@ -429,7 +471,7 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
             sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
-            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', sinon.match(/\/.npmrc$/)).rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
+            connection.fs.copy.withArgs('/some/file', sinon.match(/\/.npmrc$/)).rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
             return connection.install(mockSecurityContext, mockBusinessNetwork, {npmrcFile: '/some/file'})
                 .should.be.rejectedWith(/ENOENT/);
         });
@@ -515,6 +557,41 @@ describe('HLFConnection', () => {
                 });
         });
 
+        it('should not throw an error and return false for chaincode installed if from deploy flag set', () => {
+            const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
+            const installResponses = [errorResp, errorResp, errorResp];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
+            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 3, validResponses: []});
+
+            return connection.install(mockSecurityContext, mockBusinessNetwork, {calledFromDeploy: true})
+            .then((chaincodeInstalled) => {
+                chaincodeInstalled.should.be.false;
+                sinon.assert.calledOnce(mockClient.installChaincode);
+            });
+        });
+    });
+
+    describe('#_createPackageDependencies', () => {
+        it('should not modify dependencies if all required present', () => {
+            const testVersion = '0.0.1-banana';
+            const dependencies = {
+                'composer-runtime-hlfv1': testVersion,
+                'composer-runtime': testVersion,
+                'composer-common': testVersion,
+                'banana': testVersion
+            };
+            connection._createPackageDependencies(dependencies).should.equal(dependencies);
+        });
+
+        it('should add required dependencies if none supplied', () => {
+            connection._createPackageDependencies().should.have.all.keys(
+                'composer-runtime-hlfv1',
+                'composer-runtime',
+                'composer-common'
+            );
+        });
     });
 
     describe('#__addEndorsementPolicy', () => {
@@ -1126,617 +1203,6 @@ describe('HLFConnection', () => {
             sinon.assert.notCalled(mockChannel.compareProposalResponseResults);
         });
 
-
-    });
-
-    describe.skip('#deploy', () => {
-        const validResponses = [{
-            response: {
-                status: 200
-            }
-        }];
-
-        beforeEach(() => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            sandbox.stub(connection, '_initializeChannel').resolves();
-            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: validResponses});
-            mockClient.getEventHubsForOrg.returns([mockEventHub]);
-            connection._connectToEventHubs();
-            sandbox.stub(connection,'getChannelPeersInOrg').returns([mockPeer1]);
-        });
-
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            return connection.deploy(mockSecurityContext, null)
-                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
-        });
-
-        it('should throw if deployTransaction not specified', () => {
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName())
-                .should.be.rejectedWith(/deployTransaction not specified/);
-        });
-
-        it('should request an event timeout based on connection settings', () => {
-            connectOptions = {
-                'x-commitTimeout': 22
-            };
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
-            sandbox.stub(connection, '_validateResponses').returns({ignoredErrors: 0, validResponses: validResponses});
-            sandbox.stub(connection, '_initializeChannel').resolves();
-            connection._connectToEventHubs();
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            sandbox.stub(global, 'setTimeout').yields();
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/Failed to receive commit notification/)
-                .then(() => {
-                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
-                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
-                });
-        });
-
-        it('should deploy and include an npmrc file if specified', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').resolves();
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', {npmrcFile: '/some/file'})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.fs.copy);
-                    sinon.assert.calledWith(connection.fs.copy, '/some/file', runtimeModulePath + '/.npmrc');
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}']
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should throw an error if specified npmrcFile doesn\'t exist', () => {
-
-            // This is the install proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            sandbox.stub(connection.fs, 'copy').withArgs('/some/file', runtimeModulePath + '/.npmrc').rejects(new Error('ENOENT: no such file or directory, lstat \'/some/file\''));
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', {npmrcFile: '/some/file'})
-                .should.be.rejectedWith(/ENOENT/);
-        });
-
-
-        it('should deploy the business network with endorsement policy object', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-
-            const policy = {
-                identities: [
-                    { role: { name: 'member', mspId: 'Org1MSP' }},
-                    { role: { name: 'member', mspId: 'Org2MSP' }},
-                    { role: { name: 'admin', mspId: 'Org1MSP' }}
-                ],
-                policy: {
-                    '1-of': [
-                        { 'signed-by': 2},
-                        { '2-of': [{ 'signed-by': 0}, { 'signed-by': 1 }]}
-                    ]
-                }
-            };
-            const deployOptions = {
-                endorsementPolicy : policy
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-                .then(() => {
-                    // Check the filter ignores any relevant node modules files.
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}'],
-                        'endorsement-policy' : policy
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should deploy the business network with endorsement policy string', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-
-            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
-            const policy = JSON.parse(policyString);
-            const deployOptions = {
-                endorsementPolicy : policyString
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-                .then(() => {
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}'],
-                        'endorsement-policy' : policy
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should deploy the business network with endorsement policy file', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-
-            const policyString = '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
-            const deployOptions = {
-                endorsementPolicyFile : '/path/to/options.json'
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-                .then(() => {
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}'],
-                        'endorsement-policy' : JSON.parse(policyString)
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should throw an error if the policy string isn\'t valid json', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-
-            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
-            const deployOptions = {
-                endorsementPolicy : policyString
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-            .should.be.rejectedWith(/Error trying parse endorsement policy/);
-        });
-
-        it('should throw an error if the policy file doesn\'t exist', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').throws(new Error('ENOENT'));
-            const deployOptions = {
-                endorsementPolicyFile : '/path/to/options.json'
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-            .should.be.rejectedWith(/Error trying parse endorsement policy/);
-        });
-
-        it('should throw an error if the policy file isn\'t valid json', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-
-            const policyString = '{identities: [{role: {name: "member",mspId: "Org1MSP"}}],policy: {1-of: [{signed-by: 0}]}}';
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(policyString);
-            const deployOptions = {
-                endorsementPolicyFile : '/path/to/options.json'
-            };
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}', deployOptions)
-            .should.be.rejectedWith(/Error trying parse endorsement policy/);
-        });
-
-        it('should deploy the business network with no debug level specified', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .then(() => {
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}']
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should instantiate the business network if it responds already installed', () => {
-            sandbox.stub(global, 'setTimeout');
-            const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
-            const installResponses = [errorResp];
-            const instantiateResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID.toString(), 'VALID');
-            connection._validateResponses.withArgs(installResponses).returns({ignoredErrors: 1, validResponses: []});
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .then(() => {
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledOnce(connection._initializeChannel);
-                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        fcn: 'init',
-                        args: ['{"start":"json"}']
-                    });
-
-                    sinon.assert.calledOnce(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should install and exit cleanly if business network already instantiated', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is reponse from an install and instantiate
-            const installInstantiateResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ installInstantiateResponses ]);
-
-            // query instantiate response shows chaincode already instantiated
-            const queryInstantiatedResponse = {
-                chaincodes: [
-                    {
-                        path: 'composer',
-                        name: mockBusinessNetwork.getName()
-                    }
-                ]
-            };
-            mockChannel.queryInstantiatedChaincodes.resolves(queryInstantiatedResponse);
-
-            // What would be a valid instantiate proposal response, should not be used.
-            mockChannel.sendInstantiateProposal.resolves([ installInstantiateResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: installInstantiateResponses, proposal: proposal, header: header }).resolves(response);
-
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .then(() => {
-                    sinon.assert.calledOnce(mockClient.installChaincode);
-                    sinon.assert.calledWith(mockClient.installChaincode, {
-                        chaincodeType: 'node',
-                        chaincodePath: runtimeModulePath,
-                        chaincodeVersion: mockBusinessNetwork.getVersion(),
-                        chaincodeId: mockBusinessNetwork.getName(),
-                        txId: mockTransactionID,
-                        targets: [mockPeer1]
-                    });
-                    sinon.assert.notCalled(connection._initializeChannel);
-                    sinon.assert.notCalled(mockChannel.sendInstantiateProposal);
-                    sinon.assert.notCalled(mockChannel.sendTransaction);
-                });
-        });
-
-        it('should throw an error is already installed and instantiated', () => {
-            sandbox.stub(global, 'setTimeout');
-            const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
-            const installResponses = [errorResp];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
-            // query instantiate response shows chaincode already instantiated
-            const queryInstantiatedResponse = {
-                chaincodes: [
-                    {
-                        path: 'composer',
-                        name: mockBusinessNetwork.getName()
-                    }
-                ]
-            };
-            mockChannel.queryInstantiatedChaincodes.resolves(queryInstantiatedResponse);
-            connection._validateResponses.withArgs(installResponses).returns({ignoredErrors: 1, validResponses: []});
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/already been deployed/);
-        });
-
-        it('should throw if install fails to validate', () => {
-            sandbox.stub(global, 'setTimeout');
-            // This is the deployment proposal and response (from the peers).
-            const errorResp = new Error('Error something went completely wrong');
-            const installResponses = [errorResp];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
-            connection._validateResponses.withArgs(installResponses).throws(errorResp);
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/Error something went completely wrong/);
-        });
-
-        it('should throw if any instantiate fails to validate', () => {
-            const installResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const errorResp = new Error('such error');
-            const instantiateResponses = [ errorResp ];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
-            connection._validateResponses.withArgs(installResponses).returns({ignoredErrors: 1, validResponses: []});
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
-            connection._validateResponses.withArgs(instantiateResponses).throws(errorResp);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/such error/);
-        });
-
-        it('should throw an error if a commit fails', () => {
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/Peer has rejected transaction/);
-        });
-
-        it('should throw an error if peer says transaction not valid', () => {
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
-            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
-            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
-            return connection.deploy(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
-                .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
-        });
 
     });
 

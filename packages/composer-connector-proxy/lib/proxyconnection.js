@@ -120,27 +120,6 @@ class ProxyConnection extends Connection {
         });
     }
 
-
-    /**
-     * Deploy a business network definition.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deployment options
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
-     */
-    deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionDeploy', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, deployTransaction, deployOptions, (error) => {
-                if (error) {
-                    return reject(ProxyUtil.inflaterr(error));
-                }
-                resolve();
-            });
-        });
-    }
-
     /**
      * Undeploy a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.

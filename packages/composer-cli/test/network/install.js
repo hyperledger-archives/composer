@@ -45,7 +45,6 @@ describe('composer network install CLI', function () {
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
 
         mockAdminConnection.connect.resolves();
-        mockAdminConnection.deploy.resolves();
 
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');

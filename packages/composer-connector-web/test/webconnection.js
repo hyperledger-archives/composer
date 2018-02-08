@@ -163,18 +163,6 @@ describe('WebConnection', () => {
         });
     });
 
-    describe('#deploy', () => {
-        it('should just call start', () => {
-            sinon.stub(connection, 'start').resolves();
-            return connection.deploy(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.start);
-                    sinon.assert.calledWith(connection.start, mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'});
-                });
-        });
-    });
-
-
     describe('#start', () => {
 
         it('should call the init engine method, ping, and store the chaincode ID', () => {
