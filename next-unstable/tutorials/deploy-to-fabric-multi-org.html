@@ -315,19 +315,18 @@ ga('send', 'pageview');
 
 <p>cd fabric-samples</p></li>
 <li><p>Download the platform binaries, including cryptogen :</p>
-
-<p>curl -sSL <a href="https://goo.gl/6wtTN5">https://goo.gl/6wtTN5</a> | bash -s 1.1.0-alpha</p>
-
+<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0-alpha
+</code></pre></div>
 <p>Verify the list of docker images downloaded without issues</p></li>
 <li><p>change directory into <code>first-network</code> sample </p>
-
-<p>cd first-network</p></li>
+<div class="highlight"><pre><code class="language-" data-lang="">cd first-network
+</code></pre></div></li>
 <li><p>Next, start the BYFN network - additional flags (to the <code>byfn.sh</code> script below) must be specified, as we&#39;re using CouchDB as the world state database (different to that specified on the Fabric BYFN page) - we also want to start a Certificate Authority (CA) for <strong>each</strong> organization.</p></li>
 <li><p>Execute the following commands in sequence from the <code>first-network</code> directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">./byfn.sh -m generate
 
-<p>./byfn.sh -m generate</p>
-
-<p>./byfn.sh -m up -s couchdb -a</p></li>
+./byfn.sh -m up -s couchdb -a
+</code></pre></div></li>
 </ol>
 
 <p>If the command works successfully, the first command will generate Fabric network / security artifacts(see this <a href="http://hyperledger-fabric.readthedocs.io/en/release/build_network.html#generate-network-artifacts%20for%20more%20info">link</a>. Following the second command (above), the BYFN network is started, and verify that you see the following output before proceeding:</p>
