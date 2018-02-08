@@ -43,9 +43,9 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             ],
             "peers": {
                 "peer0.org1.example.com": {
-                    "endorsingPeer": true
-                    "chaincodeQuery": true
-                    "ledgerQuery": true
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
                     "eventSource": true
                 }
             }
@@ -84,7 +84,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 Official documentation for this structure can be found here:  https://fabric-sdk-node.github.io/tutorial-network-config.html.
 
-The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.
+The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile defines all the servers that exist, not only in your organization but all organizations as well as all defined channels.
 
 The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
 

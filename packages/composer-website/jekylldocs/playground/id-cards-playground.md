@@ -18,7 +18,7 @@ Here is a Business Network Card that may be used to connect to the business netw
 
 ![id-card](./images/id-card.png)
 
-A Business Network Card can be created when an Identity is issued within the Playground. This Business Network Card can then be exported and shared with others, allowing them to connect to the business network using the issued identity. If a user is provided with a Enrollment ID and Secret by an administrator, which corresponds to a valid Identity within a business network, then a Business Network Card may be directly created in the Playground. It is also possible to manually create a Business Network Card.
+A Business Network Card can be created when an Identity is issued within the Playground. This Business Network Card can then be exported and shared with others, allowing them to connect to the business network using the issued identity. If a user is provided with an Enrollment ID and Secret by an administrator, which corresponds to a valid Identity within a business network, then a Business Network Card may be directly created in the Playground. It is also possible to manually create a Business Network Card.
 
 ---
 

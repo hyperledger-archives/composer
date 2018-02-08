@@ -31,6 +31,13 @@ Profiles:
             Organizations:
                 - *Org1
                 - *Org2
+    OtherComposerChannel:
+            Consortium: ComposerConsortium
+            Application:
+                <<: *ApplicationDefaults
+                Organizations:
+                    - *Org1
+                    - *Org2
 
 ################################################################################
 #

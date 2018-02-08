@@ -14,7 +14,9 @@
 
 'use strict';
 
+const cheerio = require('cheerio');
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const playgroundAPI = require('composer-playground-api');
 
@@ -31,13 +33,27 @@ function createServer (port, testMode, config) {
     // Create the playground API server.
     const app = playgroundAPI(port, testMode);
 
-    // Parse and load the configuration, if any specified.
+    const dist = path.resolve(__dirname, 'dist');
+
     if (config) {
+        // Parse and load the configuration, if any specified.
         app.get('/config.json', (req, res, next) => {
             res.json(config);
         });
+
+        // Optionally add a Usabilla feedback/tracking script to index.html
+        if (config.usabillaTemplate) {
+            const indexFile = path.resolve(dist, 'index.html');
+            const indexHTML = fs.readFileSync(indexFile, 'utf8');
+            const usabillaTemplateFile = path.resolve(__dirname, config.usabillaTemplate);
+            const usabillaTemplate = fs.readFileSync(usabillaTemplateFile, 'utf8');
+            const $ = cheerio.load(indexHTML);
+            $('body').append(usabillaTemplate);
+            const modifiedIndexHTML = $.html();
+            fs.writeFileSync(indexFile, modifiedIndexHTML, 'utf8');
+        }
     }
-    const dist = path.resolve(__dirname, 'dist');
+
     app.use(express.static(dist));
     app.all('/*', (req, res, next) => {
         res.sendFile('index.html', { root: dist });

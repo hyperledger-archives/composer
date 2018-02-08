@@ -21,6 +21,15 @@
     ],
     "author": "Hyperledger Composer",
     "license": "Apache-2.0",
+    "license-check-and-add-config": {
+        "folder": ".",
+        "license": "header.txt",
+        "exact_paths_method": "INCLUDE",
+        "exact_paths": ["src", "e2e", "config", "index.js", "webpack.config.js"],
+        "file_type_method": "INCLUDE",
+        "file_types": [".js", ".ts", ".css"],
+        "insert_license": false
+    },
     "scripts": {
         "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
         "build:docker": "npm run build:prod && docker build -t angular2-webpack-start:latest .",
@@ -41,8 +50,9 @@
         "github-deploy:prod": "webpack --config config/webpack.github-deploy.js --progress --profile --env.githubProd",
         "github-deploy": "npm run github-deploy:dev",
         "lint": "npm run tslint \"src/**/*.ts\" && eslint .",
+        "licchk": "license-check-and-add",
         "postversion": "git push && git push --tags",
-        "pretest": "npm run lint",
+        "pretest": "npm run lint && npm run licchk",
         "posttest": "istanbul check-coverage",
         "prebuild:dev": "npm run clean:dist",
         "prebuild:prod": "npm run clean:dist",
@@ -76,6 +86,7 @@
     },
     "dependencies": {
         "@ng-bootstrap/ng-bootstrap": "1.0.0-beta.2",
+        "cheerio": "0.22.0",
         "composer-common": "0.17.4",
         "composer-playground-api": "0.17.4",
         "express": "4.15.2",
@@ -174,6 +185,7 @@
         "karma-sourcemap-loader": "0.3.7",
         "karma-webpack": "2.0.2",
         "left-pad": "1.1.3",
+        "license-check-and-add": "1.0.1",
         "lz-string": "1.4.4",
         "mocha": "3.4.2",
         "ng2-bootstrap": "1.1.16-11",

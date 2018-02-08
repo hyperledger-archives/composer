@@ -103,4 +103,11 @@ describe('WebContext', () => {
         });
     });
 
+    describe('#getNativeAPI', () => {
+        it('should throw an unsupported error', () => {
+            (() => {
+                context.getNativeAPI();
+            }).should.throw(/Native API not available in web runtime/);
+        });
+    });
 });
