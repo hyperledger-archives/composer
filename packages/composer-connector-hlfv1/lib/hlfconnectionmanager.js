@@ -95,6 +95,7 @@ class HLFConnectionManager extends ConnectionManager {
                     await HLFConnectionManager.setupWallet(client, wallet);
                 } else {
                     await client.initCredentialStores();
+                    delete ccp.client.credentialStore;
                 }
             }
         } catch(err) {
