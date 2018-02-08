@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
@@ -38,8 +39,9 @@ describe('Playground Tutorial Define', (() => {
   let baseTiles: Array<string> = null;
   let npmTiles: Array<string> = null;
   let sampleOptions;
-  let networkName = 'tutorial-network';
-  let profile = 'Web Browser';
+  const networkName = 'tutorial-network';
+  const profile = browser.params.profile;
+  const isFabricTest = (profile !== 'Web Browser');
 
   // Navigate to Editor base page and move past welcome splash
   beforeAll(() =>  {
@@ -75,10 +77,16 @@ describe('Playground Tutorial Define', (() => {
               return Deploy.nameBusinessNetwork(networkName);
           })
           .then(() => {
+            if (isFabricTest) {
+              return Deploy.selectUsernameAndSecret('admin', 'adminpw');
+            }
+            return;
+        })
+          .then(() => {
               return Deploy.clickDeploy();
           })
           .then(() => {
-              return Deploy.waitToDisappear();
+              return Deploy.waitToDisappear(isFabricTest);
           })
           .then(() => {
               return BusyAlert.waitToDisappear();
@@ -101,11 +109,11 @@ describe('Playground Tutorial Define', (() => {
             // Should have the correct named busnet once loaded
             return Editor.waitForProjectFilesToLoad()
             .then(() => {
-                return Editor.retrieveDeployedPackageName()
+                return Editor.retrieveDeployedPackageName();
             })
             .then((packageName) => {
                 expect(packageName).to.be.equal(networkName);
-                return Editor.retrieveNavigatorFileNames()
+                return Editor.retrieveNavigatorFileNames();
             })
             .then((filelist: any) => {
                 expect(filelist).to.be.an('array').lengthOf(2);
@@ -122,7 +130,7 @@ describe('Playground Tutorial Define', (() => {
         })
         .catch((err) => {
             fail(err);
-        })
+        });
       }));
   }));
 
@@ -133,7 +141,7 @@ describe('Playground Tutorial Define', (() => {
               return AddFile.waitToAppear();
           })
           .then(() => {
-              return Editor.retrieveNavigatorFileNames()
+              return Editor.retrieveNavigatorFileNames();
           })
           .then((names) => {
               // Select radio option
@@ -162,16 +170,16 @@ describe('Playground Tutorial Define', (() => {
               });
 
               // Change the code in the model file
-              let modelFileCode = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/tutorial-model-file.cto', "utf8").trim();
+              let modelFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-model-file.cto', 'utf8').trim();
 
               // Set the text for the model file in the code editor
               return EditorFile.setEditorCodeMirrorText(modelFileCode)
               .then(() => {
-                  return EditorFile.retrieveEditorCodeMirrorText()
+                  return EditorFile.retrieveEditorCodeMirrorText();
               })
               .then((text) => {
                   let lines = text.toString().split(/\r\n|\n/);
-                  expect(lines.map(function(e){return e.trim();})).to.deep.equal(modelFileCode.split(/\r\n|\n/).map(function(e){return e.trim();})); // Use trim to handle that codemirror autotabs so file is formatted differently
+                  expect(lines.map((e) => {return e.trim(); })).to.deep.equal(modelFileCode.split(/\r\n|\n/).map((e) => {return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
                   return Editor.retrieveNavigatorFileActionButtons()
                   .then((buttonlist: any) => {
                       expect(buttonlist).to.be.an('array').lengthOf(2);
@@ -193,7 +201,7 @@ describe('Playground Tutorial Define', (() => {
               return AddFile.waitToAppear();
           })
           .then(() => {
-              return Editor.retrieveNavigatorFileNames()
+              return Editor.retrieveNavigatorFileNames();
           })
           .then((names) => {
               // Select radio option
@@ -222,17 +230,17 @@ describe('Playground Tutorial Define', (() => {
               });
 
               // Change the code in the model file
-              let scriptFileCode = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/tutorial-script-file.js', "utf8").trim();
+              let scriptFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-script-file.js', 'utf8').trim();
 
               // Set the text for the model file in the code editor
               EditorFile.setEditorCodeMirrorText(scriptFileCode)
               .then(() => {
                   // Check the correct text was set
-                  return EditorFile.retrieveEditorCodeMirrorText()
+                  return EditorFile.retrieveEditorCodeMirrorText();
               })
               .then((text) => {
                   let lines = text.toString().split(/\r\n|\n/);
-                  expect(lines.map(function(e){return e.trim();})).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map(function(e){return e.trim();})); // Use trim to handle that codemirror autotabs so file is formatted differently
+                  expect(lines.map((e) => {return e.trim(); })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => {return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
               });
 
               Editor.retrieveNavigatorFileActionButtons()
@@ -251,11 +259,11 @@ describe('Playground Tutorial Define', (() => {
   describe('Access', (() => {
       it('should have the correct acl file set', (() => {
 
-          let aclFileCode = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/tutorial-acl-file.acl', "utf8").trim();
+          let aclFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-acl-file.acl', 'utf8').trim();
 
           Editor.makeFileActive('permissions.acl')
           .then(() => {
-              return EditorFile.retrieveEditorCodeMirrorText()
+              return EditorFile.retrieveEditorCodeMirrorText();
           })
           .then((text) => {
               let lines = text.toString().split(/\r\n|\n/);
@@ -297,7 +305,7 @@ describe('Playground Tutorial Define', (() => {
           .catch((err) => {
               fail(err);
           });
-      }))
+      }));
   }));
 
   describe('Testing the business network defintion', (() => {
@@ -316,7 +324,7 @@ describe('Playground Tutorial Define', (() => {
               expect(header[0]).to.deep.equal('Participant registry for org.acme.mynetwork.Trader');
           })
           .then(() => {
-              return Test.retrieveParticipantTypes()
+              return Test.retrieveParticipantTypes();
           })
           .then((participants) => {
               participants.forEach((participant) => {
@@ -324,7 +332,7 @@ describe('Playground Tutorial Define', (() => {
               });
           })
           .then(() => {
-              return Test.retrieveAssetTypes()
+              return Test.retrieveAssetTypes();
           })
           .then((assets) => {
               assets.forEach((asset) => {
@@ -339,7 +347,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Creating participants', (() => {
       it('should create TRADER1', (() => {
-          let trader1 = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/participants/TRADER1', "utf8").trim();
+          let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1', 'utf8').trim();
 
           Test.selectRegistry('participants', 'Trader')
           .then(() => {
@@ -366,8 +374,8 @@ describe('Playground Tutorial Define', (() => {
       }));
 
       it('should create TRADER2', (() => {
-          let trader1 = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/participants/TRADER1', "utf8").trim();
-          let trader2 = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/participants/TRADER2', "utf8").trim();
+          let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1', 'utf8').trim();
+          let trader2 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER2', 'utf8').trim();
 
           Test.selectRegistry('participants', 'Trader')
           .then(() => {
@@ -401,7 +409,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Creating an asset', (() => {
       it('should create ABC', (() => {
-          let abc = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/assets/ABC', "utf8").trim();
+          let abc = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/assets/ABC', 'utf8').trim();
 
           Test.selectRegistry('assets', 'Commodity')
           .then(() => {
@@ -426,14 +434,14 @@ describe('Playground Tutorial Define', (() => {
               fail(err);
           });
       }));
-    }));
+  }));
 
-    describe('Transferring the commodity between the participants', (() => {
-        it('should transfer ABC from TRADER1 to TRADER2', (() => {
-            let transaction = fs.readFileSync(__dirname+'/../data/files/playground-tutorial/transactions/ABCtoTRADER2', "utf8").trim();
+  describe('Transferring the commodity between the participants', (() => {
+      it('should transfer ABC from TRADER1 to TRADER2', (() => {
+          let transaction = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/transactions/ABCtoTRADER2', 'utf8').trim();
 
-            Test.submitTransaction(transaction, 'Trade')
-            .then(() => {
+          Test.submitTransaction(transaction, 'Trade')
+          .then(() => {
               browser.sleep(1000); // give page a second to add the new element
               Test.retrieveRegistryItem()
               .then((assets) => {
@@ -448,10 +456,10 @@ describe('Playground Tutorial Define', (() => {
                 });
             });
         }));
-    }));
+  }));
 
-    describe('Logging out of the business network', (() => {
-        it('should log the user out', (() => {
+  describe('Logging out of the business network', (() => {
+      it('should log the user out', (() => {
             OperationsHelper.click(element(by.id('dropdownMenu1')))
             .then(() => {
               OperationsHelper.click(element(by.id('footer')))
@@ -470,7 +478,7 @@ describe('Playground Tutorial Define', (() => {
                                       });
                               })
                               .then((matchedItems) => {
-                                  expect(matchedItems).to.be.an('array').lengthOf(1)
+                                  expect(matchedItems).to.be.an('array').lengthOf(1);
                                   return matchedItems[0];
                               })
                               .then((matchedItem) => {
@@ -487,9 +495,9 @@ describe('Playground Tutorial Define', (() => {
                                   expect(cards).to.be.an('array').lengthOf(1);
                               });
                           });
-                    })
+                    });
               });
           });
-        }));
-    }));
+      }));
+  }));
 }));

@@ -8,7 +8,8 @@ exports.config = {
     framework: 'jasmine',
     directConnect: true,
     baseUrl: 'http://127.0.0.1:3001',
-    specs: ['./e2e/specs/round-trip.spec.ts'],
+    specs: ['./e2e/specs/round-trip.spec.ts',
+        './e2e/specs/playground-tutorial.spec.ts'],
     capabilities: {
         'browserName': 'chrome',
         'chromeOptions': {
@@ -24,6 +25,9 @@ exports.config = {
     jasmineNodeOpts: {
         showColors: true,
         defaultTimeoutInterval: 60000
+    },
+    params: {
+        profile: 'hlfv1'
     },
     beforeLaunch: function() {
         require('ts-node').register({
