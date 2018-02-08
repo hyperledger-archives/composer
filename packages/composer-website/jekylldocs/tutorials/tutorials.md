@@ -32,7 +32,9 @@ The developer tutorial will walk you through the steps required to build a {{sit
 
 ## Access Control Language (ACL) Tutorial
 This tutorial presumes that you have some experience using {{site.data.conrefs.composer_short}}.
-In this tutorial, you will incrementally build ACL rules for a sample Commodity Trading business network, and test the ACLs as an integral step during the rules build. You can complete the tutorial in the online Playground (and you deploy the Trade sample network there) ; but you can equally complete the tutorial if you deploy that sample network to your {site.data.conrefs.hlf_full}} runtime.
+In this tutorial, you will incrementally build ACL rules for a sample Commodity Trading business network, and test the ACLs as an integral step during the rules build. You can complete the tutorial in the online Playground (and you deploy the Trade sample network there) ; but you can equally complete the tutorial if you deploy that sample network to your {{site.data.conrefs.hlf_full}} runtime.
+
+[**Start the ACL tutorial**](../tutorials/acl-trading.html).
 
 ## Query Tutorial
 
