@@ -121,9 +121,14 @@ class List {
                 listOutput.secretSet='Secret set';
             }
 
-            if (Object.keys(card.getCredentials()).length>0){
-                listOutput.credentialsSet='Credentials set';
-            }else {
+            if (Object.keys(card.getCredentials()).length > 0){
+                if (Object.keys(card.getCredentials()).length  === 1){
+                    listOutput.credentialsSet = 'Credentials set, HSM managed';
+                }
+                else {
+                    listOutput.credentialsSet='Credentials set';
+                }
+            } else {
                 listOutput.credentialsSet='No Credentials set';
             }
             cmdUtil.log(Pretty.render(listOutput,{
