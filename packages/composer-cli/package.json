@@ -41,6 +41,7 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
+    "ajv": "6.1.1",
     "chalk": "1.1.3",
     "cli-table": "0.3.1",
     "composer-admin": "0.17.5",
@@ -59,6 +60,7 @@
     "prompt": "1.0.0",
     "sanitize-filename": "1.6.1",
     "tar": "4.3.0",
+    "valid-url": "1.0.9",
     "yargs": "10.0.3"
   },
   "license-check-config": {
