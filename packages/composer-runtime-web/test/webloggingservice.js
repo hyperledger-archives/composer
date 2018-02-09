@@ -109,4 +109,11 @@ describe('WebLoggingService', () => {
 
     });
 
+    describe('#getLoggerCfg', () => {
+
+        it('should call the console logger', () => {
+            loggingService.getLoggerCfg();
+        });
+
+    });
 });

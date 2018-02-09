@@ -34,6 +34,7 @@ const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
 const NetworkManager = require('../lib/networkmanager');
 const Resolver = require('../lib/resolver');
+const Logger = require('composer-common').Logger;
 const LoggingService = require('../lib/loggingservice');
 
 const chai = require('chai');
@@ -220,16 +221,22 @@ describe('NetworkManager', () => {
             mockRegistryManager.createDefaults.resolves();
             mockRegistryManager.remove.returns;
 
-            let mockLoggingService = sinon.createStubInstance(LoggingService);
-            mockLoggingService.setLogLevel.returns();
-            mockContext.getLoggingService.returns(mockLoggingService);
+            sinon.stub(Logger,'setDebugEnv');
+
             let mockAccessController = sinon.createStubInstance(AccessController);
             mockContext.getAccessController.returns(mockAccessController);
+            let mockLoggingService=sinon.createStubInstance(LoggingService);
+            mockContext.getLoggingService.returns(mockLoggingService);
+            mockLoggingService.getLoggerCfg.resolves({
+                'fakelogger':'config'
+            });
+            mockLoggingService.setLoggerCfg.resolves();
+            sinon.spy(Logger.setLoggerCfg);
             mockAccessController.check.resolves();
             mockRegistryManager.getAll.resolves([mockRegistry]);
             return networkManager.setLogLevel(mockApi, {newLogLevel:'level'})
                         .then(() => {
-                            sinon.assert.calledWith(mockLoggingService.setLogLevel,'level');
+                            sinon.assert.calledOnce(mockLoggingService.setLoggerCfg);
                         });
         });
 
