@@ -1,1 +1,27 @@
-<%= styling %>
+.container {
+    width: 100%;
+    padding-left: 72px;
+    padding-right: 72px;
+}
+
+.btn-primary {
+    background: #844AE4;
+    border-radius: 4px;
+    border: 0px;
+    font-size: 14px;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    line-height: 10px;
+    height: 40px;
+    width: 153px;
+    float: right;
+    margin-top: 5%;
+}
+
+.table > thead > tr > th {
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.table > thead > tr > th.info {
+    background: #FFF;
+}

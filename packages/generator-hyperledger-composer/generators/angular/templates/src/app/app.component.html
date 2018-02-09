@@ -1,19 +1,21 @@
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#"><%=businessNetworkIdentifier%></a>
+      <p class="network-name"><%=businessNetworkIdentifier%>.bna</p>
+      <p class="navbar-brand"><%=appName%></p>
     </div>
-    <ul class="nav navbar-nav navbar-right">
-      <li class=""><a [routerLink]="['/']">Home</a></li>
-      <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Assets
-          <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <% for(var x=0;x<assetList.length;x++){ %>
-          <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
-          <%}%>
-        </ul>
+    <ul class="nav navbar-nav">
+      <li class="dropdown active">
+          <a class="dropdown-toggle" data-toggle="dropdown">Assets</a>
+          <ul class="dropdown-menu scrollable-menu">
+            <% for(var x=0;x<assetList.length;x++){ %>
+            <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
+            <%}%>
+          </ul>
       </li>
+      <li><a [routerLink]="['/<%=assetList[0].name%>']">Participants</a></li>
+      <li><a [routerLink]="['/<%=assetList[0].name%>']">Transactions</a></li>
+      <li><a [routerLink]="['/']">Historian</a></li>
     </ul>
   </div>
 </nav>
