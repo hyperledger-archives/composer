@@ -494,7 +494,7 @@ describe('UpdateComponent', () => {
             mockBusinessNetworkService.updateBusinessNetwork.returns(Promise.reject(DrawerDismissReasons.ESC));
 
             component.finishedSampleImport.subscribe((result) => {
-                result.should.deep.equal({deployed: false, error: DrawerDismissReasons.ESC});
+                result.should.deep.equal({deployed: false});
             });
 
             let deployPromise = component.deploy();
@@ -503,7 +503,7 @@ describe('UpdateComponent', () => {
 
             mockBusinessNetworkService.updateBusinessNetwork.should.have.been.calledWith({network: 'my network'});
             component['deployInProgress'].should.equal(false);
-            finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: DrawerDismissReasons.ESC});
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: false});
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 

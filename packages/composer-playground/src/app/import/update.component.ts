@@ -64,10 +64,12 @@ export class UpdateComponent extends ImportComponent {
             })
             .catch((error) => {
                 this.deployInProgress = false;
-                if (error !== DrawerDismissReasons.ESC ) {
-                  this.alertService.errorStatus$.next(error);
+                if (error === DrawerDismissReasons.ESC ) {
+                    this.finishedSampleImport.emit({deployed: false});
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                    this.finishedSampleImport.emit({deployed: false, error: error});
                 }
-                this.finishedSampleImport.emit({deployed: false, error: error});
             });
     }
 
