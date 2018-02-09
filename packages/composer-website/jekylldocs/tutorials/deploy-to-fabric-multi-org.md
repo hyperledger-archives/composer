@@ -57,7 +57,7 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
 
 1. change directory to `fabric-samples`
 
-    cd fabric-samples
+        cd fabric-samples
     
 2. Download the platform binaries, including cryptogen :
   
