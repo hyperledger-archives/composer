@@ -16,7 +16,6 @@
 
 const cmdUtil = require('../../utils/cmdutils');
 const Admin = require('composer-admin');
-const fs = require('fs');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 
 const ora = require('ora');
@@ -39,7 +38,7 @@ class Install {
         const spinner = ora('Installing business network. This may take a minute...').start();
 
         return adminConnection.connect(cardName).then(() => {
-            const businessNetworkArchive = Install.getArchiveFileContents(argv.archiveFile);
+            const businessNetworkArchive = cmdUtil.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
         }).then((definition) => {
             return adminConnection.install(definition, installOptions);
@@ -54,18 +53,6 @@ class Install {
         });
     }
 
-    /**
-      * Get contents from archive file
-      * @param {string} archiveFile connection profile name
-      * @return {String} archiveFileContents archive file contents
-      */
-    static getArchiveFileContents(archiveFile) {
-        if (fs.existsSync(archiveFile)) {
-            return fs.readFileSync(archiveFile);
-        } else {
-            throw new Error('Archive file '+archiveFile+' does not exist.');
-        }
-    }
 }
 
 module.exports = Install;

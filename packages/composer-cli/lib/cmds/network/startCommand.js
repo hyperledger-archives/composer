@@ -20,7 +20,8 @@ module.exports.command = 'start [options]';
 module.exports.describe = 'Starts a business network';
 module.exports.builder = function (yargs) {
     yargs.options({
-        archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
+        networkName: { alias: 'n', required: true, description: 'Name of the business network to start' },
+        networkVersion: { alias: 'v', required: true, description: 'Version of the business network to start' },
         loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG']},
         option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
         optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },

@@ -14,22 +14,16 @@
 
 'use strict';
 
-const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
-const fs = require('fs');
 const ora = require('ora');
 const Export = require('../../card/lib/export');
 
 /**
- * <p>
  * Composer start command
- * </p>
  * @private
  */
 class Start {
-
    /**
     * Command process for start command
     * @param {string} argv argument list from composer command
@@ -37,34 +31,19 @@ class Start {
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
-
-        let businessNetworkDefinition;
-
+        const cardName = argv.card;
+        const logLevel = argv.loglevel;
+        const networkName = argv.networkName;
+        const networkVersion = argv.networkVersion;
         let adminConnection;
-        let businessNetworkName;
         let spinner;
-        let logLevel = argv.loglevel;
-        let cardName = argv.card;
-
         let networkAdmins;
 
         // needs promise resolve here in case the archive errors
         return Promise.resolve().then(() => {
-            cmdUtil.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
-            let archiveFileContents = null;
-            // Read archive file contents
-            archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })
-        .then ((result) => {
-            businessNetworkDefinition = result;
-            businessNetworkName = businessNetworkDefinition.getIdentifier();
-            cmdUtil.log(chalk.blue.bold('Business network definition:'));
-            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            cmdUtil.log(chalk.blue.bold(`Starting business network ${networkName} at version ${networkVersion}`));
             cmdUtil.log('');
             adminConnection = cmdUtil.createAdminConnection();
-
             return adminConnection.connect(cardName);
         })
         .then(() => {
@@ -85,38 +64,17 @@ class Start {
             cmdUtil.log('');
 
             spinner = ora('Starting business network definition. This may take a minute...').start();
-                // Start the business network.
 
-            return adminConnection.start(businessNetworkDefinition, startOptions);
-        }).then((result) => {
-            let promises = [];
-            for (let card of result.values()){
-                // does the card have it's own business network
+            return adminConnection.start(networkName, networkVersion, startOptions);
+        }).then(adminCardMap => {
+            const promises = Array.from(adminCardMap.values()).map(card => {
                 // check the networkAdmins for matching name and return the file
-                let fileName;
-                let adminMatch = networkAdmins.find( (e)=>{
+                const adminMatch = networkAdmins.find(e => {
                     return (e.userName === card.getUserName());
                 });
-
-                if (adminMatch){
-                    fileName = adminMatch.file;
-                }
-
-                if (!fileName){
-                    let bnn = card.getBusinessNetworkName();
-                    if (bnn){
-                        fileName = card.getUserName()+'@'+ bnn +'.card';
-                    } else {
-                        let cpn = card.getConnectionProfile().name;
-                        fileName = card.getUserName()+'@'+ cpn +'.card';
-                    }
-                }
-
-                promises.push( Export.writeCardToFile(fileName,card)
-                        .then(()=>{
-                            return fileName;
-                        }));
-            }
+                const fileName = (adminMatch && adminMatch.file) || cmdUtil.getDefaultCardName(card) + '.card';
+                return Export.writeCardToFile(fileName, card).then(() => fileName);
+            });
 
             return Promise.all(promises);
         }).then((result)=>{
@@ -136,19 +94,6 @@ class Start {
         });
     }
 
-    /**
-      * Get contents from archive file
-      * @param {string} archiveFile connection profile name
-      * @return {String} archiveFileContents archive file contents
-      */
-    static getArchiveFileContents(archiveFile) {
-        let archiveFileContents;
-        if (fs.existsSync(archiveFile)) {
-            archiveFileContents = fs.readFileSync(archiveFile);
-        } else {
-            throw new Error('Archive file '+archiveFile+' does not exist.');
-        }
-        return archiveFileContents;
-    }
 }
+
 module.exports = Start;

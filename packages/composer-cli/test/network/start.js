@@ -15,13 +15,11 @@
 'use strict';
 
 const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
-const Start = require('../../lib/cmds/network/lib/start.js');
 const StartCmd = require('../../lib/cmds/network/startCommand.js');
-const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const cmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const Export = require('../../lib/cmds/card/lib/export');
 const IdCard = require('composer-common').IdCard;
-const ora = require('ora');
 
 require('chai').should();
 
@@ -31,24 +29,33 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
-let testBusinessNetworkArchive;
-
-let businessNetworkDefinition;
-
-const VALID_ENDORSEMENT_POLICY_STRING = '{"identities":[{ "role": { "name": "member", "mspId": "Org1MSP" }}], "policy": {"1-of": [{"signed-by":0}]}}';
-let mockAdminConnection;
+/**
+ * Create a map of cards keyed by user name.
+ * @param {IdCard} cards business network cards.
+ * @return {Map} card map.
+ */
+function createCardMap(...cards) {
+    const result = new Map();
+    cards.forEach(card => result.set(card.getUserName(), card));
+    return result;
+}
 
 describe('composer start network CLI unit tests', function () {
 
-    let sandbox;
+    const sandbox = sinon.sandbox.create();
+    const networkName = 'test-network';
+    const networkVersion = '1.0.0';
+    const validEndorsementPolicy = {
+        identities: [ { role: { name: 'member', mspId: 'Org1MSP' } } ],
+        policy: { '1-of': [ { 'signed-by': 0 } ] }
+    };
+    let mockAdminConnection;
     let testCard;
     let adminCard;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        testCard = new IdCard({ userName: 'conga', businessNetwork : 'a' }, { name: 'profileName' });
+        testCard = new IdCard({ userName: 'conga', businessNetwork : networkName }, { name: 'profileName' });
         adminCard = new IdCard({ userName: 'admin' }, { name: 'profileName' }, {file : '/tmp/adminCardFile'});
-        businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
 
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
 
@@ -56,20 +63,12 @@ describe('composer start network CLI unit tests', function () {
         mockAdminConnection.start.resolves();
         mockAdminConnection.update.resolves();
         mockAdminConnection.exportCard.resolves(testCard);
-        let mapCards = new Map();
-        mapCards.set('conga', testCard);
-        mapCards.set('admin', adminCard);
-        mockAdminConnection.start.resolves(mapCards);
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(businessNetworkDefinition);
-        sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+        mockAdminConnection.start.resolves(createCardMap(testCard, adminCard));
+        sandbox.stub(cmdUtil, 'createAdminConnection').returns(mockAdminConnection);
         sandbox.stub(process, 'exit');
-
         sandbox.stub(fs, 'writeFileSync');
-
-        return businessNetworkDefinition.toArchive()
-            .then((archive) => {
-                testBusinessNetworkArchive = archive;
-            });
+        sandbox.stub(Export, 'writeCardToFile').resolves();
+        sandbox.stub(cmdUtil, 'log');
     });
 
     afterEach(() => {
@@ -77,416 +76,199 @@ describe('composer start network CLI unit tests', function () {
     });
 
     describe('Deploy handler() method tests', function () {
-
-        it('should correctly execute when optional parameter -O /path/to/options.json specified.', function () {
-
-            let argv = {card:'cardname'
-                        ,archiveFile: 'testArchiveFile.zip'
-                       ,optionsFile: '/path/to/options.json'
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-            sandbox.stub(Start, 'getArchiveFileContents');
-            const optionsObject = {
-                endorsementPolicy: {
-                    identities: [{role: {name: 'member',mspId: 'Org1MSP'}}],
-                    policy: {'1-of': [{'signed-by': 0}]}
-                }
+        it('should correctly execute with all required parameters and enrollment secret', function () {
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
             };
+            return StartCmd.handler(argv).then(result => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                sinon.assert.calledOnce(mockAdminConnection.start);
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
+                    {
+                        networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                    });
+            });
+        });
 
+        it('should correctly execute with all required parameters and certificate file', function () {
+            const certificate = 'this-is-a-certificate-honest-guv';
+            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns(certificate);
+
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminCertificateFile: 'certificate-file'
+            };
+            return StartCmd.handler(argv).then(result => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                sinon.assert.calledOnce(mockAdminConnection.start);
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
+                    {
+                        networkAdmins: [{ certificate: certificate, userName: 'admin' }]
+                    });
+            });
+        });
+
+        it('should pass options specified by -O /path/to/options.json to AdminConnection.start()', function () {
+            const optionsObject = { endorsementPolicy: validEndorsementPolicy };
             // This would also work.
             //const optionsObject = {
             //    endorsementPolicy: '{"identities": [{"role": {"name": "member","mspId": "Org1MSP"}}],"policy": {"1-of": [{"signed-by": 0}]}}';
             //};
-
             const optionFileContents = JSON.stringify(optionsObject);
             sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
             sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
 
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                optionsFile: '/path/to/options.json',
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
                     {
                         endorsementPolicy: optionsObject.endorsementPolicy,  networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
                     });
             });
         });
 
-        it('should correctly execute when optional parameter -o endorsementPolicyFile= specified.', function () {
-
-            let argv = {card:'cardname'
-                       ,option: 'endorsementPolicyFile=/path/to/some/file.json'
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                    {                       endorsementPolicyFile: '/path/to/some/file.json', networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
-
-                    });
-            });
-        });
-
-
-        it('should correctly execute when optional parameter -o endorsementPolicy= specified.', function () {
-
-            let argv = {card:'cardname'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,option: 'endorsementPolicy=' + VALID_ENDORSEMENT_POLICY_STRING
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                    {
-                        endorsementPolicy: VALID_ENDORSEMENT_POLICY_STRING, networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
-                    });
-            });
-        });
-
-
-        it('should correctly execute when all parms correctly specified.', function () {
-
-            let argv = {card:'cardname'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                {    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]}  );
-            });
-        });
-
-        it('should correctly execute when all parms correctly specified. with the certificate', function () {
-
-            let argv = {card:'cardname'
-                                   ,archiveFile: 'testArchiveFile.zip'
-                                   ,networkAdmin: 'admin'
-                                   ,networkAdminCertificateFile:'certificate-file'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns('asdasdasd');
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-                        .then ((result) => {
-                            argv.thePromise.should.be.a('promise');
-                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                            sinon.assert.calledTwice(fs.writeFileSync);
-                            sinon.assert.calledOnce(mockAdminConnection.connect);
-                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                            sinon.assert.calledOnce(mockAdminConnection.start);
-
-
-                        });
-        });
-        it('should correctly execute when all parms correctly specified. File output set for the card', function () {
-
-            let argv = {card:'cardname'
-                                   ,archiveFile: 'testArchiveFile.zip'
-                                   ,networkAdmin: 'admin'
-                                   ,networkAdminEnrollSecret:'true'
-                                ,file:'mycardfile'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-                        .then ((result) => {
-                            argv.thePromise.should.be.a('promise');
-                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                            sinon.assert.calledTwice(fs.writeFileSync);
-                            sinon.assert.calledOnce(mockAdminConnection.connect);
-                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                            sinon.assert.calledOnce(mockAdminConnection.start);
-                            sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,
-                               { networkAdmins: [{ file: 'mycardfile', enrollmentSecret : 'true', userName: 'admin' }] } );
-                        }       );
-        });
-
-        it('should correctly execute when all parms correctly specified, including optional logLevel.', function () {
-
-            let argv = {card:'cardname'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,loglevel: 'DEBUG'
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,{ networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }],logLevel: 'DEBUG' });
-            });
-        });
-
-        it('should correctly execute when no secret, all other parms correctly specified.', function () {
-
-            let argv = {card:'cardname'
-                       ,archiveFile: 'testArchiveFile.zip'
-                       ,networkAdmin: 'admin'
-                       ,networkAdminEnrollSecret:'true'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect,'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                sinon.assert.calledWith(mockAdminConnection.start, businessNetworkDefinition,  {
-                    networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
-                });
-            });
-        });
-
-        const sanitize = (result) => {
-            result.forEach((tx) => {
-                delete tx.timestamp;
-                delete tx.transactionId;
-                return tx;
-            });
-        };
-
-        it('should correctly execute when, network administrator specified', function () {
-
-            let argv = {card:'cardname'
-                        ,archiveFile: 'testArchiveFile.zip'
-                        ,networkAdmin: 'admin1'
-                        ,networkAdminEnrollSecret: true};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-
-            });
-        });
-
-        it('should correctly execute when network administrator and bootstrap transactions specified', function () {
-
-            let argv = {card:'cardname'
-                        ,archiveFile: 'testArchiveFile.zip'
-
-                        ,networkAdmin: 'admin1'
-                        ,networkAdminEnrollSecret: true
-                        ,optionsFile: '/path/to/options.json'};
-
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-            const optionsObject = {
-                bootstrapTransactions: [{
-                    $class: 'org.acme.foobar.MyTransaction'
-                }]
+        it('should pass options specified by -o endorsementPolicyFile= to AdminConnection.start()', function () {
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                option: 'endorsementPolicyFile=/path/to/some/file.json',
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
             };
-
-            const optionFileContents = JSON.stringify(optionsObject);
-            sandbox.stub(fs, 'readFileSync').withArgs('/path/to/options.json').returns(optionFileContents);
-            sandbox.stub(fs, 'existsSync').withArgs('/path/to/options.json').returns(true);
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-            .then ((result) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                sinon.assert.calledTwice(fs.writeFileSync);
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.start);
-                const startOptions = mockAdminConnection.start.args[0][1];
-                sanitize(startOptions.bootstrapTransactions);
-                startOptions.bootstrapTransactions.should.deep.equal([
-
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
                     {
-                        $class: 'org.acme.foobar.MyTransaction'
-                    }
-                ]);
+                        endorsementPolicyFile: '/path/to/some/file.json', networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                    });
             });
         });
 
-        it('Should report correct error if connect fails', () => {
-            let argv = {card:'cardname'
-                ,archiveFile: 'testArchiveFile.zip'
-                ,networkAdmin: 'admin1'
-                ,networkAdminEnrollSecret: true
-                ,optionsFile: '/path/to/options.json'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            mockAdminConnection.connect.rejects(new Error('some error'));
-            let oraStart = sandbox.stub(ora,'start');
-            return Start.handler(argv).should.eventually.be.rejectedWith(/some error/)
-                .then(() => {
-                    sinon.assert.notCalled(oraStart);
-                });
+        it('should pass options specified by -o endorsementPolicy= specified to AdminConnection.start()', function () {
+            const endorsementPolicyString = JSON.stringify(validEndorsementPolicy);
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                option: 'endorsementPolicy=' + endorsementPolicyString,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
+                    {
+                        endorsementPolicy: endorsementPolicyString, networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }]
+                    });
+            });
         });
 
-        it('Should report correct error if export card fails', () => {
-            let argv = {card:'cardname'
-            ,archiveFile: 'testArchiveFile.zip'
-
-            ,networkAdmin: 'admin1'
-            ,networkAdminEnrollSecret: true
-            ,optionsFile: '/path/to/options.json'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-            mockAdminConnection.connect.resolves();
-            mockAdminConnection.start.rejects(new Error('export error'));
-            let oraStart = sandbox.stub(ora,'start');
-            return Start.handler(argv).should.eventually.be.rejectedWith(/export error/)
-                .then(() => {
-                    sinon.assert.notCalled(oraStart);
-                });
+        it('should use specified card output file name', function() {
+            const cardFileName = 'network-admin-card-file.card';
+            const networkAdmin = adminCard.getUserName();
+            let argv = {
+                card: 'cardname',
+                file: cardFileName,
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: networkAdmin,
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWith(Export.writeCardToFile,
+                    cardFileName,
+                    sinon.match(card => card.getUserName() === networkAdmin));
+            });
         });
 
-        it('should correctly execute when network administrator specified', function () {
-
-            let argv = {card:'cardname'
-                                    ,archiveFile: 'testArchiveFile.zip'
-                                    ,networkAdmin: 'admin1'
-                                    ,networkAdminEnrollSecret: true
-                                    ,file: 'mycard'};
-
-            sandbox.stub(Start, 'getArchiveFileContents');
-
-            Start.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
-
-            return StartCmd.handler(argv)
-                        .then ((result) => {
-                            argv.thePromise.should.be.a('promise');
-                            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-                            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
-                            sinon.assert.calledTwice(fs.writeFileSync);
-                            sinon.assert.calledOnce(mockAdminConnection.connect);
-                            sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                            sinon.assert.calledOnce(mockAdminConnection.start);
-
-                        });
+        it('should include specified loglevel in start options', function () {
+            const logLevel = 'debug-log-level';
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true',
+                loglevel: logLevel
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
+                    {
+                        networkAdmins: [{ enrollmentSecret : 'true', userName: 'admin' }],
+                        logLevel: logLevel
+                    });
+            });
         });
 
-    });
-
-    describe('Deploy getArchiveFileContents() method tests', function () {
-
-        it('Should correctly get the archive file contents if it exists', function () {
-
-            sandbox.stub(fs, 'existsSync').returns(true);
-            let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
-            sandbox.stub(fs, 'readFileSync').returns(testArchiveFileContents);
-
-            let testArchiveFile = 'testfile.zip';
-            let archiveFileContents = Start.getArchiveFileContents(testArchiveFile);
-
-            archiveFileContents.should.deep.equal(testArchiveFileContents);
-
+        it('should report correct error if connect fails', () => {
+            const connectErrorMessage = 'connect-error';
+            mockAdminConnection.connect.rejects(new Error(connectErrorMessage));
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).should.be.rejectedWith(connectErrorMessage);
         });
 
-        it('Should throw correct error if archive file does not exist', function () {
-
-            sandbox.stub(fs, 'existsSync').returns(false);
-            let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
-            sandbox.stub(fs, 'readFileSync').returns(testArchiveFileContents);
-
-            let testArchiveFile = 'testfile.zip';
-            (() => {Start.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
-
+        it('should report correct error if writing card fails', () => {
+            const writeErrorMessage = 'card-write-error';
+            Export.writeCardToFile.rejects(new Error(writeErrorMessage));
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).should.be.rejectedWith(writeErrorMessage);
         });
-        it('Should handle correctly any unexpected errors', function () {
 
-            let argv = {card:'cardname'
-                                               ,archiveFile: 'testArchiveFile.zip'
-                                               ,networkAdmin: 'admin'
-                                               ,networkAdminCertificateFile:'certificate-file'};
+        it('should output correct message for multiple network admin cards', function () {
+            mockAdminConnection.start.resolves(createCardMap(testCard, adminCard));
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWithMatch(cmdUtil.log, arg => /Successfully created business network cards:/.test(arg));
+            });
+        });
 
-
-            sandbox.stub(Start, 'getArchiveFileContents').withArgs('testArchiveFile.zip').throws(new Error('computer says no'));
-
-            return Start.handler(argv).should.be.rejectedWith(/computer says no/);
+        it('should output correct message for single network admin card', function () {
+            mockAdminConnection.start.resolves(createCardMap(testCard));
+            let argv = {
+                card: 'cardname',
+                networkName: networkName,
+                networkVersion: networkVersion,
+                networkAdmin: 'admin',
+                networkAdminEnrollSecret:'true'
+            };
+            return StartCmd.handler(argv).then(result => {
+                sinon.assert.calledWithMatch(cmdUtil.log, arg => /Successfully created business network card:/.test(arg));
+            });
         });
 
     });
