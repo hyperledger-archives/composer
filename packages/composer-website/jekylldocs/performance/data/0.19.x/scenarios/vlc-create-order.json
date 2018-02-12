@@ -1,0 +1,15 @@
+{
+    "test": "vlc-place-order",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 32.2, "latency": 0.63, "load": 20},
+                                    "chaincode": {"memory": "114.4MB", "CPU": "32.09%", "NetworkIn": "74.4MB", "NetworkOut": "69.1MB", "DiscRead": "0B", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "303.9MB", "CPU": "46.43%", "NetworkIn": "275.5MB", "NetworkOut": "483.2MB", "DiscRead": "0B", "DiscWrite": "78.3MB"},
+                                    "couchDB": {"memory": "187.2MB", "CPU": "213.85%", "NetworkIn": "91.3MB", "NetworkOut": "134.9MB", "DiscRead": "0B", "DiscWrite": "85.7MB"}
+                                }
+                            ]
+                }]
+}

@@ -4,7 +4,6 @@ description: Create business networks and application for Hyperledger
 email:
 url: "https://hyperledger.github.io"
 
-
 #For publishing to your own gh-pages branch of the Docs repo this will need to
 #be the sitebaseurl - but the build scripts handle this for you.
 # baseurl: "/composer"

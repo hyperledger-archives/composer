@@ -1,0 +1,15 @@
+{
+    "test": "query",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 146.7, "load": 9, "latency": 0.05},
+                                    "chaincode": {"memory": "111.3MB", "CPU": "60.2%", "NetworkIn": "84.4MB", "NetworkOut": "49.4MB", "DiscRead": "0B", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "292.8MB", "CPU": "88.3%", "NetworkIn": "182.4MB", "NetworkOut": "192.7MB", "DiscRead": "0B", "DiscWrite": "1.3MB"},
+                                    "couchDB": {"memory": "168.9MB", "CPU": "375.7%", "NetworkIn": "46.1MB", "NetworkOut": "118.8MB", "DiscRead": "0B", "DiscWrite": "0.516MB"}
+                                }
+                            ]
+                    }]
+}

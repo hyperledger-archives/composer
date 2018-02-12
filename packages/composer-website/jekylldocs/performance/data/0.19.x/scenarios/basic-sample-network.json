@@ -1,0 +1,45 @@
+{
+    "test": "bond",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 28.12, "load": 10, "latency": 0.35},
+                                    "chaincode": {"memory": "112.9MB", "CPU": "28.47%", "NetworkIn": "76.6MB", "NetworkOut": "673KB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "313.8MB", "CPU": "40.17%", "NetworkIn": "258.6MB", "NetworkOut": "478.8MB", "DiscRead": "0B", "DiscWrite": "73.6MB"},
+                                    "couchDB": {"memory": "172MB", "CPU": "182.62%", "NetworkIn": "77MB", "NetworkOut": "131MB", "DiscRead": "0B", "DiscWrite": "98.7MB"}
+                                },
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 31.54, "load": 15, "latency": 0.48}
+                                },
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 33.5, "load": 20, "latency": 0.6},
+                                    "chaincode": {"memory": "113.0MB", "CPU": "32.47%", "NetworkIn": "75.0MB", "NetworkOut": "65.7MB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "414.6MB", "CPU": "48.73%", "NetworkIn": "261.3MB", "NetworkOut": "484.6MB", "DiscRead": "0B", "DiscWrite": "71.0MB"},
+                                    "couchDB": {"memory": "166.9MB", "CPU": "204.38%", "NetworkIn": "86.7MB", "NetworkOut": "135.5MB", "DiscRead": "0B", "DiscWrite": "85.2MB"}
+                                },
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 34.15, "load": 25, "latency": 0.74}
+                                },
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 34.83, "load": 50, "latency": 1.44}
+                                },
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 34.53, "load": 100, "latency": 2.92},
+                                    "chaincode": {"memory": "112.3MB", "CPU": "32.56%", "NetworkIn": "73.6MB", "NetworkOut": "64.0MB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "376.8MB", "CPU": "50.36%", "NetworkIn": "263.1MB", "NetworkOut": "485.2MB", "DiscRead": "0B", "DiscWrite": "70.2MB"},
+                                    "couchDB": {"memory": "174.4MB", "CPU": "205.85%", "NetworkIn": "92.5MB", "NetworkOut": "138.7MB", "DiscRead": "0B", "DiscWrite": "83.2MB"}
+                                }
+                            ]
+                    },
+                    {
+                    "orgs": 3,
+                    "peerResults" : []
+                }]
+}

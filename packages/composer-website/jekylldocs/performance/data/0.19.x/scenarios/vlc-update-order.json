@@ -1,0 +1,15 @@
+{
+    "test": "vlc-update-order",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 27.53, "latency": 0.74, "load": 20},
+                                    "chaincode": {"memory": "114.5MB", "CPU": "33.78%", "NetworkIn": "104.5MB", "NetworkOut": "101.7MB", "DiscRead": "0B", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "395.3MB", "CPU": "44.62%", "NetworkIn": "377.8MB", "NetworkOut": "642.1MB", "DiscRead": "0B", "DiscWrite": "110.7MB"},
+                                    "couchDB": {"memory": "190.4MB", "CPU": "237.69%", "NetworkIn": "126.6MB", "NetworkOut": "190.9MB", "DiscRead": "0B", "DiscWrite": "105.2MB"}
+                                }
+                            ]
+                    }]
+}

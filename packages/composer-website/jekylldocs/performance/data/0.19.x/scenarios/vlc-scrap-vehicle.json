@@ -1,0 +1,14 @@
+{
+    "test": "vlc-scrap-vehicle",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 34.69, "latency": 0.58, "load": 20},
+                                    "chaincode": {"memory": "110.8MB", "CPU": "32.13%", "NetworkIn": "71.4MB", "NetworkOut": "58.3MB", "DiscRead": "0MB", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "382.8MB", "CPU": "47.2%", "NetworkIn": "239.9MB", "NetworkOut": "396.9MB", "DiscRead": "0B", "DiscWrite": "66.1MB"},
+                                    "couchDB": {"memory": "185.7MB", "CPU": "207.38%", "NetworkIn": "80.1MB", "NetworkOut": "126.4MB", "DiscRead": "0B", "DiscWrite": "81.3MB"}
+                                }]
+                    }]
+}
