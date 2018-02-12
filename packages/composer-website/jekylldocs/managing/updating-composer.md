@@ -10,7 +10,7 @@ index-order: 809
 
 # Updating {{site.data.conrefs.composer_full}} Runtime
 
-After deploying {{site.data.conrefs.composer_full}} you may wish to upgrade to a new version. To update your installed version of {{site.data.conrefs.composer_full}} you must uninstall the client, admin, and runtime CLI components and reinstall them by using npm.
+After deploying {{site.data.conrefs.composer_full}} you may wish to update to a new version. To update your installed version of {{site.data.conrefs.composer_full}} you must uninstall the client, admin, and runtime CLI components and reinstall them by using npm.
 
 ## Procedure
 

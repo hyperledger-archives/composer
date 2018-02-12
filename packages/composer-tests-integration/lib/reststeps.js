@@ -42,12 +42,16 @@ module.exports = function () {
         await this.composer.runBackground('REST_SVR', `composer-rest-server --card ${adminId} -n never -w true`, /Browse your REST API/);
     });
 
-    this.When(/^I make a (GET|HEAD|DELETE) request to (.+?)$/, function (method, path) {
+    this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, path) {
         return this.composer.request(method, path);
     });
 
     this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, path, data) {
         return this.composer.request(method, path, data);
+    });
+
+    this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (path, filter) {
+        return this.composer.request('GET', path + '?filter=' + encodeURIComponent(filter));
     });
 
     this.When('I shutdown the REST server', function() {
