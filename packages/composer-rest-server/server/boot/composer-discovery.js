@@ -232,6 +232,10 @@ function registerPingMethod(app, dataSource, System, connector) {
                 type: 'string',
                 required: false
             },
+            identity: {
+                type: 'string',
+                required: false
+            },
             version: {
                 type: 'string',
                 required: true

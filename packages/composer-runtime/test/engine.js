@@ -720,32 +720,57 @@ describe('Engine', () => {
 
     describe('#ping', () => {
 
-        it('should throw for invalid arguments', () => {
-            let result = engine.query(mockContext, 'ping', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "ping", expecting "\[\]"/);
+        it('should throw for invalid arguments', async () => {
+            await engine.query(mockContext, 'ping', ['no', 'args', 'supported'])
+                .should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "ping", expecting "\[\]"/);
         });
 
-        it('should return an object containing the version', () => {
-            return engine.query(mockContext, 'ping', [])
-                .then((result) => {
-                    result.should.deep.equal({
-                        version: version,
-                        participant: null
-                    });
-                });
+        it('should return an object containing the version', async () => {
+            const result = await engine.query(mockContext, 'ping', []);
+            result.should.deep.equal({
+                version: version,
+                participant: null,
+                identity: null
+            });
         });
 
-        it('should return an object containing the current participant', () => {
+        it('should return an object containing the current participant', async () => {
             let mockParticipant = sinon.createStubInstance(Resource);
             mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
             mockContext.getParticipant.returns(mockParticipant);
-            return engine.query(mockContext, 'ping', [])
-                .then((result) => {
-                    result.should.deep.equal({
-                        version: version,
-                        participant: 'org.doge.Doge#DOGE_1'
-                    });
-                });
+            const result = await engine.query(mockContext, 'ping', []);
+            result.should.deep.equal({
+                version: version,
+                participant: 'org.doge.Doge#DOGE_1',
+                identity: null
+            });
+        });
+
+        it('should return an object containing the current identity', async () => {
+            let mockIdentity = sinon.createStubInstance(Resource);
+            mockIdentity.getFullyQualifiedIdentifier.returns('org.hyperledger.composer.system.Identity#IDENTITY_1');
+            mockContext.getIdentity.returns(mockIdentity);
+            const result = await engine.query(mockContext, 'ping', []);
+            result.should.deep.equal({
+                version: version,
+                participant: null,
+                identity: 'org.hyperledger.composer.system.Identity#IDENTITY_1'
+            });
+        });
+
+        it('should return an object containing the current participant and identity', async () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockContext.getParticipant.returns(mockParticipant);
+            let mockIdentity = sinon.createStubInstance(Resource);
+            mockIdentity.getFullyQualifiedIdentifier.returns('org.hyperledger.composer.system.Identity#IDENTITY_1');
+            mockContext.getIdentity.returns(mockIdentity);
+            const result = await engine.query(mockContext, 'ping', []);
+            result.should.deep.equal({
+                version: version,
+                participant: 'org.doge.Doge#DOGE_1',
+                identity: 'org.hyperledger.composer.system.Identity#IDENTITY_1'
+            });
         });
 
     });

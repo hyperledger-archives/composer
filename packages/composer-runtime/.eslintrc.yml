@@ -4,7 +4,7 @@ env:
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
-    ecmaVersion: 2015
+    ecmaVersion: 8
     sourceType:
         - script
 rules:
@@ -36,13 +36,13 @@ rules:
     no-useless-call: error
     no-with: error
     operator-linebreak: error
-    require-jsdoc:
-        - error
-        - require:
-            ClassDeclaration: true
-            MethodDefinition: true
-            FunctionDeclaration: true
-    valid-jsdoc:
-        - error
-        - requireReturn: false
+#    require-jsdoc:
+#        - error
+#        - require:
+#            ClassDeclaration: true
+#            MethodDefinition: true
+#            FunctionDeclaration: true
+#    valid-jsdoc:
+#        - error
+#        - requireReturn: false
     yoda: error
