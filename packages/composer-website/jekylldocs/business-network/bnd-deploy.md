@@ -71,8 +71,6 @@ If the business network administrator has an enrollment ID and enrollment secret
 
 If you are using the instance of {{site.data.conrefs.hlf_full}} set up in the {{site.data.conrefs.composer_full}} development environment, the bootstrap registrar enrollment ID is `admin` and the bootstrap registrar enrollment secret is `adminpw`.
 
-When deploying a business network to {{site.data.conrefs.hlf_full}} v1.0 using the Playground locally, you must follow the process above to connect using the peer admin identity.
-
 Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.
 
 When deploying a business network using Playground locally, you must have at least one business network card with the `PeerAdmin` role and at least one business network card with the `ChannelAdmin` role. Each of these business network cards must contain the correct admin certificates.
