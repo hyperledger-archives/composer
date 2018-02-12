@@ -42,10 +42,7 @@ A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following 
         }
 
 
-
-  If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
-
-  _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
+  A more complete example of a connection profile with all possible properties defined is shown here (property values are examples and not necessarily valid values)
 
 
 
@@ -130,7 +127,7 @@ Support for HSM (Hardware Security Module)is now possible so long as you have PK
                 "pin": 98765432
             }
         };
- 
+
   - `library` is the absolute path to the pkcs#11 library required for communication with your specific HSM
   - `slot` is the configured slot number for the HSM
   - `pin` is the pin defined for access to that slot.
