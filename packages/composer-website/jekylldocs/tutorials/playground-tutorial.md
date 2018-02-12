@@ -10,7 +10,7 @@ excerpt: The Playground tutorial runs through creating your first business netwo
 
 # Playground Tutorial
 
-In this step by step tutorial we'll walk through setting up a business network, defining our assets, participants and transactions, and testing our network by creating some participants and an asset, and submitting transactions to change the ownership of the asset from one to another.
+In this step by step tutorial we'll walk through setting up a business network, defining our assets, participants and transactions, and testing our network by creating some participants and an asset, and submitting transactions to change the ownership of the asset from one to another. This tutorial is intended to act as an introduction to {{site.data.conrefs.composer_full}} concepts using the online playground environment.
 
 ## Step One: Open the {{site.data.conrefs.composer_full}} Playground
 
