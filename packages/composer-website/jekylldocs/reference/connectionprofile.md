@@ -17,13 +17,18 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following format:
 
+
         {
+            "name": "my-fabric",
             "type": "hlfv1",
             "orderers": [
-               { "url" : "grpc://localhost:7050" }
+                {
+                    "url" : "grpc://localhost:7050"
+                }
             ],
-            "ca": { "url": "http://localhost:7054",
-                    "name": "ca.org1.example.com"
+            "ca": {
+                "url": "http://localhost:7054",
+                "name": "ca.org1.example.com"
             },
             "peers": [
                 {
@@ -31,11 +36,11 @@ A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following 
                     "eventURL": "grpc://localhost:7053"
                 }
             ],
-            "keyValStore": "${HOME}/.composer-credentials",
             "channel": "composerchannel",
             "mspID": "Org1MSP",
-            "timeout": "300"
+            "timeout": 300
         }
+
 
 
   If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
@@ -43,26 +48,38 @@ A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following 
   _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
 
 
-        {
-          type: 'hlfv1',
-          name: 'hlfv1org1',
-          orderers: [
-            'grpc://localhost:7050'
-          ],
-          ca: {
-            url: 'http://localhost:7054',
-            name: 'ca.org1.example.com'
-          },
-          peers: [
-            {
-              requestURL: 'grpc://localhost:7051',
-              eventURL: 'grpc://localhost:7053'
+
+         {
+            "name": "my-fabric",
+            "type": "hlfv1",
+            "ca": {
+                "url": "https://localhost:7054",
+                "name": "ca.org1.example.com",
+                "trustedRoots" : ["-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----", "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----"],
+                "verify": true
             },
+            "orderers": [
+                {
+                   "url" : "grpcs://localhost:7050",
+                   "cert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
+                   "hostNameOverride": "ordererHostName"
+                }
             ],
-          channel: 'composerchannel',
-          mspID: 'Org1MSP',
-          timeout: '300',
-        };
+            "peers": [
+                {
+                    "requestURL": "grpcs://localhost:7051",
+                    "eventURL": "grpcs://localhost:7053",
+                    "cert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
+                    "hostNameOverride": "peerHostName"
+                }
+            ],
+            "channel": "composerchannel",
+            "mspID": "Org1MSP",
+            "timeout": 300,
+            "globalCert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
+            "maxSendSize": 20,
+            "maxRecvSize": 20
+        }
 
   - `name` is a name used to refer to the connection profile, and is required.
   - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0 is must be `hlfv1`.
@@ -81,3 +98,53 @@ A connection profile for {{site.data.conrefs.hlf_full}} v1.0 uses the following 
   - `globalCert` defines the TLS certificate which is used for all peers and orderers if no `cert` property is specified. If a `cert` property is specified, it overrides the `globalCert` property only for the peer or orderer it is specified for.
   - `maxSendSize` is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
   - `maxRecvSize` is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
+
+### HSM Support
+
+Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup e.g.
+
+        {
+            "name": "my-fabric-with-hsm",
+            "type": "hlfv1",
+            "orderers": [
+                {
+                    "url": "grpc://localhost:7050"
+                }
+            ],
+            "ca": {
+                "url": "http://localhost:7054",
+                "name": "ca.org1.example.com"
+            },
+            "peers": [
+                {
+                    "requestURL": "grpc://localhost:7051",
+                    "eventURL": "grpc://localhost:7053"
+                },
+            ],
+            "channel": "composerchannel",
+            "mspID": "Org1MSP",
+            "timeout": "300",
+            "hsm": {
+                "library": "/usr/local/lib/myhsm.so",
+                "slot": 0,
+                "pin": 98765432
+            }
+        };
+ 
+  - `library` is the absolute path to the pkcs#11 library required for communication with your specific HSM
+  - `slot` is the configured slot number for the HSM
+  - `pin` is the pin defined for access to that slot.
+
+To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
+
+        export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+        export PKCS_SLOT=0
+        export PKCS_PIN=98765432
+
+then you can reference these in the connection profile as follows
+
+            "hsm": {
+                "library": "{PKCS_LIBRARY}",
+                "slot": "{PKCS_SLOT}",
+                "pin": "{PKCS_PIN}"
+            }

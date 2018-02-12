@@ -41,7 +41,10 @@ class Request {
             .then((result) => {
                 mkdirp.sync(actualLocation);
                 fs.writeFileSync(path.join(actualLocation, result.enrollId + '-pub.pem'), result.certificate);
-                fs.writeFileSync(path.join(actualLocation, result.enrollId + '-priv.pem'), result.key);
+                // see if a key was returned, if HSM managed then no key is returned.
+                if (result.key) {
+                    fs.writeFileSync(path.join(actualLocation, result.enrollId + '-priv.pem'), result.key);
+                }
                 fs.writeFileSync(path.join(actualLocation, result.caName + '-root.pem'), result.rootCertificate);
                 cmdUtil.log(`'${result.enrollId}' was successfully requested and the certificates stored in '${actualLocation}'`);
             });

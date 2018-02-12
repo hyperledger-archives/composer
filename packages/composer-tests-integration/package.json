@@ -9,7 +9,9 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test-inner": "cucumber-js",
-    "int-test": "npm run pretest && npm run lint && node ./scripts/npm_serve && npm run test-inner"
+    "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
+    "int-test": "npm run pretest && npm run lint && node ./scripts/npm_serve && npm run test-inner",
+    "int-test-nohsm": "npm run pretest && npm run lint && node ./scripts/npm_serve && npm run test-inner-nohsm"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
     "license-check": "1.1.5",
+    "lodash-match-pattern": "2.0.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0"
   },

@@ -1047,27 +1047,39 @@ class HLFConnection extends Connection {
     /**
      * Upgrade runtime to a newer version
      * @param {any} securityContext security context
-     * @param {string} businessNetworkIdentifier The identifier of the business network to upgrade
+     * @param {string} businessNetworkName The name of the business network
+     * @param {object} upgradeOptions connector specific options
      * @return {Promise} A promise that is resolved when the runtime has been upgraded,
      * or rejected with an error.
      * @memberof HLFConnection
      */
-    upgrade(securityContext) {
+    upgrade(securityContext, businessNetworkName, upgradeOptions) {
         const method = 'upgrade';
-        LOG.entry(method, securityContext);
+        LOG.entry(method, securityContext, businessNetworkName, upgradeOptions);
 
-        if (!this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('No business network has been specified for this connection'));
+        if (!businessNetworkName) {
+            return Promise.reject(new Error('No business network has been specified for upgrade'));
         }
+        this.businessNetworkIdentifier = businessNetworkName;
 
         let txId;
         let eventHandler;
-        // check runtime versions to ensure only the micro version has changed, not minor or major.
-        return this._checkRuntimeVersions(securityContext)
+
+        return this.channel.queryInstantiatedChaincodes()
             .then((results) => {
-                if (!results.isCompatible) {
-                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${results.response.version}) has changed major or minor version and cannot be upgraded.`);
+                let result = results.chaincodes.filter((chaincode) => {
+                    return chaincode.path === 'composer' && chaincode.name === businessNetworkName;
+                });
+                if (result.length === 0) {
+                    throw new Error(`${businessNetworkName} has not been started so cannot be upgraded`);
                 }
+                const runtimeVersion = result[0].version;
+                // Check our new version should be greater than or equal but only a micro version change.
+                const range =  `^${runtimeVersion}`;
+                if (!semver.satisfies(connectorPackageJSON.version, range)) {
+                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${runtimeVersion}) has changed major or minor version and cannot be upgraded.`);
+                }
+
                 return this._initializeChannel();
             })
             .then(() => {
@@ -1077,7 +1089,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: this.businessNetworkIdentifier,
+                    chaincodeId: businessNetworkName,
                     txId: txId,
                     fcn: 'upgrade'
                 };

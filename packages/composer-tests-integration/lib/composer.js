@@ -16,11 +16,15 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const IdCard = require('composer-common').IdCard;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
 const fs = require('fs');
 const childProcess = require('child_process');
+const http = require('http');
+const matchPattern = require('lodash-match-pattern');
+
 
 let generated = false;
 
@@ -43,12 +47,16 @@ class Composer {
      * Constructor.
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
+     * @param {Object} tasks - current background tasks accessible to all scenarios
+     * @param {Object} aliasMap - current map of alias names to functional items
      */
-    constructor(uri, errorExpected) {
+    constructor(uri, errorExpected, tasks, aliasMap) {
         this.uri = uri;
         this.errorExpected = errorExpected;
         this.error = null;
         this.lastResp = null;
+        this.tasks = tasks;
+        this.aliasMap = aliasMap;
     }
 
     /**
@@ -228,6 +236,109 @@ class Composer {
     }
 
     /**
+     * Run a CLI Command with a substituted alias
+     * @param {*} alias -  The alias to substitue in the command
+     * @param {*} table -  Information listing the CLI command and parameters to be run
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    runCLIWithAlias(alias, table) {
+        if (typeof table !== 'string') {
+            return Promise.reject('Command passed to function was not a string');
+        } else {
+            if (!this.aliasMap.has(alias)) {
+                return Promise.reject('Unable to use passed Alias: ' + alias + ' does not exist');
+            } else {
+                let command = table.replace(alias, this.aliasMap.get(alias));
+                return this._runCLI(command);
+            }
+        }
+    }
+
+    /**
+     * Prepare CLI Command to run
+     * @param {String} label - name associated with task
+     * @param {DataTable} table -  Information listing the CLI command and parameters to be run
+     * @param {RegExp} regex - await the content of stdout before resolving promise
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    runBackground(label, table, regex) {
+        if (typeof table === 'string') {
+            return this._runBackground(label, table, regex);
+        } else {
+            return this._runBackground(label, this.convertTableToCommand(table), regex);
+        }
+    }
+
+    /**
+     * Prepare CLI Command to run
+     * @param {String} label - name associated with task
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    killBackground(label) {
+        return new Promise( (resolve, reject) => {
+            if (this.tasks[label]) {
+                this.tasks[label].kill();
+                delete this.tasks[label];
+                // delay, ensure child process is really gone!
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
+            } else {
+                reject('No such task: ' + label);
+            }
+        });
+    }
+
+    /**
+     * Do an HTTP request to REST server
+     * @param {String} method - HTTP method
+     * @param {String} path - path
+     * @param {*} data - request body
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    request(method, path, data) {
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: path,
+            method: method
+        };
+        if(data) {
+            options.headers = {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            };
+        }
+
+        let response = '';
+
+        return new Promise( (resolve, reject) => {
+            const req = http.request(options, (res) => {
+                res.setEncoding('utf8');
+                res.on('data', (chunk) => {
+                    response += chunk;
+                });
+                res.on('end', () => {
+                    this.lastResp = { code: res.statusCode, response: response };
+                    resolve(this.lastResp);
+                });
+            });
+
+            req.on('error', (e) => {
+                this.lastResp = { code: e.statusCode, response: response, error: e };
+                reject(this.lastResp);
+            });
+
+            if(data) {
+                // write data to request body
+                req.write(data);
+            }
+            req.end();
+        });
+
+    }
+
+    /**
      * Convert a prameterised table into a string command to run
      * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
      * @return {String} - String command based upon the input table
@@ -258,8 +369,6 @@ class Composer {
             let stdout = '';
             let stderr = '';
 
-            //console.log(command);
-
             return new Promise( (resolve, reject) => {
 
                 let childCliProcess = childProcess.exec(command);
@@ -283,12 +392,68 @@ class Composer {
                 childCliProcess.on('close', (code) => {
                     if (code && code !== 0) {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
-                        reject(this.lastResp);
+                        resolve(this.lastResp);
                     } else {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
                     }
                 });
+            });
+        }
+    }
+
+    /**
+     * Run a composer CLI command
+     * @param {String} label - name associated with task
+     * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
+     * @param {RegExp} regex - await the content of stdout before resolving promise
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    _runBackground(label, table, regex) {
+        if (typeof table !== 'string') {
+            return Promise.reject('Command passed to function was not a string');
+        } else {
+            let command = table;
+            let stdout = '';
+            let stderr = '';
+            let self = this;
+
+            return new Promise( (resolve, reject) => {
+
+                let args = command.split(' ');
+                let file = args.shift();
+
+                let childCliProcess = childProcess.spawn(file, args);
+
+                self.tasks[label] = childCliProcess;
+
+                childCliProcess.stdout.setEncoding('utf8');
+                childCliProcess.stderr.setEncoding('utf8');
+
+                let success = false;
+
+                setTimeout(() => {
+                    if(!success) {
+                        reject({stdout: stdout, stderr: stderr});
+                    }
+                }, 60000);
+
+                childCliProcess.stdout.on('data', (data) => {
+                    stdout += data;
+                    if(stdout.match(regex)) {
+                        success = true;
+                        resolve({stdout: stdout, stderr: stderr});
+                    }
+                });
+
+                childCliProcess.stderr.on('data', (data) => {
+                    stderr += data;
+                });
+
+                childCliProcess.on('error', (error) => {
+                    reject({error: error, stdout: stdout, stderr: stderr});
+                });
+
             });
         }
     }
@@ -310,7 +475,7 @@ class Composer {
 
         return new Promise( (resolve, reject) => {
             if (!this.lastResp || !this.lastResp[type]) {
-                reject('a ' + type + ' response was expected, but no repsonse messages have been generated');
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
             } else if (regex) {
                 if(this.lastResp[type].match(regex)) {
                     resolve();
@@ -321,6 +486,146 @@ class Composer {
         });
     }
 
+    /**
+     * Check the HTTP response status
+     * @param {Number} code expected HTTP response code.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseCode(code) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp) {
+                reject('a response was expected, but no response messages have been generated');
+            } else if (this.lastResp.code.toString() === code.toString()) {
+                resolve();
+            } else {
+                reject('received HTTP status: ' + this.lastResp.code + ', ' + this.lastResp.error);
+            }
+        });
+    }
+
+    /**
+     * Check the last message with regex
+     * @param {RegExp} [regex] Optional regular expression.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseBody(regex) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else {
+                if(this.lastResp.response.match(regex)) {
+                    resolve();
+                } else {
+                    reject('regex match failed');
+                }
+            }
+        });
+    }
+
+    /**
+     * Check the last message matches JSON
+     * @param {*} pattern Expected json
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkResponseJSON(pattern) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else {
+                const result = matchPattern(JSON.parse(this.lastResp.response), pattern);
+                if(result === null) {
+                    resolve();
+                } else {
+                    reject('JSON match failed: ' + result);
+                }
+            }
+        });
+    }
+
+    /**
+     * Save a matched pattern from the current console stdout as an alias in an internal map
+     * @param {*} regex The regex to match on
+     * @param {*} group The matched regex group to save
+     * @param {*} alias The alias to save the matched regex under
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    saveMatchingGroupAsAlias(regex, group, alias) {
+        let type = 'stdout';
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a response is required, but no response messages have been generated');
+            } else {
+                // match and save as alias, if no match then reject
+                let match = regex.exec(this.lastResp[type]);
+                if (match && match.length===2) {
+                    this.aliasMap.set(alias, match[group]);
+                    resolve();
+                } else {
+                    reject('regex match failed: unable to add alias to map');
+                }
+            }
+        })
+        .catch((err) => {
+            return Promise.reject(err);
+        });
+    }
+
+    /**
+     * Convert a card with a secret to use HSM to manage it's private keys.
+     * @param {string} cardFile the card
+     */
+    async convertToHSM(cardFile) {
+
+        try {
+            const adminConnection = new AdminConnection();
+            let cardBuffer = fs.readFileSync(cardFile);
+            let curCard = await IdCard.fromArchive(cardBuffer);
+            let cardName = BusinessNetworkCardStore.getDefaultCardName(curCard);
+            let ccp = curCard.getConnectionProfile();
+            ccp.hsm = {
+                'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                'slot': 0,
+                'pin': 98765432
+            };
+
+            let metadata = {
+                businessNetwork: curCard.getBusinessNetworkName(),
+                userName: curCard.getUserName(),
+                enrollmentSecret: curCard.getEnrollmentCredentials().secret
+            };
+            let newCard = new IdCard(metadata, ccp);
+
+            cardBuffer = await newCard.toArchive({ type: 'nodebuffer' });
+
+            let dir = path.dirname(cardFile);
+            let fn = path.basename(cardFile);
+            let nameEnd = fn.indexOf('@');
+            let newCardFile = path.join(dir, fn.substring(0, nameEnd) + '_hsm' + fn.substring(nameEnd, fn.length));
+
+            fs.writeFileSync(newCardFile, cardBuffer);
+
+            // ensure it doesn't exist.
+            const exists = await adminConnection.hasCard(cardName);
+            if (exists) {
+                await adminConnection.deleteCard(cardName);
+            }
+        } catch(err) {
+            console.log(`failed to convert to HSM and Import. Error was ${err}`);
+            console.log(err);
+        }
+    }
+
+    /**
+     * extract a secret from a card and store it in the alias
+     * @param {*} alias the alias name
+     * @param {*} cardFile the card file
+     */
+    async extractSecret(alias, cardFile) {
+        let cardBuffer = fs.readFileSync(cardFile);
+        let curCard = await IdCard.fromArchive(cardBuffer);
+
+        this.aliasMap.set(alias, curCard.getEnrollmentCredentials().secret);
+    }
 }
 
 module.exports = Composer;

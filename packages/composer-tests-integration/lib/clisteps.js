@@ -24,11 +24,39 @@ module.exports = function () {
         return this.composer.checkExists(type, table);
     });
 
+    this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
+        return this.composer.extractSecret(alias, cardFile);
+    });
+
     this.When(/^I run the following CLI command/, {timeout: 240 * 1000}, function (table) {
         return this.composer.runCLI(table);
     });
 
+    this.When(/^I substitue the alias (.*?) and run the following CLI command$/, {timeout: 240 * 1000}, function (alias, table) {
+        return this.composer.runCLIWithAlias(alias, table);
+    });
+
+    this.When(/^I spawn the following background task (.+?), and wait for \/(.+?)\/$/, {timeout: 240 * 1000}, function (label, regex, table) {
+        return this.composer.runBackground(label, table, new RegExp(regex));
+    });
+
+    this.When(/^I kill task named (.+?)$/, {timeout: 240 * 1000}, function (label) {
+        return this.composer.killBackground(label);
+    });
+
+    this.When(/^I save group (.+?) from the console output matching pattern (.+?) as alias (.*?)$/, function (group, regex, alias) {
+        return this.composer.saveMatchingGroupAsAlias(new RegExp(regex, 'g'), group, alias);
+    });
+
+    this.When(/^I convert a card to be HSM managed$/, function (cardFile) {
+        return this.composer.convertToHSM(cardFile);
+    });
+
     this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), false);
+    });
+
+    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
+        return this.composer.checkConsoleOutput(new RegExp(regex), true);
     });
 };

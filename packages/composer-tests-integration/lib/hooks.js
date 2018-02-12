@@ -17,13 +17,15 @@
 const Composer = require('./composer');
 
 module.exports = function () {
+    let tasks = {};
+    let aliasMap = new Map();
 
     this.Before(function (scenarioResult) {
         const uri = scenarioResult.scenario.uri;
         const errorExpected = scenarioResult.scenario.steps.some((step) => {
             return !!step.name.match(/^I should get an error/);
         });
-        this.composer = new Composer(uri, errorExpected);
+        this.composer = new Composer(uri, errorExpected, tasks, aliasMap);
         return Promise.resolve();
     });
 

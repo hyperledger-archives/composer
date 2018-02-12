@@ -2,9 +2,7 @@
 * [Step-by-step developement environment setup](./getting-started.md)
 * [Suggested IDE setup](./ide-setup.md)
 * [Coding Guidelines](./coding-guidelines.md)
-* Currently reading -> [Pull Request Guidelines](./submitting-pull-request.md)
-* [Release process](./release-process/weekly-qa-validation.md)
-
+* [Pull Request Guidelines](./submitting-pull-request.md)
 
 # Submitting a Pull Request
 
