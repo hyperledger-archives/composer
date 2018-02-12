@@ -267,11 +267,7 @@ ga('send', 'pageview');
 
 <h2 id="creating-a-connection-profile">Creating a Connection Profile</h2>
 
-<ol>
-<li>Create a new file called <code>connection.json</code> which will define the connection profile that contains the following information for Hyperledger Fabric v1.0. </li>
-</ol>
-
-<p>A simple connection profile that doesn&#39;t use TLS has the following format:</p>
+<p>A connection profile for Hyperledger Fabric v1.0 uses the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    {
         "name": "my-fabric",
         "type": "hlfv1",
@@ -295,8 +291,6 @@ ga('send', 'pageview');
         "timeout": 300
     }
 </code></pre></div>
-<p>If you are connecting to Hyperledger Fabric v1.0 and are not using TLS or if you don&#39;t need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:</p>
-
 <p>A more complete example of a connection profile with all possible properties defined is shown here (property values are examples and not necessarily valid values)</p>
 <div class="highlight"><pre><code class="language-" data-lang="">     {
         "name": "my-fabric",
