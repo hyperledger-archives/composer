@@ -202,8 +202,8 @@ ga('send', 'pageview');
 <li><a href="/composer/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -218,8 +218,8 @@ ga('send', 'pageview');
 <li><a href="/composer/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -261,7 +261,7 @@ ga('send', 'pageview');
             
               <h1 id="composer-card-create">Composer Card Create</h1>
 
-<p>Creates a business network card from individual components. When creating a business network card, you will need either an <code>enrollSecret</code> or both a <code>certificate</code> and <code>privateKey</code>.</p>
+<p>Creates a business network card from individual components. When creating a business network card, you will need either an <code>enrollSecret</code>, both a <code>certificate</code> and <code>privateKey</code> or just a <code>certificate</code> if your private keys are managed by a HSM (Hardware Security Module).</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer card create --file conga.card --businessNetworkName penguin-network --connectionProfileFile connection.json --user conga --enrollSecret supersecret
 </code></pre></div>
 <h2 id="syntax">Syntax</h2>

@@ -202,8 +202,8 @@ ga('send', 'pageview');
 <li><a href="/composer/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -218,8 +218,8 @@ ga('send', 'pageview');
 <li><a href="/composer/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -264,9 +264,9 @@ ga('send', 'pageview');
 <hr>
 
 <p>The <code>composer network upgrade</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-archive&gt; -p &lt;connection-profile-Name&gt; -i &lt;upgrade-Id&gt; -s &lt;upgrade-Secret&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-name&gt; -c &lt;card-name&gt;
 </code></pre></div>
-<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been deployed to a blockchain node by using the <code>composer runtime install</code> command.</p>
+<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been installed to a blockchain node by using the <code>composer runtime install</code> command.</p>
 
 <p><em>Please Note</em>: <code>composer network upgrade</code> is only suitable for upgrading between micro versions of the Hyperledger Composer runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.</p>
 
@@ -276,7 +276,8 @@ ga('send', 'pageview');
 Options:
   --help                       Show help  [boolean]
   -v, --version                Show version number  [boolean]
-  -c, --card                   The business network card defining the network to upgrade. [string]
+  --card, -c                 The cardname to use to upgrade the network  [string] [required]
+  --businessNetworkName, -n  The business network name  [string] [required]
 </code></pre></div>
             
           </section>
