@@ -105,6 +105,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /The connection to the network was successfully tested: basic-sample-network/
         Then The stdout information should include text matching /version:/
         Then The stdout information should include text matching /participant: org.hyperledger.composer.system.NetworkAdmin#admin/
+        Then The stdout information should include text matching /identity: org.hyperledger.composer.system.Identity#.+?/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can verify that there no assets have been created yet
@@ -142,6 +143,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /The connection to the network was successfully tested: basic-sample-network/
         Then The stdout information should include text matching /version:/
         Then The stdout information should include text matching /participant: org.hyperledger.composer.system.NetworkAdmin#admin/
+        Then The stdout information should include text matching /identity: org.hyperledger.composer.system.Identity#.+?/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can validate that listing all the networks includes my update
