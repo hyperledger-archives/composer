@@ -18,7 +18,7 @@ import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
-import { DrawerService } from '../common/drawer/drawer.service';
+import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -379,7 +379,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
             } else {
                 importModalRef.close();
-                if (result.error) {
+                if (result.error && result.error !== DrawerDismissReasons.ESC) {
                     this.alertService.errorStatus$.next(result.error);
                 }
             }
