@@ -295,7 +295,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-258">line 258</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-282">line 282</a>
 			</li>
 		</ul>
 	</dd>
@@ -474,7 +474,7 @@ return query(query, { inputValue: &#x27;blue&#x27; })
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-238">line 238</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-262">line 262</a>
 			</li>
 		</ul>
 	</dd>
@@ -612,7 +612,7 @@ return query(query, { inputValue: &#x27;blue&#x27; })
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-117">line 117</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-119">line 119</a>
 			</li>
 		</ul>
 	</dd>
@@ -682,6 +682,127 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
             
 <hr>
 <dt>
+    <h4 class="name" id="getCurrentIdentity"><span class="type-signature"></span>getCurrentIdentity()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the current identity. The current identity is the identity<br>that was used to submit the current transaction.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-217">line 217</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The current identity,<br>or null if the transaction was submitted using an identity that does<br>not map to a participant.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-composer-common.Resource.html">module:composer-common.Resource</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Get the current identity.
+var currentIdentity = getCurrentIdentity();
+// Get the certificate from the current identity.
+var certificate = currentIdentity.certificate;</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="getCurrentParticipant"><span class="type-signature"></span>getCurrentParticipant()</h4>
     
     
@@ -737,7 +858,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-185">line 185</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-187">line 187</a>
 			</li>
 		</ul>
 	</dd>
@@ -866,7 +987,7 @@ if (currentParticipant.getFullyQualifiedIdentifier() !== &#x27;org.acme.Driver#D
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-77">line 77</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-79">line 79</a>
 			</li>
 		</ul>
 	</dd>
@@ -993,7 +1114,7 @@ var factory = getFactory();</pre>
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-352">line 352</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-376">line 376</a>
 			</li>
 		</ul>
 	</dd>
@@ -1162,7 +1283,7 @@ getNativeAPI().getChannelID();</pre>
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-151">line 151</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-153">line 153</a>
 			</li>
 		</ul>
 	</dd>
@@ -1287,7 +1408,7 @@ return getParticipantRegistry(&#x27;org.acme.Driver&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-98">line 98</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-100">line 100</a>
 			</li>
 		</ul>
 	</dd>
@@ -1504,7 +1625,7 @@ var ser = getSerializer();</pre>
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-215">line 215</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-239">line 239</a>
 			</li>
 		</ul>
 	</dd>
@@ -1714,7 +1835,7 @@ var ser = getSerializer();</pre>
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-292">line 292</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-316">line 316</a>
 			</li>
 		</ul>
 	</dd>

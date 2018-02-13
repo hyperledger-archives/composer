@@ -133,6 +133,7 @@ class Api {
             'getAssetRegistry',
             'getParticipantRegistry',
             'getCurrentParticipant',
+            'getCurrentIdentity',
             'post',
             'emit',
             'buildQuery',
@@ -154,6 +155,7 @@ class Api {
         const factory = context.getFactory();
         const serializer = context.getSerializer();
         const participant = context.getParticipant();
+        const identity = context.getIdentity();
         const registryManager = context.getRegistryManager();
         const httpService = context.getHTTPService();
         const eventService = context.getEventService();
@@ -294,6 +296,28 @@ class Api {
             const method = 'getCurrentParticipant';
             LOG.entry(method);
             let result = participant;
+            LOG.exit(method, result);
+            return result;
+        };
+
+        /**
+         * Get the current identity. The current identity is the identity
+         * that was used to submit the current transaction.
+         * @example
+         * // Get the current identity.
+         * var currentIdentity = getCurrentIdentity();
+         * // Get the certificate from the current identity.
+         * var certificate = currentIdentity.certificate;
+         * @method module:composer-runtime#getCurrentIdentity
+         * @public
+         * @return {module:composer-common.Resource} The current identity,
+         * or null if the transaction was submitted using an identity that does
+         * not map to a participant.
+         */
+        this.getCurrentIdentity = function getCurrentIdentity() {
+            const method = 'getCurrentIdentity';
+            LOG.entry(method);
+            let result = identity;
             LOG.exit(method, result);
             return result;
         };
