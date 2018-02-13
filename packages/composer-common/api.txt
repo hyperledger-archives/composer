@@ -43,6 +43,11 @@ class MemoryCardStore extends BusinessNetworkCardStore {
    + void getAll() 
    + void delete() 
 }
+class Certificate {
+   + void constructor(string) 
+   + string getPEM() 
+   + string getIdentifier() 
+}
 class Factory {
    + Resource newResource(String,String,String,Object,boolean,String,boolean,boolean) throws TypeNotFoundException
    + Resource newConcept(String,String,Object,boolean,String,boolean) throws TypeNotFoundException

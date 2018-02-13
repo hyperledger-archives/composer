@@ -14,10 +14,11 @@
 
 'use strict';
 
+const Certificate = require('composer-common').Certificate;
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const Pretty = require('prettyjson');
 const Table = require('cli-table');
-const chalk = require('chalk');
 
 /**
  * Composer "card list" command
@@ -29,17 +30,16 @@ class List {
     * @param {Object} args argument list from composer command
     * @return {Promise} promise when command complete
     */
-    static handler(args) {
+    static async handler(args) {
         if (args.name){
-            return this.showCardDetails(args.name);
+            await this.showCardDetails(args.name);
         } else {
-            return cmdUtil.createAdminConnection().getAllCards().then(cardMap => {
-                if (args.quiet) {
-                    this.showNames(cardMap);
-                } else {
-                    this.showtable(cardMap);
-                }
-            });
+            const cardMap = await cmdUtil.createAdminConnection().getAllCards();
+            if (args.quiet) {
+                this.showNames(cardMap);
+            } else {
+                this.showtable(cardMap);
+            }
         }
     }
 
@@ -60,79 +60,91 @@ class List {
         const cardNames = Array.from(cardMap.keys());
         let alltables = {};
 
-        if (cardNames.length > 0) {
-            cmdUtil.log(chalk.bold.blue('The following Business Network Cards are available:\n'));
-
-            cardNames.forEach((e)=>{
-                let tableLine = [];
-                let idCard = cardMap.get(e);
-                let bnn = idCard.getConnectionProfile().name;
-                let currenttable = alltables[bnn];
-                if (!currenttable){
-                    currenttable = new Table({
-                        head: ['Card Name', 'UserId', 'Business Network']
-                    });
-                    alltables[bnn]=currenttable;
-                }
-
-                tableLine.push(e);
-                tableLine.push(idCard.getUserName());
-                tableLine.push(idCard.getBusinessNetworkName());
-                currenttable.push(tableLine);
-
-            });
-
-            Object.keys(alltables).sort().forEach((n)=>{
-                cmdUtil.log(chalk.blue('Connection Profile: ')+n);
-                cmdUtil.log(alltables[n].toString());
-                cmdUtil.log('\n');
-            });
-
-            cmdUtil.log('Issue '+chalk.magenta('composer card list --name <Card Name>')+' to get details a specific card');
-
-        } else {
+        if (cardNames.length === 0) {
             cmdUtil.log('There are no Business Network Cards available.');
+            return;
         }
 
+        cmdUtil.log(chalk.bold.blue('The following Business Network Cards are available:\n'));
+
+        cardNames.forEach((e)=>{
+            let tableLine = [];
+            let idCard = cardMap.get(e);
+            let bnn = idCard.getConnectionProfile().name;
+            let currenttable = alltables[bnn];
+            if (!currenttable){
+                currenttable = new Table({
+                    head: ['Card Name', 'UserId', 'Business Network']
+                });
+                alltables[bnn]=currenttable;
+            }
+
+            tableLine.push(e);
+            tableLine.push(idCard.getUserName());
+            tableLine.push(idCard.getBusinessNetworkName());
+            currenttable.push(tableLine);
+
+        });
+
+        Object.keys(alltables).sort().forEach((n)=>{
+            cmdUtil.log(chalk.blue('Connection Profile: ')+n);
+            cmdUtil.log(alltables[n].toString());
+            cmdUtil.log('\n');
+        });
+
+        cmdUtil.log('Issue '+chalk.magenta('composer card list --name <Card Name>')+' to get details a specific card');
+    }
+
+    /**
+     * Get the identity ID for the specified business network card.
+     * @param {IdCard} card The business network card.
+     * @return {string} The identity ID, or null if one is not available.
+     */
+    static _getIdentityIdForCard(idCard) {
+        const credentials = idCard.getCredentials();
+        const pem = credentials.certificate;
+        if (!pem) {
+            return '';
+        }
+        const certificate = new Certificate(pem);
+        return certificate.getIdentifier();
     }
 
     /** Show the details of a single card
      * @param {String} cardName Name of the card to show
      * @returns {Promise} resolved when details are showed
      */
-    static showCardDetails(cardName){
-        return cmdUtil.createAdminConnection().exportCard(cardName)
-        .then((card)=>{
+    static async showCardDetails(cardName){
+        const card = await cmdUtil.createAdminConnection().exportCard(cardName);
 
-            let cp = card.getConnectionProfile();
-            let cpData = { name :cp.name , 'x-type': cp['x-type'], channel:cp.channel };
+        let cp = card.getConnectionProfile();
+        let cpData = { name :cp.name , 'x-type': cp['x-type'], channel:cp.channel };
 
-            let listOutput={
-                userName:this.handleArray(card.getUserName()),
-                description:this.handleArray(card.getDescription()),
-                businessNetworkName:this.handleArray(card.getBusinessNetworkName()),
-                roles:this.handleArray(card.getRoles()),
-                connectionProfile:cpData
-            };
+        let listOutput={
+            userName:this.handleArray(card.getUserName()),
+            description:this.handleArray(card.getDescription()),
+            businessNetworkName:this.handleArray(card.getBusinessNetworkName()),
+            identityId:this.handleArray(List._getIdentityIdForCard(card)),
+            roles:this.handleArray(card.getRoles()),
+            connectionProfile:cpData
+        };
 
-            if(card.getEnrollmentCredentials()===null){
-                listOutput.secretSet='No secret set';
-            }else {
-                listOutput.secretSet='Secret set';
-            }
+        if(card.getEnrollmentCredentials()===null){
+            listOutput.secretSet='No secret set';
+        }else {
+            listOutput.secretSet='Secret set';
+        }
 
-            if (Object.keys(card.getCredentials()).length>0){
-                listOutput.credentialsSet='Credentials set';
-            }else {
-                listOutput.credentialsSet='No Credentials set';
-            }
-            cmdUtil.log(Pretty.render(listOutput,{
-                keysColor: 'blue',
-                dashColor: 'blue',
-                stringColor: 'white'
-            }));
-
-        });
+        if (Object.keys(card.getCredentials()).length>0){
+            listOutput.credentialsSet='Credentials set';
+        }else {
+            listOutput.credentialsSet='No Credentials set';
+        }
+        cmdUtil.log(Pretty.render(listOutput,{
+            keysColor: 'blue',
+            dashColor: 'blue',
+            stringColor: 'white'
+        }));
     }
 
     /** handleNull - to process any undefined or null values
