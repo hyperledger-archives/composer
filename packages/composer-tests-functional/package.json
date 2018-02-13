@@ -24,6 +24,7 @@
     "systest:hlfv1-2": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
     "systest:hlfv1-1_tls": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
     "systest:hlfv1-2_tls": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
+    "systest:hlfv1_hsm": "mocha -t 0 systest/historian.js systest/accesscontrols.js systest/identities.js systest/setup.js",
     "systest:proxy": "mocha -t 0 systest",
     "systest:web": "karma start --single-run"
   },

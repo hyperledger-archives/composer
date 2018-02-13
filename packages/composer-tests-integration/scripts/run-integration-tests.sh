@@ -13,6 +13,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # Delete any existing configuration.
 rm -fr ./verdaccio
 rm -fr ./storage
+rm -fr ./scripts/storage
 rm -fr ${HOME}/.config/verdaccio
 rm -rf ${HOME}/.composer/cards/Test*
 rm -rf ${HOME}/.composer/client-data/Test*
@@ -20,6 +21,12 @@ rm -rf ${HOME}/.composer/cards/bob*
 rm -rf ${HOME}/.composer/client-data/bob*
 rm -rf ${HOME}/.composer/cards/admin*
 rm -rf ${HOME}/.composer/client-data/admin*
+rm -rf ${HOME}/.composer/cards/fred*
+rm -rf ${HOME}/.composer/client-data/fred*
+rm -rf ${HOME}/.composer/cards/sal*
+rm -rf ${HOME}/.composer/client-data/sal*
+rm -rf ${HOME}/.composer/cards/ange*
+rm -rf ${HOME}/.composer/client-data/ange*
 rm -rf ./tmp/*
 rm -rf ./networkadmin
 rm -rf ${HOME}/.npmrc
@@ -35,9 +42,11 @@ cd "${DIR}"
 # Barf if we don't recognize this test suite.
 if [ "${INTEST}" = "" ]; then
     echo You must set INTEST to 'hlfv1' as it is the only supported test item
-    echo separated list of a set of integration test configurations to run.
     echo For example:
     echo  export INTEST=hlfv1
+    echo If you want to skip the HSM tests, you can set INTEST to 'hlfv1_nohsm'
+    echo however it is recommended you do not skip the tests but ensure you
+    echo has softhsm installed so the tests can be run.
     exit 1
 fi
 
@@ -121,7 +130,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
 
     # Run the integration tests.
-    npm run int-test 2>&1 | tee
+    if [[ ${INTEST} == *nohsm ]]; then
+        npm run int-test-nohsm 2>&1 | tee
+    else
+        npm run int-test 2>&1 | tee
+    fi
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
@@ -139,6 +152,12 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer/client-data/bob*
     rm -rf ${HOME}/.composer/cards/admin*
     rm -rf ${HOME}/.composer/client-data/admin*
+    rm -rf ${HOME}/.composer/cards/fred*
+    rm -rf ${HOME}/.composer/client-data/fred*
+    rm -rf ${HOME}/.composer/cards/sal*
+    rm -rf ${HOME}/.composer/client-data/sal*
+    rm -rf ${HOME}/.composer/cards/ange*
+    rm -rf ${HOME}/.composer/client-data/ange*
     rm -rf ./tmp/*
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc

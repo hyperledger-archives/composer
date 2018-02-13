@@ -8,7 +8,7 @@ excerpt: Hyperledger Composer Card Create
 
 # Composer Card Create
 
-Creates a business network card from individual components. When creating a business network card, you will need either an `enrollSecret` or both a `certificate` and `privateKey`.
+Creates a business network card from individual components. When creating a business network card, you will need either an `enrollSecret`, both a `certificate` and `privateKey` or just a `certificate` if your private keys are managed by a HSM (Hardware Security Module).
 
 ```
 composer card create --file conga.card --businessNetworkName penguin-network --connectionProfileFile connection.json --user conga --enrollSecret supersecret

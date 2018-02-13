@@ -12,6 +12,9 @@ excerpt: Hyperledger Composer Identity Issue Command
 
 The `composer identity issue` command issues a new identity to a participant in a participant registry relating to a business network. See the task [Issuing a new identity to a participant](../managing/identity-issue.html) for a walkthrough of using this command or the API.
 
+## Considerations
+This command creates a new card file. The connection profile in this card file comes from the card defined in the `-c|--card` option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.
+
 ## Syntax
 
 ```
