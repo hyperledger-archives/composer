@@ -6,6 +6,10 @@ participant SampleParticipant identified by email {
   o String lastName
 }
 
-transaction SampleTransaction  {
+transaction TestGetCurrentParticipant  {
+  
+}
+
+transaction TestGetCurrentIdentity  {
   
 }

@@ -481,9 +481,15 @@ class Engine {
         if (participant) {
             participantFQI = participant.getFullyQualifiedIdentifier();
         }
+        let identityFQI = null;
+        let identity = context.getIdentity();
+        if (identity) {
+            identityFQI = identity.getFullyQualifiedIdentifier();
+        }
         let result = {
             version: this.container.getVersion(),
-            participant: participantFQI
+            participant: participantFQI,
+            identity: identityFQI
         };
         LOG.exit(method, result);
         return Promise.resolve(result);
