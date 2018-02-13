@@ -9,7 +9,6 @@ exports.config = {
     directConnect: true,
     baseUrl: 'http://127.0.0.1:3001',
     specs: ['./e2e/specs/welcome.spec.ts',
-        './e2e/specs/login-define.spec.ts',
         './e2e/specs/playground-tutorial.spec.ts'
     ],
     capabilities: {
@@ -23,6 +22,9 @@ exports.config = {
                 }
             }
         }
+    },
+    params: {
+        profile: 'Web Browser'
     },
     jasmineNodeOpts: {
         showColors: true,
