@@ -210,7 +210,8 @@ describe('System REST API unit tests', () => {
                     res.should.be.json;
                     res.body.should.deep.equal({
                         version: version,
-                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin'
+                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin',
+                        identity: `org.hyperledger.composer.system.Identity#${identityIds[0]}`
                     });
                 });
         });
