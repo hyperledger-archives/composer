@@ -398,4 +398,20 @@ describe('composer transaction cmdutils unit tests', () => {
         });
     });
 
+    describe('#sanitizeCardFileName', () => {
+        it('should append .card if missing', () => {
+            CmdUtil.sanitizeCardFileName('card').should.equal('card.card');
+        });
+
+        it ('should not change file name with .card extension', () => {
+            const fileName = 'fileName.card';
+            CmdUtil.sanitizeCardFileName(fileName).should.equal(fileName);
+        });
+
+        it ('should use case-insensitive detection of .card extension', () => {
+            const fileName = 'fileName.CARD';
+            CmdUtil.sanitizeCardFileName(fileName).should.equal(fileName);
+        });
+    });
+
 });
