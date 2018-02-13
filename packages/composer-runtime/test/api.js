@@ -47,6 +47,7 @@ describe('Api', () => {
     let factory;
     let serializer;
     let mockParticipant;
+    let mockIdentity;
     let mockRegistryManager;
     let mockEventService;
     let mockHTTPService;
@@ -82,6 +83,8 @@ describe('Api', () => {
         mockContext.getSerializer.returns(serializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockContext.getParticipant.returns(mockParticipant);
+        mockIdentity = sinon.createStubInstance(Resource);
+        mockContext.getIdentity.returns(mockIdentity);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
         mockEventService = sinon.createStubInstance(EventService);
@@ -174,6 +177,14 @@ describe('Api', () => {
 
         it('should return the current participant', () => {
             api.getCurrentParticipant().should.equal(mockParticipant);
+        });
+
+    });
+
+    describe('#getCurrentIdentity', () => {
+
+        it('should return the current identity', () => {
+            api.getCurrentIdentity().should.equal(mockIdentity);
         });
 
     });

@@ -8,7 +8,8 @@ Feature: Rest steps
             """
               {
                 "version": _.isString,
-                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin"
+                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin",
+                "identity": _.isString
               }
             """
 
