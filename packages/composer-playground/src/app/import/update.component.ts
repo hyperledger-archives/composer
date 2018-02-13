@@ -19,7 +19,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { AlertService } from '../basic-modals/alert.service';
 import { ImportComponent } from './import.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
-import { ActiveDrawer } from '../common/drawer';
+import { ActiveDrawer, DrawerDismissReasons } from '../common/drawer';
 
 @Component({
     selector: 'update-business-network',
@@ -64,8 +64,12 @@ export class UpdateComponent extends ImportComponent {
             })
             .catch((error) => {
                 this.deployInProgress = false;
-                this.alertService.errorStatus$.next(error);
-                this.finishedSampleImport.emit({deployed: false, error: error});
+                if (error === DrawerDismissReasons.ESC ) {
+                    this.finishedSampleImport.emit({deployed: false});
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                    this.finishedSampleImport.emit({deployed: false, error: error});
+                }
             });
     }
 
