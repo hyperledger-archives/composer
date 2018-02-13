@@ -61,21 +61,21 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
     
 2. Download the platform binaries, including cryptogen :
   
-    curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0-alpha
+        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0-alpha
 
     Verify the list of docker images downloaded without issues
     
 3. change directory into `first-network` sample 
 
-    cd first-network
+        cd first-network
 
 4. Next, start the BYFN network - additional flags (to the `byfn.sh` script below) must be specified, as we're using CouchDB as the world state database (different to that specified on the Fabric BYFN page) - we also want to start a Certificate Authority (CA) for **each** organization.
  
 5. Execute the following commands in sequence from the `first-network` directory:
 
-    ./byfn.sh -m generate
-    
-    ./byfn.sh -m up -s couchdb -a
+        ./byfn.sh -m generate
+        
+        ./byfn.sh -m up -s couchdb -a
 
 If the command works successfully, the first command will generate Fabric network / security artifacts(see this [link](http://hyperledger-fabric.readthedocs.io/en/release/build_network.html#generate-network-artifacts for more info). Following the second command (above), the BYFN network is started, and verify that you see the following output before proceeding:
 

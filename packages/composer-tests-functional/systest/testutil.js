@@ -1055,6 +1055,14 @@ class TestUtil {
         return testRetries;
     }
 
+    /**
+     * Get the current connection profile.
+     * @return {Object} The current connection profile.
+     */
+    static getCurrentConnectionProfile() {
+        return currentCp;
+    }
+
 }
 
 module.exports = TestUtil;

@@ -8,7 +8,8 @@ Feature: Rest steps
             """
               {
                 "version": _.isString,
-                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin"
+                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin",
+                "identity": _.isString
               }
             """
 
@@ -63,8 +64,92 @@ Feature: Rest steps
             }
             """
 
+    Scenario: Using the REST API, I can create yet another Trader
+        When I make a POST request to /api/Trader
+            """
+            {
+              "$class": "org.acme.biznet.Trader",
+              "tradeId": "TRADER3",
+              "firstName": "Kenneth",
+              "lastName": "Williams"
+            }
+            """
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            {
+              "$class": "org.acme.biznet.Trader",
+              "tradeId": "TRADER3",
+              "firstName": "Kenneth",
+              "lastName": "Williams"
+            }
+            """
+
     Scenario: Using the REST API, I get the new list of Traders
         When I make a GET request to /api/Trader
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER1",
+                "firstName": "Jenny",
+                "lastName": "Jones"
+              },
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER2",
+                "firstName": "Amy",
+                "lastName": "Williams"
+              },
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER3",
+                "firstName": "Kenneth",
+                "lastName": "Williams"
+              }
+            ]
+            """
+
+    Scenario: Using the REST API, I get a filtered list of Traders
+        When I make a GET request to /api/Trader with filter {"where": {"lastName": "Williams"}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER2",
+                "firstName": "Amy",
+                "lastName": "Williams"
+              },
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER3",
+                "firstName": "Kenneth",
+                "lastName": "Williams"
+              }
+            ]
+            """
+
+    Scenario: Using the REST API, I get a filtered list of Traders (with 'and' filter)
+        When I make a GET request to /api/Trader with filter {"where": {"and":[{"firstName": "Kenneth"},{"lastName": "Williams"}]}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+              {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "TRADER3",
+                "firstName": "Kenneth",
+                "lastName": "Williams"
+              }
+            ]
+            """
+
+    Scenario: Using the REST API, I get a filtered list of Traders (with 'or' filter)
+        When I make a GET request to /api/Trader with filter {"where": {"or":[{"firstName": "Jenny"},{"firstName": "Amy"}]}}
         Then The response code should be 200
         And The response body should be JSON matching
             """
@@ -110,6 +195,56 @@ Feature: Rest steps
             }
             """
 
+    Scenario: Using the REST API, I can create another Commodity
+        When I make a POST request to /api/Commodity
+            """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "DEF",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 23,
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+            }
+            """
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "DEF",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 23,
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+            }
+            """
+
+    Scenario: Using the REST API, I can create yet another Commodity
+        When I make a POST request to /api/Commodity
+            """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "GHI",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 50,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }
+            """
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "GHI",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 50,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }
+            """
+
     Scenario: Using the REST API, I can trade a Commodity
         When I make a POST request to /api/Trade
             """
@@ -145,6 +280,73 @@ Feature: Rest steps
             }
             """
 
+    Scenario: Using the REST API, I can get the traded Commodities with quantity < 50
+        When I make a GET request to /api/Commodity with filter {"where": {"quantity": {"lt": 50}}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            [{
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "DEF",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 23,
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+            }]
+            """
+
+    Scenario: Using the REST API, I can get the traded Commodities with quantity > 50
+        When I make a GET request to /api/Commodity with filter {"where": {"quantity": {"gt": 50}}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            [{
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "ABC",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 72.297,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }]
+            """
+
+    Scenario: Using the REST API, I can get the traded Commodities with quantity != 50 and owner TRADER2
+        When I make a GET request to /api/Commodity with filter {"where": {"and": [{"or": [{"quantity": {"gt": 50}}, {"quantity": {"lt": 50}}]}, {"owner": "resource:org.acme.biznet.Trader#TRADER2"}]}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            [{
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "ABC",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 72.297,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }]
+            """
+
+    Scenario: Using the REST API, I can get the traded Commodities with quantity between 20 and 50
+        When I make a GET request to /api/Commodity with filter {"where": {"quantity": {"between": [20, 50]}}}
+        Then The response code should be 200
+        And The response body should be JSON matching
+           """
+            [{
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "DEF",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 23,
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+            }, {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "GHI",
+              "description": "Test commodity",
+              "mainExchange": "Euronext",
+              "quantity": 50,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }]
+            """
+
     Scenario: Using the REST API, I delete TRADER1
         When I make a DELETE request to /api/Trader/TRADER1
         Then The response code should be 204
@@ -152,6 +354,10 @@ Feature: Rest steps
 
     Scenario: Using the REST API, I delete TRADER2
         When I make a DELETE request to /api/Trader/TRADER2
+        Then The response code should be 204
+
+    Scenario: Using the REST API, I delete TRADER3
+        When I make a DELETE request to /api/Trader/TRADER3
         Then The response code should be 204
 
 

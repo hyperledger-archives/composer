@@ -21,17 +21,6 @@ function participantsAreEqual(participant1, participant2) {
 }
 
 /**
- * Handle the sample transaction.
- * @param {systest.accesscontrols.SampleTransaction} transaction The transaction
- * @transaction
- */
-function handleSampleTransaction(transaction) {
-    if (getCurrentParticipant().getFullyQualifiedIdentifier() !== 'systest.identities.SampleParticipant#bob@uk.ibm.com') {
-        throw new Error('wrong participant');
-    }
-}
-
-/**
  * basic update transactions
  * @param {systest.accesscontrols.UpdateAssetValue} transaction The transaction
  * @transaction
