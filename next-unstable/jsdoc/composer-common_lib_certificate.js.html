@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/typenotfoundexception.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/certificate.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/typenotfoundexception.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/certificate.js</h1>
     
 <section>
     <article>
@@ -100,48 +100,67 @@
 
 'use strict';
 
-const BaseException = require('./baseexception');
-const Globalize = require('./globalize');
+const createHash = require('sha.js');
+const Logger = require('./log/logger');
+
+const LOG = Logger.getLog('Certificate');
 
 /**
- * Error thrown when a Composer type does not exist.
- * @extends BaseException
- * @see see {@link BaseException}
- * @class
- * @memberof module:composer-common
- * @private
+ * A class representing a digital certificate, the public part of an identity.
  */
-class TypeNotFoundException extends BaseException {
-    /**
-     * Constructor. If the optional 'message' argument is not supplied, it will be set to a default value that
-     * includes the type name.
-     * @param {String} typeName - fully qualified type name.
-     * @param {String} [message] - error message.
-     */
-    constructor(typeName, message) {
-        if (!message) {
-            const formatter = Globalize.messageFormatter('typenotfounderror-defaultmessage');
-            message = formatter({
-                typeName: typeName
-            });
-        }
+class Certificate {
 
-        super(message);
-        this.typeName = typeName;
+    /**
+     * Calculate the unique identifier for the given certificate.
+     * @private
+     * @param {string} pem The PEM encoded certificate.
+     * @return {string} The unique identifier.
+     */
+    static _calculateIdentifier(pem) {
+        const method = '_calculateIdentifier';
+        LOG.entry(method, pem);
+        const bytes = pem
+            .replace(/-----BEGIN CERTIFICATE-----/, '')
+            .replace(/-----END CERTIFICATE-----/, '')
+            .replace(/[\r\n]+/g, '');
+        const buffer = Buffer.from(bytes, 'base64');
+        const sha256 = createHash('sha256');
+        const result = sha256.update(buffer).digest('hex');
+        LOG.exit(method, result);
+        return result;
     }
 
     /**
-     * Get the name of the type that was not found.
-     * @returns {string} fully qualified type name.
+     * Constructor.
+     * @param {string} pem The PEM encoded certificate.
      */
-    getTypeName() {
-        return this.typeName;
+    constructor(pem) {
+        const method = 'constructor';
+        LOG.entry(method, pem);
+        this.pem = pem;
+        this.identifier = Certificate._calculateIdentifier(pem);
+        LOG.exit(method);
+    }
+
+    /**
+     * Get the PEM encoded certificate.
+     * @return {string} The PEM encoded certificate.
+     */
+    getPEM() {
+        return this.pem;
+    }
+
+    /**
+     * Get the unique identifier.
+     * @return {string} The unique identifier.
+     */
+    getIdentifier() {
+        return this.identifier;
     }
 
 }
 
-module.exports = TypeNotFoundException;
-</pre>
+module.exports = Certificate;</pre>
     </article>
 </section>
 
