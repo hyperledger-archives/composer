@@ -79,7 +79,7 @@ Feature: Cli steps
         Then The stdout information should include text matching /Card name: admin@basic-sample-network/
         Then The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I can see the card that I just imported
+    Scenario: Using the CLI, I can see the card that I just imported in the list of cards
         When I run the following CLI command
             """
             composer card list
@@ -106,6 +106,23 @@ Feature: Cli steps
         Then The stdout information should include text matching /version:/
         Then The stdout information should include text matching /participant: org.hyperledger.composer.system.NetworkAdmin#admin/
         Then The stdout information should include text matching /identity: org.hyperledger.composer.system.Identity#.+?/
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: When using the CLI, I can see the details of the card that I just imported
+        When I run the following CLI command
+            """
+            composer card list -n admin@basic-sample-network
+            """
+        Then The stdout information should include text matching /userName:            admin/
+        Then The stdout information should include text matching /description:/
+        Then The stdout information should include text matching /businessNetworkName: basic-sample-network/
+        Then The stdout information should include text matching /identityId:          [0-9a-z]{64}/
+        Then The stdout information should include text matching /roles:               none/
+        Then The stdout information should include text matching /connectionProfile:/
+        Then The stdout information should include text matching /  name:   hlfv1/
+        Then The stdout information should include text matching /  x-type: hlfv1/
+        Then The stdout information should include text matching /secretSet:           Secret set/
+        Then The stdout information should include text matching /credentialsSet:      Credentials set/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can verify that there no assets have been created yet
