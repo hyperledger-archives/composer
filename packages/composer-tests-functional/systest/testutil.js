@@ -737,10 +737,7 @@ class TestUtil {
                     let ccpToUse = currentCp;
                     if (process.env.FVTEST && process.env.FVTEST.match('hsm$')) {
                         console.log(`defining a new card for ${enrollmentID} to use HSM`);
-                        ccpToUse = {
-                        };
-                        Object.assign(ccpToUse, currentCp);
-                        Object.assign(ccpToUse.client, currentCp.client);
+                        ccpToUse = JSON.parse(JSON.stringify(currentCp));
                         ccpToUse.client['x-hsm'] = {
                             'library': '/usr/local/lib/softhsm/libsofthsm2.so',
                             'slot': 0,
@@ -914,10 +911,7 @@ class TestUtil {
                     let ccpToUse = currentCp;
                     if (process.env.FVTEST.match('hsm$')) {
                         console.log('defining network admin id card to use HSM');
-                        ccpToUse = {
-                        };
-                        Object.assign(ccpToUse, currentCp);
-                        Object.assign(ccpToUse.client, currentCp.client);
+                        ccpToUse = JSON.parse(JSON.stringify(currentCp));
                         ccpToUse.client['x-hsm'] = {
                             'library': '/usr/local/lib/softhsm/libsofthsm2.so',
                             'slot': 0,
@@ -944,7 +938,6 @@ class TestUtil {
         } else if (!forceDeploy) {
             let metadata = {version: 1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin']};
             const deployCardName = 'deployer-card';
-            // currentCp = {type : 'embedded',name:'defaultProfile'};
             let connectionprofile;
 
             if (TestUtil.isEmbedded() || TestUtil.isProxy()) {
