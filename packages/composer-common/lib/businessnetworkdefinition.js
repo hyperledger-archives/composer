@@ -30,9 +30,11 @@ const minimatch = require('minimatch');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
 const Serializer = require('./serializer');
+const nodeUtil = require('util');
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 
+const mkdirp = nodeUtil.promisify(require('mkdirp'));
 
     /** define a help function that will filter out files
      * that are inside a node_modules directory under the path
@@ -172,13 +174,13 @@ class BusinessNetworkDefinition {
 
     /**
      * Create a BusinessNetworkDefinition from an archive.
-     * @param {Buffer} Buffer  - the Buffer to a zip archive
+     * @param {Buffer} zipBuffer  - the Buffer to a zip archive
      * @return {Promise} a Promise to the instantiated business network
      */
-    static fromArchive(Buffer) {
+    static fromArchive(zipBuffer) {
         const method = 'fromArchive';
-        LOG.entry(method, Buffer.length);
-        return JSZip.loadAsync(Buffer).then(function(zip) {
+        LOG.entry(method, zipBuffer.length);
+        return JSZip.loadAsync(zipBuffer).then(function(zip) {
             let promise = Promise.resolve();
             let ctoModelFiles = [];
             let ctoModelFileNames = [];
@@ -299,66 +301,66 @@ class BusinessNetworkDefinition {
     /**
      * Store a BusinessNetworkDefinition as an archive.
      * @param {Object} [options]  - JSZip options
-     * @return {Buffer} buffer  - the zlib buffer
+     * @return {Promise} Resolves to a Buffer of the zip file content.
      */
     toArchive(options) {
+        const zip = new JSZip();
 
-        let zip = new JSZip();
+        for (let fileEntry of this._getAllArchiveFiles()) {
+            const fileNameParts = fileEntry[0];
+            const fileContent = fileEntry[1];
+            zip.file(fileNameParts.join('/'), fileContent, options);
+        }
 
-        let packageFileContents = JSON.stringify(this.getMetadata().getPackageJson());
-        zip.file('package.json', packageFileContents, options);
+        return zip.generateAsync({ type: 'nodebuffer' });
+    }
 
-        // save the README.md if present
-        if(this.getMetadata().getREADME()) {
-            zip.file('README.md', this.getMetadata().getREADME(), options);
+    /**
+     * Get all files that include in a business network archive representing this business network.
+     * @return {Map} Map where keys are arrays of file path elements and values arefile content objects.
+     * @private
+     */
+    _getAllArchiveFiles() {
+        const resultMap = new Map();
+
+        const packageFileContents = JSON.stringify(this.getMetadata().getPackageJson());
+        resultMap.set(['package.json'], packageFileContents);
+
+        const readme = this.getMetadata().getREADME();
+        if (readme) {
+            resultMap.set(['README.md'], readme);
         }
 
         const aclFile = this.getAclManager().getAclFile();
-        if(aclFile) {
-            zip.file(aclFile.getIdentifier(), aclFile.definitions, options);
+        if (aclFile) {
+            resultMap.set([aclFile.getIdentifier()], aclFile.definitions);
         }
 
         const queryFile = this.getQueryManager().getQueryFile();
-        if(queryFile) {
-            zip.file(queryFile.getIdentifier(), queryFile.definitions, options);
+        if (queryFile) {
+            resultMap.set([queryFile.getIdentifier()], queryFile.definitions);
         }
 
-        let modelManager = this.getModelManager();
-        let modelFiles = modelManager.getModelFiles();
-        zip.file('models/', null, Object.assign({}, options, { dir: true }));
-        modelFiles.forEach(function(file) {
-            let fileName;
+        this.getModelManager().getModelFiles().forEach(file => {
             // ignore the system namespace when creating an archive
             if (file.isSystemModelFile()){
                 return;
             }
-            if (file.fileName === 'UNKNOWN'  || file.fileName === null || !file.fileName) {
+            let fileName;
+            if (file.fileName === 'UNKNOWN' || file.fileName === null || !file.fileName) {
                 fileName = file.namespace + '.cto';
             } else {
-                let fileIdentifier = file.fileName;
-                fileName = fsPath.basename(fileIdentifier);
+                fileName = fsPath.basename(file.fileName);
             }
-            zip.file('models/' + fileName, file.definitions, options);
+            resultMap.set(['models', fileName], file.definitions);
         });
 
-        let scriptManager = this.getScriptManager();
-        let scriptFiles = scriptManager.getScripts();
-        zip.file('lib/', null, Object.assign({}, options, { dir: true }));
-        scriptFiles.forEach(function(file) {
-            let fileIdentifier = file.identifier;
-            let fileName = fsPath.basename(fileIdentifier);
-            zip.file('lib/' + fileName, file.contents, options);
+        this.getScriptManager().getScripts().forEach(file => {
+            const fileName = fsPath.basename(file.identifier);
+            resultMap.set(['lib', fileName], file.contents);
         });
 
-        return zip.generateAsync({
-            type: 'nodebuffer'
-        }).then(something => {
-            return Promise.resolve(something).then(result => {
-                return result;
-            });
-
-        });
-
+        return resultMap;
     }
 
     /** Load and parse the package.json
@@ -695,6 +697,41 @@ class BusinessNetworkDefinition {
         }
     }
 
+    /**
+     * Store a BusinessNetworkDefinition to a directory
+     * @param {String} directoryPath The directory to write the content of the business network
+     * @return {Promise} Resolves when the directory is written.
+     */
+    toDirectory(directoryPath) {
+        const umask = process.umask();
+        const createDirMode = 0o0750 & ~umask; // At most: user=all, group=read/execute, others=none
+        const createFileMode = 0o0640 & ~umask; // At most: user=read/write, group=read, others=none
+        const mkdirpOptions = {
+            fs: fs,
+            mode: createDirMode
+        };
+        const writeFileOptions = {
+            encoding: 'utf8',
+            mode: createFileMode
+        };
+
+        const writeFile = nodeUtil.promisify(fs.writeFile);
+
+        const promises = [];
+
+        for (let fileEntry of this._getAllArchiveFiles()) {
+            const fileNameParts = fileEntry[0];
+            const fileContent = fileEntry[1];
+
+            const filePath = fsPath.resolve(directoryPath, ...fileNameParts);
+            const dirname = fsPath.dirname(filePath);
+            const writeFilePromise = mkdirp(dirname, mkdirpOptions)
+                .then(() => writeFile(filePath, fileContent, writeFileOptions));
+            promises.push(writeFilePromise);
+        }
+
+        return Promise.all(promises);
+    }
 
     /**
      * @param {String} dir - the dir to walk
