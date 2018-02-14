@@ -351,6 +351,14 @@ class WebConnection extends Connection {
     }
 
     /**
+     * Return whether a registry check is required before executing createIdentity to prevent duplicates.
+     * @return {boolean} true.
+     */
+    registryCheckRequired() {
+        return true;
+    }
+
+    /**
      * Create a new identity for the specified name.
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} identityName The name for the new identity.
