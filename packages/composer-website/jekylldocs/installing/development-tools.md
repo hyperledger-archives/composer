@@ -68,7 +68,7 @@ This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy you
         curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
         tar -xvf fabric-dev-servers.tar.gz
 
-      A `zip` is also available if you prefer: just replace the `.tar.gz` file with `fabric-dev-servers.zip` and the `tar -xvf` command with a `unzip` command in the above snippet.
+      A `zip` is also available if you prefer: just replace the `.tar.gz` file with `fabric-dev-servers.zip` and the `tar -xvf` command with a `unzip` command in the preceding snippet.
 
 
 9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
