@@ -23,6 +23,7 @@ import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from 'composer-common';
+import { DrawerDismissReasons } from '../common/drawer';
 
 import * as sinon from 'sinon';
 
@@ -345,6 +346,54 @@ describe('TestComponent', () => {
                 link: '1 event triggered',
                 linkCallback: sinon.match.func
             });
+        }));
+
+        it('should handle a transaction that doesn\'t have any events', fakeAsync(() => {
+            component['eventsTriggered'] = [];
+            mockAlertService.successStatus$ = {next: sinon.stub()};
+            mockModal.open.returns({result: Promise.resolve(mockTransaction)});
+
+            component.submitTransaction();
+
+            tick();
+
+            component['registryReload'].should.equal(true);
+
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                title: 'Submit Transaction Successful',
+                text: '<p>Transaction ID <b>1</b> was submitted</p>',
+                icon: '#icon-transaction',
+                link: null,
+                linkCallback: null
+            });
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            component['eventsTriggered'] = ['event', 'event'];
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+            mockModal.open.returns({result: Promise.reject('some error')});
+
+            component.submitTransaction();
+
+            tick();
+
+            component['registryReload'].should.equal(false);
+
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should handle cancel by ESC key without raising an error modal', fakeAsync(() => {
+            component['eventsTriggered'] = ['event', 'event'];
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+            mockModal.open.returns({result: Promise.reject(DrawerDismissReasons.ESC)});
+
+            component.submitTransaction();
+
+            tick();
+
+            component['registryReload'].should.equal(false);
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
     });
 
