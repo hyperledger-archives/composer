@@ -141,7 +141,7 @@ After the command has run, a business network archive file called `tutorial-netw
 
 After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlf_full}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
 
-After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administrate the business network after deployment. This identity is referred to as a network admin.
+After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.
 
 #### Retrieving the correct credentials
 

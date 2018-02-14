@@ -65,7 +65,7 @@ If the business network administrator has an enrollment ID and enrollment secret
 
 ## Deploying business networks using Playground locally
 
-When deploying a business network to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} using the Playground locally, you must follow the process above to connect using the peer admin identity.
+When deploying a business network to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} using the Playground locally, you must follow the process to connect using the peer admin identity.
 
 Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.
 
