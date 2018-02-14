@@ -1,7 +1,8 @@
+@cli
 Feature: Cli steps
 
     Background:
-        Given I have generated crypto material
+        Given I have admin business cards available
 
     Scenario: Using the CLI, I can create a business network card
         Given I have the following items
@@ -209,15 +210,6 @@ Feature: Cli steps
             composer transaction submit --card admin@basic-sample-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.sample.NewSampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.sample.SampleAsset", "resources": [{"$class": "org.acme.sample.NewSampleAsset","assetId": "newNewAsset","description":"Description","owner": "resource:org.acme.sample.SampleParticipant#sal","value": "101"}]}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
-        Then The stdout information should include text matching /Command succeeded/
-
-    Scenario: Using the CLI, I can check that the assets were created
-        When I run the following CLI command
-            """
-            Then The stdout information should include text matching /newAsset/
-            Then The stdout information should include text matching /newNewAsset/
-            composer network list --card admin@basic-sample-network
-            """
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can check that the assets were created

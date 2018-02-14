@@ -16,7 +16,7 @@
 
 module.exports = function () {
 
-    this.Given(/^I have generated crypto material/, function () {
+    this.Given(/^I have admin business cards available/, function () {
         return this.composer.setup();
     });
 
@@ -26,6 +26,31 @@ module.exports = function () {
 
     this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
         return this.composer.extractSecret(alias, cardFile);
+    });
+
+    this.Given(/^I have a deployed the bna for template network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
+        // These steps assume that the arg «name» is the business network archive file name,
+        // and is located in ./tmp/«name».bna
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
+        checkOutput(response);
+        response = await this.composer.runCLI('composer card import --file networkadmin.card');
+        checkOutput(response);
     });
 
     this.When(/^I run the following CLI command/, {timeout: 240 * 1000}, function (table) {

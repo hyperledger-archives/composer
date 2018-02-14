@@ -17,7 +17,8 @@
     "composer-common": "0.17.5",
     "shelljs": "0.7.7",
     "underscore.string": "3.3.4",
-    "yeoman-generator": "0.24.1"
+    "yeoman-generator": "0.24.1",
+    "yeoman-option-or-prompt": "2.0.0"
   },
   "repository": {
     "type": "git",
