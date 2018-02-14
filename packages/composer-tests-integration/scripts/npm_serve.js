@@ -56,11 +56,14 @@ let packages = [
     'composer-client',
     'loopback-connector-composer',
     'composer-rest-server',
-    'composer-cli'];
+    'composer-report',
+    'composer-cli',
+    'generator-hyperledger-composer'];
 
 // Packages to be installed in integration test(s)
 let testPackages = [
-    'composer-cli'
+    'composer-cli',
+    'generator-hyperledger-composer'
 ];
 
 return packages.reduce((promiseChain, p) => {

@@ -1,3 +1,4 @@
+@rest
 Feature: Rest steps
 
     Scenario: Using the REST API, I can ping the network

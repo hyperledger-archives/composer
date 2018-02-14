@@ -10,6 +10,7 @@
     "licchk": "license-check",
     "postlicchk": "npm run lint",
     "lint": "eslint .",
+    "test-tagged": "cucumber-js --tags @busnet",
     "test-inner": "cucumber-js",
     "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
     "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio",
@@ -76,7 +77,9 @@
     "composer-client": "0.17.5",
     "composer-common": "0.17.5",
     "composer-rest-server": "0.17.5",
+    "generator-hyperledger-composer": "0.17.5",
     "thenify-all": "1.6.0",
-    "verdaccio": "2.6.4"
+    "verdaccio": "2.6.4",
+    "yo": "2.0.1"
   }
 }
