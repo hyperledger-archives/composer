@@ -282,6 +282,8 @@ ga('send', 'pageview');
 <p>To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
 Hyperledger Composer provides a sample Hyperledger Fabric v1.1 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric networks.</p>
 
+<p><strong>Important</strong>: When deploying a business network to Hyperledger Fabric v1.1 a bootstrap registrar is defined in the Hyperledger Fabric Certificate Authority (CA) configuration. The Hyperledger Composer development environment contains a preconfigured instance of Hyperledger Fabric with a specific enrollment ID and enrollment secret for the bootstrap registrar.</p>
+
 <h2 id="business-network-administrators">Business network administrators</h2>
 
 <p>When you deploy a business network, access controls are enforced as per the access control rules specified in the business network definition. Each business network must have at least one participant, and that participant must have a valid identity for accessing the business network. Otherwise, client applications cannot interact with the business network.</p>
@@ -316,9 +318,9 @@ rule NetworkAdminSystem {
 </code></pre></div>
 <h2 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h2>
 
-<p>When deploying a business network to Hyperledger Fabric v1.1 using the Playground locally, you must follow the process above to connect using the peer admin identity.</p>
+<p><strong>Please note</strong>: When using a local Playground instance to deploy a business network to Hyperledger Fabric v1.1, as part of the deployment process you must choose how to provide credentials for the initial business network participant. The initial participant will be a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto"><strong>NetworkAdmin</strong></a>.</p>
 
-<p>Identities in playground are associated with business network cards, comprising a connection profile, identity metadata, and certificates.</p>
+<p>When deploying a business network using playground, you will be prompted to enter the credentials for the initial participant. Credentials can be provided either as a certificate or as a pre-defined enrollment ID and enrollment secret. If you are using the instance of Hyperledger Fabric set up in the Hyperledger Composer development environment, the bootstrap registrar enrollment ID is <code>admin</code> and the bootstrap registrar enrollment secret is <code>adminpw</code>.  This initial participant uses the credentials set for the bootstrap registrar in the Hyperledger Fabric Certificate Authority (CA), and will be a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto"><strong>NetworkAdmin</strong></a>.</p>
 
 <p>When deploying a business network using Playground locally, you must have at least one business network card with the <code>PeerAdmin</code> role and at least one business network card with the <code>ChannelAdmin</code> role. Each of these business network cards must contain the correct admin certificates.</p>
 
