@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Network Upgrade CLI | Hyperledger Composer</title>
+    <title>Node-Red Tutorial | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Network Upgrade CLI</p>
+          <p>Node-Red Tutorial</p>
           </div>
 
           <nav class="context-nav">
@@ -260,26 +260,245 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-network-upgrade">Hyperledger Composer Network Upgrade</h1>
+              <h1 id="node-red-tutorial-for-integrating-a-hyperledger-composer-business-network">Node-RED Tutorial for Integrating a Hyperledger Composer Business Network</h1>
 
-<hr>
+<p>This tutorial demonstrates how to integrate an existing system of record data source into the blockchain ledger.  In this guide, we will build on the <a href="./developer-tutorial.html">Developer Tutorial</a>, extending it to bulk load records from a JSON text file data source to populate Participant and Asset registries in the sample &#39;Commodity Trading&#39; business network.  </p>
 
-<p>The <code>composer network upgrade</code> utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-name&gt; -c &lt;card-name&gt;
+<p><a href="http://nodered.org">Node-RED</a> is a lightweight Open Source integration technology, written in JavaScript. It uses a graphical flow to integrate different <em>nodes</em>, where nodes can receive data, transform data and output data.</p>
+
+<p>Node-RED is commonly used to rapidly prototype Internet of Things style applications, or to wire existing Internet services together.</p>
+
+<p>You can use the Hyperledger Composer Node-RED contribution to:</p>
+
+<ul>
+<li>Submit transactions</li>
+<li>Read and update assets and participants</li>
+<li>Subscribe to events</li>
+<li>Delete assets and participants</li>
+<li>Perform a bulk load (eg. loading test data)</li>
+</ul>
+
+<p>This tutorial gives an overview of the techniques and resources available to apply to your own use case.</p>
+
+<p>This tutorial uses the <code>tutorial-network</code> business network developed and deployed in the <a href="./developer-tutorial.html">Developer Tutorial</a>.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before beginning this tutorial:</p>
+
+<ul>
+<li>Complete the <a href="../installing/development-tools.html">development environment installation</a>.</li>
+<li>Complete the <a href="./developer-tutorial.html">developer tutorial</a>.</li>
+</ul>
+
+<p>This tutorial assumes the reader has some familiarity with Node-RED.  The <a href="http://nodered.org">Node-RED</a> website has an introductory video and a getting started link.</p>
+
+<h2 id="step-one-install-and-start-node-red">Step One: Install and Start Node-RED</h2>
+
+<p>Node-RED is a Node.js application and should be installed on a  development environment with the following command <code>npm install -g node-red</code> </p>
+
+<p>Use the following command to start Node-RED <code>node-red</code></p>
+
+<p>The command output will show that Node-Red server is now running at <a href="http://127.0.0.1:1880/">http://127.0.0.1:1880/</a> - open this link in a Browser to see the Node-RED UI.</p>
+
+<h2 id="step-two-install-composer-nodes">Step Two: Install Composer Nodes</h2>
+
+<p>The Composer Nodes for Node-RED are described here <a href="https://www.npmjs.com/package/node-red-contrib-composer">https://www.npmjs.com/package/node-red-contrib-composer</a> and can be installed into Node-RED through the UI.</p>
+
+<ol>
+<li>On the Node-RED UI Menu, click <strong>Manage palette</strong>, the click on the <strong>Install</strong> tab.  In the <strong>search modules</strong> field type <em>node-red-contrib-composer</em>, then click the <strong>Install</strong> button and on the confirmation dialog click the red <strong>Install</strong> button.</li>
+</ol>
+
+<p>The nodes take a few moments to install, and a message will be shown in the UI and in the terminal window where Node-RED was started.</p>
+
+<ol>
+<li>Verify that the nodes are installed by scrolling to the end of the Palette on the left of the UI - a new category called <strong>Hyperledger</strong> should be at the bottom with the three nodes.</li>
+</ol>
+
+<h2 id="step-three-install-fs-node">Step Three: Install fs Node</h2>
+
+<p>This tutorial uses JSON data from text files and needs additional nodes <em>node-red-contrib-fs</em></p>
+
+<ol>
+<li><p>On the Node-RED UI Menu, click <strong>Manage palette</strong>, the click on the <strong>Install</strong> tab.  In the <strong>search modules</strong> field type <em>node-red-contrib-fs</em>, then click the <strong>Install</strong> button and on the confirmation dialog click the red <strong>Install</strong> button.</p></li>
+<li><p>Verify that the <strong>fs file lister</strong> node has been added to the Storage category on the Palette.</p></li>
+</ol>
+
+<h2 id="step-four-build-flow">Step Four: Build Flow</h2>
+
+<p>The image below shows what the completed flow will look like.
+<img src="../assets/img/tutorials/nodered/nodered-flow.png" alt="Node RED Flow"></p>
+
+<p><strong>Drag</strong> the nodes from the palette on the left onto the Flow.</p>
+
+<p><strong>Double click</strong> on a node to edit the properties.</p>
+
+<p>The types and properties of the six nodes are described below:</p>
+
+<h5 id="1-inject-node-from-input-category-start">1. <strong>inject</strong> node (from input category) - <em>Start</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Payload</strong> - <em>timestamp</em>
+ -  <strong>Topic</strong> - <em><empty\></em>
+ -  <strong>Repeat</strong> - <em>none</em>
+ -  <strong>Inject once at start?</strong> - <em><unchecked\></em>
+ -  <strong>Name</strong> - <em>Start</em>
+In this flow the inject node is being used primarily to initiate the flow, rather than to inject data.  In this flow the data will come from JSON files on disk.</p>
+
+<h5 id="2-fs-file-lister-node-from-storage-category-read-json-files">2. <strong>fs file lister</strong> node (from storage category) - <em>Read JSON Files</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Start Folder</strong> - <em>/home/<username\>/tutorial-network/testdata/traders/</em><br>
+ -  <strong>File Pattern</strong> - <em>*.json</em>
+ -  <strong>Include full path in output?</strong> - <em><checked\></em>
+ -  <strong>Output single message (array)?</strong> - <em><unchecked\></em>
+ -  <strong>Max, search depth</strong> - <em>0</em>
+ -  <strong>Return file details?</strong> - <em><unchecked\></em>
+ -  <strong>Name</strong> - <em>Read JSON Files</em></p>
+
+<p>For the <strong>Start Folder</strong>, on Ubuntu Linux substitute <username\> for the logged in user.  On Mac adjust the Foldername to reflect your system.  In the next step of the tutorial test data will be created in this folder.  Use the full path of the folder - using the ~/ notation to indicate the user&#39;s home folder will cause an error.</p>
+
+<h5 id="3-change-node-from-function-category-set-filename">3. <strong>change</strong> node (from function category) - <em>Set Filename</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Name</strong> - <em>Set Filename</em>
+ -  <strong>Rules</strong>
+    -  <strong>Set</strong> - <em>msg.filename</em>
+    -  <strong>to</strong> - <em>msg.payload</em>  (Be sure to change the dropdown to <em>msg</em> )</p>
+
+<p>This node sets the filename variable for the next node in the flow.</p>
+
+<h5 id="4-file-in-node-from-storage-category-read-json-file">4. <strong>file in</strong> node (from storage category) - <em>Read JSON File</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Filename</strong> - <em><empty\></em>
+ -  <strong>Repeat</strong> - <em>a single utf8 string</em>
+ -  <strong>Send message on error (legacy mode)</strong> - <em><checked\></em>
+ -  <strong>Name</strong> - <em>Read JSON File</em></p>
+
+<p>This node reads the JSON test data file into a String variable.</p>
+
+<h5 id="5-json-node-from-function-category-set-json">5. <strong>json</strong> node (from function category) - <em>Set JSON</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Name</strong> - <em>Set JSON</em>
+ -  <strong>Format JSON string</strong> - <em><checked\></em></p>
+
+<p>This node converts the JSON string into a JavaScript object for the next node in the flow.</p>
+
+<h5 id="6-composer-out-node-from-hyperledger-category-create-trader">6. <strong>composer</strong> out node (from Hyperledger category) - <em>Create Trader</em></h5>
+
+<p>Set the properties for this node:
+ -  <strong>Name</strong> - <em>Create Trader</em>
+ -  <strong>Action Type</strong> - <em>Create</em></p>
+
+<p><strong>Click</strong> the pencil icon to add a new Composer Card.
+ -  <strong>Card Name</strong> - <em>admin\@tutorial-network</em>
+This is the |Hyperledger Composer node that will connect to the Business Network on the Fabric and submit the Transaction.</p>
+
+<p>After you have set the properties on all the nodes, <strong>Wire the nodes together</strong> as shown in the diagram above.
+Remember to click the red <strong>Deploy</strong> button to save the flow.</p>
+
+<h2 id="step-five-create-test-data">Step Five: Create Test Data</h2>
+
+<h4 id="create-json-text-files-for-new-participants">Create JSON text files for new Participants</h4>
+
+<p>Using a text editor such as vi or gedit , create a text file called <strong>/home/<em><username\></em>/tutorial-network/testdata/traders/trader4.json</strong> with the following contents
+<code>
+{
+  &quot;$class&quot;: &quot;org.acme.biznet.Trader&quot;,
+  &quot;tradeId&quot;: &quot;TRADER4&quot;,
+  &quot;firstName&quot;: &quot;John&quot;,
+  &quot;lastName&quot;: &quot;Smith&quot;
+}
+</code></p>
+
+<p>Create two more JSON text files for <strong>trader5</strong> and <strong>trader6</strong> with the following data
+<code>
+{
+  &quot;$class&quot;: &quot;org.acme.biznet.Trader&quot;,
+  &quot;tradeId&quot;: &quot;TRADER5&quot;,
+  &quot;firstName&quot;: &quot;Simon&quot;,
+  &quot;lastName&quot;: &quot;Jenkins&quot;
+}
+</code>
+<code>
+{
+  &quot;$class&quot;: &quot;org.acme.biznet.Trader&quot;,
+  &quot;tradeId&quot;: &quot;TRADER6&quot;,
+  &quot;firstName&quot;: &quot;Susan&quot;,
+  &quot;lastName&quot;: &quot;Stone&quot;
+}
+</code></p>
+
+<h4 id="create-json-text-files-for-new-commodities">Create JSON text files for new Commodities</h4>
+
+<p>Create a text file called <strong>/home/<em><username\></em>/tutorial-network/testdata/commodities/diamond.json</strong> with the following contents
+<code>
+{
+  &quot;$class&quot;: &quot;org.acme.biznet.Commodity&quot;,
+  &quot;tradingSymbol&quot;: &quot;DIA&quot;,
+  &quot;description&quot;: &quot;Diamond commodity&quot;,
+  &quot;mainExchange&quot;: &quot;Jewel&quot;,
+  &quot;quantity&quot;: 1.45,
+  &quot;owner&quot;: &quot;resource:org.acme.biznet.Trader#TRADER6&quot;
+}
+</code></p>
+
+<p>Create two more JSON text files for <strong>apple</strong> and <strong>oil</strong> with the following data
+<code>
+{
+  &quot;$class&quot;: &quot;org.acme.biznet.Commodity&quot;,
+  &quot;tradingSymbol&quot;: &quot;APP&quot;,
+  &quot;description&quot;: &quot;Apple commodity&quot;,
+  &quot;mainExchange&quot;: &quot;Food&quot;,
+  &quot;quantity&quot;: 234500,
+  &quot;owner&quot;: &quot;resource:org.acme.biznet.Trader#TRADER4&quot;
+}
+</code></p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+ "$class": "org.acme.biznet.Commodity",
+ "tradingSymbol": "CL",
+ "description": "Crude Oil",
+ "mainExchange": "NYMEX",
+ "quantity": 35,
+ "owner": "resource:org.acme.biznet.Trader#TRADER5"
+}
 </code></pre></div>
-<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been installed to a blockchain node by using the <code>composer runtime install</code> command.</p>
+<h2 id="step-six-test-flow">Step Six: Test Flow</h2>
 
-<p><em>Please Note</em>: <code>composer network upgrade</code> is only suitable for upgrading between micro versions of the Hyperledger Composer runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.</p>
+<ol>
+<li><strong>Click</strong> on the left edge of the <strong>Start</strong> node to test the flow. </li>
+<li>Use the Playground, REST server or the following command to validate that the test data has been added <code>composer network list -c admin@tutorial-network</code></li>
+</ol>
 
-<h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade [options]
+<h2 id="step-seven-add-commodities">Step Seven: Add Commodities</h2>
 
-Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --card, -c                 The cardname to use to upgrade the network  [string] [required]
-  --businessNetworkName, -n  The business network name  [string] [required]
-</code></pre></div>
+<p>In the previous step the flow has been run and the participants (Traders) have been added.  Test data has been created for new Assets (Commodities) and a small re-configuration is required to add them.
+1. <strong>Double Click</strong> the <strong>Read JSON Files</strong> node and modify the property <strong>Start Folder</strong> to reference your commodities test data folder.
+2. <strong>Click</strong> the <strong>Deploy</strong> buton the save and deploy the change.
+3. <strong>Start</strong> the flow and validate that the Commodity test data has been added.</p>
+
+<h2 id="possible-errors">Possible errors</h2>
+
+<p>Any Errors will be dislayed on the debug tab in the UI, and on the terminal window where Node-RED was started.</p>
+
+<p><strong>[error] [fs-file-lister:Read JSON Files] Error processing folder listing</strong>  --<br>
+Incorrectly specified folder name in <strong>Read JSON Files</strong> Node.</p>
+
+<p><strong>[error] [hyperledger-composer-out:Create Trader] Error: creating resource error Namespace is not defined for type org.acme.biznetttt.Commodity</strong>  --
+Errors in the test data - namespace errors or formatting errors in the JSON files.</p>
+
+<p><strong>[error] [hyperledger-composer-out:Create Trader] Error trying to query business network. Error: Connect FailedFabric</strong>  --
+Containers not started - use <code>docker ps</code> to check.</p>
+
+<p><strong>[error] [hyperledger-composer-out:Create Trader] Error: creating resource error Card not found: admin@exampleyz-networkWrong Business Network Card specified</strong>  -- 
+verify card name by using <code>composer card list</code> on command line.</p>
+
+<!--  
+Do we add another flow for the events ?
+-->
+
             
           </section>
         </div>
