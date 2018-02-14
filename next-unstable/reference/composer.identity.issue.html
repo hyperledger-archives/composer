@@ -270,6 +270,10 @@ ga('send', 'pageview');
 
 <p>The <code>composer identity issue</code> command issues a new identity to a participant in a participant registry relating to a business network. See the task <a href="../managing/identity-issue.html">Issuing a new identity to a participant</a> for a walkthrough of using this command or the API.</p>
 
+<h2 id="considerations">Considerations</h2>
+
+<p>This command creates a new card file. The connection profile in this card file comes from the card defined in the <code>-c|--card</code> option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.</p>
+
 <h2 id="syntax">Syntax</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">$ composer identity issue
 
