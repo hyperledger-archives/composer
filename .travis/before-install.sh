@@ -43,4 +43,19 @@ wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key |
 echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
 sudo apt-get update && sudo apt-get install cf-cli
 
+# install softhsm
+mkdir softhsm
+cd softhsm
+curl -O https://dist.opendnssec.org/source/softhsm-2.0.0.tar.gz
+tar -xvf softhsm-2.0.0.tar.gz
+cd softhsm-2.0.0
+./configure --disable-non-paged-memory --disable-gost
+make
+sudo make install
+
+# now configure slot 0 with pin
+sudo mkdir -p /var/lib/softhsm/tokens
+sudo chmod 777 /var/lib/softhsm/tokens
+softhsm2-util --init-token --slot 0 --label "ForComposer" --so-pin 1234 --pin 98765432
+
 _exit "All Complete" 0

@@ -17,6 +17,9 @@ Before using this command, read the topic [Deploying and Updating Business Netwo
 composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
 ```
 
+## Considerations
+This command creates a new card file. The connection profile in this card file comes from the card defined in the `-c|--card` option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.
+
 ### Options
 ```
 composer network deploy [options]

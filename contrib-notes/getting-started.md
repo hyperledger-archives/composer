@@ -34,6 +34,32 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 
 - **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
 
+- **softhsm 2.0.0** required for the complete integration tests to run as well as a specific set of functional tests. 
+   - If you are on Linux first you need to install the openssl headers if not already installed, for example on Ubuntu
+```
+# install the openssl headers
+sudo apt-get -y install libssl-dev
+# install softhsm
+mkdir softhsm
+cd softhsm
+curl -O https://dist.opendnssec.org/source/softhsm-2.0.0.tar.gz
+tar -xvf softhsm-2.0.0.tar.gz
+cd softhsm-2.0.0
+./configure --disable-non-paged-memory --disable-gost
+make
+sudo make install
+
+# now configure slot 0 with pin
+sudo mkdir -p /var/lib/softhsm/tokens
+sudo chmod 777 /var/lib/softhsm/tokens
+softhsm2-util --init-token --slot 0 --label "ForComposer" --so-pin 1234 --pin 98765432
+```
+On linux the pkcs library you need to reference is usually placed at `/usr/local/lib/softhsm/libsofthsm2.so`
+
+   - For MAC, you might want to consider something like `homebrew` which can provide pre-built versions of softhsm. Make sure you specifically choose 2.0.0 rather than the latest version available. Alternatively you can build softhsm from source yourself but you would either need to obtain a prebuilt version of openssl with libraries and headers again from something like `homebrew` or you could compile openssl from source. 
+
+   - More details about softhsm can be found at https://www.opendnssec.org/softhsm/
+
 ## Forking and Cloning the Hyperledger Composer Repository
 
 Once those tools are installed you are ready to get going with the Hyperledger Composer repository. Let's show you how to create your own version of the Hyperledger Composer repository on GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
@@ -66,11 +92,11 @@ $ cd composer
 
 Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally so that their versions do not interfere with other projects you may be developing or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
 
-### Installing the npm Dependencies
+To install these dependencies, ensure you are in the top level directory of the composer repository you have just cloned and issue
 
-You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
-
-    $ npm run bootstrap
+```bash
+$ npm install
+```
 
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
