@@ -49,7 +49,7 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
             appauthor: passedAuthor,
             appemail: passedEmail,
             applicense: passedLic,
-            namespace: passedNS,
+            ns: passedNS,
         })
         .on('error', function (error) {
             console.log('Error found:', error);

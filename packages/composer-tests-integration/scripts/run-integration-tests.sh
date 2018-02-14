@@ -27,8 +27,9 @@ rm -rf ${HOME}/.composer/cards/sal*
 rm -rf ${HOME}/.composer/client-data/sal*
 rm -rf ${HOME}/.composer/cards/ange*
 rm -rf ${HOME}/.composer/client-data/ange*
-rm -rf ./tmp/*
-rm -rf ./networkadmin
+rm -rf ./tmp/*           # temp folder for BNA files that are generated
+rm -rf ./my-bus-net      # business network created from generator
+rm -f ./networkadmin.card
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
     cd ../composer-runtime-hlfv1
@@ -159,10 +160,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer/cards/ange*
     rm -rf ${HOME}/.composer/client-data/ange*
     rm -rf ./tmp/*
+    rm -rf ./my-bus-net
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
     rm ./*.tgz
-    rm ./networkadmin.card
+    rm -f ./networkadmin.card
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm .npmrc
