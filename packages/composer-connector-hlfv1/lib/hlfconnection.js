@@ -315,41 +315,34 @@ class HLFConnection extends Connection {
             return Promise.reject(new Error('businessNetworkDefinition not specified'));
         }
 
-        // create the package.json
+        // Update the package.json for install to Fabric
         const bnaPackage = businessNetworkDefinition.getMetadata().getPackageJson();
         bnaPackage.dependencies = this._createPackageDependencies(bnaPackage.dependencies);
         const scripts = bnaPackage.scripts || {};
         scripts.start = 'start-network';
         bnaPackage.scripts = scripts;
 
-        // create a temp directory to hold
-        // 1. package.json
-        // 2. bna file
-        // 3. the tgz files referenced in the package.json
-        let tempDir = await this.temp.mkdir('businessnetwork');
+        const installDir = await this.temp.mkdir('businessnetwork');
 
-        // write the bna file
-        let bna = await businessNetworkDefinition.toArchive();
-        this.fs.writeFileSync(path.resolve(tempDir, bnaPackage.name + '.bna'), bna);
-
-        // copy any tgz files to the tmp directory and update the package.json
+        // Copy any tgz dependencies to the install directory and update the package.json
         for (let entry in bnaPackage.dependencies) {
             let dep = bnaPackage.dependencies[entry];
             if (dep.endsWith('.tgz')) {
-                const fromPath = path.resolve(process.cwd(), dep);
+                const fromPath = path.resolve(dep);
                 const basename = path.basename(fromPath);
-                const toPath = path.resolve(tempDir, basename);
+                const toPath = path.resolve(installDir, basename);
                 await this.fs.copy(fromPath, toPath);
                 bnaPackage.dependencies[entry] = './' + basename;
             }
         }
-        // write the package.json
-        fs.writeFileSync(path.resolve(tempDir, 'package.json'), JSON.stringify(bnaPackage));
+
+        // Write out the content of the business network definition, including updated package.json
+        businessNetworkDefinition.toDirectory(installDir);
 
         // copy over a .npmrc file, should be part of the business network definition.
         if (installOptions && installOptions.npmrcFile) {
             try {
-                await this.fs.copy(installOptions.npmrcFile, tempDir + '/.npmrc');
+                await this.fs.copy(installOptions.npmrcFile, path.join(installDir, '.npmrc'));
             } catch(error) {
                 const newError = new Error(`Failed to copy specified npmrc file ${installOptions.npmrcFile} during install. ${error}`);
                 LOG.error(method, newError);
@@ -357,12 +350,11 @@ class HLFConnection extends Connection {
             }
         }
 
-
         let txId = this.client.newTransactionID();
 
         const request = {
             chaincodeType: 'node',
-            chaincodePath: tempDir,
+            chaincodePath: installDir,
             chaincodeVersion: businessNetworkDefinition.getVersion(),
             chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,
