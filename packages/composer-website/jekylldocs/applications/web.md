@@ -72,7 +72,7 @@ Below is an example using a `tutorial-network` BNA.
 composer network start -a tutorial-network.bna -A admin -S adminpw -c PeerAdmin@hlfv1
 ```
 
-This will create an 'admin' card for the business network, which for the above example is `admin@tutorial-network.card`
+This will create an 'admin' card for the business network, which for the previous example is `admin@tutorial-network.card`
 
 *Please note: The `admin` username and `adminpw` secret are for a specific {{site.data.conrefs.hlf_full}} identity configured for the instance of {{site.data.conrefs.hlf_full}} deployed in the Developer Tutorial. If you have configured a {{site.data.conrefs.hlf_full}} instance from scratch these identity details will be different.*
 
