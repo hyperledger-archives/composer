@@ -803,10 +803,27 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((exists) => {
                 if (exists) {
-                    return this.connection.createIdentity(this.securityContext, identityName, options);
+                    if (this.connection.registryCheckRequired()) {
+                        return this.getIdentityRegistry()
+                            .then((registry) => {
+                                return registry.getAll();
+                            })
+                            .then((ids) => {
+                                ids = ids.map((el) => {
+                                    return el.name;
+                                });
+
+                                if (ids.includes(identityName)) {
+                                    throw new Error(`Identity with name ${identityName} already exists in ${this.getBusinessNetwork().getName()}`);
+                                }
+                            });
+                    }
                 } else {
                     throw new Error(`Participant '${participant.getFullyQualifiedIdentifier()}' does not exist `);
                 }
+            })
+            .then(() => {
+                return this.connection.createIdentity(this.securityContext, identityName, options);
             })
             .then((identity) => {
                 return this.submitTransaction(transaction)

@@ -464,6 +464,12 @@ describe('WebConnection', () => {
 
     });
 
+    describe('#registryCheckRequired', () => {
+        it('should return true', () => {
+            connection.registryCheckRequired().should.deep.equal(true);
+        });
+    });
+
     describe('#createIdentity', () => {
 
         let mockIdentitiesDataCollection;

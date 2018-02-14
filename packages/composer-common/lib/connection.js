@@ -589,6 +589,14 @@ class Connection extends EventEmitter {
     }
 
     /**
+     * Return whether a registry check is required before executing createIdentity to prevent duplicates.
+     * @return {boolean} false.
+     */
+    registryCheckRequired() {
+        return false;
+    }
+
+    /**
      * Create a new identity for the specified user ID.
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} userID The user ID.

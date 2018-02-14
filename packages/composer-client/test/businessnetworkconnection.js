@@ -68,6 +68,7 @@ describe('BusinessNetworkConnection', () => {
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext.getConnection.returns(mockConnection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockBusinessNetworkDefinition.getName.returns('super-doge-network');
         businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
         modelManager = new ModelManager();
@@ -1144,6 +1145,45 @@ describe('BusinessNetworkConnection', () => {
                 .catch((error) => {
                     error.should.match(/does not exist /);
                 });
+        });
+
+        it('should throw an error if the identity exists in the registry and connection is requires registry check', () => {
+            mockConnection.registryCheckRequired.returns(true);
+
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.getAll.resolves([{name: 'dogeid1'}]);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
+
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            .catch((error) => {
+                error.should.match(/Identity with name dogeid1 already exists in super-doge-network/);
+            });
+        });
+
+        it('should submit a request to the chaincode if the identity does not exist in the registry and connection is WebConnection', () => {
+            mockConnection.registryCheckRequired.returns(true);
+
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.getAll.resolves([{name: 'dogeid0'}]);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
+
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            .then((result) => {
+                sinon.assert.calledOnce(mockConnection.createIdentity);
+                sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                tx.participant.isRelationship().should.be.true;
+                tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                tx.identityName.should.equal('dogeid1');
+                result.should.deep.equal({
+                    userID : 'dogeid1',
+                    userSecret : 'suchsecret'
+                });
+            });
         });
 
         it('should submit a request to the chaincode for a fully qualified identifier', () => {
