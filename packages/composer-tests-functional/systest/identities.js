@@ -30,7 +30,7 @@ chai.use(require('chai-as-promised'));
 
 process.setMaxListeners(Infinity);
 
-describe.only('Identity system tests', function() {
+describe('Identity system tests', function() {
 
     this.retries(TestUtil.retries());
 
