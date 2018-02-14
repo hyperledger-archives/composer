@@ -3,13 +3,11 @@
 const Util = require('./../util');
 
 let yeoman = require('yeoman-generator');
-
+let optionOrPrompt = require('yeoman-option-or-prompt');
 
 module.exports = yeoman.Base.extend({
-    constructor: function() {
-        yeoman.Base.apply(this, arguments);
-        this.options = this.env.options;
-    },
+
+    _optionOrPrompt: optionOrPrompt,
 
     prompting: function() {
         console.log('Welcome to the business network generator');
@@ -53,7 +51,7 @@ module.exports = yeoman.Base.extend({
             },
             {
                 type: 'input',
-                name: 'namespace',
+                name: 'ns',
                 message: 'Namespace:',
                 default: 'org.example.biznet',
                 store: true,
@@ -61,11 +59,11 @@ module.exports = yeoman.Base.extend({
             }
         ];
 
-        return this.prompt(questions)
+        return this._optionOrPrompt(questions)
             .then((answers) => {
                 this.appname = answers.appname;
                 this.appemail = answers.appemail;
-                this.namespace = answers.namespace;
+                this.namespace = answers.ns;
                 this.appdescription = answers.appdescription;
                 this.appauthor = answers.appauthor;
                 this.applicense = answers.applicense;

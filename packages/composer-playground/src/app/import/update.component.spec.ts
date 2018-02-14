@@ -27,7 +27,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { UpdateComponent } from './update.component';
-import { ActiveDrawer } from '../common/drawer';
+import { ActiveDrawer, DrawerDismissReasons } from '../common/drawer';
 import {
     ModelManager,
     BusinessNetworkDefinition,
@@ -487,6 +487,24 @@ describe('UpdateComponent', () => {
             component['deployInProgress'].should.equal(false);
             finishedSampleImportSpy.should.have.been.calledWith({deployed: false, error: 'some error'});
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should handle dismiss by esc key by without showing an error modal', fakeAsync(() => {
+            component['currentBusinessNetwork'] = {network: 'my network'};
+            mockBusinessNetworkService.updateBusinessNetwork.returns(Promise.reject(DrawerDismissReasons.ESC));
+
+            component.finishedSampleImport.subscribe((result) => {
+                result.should.deep.equal({deployed: false});
+            });
+
+            let deployPromise = component.deploy();
+
+            tick();
+
+            mockBusinessNetworkService.updateBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+            component['deployInProgress'].should.equal(false);
+            finishedSampleImportSpy.should.have.been.calledWith({deployed: false});
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
 
         it('should close the tray', fakeAsync(() => {

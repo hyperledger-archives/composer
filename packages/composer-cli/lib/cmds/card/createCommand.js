@@ -46,9 +46,6 @@ module.exports.builder = function (yargs) {
     // enforce the option after these options
     yargs.requiresArg(['file','businessNetworkName','connectionProfileFile','user','enrollSecret','certificate','privateKey','roles']);
 
-    yargs.implies('certificate','privateKey');
-    yargs.implies('privateKey','certificate');
-
     yargs.check(checkFn);
 
     return yargs;

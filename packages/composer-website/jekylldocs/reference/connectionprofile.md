@@ -318,3 +318,46 @@ A similar thing could be done for an orderer definition:
 ```
 
 There are other `grpcOptions` available, please refer to the https://fabric-sdk-node.github.io/tutorial-network-config.html for more information
+
+### HSM Support
+
+Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup. This information needs to go into the client section, for example
+
+```
+"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
+            },
+            "orderer": "300"
+        }
+    }
+    "x-hsm": {
+        "library": "/usr/local/lib/myhsm.so",
+        "slot": 0,
+        "pin": 98765432
+    }
+},
+```
+ 
+  - `library` is the absolute path to the pkcs#11 library required for communication with your specific HSM
+  - `slot` is the configured slot number for the HSM
+  - `pin` is the pin defined for access to that slot.
+
+To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
+
+        export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+        export PKCS_SLOT=0
+        export PKCS_PIN=98765432
+
+then you can reference these in the connection profile as follows
+
+            "hsm": {
+                "library": "{PKCS_LIBRARY}",
+                "slot": "{PKCS_SLOT}",
+                "pin": "{PKCS_PIN}"
+            }

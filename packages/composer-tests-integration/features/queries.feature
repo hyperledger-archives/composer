@@ -1,3 +1,4 @@
+@queries
 Feature: Queries steps
 
     Scenario: Using the REST API, I can ping the network

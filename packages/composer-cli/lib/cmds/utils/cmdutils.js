@@ -252,6 +252,19 @@ class CmdUtil {
         }
         return archiveFileContents;
     }
+
+    /**
+     * Generate a suitable card file name based on a proposed file name.
+     * This implementation simply appends '.card' if it is missing.
+     * @param {String} fileName Proposed card file name
+     * @return {String} A card file name
+     */
+    static sanitizeCardFileName(fileName) {
+        if (!/\.card$/i.test(fileName)) {
+            fileName = fileName + '.card';
+        }
+        return fileName;
+    }
 }
 
 module.exports = CmdUtil;
