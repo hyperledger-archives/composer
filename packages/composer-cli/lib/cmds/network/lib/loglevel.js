@@ -32,7 +32,6 @@ class LogLevel {
     */
     static handler(argv) {
         let adminConnection;
-        let businessNetworkName;
         let newlevel = argv.newlevel;
         let cardName = argv.card;
 
@@ -47,9 +46,9 @@ class LogLevel {
         })
         .then((result) => {
             if (newlevel) {
-                cmdUtil.log(chalk.blue.bold('The logging level was successfully changed for: ')+businessNetworkName);
+                cmdUtil.log(chalk.blue.bold('The logging level was successfully changed to: ') + newlevel);
             } else {
-                cmdUtil.log(chalk.blue.bold('The current logging level is: ')+result);
+                cmdUtil.log(chalk.blue.bold('The current logging level is: ') + result);
             }
         });
     }
