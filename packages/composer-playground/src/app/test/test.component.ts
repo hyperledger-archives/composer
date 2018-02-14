@@ -17,6 +17,7 @@ import { ClientService } from '../services/client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { TransactionComponent } from './transaction/transaction.component';
 import { TransactionDeclaration } from 'composer-common';
+import { DrawerDismissReasons } from '../common/drawer';
 
 @Component({
     selector: 'app-test',
@@ -140,6 +141,11 @@ export class TestComponent implements OnInit, OnDestroy {
             }
 
             this.alertService.successStatus$.next(message);
+        })
+        .catch((error) => {
+            if (error !== DrawerDismissReasons.ESC ) {
+                this.alertService.errorStatus$.next(error);
+            }
         });
     }
 
