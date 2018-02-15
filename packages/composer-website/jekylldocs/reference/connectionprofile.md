@@ -335,7 +335,7 @@ Support for HSM (Hardware Security Module)is now possible so long as you have PK
             },
             "orderer": "300"
         }
-    }
+    },
     "x-hsm": {
         "library": "/usr/local/lib/myhsm.so",
         "slot": 0,
@@ -356,7 +356,7 @@ To be able to ensure connection profiles remain portable as well as not hard cod
 
 then you can reference these in the connection profile as follows
 
-            "hsm": {
+            "x-hsm": {
                 "library": "{PKCS_LIBRARY}",
                 "slot": "{PKCS_SLOT}",
                 "pin": "{PKCS_PIN}"
