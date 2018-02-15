@@ -274,6 +274,10 @@ Before using this command, read the topic <a href="../business-network/bnd-deplo
 <p><em>Please Note</em>: You <strong>must</strong> first install the Hyperledger Composer runtime to the Hyperledger Fabric peers by using the <code>composer runtime install</code> command. The business network name specified in the <code>composer runtime install</code> command must be the same as the business network name specified in the <code>composer network start</code> command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start -a &lt;business-network-archive&gt; -A &lt;admin-name&gt; -S adminpw -c &lt;business-network-card&gt; -f &lt;name-of-admin-card&gt;
 </code></pre></div>
+<h2 id="considerations">Considerations</h2>
+
+<p>This command creates a new card file. The connection profile in this card file comes from the card defined in the <code>-c|--card</code> option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.</p>
+
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start [options]
 

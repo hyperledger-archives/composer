@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Global</title>
+	<title>Hyperledger Composer Class: Certificate</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,14 +79,16 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+	<h1 class="page-title">Class: Certificate</h1>
 <section>
 
 <header>
     
         <h2>
-        
+        Certificate
         </h2>
+        
+            <div class="class-description"><p>A class representing a digital certificate, the public part of an identity.</p></div>
         
     
 </header>
@@ -96,71 +98,9 @@
     <div class="container-overview">
     
         
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
 <hr>
 <dt>
-    <h4 class="name" id="getLogger"><span class="type-signature"></span>getLogger(config, configElements)</h4>
+    <h4 class="name" id="Certificate"><span class="type-signature"></span>new Certificate(pem)</h4>
     
     
 </dt>
@@ -168,7 +108,7 @@
 
     
     <div class="description">
-        <p>This the default core logger that is used for Hyperledger-Composer. This function<br>setups up the Winston logging for both file and console output.</p>
+        <p>Constructor.</p>
     </div>
     
 
@@ -203,13 +143,13 @@
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>pem</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
 
@@ -220,31 +160,7 @@
 
             
 
-            <td class="description last"><p>JSON structure with specific configuration information</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>configElements</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>JSON struction with the  DEBUG env variables for composer</p></td>
+            <td class="description last"><p>The PEM encoded certificate.</p></td>
         </tr>
 
     
@@ -288,8 +204,114 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_log_winstonInjector.js.html">composer-common/lib/log/winstonInjector.js</a>,
-				 <a href="composer-common_lib_log_winstonInjector.js.html#sunlight-1-line-29">line 29</a>
+				<a href="composer-common_lib_certificate.js.html">composer-common/lib/certificate.js</a>,
+				 <a href="composer-common_lib_certificate.js.html#sunlight-1-line-25">line 25</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="getIdentifier"><span class="type-signature"></span>getIdentifier()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the unique identifier.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_certificate.js.html">composer-common/lib/certificate.js</a>,
+				 <a href="composer-common_lib_certificate.js.html#sunlight-1-line-71">line 71</a>
 			</li>
 		</ul>
 	</dd>
@@ -318,7 +340,7 @@
     
             
 <div class="param-desc">
-    <p>object that is the logger to use</p>
+    <p>The unique identifier.</p>
 </div>
 
 
@@ -329,7 +351,119 @@
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getPEM"><span class="type-signature"></span>getPEM()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the PEM encoded certificate.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_certificate.js.html">composer-common/lib/certificate.js</a>,
+				 <a href="composer-common_lib_certificate.js.html#sunlight-1-line-63">line 63</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The PEM encoded certificate.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
 
 
 

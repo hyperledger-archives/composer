@@ -266,7 +266,7 @@ ga('send', 'pageview');
             
               <h1 id="composer-card-create">Composer Card Create</h1>
 
-<p>Creates a business network card from individual components. When creating a business network card, you will need either an <code>enrollSecret</code> or both a <code>certificate</code> and <code>privateKey</code>.</p>
+<p>Creates a business network card from individual components. When creating a business network card, you will need either an <code>enrollSecret</code>, both a <code>certificate</code> and <code>privateKey</code> or just a <code>certificate</code> if your private keys are managed by a HSM (Hardware Security Module).</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer card create --file conga.card --businessNetworkName penguin-network --connectionProfileFile connection.json --user conga --enrollSecret supersecret
 </code></pre></div>
 <h2 id="syntax">Syntax</h2>

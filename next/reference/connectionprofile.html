@@ -547,6 +547,46 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 </code></pre></div>
 <p>There are other <code>grpcOptions</code> available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
 
+<h3 id="hsm-support">HSM Support</h3>
+
+<p>Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup. This information needs to go into the client section, for example</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
+            },
+            "orderer": "300"
+        }
+    },
+    "x-hsm": {
+        "library": "/usr/local/lib/myhsm.so",
+        "slot": 0,
+        "pin": 98765432
+    }
+},
+</code></pre></div>
+<ul>
+<li><code>library</code> is the absolute path to the pkcs#11 library required for communication with your specific HSM</li>
+<li><code>slot</code> is the configured slot number for the HSM</li>
+<li><code>pin</code> is the pin defined for access to that slot.</li>
+</ul>
+
+<p>To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called <code>PKCS_LIBRARY</code>, <code>PKCS_SLOT</code> and <code>PKCS_PIN</code> to hold the hsm information, for example</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+    export PKCS_SLOT=0
+    export PKCS_PIN=98765432
+</code></pre></div>
+<p>then you can reference these in the connection profile as follows</p>
+<div class="highlight"><pre><code class="language-" data-lang="">        "x-hsm": {
+            "library": "{PKCS_LIBRARY}",
+            "slot": "{PKCS_SLOT}",
+            "pin": "{PKCS_PIN}"
+        }
+</code></pre></div>
             
           </section>
         </div>
