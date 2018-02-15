@@ -561,7 +561,7 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
             },
             "orderer": "300"
         }
-    }
+    },
     "x-hsm": {
         "library": "/usr/local/lib/myhsm.so",
         "slot": 0,
@@ -581,7 +581,7 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     export PKCS_PIN=98765432
 </code></pre></div>
 <p>then you can reference these in the connection profile as follows</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        "hsm": {
+<div class="highlight"><pre><code class="language-" data-lang="">        "x-hsm": {
             "library": "{PKCS_LIBRARY}",
             "slot": "{PKCS_SLOT}",
             "pin": "{PKCS_PIN}"
