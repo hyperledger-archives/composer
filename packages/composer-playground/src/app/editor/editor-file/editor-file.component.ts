@@ -14,8 +14,7 @@
 import { Component, Input } from '@angular/core';
 
 import { FileService } from '../../services/file.service';
-import { ClientService } from '../../services/client.service';
-import { EditorComponent } from '../editor.component';
+import { EditorFile } from '../../services/editor-file';
 
 import * as marked from 'marked';
 
@@ -81,7 +80,7 @@ export class EditorFileComponent {
     private editorType;
 
     @Input()
-    set editorFile(editorFile: any) {
+    set editorFile(editorFile: EditorFile) {
         if (editorFile) {
             this._editorFile = editorFile;
             this.loadFile();
@@ -96,7 +95,7 @@ export class EditorFileComponent {
         this._previewReadmeActive = previewReadme;
     }
 
-    constructor(private fileService: FileService, private clientService: ClientService) {
+    constructor(private fileService: FileService) {
     }
 
     loadFile() {
@@ -155,9 +154,20 @@ export class EditorFileComponent {
         }
 
         this.changingCurrentFile = false;
+        this.previousCode = this.editorContent;
     }
 
-    setCurrentCode() {
+    onCodeChanged() {
+        if (this.changingCurrentFile) {
+            return;
+        } else if (this.editorContent === this.previousCode) {
+            return;
+        }
+        this.previousCode = this.editorContent;
+        this.setCurrentCode();
+    }
+
+    private setCurrentCode() {
         let type: string;
         this.currentError = null;
         try {
@@ -174,8 +184,6 @@ export class EditorFileComponent {
             } else if (this._editorFile.isReadMe()) {
                 type = 'readme';
                 this.previewContent = marked(this.editorContent);
-            } else {
-                throw new Error('unknown file type');
             }
 
             let updatedFile = this.fileService.updateFile(this._editorFile.id, this.editorContent, type);
@@ -187,15 +195,5 @@ export class EditorFileComponent {
             this.currentError = e.toString();
             this.fileService.businessNetworkChanged$.next(false);
         }
-    }
-
-    onCodeChanged() {
-        if (this.changingCurrentFile) {
-            return;
-        } else if (this.editorContent === this.previousCode) {
-            return;
-        }
-        this.previousCode = this.editorContent;
-        this.setCurrentCode();
     }
 }

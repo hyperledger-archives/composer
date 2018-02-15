@@ -16,8 +16,6 @@ import { CommonModule }       from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { ClipboardModule } from 'ngx-clipboard';
-
 import { IdentityRoutingModule } from './identity-routing.module';
 import { ConnectionProfileComponent } from './connection-profile.component';
 
@@ -31,7 +29,7 @@ import { FooterModule } from '../footer/footer.module';
 import { DrawerModule } from '../common/drawer';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule, DrawerModule, IdentityCardModule, ClipboardModule],
+    imports: [CommonModule, FormsModule, NgbModule, FileImporterModule, IdentityRoutingModule, FooterModule, DrawerModule, IdentityCardModule],
     entryComponents: [IdentityIssuedComponent, IssueIdentityComponent],
     declarations: [IdentityIssuedComponent, IssueIdentityComponent, IdentityComponent],
     providers: [],

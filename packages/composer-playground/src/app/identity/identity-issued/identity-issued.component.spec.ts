@@ -15,39 +15,20 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Component, Directive, Input } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
+import { Component, Input, DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbActiveModal, NgbAccordionConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityIssuedComponent } from './identity-issued.component';
 import { IdentityCardService } from '../../services/identity-card.service';
+import { LocalStorageService } from 'angular-2-local-storage';
+import { AdminService } from '../../services/admin.service';
 
 import { IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
-
-@Directive({
-    selector: '[ngxClipboard]'
-})
-class MockClipboardDirective {
-    @Input() cbContent: any;
-}
-
-@Component({
-    selector: 'ngb-accordion',
-    template: ''
-})
-class MockAccordionComponent {
-    @Input() closeOthers: boolean;
-}
-
-@Component({
-    selector: 'ngb-panel',
-    template: ''
-})
-class MockPanelComponent {
-}
 
 @Component({
     selector: 'identity-card',
@@ -58,120 +39,219 @@ class MockIdentityCardComponent {
     @Input() preview: boolean;
 }
 
+@Component({
+    template: `
+        <identity-issued-modal [userID]="userID" [userSecret]="userSecret"></identity-issued-modal>`
+})
+class TestHostComponent {
+    userID;
+    userSecret;
+}
+
 describe('IdentityIssuedComponent', () => {
-    let component: IdentityIssuedComponent;
-    let fixture: ComponentFixture<IdentityIssuedComponent>;
+    let component: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
+
+    let identityIssuedElement: DebugElement;
 
     let mockActiveModal;
-    let mockIdentityCardService;
-    let mockIdCard;
-    let mockConnectionProfile;
+    let mockAdminService;
+    let mockLocalStorage;
+
+    let currentCardRef;
 
     beforeEach(() => {
         mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
-        mockIdCard = sinon.createStubInstance(IdCard);
-        mockIdCard.getBusinessNetworkName.returns('dan-net');
-        mockConnectionProfile = {
-            name: 'dan-profile'
-        };
-        mockIdCard.getConnectionProfile.returns(mockConnectionProfile);
-        mockIdentityCardService.getCurrentIdentityCard.returns(mockIdCard);
+        mockAdminService = sinon.createStubInstance(AdminService);
+        mockLocalStorage = sinon.createStubInstance(LocalStorageService);
+
+        mockAdminService.importCard.resolves();
 
         TestBed.configureTestingModule({
-            imports: [FormsModule],
+            imports: [FormsModule, NgbModule],
             declarations: [
                 IdentityIssuedComponent,
-                MockClipboardDirective,
-                MockAccordionComponent,
-                MockPanelComponent,
-                MockIdentityCardComponent
+                MockIdentityCardComponent,
+                TestHostComponent
             ],
-            providers: [
+            providers: [IdentityCardService,
+                NgbAccordionConfig,
                 {provide: NgbActiveModal, useValue: mockActiveModal},
-                {provide: IdentityCardService, useValue: mockIdentityCardService},
+                {provide: AdminService, useValue: mockAdminService},
+                {provide: LocalStorageService, useValue: mockLocalStorage}
             ]
         });
 
-        fixture = TestBed.createComponent(IdentityIssuedComponent);
+        fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
+
+        identityIssuedElement = fixture.debugElement.query(By.css('identity-issued-modal'));
     });
+
+    beforeEach(fakeAsync(inject([IdentityCardService], (identityCardService: IdentityCardService) => {
+        let currentIdCard = new IdCard({userName: 'bob', businessNetwork: 'penguin-network'}, {
+            name: 'mycp',
+            type: 'hlfv1'
+        });
+        identityCardService.addIdentityCard(currentIdCard, null).then((cardRef) => {
+            currentCardRef = cardRef;
+            return identityCardService.setCurrentIdentityCard(cardRef);
+        });
+
+        tick();
+
+    })));
 
     it('should be created', () => {
         component.should.be.ok;
     });
 
     describe('ngOnInit', () => {
-        it('should', fakeAsync(() => {
+        it('should setup the component', fakeAsync(() => {
             component.userID = 'dan';
             component.userSecret = 'wotnodolphin';
 
-            component.ngOnInit();
+            fixture.detectChanges();
 
             tick();
 
-            component['newCard'].getUserName().should.equal('dan');
-            component['newCard'].getEnrollmentCredentials().should.deep.equal({secret: 'wotnodolphin'});
-            component['newCard'].getBusinessNetworkName().should.equal('dan-net');
-            component['newCard'].getConnectionProfile().should.deep.equal({name: 'dan-profile'});
+            identityIssuedElement.componentInstance['newCard'].getUserName().should.equal('dan');
+            identityIssuedElement.componentInstance['newCard'].getEnrollmentCredentials().should.deep.equal({secret: 'wotnodolphin'});
+            identityIssuedElement.componentInstance['newCard'].getBusinessNetworkName().should.equal('penguin-network');
+            identityIssuedElement.componentInstance['newCard'].getConnectionProfile().should.deep.equal({
+                name: 'mycp',
+                type: 'hlfv1'
+            });
+
+            identityIssuedElement.componentInstance['newCardRef'].should.equal(currentCardRef);
+            identityIssuedElement.componentInstance['newIdentity'].should.equal('dan\nwotnodolphin');
         }));
     });
 
     describe('addToWallet', () => {
-        it('should close the modal with the add to wallet option', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.resolve('1234'));
-            component.addToWallet();
+        it('should not set card name if not changed', fakeAsync(() => {
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
+
+            fixture.detectChanges();
 
             tick();
 
-            mockActiveModal.close.should.have.been.calledWith({cardRef: '1234', choice: 'add'});
+            identityIssuedElement.componentInstance['cardNameValid'] = false;
+            identityIssuedElement.componentInstance['cardName'] = 'myCardName';
+
+            let cardNameElement = identityIssuedElement.query(By.css('#option-1 input'));
+
+            cardNameElement.nativeElement.value = 'myCardName';
+            cardNameElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            identityIssuedElement.componentInstance['cardNameValid'].should.equal(false);
+        }));
+
+        it('should close the modal with the add to wallet option', fakeAsync(() => {
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
+
+            fixture.detectChanges();
+
+            tick();
+
+            let cardNameElement = identityIssuedElement.query(By.css('#option-1 input'));
+
+            cardNameElement.nativeElement.value = 'myCardName';
+            cardNameElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            let addToWalletButton = identityIssuedElement.query(By.css('#option-1 button'));
+            addToWalletButton.triggerEventHandler('click', null);
+
+            tick();
+
+            mockActiveModal.close.should.have.been.calledWith({cardRef: 'myCardName', choice: 'add'});
         }));
 
         it('should handle error with card name', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'Card already exists: bob'}));
-            component.addToWallet();
+            mockAdminService.importCard.rejects(new Error('Card already exists: myCardName'));
+
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
+
+            fixture.detectChanges();
 
             tick();
 
+            let cardNameElement = identityIssuedElement.query(By.css('#option-1 input'));
+
+            cardNameElement.nativeElement.value = 'myCardName';
+            cardNameElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            let addToWalletButton = identityIssuedElement.query(By.css('#option-1 button'));
+            addToWalletButton.triggerEventHandler('click', null);
+
+            tick();
+
+            identityIssuedElement.componentInstance['cardNameValid'].should.equal(false);
             mockActiveModal.close.should.not.have.been.called;
             mockActiveModal.dismiss.should.not.have.been.called;
-
-            component['cardNameValid'].should.equal(false);
         }));
 
         it('should handle error', fakeAsync(() => {
-            mockIdentityCardService.addIdentityCard.returns(Promise.reject({message: 'some error'}));
-            component.addToWallet();
+            mockAdminService.importCard.rejects('Some error');
+
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
+
+            fixture.detectChanges();
 
             tick();
 
-            mockActiveModal.dismiss.should.have.been.calledWith({message: 'some error'});
+            let cardNameElement = identityIssuedElement.query(By.css('#option-1 input'));
+
+            cardNameElement.nativeElement.value = 'myCardName';
+            cardNameElement.nativeElement.dispatchEvent(new Event('input'));
+
+            tick();
+            fixture.detectChanges();
+
+            let addToWalletButton = identityIssuedElement.query(By.css('#option-1 button'));
+            addToWalletButton.triggerEventHandler('click', null);
+
+            tick();
+
+            mockActiveModal.dismiss.should.have.been.called;
         }));
     });
 
     describe('export', () => {
-        it('should close the modal with the export option', () => {
-            component.export();
+        it('should close the modal with the export option', fakeAsync(() => {
+            component.userID = 'dan';
+            component.userSecret = 'wotnodolphin';
 
-            mockActiveModal.close.should.have.been.calledWith({card: undefined, choice: 'export'});
-        });
-    });
+            fixture.detectChanges();
 
-    describe('setCardName', () => {
-        it('should set the card name and cardNameValid to true', () => {
-            component['setCardName']('myCardName');
+            tick();
 
-            component['cardName'].should.equal('myCardName');
-            component['cardNameValid'].should.equal(true);
-        });
+            let exportPanel = identityIssuedElement.query(By.css('#option-2-header a'));
 
-        it('should not set the card name if it hasn\'t changed and not update cardNameValid', () => {
-            component['cardNameValid'] = false;
-            component['cardName'] = 'myCardName';
-            component['setCardName']('myCardName');
+            exportPanel.triggerEventHandler('click', null);
 
-            component['cardName'].should.equal('myCardName');
-            component['cardNameValid'].should.equal(false);
-        });
+            fixture.detectChanges();
+
+            let addToWalletButton = identityIssuedElement.query(By.css('#option-2 button'));
+            addToWalletButton.triggerEventHandler('click', null);
+
+            mockActiveModal.close.should.have.been.calledWith({
+                card: identityIssuedElement.componentInstance['newCard'],
+                choice: 'export'
+            });
+        }));
     });
 });

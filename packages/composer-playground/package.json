@@ -195,7 +195,6 @@
         "mocha": "3.4.2",
         "ng2-bootstrap": "1.1.16-11",
         "ng2-codemirror": "1.1.2",
-        "ngx-clipboard": "8.0.4",
         "ngx-perfect-scrollbar": "4.3.0",
         "node-sass": "4.5.3",
         "object-hash": "1.1.8",
