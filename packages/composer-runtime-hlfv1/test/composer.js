@@ -14,7 +14,7 @@
 
 'use strict';
 
-const fs = require('fs');
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Composer = require('../lib/composer');
 const NodeContainer = require('../lib/nodecontainer');
 const Engine = require('composer-runtime').Engine;
@@ -44,9 +44,11 @@ describe('Composer', () => {
     });
 
     describe('#start', () => {
+        const testBusinessNetwork = new BusinessNetworkDefinition('business-network@1.0.0-test');
+
         beforeEach(() => {
-            sandbox.stub(fs, 'readFileSync').returns(JSON.stringify({}));
-            sandbox.stub(Context, 'parseBusinessNetworkDefinition').resolves();
+            sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').resolves(testBusinessNetwork);
+            sandbox.spy(Context, 'setBusinessNetwork');
             sandbox.stub(shim, 'start').returns();
         });
 
@@ -56,9 +58,9 @@ describe('Composer', () => {
             });
         });
 
-        it('should call Context.parseBusinessNetworkDefinition()', () => {
+        it('should call Context.setBusinessNetworkDefinition()', () => {
             return Composer.start().then(() => {
-                sinon.assert.calledOnce(Context.parseBusinessNetworkDefinition);
+                sinon.assert.calledOnce(Context.setBusinessNetwork);
             });
         });
     });

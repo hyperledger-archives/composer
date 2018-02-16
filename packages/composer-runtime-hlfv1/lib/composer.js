@@ -14,12 +14,12 @@
 
 'use strict';
 
-const fs = require('fs');
 const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
 const Engine = require('composer-runtime').Engine;
 const Context = require('composer-runtime').Context;
 const NodeContainer = require('./nodecontainer');
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Composer');
@@ -37,10 +37,8 @@ class Composer {
      * Should be called (only) from the peer startup script.
      */
     static async start() {
-        //let busNetDef = await BusinessNetworkDefinition.fromDirectory('.');
-        let pkgJSON = JSON.parse(fs.readFileSync('package.json'));
-        let archiveFileContents = fs.readFileSync(pkgJSON.name + '.bna');
-        await Context.parseBusinessNetworkDefinition(archiveFileContents);
+        const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.');
+        await Context.setBusinessNetwork(networkDefinition);
         shim.start(new Composer());
     }
 

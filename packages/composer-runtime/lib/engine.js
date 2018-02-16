@@ -14,9 +14,6 @@
 
 'use strict';
 
-//const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const Context = require('./context');
-//const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
 const util = require('util');
 
