@@ -34,7 +34,8 @@ const nodeUtil = require('util');
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 
-const mkdirp = nodeUtil.promisify(require('mkdirp'));
+const thenify = require('thenify');
+const mkdirp = thenify(require('mkdirp'));
 
     /** define a help function that will filter out files
      * that are inside a node_modules directory under the path
