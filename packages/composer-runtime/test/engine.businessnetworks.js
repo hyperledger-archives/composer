@@ -45,12 +45,17 @@ describe('EngineBusinessNetworks', () => {
 
     beforeEach(() => {
         mockSerializer = sinon.createStubInstance(Serializer);
-
+        mockLoggingService = sinon.createStubInstance(LoggingService);
+        mockRegistryManager = sinon.createStubInstance(RegistryManager);
 
         mockContainer = sinon.createStubInstance(Container);
-        mockLoggingService = sinon.createStubInstance(LoggingService);
         mockContainer.getLoggingService.returns(mockLoggingService);
         mockContainer.getVersion.returns(version);
+
+        mockDataService = sinon.createStubInstance(DataService);
+        const sysdata = sinon.createStubInstance(DataCollection);
+        mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
         mockContext.transactionStart.resolves();
@@ -59,13 +64,12 @@ describe('EngineBusinessNetworks', () => {
         mockContext.transactionRollback.resolves();
         mockContext.transactionEnd.resolves();
         mockContext.getSerializer.returns(mockSerializer);
-        mockDataService = sinon.createStubInstance(DataService);
-        mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getDataService.returns(mockDataService);
         mockContext.getRegistryManager.returns(mockRegistryManager);
 
         mockAccessController = sinon.createStubInstance(AccessController);
         mockContext.getAccessController.returns(mockAccessController);
+
 
         engine = new Engine(mockContainer);
         sandbox = sinon.sandbox.create();
@@ -76,6 +80,11 @@ describe('EngineBusinessNetworks', () => {
     });
 
     describe('#getBusinessNetwork', () => {
+        const businessNetworkArchive = 'aGVsbG8gd29ybGQ=';
+
+        beforeEach(() => {
+            mockContext.getBusinessNetworkArchive.returns(businessNetworkArchive);
+        });
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'getBusinessNetwork', ['no', 'args', 'supported']);
@@ -83,15 +92,15 @@ describe('EngineBusinessNetworks', () => {
         });
 
         it('should return the business network archive', () => {
-            let sysdata = sinon.createStubInstance(DataCollection);
-            sysdata.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
             return engine.query(mockContext, 'getBusinessNetwork', [])
-                .then((result) => {
-                    result.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-                });
+                .should.become({ data: businessNetworkArchive });
         });
 
+        it('should check READ access', () => {
+            return engine.query(mockContext, 'getBusinessNetwork', []).then(() => {
+                sinon.assert.calledWithExactly(mockAccessController.check, sinon.match.any, 'READ');
+            });
+        });
     });
 
     describe('#undeployBusinessNetwork', () => {
@@ -101,21 +110,10 @@ describe('EngineBusinessNetworks', () => {
             return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "undeployBusinessNetwork", expecting "\[\]"/);
         });
 
-        it('should set the undeploy flag on a business network', () => {
-            let businessNetwork = { data: 'data', hash: 'hash' };
-            let sysdata = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            sysdata.get.withArgs('businessnetwork').resolves(businessNetwork);
-
-            return engine.invoke(mockContext, 'undeployBusinessNetwork', [])
-                .then(() => {
-                    sinon.assert.calledTwice(sysdata.get);
-                    sinon.assert.calledWith(sysdata.get, 'businessnetwork');
-                    sinon.assert.calledWith(sysdata.get, 'metanetwork');
-                    businessNetwork.undeploy = true;
-                    sinon.assert.calledOnce(sysdata.update);
-                    sinon.assert.calledWith(sysdata.update, 'businessnetwork', businessNetwork);
-                });
+        it('should check DELETE access', () => {
+            return engine.invoke(mockContext, 'undeployBusinessNetwork', []).then(() => {
+                sinon.assert.calledWithExactly(mockAccessController.check, sinon.match.any, 'DELETE');
+            });
         });
 
     });

@@ -33,74 +33,52 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    getBusinessNetwork(context, args) {
+    async getBusinessNetwork(context, args) {
         const method = 'getBusinessNetwork';
         LOG.entry(method, context, args);
+
         if (args.length !== 0) {
             LOG.error(method, 'Invalid arguments', args);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getBusinessNetwork', []));
         }
-        let dataService = context.getDataService();
-        let sysdata;
-        let resource;
-        return dataService.getCollection('$sysdata')
-            .then((result) => {
-                sysdata = result;
-                return sysdata.get('metanetwork');
-            })
-            .then((result) => {
-                resource = context.getSerializer().fromJSON(result);
-                return context.getAccessController().check(resource, 'READ');
-            })
-            .then(() => {
-                // convert to resource and then check pmerssions.
-                LOG.exit(method);
-                return {
-                    data: context.getBusinessNetworkArchive()
-                };
-            });
+
+        await this._assertAccessForOperation(context, 'READ');
+
+        const result = {
+            data: context.getBusinessNetworkArchive()
+        };
+        LOG.exit(method, result);
+        return result;
+    }
+
+    async _assertAccessForOperation(context, operation) {
+        const dataService = context.getDataService();
+        const sysdata = await dataService.getCollection('$sysdata');
+        const metanetwork = await sysdata.get('metanetwork');
+        const resource = context.getSerializer().fromJSON(metanetwork);
+        await context.getAccessController().check(resource, operation);
     }
 
     /**
-     * Undeploy the business network;
-     * Doesn't actually undeploy the nework but merely puts it beyond use.
+     * Undeploy the business network. Does nothing.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    undeployBusinessNetwork(context, args) {
+    async undeployBusinessNetwork(context, args) {
         const method = 'undeployBusinessNetwork';
         LOG.entry(method, context, args);
+
         if (args.length !== 0) {
             LOG.error(method, 'Invalid arguments', args);
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, method, []));
         }
-        let dataService = context.getDataService();
-        let sysdata;
-        return dataService.getCollection('$sysdata')
-            .then((sysdata_) => {
-                sysdata = sysdata_;
-                return sysdata.get('metanetwork');
-            })
-            .then((result) => {
-                let resource = context.getSerializer().fromJSON(result);
-                return context.getAccessController().check(resource, 'DELETE');
-            })
-            .then(() => {
-                // Validate the business network arsysregistrieschive and store it.
-                return sysdata.get('businessnetwork');
-            })
-            .then((businessNetwork) => {
-                businessNetwork.undeployed = true;
-                return sysdata.update('businessnetwork', businessNetwork);
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
+
+        await this._assertAccessForOperation(context, 'DELETE');
+
+        LOG.exit(method);
     }
-
-
 
 }
 

@@ -82,7 +82,7 @@ class Engine {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    init(context, fcn, args) {
+    async init(context, fcn, args) {
         const method = 'init';
         LOG.entry(method, context, fcn, args);
 
@@ -121,142 +121,69 @@ class Engine {
             this.getContainer().getLoggingService().setLogLevel(logLevel);
         }
 
-        let dataService = context.getDataService();
-        let sysregistries, sysdata;
-        return Promise.resolve()
-            .then(() => {
+        const dataService = context.getDataService();
+        await context.transactionStart(false);
 
-                // Start the transaction.
-                return context.transactionStart(false);
+        LOG.debug(method, 'Storing metanetwork in $sysdata collection');
+        const sysdata = await dataService.ensureCollection('$sysdata');
+        const networkIdentifier = context.getBusinessNetworkDefinition().getIdentifier();
+        await sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': networkIdentifier });
 
-            })
-            .then(() => {
-                // Get the sysdata collection where the business network definition is stored.
-                LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                return dataService.ensureCollection('$sysdata');
+        LOG.debug(method, 'Ensuring that sysregistries collection exists');
+        const sysregistries = await dataService.ensureCollection('$sysregistries');
 
-            })
-            .then((sysdata_) => {
+        LOG.debug(method, 'Initializing context', this.getContainer().getVersion());
+        await context.initialize({
+            function: fcn,
+            arguments: args,
+            sysregistries: sysregistries,
+            container: this.getContainer()
+        });
 
-                // Add the business network definition to the sysdata collection.
-                sysdata = sysdata_;
+        LOG.debug(method, 'Creating default registries');
+        const registryManager = context.getRegistryManager();
+        await registryManager.createDefaults();
 
-            })
-            .then(() => {
-                //TODO: need to get the businessNetworkDefinition from the context.
-                return sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': context.getBusinessNetworkDefinition().getIdentifier() });
-            })
-            .then(() => {
+        // We want the historian entries to be ordered, so lets bump the milliseconds for every
+        // bootstrap transaction we execute.
+        const timestamp = new Date(transactionData.timestamp);
 
-                // Ensure that the system registries collection exists.
-                LOG.debug(method, 'Ensuring that sysregistries collection exists');
-                return dataService.ensureCollection('$sysregistries')
-                    .then((sysregistries_) => {
-                        sysregistries = sysregistries_;
-                    });
+        // First we need to prepare any bootstrap transactions by forcing the transaction ID
+        // and timestamp to be derived from the start business network transaction.
+        const bootstrapTransactions = transactionData.bootstrapTransactions || [];
+        bootstrapTransactions.forEach((bootstrapTransaction, index) => {
+            bootstrapTransaction.transactionId = transactionData.transactionId + '#' + index;
+            timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
+            bootstrapTransaction.timestamp = timestamp.toISOString();
+        });
 
-            })
-            .then(() => {
+        // Now update the original timestamp so the start business network transaction is correct.
+        timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
+        transactionData.timestamp = timestamp.toISOString();
 
-                // Initialize the context.
-                LOG.debug(method, 'Initializing context 2',this.getContainer().getVersion());
+        try {
+            for(let transaction of bootstrapTransactions) {
+                LOG.debug(method, 'Executing bootstrap transaction', transaction.transactionId);
+                await this.submitTransaction(context, [JSON.stringify(transaction)]);
+            }
 
-                return context.initialize({
-                    function: fcn,
-                    arguments: args,
-                    sysregistries: sysregistries,
-                    container: this.getContainer()
-                });
+            // This step executes the start business network transaction. This is a no-op, but records
+            // the event into the transaction registry and historian.
+            LOG.debug(method, 'Executing start business network transaction');
+            await this.submitTransaction(context, [JSON.stringify(transactionData)]);
 
-            })
-            .then(() => {
+            await context.transactionPrepare();
+            await context.transactionCommit();
+            await context.transactionEnd();
+        } catch (error) {
+            LOG.error(method, 'Caught error, rethrowing', error);
+            await context.transactionRollback();
+            await context.transactionEnd();
+            throw error;
+        }
 
-                // Create all the default registries for each asset, participant, and transaction type.
-                LOG.debug(method, 'Creating default registries');
-                let registryManager = context.getRegistryManager();
-                return registryManager.createDefaults();
-
-            })
-            .then(() => {
-
-                // We want the historian entries to be ordered, so lets bump the milliseconds for every
-                // bootstrap transaction we execute.
-                const timestamp = new Date(transactionData.timestamp);
-
-                // First we need to prepare any bootstrap transactions by forcing the transaction ID
-                // and timestamp to be derived from the start business network transaction.
-                const bootstrapTransactions = transactionData.bootstrapTransactions || [];
-                bootstrapTransactions.forEach((bootstrapTransaction, index) => {
-                    bootstrapTransaction.transactionId = transactionData.transactionId + '#' + index;
-                    timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
-                    bootstrapTransaction.timestamp = timestamp.toISOString();
-                });
-
-                // Now update the original timestamp so the start business network transaction is correct.
-                timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
-                transactionData.timestamp = timestamp.toISOString();
-
-                // Now that we have initialized and loaded the business network defintion, we can now
-                // safely execute all of the bootstrap transactions.
-                return bootstrapTransactions.reduce((promise, bootstrapTransaction) => {
-                    return promise.then(() => {
-                        LOG.debug(method, 'Executing bootstrap transaction', bootstrapTransaction.transactionId);
-                        return this.submitTransaction(context, [JSON.stringify(bootstrapTransaction)]);
-                    });
-                }, Promise.resolve());
-
-            })
-            .then(() => {
-
-                // This step executes the start business network transaction. This is a no-op, but records
-                // the event into the transaction registry and historian.
-                LOG.debug(method, 'Executing start business network transaction');
-                return this.submitTransaction(context, [JSON.stringify(transactionData)]);
-
-            })
-            .then(() => {
-                return context.transactionPrepare()
-                    .then(() => {
-                        return context.transactionCommit();
-                    })
-                    .then(() => {
-                        return context.transactionEnd();
-                    });
-            })
-            .catch((error) => {
-                LOG.error(method, 'Caught error, rethrowing', error);
-                return context.transactionRollback()
-                    .then(() => {
-                        return context.transactionEnd();
-                    })
-                    .then(() => {
-                        throw error;
-                    });
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
+        LOG.exit(method);
     }
-
-    /**
-     * Handle an initialisation (deploy) request.
-     * @private
-     * @param {Context} context The request context.
-     * @param {string} fcn The name of the chaincode function to invoke.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @param {function} callback The callback function to call when complete.
-     */
-    /*
-    _init(context, fcn, args, callback) {
-        this.init(context, fcn, args)
-            .then((result) => {
-                callback(null, result);
-            })
-            .catch((error) => {
-                callback(error, null);
-            });
-    }
-    */
 
     /**
      * Handle an invoke request.
@@ -312,26 +239,6 @@ class Engine {
     }
 
     /**
-     * Handle an invoke request.
-     * @private
-     * @param {Context} context The request context.
-     * @param {string} fcn The name of the chaincode function to invoke.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @param {function} callback The callback function to call when complete.
-     */
-    /*
-    _invoke(context, fcn, args, callback) {
-        this.invoke(context, fcn, args)
-            .then((result) => {
-                callback(null, result);
-            })
-            .catch((error) => {
-                callback(error, null);
-            });
-    }
-    */
-
-    /**
      * Handle a query request.
      * @param {Context} context The request context.
      * @param {string} fcn The name of the chaincode function to invoke.
@@ -383,26 +290,6 @@ class Engine {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
         }
     }
-
-    /**
-     * Handle a query request.
-     * @private
-     * @param {Context} context The request context.
-     * @param {string} fcn The name of the chaincode function to invoke.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @param {function} callback The callback function to call when complete.
-     */
-    /*
-    _query(context, fcn, args, callback) {
-        this.query(context, fcn, args)
-            .then((result) => {
-                callback(null, result);
-            })
-            .catch((error) => {
-                callback(error, null);
-            });
-    }
-    */
 
     /**
      * Handle a ping request.
