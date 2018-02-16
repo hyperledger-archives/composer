@@ -64,11 +64,8 @@ describe('composer card delete CLI', function() {
         adminConnectionStub.deleteCard.resolves(false);
         const cardName = 'CARD_NAME';
         const args = { name: cardName };
-        return DeleteCmd.handler(args).then(() => {
-            // regexp to quickly strip any colour coded console output
-            let regexp = new RegExp('.*Card not found:.*'+cardName);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(regexp));
-        });
+        let regexp = new RegExp('.*Card not found:.*'+cardName);
+        DeleteCmd.handler(args).should.be.rejectedWith(regexp);
     });
 
 });
