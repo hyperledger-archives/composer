@@ -31,7 +31,7 @@ class Delete {
             if (cardExisted) {
                 cmdUtil.log(chalk.bold.blue('Deleted Business Network Card: ') + args.name);
             } else {
-                cmdUtil.log(chalk.bold.blue('Card not found: ') + args.name);
+                throw new Error(`Card not found: ${args.name}`);
             }
         });
     }

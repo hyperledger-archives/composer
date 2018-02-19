@@ -126,6 +126,13 @@ Feature: Cli steps
         Then The stdout information should include text matching /credentialsSet:      Credentials set/
         Then The stdout information should include text matching /Command succeeded/
 
+    Scenario: When using the CLI, I should get an error if I try to delete a card which doesn't exist
+        When I run the following CLI command
+            """
+            composer card delete -n whoami@basic-sample-network
+            """
+        Then The stdout information should include text matching /Command failed/
+
     Scenario: Using the CLI, I can verify that there no assets have been created yet
         When I run the following CLI command
             """
