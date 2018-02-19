@@ -363,18 +363,19 @@ class HLFConnection extends Connection {
             txId: txId,
             targets: this.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery'])
         };
+        LOG.debug(method, 'Install chaincode request', request);
         // the following should have been used for request but the node sdk is broken
         // channelNames: this.channel.getName() // this will drive getting all the Peers to install on
 
 
         try {
-            let results = await this.client.installChaincode(request);
+            const results = await this.client.installChaincode(request);
             LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
             const CCAlreadyInstalledPattern = /chaincode .+ exists/;
-            let {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
+            const {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
             // is the composer runtime already installed on all the peers ?
-            let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
+            const calledFromDeploy = installOptions && installOptions.calledFromDeploy;
             if (ignoredErrors === results[0].length && !calledFromDeploy) {
                 const errorMsg = 'The business network is already installed on all the peers';
                 throw new Error(errorMsg);
@@ -382,11 +383,7 @@ class HLFConnection extends Connection {
 
             // if we failed to install the runtime on all the peers that don't have a runtime installed, throw an error
             if ((validResponses.length + ignoredErrors) !== results[0].length) {
-                let allRespMsgs = '';
-                invalidResponseMsgs.forEach((invalidResponse) => {
-                    allRespMsgs += invalidResponse;
-                    allRespMsgs += '\n';
-                });
+                const allRespMsgs = invalidResponseMsgs.join('\n');
                 const errorMsg = `The business network failed to install on 1 or more peers: ${allRespMsgs}`;
                 throw new Error(errorMsg);
             }
@@ -400,14 +397,6 @@ class HLFConnection extends Connection {
             const newError = new Error(`Error trying install business network. ${error}`);
             LOG.error(method, newError);
             throw newError;
-        } finally {
-            if (installOptions && installOptions.npmrcFile) {
-                try {
-                    await this.fs.remove(runtimeModulePath + '/.npmrc');
-                } catch(error) {
-                    // Ignore any error to try to remove, it could be file not there
-                }
-            }
         }
     }
 
