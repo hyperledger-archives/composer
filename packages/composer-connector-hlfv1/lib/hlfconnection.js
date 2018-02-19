@@ -373,7 +373,7 @@ class HLFConnection extends Connection {
             // is the composer runtime already installed on all the peers ?
             let calledFromDeploy = installOptions && installOptions.calledFromDeploy;
             if (ignoredErrors === results[0].length && !calledFromDeploy) {
-                const errorMsg = 'The Composer runtime is already installed on all the peers';
+                const errorMsg = 'The business network is already installed on all the peers';
                 throw new Error(errorMsg);
             }
 
@@ -384,17 +384,17 @@ class HLFConnection extends Connection {
                     allRespMsgs += invalidResponse;
                     allRespMsgs += '\n';
                 });
-                const errorMsg = `The Composer runtime failed to install on 1 or more peers: ${allRespMsgs}`;
+                const errorMsg = `The business network failed to install on 1 or more peers: ${allRespMsgs}`;
                 throw new Error(errorMsg);
             }
-            LOG.debug(method, `Composer runtime installed on ${validResponses.length} out of ${results[0].length} peers`);
+            LOG.debug(method, `Business network installed on ${validResponses.length} out of ${results[0].length} peers`);
 
             // return a boolean to indicate if any composer runtime was installed.
             const chaincodeInstalled = validResponses.length !== 0;
             LOG.exit(method, chaincodeInstalled);
             return chaincodeInstalled;
         } catch(error) {
-            const newError = new Error(`Error trying install composer runtime. ${error}`);
+            const newError = new Error(`Error trying install business network. ${error}`);
             LOG.error(method, newError);
             throw newError;
         } finally {
