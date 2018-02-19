@@ -304,7 +304,9 @@ in your /home/user1/config directory:</p>
 </code></pre></div>
 <h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
 
-<h3 id="composer-network-start-deploy-cli">composer network start/deploy CLI</h3>
+<p>You can provide Hyperledger Fabric endorsement policies to both network start and network upgrade requests. The examples that follow show <code>start</code> but the approach is identical to <code>upgrade</code> as well.</p>
+
+<h3 id="composer-network-start-upgrade-cli">composer network start/upgrade CLI</h3>
 
 <p>Hyperledger Fabric endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
 
@@ -331,7 +333,7 @@ in your /home/user1/config directory:</p>
 </code></pre></div></li>
 </ul>
 
-<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric Node.js SDK documentation</a>.</p>
+<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#ChaincodeInstantiateUpgradeRequest">Hyperledger Fabric Node.js SDK documentation</a> which provides examples of endorsement policies.</p>
 
 <h3 id="admin-api">Admin API</h3>
 

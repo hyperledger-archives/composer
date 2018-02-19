@@ -294,34 +294,7 @@ Options:
   --card, -c                         The cardname to use to start the network  [string]
   --file, -f                         File name of the card to be created  [string]
 </code></pre></div>
-<h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
-
-<p>The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option allow connection specific information to be sent. Hyperledger Fabric endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
-
-<ul>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicy='{"identities": [.... }'
-</code></pre></div></li>
-<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
-</code></pre></div>
-<p>In this case, the endorsement policy file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
-    "policy": {...}}
-</code></pre></div></li>
-<li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -O /path/to/file/options.json
-</code></pre></div>
-<p>In this case, the options file should follow this format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].
-            "policy: {...}"
-          },
-          "someOtherOption": "A Value"
-        }
-</code></pre></div></li>
-</ul>
-
-<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric Node.js SDK documentation</a>.</p>
+<p>Please refer to <a href="../managing/connector-information.html">Connector specific information</a> for more information about connector specific options.</p>
 
             
           </section>
