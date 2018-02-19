@@ -65,8 +65,9 @@ await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '
 
 
 ## {{site.data.conrefs.hlf_full}} Endorsement Policies
+You can provide fabric endorsement policies to both network start and network upgrade requests. The examples that follow show `start` but the approach is identical to `upgrade` as well.
 
-### composer network start/deploy CLI
+### composer network start/upgrade CLI
 
 {{site.data.conrefs.hlf_full}} endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
