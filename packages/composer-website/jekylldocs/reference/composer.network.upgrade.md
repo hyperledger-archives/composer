@@ -26,8 +26,12 @@ composer network upgrade -n <business-network-name> -c <business-network-card>
 composer network upgrade [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --card, -c                   The cardname to use to upgrade the network  [string] [required]
-  --businessNetworkName, -n    The business network name  [string] [required]
+  --help                     Show help  [boolean]
+  -v, --version              Show version number  [boolean]
+  --card, -c                 The cardname to use to upgrade the network  [string] [required]
+  --businessNetworkName, -n  The business network name  [string] [required]
+  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```
+
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connector specific options.

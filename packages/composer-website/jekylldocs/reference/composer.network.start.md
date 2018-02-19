@@ -38,35 +38,5 @@ Options:
   --card, -c                         The cardname to use to start the network  [string]
   --file, -f                         File name of the card to be created  [string]
 ```
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connector specific options.
 
-
-## {{site.data.conrefs.hlf_full}} Endorsement Policies
-
-The `--option, -o` option and the `--optionsFile, -O` option allow connection specific information to be sent. {{site.data.conrefs.hlf_full}} endorsement policies can be sent using the `-o` and `-O` options in several ways.
-
-- Using the `-o` option, the endorsement policy can be sent as a single-line JSON string as follows:
-
-        composer network start -o endorsementPolicy='{"identities": [.... }'
-
-- Using the `-o` option, the endorsement policy can be sent as a file path as follows:
-
-        composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
-
-	In this case, the endorsement policy file should follow this format:
-
-		{"identities":[...],
-			"policy": {...}}
-
-- Using the `-O` option, the endorsement policy can be sent as a file path as follows:
-
-        composer network start -O /path/to/file/options.json
-
-	In this case, the options file should follow this format:
-
-				{"endorsementPolicy": {"Identities": [...].
-				    "policy: {...}"
-				  },
-				  "someOtherOption": "A Value"
-				}
-
-For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} Node.js SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
