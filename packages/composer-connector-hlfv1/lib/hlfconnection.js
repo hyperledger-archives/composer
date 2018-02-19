@@ -336,8 +336,11 @@ class HLFConnection extends Connection {
             }
         }
 
-        // Write out the content of the business network definition, including updated package.json
-        businessNetworkDefinition.toDirectory(installDir);
+        // Write out the content of the business network definition and updated package.json
+        await businessNetworkDefinition.toDirectory(installDir);
+        const packagePath = path.join(installDir, 'package.json');
+        const packageContent = JSON.stringify(bnaPackage);
+        fs.writeFileSync(packagePath, packageContent);
 
         // copy over a .npmrc file, should be part of the business network definition.
         if (installOptions && installOptions.npmrcFile) {
