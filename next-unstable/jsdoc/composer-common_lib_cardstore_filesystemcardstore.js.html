@@ -178,7 +178,7 @@ class FileSystemCardStore extends BusinessNetworkCardStore {
             return card.toDirectory(cardPath, this.fs);
         }).catch(cause => {
             LOG.error(method, cause);
-            const error = new Error('Failed to save card: ' + cardName);
+            const error = new Error(`Failed to save card: ${cardName}. Reason: ${cause.message}`);
             error.cause = cause;
             throw error;
         });
