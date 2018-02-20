@@ -8,6 +8,7 @@ out
 logs
 *.log
 npm-debug.log*
+composer-logs
 
 # Runtime data
 pids
