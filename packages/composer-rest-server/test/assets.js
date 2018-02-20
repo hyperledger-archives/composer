@@ -121,6 +121,51 @@ const clone = require('clone');
                     periodMultiplier: 6
                 }
             }
+        }, {
+            $class: 'org.acme.bond.ExtendedBondAsset',
+            ISINCode: 'ISIN_5',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOM',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 4000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#1',
+                maturity: '2018-02-27T21:03:52.000Z',
+                parValue: 4000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            },
+            arrayProp1: []
+        }, {
+            $class: 'org.acme.bond.ExtendedBondAsset',
+            ISINCode: 'ISIN_6',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOM',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 4000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#1',
+                maturity: '2018-02-27T21:03:52.000Z',
+                parValue: 4000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
         }];
 
         let app;
@@ -229,6 +274,30 @@ const clone = require('clone');
                         json.should.deep.equal(assetData[3]);
                         return assetRegistry.remove('ISIN_4');
                     });
+            });
+
+            it('should create the specified asset with an empty array property', async () => {
+                const res = await chai.request(app)
+                    .post(`/api/${prefix}ExtendedBondAsset`)
+                    .send(assetData[4]);
+                res.should.have.status(200);
+                const assetRegistry = await businessNetworkConnection.getAssetRegistry('org.acme.bond.ExtendedBondAsset');
+                const asset = await assetRegistry.get('ISIN_5');
+                const json = serializer.toJSON(asset);
+                json.arrayProp1.should.deep.equal([]);
+                await assetRegistry.remove('ISIN_5');
+            });
+
+            it('should create the specified asset with a missing array property', async () => {
+                const res = await chai.request(app)
+                    .post(`/api/${prefix}ExtendedBondAsset`)
+                    .send(assetData[5]);
+                res.should.have.status(200);
+                const assetRegistry = await businessNetworkConnection.getAssetRegistry('org.acme.bond.ExtendedBondAsset');
+                const asset = await assetRegistry.get('ISIN_6');
+                const json = serializer.toJSON(asset);
+                json.arrayProp1.should.deep.equal([]);
+                await assetRegistry.remove('ISIN_6');
             });
 
             it('should return a 500 if the specified asset already exists', () => {
