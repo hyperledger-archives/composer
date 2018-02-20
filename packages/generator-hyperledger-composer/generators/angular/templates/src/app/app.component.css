@@ -24,6 +24,10 @@
     color: #000;
 }
 
+.navbar-brand:hover {
+    color: #000;
+}
+
 .network-name {
     font-size: 12px;
     letter-spacing: 0.28px;
