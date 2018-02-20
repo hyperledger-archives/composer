@@ -1,0 +1,12 @@
+# hidden config files
+.editorconfig
+.eslint.yml
+.eslintignore
+.eslintrc.yml
+.tern-project
+
+# test directory
+test
+
+# scripts directory
+scripts
