@@ -576,6 +576,12 @@ describe('Connection', () => {
 
     });
 
+    describe('#registryCheckRequired', () => {
+        it('should return false', () => {
+            connection.registryCheckRequired().should.deep.equal(false);
+        });
+    });
+
     describe('#createIdentity', () => {
 
         it('should call _createIdentity and handle no error', () => {

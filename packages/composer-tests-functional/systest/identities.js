@@ -16,13 +16,13 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
+const IdCard = require('composer-common').IdCard;
 const path = require('path');
-const uuid = require('uuid');
-
 const TestUtil = require('./testutil');
+const uuid = require('uuid');
 
 const chai = require('chai');
 chai.should();
@@ -33,16 +33,14 @@ process.setMaxListeners(Infinity);
 describe('Identity system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
     let participant;
 
-    before(function () {
+    before(async () => {
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying null as the value
         const modelFiles = [
             { fileName: null, contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
@@ -55,198 +53,46 @@ describe('Identity system tests', function() {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
-            let scriptManager = businessNetworkDefinition.getScriptManager();
+            const scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
         bnID = businessNetworkDefinition.getName();
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-identities')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-identities');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
     });
 
-    beforeEach(() => {
-        let factory = client.getBusinessNetwork().getFactory();
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
+        const factory = client.getBusinessNetwork().getFactory();
         participant = factory.newResource('systest.identities', 'SampleParticipant', 'bob@uk.ibm.com');
         participant.firstName = 'Bob';
         participant.lastName = 'Bobbington';
-        return client.getParticipantRegistry('systest.identities.SampleParticipant')
-            .then((participantRegistry) => {
-                return participantRegistry.add(participant);
-            });
+        const participantRegistry = await client.getParticipantRegistry('systest.identities.SampleParticipant');
+        await participantRegistry.add(participant);
     });
 
-    afterEach(() => {
-        return TestUtil.getClient(cardStore,'systest-identities')
-            .then((result) => {
-                client = result;
-            });
+    afterEach(async () => {
+        client = await TestUtil.getClient(cardStore,'systest-identities');
     });
 
-    it('should issue an identity and make it available for a ping request', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                return client.ping();
-            })
-            .then((result) => {
-                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
-            });
-    });
+    let identityIndex = 1;
 
-    it('should issue an identity that can issue another identity and make it available for a ping request', () => {
-        let identity = uuid.v4();
-        let identity2 = uuid.v4();
-        let participant2;
-        return client.issueIdentity(participant, identity, {issuer: true})
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                return client.ping();
-            })
-            .then((result) => {
-                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
-                let factory = client.getBusinessNetwork().getFactory();
-                participant2 = factory.newResource('systest.identities', 'SampleParticipant', 'frank@uk.ibm.com');
-                participant2.firstName = 'Frank';
-                participant2.lastName = 'Frankly';
-                return client.getParticipantRegistry('systest.identities.SampleParticipant');
-            })
-            .then((participantRegistry) => {
-                return participantRegistry.add(participant2);
-            })
-            .then(() => {
-                return client.issueIdentity(participant2, identity2, {issuer: true});
-            })
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                return client.ping();
-            })
-            .then((result) => {
-                result.participant.should.equal(participant2.getFullyQualifiedIdentifier());
-            });
-    });
-
-    xit('should bind an identity and make it available for a ping request', function () {
-        let identity, certificate, privateKey;
-        identity = uuid.v4();
+    /**
+     * Get the next identity.
+     * @return {Object} The next identity.
+     */
+    function getNextIdentity() {
+        let certificate, privateKey;
         if (TestUtil.isHyperledgerFabricV1()) {
-            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
+            const certificateFile = path.resolve(__dirname, `../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User${identityIndex}@org1.example.com/msp/signcerts/User${identityIndex}@org1.example.com-cert.pem`);
             certificate = fs.readFileSync(certificateFile, 'utf8');
-            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
+            const privateKeyFile = path.resolve(__dirname, `../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User${identityIndex}@org1.example.com/msp/keystore/key.pem`);
             privateKey = fs.readFileSync(privateKeyFile, 'utf8');
-        } else {
-            certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('User1@org1.example.com' + ':' + uuid.v4()).toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
-            privateKey = 'not used';
-        }
-        return client.bindIdentity(cardStore, participant, certificate)
-            .then(() => {
-                const admin = new AdminConnection({cardStore});
-                if (TestUtil.isHyperledgerFabricV1()) {
-                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
-                } else {
-                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
-                }
-            })
-            .then(() => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity, 'not used');
-            })
-            .then((result) => {
-                client = result;
-                return client.ping();
-            })
-            .then((result) => {
-                result.participant.should.equal(participant.getFullyQualifiedIdentifier());
-            });
-    });
-
-    it('should throw an exception for a ping request using a revoked identity', () => {
-        let identityName = uuid.v4();
-        return client.issueIdentity(participant, identityName)
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                return client.getIdentityRegistry();
-            })
-            .then((identityRegistry) => {
-                return identityRegistry.getAll();
-            })
-            .then((identities) => {
-                const identity = identities.find((identity) => {
-                    return identity.name === identityName;
-                });
-                return client.revokeIdentity(identity);
-            })
-            .then(() => {
-                return client.ping();
-            })
-            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', has been revoked/);
-    });
-
-    it('should throw an exception for a ping request using a identity that is mapped to a non-existent participant', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
-            .then((identity) => {
-                return client.getParticipantRegistry('systest.identities.SampleParticipant')
-                    .then((participantRegistry) => {
-                        return participantRegistry.remove(participant);
-                    })
-                    .then(() => {
-                        return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-                    });
-            })
-            .then((result) => {
-                client = result;
-                return client.ping();
-            })
-            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', is bound to a participant \'resource:systest.identities.SampleParticipant#bob@uk.ibm.com\' that does not exist/);
-    });
-
-    it('should issue an identity and make the participant available for transaction processor functions', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                let factory = client.getBusinessNetwork().getFactory();
-                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
-                return client.submitTransaction(transaction);
-            });
-    });
-
-    xit('should bind an identity and make the participant available for transaction processor functions', function () {
-        let identity, certificate, privateKey;
-        identity = uuid.v4();
-        if (TestUtil.isHyperledgerFabricV1()) {
-            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/signcerts/User2@org1.example.com-cert.pem');
-            certificate = fs.readFileSync(certificateFile, 'utf8');
-            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User2@org1.example.com/msp/keystore/key.pem');
-            privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+            identityIndex++;
         } else {
             certificate = [
                 '----- BEGIN CERTIFICATE -----',
@@ -255,111 +101,183 @@ describe('Identity system tests', function() {
             ].join('\n').concat('\n');
             privateKey = 'not used';
         }
-        return client.bindIdentity(participant, certificate)
-            .then(() => {
-                const admin = new AdminConnection();
-                if (TestUtil.isHyperledgerFabricV1()) {
-                    return admin.importIdentity('composer-systests-org1', identity, certificate, privateKey);
-                } else {
-                    return admin.importIdentity('composer-systests', identity, certificate, privateKey);
-                }
-            })
-            .then(() => {
-                return TestUtil.getClient('systest-identities', identity, 'not used');
-            })
-            .then((result) => {
-                client = result;
-                let factory = client.getBusinessNetwork().getFactory();
-                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
-                return client.submitTransaction(transaction);
-            });
+        return { certificate, privateKey };
+    }
+
+    it('should issue an identity and make the participant available for a ping request', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const result = await client.ping();
+        result.participant.should.equal(participant.getFullyQualifiedIdentifier());
     });
 
-    it('should throw an exception for a transaction processor function using a revoked identity', () => {
-        let identityName = uuid.v4();
-        return client.issueIdentity(participant, identityName)
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                client = result;
-                return client.getIdentityRegistry();
-            })
-            .then((identityRegistry) => {
-                return identityRegistry.getAll();
-            })
-            .then((identities) => {
-                const identity = identities.find((identity) => {
-                    return identity.name === identityName;
-                });
-                return client.revokeIdentity(identity);
-            })
-            .then(() => {
-                let factory = client.getBusinessNetwork().getFactory();
-                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
-                return client.submitTransaction(transaction);
-            })
+    it('should issue an identity and make the identity available for a ping request', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const result = await client.ping();
+        const identityRegistry = await client.getIdentityRegistry();
+        const identities = await identityRegistry.getAll();
+        const matchingIdentity = identities.find((identity) => {
+            return identity.name === identityName;
+        });
+        result.identity.should.equal(matchingIdentity.getFullyQualifiedIdentifier());
+    });
+
+    it('should issue an identity that can issue another identity and make it available for a ping request', async () => {
+        const identityName = uuid.v4();
+        const identityName2 = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName, {issuer: true});
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const result = await client.ping();
+        result.participant.should.equal(participant.getFullyQualifiedIdentifier());
+        const factory = client.getBusinessNetwork().getFactory();
+        const participant2 = factory.newResource('systest.identities', 'SampleParticipant', 'frank@uk.ibm.com');
+        participant2.firstName = 'Frank';
+        participant2.lastName = 'Frankly';
+        const participantRegistry = await client.getParticipantRegistry('systest.identities.SampleParticipant');
+        await participantRegistry.add(participant2);
+        const identity2 = await client.issueIdentity(participant2, identityName2, {issuer: true});
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity2.userID, identity2.userSecret);
+        const result2 = await client.ping();
+        result2.participant.should.equal(participant2.getFullyQualifiedIdentifier());
+    });
+
+    it('should bind an identity and make it available for a ping request', async function () {
+        const identityName = uuid.v4();
+        const cardName = `${identityName}@systest-identities`;
+        const { certificate, privateKey } = getNextIdentity();
+        await client.bindIdentity(participant, certificate);
+        const card = new IdCard({ businessNetwork: 'systest-identities', userName: identityName }, TestUtil.getCurrentConnectionProfile());
+        card.setCredentials({ certificate, privateKey });
+        const admin = new AdminConnection({ cardStore });
+        await admin.importCard(cardName, card);
+        client = new BusinessNetworkConnection({ cardStore });
+        await client.connect(cardName);
+        const result = await client.ping();
+        result.participant.should.equal(participant.getFullyQualifiedIdentifier());
+    });
+
+    it('should throw an exception for a ping request using a revoked identity', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const identityRegistry = await client.getIdentityRegistry();
+        const identities = await identityRegistry.getAll();
+        const matchingIdentity = identities.find((identity) => {
+            return identity.name === identityName;
+        });
+        await client.revokeIdentity(matchingIdentity);
+        await client.ping()
             .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', has been revoked/);
     });
 
-    it('should throw an exception for a transaction processor function using a identity that is mapped to a non-existent participant', () => {
-        let identity = uuid.v4();
-        return client.issueIdentity(participant, identity)
-            .then((identity) => {
-                return client.getParticipantRegistry('systest.identities.SampleParticipant')
-                    .then((participantRegistry) => {
-                        return participantRegistry.remove(participant);
-                    })
-                    .then(() => {
-                        return TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
-                    });
-            })
-            .then((result) => {
-                client = result;
-                let factory = client.getBusinessNetwork().getFactory();
-                let transaction = factory.newTransaction('systest.identities', 'SampleTransaction');
-                return client.submitTransaction(transaction);
-            })
+    it('should throw an exception for a ping request using a identity that is mapped to a non-existent participant', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        const participantRegistry = await client.getParticipantRegistry('systest.identities.SampleParticipant');
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        await participantRegistry.remove(participant);
+        await client.ping()
             .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', is bound to a participant \'resource:systest.identities.SampleParticipant#bob@uk.ibm.com\' that does not exist/);
     });
 
-    xit('should export credentials for previously imported identity', function () {
-        let profileName;
-        let certificate;
-        let privateKey;
-        if (TestUtil.isHyperledgerFabricV1()) {
-            profileName = 'composer-systests-org1';
-            const certificateFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem');
-            certificate = fs.readFileSync(certificateFile, 'utf8').replace(/\r/g, '');
-            const privateKeyFile = path.resolve(__dirname, '../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/key.pem');
-            privateKey = fs.readFileSync(privateKeyFile, 'utf8').replace(/\r/g, '');
-        } else {
-            profileName = 'composer-systests';
-            certificate =
-                '----- BEGIN CERTIFICATE -----\n' +
-                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64') + '\n' +
-                '----- END CERTIFICATE -----\n';
-            privateKey = 'FAKE_PRIVATE_KEY';
-        }
+    it('should issue an identity and make the participant available for transaction processor functions', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentParticipant');
+        await client.submitTransaction(transaction);
+    });
 
-        const identity = uuid.v4();
+    it('should issue an identity and make the identity available for transaction processor functions', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentIdentity');
+        await client.submitTransaction(transaction);
+    });
 
-        const adminConnection = new AdminConnection({cardStore});
+    it('should bind an identity and make the participant available for transaction processor functions', async function () {
+        const identityName = uuid.v4();
+        const cardName = `${identityName}@systest-identities`;
+        const { certificate, privateKey } = getNextIdentity();
+        await client.bindIdentity(participant, certificate);
+        const card = new IdCard({ businessNetwork: 'systest-identities', userName: identityName }, TestUtil.getCurrentConnectionProfile());
+        card.setCredentials({ certificate, privateKey });
+        const admin = new AdminConnection({ cardStore });
+        await admin.importCard(cardName, card);
+        client = new BusinessNetworkConnection({ cardStore });
+        await client.connect(cardName);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentParticipant');
+        await client.submitTransaction(transaction);
+    });
 
-        return adminConnection.importIdentity(profileName, identity, certificate, privateKey)
-            .then(() => {
-                return adminConnection.exportIdentity(profileName, identity);
-            })
-            .then((credentials) => {
-                // Remove any carriage returns that may have been added by fabric
-                credentials.certificate = credentials.certificate.replace(/\r/g, '');
-                credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
+    it('should bind an identity and make the identity available for transaction processor functions', async function () {
+        const identityName = uuid.v4();
+        const cardName = `${identityName}@systest-identities`;
+        const { certificate, privateKey } = getNextIdentity();
+        await client.bindIdentity(participant, certificate);
+        const card = new IdCard({ businessNetwork: 'systest-identities', userName: identityName }, TestUtil.getCurrentConnectionProfile());
+        card.setCredentials({ certificate, privateKey });
+        const admin = new AdminConnection({ cardStore });
+        await admin.importCard(cardName, card);
+        client = new BusinessNetworkConnection({ cardStore });
+        await client.connect(cardName);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentIdentity');
+        await client.submitTransaction(transaction);
+    });
 
-                credentials.should.deep.equal({
-                    certificate: certificate,
-                    privateKey: privateKey
-                });
-            });
+    it('should throw an exception for a transaction processor function using a revoked identity', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        const identityRegistry = await client.getIdentityRegistry();
+        const identities = await identityRegistry.getAll();
+        const matchingIdentity = identities.find((identity) => {
+            return identity.name === identityName;
+        });
+        await client.revokeIdentity(matchingIdentity);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentParticipant');
+        await client.submitTransaction(transaction)
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', has been revoked/);
+    });
+
+    it('should throw an exception for a transaction processor function using a identity that is mapped to a non-existent participant', async () => {
+        const identityName = uuid.v4();
+        const identity = await client.issueIdentity(participant, identityName);
+        const participantRegistry = await client.getParticipantRegistry('systest.identities.SampleParticipant');
+        client = await TestUtil.getClient(cardStore,'systest-identities', identity.userID, identity.userSecret);
+        await participantRegistry.remove(participant);
+        const factory = client.getBusinessNetwork().getFactory();
+        const transaction = factory.newTransaction('systest.identities', 'TestGetCurrentParticipant');
+        await client.submitTransaction(transaction)
+            .should.be.rejectedWith(/The current identity, with the name \'.+?\' and the identifier \'.+?\', is bound to a participant \'resource:systest.identities.SampleParticipant#bob@uk.ibm.com\' that does not exist/);
+    });
+
+    it('should export credentials for previously imported identity', async () => {
+        const identityName = uuid.v4();
+        const cardName = `${identityName}@systest-identities`;
+        const { certificate, privateKey } = getNextIdentity();
+        const card = new IdCard({ businessNetwork: 'systest-identities', userName: identityName }, TestUtil.getCurrentConnectionProfile());
+        card.setCredentials({ certificate, privateKey });
+        const admin = new AdminConnection({ cardStore });
+        await admin.importCard(cardName, card);
+        const card2 = await admin.exportCard(cardName);
+        // Remove any carriage returns that may have been added by fabric
+        const credentials = card2.getCredentials();
+        credentials.certificate = credentials.certificate.replace(/\r/g, '');
+        credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
+        credentials.should.deep.equal({
+            certificate: certificate,
+            privateKey: privateKey
+        });
     });
 
 });

@@ -36,18 +36,24 @@ module.exports = function () {
         response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
         checkOutput(response);
         response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
-        checkOutput(response);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
         response = await this.composer.runCLI('composer card import --file networkadmin.card');
         checkOutput(response);
         await this.composer.runBackground('REST_SVR', `composer-rest-server --card ${adminId} -n never -w true`, /Browse your REST API/);
     });
 
-    this.When(/^I make a (GET|HEAD|DELETE) request to (.+?)$/, function (method, path) {
+    this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, path) {
         return this.composer.request(method, path);
     });
 
     this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, path, data) {
         return this.composer.request(method, path, data);
+    });
+
+    this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (path, filter) {
+        return this.composer.request('GET', path + '?filter=' + encodeURIComponent(filter));
     });
 
     this.When('I shutdown the REST server', function() {

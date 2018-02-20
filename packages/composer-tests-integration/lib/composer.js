@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const IdCard = require('composer-common').IdCard;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -585,6 +586,63 @@ class Composer {
         .catch((err) => {
             return Promise.reject(err);
         });
+    }
+
+    /**
+     * Convert a card with a secret to use HSM to manage it's private keys
+     * @param {string} cardFile the card
+     */
+    async convertToHSM(cardFile) {
+
+        try {
+            const adminConnection = new AdminConnection();
+            let cardBuffer = fs.readFileSync(cardFile);
+            let curCard = await IdCard.fromArchive(cardBuffer);
+            let cardName = BusinessNetworkCardStore.getDefaultCardName(curCard);
+            let ccp = curCard.getConnectionProfile();
+            ccp.client['x-hsm'] = {
+                'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                'slot': 0,
+                'pin': 98765432
+            };
+
+            let metadata = {
+                businessNetwork: curCard.getBusinessNetworkName(),
+                userName: curCard.getUserName(),
+                enrollmentSecret: curCard.getEnrollmentCredentials().secret
+            };
+            let newCard = new IdCard(metadata, ccp);
+
+            cardBuffer = await newCard.toArchive({ type: 'nodebuffer' });
+
+            let dir = path.dirname(cardFile);
+            let fn = path.basename(cardFile);
+            let nameEnd = fn.indexOf('@');
+            let newCardFile = path.join(dir, fn.substring(0, nameEnd) + '_hsm' + fn.substring(nameEnd, fn.length));
+
+            fs.writeFileSync(newCardFile, cardBuffer);
+
+            // ensure it doesn't exist.
+            const exists = await adminConnection.hasCard(cardName);
+            if (exists) {
+                await adminConnection.deleteCard(cardName);
+            }
+        } catch(err) {
+            console.log(`failed to convert to HSM and Import. Error was ${err}`);
+            console.log(err);
+        }
+    }
+
+    /**
+     * extract a secret from a card and store it in the alias
+     * @param {*} alias the alias name
+     * @param {*} cardFile the card file
+     */
+    async extractSecret(alias, cardFile) {
+        let cardBuffer = fs.readFileSync(cardFile);
+        let curCard = await IdCard.fromArchive(cardBuffer);
+
+        this.aliasMap.set(alias, curCard.getEnrollmentCredentials().secret);
     }
 }
 

@@ -65,8 +65,9 @@ await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '
 
 
 ## {{site.data.conrefs.hlf_full}} Endorsement Policies
+You can provide {{site.data.conrefs.hlf_full}} endorsement policies to both network start and network upgrade requests. The examples that follow show `start` but the approach is identical to `upgrade` as well.
 
-### composer network start/deploy CLI
+### composer network start/upgrade CLI
 
 {{site.data.conrefs.hlf_full}} endorsement policies can be sent using the `-o` and `-O` options in several ways.
 
@@ -97,7 +98,7 @@ When a file path is specified, the endorsement policy file should follow this fo
 				  "someOtherOption": "A Value"
 				}
 
-For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} Node.js SDK documentation](https://fabric-sdk-node.github.io/global.html#Policy).
+For more information on writing {{site.data.conrefs.hlf_full}} endorsement policies, see the [{{site.data.conrefs.hlf_full}} Node.js SDK documentation](https://fabric-sdk-node.github.io/global.html#ChaincodeInstantiateUpgradeRequest) which provides examples of endorsement policies.
 
 ### Admin API
 

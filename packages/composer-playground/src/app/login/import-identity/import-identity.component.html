@@ -38,7 +38,7 @@
         <button type="button" class="secondary" (click)="activeDrawer.dismiss();">
             <span>Cancel</span>
         </button>
-        <button type="button" class="primary" (click)="import();" [disabled]="!identityCard || !cardNameValid">
+        <button id="" type="button" id="importBtn" class="primary" (click)="import();" [disabled]="!identityCard || !cardNameValid">
             <span *ngIf="!importInProgress">Import</span>
             <div *ngIf="importInProgress" class="ibm-spinner-indeterminate small loop">
                 <div class="loader">

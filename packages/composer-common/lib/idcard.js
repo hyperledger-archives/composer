@@ -434,7 +434,7 @@ class IdCard {
             return Promise.all(credentialPromises);
         }).catch(cause => {
             LOG.error(method, cause);
-            throw newErrorWithCause('Failed to save card to directory: ' + cardDirectory, cause);
+            throw newErrorWithCause(`Failed to save card to directory: ${cardDirectory}. Reason: ${cause.message}`, cause);
         });
     }
 

@@ -109,6 +109,31 @@ describe('composer identity request CLI unit tests', () => {
             });
     });
 
+    it('should request an identity which is HSM managed', () => {
+        let argv = {
+            card : 'cardName',
+            user : USER_ID,
+            enrollSecret: USER_SECRET,
+        };
+        let fsStub = sandbox.stub(fs, 'writeFileSync');
+        sandbox.stub(os, 'homedir').returns('/x');
+        mockAdminConnection.requestIdentity.resolves({
+            certificate: 'a',
+            rootCertificate: 'c',
+            caName: 'caName',
+            enrollId : USER_ID
+        });
+        return Request.handler(argv)
+            .then(() => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.requestIdentity);
+                sinon.assert.calledWith(mockAdminConnection.requestIdentity, 'cardName', USER_ID, USER_SECRET);
+                sinon.assert.calledTwice(fsStub);
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/SuccessKid-pub.pem', 'a');
+                sinon.assert.calledWith(fsStub, '/x/.identityCredentials/caName-root.pem', 'c');
+            });
+    });
+
     it('should fail gracefully if requestIdentity fails', () => {
         let argv = {
             cardName : 'cardName',

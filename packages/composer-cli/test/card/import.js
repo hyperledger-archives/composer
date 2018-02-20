@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const Validate = require('../../lib/cmds/card/lib/validate.js');
 const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
 const ImportCmd = require('../../lib/cmds/card/importCommand.js');
@@ -51,6 +52,7 @@ describe('composer card import CLI', function() {
     });
 
     it('should import valid card file with default name', function() {
+        sandbox.stub(Validate, 'validateProfile').returns;
         sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const args = {
             file: cardFileName
@@ -64,6 +66,7 @@ describe('composer card import CLI', function() {
     });
 
     it('should import valid card file with specified name', function() {
+        sandbox.stub(Validate, 'validateProfile').returns;
         sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const cardName = 'CONGA_CARD';
         const args = {
@@ -96,6 +99,16 @@ describe('composer card import CLI', function() {
         };
         adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(true);
         return ImportCmd.handler(args).should.be.rejectedWith(/already exists/);
+    });
+
+    it('should reject card containing invalid connection profile', function() {
+        sandbox.stub(Validate, 'validateProfile').returns([{'error':'error'}]);
+        sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
+        const args = {
+            file: cardFileName
+        };
+        adminConnectionStub.hasCard.resolves(false);
+        return ImportCmd.handler(args).should.be.rejectedWith(/Errors found in the connection profile in the card/);
     });
 
 });

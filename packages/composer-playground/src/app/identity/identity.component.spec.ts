@@ -15,8 +15,9 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { Component, Input, Output, Directive } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Component, Input, Directive } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject, async } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -25,8 +26,10 @@ import { IdentityComponent } from './identity.component';
 import { AlertService } from '../basic-modals/alert.service';
 import { ClientService } from '../services/client.service';
 import { IdentityCardService } from '../services/identity-card.service';
+import { AdminService } from '../services/admin.service';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdCard } from 'composer-common';
+import { LocalStorageService } from 'angular-2-local-storage';
 
 import * as fileSaver from 'file-saver';
 
@@ -59,42 +62,49 @@ describe(`IdentityComponent`, () => {
     let fixture: ComponentFixture<IdentityComponent>;
 
     let mockModal;
-    let mockAlertService;
-    let mockIdentityCardService;
+
     let mockClientService;
     let mockBusinessNetworkConnection;
-    let mockCard;
-    let mockIDCards: Map<string, IdCard>;
+    let mockAdminService;
+    let mockLocalStorage;
+
+    let currentCardRef;
+    let currentIdCard;
+    let cardOne;
 
     beforeEach(() => {
-
-        mockCard = sinon.createStubInstance(IdCard);
-        mockCard.getBusinessNetworkName.returns('myNetwork');
-        mockCard.getConnectionProfile.returns({name: 'myProfile'});
-        mockCard.getUserName.returns('myName');
-
-        mockIDCards = new Map<string, IdCard>();
-        mockIDCards.set('1234', mockCard);
-
         mockModal = sinon.createStubInstance(NgbModal);
-        mockAlertService = sinon.createStubInstance(AlertService);
-        mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
+        mockAdminService = sinon.createStubInstance(AdminService);
+        mockLocalStorage = sinon.createStubInstance(LocalStorageService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
 
-        mockAlertService.errorStatus$ = {next: sinon.stub()};
-        mockAlertService.successStatus$ = {next: sinon.stub()};
-        mockAlertService.busyStatus$ = {next: sinon.stub()};
+        mockAdminService.importCard.resolves();
+        mockAdminService.deleteCard.resolves();
 
-        mockClientService.ensureConnected.returns(Promise.resolve(true));
-        mockBusinessNetworkConnection.getIdentityRegistry.returns(Promise.resolve({
-            getAll: sinon.stub().returns([{name: 'idOne'}, {name: 'idTwo'}])
-        }));
-        mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
-
-        mockClientService.getBusinessNetwork.returns({
-            getName: sinon.stub().returns('name')
+        mockClientService.ensureConnected.resolves(true);
+        mockClientService.revokeIdentity.resolves();
+        mockBusinessNetworkConnection.getIdentityRegistry.resolves({
+            getAll: sinon.stub().returns([{
+                name: 'bob', participant: {
+                    $namespace: 'bob-namespace',
+                    $type: 'bob-type'
+                }
+            }, {
+                name: 'fred', participant: {
+                    $namespace: 'fred-namespace',
+                    $type: 'fred-type'
+                }
+            }, {
+                name: 'jim', participant: {
+                    $namespace: 'jim-namespace',
+                    $type: 'jim-type'
+                }
+            }])
         });
+
+        mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+        mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('penguin-network')});
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
@@ -104,10 +114,11 @@ describe(`IdentityComponent`, () => {
                 MockToolTipDirective
             ],
             providers: [
+                AlertService, IdentityCardService,
                 {provide: NgbModal, useValue: mockModal},
-                {provide: AlertService, useValue: mockAlertService},
+                {provide: AdminService, useValue: mockAdminService},
+                {provide: LocalStorageService, useValue: mockLocalStorage},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: IdentityCardService, useValue: mockIdentityCardService},
             ]
         });
 
@@ -116,654 +127,607 @@ describe(`IdentityComponent`, () => {
         component = fixture.componentInstance;
     });
 
+    beforeEach(fakeAsync(inject([IdentityCardService], (identityCardService: IdentityCardService) => {
+        currentIdCard = new IdCard({userName: 'bob', businessNetwork: 'penguin-network'}, {
+            name: 'mycp',
+            type: 'hlfv1'
+        });
+
+        cardOne = new IdCard({userName: 'fred', businessNetwork: 'penguin-network'}, {
+            name: 'mycp',
+            type: 'hlfv1'
+        });
+
+        identityCardService.addIdentityCard(currentIdCard, null).then((cardRef) => {
+            currentCardRef = cardRef;
+            return identityCardService.setCurrentIdentityCard(cardRef);
+        }).then(() => {
+            return identityCardService.addIdentityCard(cardOne, 'cardOne');
+        });
+
+        tick();
+
+    })));
+
     describe('ngOnInit', () => {
         it('should create the component', () => {
             component.should.be.ok;
         });
 
-        it('should load the component', fakeAsync(() => {
-            let loadMock = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
-
-            component.ngOnInit();
+        it('should load the identities', fakeAsync(() => {
+            fixture.detectChanges();
 
             tick();
 
-            loadMock.should.have.been.called;
-        }));
-    });
+            component['currentIdentity'].should.equal(currentCardRef);
+            component['identityCards'].size.should.equal(2);
+            component['identityCards'].get(currentCardRef).should.equal(currentIdCard);
+            component['identityCards'].get('cardOne').should.equal(cardOne);
+            component['cardRefs'].length.should.equal(2);
+            component['cardRefs'][0].should.equal(currentCardRef);
+            component['cardRefs'][1].should.equal('cardOne');
 
-    describe('load all identities', () => {
-        it('should load the identities', fakeAsync(() => {
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('myNetwork')});
-            let myIdentityMock = sinon.stub(component, 'loadMyIdentities');
+            component['businessNetworkName'].should.equal('penguin-network');
 
-            mockIdentityCardService.getCurrentIdentityCard.returns({
-                getConnectionProfile: sinon.stub().returns({name: 'myProfile'})
+            component['allIdentities'].length.should.equal(3);
+
+            component['allIdentities'][0].should.deep.equal({
+                name: 'bob',
+                participant: {
+                    $namespace: 'bob-namespace',
+                    $type: 'bob-type'
+                },
+                ref: currentCardRef
             });
 
-            mockIdentityCardService.getQualifiedProfileName.returns('qpn');
-            mockIdentityCardService.getCardRefFromIdentity.onFirstCall().returns('1234');
-            mockIdentityCardService.getCardRefFromIdentity.onSecondCall().returns('4321');
+            component['allIdentities'][1].should.deep.equal({
+                name: 'fred',
+                participant: {
+                    $namespace: 'fred-namespace',
+                    $type: 'fred-type'
+                },
+                ref: 'cardOne'
+            });
+        }));
 
-            component.loadAllIdentities();
+        it('should give an alert if there is an error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+
+            mockBusinessNetworkConnection.getIdentityRegistry.rejects('some error');
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            fixture.detectChanges();
 
             tick();
 
-            component['businessNetworkName'].should.equal('myNetwork');
-            myIdentityMock.should.have.been.called;
-
-            mockIdentityCardService.getCurrentIdentityCard.should.have.been.called;
-            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name: 'myProfile'});
-            mockIdentityCardService.getCardRefFromIdentity.should.have.been.calledTwice;
-            mockIdentityCardService.getCardRefFromIdentity.firstCall.should.have.been.calledWith('idOne', 'myNetwork', 'qpn');
-            mockIdentityCardService.getCardRefFromIdentity.secondCall.should.have.been.calledWith('idTwo', 'myNetwork', 'qpn');
-            component['allIdentities'].should.deep.equal([{name: 'idOne', ref: '1234'}, {name: 'idTwo', ref: '4321'}]);
-        }));
-
-        it('should give an alert if there is an error', fakeAsync(() => {
-
-            mockBusinessNetworkConnection.getIdentityRegistry.returns(Promise.reject('some error'));
-            let myIdentityMock = sinon.stub(component, 'loadMyIdentities');
-
-            component.loadAllIdentities();
-
-            tick();
-
-            myIdentityMock.should.have.been.called;
-            mockBusinessNetworkConnection.getIdentityRegistry.should.have.been.called;
-
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
-    });
-
-    describe('loadMyIdentities', () => {
-        it('should load identities for a business network', () => {
-            mockIdentityCardService.currentCard = '1234';
-
-            mockIdentityCardService.getCurrentIdentityCard.returns(mockCard);
-            mockIdentityCardService.getQualifiedProfileName.returns('web-profile');
-
-            mockIdentityCardService.getAllCardsForBusinessNetwork.returns(mockIDCards);
-
-            component.loadMyIdentities();
-
-            component['currentIdentity'].should.equal('1234');
-            mockIdentityCardService.getCurrentIdentityCard.should.have.been.calledTwice;
-
-            mockCard.getBusinessNetworkName.should.have.been.called;
-            mockCard.getConnectionProfile.should.have.been.called;
-
-            mockIdentityCardService.getQualifiedProfileName.should.have.been.calledWith({name: 'myProfile'});
-
-            mockIdentityCardService.getAllCardsForBusinessNetwork.should.have.been.calledWith('myNetwork', 'web-profile');
-            component['identityCards'].should.deep.equal(mockIDCards);
-
-            component['cardRefs'].should.deep.equal(['1234']);
-        });
+            alertSpy.should.have.been.called;
+        })));
     });
 
     describe('issueNewId', () => {
-        let mockGetConnectionProfile;
-        let mockLoadAllIdentities;
-        let mockAddIdentityToWallet;
-        let mockShowNewId;
-
-        beforeEach(() => {
-            mockModal.open.reset();
-
-            mockGetConnectionProfile = sinon.stub();
-
-            mockIdentityCardService.getCurrentIdentityCard.returns({
-                getConnectionProfile: mockGetConnectionProfile
-            });
-
-            mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-            mockAddIdentityToWallet = sinon.stub(component, 'addIdentityToWallet');
-            mockShowNewId = sinon.stub(component, 'showNewId');
-        });
-
-        it('should show the new id', fakeAsync(() => {
-            mockGetConnectionProfile.returns({
-                'x-type': 'hlfv1'
-            });
-
-            mockModal.open.returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            component.issueNewId();
-
-            tick();
-
-            mockAddIdentityToWallet.should.not.have.been.called;
-            mockShowNewId.should.have.been.called;
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should add id to wallet when using the web profile', fakeAsync(() => {
-            mockGetConnectionProfile.returns({
-                'x-type': 'web'
-            });
-
-            mockModal.open.returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            component.issueNewId();
-
-            tick();
-
-            mockAddIdentityToWallet.should.have.been.called;
-            mockShowNewId.should.not.have.been.called;
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should handle error in id creation', fakeAsync(() => {
-            mockModal.open.returns({
-                result: Promise.reject('some error')
-            });
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockModal.open.should.have.been.calledOnce;
-
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should handle error showing new identity', fakeAsync(() => {
-            mockGetConnectionProfile.returns({
-                'x-type': 'hlfv1'
-            });
-
-            mockModal.open.returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            mockShowNewId.rejects(new Error('show new id error'));
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockModal.open.should.have.been.calledOnce;
-
-            let expectedError = sinon.match(sinon.match.instanceOf(Error).and(sinon.match.has('message', 'show new id error')));
-            mockAlertService.errorStatus$.next.should.have.been.calledWith(expectedError);
-
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should handle error adding identity to wallet', fakeAsync(() => {
-            mockGetConnectionProfile.returns({
-                'x-type': 'web'
-            });
-
-            mockModal.open.returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            mockAddIdentityToWallet.rejects(new Error('add identity to wallet error'));
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockModal.open.should.have.been.calledOnce;
-
-            let expectedError = sinon.match(sinon.match.instanceOf(Error).and(sinon.match.has('message', 'add identity to wallet error')));
-            mockAlertService.errorStatus$.next.should.have.been.calledWith(expectedError);
-
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should handle error reloading identities', fakeAsync(() => {
-            mockModal.open.returns({
-                result: Promise.resolve({userID: 'myId', userSecret: 'mySecret'})
-            });
-
-            mockLoadAllIdentities.returns(Promise.reject('some error'));
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockModal.open.should.have.been.calledOnce;
-
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should handle escape being pressed', fakeAsync(() => {
-            mockModal.open.returns({
-                result: Promise.reject(1)
-            });
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockModal.open.should.have.been.calledOnce;
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            mockLoadAllIdentities.should.have.been.called;
-        }));
-
-        it('should not issue identity if cancelled', fakeAsync(() => {
-            mockModal.open.returns({
-                result: Promise.resolve()
-            });
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-
-            component.issueNewId();
-
-            tick();
-
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-            mockLoadAllIdentities.should.have.been.called;
-
-        }));
-    });
-
-    describe('showNewId', () => {
-        let mockExportIdentity;
-
-        beforeEach(() => {
-            mockModal.open.reset();
-            mockExportIdentity = sinon.stub(component, 'exportIdentity');
-        });
-
-        it('should add card to wallet when add option selected', fakeAsync(() => {
-            mockModal.open.returns({
-                componentInstance: {},
-                result: Promise.resolve({cardRef: '1234', choice: 'add'})
-            });
-
-            mockIdentityCardService.getIdentityCard.returns(mockCard);
-
-            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
-
-            tick();
-
-            mockModal.open.should.have.been.called;
-            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('1234');
-            mockAlertService.successStatus$.next.should.have.been.calledWith({
-                title: 'ID Card added to wallet',
-                text: 'The ID card myName was successfully added to your wallet',
-                icon: '#icon-role_24'
-            });
-
-            mockExportIdentity.should.not.have.been.called;
-        }));
-
-        it('should export card when export option selected', fakeAsync(() => {
-            mockModal.open.returns({
-                componentInstance: {},
-                result: Promise.resolve({card: 'myCard', choice: 'export'})
-            });
-
-            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
-
-            tick();
-
-            mockModal.open.should.have.been.called;
-            mockAlertService.successStatus$.next.should.not.have.been.called;
-            mockExportIdentity.should.have.been.calledWith('myCard');
-        }));
-
-        it('should do nothing for other options', fakeAsync(() => {
-            mockModal.open.returns({
-                componentInstance: {},
-                result: Promise.resolve({card: 'myCard', choice: 'other'})
-            });
-
-            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
-
-            tick();
-
-            mockModal.open.should.have.been.called;
-            mockAlertService.successStatus$.next.should.not.have.been.called;
-            mockExportIdentity.should.not.have.been.called;
-        }));
-
-        it('should do nothing when closed', fakeAsync(() => {
-            mockModal.open.returns({
-                componentInstance: {},
-                result: Promise.resolve()
-            });
-
-            component.showNewId({userID: 'myId', userSecret: 'mySecret'});
-
-            tick();
-
-            mockModal.open.should.have.been.called;
-            mockAlertService.successStatus$.next.should.not.have.been.called;
-            mockExportIdentity.should.not.have.been.called;
-        }));
-    });
-
-    describe('addIdentityToWallet', () => {
-        it('should add identity to wallet', fakeAsync(() => {
-            mockIdentityCardService.getCurrentIdentityCard.returns(mockCard);
-            mockIdentityCardService.createIdentityCard.resolves('cardref');
-            mockIdentityCardService.getIdentityCard.returns(mockCard);
-
-            component.addIdentityToWallet({userID: 'myName', userSecret: 'mySecret'});
-
-            tick();
-
-            mockIdentityCardService.createIdentityCard.should.have.been.calledWith('myName', null, 'myNetwork', 'mySecret', {name: 'myProfile'});
-            mockIdentityCardService.getIdentityCard.should.have.been.calledWith('cardref');
-            mockAlertService.successStatus$.next.should.have.been.calledWith({
-                title: 'ID Card added to wallet',
-                text: 'The ID card myName was successfully added to your wallet',
-                icon: '#icon-role_24'
-            });
-        }));
-    });
-
-    describe('exportIdentity', () => {
         let sandbox = sinon.sandbox.create();
         let saveAsStub;
 
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
+            mockModal.open.reset();
+
             saveAsStub = sandbox.stub(fileSaver, 'saveAs');
-        });
+        }));
 
         afterEach(() => {
             sandbox.restore();
         });
 
-        it('should export idcard', fakeAsync(() => {
-            mockCard.toArchive.returns(Promise.resolve('card data'));
+        it('should show the new id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            mockModal.open.onFirstCall().returns({
+                result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
+            });
 
-            component.exportIdentity(mockCard);
+            mockModal.open.onSecondCall().returns({
+                componentInstance: {},
+                result: Promise.resolve({cardRef: 'cardOne', choice: 'add'})
+            });
+
+            let loadAllSpy = sinon.spy(component, 'loadAllIdentities');
+
+            let alertSpy = sinon.spy(alertService.successStatus$, 'next');
+            alertService.successStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'ID Card added to wallet',
+                        text: 'The ID card fred was successfully added to your wallet',
+                        icon: '#icon-role_24'
+                    });
+                }
+            });
+
+            fixture.detectChanges();
+            tick();
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
 
             tick();
 
+            alertSpy.should.have.been.called;
+            loadAllSpy.should.have.been.called;
+        })));
+
+        it('should export the new id', fakeAsync(() => {
+            // TODO: make this work with the real toArchive - can't get the promise to resolve properly
             let expectedFile = new Blob(['card data'], {type: 'application/octet-stream'});
-            saveAsStub.should.have.been.calledWith(expectedFile, 'myName.card');
+            sinon.stub(cardOne, 'toArchive').resolves(expectedFile);
+            mockModal.open.onFirstCall().returns({
+                result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
+            });
+
+            mockModal.open.onSecondCall().returns({
+                componentInstance: {},
+                result: Promise.resolve({card: cardOne, choice: 'export'})
+            });
+
+            let loadAllSpy = sinon.spy(component, 'loadAllIdentities');
+
+            fixture.detectChanges();
+            tick();
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
+
+            tick();
+
+            saveAsStub.should.have.been.calledWith(expectedFile, 'fred.card');
+            loadAllSpy.should.have.been.called;
         }));
+
+        it('should add id to wallet when using the web profile', fakeAsync(inject([IdentityCardService, AlertService], (identityCardService: IdentityCardService, alertService: AlertService) => {
+            let newCurrentIdCard = new IdCard({userName: 'penguinWeb', businessNetwork: 'igloo-network'}, {
+                'name': 'mycp',
+                'x-type': 'web'
+            });
+
+            identityCardService.addIdentityCard(newCurrentIdCard, 'webCard').then((cardRef) => {
+                currentCardRef = cardRef;
+                return identityCardService.setCurrentIdentityCard(cardRef);
+            });
+
+            tick();
+
+            mockModal.open.onFirstCall().returns({
+                result: Promise.resolve({userID: 'snowMan', userSecret: 'mySecret'})
+            });
+
+            let alertSpy = sinon.spy(alertService.successStatus$, 'next');
+            alertService.successStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'ID Card added to wallet',
+                        text: 'The ID card snowMan was successfully added to your wallet',
+                        icon: '#icon-role_24'
+                    });
+                }
+            });
+
+            fixture.detectChanges();
+            tick();
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
+
+            tick();
+
+            alertSpy.should.have.been.called;
+
+            component['identityCards'].size.should.equal(2);
+            component['identityCards'].get('snowMan@igloo-network').getUserName().should.equal('snowMan');
+        })));
+
+        it('should handle error with issuing id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            mockModal.open.onFirstCall().returns({
+                result: Promise.reject('some error')
+            });
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
+            });
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
+
+            tick();
+
+            alertSpy.should.have.been.called;
+        })));
+
+        it('should handle esc being pressed', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            mockModal.open.onFirstCall().returns({
+                result: Promise.reject(1)
+            });
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
+
+            tick();
+
+            alertSpy.should.not.have.been.called;
+        })));
+
+        it('should handle error with reloading', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            mockModal.open.onFirstCall().returns({
+                result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
+            });
+
+            mockModal.open.onSecondCall().returns({
+                componentInstance: {},
+                result: Promise.resolve({cardRef: 'cardOne', choice: 'add'})
+            });
+
+            let loadAllSpy = sinon.stub(component, 'loadAllIdentities').returns(Promise.reject('some error'));
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
+            });
+
+            let issuedIdElement = fixture.debugElement.query(By.css('.flex-container button.secondary'));
+            issuedIdElement.triggerEventHandler('click', null);
+
+            tick();
+
+            alertSpy.should.have.been.called;
+            loadAllSpy.should.have.been.called;
+        })));
     });
 
     describe('setCurrentIdentity', () => {
-        it('should set the current identity', fakeAsync(() => {
-            let loadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            mockClientService.ensureConnected.returns(Promise.resolve());
-
-            component.setCurrentIdentity('1234', false);
-
+        it('should set the current identity', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
             tick();
 
-            component['currentIdentity'].should.equal('1234');
-            mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('1234');
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
-            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
-            loadAllIdentities.should.have.been.called;
-        }));
+            let identityElements = fixture.debugElement.queryAll(By.css('.identity'));
+            let identityToChangeToElement = identityElements[1];
 
-        it('should do nothing if the new identity matches the current identity', fakeAsync(() => {
-            let loadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-            component['currentIdentity'] = '1234';
+            let alertSpy = sinon.spy(alertService.busyStatus$, 'next');
+            let loadAllIdentitiesSpy = sinon.spy(component, 'loadAllIdentities');
 
-            component.setCurrentIdentity('1234', false);
+            alertService.busyStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'Reconnecting...',
+                        text: 'Using identity cardOne'
+                    });
+                }
+            });
 
+            identityToChangeToElement.triggerEventHandler('dblclick', null);
+
+            fixture.detectChanges();
             tick();
 
-            component['currentIdentity'].should.equal('1234');
-            loadAllIdentities.should.not.have.been.called;
-            mockIdentityCardService.setCurrentIdentityCard.should.not.have.been.called;
-            mockClientService.ensureConnected.should.not.have.been.called;
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
-        }));
+            alertSpy.should.have.been.called;
+            loadAllIdentitiesSpy.should.have.been.called;
+        })));
 
-        it('should handle errors and revert to previous on error', fakeAsync(() => {
-            mockClientService.ensureConnected.returns(Promise.reject('Testing'));
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            component['currentIdentity'] = '12345';
-            component.setCurrentIdentity('1234', true);
-
-            let spy = sinon.spy(component, 'setCurrentIdentity');
-
+        it('should do nothing if the new identity matches the current identity', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
             tick();
 
-            mockAlertService.busyStatus$.next.callCount.should.deep.equal(4);
-            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
-            mockAlertService.errorStatus$.next.should.have.been.called;
-            spy.should.have.been.calledWith('12345');
-        }));
+            let identityElements = fixture.debugElement.queryAll(By.css('.identity'));
+            let identityToChangeToElement = identityElements[0];
 
-        it('should handle errors and not revert to previous on error', fakeAsync(() => {
-            mockClientService.ensureConnected.returns(Promise.reject('Testing'));
-            mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
-            component['currentIdentity'] = '12345';
-            component.setCurrentIdentity('1234', false);
+            let alertSpy = sinon.spy(alertService.busyStatus$, 'next');
+            let loadAllIdentitiesSpy = sinon.spy(component, 'loadAllIdentities');
 
-            let spy = sinon.spy(component, 'setCurrentIdentity');
+            identityToChangeToElement.triggerEventHandler('dblclick', null);
 
+            fixture.detectChanges();
             tick();
 
-            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
-            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
-            mockAlertService.errorStatus$.next.should.have.been.called;
-            spy.should.not.have.been.called;
-        }));
+            alertSpy.should.not.have.been.called;
+            loadAllIdentitiesSpy.should.not.have.been.called;
+        })));
+
+        it('should handle errors and revert to previous on error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            let identityElements = fixture.debugElement.queryAll(By.css('.identity'));
+            let identityToChangeToElement = identityElements[1];
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
+            });
+
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
+
+            identityToChangeToElement.triggerEventHandler('dblclick', null);
+
+            fixture.detectChanges();
+            tick();
+
+            alertSpy.should.have.been.called;
+        })));
     });
 
     describe('openRemoveModal', () => {
-        it('should open the delete-confirm modal', fakeAsync(() => {
-            component['identityCards'] = mockIDCards;
-            let loadMock = sinon.stub(component, 'loadAllIdentities');
+        it('should open the delete-confirm modal and handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.equal('some error');
+                }
+            });
+
+            let identityElement = fixture.debugElement.queryAll(By.css('.identity'))[1];
+            let removeButton = identityElement.queryAll(By.css('button'))[1];
+
+            removeButton.triggerEventHandler('click', {stopPropagation : sinon.stub()});
+
+            tick();
+
+            alertSpy.should.have.been.called;
+        })));
+
+        it('should open the delete-confirm modal and handle cancel', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(1)
+            });
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            let identityElement = fixture.debugElement.queryAll(By.css('.identity'))[1];
+            let removeButton = identityElement.queryAll(By.css('button'))[1];
+
+            removeButton.triggerEventHandler('click', {stopPropagation : sinon.stub()});
+
+            tick();
+
+            alertSpy.should.not.have.been.called;
+        })));
+
+        it('should open the delete-confirm modal and handle remove press', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve()
             });
 
-            component.openRemoveModal('1234');
-            tick();
-
-            mockModal.open.should.have.been.called;
-        }));
-
-        it('should open the delete-confirm modal and handle error', fakeAsync(() => {
-            component['identityCards'] = mockIDCards;
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject('some error')
+            let alertSpy = sinon.spy(alertService.successStatus$, 'next');
+            alertService.successStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'Removal Successful',
+                        text: 'fred was successfully removed.',
+                        icon: '#icon-bin_icon'
+                    });
+                }
             });
 
-            component.openRemoveModal('1234');
+            let identityElement = fixture.debugElement.queryAll(By.css('.identity'))[1];
+            let removeButton = identityElement.queryAll(By.css('button'))[1];
+
+            removeButton.triggerEventHandler('click', {stopPropagation: sinon.stub()});
+
             tick();
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.called;
-        }));
+            alertSpy.should.have.been.called;
+            should.not.exist(component['identityCards'].get('cardOne'));
+        })));
 
-        it('should open the delete-confirm modal and handle cancel', fakeAsync(() => {
-            component['identityCards'] = mockIDCards;
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject(null)
-            });
-
-            component.openRemoveModal('1234');
+        it('should handle error on trying to remove', fakeAsync(inject([AlertService, IdentityCardService], (alertService: AlertService, identityCardService: IdentityCardService) => {
+            fixture.detectChanges();
             tick();
 
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        }));
-
-        it('should open the delete-confirm modal and handle remove press', fakeAsync(() => {
-            component['identityCards'] = mockIDCards;
-            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
+            sinon.stub(identityCardService, 'deleteIdentityCard').returns(Promise.reject('some error'));
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
-                result: Promise.resolve(true)
+                result: Promise.resolve()
             });
 
-            component.openRemoveModal('1234');
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
+            });
+
+            let identityElement = fixture.debugElement.queryAll(By.css('.identity'))[1];
+            let removeButton = identityElement.queryAll(By.css('button'))[1];
+
+            removeButton.triggerEventHandler('click', {stopPropagation: sinon.stub()});
 
             tick();
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockRemoveIdentity.should.have.been.calledWith('1234');
-        }));
-    });
-    describe('removeIdentity', () => {
-      it('should remove the identity from the wallet', fakeAsync(() => {
-          component['identityCards'] = mockIDCards;
-          mockIdentityCardService.deleteIdentityCard.returns(Promise.resolve());
-
-          mockModal.open = sinon.stub().returns({
-              componentInstance: {},
-              result: Promise.resolve(true)
-          });
-
-          let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-          component.removeIdentity('1234');
-
-          tick();
-
-          mockAlertService.busyStatus$.next.should.have.been.called;
-          mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
-          mockLoadAllIdentities.should.have.been.called;
-
-          mockAlertService.busyStatus$.next.should.have.been.called;
-          mockAlertService.successStatus$.next.should.have.been.called;
-          mockAlertService.errorStatus$.next.should.not.have.been.called;
-      }));
-      it('should handle error when removing from wallet', fakeAsync(() => {
-            component['identityCards'] = mockIDCards;
-            mockIdentityCardService.deleteIdentityCard.returns(Promise.reject('some error'));
-
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve(true)
-            });
-
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
-
-            component.removeIdentity('1234');
-
-            tick();
-
-            mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('1234');
-            mockLoadAllIdentities.should.not.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
+            alertSpy.should.have.been.called;
+            should.exist(component['identityCards'].get('cardOne'));
+        })));
     });
 
     describe('revokeIdentity', () => {
-        it('should open the delete-confirm modal', fakeAsync(() => {
+        it('should open the delete-confirm modal and revoke the id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            fixture.detectChanges();
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.resolve()
             });
 
-            component.revokeIdentity({name: 'fred'});
+            let alertSpy = sinon.spy(alertService.successStatus$, 'next');
+            alertService.successStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'Revoke Successful',
+                        text: 'fred was successfully revoked.',
+                        icon: '#icon-bin_icon'
+                    });
+                }
+            });
+
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+
+            let revokeButton = revokeElement.query(By.css('button'));
+            revokeButton.triggerEventHandler('click', null);
+
             tick();
 
-            mockModal.open.should.have.been.called;
-        }));
+            alertSpy.should.have.been.called;
+            should.not.exist(component['identityCards'].get('cardOne'));
+        })));
 
-        it('should open the delete-confirm modal and handle error', fakeAsync(() => {
+        it('should open the delete-confirm modal and revoke the id and handle not being in wallet', fakeAsync(inject([AlertService, IdentityCardService], (alertService: AlertService, identityCardService: IdentityCardService) => {
+            fixture.detectChanges();
+            tick();
+
+            fixture.detectChanges();
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve()
+            });
+
+            let deleteSpy = sinon.spy(identityCardService, 'deleteIdentityCard');
+
+            let alertSpy = sinon.spy(alertService.successStatus$, 'next');
+            alertService.successStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal({
+                        title: 'Revoke Successful',
+                        text: 'jim was successfully revoked.',
+                        icon: '#icon-bin_icon'
+                    });
+                }
+            });
+
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
+
+            let revokeButton = revokeElement.query(By.css('button'));
+            revokeButton.triggerEventHandler('click', null);
+
+            tick();
+
+            alertSpy.should.have.been.called;
+            deleteSpy.should.not.have.been.called;
+        })));
+
+        it('should open the delete-confirm modal and handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            fixture.detectChanges();
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
                 result: Promise.reject('some error')
             });
 
-            component.revokeIdentity({name: 'fred'});
-            tick();
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.called;
-        }));
-
-        it('should open the delete-confirm modal and handle cancel', fakeAsync(() => {
-
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject(null)
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
             });
 
-            component.revokeIdentity({name: 'fred'});
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+
+            let revokeButton = revokeElement.query(By.css('button'));
+            revokeButton.triggerEventHandler('click', null);
+
             tick();
 
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        }));
+            alertSpy.should.have.been.called;
+            should.exist(component['identityCards'].get('cardOne'));
+        })));
 
-        it('should revoke the identity from the client service and then remove the identity from the wallet if in wallet', fakeAsync(() => {
-            component['cardRefs'] = ['1234'];
-            component['businessNetworkName'] = 'myNetwork';
-            component['myIdentities'] = ['fred'];
+        it('should open the delete-confirm modal and handle cancel', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
+
+            fixture.detectChanges();
+
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
-                result: Promise.resolve(true)
+                result: Promise.reject(1)
             });
 
-            mockClientService.revokeIdentity.returns(Promise.resolve());
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
 
-            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity').returns(Promise.resolve());
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities').returns(Promise.resolve());
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
 
-            component.revokeIdentity({name: 'fred', ref: '1234'});
+            let revokeButton = revokeElement.query(By.css('button'));
+            revokeButton.triggerEventHandler('click', null);
 
             tick();
 
-            mockClientService.revokeIdentity.should.have.been.called;
-            mockRemoveIdentity.should.have.been.calledWith('1234');
-            mockLoadAllIdentities.should.have.been.called;
+            alertSpy.should.not.have.been.called;
+            should.exist(component['identityCards'].get('cardOne'));
+        })));
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
+        it('should handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            fixture.detectChanges();
+            tick();
 
-        it('should handle error', fakeAsync(() => {
+            fixture.detectChanges();
+
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
-                result: Promise.resolve(true)
+                result: Promise.resolve()
+            });
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
             });
 
             mockClientService.revokeIdentity.returns(Promise.reject('some error'));
 
-            let mockRemoveIdentity = sinon.stub(component, 'removeIdentity');
-            let mockLoadAllIdentities = sinon.stub(component, 'loadAllIdentities');
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
 
-            component.revokeIdentity({name: 'fred'});
+            let revokeButton = revokeElement.query(By.css('button'));
+            revokeButton.triggerEventHandler('click', null);
 
             tick();
 
-            mockClientService.revokeIdentity.should.have.been.called;
-            mockRemoveIdentity.should.not.have.been.called;
-            mockLoadAllIdentities.should.not.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.called;
-        }));
+            alertSpy.should.have.been.called;
+        })));
     });
 });

@@ -35,7 +35,7 @@ let cardStore;
  * @param {string} id The module ID.
  * @return {*} The module.
  */
-function dynamicRequire (id) {
+function dynamicRequire(id) {
     return require(id);
 }
 
@@ -51,7 +51,7 @@ class TestUtil {
      * Check to see if running under a web browser.
      * @return {boolean} True if running under Karma, false if not.
      */
-    static isWeb () {
+    static isWeb() {
         return global.window && global.window.__karma__;
     }
 
@@ -59,7 +59,7 @@ class TestUtil {
      * Check to see if running in embedded mode.
      * @return {boolean} True if running in embedded mode, false if not.
      */
-    static isEmbedded () {
+    static isEmbedded() {
         return process.env.npm_lifecycle_event === 'systest:embedded' || process.env.FVTEST === 'embedded';
     }
 
@@ -67,7 +67,7 @@ class TestUtil {
      * Check to see if running in proxy mode.
      * @return {boolean} True if running in proxy mode, false if not.
      */
-    static isProxy () {
+    static isProxy() {
         return process.env.npm_lifecycle_event === 'systest:proxy';
     }
 
@@ -75,7 +75,7 @@ class TestUtil {
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
-    static isHyperledgerFabric () {
+    static isHyperledgerFabric() {
         return process.env.FVTEST && process.env.FVTEST.match('^hlf.*');
     }
 
@@ -83,7 +83,7 @@ class TestUtil {
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
-    static isHyperledgerFabricV1 () {
+    static isHyperledgerFabricV1() {
         return process.env.FVTEST && process.env.FVTEST.match('^hlfv1.*');
     }
 
@@ -94,7 +94,7 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when the specified
      * hostname to start listening on the specified port.
      */
-    static waitForPort (hostname, port) {
+    static waitForPort(hostname, port) {
         let waitTime = 30;
         if (process.env.COMPOSER_PORT_WAIT_SECS) {
             waitTime = parseInt(process.env.COMPOSER_PORT_WAIT_SECS);
@@ -132,7 +132,7 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved when the peer has
      * started listening on the specified port.
      */
-    static waitForPorts () {
+    static waitForPorts() {
         if (!TestUtil.isHyperledgerFabric()) {
             return Promise.resolve();
         }
@@ -163,7 +163,7 @@ class TestUtil {
      * @return {Promise} - a promise that wil be resolved with a configured and
      * connected instance of BusinessNetworkConnection.
      */
-    static setUp () {
+    static setUp() {
         cardStore = new MemoryCardStore();
         let adminConnection = new AdminConnection({cardStore});
         forceDeploy = false;
@@ -188,7 +188,7 @@ class TestUtil {
                     BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
 
                     const FileSystemCardStore = dynamicRequire('composer-common').FileSystemCardStore;
-                    cardStore = new FileSystemCardStore({fs : bfs_fs});
+                    cardStore = new FileSystemCardStore({fs:bfs_fs});
 
                     const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
                     const socketIO = dynamicRequire('socket.io');
@@ -226,200 +226,200 @@ class TestUtil {
                         console.log('setting up TLS Connection Profile for HLF V1');
                         // define ORG 1 CCP
                         connectionProfileOrg1 = {
-                            'name' : 'hlfv1org1',
-                            'x-type' : 'hlfv1',
-                            'x-commitTimeout' : 300,
-                            'version' : '1.0.0',
-                            'client' : {
-                                'organization' : 'Org1',
-                                'connection' : {
-                                    'timeout' : {
-                                        'peer' : {
-                                            'endorser' : '300',
-                                            'eventHub' : '300',
-                                            'eventReg' : '300'
+                            'name': 'hlfv1org1',
+                            'x-type': 'hlfv1',
+                            'x-commitTimeout': 300,
+                            'version': '1.0.0',
+                            'client': {
+                                'organization': 'Org1',
+                                'connection': {
+                                    'timeout': {
+                                        'peer': {
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer' : '300'
+                                        'orderer': '300'
                                     }
                                 }
                             },
-                            'channels' : {
-                                'composerchannel' : {
-                                    'orderers' : [
+                            'channels': {
+                                'composerchannel': {
+                                    'orderers': [
                                         'orderer.example.com'
                                     ],
-                                    'peers' : {
-                                        'peer0.org1.example.com' : {},
-                                        'peer0.org2.example.com' : {}
+                                    'peers': {
+                                        'peer0.org1.example.com': {},
+                                        'peer0.org2.example.com': {}
                                     }
                                 }
                             },
-                            'organizations' : {
-                                'Org1' : {
-                                    'mspid' : 'Org1MSP',
-                                    'peers' : [
+                            'organizations': {
+                                'Org1': {
+                                    'mspid': 'Org1MSP',
+                                    'peers': [
                                         'peer0.org1.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org1.example.com'
                                     ]
                                 },
-                                'Org2' : {
-                                    'mspid' : 'Org2MSP',
-                                    'peers' : [
+                                'Org2': {
+                                    'mspid': 'Org2MSP',
+                                    'peers': [
                                         'peer0.org2.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org2.example.com'
                                     ]
                                 }
                             },
-                            'orderers' : {
-                                'orderer.example.com' : {
-                                    'url' : 'grpcs://localhost:7050',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'orderer.example.com'
+                            'orderers': {
+                                'orderer.example.com': {
+                                    'url': 'grpcs://localhost:7050',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'orderer.example.com'
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
                                     }
                                 }
                             },
-                            'peers' : {
-                                'peer0.org1.example.com' : {
-                                    'url' : 'grpcs://localhost:7051',
-                                    'eventUrl' : 'grpcs://localhost:7053',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'peer0.org1.example.com',
+                            'peers': {
+                                'peer0.org1.example.com': {
+                                    'url': 'grpcs://localhost:7051',
+                                    'eventUrl': 'grpcs://localhost:7053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org1.example.com',
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                     }
                                 },
-                                'peer0.org2.example.com' : {
-                                    'url' : 'grpcs://localhost:8051',
-                                    'eventUrl' : 'grpcs://localhost:8053',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'peer0.org2.example.com',
+                                'peer0.org2.example.com': {
+                                    'url': 'grpcs://localhost:8051',
+                                    'eventUrl': 'grpcs://localhost:8053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org2.example.com',
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
                                     }
                                 }
                             },
-                            'certificateAuthorities' : {
-                                'ca.org1.example.com' : {
-                                    'url' : 'https://localhost:7054',
-                                    'httpOptions' : {
+                            'certificateAuthorities': {
+                                'ca.org1.example.com': {
+                                    'url': 'https://localhost:7054',
+                                    'httpOptions': {
                                         'verify' : false
                                     },
-                                    'caName' : 'ca.org1.example.com'
+                                    'caName': 'ca.org1.example.com'
                                 },
-                                'ca.org2.example.com' : {
-                                    'url' : 'https://localhost:8054',
-                                    'httpOptions' : {
+                                'ca.org2.example.com': {
+                                    'url': 'https://localhost:8054',
+                                    'httpOptions': {
                                         'verify' : false
                                     },
-                                    'caName' : 'ca.org2.example.com'
+                                    'caName': 'ca.org2.example.com'
                                 }
                             }
                         };
                         otherConnectionProfileOrg1 = {
-                            'name' : 'hlfv1org1',
-                            'x-type' : 'hlfv1',
-                            'x-commitTimeout' : 300,
-                            'version' : '1.0.0',
-                            'client' : {
-                                'organization' : 'Org1',
-                                'connection' : {
-                                    'timeout' : {
-                                        'peer' : {
-                                            'endorser' : '300',
-                                            'eventHub' : '300',
-                                            'eventReg' : '300'
+                            'name': 'hlfv1org1',
+                            'x-type': 'hlfv1',
+                            'x-commitTimeout': 300,
+                            'version': '1.0.0',
+                            'client': {
+                                'organization': 'Org1',
+                                'connection': {
+                                    'timeout': {
+                                        'peer': {
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer' : '300'
+                                        'orderer': '300'
                                     }
                                 }
                             },
-                            'channels' : {
-                                'othercomposerchannel' : {
-                                    'orderers' : [
+                            'channels': {
+                                'othercomposerchannel': {
+                                    'orderers': [
                                         'orderer.example.com'
                                     ],
-                                    'peers' : {
-                                        'peer0.org1.example.com' : {},
-                                        'peer0.org2.example.com' : {}
+                                    'peers': {
+                                        'peer0.org1.example.com': {},
+                                        'peer0.org2.example.com': {}
                                     }
                                 }
                             },
-                            'organizations' : {
-                                'Org1' : {
-                                    'mspid' : 'Org1MSP',
-                                    'peers' : [
+                            'organizations': {
+                                'Org1': {
+                                    'mspid': 'Org1MSP',
+                                    'peers': [
                                         'peer0.org1.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org1.example.com'
                                     ]
                                 },
-                                'Org2' : {
-                                    'mspid' : 'Org2MSP',
-                                    'peers' : [
+                                'Org2': {
+                                    'mspid': 'Org2MSP',
+                                    'peers': [
                                         'peer0.org2.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org2.example.com'
                                     ]
                                 }
                             },
-                            'orderers' : {
-                                'orderer.example.com' : {
-                                    'url' : 'grpcs://localhost:7050',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'orderer.example.com'
+                            'orderers': {
+                                'orderer.example.com': {
+                                    'url': 'grpcs://localhost:7050',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'orderer.example.com'
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
                                     }
                                 }
                             },
-                            'peers' : {
-                                'peer0.org1.example.com' : {
-                                    'url' : 'grpcs://localhost:7051',
-                                    'eventUrl' : 'grpcs://localhost:7053',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'peer0.org1.example.com',
+                            'peers': {
+                                'peer0.org1.example.com': {
+                                    'url': 'grpcs://localhost:7051',
+                                    'eventUrl': 'grpcs://localhost:7053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org1.example.com',
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                     }
                                 },
-                                'peer0.org2.example.com' : {
-                                    'url' : 'grpcs://localhost:8051',
-                                    'eventUrl' : 'grpcs://localhost:8053',
-                                    'grpcOptions' : {
-                                        'ssl-target-name-override' : 'peer0.org2.example.com',
+                                'peer0.org2.example.com': {
+                                    'url': 'grpcs://localhost:8051',
+                                    'eventUrl': 'grpcs://localhost:8053',
+                                    'grpcOptions': {
+                                        'ssl-target-name-override': 'peer0.org2.example.com',
                                     },
-                                    'tlsCACerts' : {
-                                        'path' : './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
+                                    'tlsCACerts': {
+                                        'path': './hlfv1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt'
                                     }
                                 }
                             },
-                            'certificateAuthorities' : {
-                                'ca.org1.example.com' : {
-                                    'url' : 'https://localhost:7054',
-                                    'httpOptions' : {
-                                        'verify' : false
+                            'certificateAuthorities': {
+                                'ca.org1.example.com': {
+                                    'url': 'https://localhost:7054',
+                                    'httpOptions': {
+                                        'verify': false
                                     },
-                                    'caName' : 'ca.org1.example.com'
+                                    'caName': 'ca.org1.example.com'
                                 },
                                 'ca.org2.example.com' : {
-                                    'url' : 'https://localhost:8054',
-                                    'httpOptions' : {
-                                        'verify' : false
+                                    'url': 'https://localhost:8054',
+                                    'httpOptions': {
+                                        'verify': false
                                     },
-                                    'caName' : 'ca.org2.example.com'
+                                    'caName': 'ca.org2.example.com'
                                 }
                             }
                         };
@@ -428,15 +428,15 @@ class TestUtil {
                         Object.assign(connectionProfileOrg2, connectionProfileOrg1);
                         connectionProfileOrg2.name = 'hlfv1org2';
                         connectionProfileOrg2.client = {
-                            'organization' : 'Org2',
-                            'connection' : {
-                                'timeout' : {
-                                    'peer' : {
-                                        'endorser' : '300',
-                                        'eventHub' : '300',
-                                        'eventReg' : '300'
+                            'organization': 'Org2',
+                            'connection': {
+                                'timeout': {
+                                    'peer': {
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer' : '300'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -444,15 +444,15 @@ class TestUtil {
                         Object.assign(otherConnectionProfileOrg2, otherConnectionProfileOrg1);
                         otherConnectionProfileOrg2.name = 'hlfv1org2';
                         otherConnectionProfileOrg2.client = {
-                            'organization' : 'Org2',
-                            'connection' : {
-                                'timeout' : {
-                                    'peer' : {
-                                        'endorser' : '300',
-                                        'eventHub' : '300',
-                                        'eventReg' : '300'
+                            'organization': 'Org2',
+                            'connection': {
+                                'timeout': {
+                                    'peer': {
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer' : '300'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -461,152 +461,152 @@ class TestUtil {
                         console.log('setting up Non-TLS Connection Profile for HLF V1');
                         // define ORG 1 CCP NON-TLS
                         connectionProfileOrg1 = {
-                            'name' : 'hlfv1org1',
-                            'x-type' : 'hlfv1',
-                            'x-commitTimeout' : 300,
-                            'version' : '1.0.0',
-                            'client' : {
-                                'organization' : 'Org1',
-                                'connection' : {
-                                    'timeout' : {
-                                        'peer' : {
-                                            'endorser' : '300',
-                                            'eventHub' : '300',
-                                            'eventReg' : '300'
+                            'name': 'hlfv1org1',
+                            'x-type': 'hlfv1',
+                            'x-commitTimeout': 300,
+                            'version': '1.0.0',
+                            'client': {
+                                'organization': 'Org1',
+                                'connection': {
+                                    'timeout': {
+                                        'peer': {
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer' : '300'
+                                        'orderer': '300'
                                     }
                                 }
                             },
-                            'channels' : {
-                                'composerchannel' : {
-                                    'orderers' : [
+                            'channels': {
+                                'composerchannel': {
+                                    'orderers': [
                                         'orderer.example.com'
                                     ],
-                                    'peers' : {
-                                        'peer0.org1.example.com' : {},
-                                        'peer0.org2.example.com' : {}
+                                    'peers': {
+                                        'peer0.org1.example.com': {},
+                                        'peer0.org2.example.com': {}
                                     }
                                 }
                             },
-                            'organizations' : {
-                                'Org1' : {
-                                    'mspid' : 'Org1MSP',
-                                    'peers' : [
+                            'organizations': {
+                                'Org1': {
+                                    'mspid': 'Org1MSP',
+                                    'peers': [
                                         'peer0.org1.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org1.example.com'
                                     ]
                                 },
-                                'Org2' : {
-                                    'mspid' : 'Org2MSP',
-                                    'peers' : [
+                                'Org2': {
+                                    'mspid': 'Org2MSP',
+                                    'peers': [
                                         'peer0.org2.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org2.example.com'
                                     ]
                                 }
                             },
-                            'orderers' : {
-                                'orderer.example.com' : {
-                                    'url' : 'grpc://localhost:7050'
+                            'orderers': {
+                                'orderer.example.com': {
+                                    'url': 'grpc://localhost:7050'
                                 }
                             },
-                            'peers' : {
-                                'peer0.org1.example.com' : {
-                                    'url' : 'grpc://localhost:7051',
-                                    'eventUrl' : 'grpc://localhost:7053'
+                            'peers': {
+                                'peer0.org1.example.com': {
+                                    'url': 'grpc://localhost:7051',
+                                    'eventUrl': 'grpc://localhost:7053'
                                 },
-                                'peer0.org2.example.com' : {
-                                    'url' : 'grpc://localhost:8051',
-                                    'eventUrl' : 'grpc://localhost:8053'
+                                'peer0.org2.example.com': {
+                                    'url': 'grpc://localhost:8051',
+                                    'eventUrl': 'grpc://localhost:8053'
                                 }
                             },
-                            'certificateAuthorities' : {
-                                'ca.org1.example.com' : {
-                                    'url' : 'http://localhost:7054',
-                                    'caName' : 'ca.org1.example.com'
+                            'certificateAuthorities': {
+                                'ca.org1.example.com': {
+                                    'url': 'http://localhost:7054',
+                                    'caName': 'ca.org1.example.com'
                                 },
-                                'ca.org2.example.com' : {
-                                    'url' : 'http://localhost:8054',
-                                    'caName' : 'ca.org2.example.com'
+                                'ca.org2.example.com': {
+                                    'url': 'http://localhost:8054',
+                                    'caName': 'ca.org2.example.com'
                                 }
                             }
                         };
                         otherConnectionProfileOrg1 = {
-                            'name' : 'hlfv1org1',
-                            'x-type' : 'hlfv1',
-                            'x-commitTimeout' : 300,
-                            'version' : '1.0.0',
-                            'client' : {
-                                'organization' : 'Org1',
-                                'connection' : {
-                                    'timeout' : {
-                                        'peer' : {
-                                            'endorser' : '300',
-                                            'eventHub' : '300',
-                                            'eventReg' : '300'
+                            'name': 'hlfv1org1',
+                            'x-type': 'hlfv1',
+                            'x-commitTimeout': 300,
+                            'version': '1.0.0',
+                            'client': {
+                                'organization': 'Org1',
+                                'connection': {
+                                    'timeout': {
+                                        'peer': {
+                                            'endorser': '300',
+                                            'eventHub': '300',
+                                            'eventReg': '300'
                                         },
-                                        'orderer' : '300'
+                                        'orderer': '300'
                                     }
                                 }
                             },
-                            'channels' : {
-                                'othercomposerchannel' : {
-                                    'orderers' : [
+                            'channels': {
+                                'othercomposerchannel': {
+                                    'orderers': [
                                         'orderer.example.com'
                                     ],
-                                    'peers' : {
-                                        'peer0.org1.example.com' : {},
-                                        'peer0.org2.example.com' : {}
+                                    'peers': {
+                                        'peer0.org1.example.com': {},
+                                        'peer0.org2.example.com': {}
                                     }
                                 }
                             },
-                            'organizations' : {
-                                'Org1' : {
-                                    'mspid' : 'Org1MSP',
-                                    'peers' : [
+                            'organizations': {
+                                'Org1': {
+                                    'mspid': 'Org1MSP',
+                                    'peers': [
                                         'peer0.org1.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org1.example.com'
                                     ]
                                 },
-                                'Org2' : {
-                                    'mspid' : 'Org2MSP',
-                                    'peers' : [
+                                'Org2': {
+                                    'mspid': 'Org2MSP',
+                                    'peers': [
                                         'peer0.org2.example.com'
                                     ],
-                                    'certificateAuthorities' : [
+                                    'certificateAuthorities': [
                                         'ca.org2.example.com'
                                     ]
                                 }
                             },
-                            'orderers' : {
-                                'orderer.example.com' : {
-                                    'url' : 'grpc://localhost:7050'
+                            'orderers': {
+                                'orderer.example.com': {
+                                    'url': 'grpc://localhost:7050'
                                 }
                             },
-                            'peers' : {
-                                'peer0.org1.example.com' : {
-                                    'url' : 'grpc://localhost:7051',
-                                    'eventUrl' : 'grpc://localhost:7053'
+                            'peers': {
+                                'peer0.org1.example.com': {
+                                    'url': 'grpc://localhost:7051',
+                                    'eventUrl': 'grpc://localhost:7053'
                                 },
-                                'peer0.org2.example.com' : {
-                                    'url' : 'grpc://localhost:8051',
-                                    'eventUrl' : 'grpc://localhost:8053'
+                                'peer0.org2.example.com': {
+                                    'url': 'grpc://localhost:8051',
+                                    'eventUrl': 'grpc://localhost:8053'
                                 }
                             },
-                            'certificateAuthorities' : {
-                                'ca.org1.example.com' : {
-                                    'url' : 'http://localhost:7054',
-                                    'caName' : 'ca.org1.example.com'
+                            'certificateAuthorities': {
+                                'ca.org1.example.com': {
+                                    'url': 'http://localhost:7054',
+                                    'caName': 'ca.org1.example.com'
                                 },
-                                'ca.org2.example.com' : {
-                                    'url' : 'http://localhost:8054',
-                                    'caName' : 'ca.org2.example.com'
+                                'ca.org2.example.com': {
+                                    'url': 'http://localhost:8054',
+                                    'caName': 'ca.org2.example.com'
                                 }
                             }
                         };
@@ -616,15 +616,15 @@ class TestUtil {
                         Object.assign(connectionProfileOrg2, connectionProfileOrg1);
                         connectionProfileOrg2.name = 'hlfv1org2';
                         connectionProfileOrg2.client = {
-                            'organization' : 'Org2',
-                            'connection' : {
-                                'timeout' : {
-                                    'peer' : {
-                                        'endorser' : '300',
-                                        'eventHub' : '300',
-                                        'eventReg' : '300'
+                            'organization': 'Org2',
+                            'connection': {
+                                'timeout': {
+                                    'peer': {
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer' : '300'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -632,15 +632,15 @@ class TestUtil {
                         Object.assign(otherConnectionProfileOrg2, otherConnectionProfileOrg1);
                         otherConnectionProfileOrg2.name = 'hlfv1org2';
                         otherConnectionProfileOrg2.client = {
-                            'organization' : 'Org2',
-                            'connection' : {
-                                'timeout' : {
-                                    'peer' : {
-                                        'endorser' : '300',
-                                        'eventHub' : '300',
-                                        'eventReg' : '300'
+                            'organization': 'Org2',
+                            'connection': {
+                                'timeout': {
+                                    'peer': {
+                                        'endorser': '300',
+                                        'eventHub': '300',
+                                        'eventReg': '300'
                                     },
-                                    'orderer' : '300'
+                                    'orderer': '300'
                                 }
                             }
                         };
@@ -653,8 +653,8 @@ class TestUtil {
                     let fs = dynamicRequire('fs');
                     console.log('Creating peer admin cards, and import them to the card store');
                     const admins = [
-                        {org : 'org1', keyFile : 'key.pem'},
-                        {org : 'org2', keyFile : 'key.pem'}
+                        { org: 'org1', keyFile: 'key.pem' },
+                        { org: 'org2', keyFile: 'key.pem' }
                     ];
                     return admins.reduce((promise, admin) => {
                         const org = admin.org;
@@ -667,9 +667,9 @@ class TestUtil {
                             let key = fs.readFileSync(keyPath).toString();
 
                             let metadata = {
-                                version : 1,
-                                userName : 'PeerAdmin',
-                                roles : ['PeerAdmin', 'ChannelAdmin']
+                                version: 1,
+                                userName: 'PeerAdmin',
+                                roles: ['PeerAdmin', 'ChannelAdmin']
                             };
                             // form up a IDCard
                             let card, otherCard;
@@ -681,8 +681,8 @@ class TestUtil {
                                 card = new IdCard(metadata, connectionProfileOrg2);
                                 otherCard = new IdCard(metadata, otherConnectionProfileOrg2);
                             }
-                            card.setCredentials({certificate : signerCert, privateKey : key});
-                            otherCard.setCredentials({certificate : signerCert, privateKey : key});
+                            card.setCredentials({certificate: signerCert, privateKey: key});
+                            otherCard.setCredentials({certificate: signerCert, privateKey: key});
                             return adminConnection.importCard(`composer-systests-${org}-PeerAdmin`, card)
                                 .then(() => {
                                     return adminConnection.importCard(`othercomposer-systests-${org}-PeerAdmin`, otherCard);
@@ -707,7 +707,7 @@ class TestUtil {
      * @return {Promise} - a promise that wil be resolved with a configured and
      * connected instance of BusinessNetworkConnection.
      */
-    static tearDown () {
+    static tearDown() {
         forceDeploy = false;
         return Promise.resolve();
     }
@@ -721,7 +721,7 @@ class TestUtil {
      * @return {Promise} - a promise that will be resolved with a configured and
      * connected instance of {@link BusinessNetworkConnection}.
      */
-    static getClient (cardStore, network, enrollmentID, enrollmentSecret) {
+    static getClient(cardStore, network, enrollmentID, enrollmentSecret) {
         network = network || 'common-network';
         let cardName = 'admincard';
         let thisClient;
@@ -731,11 +731,21 @@ class TestUtil {
                     let metadata = {
                         userName : enrollmentID,
                         version : 1,
-                        enrollmentSecret : enrollmentSecret,
+                        enrollmentSecret: enrollmentSecret,
                         businessNetwork : network
                     };
+                    let ccpToUse = currentCp;
+                    if (process.env.FVTEST && process.env.FVTEST.match('hsm$')) {
+                        console.log(`defining a new card for ${enrollmentID} to use HSM`);
+                        ccpToUse = JSON.parse(JSON.stringify(currentCp));
+                        ccpToUse.client['x-hsm'] = {
+                            'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                            'slot': 0,
+                            'pin': 98765432
+                        };
+                    }
 
-                    let idCard = new IdCard(metadata, currentCp);
+                    let idCard = new IdCard(metadata, ccpToUse);
                     let adminConnection = new AdminConnection({cardStore});
                     return adminConnection.connect('admincard')
                         .then(() => {
@@ -762,10 +772,8 @@ class TestUtil {
                 }
             })
             .then(() => {
-                enrollmentID = enrollmentID || 'admin';
-                let password = TestUtil.isHyperledgerFabricV1() ? 'adminpw' : 'Xurw3yU9zI0l';
-                enrollmentSecret = enrollmentSecret || password;
                 if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
+                    console.log('Connecting with ' + cardName);
                     return thisClient.connect(cardName);
                 } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                     throw new Error('force deploy is being called and that will not work now');
@@ -787,7 +795,7 @@ class TestUtil {
      * @param {boolean} [forceDeploy_] - force use of the deploy API instead of install and start.
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static deploy (businessNetworkDefinition, cardName, otherChannel, forceDeploy_) {
+    static deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy_) {
         // do not believe there is any code left doing forceDeploy_
         if (forceDeploy_) {
             throw new Error('this should not be deploying');
@@ -802,19 +810,19 @@ class TestUtil {
         forceDeploy = forceDeploy_;
         const bootstrapTransactions = [
             {
-                $class : 'org.hyperledger.composer.system.AddParticipant',
-                resources : [
+                $class: 'org.hyperledger.composer.system.AddParticipant',
+                resources: [
                     {
-                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                        participantId : 'admin'
+                        $class: 'org.hyperledger.composer.system.NetworkAdmin',
+                        participantId: 'admin'
                     }
                 ],
-                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
+                targetRegistry: 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin'
             },
             {
-                $class : 'org.hyperledger.composer.system.IssueIdentity',
-                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                identityName : 'admin'
+                $class: 'org.hyperledger.composer.system.IssueIdentity',
+                participant: 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                identityName: 'admin'
             }
         ];
         if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
@@ -831,7 +839,7 @@ class TestUtil {
                 })
                 .then(() => {
                     console.log('installing to Org1');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile : '/tmp/npmrc'});
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -847,7 +855,7 @@ class TestUtil {
                 })
                 .then(() => {
                     console.log('installing to Org2');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile : '/tmp/npmrc'});
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -865,28 +873,28 @@ class TestUtil {
                     console.log('Starting the network');
                     return adminConnection.start(businessNetworkDefinition, {
                         bootstrapTransactions,
-                        endorsementPolicy : {
-                            identities : [
+                        endorsementPolicy: {
+                            identities: [
                                 {
-                                    role : {
-                                        name : 'member',
-                                        mspId : 'Org1MSP'
+                                    role: {
+                                        name: 'member',
+                                        mspId: 'Org1MSP'
                                     }
                                 },
                                 {
-                                    role : {
-                                        name : 'member',
-                                        mspId : 'Org2MSP'
+                                    role: {
+                                        name: 'member',
+                                        mspId: 'Org2MSP'
                                     }
                                 }
                             ],
-                            policy : {
-                                '2-of' : [
+                            policy: {
+                                '2-of': [
                                     {
-                                        'signed-by' : 0
+                                        'signed-by': 0
                                     },
                                     {
-                                        'signed-by' : 1
+                                        'signed-by': 1
                                     }
                                 ]
                             }
@@ -900,11 +908,22 @@ class TestUtil {
                         currentCp = connectionProfileOrg1;
                     }
                     console.log('Creating the network admin id card');
+                    let ccpToUse = currentCp;
+                    if (process.env.FVTEST.match('hsm$')) {
+                        console.log('defining network admin id card to use HSM');
+                        ccpToUse = JSON.parse(JSON.stringify(currentCp));
+                        ccpToUse.client['x-hsm'] = {
+                            'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                            'slot': 0,
+                            'pin': 98765432
+                        };
+                    }
+
                     let adminidCard = new IdCard({
-                        userName : 'admin',
-                        enrollmentSecret : 'adminpw',
-                        businessNetwork : businessNetworkDefinition.getName()
-                    }, currentCp);
+                        userName: 'admin',
+                        enrollmentSecret: 'adminpw',
+                        businessNetwork: businessNetworkDefinition.getName()
+                    }, ccpToUse);
                     return adminConnection.importCard(cardName, adminidCard);
                 })
                 .then(() => {
@@ -917,15 +936,14 @@ class TestUtil {
             //console.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
             // Connect and deploy the network on the peers for org1.
         } else if (!forceDeploy) {
-            let metadata = {version : 1, userName : 'admin', secret : 'adminpw', roles : ['PeerAdmin', 'ChannelAdmin']};
+            let metadata = {version: 1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin']};
             const deployCardName = 'deployer-card';
-            // currentCp = {type : 'embedded',name:'defaultProfile'};
             let connectionprofile;
 
             if (TestUtil.isEmbedded() || TestUtil.isProxy()) {
-                connectionprofile = {'x-type' : 'embedded', name : 'defaultProfile'};
+                connectionprofile = {'x-type' : 'embedded', name: 'defaultProfile'};
             } else if (TestUtil.isWeb()) {
-                connectionprofile = {'x-type' : 'web', name : 'defaultProfile'};
+                connectionprofile = {'x-type' : 'web', name: 'defaultProfile'};
             } else {
                 throw new Error('Unknown connector type');
             }
@@ -939,7 +957,7 @@ class TestUtil {
                     return adminConnection.connect(deployCardName);
                 })
                 .then(() => {
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile : '/tmp/npmrc'});
+                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     console.log('deploying new ' + businessNetworkDefinition.getName());
@@ -948,9 +966,9 @@ class TestUtil {
                 .then(() => {
 
                     let adminidCard = new IdCard({
-                        userName : 'admin',
-                        enrollmentSecret : 'adminpw',
-                        businessNetwork : businessNetworkDefinition.getName()
+                        userName: 'admin',
+                        enrollmentSecret: 'adminpw',
+                        businessNetwork: businessNetworkDefinition.getName()
                     }, connectionprofile);
                     return adminConnection.importCard('admincard', adminidCard);
                 })
@@ -979,7 +997,7 @@ class TestUtil {
      * @param {BusinessNetworkDefiniton} businessNetworkDefinition - the business network definition.
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static undeploy (businessNetworkDefinition) {
+    static undeploy(businessNetworkDefinition) {
         if (!TestUtil.isHyperledgerFabricV1()) {
             client = null;
             return Promise.resolve();
@@ -1008,7 +1026,7 @@ class TestUtil {
      * @param {string} cardName, the card name to use to reset the network
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static resetBusinessNetwork (cardStore, identifier, retryCount, cardName) {
+    static resetBusinessNetwork(cardStore, identifier, retryCount, cardName) {
         if (!client) {
             return Promise.resolve();
         }
@@ -1028,7 +1046,7 @@ class TestUtil {
                     if (retryCount >= this.retries) {
                         throw(err);
                     } else {
-                        this.resetBusinessNetwork(identifier, retryCount++);
+                        this.resetBusinessNetwork(cardStore, identifier, retryCount++, cardName);
                     }
                 });
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
@@ -1051,8 +1069,16 @@ class TestUtil {
     /** Return an integer for use as a number of retries
      *  @return {int} - an integer
      */
-    static retries () {
+    static retries() {
         return testRetries;
+    }
+
+    /**
+     * Get the current connection profile.
+     * @return {Object} The current connection profile.
+     */
+    static getCurrentConnectionProfile() {
+        return currentCp;
     }
 
 }

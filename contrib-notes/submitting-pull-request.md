@@ -16,5 +16,3 @@
 - Commit any changes using a descriptive commit message.
 - Pull requests that have associated builds that are not 100% clean will be closed.
 
-# Next step
-Move on to read [Release process](./release-process/weekly-qa-validation.md)

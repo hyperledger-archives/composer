@@ -1,3 +1,4 @@
+@queries
 Feature: Queries steps
 
     Scenario: Using the REST API, I can ping the network
@@ -8,7 +9,8 @@ Feature: Queries steps
             """
               {
                 "version": _.isString,
-                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin"
+                "participant": "org.hyperledger.composer.system.NetworkAdmin#admin",
+                "identity": _.isString
               }
             """
 
