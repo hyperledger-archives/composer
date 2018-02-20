@@ -19,6 +19,7 @@ import { AlertService } from '../../basic-modals/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
 import { DeleteComponent } from '../../basic-modals/delete-confirm/delete-confirm.component';
 import { ViewTransactionComponent } from '../view-transaction/view-transaction.component';
+import { DrawerDismissReasons } from '../../common/drawer';
 
 @Component({
     selector: 'registry',
@@ -101,6 +102,11 @@ export class RegistryComponent {
         modalRef.result.then(() => {
             // refresh current resource list
             this.loadResources();
+        })
+        .catch((error) => {
+            if (error !== DrawerDismissReasons.ESC ) {
+                this.alertService.errorStatus$.next(error);
+            }
         });
     }
 
@@ -117,6 +123,11 @@ export class RegistryComponent {
         editModalRef.result.then(() => {
             // refresh current resource list
             this.loadResources();
+        })
+        .catch((error) => {
+          if (error !== DrawerDismissReasons.ESC ) {
+              this.alertService.errorStatus$.next(error);
+            }
         });
     }
 
@@ -143,6 +154,11 @@ export class RegistryComponent {
                 // modal but will that always be true
 
             }
+        })
+        .catch((error) => {
+            if (error !== DrawerDismissReasons.ESC ) {
+                this.alertService.errorStatus$.next(error);
+            }
         });
     }
 
@@ -153,7 +169,7 @@ export class RegistryComponent {
             transactionModalRef.componentInstance.events = transaction.eventsEmitted;
 
             transactionModalRef.result.catch((error) => {
-                if (error && error !== 1) {
+                if (error && error !== DrawerDismissReasons.ESC) {
                     this.alertService.errorStatus$.next(error);
                 }
             });
