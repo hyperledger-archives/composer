@@ -259,9 +259,7 @@ You should get an Authorized error and that is because we have configured a Goog
 
 <h2 class='everybody'> Step 9:  Create some Participants and Identities for testing OAUTH2.0 authentication  </h2>
 
-1. You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode.
-
-We will be using the composer CLI commands to add participants and identities as follows - first name is **Jo Doe**:
+1. You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is **Jo Doe**:
 
     composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
      
