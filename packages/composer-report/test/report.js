@@ -15,8 +15,7 @@
 'use strict';
 
 const report = require('../lib/report.js');
-const { sep } = require('path');
-const os = require('os');
+const fs = require('fs');
 const nodereport = require('node-report');
 const tar = require('tar');
 
@@ -24,55 +23,111 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
-const assert = chai.assert;
 chai.use(sinonChai);
 
 describe('composer-report CLI', function() {
     const sandbox = sinon.sandbox.create();
-    let triggerReportStub;
-    let setDirectoryStub;
-    let cStub;
 
-    beforeEach(function() {
-        cStub = sandbox.stub(tar, 'c').returns(Promise.resolve());
-        triggerReportStub = sandbox.stub(nodereport, 'triggerReport');
-        setDirectoryStub = sandbox.stub(nodereport, 'setDirectory');
+    describe('#beginReport', function() {
+        let accessSyncStub;
+        let mkdtempSyncStub;
+
+        beforeEach(function() {
+            accessSyncStub = sandbox.stub(fs, 'accessSync');
+            mkdtempSyncStub = sandbox.stub(fs, 'mkdtempSync');
+            mkdtempSyncStub.returns('tempDir');
+        });
+
+        afterEach(function() {
+            sandbox.restore();
+        });
+
+        it('should create a temporary directory to store files to create the report archive from', function() {
+            let result = report.beginReport();
+            expect(result.reportId).to.match(/^composer-report-\d{8}T\d{6}/);
+            expect(result.reportDir).to.equal('tempDir');
+        });
+
+        it('should handle errors', function() {
+            let testErr = new Error('ERROR');
+            accessSyncStub.throws(testErr);
+
+            let result;
+            try {
+                report.beginReport();
+            } catch (err) {
+                result = err;
+            }
+
+            expect(result).to.exist;
+            expect(result.name).not.to.equal('DirectoryAccessError');
+        });
+
+        it('should throw DirectoryAccessError if the current directory is not writeable', function() {
+            let testErr = new Error('Access denied');
+            testErr.code = 'EACCES';
+            accessSyncStub.throws(testErr);
+
+            let result;
+            try {
+                report.beginReport();
+            } catch (err) {
+                result = err;
+            }
+
+            expect(result).to.exist;
+            expect(result.name).to.equal('DirectoryAccessError');
+        });
     });
 
-    afterEach(function() {
-        sandbox.restore();
+    describe('#collectBasicDiagnostics', function() {
+        let triggerReportStub;
+        let setDirectoryStub;
+        let writeFileSyncStub;
+
+        beforeEach(function() {
+            triggerReportStub = sandbox.stub(nodereport, 'triggerReport');
+            setDirectoryStub = sandbox.stub(nodereport, 'setDirectory');
+            writeFileSyncStub = sandbox.stub(fs, 'writeFileSync');
+        });
+
+        afterEach(function() {
+            sandbox.restore();
+        });
+
+        it('should successfully write a composer report text file to the temporary directory', function() {
+            report.collectBasicDiagnostics('reportId', 'reportDir');
+            expect(writeFileSyncStub).to.have.been.calledWith('reportDir/reportId.txt', sinon.match(/^composer-report version: \d+\.\d+\.\d+$/));
+        });
+
+        it('should successfully write a node-report report to the temporary directory', function() {
+            report.collectBasicDiagnostics('reportId', 'reportDir');
+            expect(setDirectoryStub).to.have.been.calledWith('reportDir');
+            expect(triggerReportStub).to.have.been.called;
+        });
     });
 
-    it('should successfully run the composer-report command with no arguments specified', function() {
-        let reportSpy = sinon.spy(report, 'report');
-        report.report({}, reportSpy);
-        expect(reportSpy).to.have.been.calledWith({});
-    });
+    describe('#completeReport', function() {
+        let cStub;
 
-    it('should create a temporary directory to store files to create the report archive from', function() {
-        let setupSpy = sinon.spy(report, 'setupReportDir');
-        let result = report.setupReportDir(setupSpy);
-        expect(setupSpy).to.have.been.calledOnce;
-        assert.match(result, new RegExp('^'+os.tmpdir()+sep+'.*$'));
-    });
+        beforeEach(function() {
+            cStub = sandbox.stub(tar, 'c');
+        });
 
-    it('should successfully write a node-report report to the temporary directory', function() {
-        let createReportSpy = sinon.spy(report, 'createNodeReport');
-        report.createNodeReport('/tmp');
-        expect(createReportSpy).to.have.been.calledWith('/tmp');
-        expect(setDirectoryStub).to.have.been.calledWith('/tmp');
-        expect(triggerReportStub).to.have.been.calledWith();
-    });
+        afterEach(function() {
+            sandbox.restore();
+        });
 
-    it('should successfully create a zipped tar archive of the COMPOSER_REPORT_TEMPDIR in the current directory and log the output filename in the console', function() {
-        report.archiveReport('COMPOSER_REPORT_TEMPDIR');
-        sinon.assert.calledOnce(cStub);
-        sinon.assert.calledWith(cStub, {
-            cwd: 'COMPOSER_REPORT_TEMPDIR/',
-            prefix: sinon.match(/^composer-report-\d{8}T\d{6}$/),
-            gzip: true,
-            file: sinon.match(/^composer-report-\d{8}T\d{6}\.tgz$/),
-            sync: true
-        }, ['.']);
+        it('should successfully create a zipped tar archive of the temporary directory in the current directory', function() {
+            report.completeReport('reportId', 'reportDir');
+            sinon.assert.calledOnce(cStub);
+            sinon.assert.calledWith(cStub, {
+                cwd: 'reportDir/',
+                prefix: 'reportId',
+                gzip: true,
+                file: 'reportId.tgz',
+                sync: true
+            }, ['.']);
+        });
     });
 });
