@@ -35,9 +35,7 @@ const runtimeHlfPackageJson = require('composer-runtime-hlfv1/package.json');
 const composerVersion = runtimeHlfPackageJson.version;
 
 const installDependencies = {
-    'composer-runtime-hlfv1': composerVersion,
-    'composer-runtime': composerVersion,
-    'composer-common': composerVersion
+    'composer-runtime-hlfv1': composerVersion
 };
 
 /**
