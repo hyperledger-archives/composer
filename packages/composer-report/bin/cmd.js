@@ -17,4 +17,24 @@
 
 const report = require('../lib/report.js');
 
-report.report();
+try {
+    const {reportId, reportDir} = report.beginReport();
+
+    // eslint-disable-next-line no-console
+    console.log('Collecting diagnostic data...');
+    report.collectBasicDiagnostics(reportId, reportDir);
+
+    const archiveName = report.completeReport(reportId, reportDir);
+
+    // eslint-disable-next-line no-console
+    console.log(`Created archive file: ${archiveName}`);
+
+} catch (err) {
+    if (err.name === 'DirectoryAccessError') {
+        // eslint-disable-next-line no-console
+        console.log(err.message);
+        return 1;
+    } else {
+        throw err;
+    }
+}
