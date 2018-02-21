@@ -150,7 +150,7 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(modelBase);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
         });
 
         it('should return error for duplicate namespaces from an object', () => {
@@ -159,7 +159,36 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(mf1);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
+        });
+
+        it('should return error for duplicate namespaces from an model file with a filename', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            mf1.getName.returns('duplFile');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base specified in file duplFile is already declared/);
+        });
+
+        it('should return error for duplicate namespaces from an model file where original filename was provided', () => {
+            modelManager.addModelFile(modelBase, 'origFile');
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base is already declared in file origFile/);
+        });
+
+        it('should return error for duplicate namespaces from an model file where original filename and new filename were provided', () => {
+            modelManager.addModelFile(modelBase, 'origFile');
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            mf1.getName.returns('duplFile');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base specified in file duplFile is already declared in file origFile/);
         });
 
     });
@@ -267,7 +296,13 @@ describe('ModelManager', () => {
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
                 modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
+        });
+
+        it('should return an error for duplicate namespace from strings that have filenames', () => {
+            (() => {
+                modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase], ['cm', 'mb', 'f2f', 'mb2']);
+            }).should.throw(/Namespace org.acme.base specified in file mb2 is already declared in file mb/);
         });
 
         it('should return an error for duplicate namespace from objects', () => {
@@ -278,8 +313,25 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([mf1,mf2]);
             (() => {
                 modelManager.addModelFiles([mf1]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.doge is already declared/);
         });
+
+        it('should return an error for duplicate namespace from objects, with filenames', () => {
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.doge');
+            mf1.getName.returns('mf1');
+            let mf2 = sinon.createStubInstance(ModelFile);
+            mf2.getNamespace.returns('org.doge.base');
+            mf2.getName.returns('mf2');
+            let mf3 = sinon.createStubInstance(ModelFile);
+            mf3.getNamespace.returns('org.doge');
+            mf3.getName.returns('mf1-again');
+            modelManager.addModelFiles([mf1,mf2]);
+            (() => {
+                modelManager.addModelFiles([mf3]);
+            }).should.throw(/Namespace org.doge specified in file mf1-again is already declared in file mf1/);
+        });
+
 
         it('should return the error message for an invalid model file', () => {
             const mf1 = `namespace org.acme1
