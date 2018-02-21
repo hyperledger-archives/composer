@@ -256,7 +256,7 @@ class AdminConnection {
      * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * try {
      *    await adminConnection.connect('adminCard@hlfv1')
-     *    await adminConnection.install(businessNetworkDefinition;
+     *    await adminConnection.install(businessNetworkDefinition);
      *    // Business network installed
      * } catch (error) {
      *     // Add optional error handling here.
