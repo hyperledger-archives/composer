@@ -4,6 +4,7 @@ env:
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
+    ecmaVersion: 8
     sourceType:
         - script
 rules:
@@ -31,7 +32,6 @@ rules:
     dot-notation: error
     no-tabs: error
     no-trailing-spaces: error
-    # no-use-before-define: error
     no-useless-call: error
     no-with: error
     operator-linebreak: error

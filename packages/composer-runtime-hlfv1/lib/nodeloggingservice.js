@@ -43,12 +43,22 @@ const LOGLEVEL_KEY = 'ComposerLogLevel';
  * @protected
  */
 class NodeLoggingService extends LoggingService {
+
+    /**
+     * Constructor.
+     */
     constructor() {
         super();
         this.stub = null;
         this.currentLogLevel = -1;
     }
 
+    /**
+     * Log a message.
+     * @private
+     * @param {string} message The message to log.
+     * @param {*} logLevel The log level.
+     */
     _outputMessage(message, logLevel) {
         const timestamp = new Date().toISOString();
         const logStr = LOOKUP_LOG_LEVELS[logLevel].padEnd(8);
@@ -67,7 +77,6 @@ class NodeLoggingService extends LoggingService {
      * And enables the logging level currently set.
      *
      * @param {any} stub The stub to save
-     * @returns {Promise} A promise that resolves once the logging level has been set, rejected if an error
      */
     async initLogging(stub) {
         this.stub = stub;
@@ -162,7 +171,6 @@ class NodeLoggingService extends LoggingService {
     /**
      * Set the log level for the runtime.
      * @param {string} newLogLevel The new log level to apply.
-     * @returns {Promise} which is resolved when log level is set, rejected otherwise
      */
     async setLogLevel(newLogLevel) {
         newLogLevel = newLogLevel.toUpperCase();
@@ -183,6 +191,7 @@ class NodeLoggingService extends LoggingService {
 
     /**
      * Get the current log level for the runtime.
+     * @return {string} the current log level.
      */
     getLogLevel() {
         return LOOKUP_LOG_LEVELS[this.currentLogLevel];

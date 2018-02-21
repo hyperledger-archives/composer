@@ -11,7 +11,6 @@ rules:
     indent:
         - error
         - 4
-        - SwitchCase: 1
     linebreak-style:
         - error
         - unix
@@ -33,7 +32,6 @@ rules:
     dot-notation: error
     no-tabs: error
     no-trailing-spaces: error
-    no-use-before-define: error
     no-useless-call: error
     no-with: error
     operator-linebreak: error

@@ -19,7 +19,9 @@ const NodeUtils = require('./nodeutils');
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('NodeDataCollection');
 
-
+/**
+ * Class representing a data collection provided by a {@link DataService}.
+ */
 class NodeDataCollection extends DataCollection {
 
     /**
@@ -37,6 +39,10 @@ class NodeDataCollection extends DataCollection {
         LOG.exit(method);
     }
 
+    /**
+     * Serialize this object to a string.
+     * @return {string} this object as a string.
+     */
     toString() {
         return `[DataCollection: + ${this.collectionID}]`;
     }
@@ -145,8 +151,6 @@ class NodeDataCollection extends DataCollection {
     /**
      * Remove an object from the collection.
      * @param {string} id The ID of the object.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async remove(id) {
         const method = 'remove';

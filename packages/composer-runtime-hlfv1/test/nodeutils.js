@@ -15,9 +15,9 @@
 'use strict';
 
 const NodeUtils = require('../lib/nodeutils');
-const MockIterator = require('./mockiterator');
-const MockStub = require('./mockstub');
 const Logger = require('composer-common').Logger;
+const ChaincodeStub = require('fabric-shim/lib/stub');
+const StateQueryIterator = require('fabric-shim/lib/iterators').StateQueryIterator;
 
 const chai = require('chai');
 chai.should();
@@ -33,9 +33,9 @@ describe('NodeUtils', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockIterator = new MockIterator();
-        sinon.stub(mockIterator, 'close').resolves();
-        mockStub = sinon.createStubInstance(MockStub);
+        mockIterator = sinon.createStubInstance(StateQueryIterator);
+        mockIterator.close.resolves();
+        mockStub = sinon.createStubInstance(ChaincodeStub);
         const LOG = Logger.getLog('NodeUtils');
         logWarnSpy = sandbox.spy(LOG, 'warn');
 
@@ -47,7 +47,7 @@ describe('NodeUtils', () => {
 
     describe('#getAllResults', () => {
         it('should handle empty iterator', async () => {
-            sinon.stub(mockIterator, 'next').onFirstCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves({done: true});
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -61,9 +61,8 @@ describe('NodeUtils', () => {
                 },
                 done: false
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
-            nextStub.onSecondCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves(data);
+            mockIterator.next.onSecondCall().resolves({done: true});
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -77,8 +76,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -99,9 +97,8 @@ describe('NodeUtils', () => {
                 done: true
             };
 
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data1);
-            nextStub.onSecondCall().resolves(data2);
+            mockIterator.next.onFirstCall().resolves(data1);
+            mockIterator.next.onSecondCall().resolves(data2);
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -122,10 +119,9 @@ describe('NodeUtils', () => {
                 done: false
             };
 
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data1);
-            nextStub.onSecondCall().resolves(data2);
-            nextStub.onThirdCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves(data1);
+            mockIterator.next.onSecondCall().resolves(data2);
+            mockIterator.next.onThirdCall().resolves({done: true});
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledThrice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -139,8 +135,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -148,8 +143,7 @@ describe('NodeUtils', () => {
         });
 
         it('should handle next throwing an error', async () => {
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().rejects(new Error('NextError'));
+            mockIterator.next.onFirstCall().rejects(new Error('NextError'));
             await NodeUtils.getAllResults(mockIterator)
                 .should.be.rejectedWith(/NextError/);
         });
@@ -161,8 +155,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             mockIterator.close.rejects(new Error('CloseError'));
             let results = await NodeUtils.getAllResults(mockIterator);
             sinon.assert.calledOnce(mockIterator.next);
@@ -177,7 +170,7 @@ describe('NodeUtils', () => {
     describe('#deleteAllResults', () => {
 
         it('should handle empty iterator', async () => {
-            sinon.stub(mockIterator, 'next').onFirstCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves({done: true});
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -192,9 +185,8 @@ describe('NodeUtils', () => {
                 },
                 done: false
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
-            nextStub.onSecondCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves(data);
+            mockIterator.next.onSecondCall().resolves({done: true});
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -211,8 +203,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -236,9 +227,8 @@ describe('NodeUtils', () => {
                 done: true
             };
 
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data1);
-            nextStub.onSecondCall().resolves(data2);
+            mockIterator.next.onFirstCall().resolves(data1);
+            mockIterator.next.onSecondCall().resolves(data2);
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledTwice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -263,10 +253,9 @@ describe('NodeUtils', () => {
                 done: false
             };
 
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data1);
-            nextStub.onSecondCall().resolves(data2);
-            nextStub.onThirdCall().resolves({done: true});
+            mockIterator.next.onFirstCall().resolves(data1);
+            mockIterator.next.onSecondCall().resolves(data2);
+            mockIterator.next.onThirdCall().resolves({done: true});
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledThrice(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -283,8 +272,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
             sinon.assert.calledOnce(mockIterator.close);
@@ -292,8 +280,7 @@ describe('NodeUtils', () => {
         });
 
         it('should handle next throwing an error', async () => {
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().rejects(new Error('NextError'));
+            mockIterator.next.onFirstCall().rejects(new Error('NextError'));
             await NodeUtils.deleteAllResults(mockIterator, mockStub)
                 .should.be.rejectedWith(/NextError/);
         });
@@ -305,8 +292,7 @@ describe('NodeUtils', () => {
                 },
                 done: true
             };
-            let nextStub = sinon.stub(mockIterator, 'next');
-            nextStub.onFirstCall().resolves(data);
+            mockIterator.next.onFirstCall().resolves(data);
             mockIterator.close.rejects(new Error('CloseError'));
             await NodeUtils.deleteAllResults(mockIterator, mockStub);
             sinon.assert.calledOnce(mockIterator.next);
