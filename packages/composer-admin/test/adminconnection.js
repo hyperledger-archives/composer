@@ -272,7 +272,7 @@ describe('AdminConnection', () => {
         const expectedStartTransaction = {
             $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
             timestamp : '1970-01-01T00:00:00.000Z',
-            transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
+            transactionId : sinon.match.string
         };
         const expectedNetworkAdminBootstrapTransactions = {
             bootstrapTransactions : [
@@ -286,7 +286,7 @@ describe('AdminConnection', () => {
                     ],
                     targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
                     timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
+                    transactionId : sinon.match.string
                 },
                 {
                     $class : 'org.hyperledger.composer.system.AddParticipant',
@@ -298,21 +298,21 @@ describe('AdminConnection', () => {
                     ],
                     targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
                     timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
+                    transactionId : sinon.match.string
                 },
                 {
                     $class : 'org.hyperledger.composer.system.IssueIdentity',
                     identityName : 'admin',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
                     timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
+                    transactionId : sinon.match.string
                 },
                 {
                     $class : 'org.hyperledger.composer.system.BindIdentity',
                     certificate : 'certcertcert',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#adminc',
                     timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
+                    transactionId : sinon.match.string
                 }
             ]
         };
@@ -321,7 +321,6 @@ describe('AdminConnection', () => {
             mockSecurityContext.getUser.returns(identityName);
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            sandbox.stub(uuid, 'v4').returns('47bc3a67-5599-4460-9745-6a291df4f879');
         });
 
         it('should error if neither networkAdmins or bootstrapTransactions specified', () => {
