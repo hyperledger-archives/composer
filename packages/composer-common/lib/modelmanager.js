@@ -117,6 +117,19 @@ class ModelManager {
     }
 
     /**
+     * Throws an error with details about the existing namespace.
+     * @param {ModelFile} modelFile The model file that is trying to declare an existing namespace
+     * @private
+     */
+    _throwAlreadyExists(modelFile) {
+        const existingModelFileName = this.modelFiles[modelFile.getNamespace()].getName();
+        const postfix = existingModelFileName ? ` in file ${existingModelFileName}` : '';
+        const prefix = modelFile.getName() ? ` specified in file ${modelFile.getName()}` : '';
+        let errMsg = `Namespace ${modelFile.getNamespace()}${prefix} is already declared${postfix}`;
+        throw new Error(errMsg);
+    }
+
+    /**
      * Adds a Composer file (as a string) to the ModelManager.
      * Composer files have a single namespace. If a Composer file with the
      * same namespace has already been added to the ModelManager then it
@@ -152,7 +165,7 @@ class ModelManager {
             }
             this.modelFiles[m.getNamespace()] = m;
         } else {
-            throw new Error('namespace already exists');
+            this._throwAlreadyExists(m);
         }
 
         return m;
@@ -240,7 +253,7 @@ class ModelManager {
                         this.modelFiles[m.getNamespace()] = m;
                         newModelFiles.push(m);
                     } else {
-                        throw new Error('namespace already exists');
+                        this._throwAlreadyExists(m);
                     }
                 } else {
                     if (modelFile.isSystemModelFile()) {
@@ -250,7 +263,7 @@ class ModelManager {
                         this.modelFiles[modelFile.getNamespace()] = modelFile;
                         newModelFiles.push(modelFile);
                     } else {
-                        throw new Error('namespace already exists');
+                        this._throwAlreadyExists(modelFile);
                     }
                 }
             }

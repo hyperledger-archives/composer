@@ -30,12 +30,15 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
+# Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
 # Dependency directories
 node_modules/
 jspm_packages/
+
+# Tarballs
+*.tgz
 
 # Typescript v1 declaration files
 typings/
@@ -61,11 +64,13 @@ typings/
 # JSDoc
 out
 
-# Mac files.
+# next.js build output
+.next
+
+# OSX files
 **/.DS_Store
 
 *.swp
 
 # Build generated files should be ignored by git, but not by npm.
 index.d.ts
-
