@@ -862,8 +862,8 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('installing to Org1');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    console.log('Installing network to org1');
+                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -878,8 +878,8 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('installing to Org2');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    console.log('Installing network to org2');
+                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
                     return adminConnection.disconnect();
@@ -894,36 +894,39 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('Starting the network');
-                    return adminConnection.start(businessNetworkDefinition, {
-                        bootstrapTransactions,
-                        endorsementPolicy: {
-                            identities: [
-                                {
-                                    role: {
-                                        name: 'member',
-                                        mspId: 'Org1MSP'
-                                    }
-                                },
-                                {
-                                    role: {
-                                        name: 'member',
-                                        mspId: 'Org2MSP'
-                                    }
-                                }
-                            ],
-                            policy: {
-                                '2-of': [
+                    console.log('Starting the network');
+                    return adminConnection.start(
+                        businessNetworkDefinition.getName(),
+                        businessNetworkDefinition.getVersion(),
+                        {
+                            bootstrapTransactions,
+                            endorsementPolicy: {
+                                identities: [
                                     {
-                                        'signed-by': 0
+                                        role: {
+                                            name: 'member',
+                                            mspId: 'Org1MSP'
+                                        }
                                     },
                                     {
-                                        'signed-by': 1
+                                        role: {
+                                            name: 'member',
+                                            mspId: 'Org2MSP'
+                                        }
                                     }
-                                ]
+                                ],
+                                policy: {
+                                    '2-of': [
+                                        {
+                                            'signed-by': 0
+                                        },
+                                        {
+                                            'signed-by': 1
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    });
+                        });
                 })
                 .then(() => {
                     if(otherChannel) {
@@ -980,11 +983,12 @@ class TestUtil {
                     return adminConnection.connect(deployCardName);
                 })
                 .then(() => {
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
-                    TestUtil.log('deploying new ' + businessNetworkDefinition.getName());
-                    return adminConnection.start(businessNetworkDefinition, {bootstrapTransactions});
+                    return adminConnection.start(businessNetworkDefinition.getName(),
+                        businessNetworkDefinition.getVersion(),
+                        {bootstrapTransactions});
                 })
                 .then(() => {
                     let adminidCard = new IdCard({
