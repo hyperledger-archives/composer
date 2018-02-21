@@ -442,7 +442,7 @@ class BusinessNetworkDefinition {
         const modelFileNames = [];
         // process each module dependency
         // filtering using a glob on the module dependency name
-        if(jsonObject.dependencies) {
+        if(options.processDependencies !== false && jsonObject.dependencies) {
             this._processDependencies(jsonObject,path,options,modelFiles,modelFileNames);
         }
 
@@ -605,6 +605,8 @@ class BusinessNetworkDefinition {
      * @param {boolean} [options.updateExternalModels] - if true then external models for
      * the network are downloaded and updated.
      * @param {object} [options.updateExternalModelsOptions] - options passed to ModelManager.updateExternalModels
+     * @param {boolean} [options.processDependencies] if false, do not process package dependencies; otherwise
+     * package dependencies are processed.
      * @return {Promise} a Promise to the instantiated business network
      */
     static fromDirectory(path, options) {

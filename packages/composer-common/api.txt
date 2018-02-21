@@ -6,7 +6,7 @@ class BusinessNetworkDefinition {
    + String getDescription() 
    + Promise fromArchive(Buffer) 
    + Promise toArchive(Object) 
-   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object) 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object,boolean) 
    + Promise toDirectory(String) 
    + Introspector getIntrospector() 
    + Factory getFactory() 

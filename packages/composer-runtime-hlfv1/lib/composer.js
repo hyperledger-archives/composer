@@ -37,7 +37,7 @@ class Composer {
      * Should be called (only) from the peer startup script.
      */
     static async start() {
-        const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.');
+        const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.', { processDependencies: false });
         await Context.setBusinessNetwork(networkDefinition);
         shim.start(new Composer());
     }

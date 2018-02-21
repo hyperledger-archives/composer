@@ -18,6 +18,9 @@ Version 0.18.0 {c4e008425f84c47d61303c19829ceb59} 2018-02-28
 Version 0.17.7 {9b23cddaef6ca9a26d5515dafbec861e} 2018-02-22
 - Added CertificateUtil to public API
 
+Version 0.17.6 {9e7162818f534ebe111e74b98449f36e} 2018-02-21
+- Add option to disable dependency processing in BusinessNetworkDefinition.fromDirectory
+
 Version 0.17.5 {e7ec4335f8faa9e7b3845dddc4adc7ee} 2018-02-13
 - Added Certificate to public API
 - Add BusinessNetworkDefinition.toDirectory function

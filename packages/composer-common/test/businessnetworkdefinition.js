@@ -389,6 +389,14 @@ describe('BusinessNetworkDefinition', () => {
                 });
         });
 
+        it('should not fail on load with bad dependencies if dependency processing disabled', () => {
+            const bnaDirectory = path.join(__dirname, 'data', 'zip', 'test-archive-broken-dependency');
+            return BusinessNetworkDefinition.fromDirectory(bnaDirectory, { processDependencies: false })
+                .should.be.fulfilled.then(result => {
+                    result.should.be.BusinessNetworkDefinition;
+                });
+        });
+
     });
 
     describe('#usingArchives', () => {
