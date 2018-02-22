@@ -17,6 +17,11 @@ This directory ( composer/packages/composer-website ) hold the documentation for
 - What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser).
 - Then push your changes as per usual.
 
+# Sharing access to your jekyll-serve docs
+If you would like to share your docs for remote viewing without requiring pulling and subsequent building of your changes, it is possible to open ports on your machine to enable viewing.
+
+To enable this, you must modify the _config.yml file to include `host: 0.0.0.0` as a tag.
+
 # Reference information
 
 ## High Level Process
