@@ -1,16 +1,16 @@
 ---
 layout: default
-title: Writing Web or mobile applications
+title: Writing Web applications
 category: start
 section: applications
 index-order: 602
 sidebar: sidebars/accordion-toc0.md
-excerpt: Web or mobile applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the `composer-rest-server` to [**dynamically generate a REST API from the deployed business network**](./web.html).
+excerpt: Web applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the `composer-rest-server` to [**dynamically generate a REST API from the deployed business network**](./web.html).
 ---
 
-# Writing Web or mobile Applications
+# Writing Web Applications
 
-To interact with a deployed business network, web or mobile applications should make REST API calls. To create a custom REST API for a business network, use the `composer-rest-server` command.
+To interact with a deployed business network, web applications should make REST API calls. To create a custom REST API for a business network, use the `composer-rest-server` command.
 
 To create a skeleton Angular application that can interact with the REST API, use the `yo hyperledger-composer` command.
 

@@ -15,9 +15,14 @@ describe('Starting tests for <%=appName%>', function() {
     })
   });
 
-  it('navbar-brand should be <%=businessNetworkIdentifier%>',() => {
+  it('network-name should be <%=businessNetworkIdentifier%>',() => {
+    var networkName = element(by.css('.network-name')).getWebElement();
+    expect(networkName.getText()).toBe('<%=businessNetworkIdentifier%>');
+  });
+
+  it('navbar-brand should be <%=appName%>',() => {
     var navbarBrand = element(by.css('.navbar-brand')).getWebElement();
-    expect(navbarBrand.getText()).toBe('<%=businessNetworkIdentifier%>');
+    expect(navbarBrand.getText()).toBe('<%=appName%>');
   });
 
   <% for(var x=0;x<assetList.length;x++){ %>
