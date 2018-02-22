@@ -80,6 +80,8 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         npm publish --registry http://localhost:4873
         cd ../composer-common
         npm publish --registry http://localhost:4873
+        cd ../composer-runtime-hlfv1
+        npm publish --registry http://localhost:4873
 
         if [ `uname` = "Darwin" ]; then
             export GATEWAY=docker.for.mac.localhost
