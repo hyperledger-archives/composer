@@ -17,7 +17,7 @@ describe('Starting tests for <%=appName%>', function() {
 
   it('network-name should be <%=businessNetworkIdentifier%>',() => {
     var networkName = element(by.css('.network-name')).getWebElement();
-    expect(networkName.getText()).toBe('<%=businessNetworkIdentifier%>');
+    expect(networkName.getText()).toBe('<%=businessNetworkIdentifier%>.bna');
   });
 
   it('navbar-brand should be <%=appName%>',() => {
