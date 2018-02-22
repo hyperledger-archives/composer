@@ -45,6 +45,9 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
            --iv "$encrypted_17b59ce72ad7_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
+# This is the list of npm modules required by docker images
+export NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-report composer-playground composer-playground-api composer-rest-server loopback-connector-composer"
+
 # Change from HTTPS to SSH.
 ./.travis/fix_github_https_repo.sh
 
@@ -95,9 +98,12 @@ export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 echo "Pushing with tag ${TAG}"
 lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag="${TAG}" 2>&1
 
-# quick check to see if the latest npm module has been published
-while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-  sleep 10
+# Check that all required modules have been published to npm and are retrievable
+for j in ${NPM_MODULES}; do
+    # check the next in the list
+    while ! npm view ${j}@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+        sleep 10
+    done
 done
 
 # Build, tag, and publish Docker images.
