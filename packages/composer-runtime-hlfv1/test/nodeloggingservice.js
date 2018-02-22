@@ -16,7 +16,7 @@
 
 const LoggingService = require('composer-runtime').LoggingService;
 const NodeLoggingService = require('../lib/nodeloggingservice');
-const MockStub = require('./mockstub');
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 const chai = require('chai');
 chai.should();
@@ -32,7 +32,7 @@ describe('NodeLoggingService', () => {
     beforeEach(() => {
         loggingService = new NodeLoggingService();
         sandbox = sinon.sandbox.create();
-        mockStub = sinon.createStubInstance(MockStub);
+        mockStub = sinon.createStubInstance(ChaincodeStub);
         mockStub.getTxID.returns('1548a95f57863bce4566');
         loggingService.stub = mockStub;
         mockStub.putState.resolves();

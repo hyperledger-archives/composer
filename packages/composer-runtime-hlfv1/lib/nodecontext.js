@@ -34,7 +34,7 @@ class NodeContext extends Context {
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
-     * @param {Object} identity The current identity.
+     * @param {any} stub the shim instance for this invocation
      */
     constructor(engine, stub) {
         const method = 'constructor';

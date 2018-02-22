@@ -41,10 +41,22 @@ class Composer {
         LOG.exit(method);
     }
 
+    /**
+     * Create an instance of the Composer engine.
+     * @private
+     * @return {Engine} an instance of the Composer engine.
+     */
     _createEngine() {
         return new Engine(this.container);
     }
 
+    /**
+     * Create an instance of the Composer context.
+     * @private
+     * @param {Engine} engine the Composer engine.
+     * @param {any} stub the shim instance for this invocation
+     * @return {NodeContext} an instance of the Composer context.
+     */
     _createContext(engine, stub) {
         return new NodeContext(engine, stub);
     }

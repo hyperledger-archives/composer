@@ -28,7 +28,6 @@ class List {
   /**
     * Command implementation.
     * @param {Object} args argument list from composer command
-    * @return {Promise} promise when command complete
     */
     static async handler(args) {
         if (args.name){
@@ -97,7 +96,7 @@ class List {
 
     /**
      * Get the identity ID for the specified business network card.
-     * @param {IdCard} card The business network card.
+     * @param {IdCard} idCard The business network card.
      * @return {string} The identity ID, or null if one is not available.
      */
     static _getIdentityIdForCard(idCard) {
@@ -110,9 +109,9 @@ class List {
         return certificate.getIdentifier();
     }
 
-    /** Show the details of a single card
+    /**
+     * Show the details of a single card
      * @param {String} cardName Name of the card to show
-     * @returns {Promise} resolved when details are showed
      */
     static async showCardDetails(cardName){
         const card = await cmdUtil.createAdminConnection().exportCard(cardName);

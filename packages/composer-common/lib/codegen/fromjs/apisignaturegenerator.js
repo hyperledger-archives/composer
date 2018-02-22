@@ -18,6 +18,25 @@ const fs = require('fs');
 const Writer = require('../writer');
 
 /**
+ * Converts an array of parameter types to a string
+ * @param  {string[]} paramTypes array of parameter type names
+ * @return {string} - string representation
+ * @private
+ */
+function paramsToString(paramTypes) {
+    let result = '(';
+    for(let n=0; n < paramTypes.length; n++) {
+        result += paramTypes[n];
+        if(n < paramTypes.length-1) {
+            result += ',';
+        }
+    }
+
+    result += ')';
+    return result;
+}
+
+/**
  * Converts the includes, classes and methods in a Javascript
  * file into an API Signature File called api.txt, stored in the
  * output directory.
@@ -71,25 +90,6 @@ class APISignatureGenerator {
             fs.appendFileSync(program.outputDir + '/api.txt', writer.getBuffer());
         }
     }
-}
-
-/**
- * Converts an array of parameter types to a string
- * @param  {string[]} paramTypes array of parameter type names
- * @return {string} - string representation
- * @private
- */
-function paramsToString(paramTypes) {
-    let result = '(';
-    for(let n=0; n < paramTypes.length; n++) {
-        result += paramTypes[n];
-        if(n < paramTypes.length-1) {
-            result += ',';
-        }
-    }
-
-    result += ')';
-    return result;
 }
 
 module.exports = APISignatureGenerator;

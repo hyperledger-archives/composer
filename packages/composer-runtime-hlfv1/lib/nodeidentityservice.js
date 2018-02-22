@@ -31,6 +31,7 @@ class NodeIdentityService extends IdentityService {
 
     /**
      * Constructor.
+     * @param {any} stub the stub for this invocation
      */
     constructor(stub) {
         super();

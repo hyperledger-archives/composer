@@ -142,15 +142,21 @@ describe('Factory', function() {
             should.equal(resource.newValue, undefined);
         });
 
+        const assertEmptyFieldValues = function(resource) {
+            should.not.equal(resource.newValue, undefined);
+            resource.newValue.should.be.a('String');
+            resource.newValue.length.should.equal(0);
+        };
+
         it('should generate empty field values', function() {
             const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'empty' });
             assertEmptyFieldValues(resource);
         });
 
-        const assertEmptyFieldValues = function(resource) {
+        const assertSampleFieldValues = function(resource) {
             should.not.equal(resource.newValue, undefined);
             resource.newValue.should.be.a('String');
-            resource.newValue.length.should.equal(0);
+            resource.newValue.length.should.not.equal(0);
         };
 
         it('should generate sample field values', function() {
@@ -163,10 +169,8 @@ describe('Factory', function() {
             assertSampleFieldValues(resource);
         });
 
-        const assertSampleFieldValues = function(resource) {
-            should.not.equal(resource.newValue, undefined);
-            resource.newValue.should.be.a('String');
-            resource.newValue.length.should.not.equal(0);
+        const assertOptionalNotDefined = function(resource) {
+            should.equal(resource.optionalValue, undefined);
         };
 
         it('should not define optional fields with generated empty data if includeOptionalFields not specified', function() {
@@ -179,8 +183,9 @@ describe('Factory', function() {
             assertOptionalNotDefined(resource);
         });
 
-        const assertOptionalNotDefined = function(resource) {
-            should.equal(resource.optionalValue, undefined);
+        const assertOptionalIsDefined = function(resource) {
+            should.not.equal(resource.optionalValue, undefined);
+            resource.optionalValue.should.be.a('String');
         };
 
         it ('should define optional fields with generated empty data if includeOptionalFields is specified', function() {
@@ -192,11 +197,6 @@ describe('Factory', function() {
             const resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: 'sample', includeOptionalFields: true });
             assertOptionalIsDefined(resource);
         });
-
-        const assertOptionalIsDefined = function(resource) {
-            should.not.equal(resource.optionalValue, undefined);
-            resource.optionalValue.should.be.a('String');
-        };
 
     });
 

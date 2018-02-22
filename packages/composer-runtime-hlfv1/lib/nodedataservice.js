@@ -22,6 +22,9 @@ const LOG = Logger.getLog('NodeDataService');
 
 const collectionObjectType = '$syscollections';
 
+/**
+ * Class representing a data service provided by a {@link Container}.
+ */
 class NodeDataService extends DataService {
 
     /**
@@ -36,6 +39,10 @@ class NodeDataService extends DataService {
         LOG.exit(method);
     }
 
+    /**
+     * Serialize this object to a string.
+     * @return {string} this object as a string.
+     */
     toString() {
         return 'DataService';
     }
@@ -89,8 +96,6 @@ class NodeDataService extends DataService {
     /**
      * Delete a collection with the specified ID.
      * @param {string} id The ID of the collection.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async deleteCollection(id) {
         const method = 'deleteCollection';
@@ -143,7 +148,7 @@ class NodeDataService extends DataService {
     /**
      * Execute a query across all objects stored in all collections, using a query
      * string that is dependent on the current Blockchain platform.
-     * @param {string} queryString The query string for the current Blockchain platform.
+     * @param {string} query The query string for the current Blockchain platform.
      * @return {Promise} A promise that will be resolved with an array of objects
      * when complete, or rejected with an error.
      */
@@ -159,8 +164,6 @@ class NodeDataService extends DataService {
     /**
      * Remove all objects from the specified collection.
      * @param {string} id The ID of the collection.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async clearCollection(id) {
         const method = 'clearCollection';

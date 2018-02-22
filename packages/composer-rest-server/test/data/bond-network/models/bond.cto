@@ -91,3 +91,7 @@ abstract participant BaseParticipant {
 abstract transaction BaseTransaction {
   
 }
+
+asset ExtendedBondAsset extends BondAsset {
+    o String[] arrayProp1
+}
