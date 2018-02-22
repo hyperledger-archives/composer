@@ -34,12 +34,23 @@ let program = yargs
 })
 .argv;
 
-
-
-console.log('Input dir ' + program.inputDir);
-
-// Loop through all the files in the input directory
-processDirectory(program.inputDir);
+/**
+ * Processes a single UML file (.uml extension)
+ *
+ * @param {string} file - the file to process
+ * @private
+ */
+function processFile(file) {
+    let filePath = path.parse(file);
+    if (filePath.ext === '.uml') {
+        let gen = plantuml.generate(file, {
+            format: program.format
+        });
+        const imageFile = program.outputDir + '/' + filePath.name + '.' + program.format;
+        fs.ensureFileSync(imageFile);
+        gen.out.pipe(fs.createWriteStream(imageFile));
+    }
+}
 
 /**
  * Processes all the UML files within a directory.
@@ -66,20 +77,7 @@ function processDirectory(path) {
     });
 }
 
-/**
- * Processes a single UML file (.uml extension)
- *
- * @param {string} file - the file to process
- * @private
- */
-function processFile(file) {
-    let filePath = path.parse(file);
-    if (filePath.ext === '.uml') {
-        let gen = plantuml.generate(file, {
-            format: program.format
-        });
-        const imageFile = program.outputDir + '/' + filePath.name + '.' + program.format;
-        fs.ensureFileSync(imageFile);
-        gen.out.pipe(fs.createWriteStream(imageFile));
-    }
-}
+console.log('Input dir ' + program.inputDir);
+
+// Loop through all the files in the input directory
+processDirectory(program.inputDir);

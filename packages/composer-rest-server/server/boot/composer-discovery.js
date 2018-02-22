@@ -21,137 +21,6 @@ const ModelUtil = require('composer-common').ModelUtil;
 const QueryAnalyzer = require('composer-common').QueryAnalyzer;
 
 /**
- * Create a Composer data source using the specified Composer configuration.
- * @param {Object} app The LoopBack application.
- * @param {Object} composer The Composer configuration.
- * @returns {Promise} A promise that will be resolved with the LoopBack data
- * source when complete, or rejected with an error.
- */
-function createDataSource(app, composer) {
-    const connectorSettings = {
-        name: 'composer',
-        connector: connector,
-        card: composer.card,
-        cardStore: composer.cardStore,
-        namespaces: composer.namespaces,
-        multiuser: composer.multiuser,
-        fs: composer.fs,
-        wallet: composer.wallet
-    };
-    return app.loopback.createDataSource('composer', connectorSettings);
-}
-
-/**
- * Create all of the Composer system models.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- */
-function createSystemModel(app, dataSource) {
-
-    // Create the system model schema.
-    let modelSchema = {
-        name: 'System',
-        description: 'General business network methods',
-        plural: '/system',
-        base: 'Model'
-    };
-    modelSchema = updateModelSchema(modelSchema);
-
-    // Create the system model which is an anchor for all system methods.
-    const System = app.loopback.createModel(modelSchema);
-
-    // Register the system model.
-    app.model(System, {
-        dataSource: dataSource,
-        public: true
-    });
-
-}
-
-/**
- * Create all of the Composer system models.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- */
-function createQueryModel(app, dataSource) {
-
-    // Create the query model schema.
-    let modelSchema = {
-        name: 'Query',
-        description: 'Named queries',
-        plural: '/queries',
-        base: 'Model'
-    };
-    modelSchema = updateModelSchema(modelSchema);
-
-    // Create the query model which is an anchor for all query methods.
-    const Query = app.loopback.createModel(modelSchema);
-
-    // Register the query model.
-    app.model(Query, {
-        dataSource: dataSource,
-        public: true
-    });
-
-}
-
-/**
- * Register all of the Composer system methods.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- */
-function registerSystemMethods(app, dataSource) {
-
-    // Grab the system model.
-    const System = app.models.System;
-    const connector = dataSource.connector;
-
-    // Register all system methods
-    const registerMethods = [
-        registerPingMethod,
-        registerGetAllIdentitiesMethod,
-        registerGetIdentityByIDMethod,
-        registerIssueIdentityMethod,
-        registerBindIdentityMethod,
-        registerRevokeIdentityMethod,
-        registerGetAllHistorianRecordsMethod,
-        registerGetHistorianRecordsByIDMethod
-    ];
-    registerMethods.forEach((registerMethod) => {
-        registerMethod(app, dataSource, System, connector);
-    });
-
-}
-
-/**
- * Register all of the Composer query methods.
- * @param {Object} app The LoopBack application.
- * @param {Object} dataSource The LoopBack data source.
- * @param {boolean} namespaces true if types should be fully qualified
- * @returns {Promise} a promise when complete
- */
-function registerQueryMethods(app, dataSource, namespaces) {
-
-    // Grab the query model.
-    const Query = app.models.Query;
-    const connector = dataSource.connector;
-
-    return new Promise((resolve, reject) => {
-        connector.discoverQueries(null, (error, queries) => {
-            if (error) {
-                return reject(error);
-            }
-
-            queries.forEach((query) => {
-                registerQueryMethod(app, dataSource, Query, connector, query, namespaces);
-            });
-
-            resolve(queries);
-        });
-    });
-}
-
-/**
  * Register a composer named query method at a GET method on the REST API. The
  * parameters for the named query are exposed as GET query parameters.
  * @param {Object} app The LoopBack application.
@@ -719,6 +588,137 @@ function restrictModelMethods(modelSchema, model) {
     // Return the updated model.
     return model;
 
+}
+
+/**
+ * Create a Composer data source using the specified Composer configuration.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} composer The Composer configuration.
+ * @returns {Promise} A promise that will be resolved with the LoopBack data
+ * source when complete, or rejected with an error.
+ */
+function createDataSource(app, composer) {
+    const connectorSettings = {
+        name: 'composer',
+        connector: connector,
+        card: composer.card,
+        cardStore: composer.cardStore,
+        namespaces: composer.namespaces,
+        multiuser: composer.multiuser,
+        fs: composer.fs,
+        wallet: composer.wallet
+    };
+    return app.loopback.createDataSource('composer', connectorSettings);
+}
+
+/**
+ * Create all of the Composer system models.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function createSystemModel(app, dataSource) {
+
+    // Create the system model schema.
+    let modelSchema = {
+        name: 'System',
+        description: 'General business network methods',
+        plural: '/system',
+        base: 'Model'
+    };
+    modelSchema = updateModelSchema(modelSchema);
+
+    // Create the system model which is an anchor for all system methods.
+    const System = app.loopback.createModel(modelSchema);
+
+    // Register the system model.
+    app.model(System, {
+        dataSource: dataSource,
+        public: true
+    });
+
+}
+
+/**
+ * Create all of the Composer system models.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function createQueryModel(app, dataSource) {
+
+    // Create the query model schema.
+    let modelSchema = {
+        name: 'Query',
+        description: 'Named queries',
+        plural: '/queries',
+        base: 'Model'
+    };
+    modelSchema = updateModelSchema(modelSchema);
+
+    // Create the query model which is an anchor for all query methods.
+    const Query = app.loopback.createModel(modelSchema);
+
+    // Register the query model.
+    app.model(Query, {
+        dataSource: dataSource,
+        public: true
+    });
+
+}
+
+/**
+ * Register all of the Composer system methods.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ */
+function registerSystemMethods(app, dataSource) {
+
+    // Grab the system model.
+    const System = app.models.System;
+    const connector = dataSource.connector;
+
+    // Register all system methods
+    const registerMethods = [
+        registerPingMethod,
+        registerGetAllIdentitiesMethod,
+        registerGetIdentityByIDMethod,
+        registerIssueIdentityMethod,
+        registerBindIdentityMethod,
+        registerRevokeIdentityMethod,
+        registerGetAllHistorianRecordsMethod,
+        registerGetHistorianRecordsByIDMethod
+    ];
+    registerMethods.forEach((registerMethod) => {
+        registerMethod(app, dataSource, System, connector);
+    });
+
+}
+
+/**
+ * Register all of the Composer query methods.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {boolean} namespaces true if types should be fully qualified
+ * @returns {Promise} a promise when complete
+ */
+function registerQueryMethods(app, dataSource, namespaces) {
+
+    // Grab the query model.
+    const Query = app.models.Query;
+    const connector = dataSource.connector;
+
+    return new Promise((resolve, reject) => {
+        connector.discoverQueries(null, (error, queries) => {
+            if (error) {
+                return reject(error);
+            }
+
+            queries.forEach((query) => {
+                registerQueryMethod(app, dataSource, Query, connector, query, namespaces);
+            });
+
+            resolve(queries);
+        });
+    });
 }
 
 module.exports = function (app, callback) {

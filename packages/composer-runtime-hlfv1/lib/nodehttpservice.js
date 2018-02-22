@@ -27,6 +27,7 @@ class NodeHTTPService extends HTTPService {
 
     /**
      * Constructor.
+     * @param {any} stub the stub for this invocation
      */
     constructor(stub) {
         super();
@@ -36,6 +37,10 @@ class NodeHTTPService extends HTTPService {
         LOG.exit(method);
     }
 
+    /**
+     * Serialize this object to a string.
+     * @return {string} this object as a string.
+     */
     toString() {
         return 'Instance of HTTPService';
     }

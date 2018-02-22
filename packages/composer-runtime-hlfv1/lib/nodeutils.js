@@ -67,6 +67,7 @@ class NodeUtils {
      *
      * @static
      * @param {any} iterator the chaincode iterator
+     * @param {any} stub the stub for this invocation
      * @returns {promise} a promise that is resolved with the results or rejected or error
      */
     static async deleteAllResults(iterator, stub) {

@@ -502,11 +502,21 @@ class LoopbackVisitor {
 
         // Is the type an array?
         if (field.isArray()) {
-            jsonSchema.type = [ jsonSchema.type ];
-        }
 
-        // Is the field required?
-        jsonSchema.required = !field.isOptional();
+            // Set the type to an array of the already set type from above.
+            jsonSchema.type = [ jsonSchema.type ];
+
+            // Array properties have to be optional and have a default value as LoopBack does not cope with
+            // the difference between a required array property and an empty array property (issue #3438).
+            jsonSchema.default = [];
+            jsonSchema.required = false;
+
+        } else {
+
+            // Is the field required?
+            jsonSchema.required = !field.isOptional();
+
+        }
 
         // Return the schema.
         return jsonSchema;

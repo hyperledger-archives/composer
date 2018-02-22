@@ -23,6 +23,52 @@ const nodereport = require('node-report');
 const tar = require('tar');
 
 /**
+ * Creates a report identifer for use in filenames etc.
+ * @return {String} the report identifier
+ * @private
+ */
+function _createReportId() {
+    let timestamp = moment().utc().format('YYYYMMDD[T]HHmmss');
+    return 'composer-report-' + timestamp;
+}
+
+/**
+ * Sets up the temp directory for the report
+ * @return {String} the Path to the temporary directory
+ * @private
+ */
+function _setupReportDir() {
+    const tmpDir = os.tmpdir();
+    return fs.mkdtempSync(`${tmpDir}${sep}`);
+}
+
+/**
+ * Write simple composer report in the temp directory
+ * @param {String} reportId report identifier
+ * @param {String} tmpDirectory the temporary directory for collecting report output
+ * @private
+ */
+function _createComposerReport(reportId, tmpDirectory) {
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    const composerReportVersion = 'composer-report version: ' + packageJson.version;
+
+    const reportPath = path.join(tmpDirectory, reportId + '.txt');
+    fs.writeFileSync(reportPath, composerReportVersion);
+}
+
+/**
+ * Trigger node-report to write report in the temp directory
+ * @param {String} tmpDirectory the temporary directory for collecting report output
+ * @private
+ */
+function _createNodeReport(tmpDirectory) {
+    nodereport.setDirectory(tmpDirectory);
+    nodereport.triggerReport();
+}
+
+/**
  * Prepares a report ID and temporary ready to begin collecting
  * diagnostic data
  * @return {Object} the report ID and temporary directory
@@ -85,49 +131,3 @@ function completeReport(reportId, tmpDirectory) {
 }
 
 module.exports = { beginReport, collectBasicDiagnostics, completeReport } ;
-
-/**
- * Creates a report identifer for use in filenames etc.
- * @return {String} the report identifier
- * @private
- */
-function _createReportId() {
-    let timestamp = moment().utc().format('YYYYMMDD[T]HHmmss');
-    return 'composer-report-' + timestamp;
-}
-
-/**
- * Sets up the temp directory for the report
- * @return {String} the Path to the temporary directory
- * @private
- */
-function _setupReportDir() {
-    const tmpDir = os.tmpdir();
-    return fs.mkdtempSync(`${tmpDir}${sep}`);
-}
-
-/**
- * Write simple composer report in the temp directory
- * @param {String} reportId report identifier
- * @param {String} tmpDirectory the temporary directory for collecting report output
- * @private
- */
-function _createComposerReport(reportId, tmpDirectory) {
-    const packageJsonPath = path.join(__dirname, '..', 'package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-    const composerReportVersion = 'composer-report version: ' + packageJson.version;
-
-    const reportPath = path.join(tmpDirectory, reportId + '.txt');
-    fs.writeFileSync(reportPath, composerReportVersion);
-}
-
-/**
- * Trigger node-report to write report in the temp directory
- * @param {String} tmpDirectory the temporary directory for collecting report output
- * @private
- */
-function _createNodeReport(tmpDirectory) {
-    nodereport.setDirectory(tmpDirectory);
-    nodereport.triggerReport();
-}

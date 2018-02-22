@@ -17,28 +17,6 @@
 const loremIpsum = require('lorem-ipsum');
 
 /**
- * Factory providing static methods to create ValueGenerator instances.
- * @private
- */
-class ValueGeneratorFactory {
-    /**
-     * Create a value generator that supplies empty values.
-     * @return {ValueGenerator} a value generator.
-     */
-    static empty() {
-        return new EmptyValueGenerator();
-    }
-
-    /**
-     * Create a value generator that supplies randomly generated sample values.
-     * @return {ValueGenerator} a value generator.
-     */
-    static sample() {
-        return new SampleValueGenerator();
-    }
-}
-
-/**
  * Empty value generator.
  * @private
  */
@@ -195,6 +173,28 @@ class SampleValueGenerator extends EmptyValueGenerator {
      */
     getArray(valueSupplier) {
         return [valueSupplier()];
+    }
+}
+
+/**
+ * Factory providing static methods to create ValueGenerator instances.
+ * @private
+ */
+class ValueGeneratorFactory {
+    /**
+     * Create a value generator that supplies empty values.
+     * @return {ValueGenerator} a value generator.
+     */
+    static empty() {
+        return new EmptyValueGenerator();
+    }
+
+    /**
+     * Create a value generator that supplies randomly generated sample values.
+     * @return {ValueGenerator} a value generator.
+     */
+    static sample() {
+        return new SampleValueGenerator();
     }
 }
 
