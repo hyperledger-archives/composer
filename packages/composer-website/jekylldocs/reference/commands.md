@@ -54,16 +54,17 @@ Lists all cards currently in your wallet: [composer card list](./composer.card.l
 
 ## Business Network management
 
-`composer network deploy`
-
-Deploy a Business Network Definition: [composer network deploy](./composer.network.deploy.html)
-
-*Please note: It is recommended that users use the `composer runtime install` and `composer network start` commands instead of this command.*
-
-
 `composer network undeploy`
 
 Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.html)
+
+`composer network install`
+
+Install a business network archive to a {{site.data.conrefs.hlf_full}} peer: [composer network install](./composer.network.install.html)
+
+`composer network start`
+
+Start a business network on a {{site.data.conrefs.hlf_full}} peer that already has the business network installed: [composer network start](./composer.network.start.html)
 
 `composer network list`
 
@@ -84,14 +85,6 @@ Update a deployed Business Network: [composer network update](./composer.network
 `composer network upgrade`
 
 Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.html)
-
-`composer network start`
-
-Deploy a business network archive to a {{site.data.conrefs.hlf_full}} peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.html)
-
-`composer runtime install`
-
-Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} peer: [composer runtime install](./composer.runtime.install.html)
 
 ## Participant and Identity management
 

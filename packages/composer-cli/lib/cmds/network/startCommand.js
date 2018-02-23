@@ -17,7 +17,7 @@
 const Start = require ('./lib/start.js');
 
 module.exports.command = 'start [options]';
-module.exports.describe = 'Starts a business network';
+module.exports.describe = 'Starts a specific version of a business network that is already installed to Hyperledger Fabric';
 module.exports.builder = function (yargs) {
     yargs.options({
         networkName: { alias: 'n', required: true, description: 'Name of the business network to start' },
@@ -33,7 +33,7 @@ module.exports.builder = function (yargs) {
     });
 
     // enforce the option after these options
-    yargs.requiresArg(['file','archiveFile','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
+    yargs.requiresArg(['file','networkName','networkVersion','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
 
     yargs.conflicts('C','S');
 

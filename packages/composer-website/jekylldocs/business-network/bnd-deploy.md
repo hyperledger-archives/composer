@@ -12,11 +12,12 @@ excerpt: How to deploy a business network
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (.bna) file. The `composer archive create` command is used to create a business network archive file from a business network definition folder on disk.
 
-Once the business network archive file has been created it can be deployed to a runtime using the [`composer runtime install`](../reference/composer.runtime.install.html) command followed by a [`composer network start`](../reference/composer.network.start.html) command.
+Once the business network archive file has been created it can be deployed to a runtime using the [`composer network install`](../reference/composer.network.install.html) command followed by a [`composer network start`](../reference/composer.network.start.html) command.
 
 For example:
 
-    composer runtime install -n tutorial-network -c PeerAdmin@fabric-network
+    composer network install --archiveFile tutorial-network@1.0.0.bna --card PeerAdmin@fabric-network
+    composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@Fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
 
 To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
 

@@ -17,7 +17,7 @@
 const Install = require ('./lib/install.js');
 
 module.exports.command = 'install [options]';
-module.exports.describe = 'Installs the Hyperledger Composer runtime for a business network to the Hyperledger Fabric';
+module.exports.describe = 'Installs a business network archive to Hyperledger Fabric';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
     card: { alias: 'c', required: true, describe: 'The cardname to use to install the network', type:'string'},
