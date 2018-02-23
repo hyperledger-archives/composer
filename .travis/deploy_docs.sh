@@ -84,7 +84,7 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
 
     if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-        DOCS_DIR=""
+        DOCS_DIR="latest"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         DOCS_DIR="next"
     else 
@@ -107,6 +107,5 @@ cd ${TODIR}
 git add .
 git commit -m "Automatic deployment of website"
 git push origin gh-pages
-
 
 _exit "All complete" 0
