@@ -108,6 +108,9 @@ git ls-remote
 # Log in to Docker Hub.
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 
+# This is the list of npm modules required by docker images
+export NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-playground composer-playground-api composer-rest-server loopback-connector-composer"
+
 # This is the list of Docker images to build.
 export DOCKER_IMAGES="composer-playground composer-rest-server composer-cli"
 
@@ -134,10 +137,13 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
     echo "Pushing with tag ${TAG}"
     lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag="${TAG}" 2>&1
 
-	# quick check to see if the latest npm module has been published
-	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-	  sleep 10
-	done
+    # Check that all required modules have been published to npm and are retrievable
+    for j in ${NPM_MODULES}; do
+        # check the next in the list
+        while ! npm view ${j}@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+            sleep 10
+        done
+    done
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
@@ -182,10 +188,13 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
     echo "Pushing with tag ${TAG}"
     lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag="${TAG}" 2>&1
 
-	# quick check to see if the latest npm module has been published
-	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-	  sleep 10
-	done
+    # Check that all required modules have been published to npm and are retrievable
+    for j in ${NPM_MODULES}; do
+        # check the next in the list
+        while ! npm view ${j}@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+            sleep 10
+        done
+    done
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
