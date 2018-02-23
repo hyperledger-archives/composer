@@ -477,7 +477,7 @@ class Composer {
                 if(this.lastResp[type].match(regex)) {
                     resolve();
                 } else {
-                    reject('regex match on ' + type + ' failed');
+                    reject(`Regex match on ${type} failed.\nExpected: ${regex}\nActual: ${this.lastResp[type]}`);
                 }
             }
         });
