@@ -101,15 +101,14 @@
   "nyc": {
     "exclude": [
       "coverage/**",
-      "lib/codegen/javascriptparser.js",
-      "lib/codegen/parsejs.js",
       "lib/introspect/parser.js",
       "lib/acl/parser.js",
       "lib/query/parser.js",
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "lib/codegen/javascriptparser.js"
     ],
     "reporter": [
       "text-summary",
