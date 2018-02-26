@@ -315,79 +315,6 @@ describe('Connection', () => {
 
     });
 
-    describe('#update', () => {
-
-        it('should reject if no network defn given',()=>{
-            (()=>{
-                connection.update(mockSecurityContext,null);
-            }).should.throw(/business network definition not specified/);
-        });
-
-        it('should handle valid data', () => {
-            const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
-            }));
-
-            const buffer2 = Buffer.from(JSON.stringify({
-                data: 'aGsad33VsbG8='
-            }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
-            let mockFactory = sinon.createStubInstance(Factory);
-            let mockSerializer = sinon.createStubInstance(Serializer);
-            let mockTransaction = sinon.createStubInstance(Resource);
-
-            mockFactory.newTransaction.returns(mockTransaction);
-            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.toJSON.returns({key:'value'});
-            mockTransaction.getIdentifier.returns('txid');
-
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-            .then(()=>{
-                sinon.assert.called(Util.invokeChainCode);
-                sinon.assert.called(Util.queryChainCode);
-                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
-            });
-
-        });
-
-        it('should handle valid data minus tx id and with a hardcoded timestamp', () => {
-            const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
-            }));
-
-            const buffer2 = Buffer.from(JSON.stringify({
-                data: 'aGsad33VsbG8='
-            }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
-            let mockFactory = sinon.createStubInstance(Factory);
-            let mockSerializer = sinon.createStubInstance(Serializer);
-            let mockTransaction = sinon.createStubInstance(Resource);
-
-            mockFactory.newTransaction.returns(mockTransaction);
-            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.toJSON.returns({key:'value'});
-            mockTransaction.getIdentifier.returns(null);
-            mockTransaction.timestamp='the epoch';
-
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-            .then(()=>{
-                sinon.assert.called(Util.invokeChainCode);
-                sinon.assert.called(Util.queryChainCode);
-                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
-            });
-
-        });
-
-    });
-
     describe('#upgrade', () => {
 
         it('should call _upgrade and handle no error', () => {
@@ -414,37 +341,6 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             (() => {
                 connection._upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#undeploy', () => {
-
-        it('should call _undeploy and handle no error', () => {
-            sinon.stub(connection, '_undeploy').yields(null);
-            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
-                .then(() => {
-                    sinon.assert.calledWith(connection._undeploy, mockSecurityContext, 'org-acme-biznet');
-                });
-        });
-
-        it('should call _undeploy and handle an error', () => {
-            sinon.stub(connection, '_undeploy').yields(new Error('error'));
-            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._undeploy, mockSecurityContext), 'org-acme-biznet';
-                });
-        });
-
-    });
-
-    describe('#_undeploy', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._undeploy(mockSecurityContext, 'org-acme-biznet');
             }).should.throw(/abstract function called/);
         });
 

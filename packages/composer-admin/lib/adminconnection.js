@@ -483,31 +483,6 @@ class AdminConnection {
     }
 
     /**
-     * Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
-     * must have been previously deployed.
-     * @example
-     * // Updates a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.update(businessNetworkDefinition)
-     *    // Business network definition updated
-     * } catch(error){
-     *     // Add optional error handling here.
-     * }
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The new BusinessNetworkDefinition
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * updated.
-     */
-    update (businessNetworkDefinition) {
-        return Promise.resolve().then(() => {
-            Util.securityCheck(this.securityContext);
-            return this.connection.update(this.securityContext, businessNetworkDefinition);
-        });
-    }
-
-    /**
      * Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
      * must have been previously deployed.
      *

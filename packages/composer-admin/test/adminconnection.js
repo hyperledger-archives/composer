@@ -16,7 +16,6 @@
 
 const AdminConnection = require('..').AdminConnection;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const IdCard = require('composer-common').IdCard;
@@ -69,7 +68,6 @@ describe('AdminConnection', () => {
         mockConnection.ping.resolves();
         mockConnection.queryChainCode.resolves();
         mockConnection.invokeChainCode.resolves();
-        mockConnection.update.resolves();
         mockConnection.upgrade.resolves();
         mockConnection.reset.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
@@ -442,20 +440,6 @@ describe('AdminConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.reset);
                     sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
-                });
-        });
-    });
-
-    describe('#update', () => {
-
-        it('should be able to update a business network', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.update(businessNetworkDefinition)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.update);
-                    sinon.assert.calledWith(mockConnection.update, mockSecurityContext, businessNetworkDefinition);
                 });
         });
     });

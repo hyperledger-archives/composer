@@ -217,54 +217,6 @@ class Connection extends EventEmitter {
     }
 
     /**
-     * Updates an existing deployed business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been updated, or rejected with an error.
-     */
-    update(securityContext, businessNetworkDefinition) {
-
-        // create the new transaction to update the network
-        if (!businessNetworkDefinition) {
-            throw new Error('business network definition not specified');
-        }
-        let currentDeployedNetwork;
-
-        return Util.queryChainCode(securityContext, 'getBusinessNetwork', [])
-        .then((buffer) => {
-            let businessNetworkJSON = JSON.parse(buffer.toString());
-            let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
-            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-        })
-        .then((businessNetwork) => {
-            currentDeployedNetwork = businessNetwork;
-            // Serialize the business network.
-            return businessNetworkDefinition.toArchive({ date: new Date(545184000000) });
-        })
-        .then((businessNetworkArchive) => {
-            // Send an update request to the chaincode.
-            // create the new system transaction to add the resources
-            let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','UpdateBusinessNetwork');
-            let id = transaction.getIdentifier();
-            if (id === null || id === undefined) {
-                id = uuid.v4();
-                transaction.setIdentifier(id);
-            }
-            let timestamp = transaction.timestamp;
-            if (timestamp === null || timestamp === undefined) {
-                timestamp = transaction.timestamp = new Date();
-            }
-
-
-            transaction.businessNetworkArchive =  businessNetworkArchive.toString('base64');
-            let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-            return Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
-        });
-    }
-
-    /**
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
@@ -393,42 +345,6 @@ class Connection extends EventEmitter {
      * @param {upgradeCallback} callback The callback function to call when complete.
      */
     _upgrade(securityContext, businessNetworkName, upgradeOptions, callback) {
-        throw new Error('abstract function called');
-    }
-
-    /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been undeployed, or rejected with an error.
-     */
-    undeploy(securityContext, businessNetworkIdentifier) {
-        return new Promise((resolve, reject) => {
-            this._undeploy(securityContext, businessNetworkIdentifier, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback undeployCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @param {undeployCallback} callback The callback function to call when complete.
-     */
-    _undeploy(securityContext, businessNetworkIdentifier, callback) {
         throw new Error('abstract function called');
     }
 

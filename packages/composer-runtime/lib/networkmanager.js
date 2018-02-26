@@ -38,10 +38,6 @@ class NetworkManager extends TransactionHandler {
             this.startBusinessNetwork
         );
         this.bind(
-            'org.hyperledger.composer.system.UpdateBusinessNetwork',
-            this.updateBusinessNetwork
-        );
-        this.bind(
             'org.hyperledger.composer.system.ResetBusinessNetwork',
             this.resetBusinessNetwork
         );
@@ -91,17 +87,6 @@ class NetworkManager extends TransactionHandler {
         LOG.entry(method, transaction);
         LOG.exit(method);
         return Promise.resolve();
-    }
-
-    /**
-     * Update the business network archive.
-     * @param {api} api The request context.
-     * @param {Transaction} transaction The arguments to pass to the chaincode function.
-     */
-    async updateBusinessNetwork(api, transaction) {
-        const method = 'updateBusinessNetwork';
-        LOG.entry(method, api, transaction);
-        LOG.exit(method);
     }
 
     /**

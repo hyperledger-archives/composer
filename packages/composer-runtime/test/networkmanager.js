@@ -104,14 +104,6 @@ describe('NetworkManager', () => {
 
     });
 
-    describe('#updateBusinessNetwork', () => {
-
-        it('code coverage', () => {
-            return networkManager.updateBusinessNetwork();
-        });
-
-    });
-
     describe('#resetBusinessNetwork', () => {
 
         it('should delete all registries and resources', () => {

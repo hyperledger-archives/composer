@@ -176,16 +176,12 @@ transaction StartBusinessNetwork {
 }
 
 transaction ResetBusinessNetwork {
-  
-}
 
-transaction UpdateBusinessNetwork {
-  o String businessNetworkArchive
 }
 
 /**
  * Sets the log level of the Business Network runtime to that specified
- * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR 
+ * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR
  */
 transaction SetLogLevel {
   o String newLogLevel
