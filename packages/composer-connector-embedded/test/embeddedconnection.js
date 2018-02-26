@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { Certificate, Connection, ConnectionManager } = require('composer-common');
+const { BusinessNetworkDefinition, Certificate, Connection, ConnectionManager } = require('composer-common');
 const Context = require('composer-runtime').Context;
 const DataCollection = require('composer-runtime').DataCollection;
 const DataService = require('composer-runtime').DataService;
@@ -31,15 +31,16 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 describe('EmbeddedConnection', () => {
-
-    let sandbox;
+    const sandbox = sinon.sandbox.create();
     let mockConnectionManager;
     let mockSecurityContext;
     let identity;
     let connection;
+    let testBusinessNetwork;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        testBusinessNetwork = new BusinessNetworkDefinition('test-network@1.0.0');
+        Context.setBusinessNetwork(testBusinessNetwork);
         EmbeddedConnection.reset();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockSecurityContext = sinon.createStubInstance(EmbeddedSecurityContext);
@@ -176,34 +177,6 @@ describe('EmbeddedConnection', () => {
                         container: mockContainer,
                         engine: mockEngine
                     });
-                });
-        });
-
-    });
-
-    describe('#undeploy', () => {
-
-        it('should remove the business network', () => {
-            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            return connection.undeploy(mockSecurityContext, 'org.acme.Business')
-                .then(() => {
-                    should.equal(EmbeddedConnection.getBusinessNetwork('org.acme.Business', 'devFabric1'), undefined);
-                });
-        });
-
-        it('should handle a duplicate removal of a business network', () => {
-            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            return connection.undeploy(mockSecurityContext, 'org.acme.Business')
-                .then(() => {
-                    return connection.undeploy(mockSecurityContext, 'org.acme.Business');
                 });
         });
 

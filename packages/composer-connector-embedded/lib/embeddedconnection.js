@@ -66,19 +66,6 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * Delete the specified business network.
-     * @param {string} businessNetworkIdentifier The business network identifier.
-     * @param {string} connectionProfile The connection profile name.
-     */
-    static deleteBusinessNetwork(businessNetworkIdentifier, connectionProfile) {
-        let chaincodeUUID = businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        if (chaincodeUUID) {
-            delete chaincodes[chaincodeUUID];
-            delete businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        }
-    }
-
-    /**
      * Add a chaincode.
      * @param {string} chaincodeUUID The chaincode UUID.
      * @param {Container} container The container.
@@ -184,19 +171,6 @@ class EmbeddedConnection extends Connection {
         let context = new EmbeddedContext(engine, identity, this);
         await engine.init(context, 'init', [startTransaction]);
     }
-
-    /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been undeployed, or rejected with an error.
-     */
-    async undeploy(securityContext, businessNetworkIdentifier) {
-        EmbeddedConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-    }
-
 
     /**
      * Test ("ping") the connection to the business network.
