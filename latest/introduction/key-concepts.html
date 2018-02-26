@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Key Concepts | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Key Concepts</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/introduction/introduction"><b>Introduction</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/installing/installing-index"><b>Installing</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/installing/using-playground-locally">Installing Playground only</a></li>
+</ul></li>
+<li><p><a href="/composer/tutorials/tutorials"><b>Tutorials</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/playground/playground-index"><b>Using Playground</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/business-network/historian">Hyperledger Composer Historian</a></li>
+</ul></li>
+<li><p><a href="/composer/applications/applications-index"><b>Developing Applications</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/integrating/call-out">Calling external REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+</ul></li>
+<li><p><a href="/composer/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/reference/reference-index"><b>Reference</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/reference/query-language">Query Language</a></li>
+<li><a href="/composer/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/support/support-index"><b>Support</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/api/api-doc-index"><b>API Reference</b><img src="/composer/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/api/allData">API Class Index</a></li>
+<li><a href="/composer/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
+<li><a href="/composer/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
+<li><a href="/composer/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="key-concepts-in-hyperledger-composer">Key Concepts in Hyperledger Composer</h1>
+
+<p>Hyperledger Composer is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow <strong>participants</strong> to send <strong>transactions</strong> that exchange <strong>assets</strong>.</p>
+
+<hr>
+
+<h2 id="hyperledger-composer-components">Hyperledger Composer Components</h2>
+
+<p>You can experience Hyperledger Composer with our browser-based UI called Hyperledger Composer Playground.  Playground is available as a hosted version (no install necessary) or a local install (good for editing and testing sample business networks offline).</p>
+
+<p>Developers who want to use Hyperledger Composer&#39;s full application development capabilities should install the Developer Tools.</p>
+
+<p><img src="../assets/img/ComposerComponents.svg" alt="Diagram of Hyperledger Composer components"></p>
+
+<hr>
+
+<h2 id="key-concepts-in-hyperledger-composer">Key Concepts in Hyperledger Composer</h2>
+
+<h3 id="blockchain-state-storage">Blockchain State Storage</h3>
+
+<p>All transactions submitted through a business network are stored on the blockchain ledger, and the current state of assets and participants are stored in the blockchain state database. The blockchain distributes the ledger and the state database across a set of peers and ensures that updates to the ledger and state database are consistent across all peers using a consensus algorithm.</p>
+
+<hr>
+
+<h3 id="connection-profiles">Connection Profiles</h3>
+
+<p>Hyperledger Composer uses <em>Connection Profiles</em> to connect to a runtime. A Connection Profile is a JSON document that lives in the user&#39;s home directory (or may come from an environment variable) and is referenced by name when using the Composer APIs or the Command Line tools. Using connection profiles ensures that code and scripts are easily portable from one runtime instance to another. You can read more about Connection Profiles in the reference section.</p>
+
+<hr>
+
+<h3 id="assets">Assets</h3>
+
+<p>Assets are tangible or intangible goods, services, or property, and are stored in registries. Assets can represent almost anything in a business network, for example, a house for sale, the sale listing, the land registry certificate for that house, and the insurance documents for that house may all be assets in one or more business networks.</p>
+
+<p>Assets must have a unique identifier, but other than that, they can contain whatever properties you define. Assets may be <em>related to</em> other assets or participants.</p>
+
+<hr>
+
+<h3 id="participants">Participants</h3>
+
+<p>Participants are members of a business network. They may own assets and submit transactions. Participant types are modeled, and like assets, must have an identifier and can have any other properties as required.</p>
+
+<hr>
+
+<h3 id="identities-and-id-cards">Identities and ID cards</h3>
+
+<p>Within a business network, participants can be associated with an identity. ID cards are a combination of an identity, a connection profile, and metadata. ID cards simplify the process of connecting to a business network, and extend the concept of an identity outside the business network to a &#39;wallet&#39; of identities, each associated with a specific business network and connection profile.</p>
+
+<hr>
+
+<h3 id="transactions">Transactions</h3>
+
+<p>Transactions are the mechanism by which participants interact with assets. This could be as simple as a participant placing a bid on a asset in an auction, or an auctioneer marking an auction closed, automatically transferring ownership of the asset to the highest bidder.</p>
+
+<hr>
+
+<h3 id="queries">Queries</h3>
+
+<p>Queries are used to return data about the blockchain world-state. Queries are defined within a business network, and can include variable parameters for simple customization. By using queries, data can be easily extracted from your blockchain network. Queries are sent by using the Hyperledger Composer API.</p>
+
+<hr>
+
+<h3 id="events">Events</h3>
+
+<p>Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be emitted by transaction processor functions to indicate to external systems that something of importance has happened to the ledger. Applications can subscribe to emitted events through the <code>composer-client</code> API.</p>
+
+<hr>
+
+<h3 id="access-control">Access Control</h3>
+
+<p>Business networks may contain a set of access control rules. Access control rules allow fine-grained control over what participants have access to what assets in the business network and under what conditions. The access control language is rich enough to capture sophisticated conditions declaratively, such as &quot;only the owner of a vehicle can transfer ownership of the vehicle&quot;. Externalizing access control from transaction processor function logic makes it easier to inspect, debug, develop and maintain.</p>
+
+<hr>
+
+<h3 id="historian-registry">Historian registry</h3>
+
+<p>The historian is a specialised registry which records successful transactions, including the participants and identities that submitted them. The historian stores transactions as <code>HistorianRecord</code> assets, which are defined in the Hyperledger Composer system namespace.</p>
+
+<hr>
+
+<h2 id="where-do-i-go-from-here">Where do I go from here?</h2>
+
+<hr>
+
+<ul>
+<li>To try Hyperledger Composer right away, visit the the <a href="https://composer-playground.mybluemix.net">Online Playground</a></li>
+<li>For an architectural overview of a typical solution built with Composer, see <a href="./solution-architecture.html">Typical Solution Architecture</a></li>
+<li>To install the Development Tools, see <a href="../installing/development-tools.html">Getting setup with development tools</a></li>
+</ul>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/assets/js/nav.js"></script>
+<script src="/composer/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
