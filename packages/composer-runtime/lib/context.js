@@ -148,8 +148,6 @@ class Context {
      * @param {string} [options.arguments] The arguments for the currently executing runtime method.
      * @param {Container} [options.container] The chaincode container in which the transactions is running
      * @param {DataCollection} [options.sysregistries] The system registries collection to use.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async initialize(options) {
         const method = 'initialize';
@@ -497,6 +495,10 @@ class Context {
         return this.eventNumber++;
     }
 
+    /**
+     * Returns the installed business network definition
+     * @returns {BusinessNetworkDefinition} business network definition
+    */
     getBusinessNetworkDefinition() {
         return this.networkDefinition;
     }

@@ -483,30 +483,6 @@ class AdminConnection {
     }
 
     /**
-     * Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no
-     * longer be able to process transactions.
-     * @example
-     * // Undeploy a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.undeploy('network-name')
-     *    // Undeployed Business Network Definition
-     * } catch(error){
-     *     // Add error handling here.
-     * }
-     * @param {String} businessNetworkName - The name of business network that will be used to start this runtime.
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * undeployed.
-     */
-    undeploy (businessNetworkName) {
-        return Promise.resolve().then(() => {
-            Util.securityCheck(this.securityContext);
-            return this.connection.undeploy(this.securityContext, businessNetworkName);
-        });
-    }
-
-    /**
      * Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
      * must have been previously deployed.
      * @example

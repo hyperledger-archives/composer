@@ -51,33 +51,17 @@ class EngineBusinessNetworks {
         return result;
     }
 
+    /**
+     * Assert access for operation
+     * @param {*} context the context
+     * @param {*} operation the operation
+     */
     async _assertAccessForOperation(context, operation) {
         const dataService = context.getDataService();
         const sysdata = await dataService.getCollection('$sysdata');
         const metanetwork = await sysdata.get('metanetwork');
         const resource = context.getSerializer().fromJSON(metanetwork);
         await context.getAccessController().check(resource, operation);
-    }
-
-    /**
-     * Undeploy the business network. Does nothing.
-     * @param {Context} context The request context.
-     * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
-     */
-    async undeployBusinessNetwork(context, args) {
-        const method = 'undeployBusinessNetwork';
-        LOG.entry(method, context, args);
-
-        if (args.length !== 0) {
-            LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, method, []));
-        }
-
-        await this._assertAccessForOperation(context, 'DELETE');
-
-        LOG.exit(method);
     }
 
 }

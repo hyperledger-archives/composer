@@ -633,41 +633,6 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
-     */
-    undeploy(securityContext, businessNetworkIdentifier) {
-        const method = 'undeploy';
-        LOG.entry(method, securityContext, businessNetworkIdentifier);
-
-        // Check that a valid security context has been specified.
-        HLFUtil.securityCheck(securityContext);
-
-        // Validate all the arguments.
-        if (!businessNetworkIdentifier) {
-            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
-        }
-        if (businessNetworkIdentifier !== this.businessNetworkIdentifier) {
-            return Promise.reject(new Error('businessNetworkIdentifier does not match the business network identifier for this connection'));
-        }
-
-        // Send an undeploy request which will disable the chaincode.
-        return this.invokeChainCode(securityContext, 'undeployBusinessNetwork', [])
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying undeploy. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
-    }
-
-    /**
      * Test ("ping") the connection to the business network.
      * @param {HLFSecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the

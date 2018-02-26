@@ -9,7 +9,6 @@ class AdminConnection {
    + Promise disconnect() 
    + Promise install(String,Object) 
    + Promise start(String,String,Object) 
-   + Promise undeploy(String) 
    + Promise update(BusinessNetworkDefinition) 
    + Promise reset(String) 
    + Promise upgrade(string,object) 

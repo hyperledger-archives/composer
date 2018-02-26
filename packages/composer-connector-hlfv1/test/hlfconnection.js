@@ -1202,40 +1202,6 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#undeploy', () => {
-        beforeEach(() => {
-            sandbox.stub(process, 'on').withArgs('exit').yields();
-            mockClient.getEventHubsForOrg.returns([mockEventHub]);
-            connection._connectToEventHubs();
-        });
-
-        it('should throw if businessNetworkIdentifier not specified', () => {
-            return connection.undeploy(mockSecurityContext, null)
-                .should.be.rejectedWith(/businessNetworkIdentifier not specified/);
-        });
-
-        it('should throw if businessNetworkIdentifier not same as the connection', () => {
-            return connection.undeploy(mockSecurityContext, 'FunnyNetwork')
-                .should.be.rejectedWith(/businessNetworkIdentifier does not match the business network identifier for this connection/);
-        });
-
-        it('should invoke the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').resolves();
-            return connection.undeploy(mockSecurityContext, mockBusinessNetwork.getName())
-                .then(() => {
-                    sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
-                });
-        });
-
-        it('should handle errors invoking the chaincode', () => {
-            sandbox.stub(connection, 'invokeChainCode').rejects('such error');
-            return connection.undeploy(mockSecurityContext, mockBusinessNetwork.getName())
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
     describe('#upgrade', () => {
         const validResponses = [{
             response: {

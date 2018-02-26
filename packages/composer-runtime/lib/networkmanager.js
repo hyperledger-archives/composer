@@ -97,8 +97,6 @@ class NetworkManager extends TransactionHandler {
      * Update the business network archive.
      * @param {api} api The request context.
      * @param {Transaction} transaction The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async updateBusinessNetwork(api, transaction) {
         const method = 'updateBusinessNetwork';

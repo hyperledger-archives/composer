@@ -103,18 +103,4 @@ describe('EngineBusinessNetworks', () => {
         });
     });
 
-    describe('#undeployBusinessNetwork', () => {
-
-        it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'undeployBusinessNetwork', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "undeployBusinessNetwork", expecting "\[\]"/);
-        });
-
-        it('should check DELETE access', () => {
-            return engine.invoke(mockContext, 'undeployBusinessNetwork', []).then(() => {
-                sinon.assert.calledWithExactly(mockAccessController.check, sinon.match.any, 'DELETE');
-            });
-        });
-
-    });
 });

@@ -69,7 +69,6 @@ describe('AdminConnection', () => {
         mockConnection.ping.resolves();
         mockConnection.queryChainCode.resolves();
         mockConnection.invokeChainCode.resolves();
-        mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
         mockConnection.upgrade.resolves();
         mockConnection.reset.resolves();
@@ -443,19 +442,6 @@ describe('AdminConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.reset);
                     sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
-                });
-        });
-    });
-
-    describe('#undeploy', () => {
-
-        it('should be able to undeploy a business network', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.undeploy('testnetwork')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.undeploy);
-                    sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, 'testnetwork');
                 });
         });
     });
