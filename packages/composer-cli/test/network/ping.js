@@ -29,14 +29,14 @@ describe('composer network ping CLI unit tests', () => {
     let sandbox;
     let argv;
     let mockBusinessNetworkConnection;
-    let mockBusinessNetworkDefinition;
+    let businessNetworkDefinition;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         argv = { card: 'cardname' };
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+        businessNetworkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+        mockBusinessNetworkConnection.connect.resolves(businessNetworkDefinition);
         mockBusinessNetworkConnection.ping.resolves({
             version: '9.9.9',
             participant: null,
@@ -58,7 +58,7 @@ describe('composer network ping CLI unit tests', () => {
         sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
         sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
         sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?<no participant found>/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?<no identity found>/));
     });
@@ -75,7 +75,7 @@ describe('composer network ping CLI unit tests', () => {
         sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
         sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
         sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?org.doge.Doge#DOGE_1/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?<no identity found>/));
     });
@@ -92,7 +92,7 @@ describe('composer network ping CLI unit tests', () => {
         sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
         sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
         sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?<no participant found>/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?org.hyperledger.composer.system.Identity#IDENTITY_1/));
     });
@@ -109,7 +109,7 @@ describe('composer network ping CLI unit tests', () => {
         sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
         sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
         sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?org.doge.Doge#DOGE_1/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?org.hyperledger.composer.system.Identity#IDENTITY_1/));
     });
@@ -118,6 +118,12 @@ describe('composer network ping CLI unit tests', () => {
         mockBusinessNetworkConnection.ping.rejects(new Error('such error'));
         await Ping.handler(argv)
             .should.be.rejectedWith(/such error/);
+    });
+
+    it('should output business network version', async () => {
+        const expected = new RegExp('Business network version:.*?' + businessNetworkDefinition.getVersion());
+        await Ping.handler(argv);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(expected));
     });
 
 });
