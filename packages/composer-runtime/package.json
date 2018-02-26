@@ -16,8 +16,6 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "postlint": "npm run browserify",
-    "browserify": "browserify ./index.js -t [ babelify --presets [ latest ] ] > ./out/composer-runtime.js",
     "test": "nyc mocha --recursive -t 10000",
     "mocha": "mocha --recursive -t 10000",
     "nyc": "nyc mocha --recursive -t 10000"
@@ -36,7 +34,6 @@
   "devDependencies": {
     "babel-preset-latest": "6.24.1",
     "babelify": "7.3.0",
-    "browserify": "13.3.0",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "chai-subset": "1.3.0",

@@ -28,8 +28,8 @@ const WebContainer = require('composer-runtime-web').WebContainer;
 const WebSecurityContext = require('../lib/websecuritycontext');
 
 const chai = require('chai');
-const should = chai.should();
 chai.use(require('chai-as-promised'));
+const should = chai.should();
 const sinon = require('sinon');
 
 describe('WebConnection', () => {

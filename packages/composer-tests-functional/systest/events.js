@@ -22,23 +22,21 @@ const path = require('path');
 const TestUtil = require('./testutil');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
+chai.should();
 
 describe('Event system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
 
-
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying no value in model creation
         const modelFiles = [
             { fileName: 'models/events.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.cto'), 'utf8') }
@@ -56,18 +54,17 @@ describe('Event system tests', function() {
         });
 
         bnID = businessNetworkDefinition.getName();
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore=_cardStore;
-                return TestUtil.getClient(cardStore,'systest-events')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-events');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     let validateEvent = (event, index) => {
