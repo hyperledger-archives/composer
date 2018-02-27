@@ -46,6 +46,18 @@ describe('BrowserBusinessNetworkCardStore', () => {
         window['localStorage'].clear();
     });
 
+    describe('#getWallet', () => {
+        it('should return the dummy wallet', (done) => {
+            return businessNetworkCardStore.getWallet()
+                .then((result) => {
+                    result.should.deep.equal({empty: 'browser-wallet'});
+                    done();
+                });
+
+        });
+
+    });
+
     describe('#get', () => {
         it('should get from the browser business network card store', (done) => {
             return businessNetworkCardStore.get('bob').then((result) => {

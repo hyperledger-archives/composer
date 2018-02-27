@@ -20,7 +20,6 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
-// const cardStore = NetworkCardStoreManager.getCard( { type: 'composer-wallet-inmemory' } );
 const server = require('../server/server');
 
 const chai = require('chai');

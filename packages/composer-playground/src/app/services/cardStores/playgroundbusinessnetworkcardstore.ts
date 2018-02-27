@@ -133,4 +133,13 @@ export class PlaygroundBusinessNetworkCardStore extends BusinessNetworkCardStore
                 }
             });
     }
+
+    /** Implement the getWallet method - this is not needed within playground so return dummy object
+     * The connector server will handle getting the wallet
+     *
+     * @return {Promise} Resolved with a dummy object
+     */
+    getWallet(): Promise<any> {
+        return Promise.resolve({empty: 'playground-wallet'});
+    }
 }

@@ -43,7 +43,7 @@ if (typeof(results.thePromise) !== 'undefined'){
         }
         process.exit(0);
     }).catch((error) => {
-        console.log(error+chalk.red('\nCommand failed\n'));
+        cmdUtil.log(error+chalk.red('\nCommand failed\n'));
         process.exit(1);
     });
 } else {

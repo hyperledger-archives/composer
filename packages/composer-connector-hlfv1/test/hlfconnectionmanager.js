@@ -179,7 +179,6 @@ describe('HLFConnectionManager', () => {
             let client = await HLFConnectionManager.createClient(ccp, true);
             client.should.be.an.instanceOf(Client);
             sinon.assert.calledOnce(Client.loadFromConfig);
-            // sinon.assert.calledWith(Client.loadFromConfig,sinon.match(ccp));
             sinon.assert.calledOnce(HLFConnectionManager.setupWallet);
             sinon.assert.calledWith(HLFConnectionManager.setupWallet, mockClient, ccp.wallet);
             sinon.assert.notCalled(mockClient.initCredentialStores);

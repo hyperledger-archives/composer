@@ -47,7 +47,7 @@ function runCucumberTest (featureSource) {
         colorsEnabled : true,
         cwd : '/',
         log : (data) => {
-            console.log(data);
+         //   console.log(data);  // uncomment this line to get detailed output for each test
         },
         supportCodeLibrary : supportCodeLibrary
     };

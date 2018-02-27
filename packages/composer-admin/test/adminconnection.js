@@ -104,12 +104,12 @@ describe('AdminConnection', () => {
             businessNetwork:'network',
             description:'test',
             enrollmentSecret : 'password' };
-        let minimalConnectionProfile = config;//{ name: 'profile' };
+        let minimalConnectionProfile = config;
         let validCredentials = {
             certificate: 'cert',
             privateKey: 'key'
         };
-        // {certificate : 'cert', privateKey : 'key'}
+
         secretCard = new IdCard(secretMetadata, minimalConnectionProfile);
         faultyCard = new IdCard(faultyMetaData, minimalConnectionProfile);
         credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
@@ -143,13 +143,6 @@ describe('AdminConnection', () => {
         beforeEach(() => {
 
             sinon.spy(cardStore, 'get');
-            // cardStub = sinon.createStubInstance(IdCard);
-            // cardStub.getConnectionProfile.returns({});
-            // cardStub.getUserName.returns('fred');
-            // cardStub.getBusinessNetworkName.returns('network');
-            // cardStub.getCredentials.returns({});
-            // cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            // cardStub.toArchive.resolves(new Buffer([1,2,3,4]));
             return cardStore.put('secretCardname', secretCard).then(()=>{
                 sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
                 return cardStore.put('testCardname', credentialsCard);
