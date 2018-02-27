@@ -270,8 +270,8 @@ class ConnectorServer {
      */
     connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
         const method = 'connectionManagerConnect';
-        connectionOptions.wallet = this.businessNetworkCardStore.getWallet();
-        // connectionOptions.cardName = cardName;
+        connectionOptions.wallet = this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
+
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
 
         return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)

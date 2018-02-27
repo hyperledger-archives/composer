@@ -39,7 +39,7 @@ class WalletBackedCardStore extends BusinessNetworkCardStore {
     constructor(options) {
         super();
         if (!options) {
-            throw new Error('Need options');
+            throw new Error('Options must be given');
         }
         this.storeOptions = _.cloneDeep(options);
         this.storeOptions.namePrefix='cards';
@@ -84,17 +84,14 @@ class WalletBackedCardStore extends BusinessNetworkCardStore {
         const method = 'put';
         LOG.entry(method);
 
-        console.log(`Putting card ${cardName}`);
         if (!cardName) {
             return Promise.reject(new Error('Invalid card name'));
         }
         if (!card){
             return Promise.reject(new Error('no card to store'));
         }
-
         return card.toArchive({ type: 'nodebuffer' })
             .then((buffer)=>{
-
                 return this.store.put(cardName,buffer,card);
             })
             .catch((err)=>{

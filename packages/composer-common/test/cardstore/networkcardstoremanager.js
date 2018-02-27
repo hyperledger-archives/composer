@@ -20,82 +20,76 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 chai.should();
 chai.use(require('chai-things'));
-const mockery = require('mockery');
+
 const sinon = require('sinon');
+const LoadModule = require('../../lib/module/loadModule');
 const StoreProxy = require('../../lib/cardstore/walletbackedcardstore');
 
 describe('NetworkCardStoreManager', function() {
 
     let NetworkCardStoreManager;
     let sandbox;
+    let loadModuleSpy;
 
     beforeEach(() => {
         delete require.cache[require.resolve('../../lib/cardstore/networkcardstoremanager')];
-        mockery.enable({
-            warnOnReplace:false,
-            warnOnUnregistered:false,
-        });
-        sandbox = sinon.sandbox.create();
+        NetworkCardStoreManager = require('../../lib/cardstore/networkcardstoremanager');
 
+        sandbox = sinon.sandbox.create();
+        loadModuleSpy = sandbox.spy(LoadModule,'loadModule');
     });
 
     afterEach(() => {
         delete require.cache[require.resolve('../../lib/cardstore/networkcardstoremanager')];
         sandbox.restore();
-        mockery.deregisterAll();
 
     });
 
     describe('#getCardStore', function() {
         it('should correctly load the config module and the default object', () => {
-            // const FileSystemWallet = require('../../lib/cardstore/filesystemwallet');
-
-            NetworkCardStoreManager = require('../../lib/cardstore/networkcardstoremanager');
 
             let store = NetworkCardStoreManager.getCardStore();
             store.should.be.an.instanceOf(StoreProxy);
-
-        });
-
-        it('should correctly load the config module and the default object', () => {
-
-            sandbox.spy(ConfigMediator,'get');
-            NetworkCardStoreManager = require('../../lib/cardstore/networkcardstoremanager');
-            // NetworkCardStoreManager.setCardStore(null);
-            let store = NetworkCardStoreManager.getCardStore();
-            store.should.be.an.instanceOf(StoreProxy);
-
-
-
-            let store2 = NetworkCardStoreManager.getCardStore();
-            store2.should.be.an.instanceOf(StoreProxy);
-
-            sinon.assert.calledTwice(ConfigMediator.get);
-
-        });
-
-        it('should correctly load the config module and the default object', () => {
-            sandbox.stub(ConfigMediator,'get').returns({ 'type': 'composer-wallet-filesystem' });
-
-
-            NetworkCardStoreManager = require('../../lib/cardstore/networkcardstoremanager');
-
-            let store = NetworkCardStoreManager.getCardStore();
-            store.should.be.an.instanceOf(StoreProxy);
-
+            sinon.assert.calledOnce(loadModuleSpy);
+            sinon.assert.calledWith(loadModuleSpy,'composer-wallet-filesystem',sinon.match.any);
         });
 
         it('should correctly throw an error if an invalid name is given', () => {
             sandbox.stub(ConfigMediator,'get').returns({ 'type': 'random' });
-
-            NetworkCardStoreManager = require('../../lib/cardstore/networkcardstoremanager');
             try {
-                let store = NetworkCardStoreManager.getCardStore();
-                store.should.be.an.instanceOf(StoreProxy);
+                NetworkCardStoreManager.getCardStore();
             } catch (err){
                 err.should.match(/Module give does not have valid name/);
             }
 
+        });
+
+        it('should correctly load the config module from the cache second time', () => {
+            let store1 = NetworkCardStoreManager.getCardStore();
+            store1.should.be.an.instanceOf(StoreProxy);
+            let store2 = NetworkCardStoreManager.getCardStore();
+            store2.should.be.an.instanceOf(StoreProxy);
+            sinon.assert.calledOnce(loadModuleSpy);
+            sinon.assert.calledWith(loadModuleSpy,'composer-wallet-filesystem',sinon.match.any);
+        });
+
+        it('should correctly throw an error if the module is unloadable', () => {
+            sandbox.stub(ConfigMediator,'get').returns({ 'type': 'composer-wallet-fault.js' });
+            try {
+                NetworkCardStoreManager.getCardStore();
+            } catch (err){
+                err.should.match(/Unable to load requested module/);
+            }
+        });
+
+
+        it('should correctly throw an error if the module has thre wrong api', () => {
+            sandbox.stub(ConfigMediator,'get').returns({ 'type': 'composer-wallet-fault.js' });
+            try {
+                NetworkCardStoreManager.getCardStore({'paths':[__dirname]});
+            } catch (err){
+                err.should.match(/Module loaded does not have correct interface /);
+            }
         });
 
     });

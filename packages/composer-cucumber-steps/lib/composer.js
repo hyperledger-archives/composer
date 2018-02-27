@@ -22,8 +22,6 @@ const EventDeclaration = require('composer-common').EventDeclaration;
 const path = require('path');
 const RelationshipDeclaration = require('composer-common').RelationshipDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
-// const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
-// const MemoryCardStore = require('composer-common').MemoryCardStore;
 const thenifyAll = require('thenify-all');
 const IdCard = require('composer-common').IdCard;
 
@@ -88,7 +86,6 @@ class Composer {
      * error.
      */
     initialize () {
-        // NetworkCardStoreManager.setCardStore({ wallet : { type: 'composer-wallet-inmemory' } });
         return this.createAdminConnection({ wallet : { type: 'composer-wallet-inmemory' } })
             .then((adminConnection) => {
                 this.adminConnection = adminConnection;
@@ -175,8 +172,6 @@ class Composer {
      * error.
      */
     createAdminConnection () {
-
-
         const adminConnection = new AdminConnection();
         let card = this.createBusinessNetworkCard();
         return adminConnection.importCard('PeerAdminCard', card)

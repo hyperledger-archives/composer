@@ -132,7 +132,6 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     fi
 
     # Run the system tests.
-    # exit 0
     npm run systest:${FVTEST} 2>&1 | tee
 
     # Kill and remove any started Docker images.
