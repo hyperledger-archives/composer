@@ -206,7 +206,7 @@ describe('Logger', () => {
 
     describe('#setFunctionalLogger', () => {
 
-        it('should set a new functional logger', () => {
+        it('should set a new fmockConfigunctional logger', () => {
             const logger = {
                 log: () => {
 

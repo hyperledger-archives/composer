@@ -88,14 +88,7 @@ class HLFWalletProxy extends KeyValueStore {
         const method = 'setValue';
         LOG.entry(method, name, value);
         name = this.extractEnrollmentID(name);
-        return this.wallet.contains(name)
-            .then((contains) => {
-                if (contains) {
-                    return this.wallet.update(name, value);
-                } else {
-                    return this.wallet.add(name, value);
-                }
-            })
+        return this.wallet.put(name,value)
             .then(() => {
                 LOG.exit(method);
             })

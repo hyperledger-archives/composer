@@ -13,7 +13,7 @@
  */
 
 'use strict';
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const Logger = require('composer-common').Logger;
 
@@ -81,7 +81,7 @@ describe('composer-connector-server CLI unit tests', () => {
             '.' : mockConnectorServer
         });
         sinon.assert.calledOnce(mockConnectorServer);
-        sinon.assert.calledWith(mockConnectorServer, sinon.match.instanceOf(FileSystemCardStore), sinon.match.instanceOf(ConnectionProfileManager), mockClientSocket);
+        sinon.assert.calledWith(mockConnectorServer, sinon.match.instanceOf(BusinessNetworkCardStore), sinon.match.instanceOf(ConnectionProfileManager), mockClientSocket);
     });
 
     it('should register a disconnect listener', () => {

@@ -123,6 +123,7 @@ class NodeDataCollection extends DataCollection {
             }
         }
         await this.stub.putState(key, Buffer.from(JSON.stringify(object)));
+
         LOG.exit(method);
     }
 

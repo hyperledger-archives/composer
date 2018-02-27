@@ -15,7 +15,6 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const fs = require('fs');
 const http = require('http');
@@ -42,7 +41,7 @@ describe('server', () => {
     let cardStore;
 
     before(() => {
-        cardStore = new MemoryCardStore();
+        cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';

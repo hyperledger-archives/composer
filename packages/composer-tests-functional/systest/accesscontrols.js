@@ -31,7 +31,6 @@ if (process.setMaxListeners) {
 }
 
 describe('Access control system tests', function() {
-
     this.retries(TestUtil.retries());
 
     let bnID;

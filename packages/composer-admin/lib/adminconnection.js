@@ -15,8 +15,7 @@
 'use strict';
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const fs = require('fs');
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const Logger = require('composer-common').Logger;
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
@@ -60,7 +59,7 @@ class AdminConnection {
         LOG.entry(method, options);
         options = options || {};
 
-        this.cardStore = options.cardStore || new FileSystemCardStore({fs : options.fs || fs});
+        this.cardStore = options.cardStore || NetworkCardStoreManager.getCardStore(options.wallet);
         this.connectionProfileManager = new ConnectionProfileManager();
         this.connection = null;
         this.securityContext = null;
@@ -94,6 +93,7 @@ class AdminConnection {
                 // if we have a certificate and optionally a privateKey we should ask the connection manager to import
                 let certificate = card.getCredentials().certificate;
                 let privateKey = card.getCredentials().privateKey;
+                connectionProfileData.wallet=this.cardStore.getWallet(name);
                 if (certificate){
                     return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
                 }
@@ -128,6 +128,7 @@ class AdminConnection {
                     connectionProfileData.cardName = cardName;
                     return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
                         .then((connectionManager) => {
+                            connectionProfileData.wallet=this.cardStore.getWallet(cardName);
                             return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
                         })
                         .then((result) => {
@@ -166,6 +167,7 @@ class AdminConnection {
             connectionProfileData = card.getConnectionProfile();
             cardUserName = card.getUserName();
             connectionProfileData.cardName = name;
+            connectionProfileData.wallet=this.cardStore.getWallet(name);
             return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
         })
         .then((connectionManager_) => {
@@ -235,7 +237,8 @@ class AdminConnection {
                 return this.connectionProfileManager.connectWithData(
                     card.getConnectionProfile(),
                     card.getBusinessNetworkName(),
-                    {cardName : cardName});
+                    {cardName : cardName,
+                        wallet: this.cardStore.getWallet(cardName)});
             })
             .then((connection) => {
                 this.connection = connection;

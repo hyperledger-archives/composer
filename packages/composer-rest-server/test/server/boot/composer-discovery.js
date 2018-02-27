@@ -16,7 +16,6 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const boot = require('loopback-boot');
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const composerDiscovery = require('../../../server/boot/composer-discovery');
 const IdCard = require('composer-common').IdCard;
@@ -38,7 +37,7 @@ describe('composer-discovery boot script', () => {
     let idCard;
     let cardStore;
     before(() => {
-        cardStore = new MemoryCardStore();
+        cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';

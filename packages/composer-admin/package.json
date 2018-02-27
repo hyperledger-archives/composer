@@ -44,7 +44,9 @@
   },
   "dependencies": {
     "composer-common": "0.17.7",
-    "composer-connector-hlfv1": "0.17.7"
+    "composer-connector-hlfv1": "0.17.7",
+    "composer-wallet-filesystem": "0.17.7",
+    "composer-wallet-inmemory": "0.17.7"
   },
   "license-check-config": {
     "src": [

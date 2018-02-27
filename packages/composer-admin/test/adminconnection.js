@@ -20,9 +20,9 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const Factory = require('composer-common').Factory;
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const IdCard = require('composer-common').IdCard;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
+
 const ModelManager = require('composer-common').ModelManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
@@ -37,7 +37,7 @@ chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('AdminConnection', () => {
-    const testProfileName = 'TEST_PROFILE';
+    const testProfileName = 'profile';
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
@@ -46,9 +46,12 @@ describe('AdminConnection', () => {
     let clock;
     let cardStore;
     let mockAdminIdCard;
+    let secretCard;
+    let credentialsCard;
+    let faultyCard;
 
     const config =
-        {
+        { name: 'profile',
             'x-type' : 'hlfv1'
         };
 
@@ -75,11 +78,11 @@ describe('AdminConnection', () => {
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        cardStore = new MemoryCardStore();
-        const adminConnectionOptions = {
-            cardStore : cardStore
-        };
+
+        cardStore = NetworkCardStoreManager.getCardStore( { type : 'composer-wallet-inmemory' });
+        const adminConnectionOptions = { cardStore };
         adminConnection = new AdminConnection(adminConnectionOptions);
+
         adminConnection.securityContext = mockSecurityContext;
         mockAdminIdCard = sinon.createStubInstance(IdCard);
         mockAdminIdCard.getConnectionProfile.returns({name : 'profile', 'x-type' : 'test'});
@@ -90,6 +93,28 @@ describe('AdminConnection', () => {
         delete process.env.COMPOSER_CONFIG;
         sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
+        let faultyMetaData = { userName: 'fred',
+
+            description:'test'};
+
+        let minimalMetadata = { userName: 'fred',
+            businessNetwork:'network',
+            description:'test'};
+        let secretMetadata = { userName: 'fred',
+            businessNetwork:'network',
+            description:'test',
+            enrollmentSecret : 'password' };
+        let minimalConnectionProfile = config;
+        let validCredentials = {
+            certificate: 'cert',
+            privateKey: 'key'
+        };
+
+        secretCard = new IdCard(secretMetadata, minimalConnectionProfile);
+        faultyCard = new IdCard(faultyMetaData, minimalConnectionProfile);
+        credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+        credentialsCard.setCredentials(validCredentials);
+
     });
 
     afterEach(() => {
@@ -110,44 +135,37 @@ describe('AdminConnection', () => {
             adminConnection.cardStore.should.equal(cardStore);
         });
 
-        it('should use FileSystemCardStore as default card store', function () {
-            const adminConnection = new AdminConnection();
-            adminConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
-        });
     });
 
     describe('#connect', () => {
-        let cardStub;
+
 
         beforeEach(() => {
-            sinon.spy(cardStore, 'get');
-            cardStub = sinon.createStubInstance(IdCard);
-            cardStub.getConnectionProfile.returns({});
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
 
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            sinon.spy(cardStore, 'get');
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
+
         });
 
         it('should connect and login when card has secret', () => {
-            return adminConnection.connect('testCardname').then(() => {
+            return adminConnection.connect('secretCardname').then(() => {
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
-                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, {}, 'network');
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, config, 'network',sinon.match({cardName : 'secretCardname'}));
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'fred', 'password');
             });
         });
 
         it('should connect and login when card has certificates', () => {
-            cardStub.getCredentials.returns({certificate : 'cert', privateKey : 'key'});
-            cardStub.getEnrollmentCredentials.returns(null);
 
             return adminConnection.connect('testCardname').then(() => {
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
-                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, {}, 'network');
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, config, 'network',sinon.match({cardName : 'testCardname'}));
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'fred', 'na');
             });
@@ -161,28 +179,24 @@ describe('AdminConnection', () => {
         });
 
         it('should not ping if card does not contain business network name', () => {
-            cardStub.getBusinessNetworkName.returns('');
-
-            return adminConnection.connect('testCardname').then(() => {
+            return adminConnection.connect('faultyCardname').then(() => {
                 sinon.assert.notCalled(mockConnection.ping);
             });
         });
     });
 
     describe('#disconnect', () => {
-        let cardStub;
+
 
         beforeEach(() => {
             sinon.spy(cardStore, 'get');
-            cardStub = sinon.createStubInstance(IdCard);
-            cardStub.getConnectionProfile.returns({});
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
 
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
         });
 
         it('should set connection and security context to null if connection is set', () => {
@@ -571,15 +585,12 @@ describe('AdminConnection', () => {
         beforeEach(() => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let cardStub = sinon.createStubInstance(IdCard);
-            let cp = config;
-            cp.name = testProfileName;
-            cardStub.getConnectionProfile.returns(cp);
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
         });
 
         it('should be able to request an identity', () => {
@@ -608,7 +619,7 @@ describe('AdminConnection', () => {
                 enrollId : 'fred'
             });
 
-            return adminConnection.requestIdentity('testCardname')
+            return adminConnection.requestIdentity('secretCardname')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
                     sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'fred', 'password');
@@ -1052,7 +1063,7 @@ describe('AdminConnection', () => {
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', expectedConnection, 'user');
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', sinon.match(expectedConnection), 'user');
                     updated.should.be.true;
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
                 });

@@ -22,7 +22,6 @@ const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
@@ -108,7 +107,7 @@ describe('System REST API unit tests', () => {
     };
 
     before(() => {
-        const cardStore = new MemoryCardStore();
+        const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
