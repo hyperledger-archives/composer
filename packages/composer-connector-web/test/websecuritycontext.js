@@ -18,7 +18,9 @@ const Connection = require('composer-common').Connection;
 const SecurityContext = require('composer-common').SecurityContext;
 const WebSecurityContext = require('../lib/websecuritycontext');
 
-require('chai').should();
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.should();
 const sinon = require('sinon');
 
 describe('WebSecurityContext', () => {

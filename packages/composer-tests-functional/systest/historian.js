@@ -15,18 +15,26 @@
 
 'use strict';
 
-const uuid = require('uuid');
-const TestUtil = require('./testutil');
-const path = require('path');
-const chai = require('chai');
-chai.should();
-chai.use(require('chai-as-promised'));
-process.setMaxListeners(Infinity);
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const fs = require('fs');
+const path = require('path');
+const TestUtil = require('./testutil');
+const uuid = require('uuid');
+
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
+
+if (process.setMaxListeners) {
+    process.setMaxListeners(Infinity);
+}
+
 let client;
 let cardStore;
 let bnID;
+let businessNetworkDefinition;
+
 let createAsset = (assetId) => {
     let factory = client.getBusinessNetwork().getFactory();
     let asset = factory.newResource('systest.assets', 'SimpleAsset', assetId);
@@ -46,6 +54,7 @@ let createAsset = (assetId) => {
     asset.enumValues = ['SUCH', 'MANY', 'MUCH'];
     return asset;
 };
+
 let validateAsset = (asset, assetId) => {
     asset.getIdentifier().should.equal(assetId);
     asset.stringValue.should.equal('hello world');
@@ -108,40 +117,49 @@ let validateParticipant = (participant, participantId) => {
     participant.enumValues.should.deep.equal(['SUCH', 'MANY', 'MUCH']);
 };
 
-let deployCommon =  ()=> {
-
-    const modelFiles = [
-        { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
-        { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
-        { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
-        { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
-
-    ];
-    const scriptFiles = [
-       { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
-    ];
-    let businessNetworkDefinition = new BusinessNetworkDefinition('common-historian-network@0.0.1', 'The network for the access controls system tests');
-    modelFiles.forEach((modelFile) => {
-        businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
-    });
-    scriptFiles.forEach((scriptFile) => {
-        let scriptManager = businessNetworkDefinition.getScriptManager();
-        scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
-    });
-    let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
-    businessNetworkDefinition.getAclManager().setAclFile(aclFile);
-
-    bnID = businessNetworkDefinition.getName();
-    return TestUtil.deploy(businessNetworkDefinition);
-};
-
-
 describe('Historian', function() {
 
     this.retries(TestUtil.retries());
 
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
+    before(async () => {
+        await TestUtil.setUp();
+        const modelFiles = [
+            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
+            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
+            { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
+            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
+
+        ];
+        const scriptFiles = [
+           { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
+        ];
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-historian@0.0.1', 'The network for the access controls system tests');
+        modelFiles.forEach((modelFile) => {
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
+        });
+        scriptFiles.forEach((scriptFile) => {
+            let scriptManager = businessNetworkDefinition.getScriptManager();
+            scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
+        });
+        let aclFile = businessNetworkDefinition.getAclManager().createAclFile('permissions.acl', fs.readFileSync(path.resolve(__dirname, 'data/common-network/permissions.acl'), 'utf8'));
+        businessNetworkDefinition.getAclManager().setAclFile(aclFile);
+
+        bnID = businessNetworkDefinition.getName();
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-historian');
+    });
+
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
+    });
+
+    afterEach(async () => {
+        client = await TestUtil.getClient(cardStore,'systest-historian');
     });
 
     describe('CRUD Asset', () => {
@@ -579,21 +597,21 @@ describe('Historian', function() {
                     return client.issueIdentity(alice, aliceIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'systest-historian', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     aliceClient = result;
                     return client.issueIdentity(bob, bobIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'systest-historian', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     bobClient = result;
                     return client.issueIdentity(charlie, charlieIdentity);
                 })
                 .then((identity) => {
-                    return TestUtil.getClient(cardStore,'common-historian-network', identity.userID, identity.userSecret);
+                    return TestUtil.getClient(cardStore,'systest-historian', identity.userID, identity.userSecret);
                 })
                 .then((result) => {
                     charlieClient = result;
@@ -753,27 +771,4 @@ describe('Historian', function() {
 
     });
 
-
-    before(function () {
-        // need factor this deployCommon out shortly.
-        return deployCommon()
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore)
-                    .then((result) => {
-                        client = result;
-                    });
-            });
-    });
-    after(function () {
-        return TestUtil.undeploy();
-    });
-    beforeEach(() => { });
-
-    afterEach(() => {
-        return TestUtil.getClient(cardStore)
-            .then((result) => {
-                client = result;
-            });
-    });
 });

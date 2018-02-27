@@ -40,7 +40,6 @@ function update(transaction) {
  * @transaction
  */
 function MarkQuestion(transaction) {
-    console.log('...marking question now.....'+transaction.text);
     if (transaction.question.correctAnswer.text === transaction.text){
         // all good
     } else {

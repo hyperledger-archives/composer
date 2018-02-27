@@ -22,8 +22,8 @@ const uuid = require('uuid');
 const WebConnectionManager = require('..');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.should();
 const sinon = require('sinon');
 
 

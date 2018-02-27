@@ -15,27 +15,25 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
-
 const TestUtil = require('./testutil');
+
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
 describe('HTTP POST system tests', function() {
 
     this.retries(TestUtil.retries());
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
 
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         const modelFiles = [
             { fileName: 'models/post.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/post.cto'), 'utf8') }
         ];
@@ -51,18 +49,17 @@ describe('HTTP POST system tests', function() {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-post')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-post');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     it('should update an asset with the the results of an HTTP POST. WARNING, running remote on Bluemix.', () => {

@@ -25,10 +25,13 @@ const TestUtil = require('./testutil');
 const uuid = require('uuid');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
-process.setMaxListeners(Infinity);
+if (process.setMaxListeners) {
+    process.setMaxListeners(Infinity);
+}
 
 describe('Identity system tests', function() {
 
@@ -41,6 +44,7 @@ describe('Identity system tests', function() {
     let participant;
 
     before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying null as the value
         const modelFiles = [
             { fileName: null, contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
@@ -63,6 +67,7 @@ describe('Identity system tests', function() {
 
     after(async () => {
         await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
     });
 
     beforeEach(async () => {

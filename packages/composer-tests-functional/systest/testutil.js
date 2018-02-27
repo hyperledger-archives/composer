@@ -13,22 +13,22 @@
  */
 
 'use strict';
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const Docker = require('dockerode');
+const { ConnectionProfileManager, IdCard, Logger, MemoryCardStore } = require('composer-common');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-const IdCard = require('composer-common').IdCard;
+
 let client;
 let currentCp;
 let connectionProfileOrg1, connectionProfileOrg2, otherConnectionProfileOrg1, otherConnectionProfileOrg2;
-let docker = new Docker();
+let docker;
 let forceDeploy = false;
 let testRetries = 4;
 let cardStore;
+let io;
 
 /**
  * Trick browserify by making the ID parameter to require dynamic.
@@ -45,7 +45,6 @@ function dynamicRequire(id) {
  * @private
  */
 class TestUtil {
-
 
     /**
      * Check to see if running under a web browser.
@@ -85,6 +84,18 @@ class TestUtil {
      */
     static isHyperledgerFabricV1() {
         return process.env.FVTEST && process.env.FVTEST.match('^hlfv1.*');
+    }
+
+    /**
+     * Get an instance of the Docker API for interacting with Docker.
+     * @return {Docker} An instance of the Docker API for interacting with Docker.
+     */
+    static getDocker() {
+        const Docker = require('dockerode');
+        if (!docker) {
+            docker = new Docker();
+        }
+        return docker;
     }
 
     /**
@@ -164,6 +175,11 @@ class TestUtil {
      * connected instance of BusinessNetworkConnection.
      */
     static setUp() {
+        Logger.setFunctionalLogger({
+            log: () => {
+
+            }
+        });
         cardStore = new MemoryCardStore();
         let adminConnection = new AdminConnection({cardStore});
         forceDeploy = false;
@@ -172,23 +188,22 @@ class TestUtil {
 
                 // Create all necessary configuration for the web runtime.
                 if (TestUtil.isWeb()) {
-                    ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
-                    console.log('Used to call  AdminConnection.createProfile() ...');
 
-                    // Create all necessary configuration for the embedded runtime.
+                    // Register the web connector.
+                    ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
+
+                // Create all necessary configuration for the embedded runtime.
                 } else if (TestUtil.isEmbedded()) {
-                    console.log('Used to call  AdminConnection.createProfile() ...');
+
+                    // Nothing required.
+
                 } else if (TestUtil.isProxy()) {
 
                     // A whole bunch of dynamic requires to trick browserify.
                     const ConnectorServer = dynamicRequire('composer-connector-server');
                     const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
-                    const BrowserFS = dynamicRequire('browserfs/dist/node/index');
-                    const bfs_fs = BrowserFS.BFSRequire('fs');
-                    BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
 
-                    const FileSystemCardStore = dynamicRequire('composer-common').FileSystemCardStore;
-                    cardStore = new FileSystemCardStore({fs:bfs_fs});
+                    cardStore = new MemoryCardStore();
 
                     const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
                     const socketIO = dynamicRequire('socket.io');
@@ -204,16 +219,14 @@ class TestUtil {
                     connectionProfileManager.getConnectionManagerByType = () => {
                         return Promise.resolve(connectionManager);
                     };
-                    const io = socketIO(15699);
+                    io = socketIO(15699);
                     io.on('connect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
                         new ConnectorServer(cardStore, connectionProfileManager, socket);
-                        console.log('Connector Server created');
                     });
                     io.on('disconnect', (socket) => {
                         console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
                     });
-                    console.log('Calling AdminConnection.createProfile() ...');
                     return;
 
                     // Create all necessary configuration for Hyperledger Fabric v1.0.
@@ -651,7 +664,7 @@ class TestUtil {
                     currentCp = connectionProfileOrg1;
 
                     let fs = dynamicRequire('fs');
-                    console.log('Creating peer admin cards, and import them to the card store');
+                    console.log('Creating peer admin cards, and importing them into the card store');
                     const admins = [
                         { org: 'org1', keyFile: 'key.pem' },
                         { org: 'org2', keyFile: 'key.pem' }
@@ -688,7 +701,7 @@ class TestUtil {
                                     return adminConnection.importCard(`othercomposer-systests-${org}-PeerAdmin`, otherCard);
                                 })
                                 .then(() => {
-                                    console.log('Imported cards to the card store');
+                                    console.log(`Imported cards for ${org} to the card store`);
                                 });
 
                         });
@@ -704,12 +717,12 @@ class TestUtil {
 
     /**
      * Disconnect the BusinessNetworkConnection object.
-     * @return {Promise} - a promise that wil be resolved with a configured and
-     * connected instance of BusinessNetworkConnection.
      */
-    static tearDown() {
+    static async tearDown() {
         forceDeploy = false;
-        return Promise.resolve();
+        if (io) {
+            await new Promise((resolve, reject) => { io.close(resolve); });
+        }
     }
 
     /**
@@ -773,12 +786,10 @@ class TestUtil {
             })
             .then(() => {
                 if (TestUtil.isHyperledgerFabricV1() && !forceDeploy) {
-                    console.log('Connecting with ' + cardName);
                     return thisClient.connect(cardName);
                 } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
                     throw new Error('force deploy is being called and that will not work now');
                 } else {
-                    console.log('Connecting with ' + cardName);
                     return thisClient.connect(cardName);
                 }
             })
@@ -838,7 +849,7 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    console.log('installing to Org1');
+                    console.log('Installing network to org1');
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
@@ -854,7 +865,7 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    console.log('installing to Org2');
+                    console.log('Installing network to org2');
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
@@ -960,11 +971,9 @@ class TestUtil {
                     return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
                 })
                 .then(() => {
-                    console.log('deploying new ' + businessNetworkDefinition.getName());
                     return adminConnection.start(businessNetworkDefinition, {bootstrapTransactions});
                 })
                 .then(() => {
-
                     let adminidCard = new IdCard({
                         userName: 'admin',
                         enrollmentSecret: 'adminpw',
@@ -1002,6 +1011,7 @@ class TestUtil {
             client = null;
             return Promise.resolve();
         }
+        const docker = TestUtil.getDocker();
         return docker.listContainers()
             .then((containers) => {
                 const matchingContainers = containers.filter((container) => {

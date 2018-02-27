@@ -26,11 +26,12 @@ module.exports = function(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'browserify'],
+        frameworks: ['mocha', 'chai'],
 
 
         // list of files / patterns to load in the browser
         files: [
+            require.resolve('babel-polyfill/browser.js'),
             'test/**/*.js'
         ],
 
@@ -42,7 +43,7 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test/**/*.js': ['browserify']
+            'test/**/*.js': ['webpack']
         },
 
 
@@ -82,11 +83,6 @@ module.exports = function(config) {
         // how many browser should be started simultaneous
         concurrency: Infinity,
 
-        browserify: {
-            debug: true,
-            transform: ['brfs', 'browserify-istanbul']
-        },
-
         coverageReporter: {
             check: {
                 global: {
@@ -96,6 +92,57 @@ module.exports = function(config) {
                     lines: 100,
                 }
             }
+        },
+
+        webpack: {
+            // karma watches the test entry points
+            // (you don't need to specify the entry option)
+            // webpack watches dependencies
+
+            // webpack configuration
+            module: {
+                rules: [
+                    {
+                        test: /systest\/.*\.js$/,
+                        loader: 'transform-loader?brfs'
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /(node_modules(?!\/(composer|yallist|jsonata|uri-js))|bower_components)/,
+                        loader: 'babel-loader',
+                        query: {
+                            presets: [require.resolve('babel-preset-latest')]
+                        }
+                    }
+                ]
+            },
+            node: {
+                net: 'empty'
+            }
+        },
+
+        webpackMiddleware: {
+            // webpack-dev-middleware configuration
+            // i. e.
+            stats: 'errors-only'
+        },
+
+        browserNoActivityTimeout: 30000,
+
+        client: {
+            captureConsole: !!process.env.DEBUG,
+            mocha: {
+                timeout: '0'
+            }
+        },
+
+        specReporter: {
+            maxLogLines: 5, // limit number of lines logged per test
+            suppressErrorSummary: true, // do not print error summary
+            suppressFailed: false, // do not print information about failed tests
+            suppressPassed: false, // do not print information about passed tests
+            suppressSkipped: true, // do not print information about skipped tests
+            showSpecTiming: true // print the time elapsed for each spec
         }
     });
 };
