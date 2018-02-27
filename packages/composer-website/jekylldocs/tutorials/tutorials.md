@@ -18,7 +18,7 @@ We have two basic tutorial options, and one more advanced tutorial:
 
 The Playground tutorial runs through using the Playground to track the ownership of commodities in a business network.
 
-If you want to run the playground tutorial locally [install the Playground locally](../installing/using-playground-locally.html) first, then use the playground tutorial.
+This tutorial can be followed using the web Playground (no install necessary) or with your own Playground (acquired as part of the install instructions).
 
 [**Start Playground Tutorial**](../tutorials/playground-tutorial.html)
 
@@ -51,5 +51,14 @@ This tutorial presumes that you have experience using {{site.data.conrefs.hlf_fu
 In this tutorial, two organization administrators configure their instances of {{site.data.conrefs.composer_full}} to interact with the same channel in {{site.data.conrefs.hlf_full}}.
 
 [**Start the multi-organization {{site.data.conrefs.hlf_full}} deployment tutorial**](../tutorials/deploy-to-fabric-multi-org.html)
+
+## Integrate with Node-RED
+
+This tutorial presumes that you have experience using {{site.data.conrefs.composer_full}} and Node-RED.
+
+This tutorial demonstrates how to integrate an existing system of record data source into the blockchain ledger with Node-RED.
+
+[**Start the multi-organization {{site.data.conrefs.hlf_full}} deployment tutorial**](../tutorials/nodered-tutorial.html)
+
 
 ---
