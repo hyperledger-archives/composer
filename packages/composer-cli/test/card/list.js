@@ -26,6 +26,27 @@ const sinon = require('sinon');
 
 describe('composer card list CLI', () => {
 
+    const certificate = '-----BEGIN CERTIFICATE-----\r\n' +
+    'MIICGTCCAb+gAwIBAgIQQhvRH/QkdZTNIwl0yKgAaTAKBggqhkjOPQQDAjBzMQsw\r\n' +
+    'CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy\r\n' +
+    'YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu\r\n' +
+    'b3JnMS5leGFtcGxlLmNvbTAeFw0xNzA3MjMxMTM4MDFaFw0yNzA3MjExMTM4MDFa\r\n' +
+    'MFsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T\r\n' +
+    'YW4gRnJhbmNpc2NvMR8wHQYDVQQDDBZBZG1pbkBvcmcxLmV4YW1wbGUuY29tMFkw\r\n' +
+    'EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEYhrF0azzb6sL49Y4KQhIfrfrxbIRdmMn\r\n' +
+    'fVePZcvpLsyLMUxG+9N2HQSpNcQgZ/bQAcAOh7uyZyhDm1r5Z+qTNKNNMEswDgYD\r\n' +
+    'VR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwKwYDVR0jBCQwIoAgxPOYr6lOuYwg\r\n' +
+    '/zLQtVNayLqVJjBQDU2p/l+DlrFoXSMwCgYIKoZIzj0EAwIDSAAwRQIhANEh3wP7\r\n' +
+    '7ncL/IuY0TpMKQSpUIzOcUYITsMQ0TbN6rNEAiB2uFORKQQn1Vb4tcg39Wu0+XnO\r\n' +
+    'HFoBC92MQ75d8E1jnw==\r\n' +
+    '-----END CERTIFICATE-----\r\n';
+
+    const privateKey = '-----BEGIN PRIVATE KEY-----\r\n' +
+    'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgJ+SeTifp+fL+XgJG\r\n' +
+    'zlyJjSVjAymNEjehg87lLkNkFPmhRANCAARiGsXRrPNvqwvj1jgpCEh+t+vFshF2\r\n' +
+    'Yyd9V49ly+kuzIsxTEb703YdBKk1xCBn9tABwA6Hu7JnKEObWvln6pM0\r\n' +
+    '-----END PRIVATE KEY-----\r\n';
+
     let sandbox;
     let adminConnectionStub;
 
@@ -79,7 +100,7 @@ describe('composer card list CLI', () => {
 
     it('show card details for one card with certificates', async () => {
         const testCard = new IdCard({ userName: 'conga', description: 'such description', roles: ['PeerAdmin', 'ChannelAdmin'] }, { name: 'profileName' });
-        testCard.setCredentials({certificate:'cert',privateKey:'key'});
+        testCard.setCredentials({certificate,privateKey});
         adminConnectionStub.exportCard.resolves(testCard);
         await ListCmd.handler({ name: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
@@ -94,7 +115,7 @@ describe('composer card list CLI', () => {
 
     it('show card details for one card with certificates', async () => {
         const testCard = new IdCard({ userName: 'conga', description: 'such description', roles: ['PeerAdmin', 'ChannelAdmin'] }, { name: 'profileName' });
-        testCard.setCredentials({certificate:'cert'});
+        testCard.setCredentials({certificate});
         adminConnectionStub.exportCard.resolves(testCard);
         await ListCmd.handler({ name: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
