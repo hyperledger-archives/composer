@@ -10,6 +10,7 @@ Hyperledger Composer is an application development framework which simplifies an
 This site will help you get up and running by developing a sample blockchain application to buy and sell houses and apartments in a digital property business network.
 
 [![Build Status](https://travis-ci.org/hyperledger/composer.svg?branch=master)](https://travis-ci.org/hyperledger/composer)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1071/badge)](https://bestpractices.coreinfrastructure.org/projects/1071)
 
 For additional help with Hyperledger Composer the following are good places:
 
