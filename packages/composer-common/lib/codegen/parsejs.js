@@ -107,3 +107,4 @@ else if (program.single){
 } else {
     console.log('no file option given');
 }
+

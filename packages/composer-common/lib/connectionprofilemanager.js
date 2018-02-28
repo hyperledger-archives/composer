@@ -131,6 +131,7 @@ class ConnectionProfileManager {
                                 // one last time.
                                 connectionManager = new (require(mod))(this);
                             }
+
                         }
 
                     } catch (e) {
@@ -190,7 +191,6 @@ class ConnectionProfileManager {
             return this.getConnectionManagerByType(connectOptions['x-type']);
         })
             .then((connectionManager) => {
-                // todo - this connect is duplicating values
                 return connectionManager.connect(connectOptions.name, businessNetworkIdentifier, connectOptions);
             });
 

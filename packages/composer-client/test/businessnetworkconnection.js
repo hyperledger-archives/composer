@@ -14,7 +14,6 @@
 
 'use strict';
 
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
@@ -114,12 +113,6 @@ describe('BusinessNetworkConnection', () => {
             businessNetworkConnection = new BusinessNetworkConnection({cardStore : mockCardStore});
             should.equal(businessNetworkConnection.connection, null);
             businessNetworkConnection.cardStore.should.equal(mockCardStore);
-        });
-
-        it('should create a new instance with a file system card store', () => {
-            businessNetworkConnection = new BusinessNetworkConnection();
-            should.equal(businessNetworkConnection.connection, null);
-            businessNetworkConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
         });
     });
 

@@ -15,7 +15,6 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
@@ -133,7 +132,7 @@ chai.use(require('chai-as-promised'));
         let idCard;
 
         before(() => {
-            const cardStore = new MemoryCardStore();
+            const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
             adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';

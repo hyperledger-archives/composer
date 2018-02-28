@@ -54,11 +54,11 @@ describe('Wallet', () => {
 
     });
 
-    describe('#list', () => {
+    describe('#listNames', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                wallet.list();
+                wallet.listNames();
             }).should.throw(/abstract function called/);
         });
 
@@ -84,25 +84,16 @@ describe('Wallet', () => {
 
     });
 
-    describe('#add', () => {
+    describe('#put', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                wallet.add('id1', 'value1');
+                wallet.put('id1', 'value1');
             }).should.throw(/abstract function called/);
         });
 
     });
 
-    describe('#update', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                wallet.update('id1', 'value1');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
 
     describe('#remove', () => {
 

@@ -172,14 +172,13 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should set up a wallet if wallet defined as well as cardName', async () => {
-            sandbox.stub(Client, 'loadFromConfig').withArgs(ccp).returns(mockClient);
+            ccp.wallet = sinon.createStubInstance(Wallet);
+            sandbox.stub(Client, 'loadFromConfig').returns(mockClient);
             sandbox.stub(Wallet, 'getWallet').returns(null);
             sandbox.stub(HLFConnectionManager, 'setupWallet').resolves();
-            ccp.wallet = sinon.createStubInstance(Wallet);
             let client = await HLFConnectionManager.createClient(ccp, true);
             client.should.be.an.instanceOf(Client);
             sinon.assert.calledOnce(Client.loadFromConfig);
-            sinon.assert.calledWith(Client.loadFromConfig, ccp);
             sinon.assert.calledOnce(HLFConnectionManager.setupWallet);
             sinon.assert.calledWith(HLFConnectionManager.setupWallet, mockClient, ccp.wallet);
             sinon.assert.notCalled(mockClient.initCredentialStores);
@@ -258,7 +257,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should set up an hsm cryptosuite and wallet store from a Wallet', async () => {
-            sandbox.stub(Client, 'loadFromConfig').withArgs(ccp).returns(mockClient);
+            sandbox.stub(Client, 'loadFromConfig').returns(mockClient);
             sandbox.stub(Wallet, 'getWallet').returns(null);
             sandbox.stub(HLFConnectionManager, 'setupWallet');
             sandbox.stub(HLFConnectionManager, 'setupHSM');
