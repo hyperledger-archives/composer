@@ -18,17 +18,20 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
+const { CertificateUtil, IdCard } = require('composer-common');
 const fs = require('fs');
-const IdCard = require('composer-common').IdCard;
 const path = require('path');
 const TestUtil = require('./testutil');
 const uuid = require('uuid');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
-process.setMaxListeners(Infinity);
+if (process.setMaxListeners) {
+    process.setMaxListeners(Infinity);
+}
 
 describe('Identity system tests', function() {
 
@@ -41,6 +44,7 @@ describe('Identity system tests', function() {
     let participant;
 
     before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying null as the value
         const modelFiles = [
             { fileName: null, contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
@@ -63,6 +67,7 @@ describe('Identity system tests', function() {
 
     after(async () => {
         await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
     });
 
     beforeEach(async () => {
@@ -94,12 +99,8 @@ describe('Identity system tests', function() {
             privateKey = fs.readFileSync(privateKeyFile, 'utf8');
             identityIndex++;
         } else {
-            certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('User2@org1.example.com' + ':' + uuid.v4()).toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
-            privateKey = 'not used';
+            ({ certificate, privateKey } = CertificateUtil.generate({ commonName: `User${identityIndex}@org1.example.com` }));
+            identityIndex++;
         }
         return { certificate, privateKey };
     }
@@ -272,8 +273,6 @@ describe('Identity system tests', function() {
         const card2 = await admin.exportCard(cardName);
         // Remove any carriage returns that may have been added by fabric
         const credentials = card2.getCredentials();
-        credentials.certificate = credentials.certificate.replace(/\r/g, '');
-        credentials.privateKey = credentials.privateKey.replace(/\r/g, '');
         credentials.should.deep.equal({
             certificate: certificate,
             privateKey: privateKey

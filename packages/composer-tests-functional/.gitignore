@@ -46,3 +46,4 @@ out
 *.swp
 
 # Build generated files should be ignored by git, but not by npm.
+storage

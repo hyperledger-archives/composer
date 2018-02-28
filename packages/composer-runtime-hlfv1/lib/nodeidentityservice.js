@@ -14,14 +14,11 @@
 
 'use strict';
 
+const Certificate = require('composer-common').Certificate;
 const IdentityService = require('composer-runtime').IdentityService;
-const jsr = require('jsrsasign');
-const crypto = require('crypto');
-
 const Logger = require('composer-common').Logger;
-const LOG = Logger.getLog('NodeIdentityService');
 
-const extractCN = /(\/CN=)(.*?)(\/|,|$)/;
+const LOG = Logger.getLog('NodeIdentityService');
 
 /**
  * Base class representing the identity service provided by a {@link Container}.
@@ -31,6 +28,7 @@ class NodeIdentityService extends IdentityService {
 
     /**
      * Constructor.
+     * @param {any} stub the stub for this invocation
      */
     constructor(stub) {
         super();
@@ -51,21 +49,10 @@ class NodeIdentityService extends IdentityService {
         let creator = this.stub.getCreator();
         this.pem = creator.getIdBytes().toString('utf8');
         if (this.pem && this.pem.startsWith('-----BEGIN CERTIFICATE-----')) {
-
-            this.certificate = new jsr.X509();
-            this.certificate.readCertPEM(this.pem);
-
-            //TODO: Issuer is not always used, so could lazy load that for a performance improvement
-            const sha256Issuer = crypto.createHash('sha256');
-            sha256Issuer.update(this.certificate.getIssuerString(), 'utf8');
-            this.issuer = sha256Issuer.digest('hex');
-
-            const sha256Identifier = crypto.createHash('sha256');
-            sha256Identifier.update(Buffer.from(this.certificate.hex, 'hex'));
-            this.identifier = sha256Identifier.digest('hex');
-
-            // need to do this because getSubjectString is not in a valid DN format
-            this.name = extractCN.exec(this.certificate.getSubjectString())[2];
+            this.certificate = new Certificate(this.pem);
+            this.identifier = this.certificate.getIdentifier();
+            this.issuer = this.certificate.getIssuer();
+            this.name = this.certificate.getName();
         }
         else {
             const newErr = new Error('No creator certificate provided or not a valid x509 certificate');

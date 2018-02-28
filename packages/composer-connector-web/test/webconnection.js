@@ -14,8 +14,7 @@
 
 'use strict';
 
-const Connection = require('composer-common').Connection;
-const ConnectionManager = require('composer-common').ConnectionManager;
+const { Certificate, Connection, ConnectionManager } = require('composer-common');
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const Context = require('composer-runtime').Context;
 const DataCollection = require('composer-runtime').DataCollection;
@@ -28,8 +27,8 @@ const WebContainer = require('composer-runtime-web').WebContainer;
 const WebSecurityContext = require('../lib/websecuritycontext');
 
 const chai = require('chai');
-const should = chai.should();
 chai.use(require('chai-as-promised'));
+const should = chai.should();
 const sinon = require('sinon');
 
 describe('WebConnection', () => {
@@ -388,22 +387,6 @@ describe('WebConnection', () => {
 
     describe('#_createAdminIdentity', () => {
 
-        const adminIdentity = {
-            certificate : [
-                '-----BEGIN CERTIFICATE-----',
-                'YWRtaW4=',
-                '-----END CERTIFICATE-----'
-            ].join('\n').concat('\n'),
-            identifier : '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-            issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-            name : 'admin',
-            secret : 'adminpw',
-            imported : false,
-            options : {
-                issuer : true
-            }
-        };
-
         let mockIdentitiesDataCollection;
 
         beforeEach(() => {
@@ -411,13 +394,25 @@ describe('WebConnection', () => {
             sandbox.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
         });
 
-        it('should store a new identity if it does not exists', () => {
-            return connection._createAdminIdentity()
-                .then((result) => {
-                    sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
-                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'admin', adminIdentity);
-                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', adminIdentity);
-                });
+        it('should store a new identity if it does not exists', async () => {
+            await connection._createAdminIdentity();
+            sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
+            mockIdentitiesDataCollection.add.getCall(0).args[0].should.equal('admin');
+            const adminIdentityIdentifier = mockIdentitiesDataCollection.add.getCall(1).args[0];
+            const adminIdentity1 = mockIdentitiesDataCollection.add.getCall(0).args[1];
+            const certificateObj = new Certificate(adminIdentity1.certificate);
+            certificateObj.getIdentifier().should.equal(adminIdentityIdentifier);
+            certificateObj.getIssuer().should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            certificateObj.getName().should.equal('admin');
+            certificateObj.getPublicKey().should.be.a('string');
+            adminIdentity1.identifier.should.equal(adminIdentityIdentifier);
+            adminIdentity1.issuer.should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            adminIdentity1.name.should.equal('admin');
+            adminIdentity1.secret.should.equal('adminpw');
+            adminIdentity1.imported.should.be.false;
+            adminIdentity1.options.issuer.should.be.true;
+            const adminIdentity2 = mockIdentitiesDataCollection.add.getCall(1).args[1];
+            adminIdentity1.should.deep.equal(adminIdentity2);
         });
 
     });
@@ -479,78 +474,73 @@ describe('WebConnection', () => {
             sandbox.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
         });
 
-        it('should return the existing identity if it already exists', () => {
+        it('should return the existing identity if it already exists', async () => {
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
             mockIdentitiesDataCollection.get.withArgs('doge').resolves({
-                certificate : '',
-                identifier : '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
-                issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                name : 'doge',
-                secret : 'f892c30a'
+                certificate: '',
+                identifier: '8f00d1b8319abc0ad87ccb6c1baae0a54c406c921c01e1ed165c33b93f3e5b6a',
+                issuer: '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
+                name: 'doge',
+                secret: 'f892c30a'
             });
-            return connection.createIdentity(mockSecurityContext, 'doge')
-                .then((result) => {
-                    sinon.assert.notCalled(mockIdentitiesDataCollection.add);
-                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
-                });
+            const result = await connection.createIdentity(mockSecurityContext, 'doge');
+            sinon.assert.notCalled(mockIdentitiesDataCollection.add);
+            result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
         });
 
-        it('should store a new identity if it does not exists', () => {
+        it('should store a new identity if it does not exists', async () => {
             sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
-            return connection.createIdentity(mockSecurityContext, 'doge')
-                .then((result) => {
-                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
-                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                        certificate : [
-                            '-----BEGIN CERTIFICATE-----',
-                            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
-                            '-----END CERTIFICATE-----'
-                        ].join('\n').concat('\n'),
-                        identifier : '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
-                        issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                        name : 'doge',
-                        secret : 'f892c30a',
-                        imported : false,
-                        options : {}
-                    });
-                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
-                });
+            const result = await connection.createIdentity(mockSecurityContext, 'doge');
+            sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
+            mockIdentitiesDataCollection.add.getCall(0).args[0].should.equal('doge');
+            const adminIdentityIdentifier = mockIdentitiesDataCollection.add.getCall(1).args[0];
+            const adminIdentity1 = mockIdentitiesDataCollection.add.getCall(0).args[1];
+            const certificateObj = new Certificate(adminIdentity1.certificate);
+            certificateObj.getIdentifier().should.equal(adminIdentityIdentifier);
+            certificateObj.getIssuer().should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            certificateObj.getName().should.equal('doge');
+            certificateObj.getPublicKey().should.be.a('string');
+            adminIdentity1.identifier.should.equal(adminIdentityIdentifier);
+            adminIdentity1.issuer.should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            adminIdentity1.name.should.equal('doge');
+            adminIdentity1.secret.should.equal('f892c30a');
+            adminIdentity1.imported.should.be.false;
+            const adminIdentity2 = mockIdentitiesDataCollection.add.getCall(1).args[1];
+            adminIdentity1.should.deep.equal(adminIdentity2);
+            result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
         });
 
-        it('should store a new identity along with additional options if it does not exists', () => {
+        it('should store a new identity along with additional options if it does not exists', async () => {
             sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
-            return connection.createIdentity(mockSecurityContext, 'doge', {issuer : true})
-                .then((result) => {
-                    sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
-                    sinon.assert.calledWith(mockIdentitiesDataCollection.add, 'doge', {
-                        certificate : [
-                            '-----BEGIN CERTIFICATE-----',
-                            'ZG9nZTpmODkyYzMwYS03Nzk5LTRlYWMtODM3Ny0wNmRhNTM2MDBlNQ==',
-                            '-----END CERTIFICATE-----'
-                        ].join('\n').concat('\n'),
-                        identifier : '8b36964b0cd0b9aea800b3fb293b3024d5cd6346f6aff4a589eb4d408ea76799',
-                        issuer : '89e0c13fa652f52d91fc90d568b70070d6ed1a59c5d9f452dfb1b2a199b1928e',
-                        name : 'doge',
-                        secret : 'f892c30a',
-                        imported : false,
-                        options : {
-                            issuer : true
-                        }
-                    });
-                    result.should.be.deep.equal({userID : 'doge', userSecret : 'f892c30a'});
-                });
+            const result = await connection.createIdentity(mockSecurityContext, 'doge', { issuer: true });
+            sinon.assert.calledTwice(mockIdentitiesDataCollection.add);
+            mockIdentitiesDataCollection.add.getCall(0).args[0].should.equal('doge');
+            const adminIdentityIdentifier = mockIdentitiesDataCollection.add.getCall(1).args[0];
+            const adminIdentity1 = mockIdentitiesDataCollection.add.getCall(0).args[1];
+            const certificateObj = new Certificate(adminIdentity1.certificate);
+            certificateObj.getIdentifier().should.equal(adminIdentityIdentifier);
+            certificateObj.getIssuer().should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            certificateObj.getName().should.equal('doge');
+            certificateObj.getPublicKey().should.be.a('string');
+            adminIdentity1.identifier.should.equal(adminIdentityIdentifier);
+            adminIdentity1.issuer.should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
+            adminIdentity1.name.should.equal('doge');
+            adminIdentity1.secret.should.equal('f892c30a');
+            adminIdentity1.imported.should.be.false;
+            const adminIdentity2 = mockIdentitiesDataCollection.add.getCall(1).args[1];
+            adminIdentity1.should.deep.equal(adminIdentity2);
+            result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
         });
 
-        it('should throw if the current identity is not an issuer', () => {
+        it('should throw if the current identity is not an issuer', async () => {
             identity.options.issuer = false;
-            (() => {
-                connection.createIdentity(mockSecurityContext, 'doge');
-            }).should.throw(/does not have permission to create a new identity/);
+            await connection.createIdentity(mockSecurityContext, 'doge').should.be.rejectedWith(/does not have permission to create a new identity/);
         });
 
     });
+
 });

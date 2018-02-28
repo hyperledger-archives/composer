@@ -57,6 +57,7 @@ module.exports.BusinessNetworkCardStore = require('./lib/cardstore/businessnetwo
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.BusinessNetworkMetadata = require('./lib/businessnetworkmetadata');
 module.exports.Certificate = require('./lib/certificate');
+module.exports.CertificateUtil = require('./lib/certificateutil');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');
 module.exports.Concept = require('./lib/model/concept');

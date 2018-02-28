@@ -45,8 +45,14 @@ class MemoryCardStore extends BusinessNetworkCardStore {
 }
 class Certificate {
    + void constructor(string) 
-   + string getPEM() 
+   + string getCertificate() 
+   + string getPublicKey() 
    + string getIdentifier() 
+   + string getIssuer() 
+   + string getName() 
+}
+class CertificateUtil {
+   + void generate(Object,string,string,string,string) 
 }
 class Factory {
    + Resource newResource(String,String,String,Object,boolean,String,boolean,boolean) throws TypeNotFoundException

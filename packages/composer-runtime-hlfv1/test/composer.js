@@ -15,11 +15,11 @@
 'use strict';
 
 const Composer = require('../lib/composer');
-const MockStub = require('./mockstub');
 const NodeContainer = require('../lib/nodecontainer');
 const Engine = require('composer-runtime').Engine;
 const Context = require('composer-runtime').Context;
 const shim = require('fabric-shim');
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -32,7 +32,7 @@ describe('Composer', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         composer = new Composer();
-        mockStub = sinon.createStubInstance(MockStub);
+        mockStub = sinon.createStubInstance(ChaincodeStub);
         mockEngine = sinon.createStubInstance(Engine);
         mockContext = sinon.createStubInstance(Context);
 

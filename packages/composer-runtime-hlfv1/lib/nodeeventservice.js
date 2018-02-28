@@ -39,8 +39,6 @@ class NodeEventService extends EventService {
 
     /**
      * set the events stored in eventBuffer
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async transactionCommit() {
         const method = 'transactionCommit';

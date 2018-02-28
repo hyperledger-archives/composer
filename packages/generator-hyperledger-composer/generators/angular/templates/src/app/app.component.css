@@ -26,16 +26,12 @@
 
 .navbar-brand:hover {
     color: #000;
-    letter-spacing: 5px;
 }
 
 .network-name {
     font-size: 12px;
     letter-spacing: 0.28px;
     color: #5D636A;
-}
-.network-name:hover{
-    letter-spacing: 2px;
 }
 
 .navbar-nav > li {

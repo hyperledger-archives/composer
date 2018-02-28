@@ -15,29 +15,26 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
-
 const TestUtil = require('./testutil');
 
 const chai = require('chai');
-chai.should();
-chai.use(require('chai-subset'));
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
 describe('Participant system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
 
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying undefined as the value
         const modelFiles = [
             { fileName: undefined, contents: fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8') }
@@ -47,18 +44,17 @@ describe('Participant system tests', function() {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         bnID = businessNetworkDefinition.getName();
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-participants')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-participants');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     let createParticipant = (participantId) => {

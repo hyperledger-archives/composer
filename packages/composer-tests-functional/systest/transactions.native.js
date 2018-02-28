@@ -15,24 +15,31 @@
 
 'use strict';
 
-const TestUtil = require('./testutil');
-const path = require('path');
-const chai = require('chai');
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const IdCard = require('composer-common').IdCard;
-const uuid = require('uuid');
-chai.should();
-chai.use(require('chai-as-promised'));
-process.setMaxListeners(Infinity);
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const fs = require('fs');
+const IdCard = require('composer-common').IdCard;
+const path = require('path');
+const TestUtil = require('./testutil');
+const uuid = require('uuid');
+
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
+
+if (process.setMaxListeners) {
+    process.setMaxListeners(Infinity);
+}
+
 let client;
 let otherClient;
 let cardStore;
 let otherCardStore;
 let bnID;
 let otherBnID;
+let businessNetworkDefinition;
 
 let createAsset = (assetId) => {
     let factory = client.getBusinessNetwork().getFactory();
@@ -41,34 +48,17 @@ let createAsset = (assetId) => {
     return asset;
 };
 
-let deployCommon = () => {
-
+let deployCommon = async () => {
     const modelFiles = [
-        {
-            fileName : 'models/accesscontrols.cto',
-            contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')
-        },
-        {
-            fileName : 'models/participants.cto',
-            contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')
-        },
-        {
-            fileName : 'models/assets.cto',
-            contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')
-        },
-        {
-            fileName : 'models/transactions.cto',
-            contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')
-        }
-
+        { fileName : 'models/accesscontrols.cto', contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8') },
+        { fileName : 'models/participants.cto', contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8') },
+        { fileName : 'models/assets.cto', contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8') },
+        { fileName : 'models/transactions.cto', contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8') }
     ];
     const scriptFiles = [
-        {
-            identifier : 'transactions.js',
-            contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8')
-        }
+        { identifier : 'transactions.js', contents : fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
     ];
-    let businessNetworkDefinition = new BusinessNetworkDefinition('common-native-network@0.0.1', 'The network for the access controls system tests');
+    businessNetworkDefinition = new BusinessNetworkDefinition('common-native-network@0.0.1', 'The network for the access controls system tests');
     modelFiles.forEach((modelFile) => {
         businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
     });
@@ -83,7 +73,7 @@ let deployCommon = () => {
     return TestUtil.deploy(businessNetworkDefinition);
 };
 
-let deployOther = (cardName, networkName, otherChannel) => {
+let deployOther = async (cardName, networkName, otherChannel) => {
     const modelFiles = [
         {
             fileName : 'models/transactions.assets.cto',
@@ -122,8 +112,23 @@ describe('Native API', function () {
 
     this.retries(TestUtil.retries());
 
+    before(async () => {
+        await TestUtil.setUp();
+        cardStore = await deployCommon();
+        client = await TestUtil.getClient(cardStore,'common-native-network');
+    });
+
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
     beforeEach(async () => {
-        await TestUtil.resetBusinessNetwork(cardStore, bnID, 0, 'admincard');
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
+    });
+
+    afterEach(async () => {
+        client = await TestUtil.getClient(cardStore,'common-native-network');
     });
 
     describe('Simple Native API', () => {
@@ -267,28 +272,4 @@ describe('Native API', function () {
         });
     });
 
-    before(function () {
-        // need factor this deployCommon out shortly.
-        return deployCommon()
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore)
-                    .then((result) => {
-                        client = result;
-                    });
-            });
-    });
-
-    after(function () {
-        return TestUtil.undeploy();
-    });
-    beforeEach(() => {
-    });
-
-    afterEach(() => {
-        return TestUtil.getClient(cardStore)
-            .then((result) => {
-                client = result;
-            });
-    });
 });

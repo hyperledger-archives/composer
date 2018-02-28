@@ -14,7 +14,7 @@
 
 'use strict';
 
-const createHash = require('sha.js');
+const { KEYUTIL, KJUR, X509 } = require('jsrsasign');
 const Logger = require('./log/logger');
 
 const LOG = Logger.getLog('Certificate');
@@ -25,26 +25,6 @@ const LOG = Logger.getLog('Certificate');
 class Certificate {
 
     /**
-     * Calculate the unique identifier for the given certificate.
-     * @private
-     * @param {string} pem The PEM encoded certificate.
-     * @return {string} The unique identifier.
-     */
-    static _calculateIdentifier(pem) {
-        const method = '_calculateIdentifier';
-        LOG.entry(method, pem);
-        const bytes = pem
-            .replace(/-----BEGIN CERTIFICATE-----/, '')
-            .replace(/-----END CERTIFICATE-----/, '')
-            .replace(/[\r\n]+/g, '');
-        const buffer = Buffer.from(bytes, 'base64');
-        const sha256 = createHash('sha256');
-        const result = sha256.update(buffer).digest('hex');
-        LOG.exit(method, result);
-        return result;
-    }
-
-    /**
      * Constructor.
      * @param {string} pem The PEM encoded certificate.
      */
@@ -52,7 +32,12 @@ class Certificate {
         const method = 'constructor';
         LOG.entry(method, pem);
         this.pem = pem;
-        this.identifier = Certificate._calculateIdentifier(pem);
+        this.certificate = new X509();
+        this.certificate.readCertPEM(pem);
+        this.publicKey = KEYUTIL.getPEM(this.certificate.getPublicKey());
+        this.identifier = KJUR.crypto.Util.hashHex(this.certificate.getPublicKey().pubKeyHex, 'sha256');
+        this.issuer = KJUR.crypto.Util.hashHex(this.certificate.getIssuerString(), 'sha256');
+        this.name = /(\/CN=)(.*?)(\/|,|$)/.exec(this.certificate.getSubjectString())[2];
         LOG.exit(method);
     }
 
@@ -60,8 +45,16 @@ class Certificate {
      * Get the PEM encoded certificate.
      * @return {string} The PEM encoded certificate.
      */
-    getPEM() {
+    getCertificate() {
         return this.pem;
+    }
+
+    /**
+     * Get the PEM encoded public key.
+     * @return {string} The PEM encoded public key.
+     */
+    getPublicKey() {
+        return this.publicKey;
     }
 
     /**
@@ -70,6 +63,22 @@ class Certificate {
      */
     getIdentifier() {
         return this.identifier;
+    }
+
+    /**
+     * Get the issuer.
+     * @return {string} The issuer.
+     */
+    getIssuer() {
+        return this.issuer;
+    }
+
+    /**
+     * Get the name.
+     * @return {string} The name.
+     */
+    getName() {
+        return this.name;
     }
 
 }

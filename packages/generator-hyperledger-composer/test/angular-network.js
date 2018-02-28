@@ -1,32 +1,23 @@
 'use strict';
-let path = require('path');
-let assert = require('yeoman-assert');
-let helpers = require('yeoman-test');
-const fs = require('fs');
+
 const AdminConnection = require('composer-admin').AdminConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const BrowserFS = require('browserfs/dist/node/index');
-const bfs_fs = BrowserFS.BFSRequire('fs');
+const assert = require('yeoman-assert');
+const { BusinessNetworkDefinition, MemoryCardStore } = require('composer-common');
+const fs = require('fs');
+const helpers = require('yeoman-test');
 const IdCard = require('composer-common').IdCard;
-const deployCardName = 'deployer-card';
+const path = require('path');
 
 describe('hyperledger-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
 
     let tmpDir; // This is the directory which we will create our app into
 
     before(function() {
+        let idCard_PeerAdmin = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw' }, {'x-type' : 'embedded',name:'generatorProfile'});
+        const cardStore = new MemoryCardStore();
+        const adminConnection = new AdminConnection({ cardStore });
 
-        let metadata = { version:1 };
-        metadata.userName = 'PeerAdmin';
-        metadata.roles = 'PeerAdmin';
-
-
-
-        let idCard_PeerAdmin = new IdCard(metadata, {'x-type' : 'embedded',name:'generatorProfile'});
-        idCard_PeerAdmin.setCredentials({ certificate: 'cert', privateKey: 'key' });
-
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({    fs: bfs_fs });
+        const deployCardName = 'deployer-card';
         return adminConnection.importCard(deployCardName, idCard_PeerAdmin)
         .then(() => {
             return adminConnection.connect(deployCardName);
@@ -47,7 +38,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             .inTmpDir(function (dir) {
                 tmpDir = dir;
             })
-            .withOptions({ skipInstall: true, embeddedRuntime: adminConnection })
+            .withOptions({ skipInstall: true, cardStore })
             .withPrompts({
                 liveNetwork: true,
                 appName: 'digitalPropertyNetwork',
