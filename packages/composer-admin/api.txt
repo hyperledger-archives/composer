@@ -10,7 +10,7 @@ class AdminConnection {
    + Promise install(String,Object) 
    + Promise start(String,String,Object) 
    + Promise reset(String) 
-   + Promise upgrade(string,object) 
+   + Promise upgrade(string,string,object) 
    + Promise ping() 
    + Promise setLogLevel(any) 
    + Promise getLogLevel() 

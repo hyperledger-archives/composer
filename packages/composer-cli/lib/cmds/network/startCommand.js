@@ -20,6 +20,7 @@ module.exports.command = 'start [options]';
 module.exports.describe = 'Starts a specific version of a business network that is already installed to Hyperledger Fabric';
 module.exports.builder = function (yargs) {
     yargs.options({
+        card: { alias: 'c', required: true, description: 'The cardname to use to start the network', type:'string'},
         networkName: { alias: 'n', required: true, description: 'Name of the business network to start' },
         networkVersion: { alias: 'V', required: true, description: 'Version of the business network to start' },
         loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG']},
@@ -28,7 +29,6 @@ module.exports.builder = function (yargs) {
         networkAdmin: { alias: 'A', required: true, description: 'The identity name of the business network administrator', type: 'string' },
         networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
         networkAdminEnrollSecret: { alias: 'S', required: false, description: 'The enrollment secret for the business network administrator', type: 'string', default: undefined },
-        card: { alias: 'c', required: true, description: 'The cardname to use to start the network', type:'string'},
         file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
     });
 

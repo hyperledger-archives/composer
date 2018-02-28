@@ -28,70 +28,57 @@ class Start {
     * Command process for start command
     * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
-    * @return {Promise} promise when command complete
     */
-    static handler(argv) {
+    static async handler(argv) {
         const cardName = argv.card;
-        const logLevel = argv.loglevel;
         const networkName = argv.networkName;
         const networkVersion = argv.networkVersion;
-        let adminConnection;
-        let spinner;
-        let networkAdmins;
+        const logLevel = argv.loglevel;
 
-        // needs promise resolve here in case the archive errors
-        return Promise.resolve().then(() => {
-            cmdUtil.log(chalk.blue.bold(`Starting business network ${networkName} at version ${networkVersion}`));
-            cmdUtil.log('');
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(cardName);
-        })
-        .then(() => {
-            // Build the start options.
-            let startOptions = cmdUtil.parseOptions(argv);
-            if (logLevel) {
-                startOptions.logLevel = logLevel;
-            }
+        cmdUtil.log(chalk.blue.bold(`Starting business network ${networkName} at version ${networkVersion}`));
+        cmdUtil.log('');
 
-            // grab the network admins
-            // what we want is an array of the following
-            // {userName, certificate, secret, file}
-            startOptions.networkAdmins = networkAdmins = cmdUtil.parseNetworkAdmins(argv);
-            cmdUtil.log(chalk.bold.blue('Processing these Network Admins: '));
-            startOptions.networkAdmins.forEach((e)=>{
-                cmdUtil.log(chalk.blue('\tuserName: ')+e.userName);
-            });
-            cmdUtil.log('');
+        // Build the start options.
+        const startOptions = cmdUtil.parseOptions(argv);
+        if (logLevel) {
+            startOptions.logLevel = logLevel;
+        }
 
-            spinner = ora('Starting business network definition. This may take a minute...').start();
+        // grab the network admins
+        // what we want is an array of the following
+        // {userName, certificate, secret, file}
+        const networkAdmins = cmdUtil.parseNetworkAdmins(argv);
+        startOptions.networkAdmins = networkAdmins;
+        cmdUtil.log(chalk.bold.blue('Processing these Network Admins: '));
+        networkAdmins.forEach(e => {
+            cmdUtil.log(chalk.blue('\tuserName: ') + e.userName);
+        });
+        cmdUtil.log('');
 
-            return adminConnection.start(networkName, networkVersion, startOptions);
-        }).then(adminCardMap => {
-            const promises = Array.from(adminCardMap.values()).map(card => {
+        const spinner = ora('Starting business network definition. This may take a minute...').start();
+        try {
+            const adminConnection = cmdUtil.createAdminConnection();
+            await adminConnection.connect(cardName);
+
+            const adminCardMap = await adminConnection.start(networkName, networkVersion, startOptions);
+            const writeNetworkAdminCardPromises = Array.from(adminCardMap.values()).map(card => {
                 // check the networkAdmins for matching name and return the file
-                const adminMatch = networkAdmins.find(e => {
-                    return (e.userName === card.getUserName());
-                });
+                const adminMatch = networkAdmins.find(e => (e.userName === card.getUserName()));
                 const fileName = (adminMatch && adminMatch.file) || cmdUtil.getDefaultCardName(card) + '.card';
                 return Export.writeCardToFile(fileName, card).then(() => fileName);
             });
 
-            return Promise.all(promises);
-        }).then((result)=>{
-            spinner.succeed();
-            let cards = cmdUtil.arrayify(result);
-            cmdUtil.log(chalk.bold.blue('Successfully created business network card'+(cards.length>1? 's:':':')));
-            cards.forEach((e)=>{
-                cmdUtil.log(chalk.blue('\tFilename: ')+e);
-            });
+            const cardFileNames = await Promise.all(writeNetworkAdminCardPromises);
 
-            return result;
-        }).catch((error) => {
-            if (spinner) {
-                spinner.fail();
-            }
+            spinner.succeed();
+            cmdUtil.log(chalk.bold.blue('Successfully created business network card'+(cardFileNames.length>1? 's:':':')));
+            cardFileNames.forEach(e => {
+                cmdUtil.log(chalk.blue('\tFilename: ') + e);
+            });
+        } catch (error) {
+            spinner.fail();
             throw error;
-        });
+        }
     }
 
 }

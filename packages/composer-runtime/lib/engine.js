@@ -95,12 +95,12 @@ class Engine {
             //runtime. Currently not supported and the connector will not allow
             //the upgrade. We could add a check here as well and reject the upgrade
             //but it's overkill at the moment.
-            return Promise.resolve();
+            return;
         }
-
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
-        } else if (args.length !== 1) {
+        }
+        if (args.length !== 1) {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['serializedResource']));
         }
 

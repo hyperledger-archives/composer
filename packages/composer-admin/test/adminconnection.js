@@ -35,6 +35,10 @@ const sinon = require('sinon');
 describe('AdminConnection', () => {
     const testProfileName = 'profile';
     const sandbox = sinon.sandbox.create();
+    const config = {
+        name: testProfileName,
+        'x-type': 'hlfv1'
+    };
 
     let mockConnectionManager;
     let mockConnection;
@@ -46,12 +50,6 @@ describe('AdminConnection', () => {
     let secretCard;
     let credentialsCard;
     let faultyCard;
-
-    const config =
-        {
-            name:testProfileName,
-            'x-type' : 'hlfv1'
-        };
 
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
@@ -423,10 +421,10 @@ describe('AdminConnection', () => {
         it('should be able to upgrade a composer runtime', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.upgrade()
+            return adminConnection.upgrade('name', '1.0.1', {'foo':'bar'})
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.upgrade);
-                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext);
+                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'name', '1.0.1', {'foo':'bar'});
                 });
         });
     });

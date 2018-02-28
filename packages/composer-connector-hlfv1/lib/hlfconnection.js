@@ -30,7 +30,6 @@ const TransactionID = require('fabric-client/lib/TransactionID');
 const LOG = Logger.getLog('HLFConnection');
 
 const connectorPackageJSON = require('../package.json');
-const runtimeModulePath = path.resolve(path.dirname(require.resolve('composer-runtime-hlfv1')));
 const runtimeHlfPackageJson = require('composer-runtime-hlfv1/package.json');
 const composerVersion = runtimeHlfPackageJson.version;
 
@@ -310,7 +309,7 @@ class HLFConnection extends Connection {
         LOG.entry(method, securityContext, businessNetworkDefinition, installOptions);
 
         if (!businessNetworkDefinition) {
-            return Promise.reject(new Error('businessNetworkDefinition not specified'));
+            throw new Error('businessNetworkDefinition not specified');
         }
 
         // Update the package.json for install to Fabric
@@ -370,7 +369,7 @@ class HLFConnection extends Connection {
             const results = await this.client.installChaincode(request);
             LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
             const CCAlreadyInstalledPattern = /chaincode .+ exists/;
-            const {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
+            const {ignoredErrors, validResponses, invalidResponseMsgs} = this._validatePeerResponses(results[0], false, CCAlreadyInstalledPattern);
 
             // is the composer runtime already installed on all the peers ?
             const calledFromDeploy = installOptions && installOptions.calledFromDeploy;
@@ -458,8 +457,14 @@ class HLFConnection extends Connection {
     _addEndorsementPolicy(options, request) {
         const method = '_addEndorsementPolicy';
         LOG.entry(method, options, request);
-        // endorsementPolicy overrides endorsementPolicyFile
+
+        if (!options) {
+            LOG.exit(method, request);
+            return;
+        }
+
         try {
+            // endorsementPolicy overrides endorsementPolicyFile
             if (options.endorsementPolicy) {
                 request['endorsement-policy'] =
                     (typeof options.endorsementPolicy === 'string') ? JSON.parse(options.endorsementPolicy) : options.endorsementPolicy;
@@ -479,84 +484,87 @@ class HLFConnection extends Connection {
      * Instantiate the chaincode.
      *
      * @param {any} securityContext the security context
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} businessNetworkName The identifier of the Business network that will be started in this installed runtime
      * @param {String} businessNetworkVersion The semantic version of the business network
      * @param {string} startTransaction The serialized start transaction.
-     * @param {Object} startOptions connector specific installation options
-     * @returns {Promise} a promise for instantiation completion
+     * @param {Object} [startOptions] connector specific installation options
+     * @async
      */
-    start(securityContext, businessNetworkIdentifier, businessNetworkVersion, startTransaction, startOptions) {
+    async start(securityContext, businessNetworkName, businessNetworkVersion, startTransaction, startOptions) {
         const method = 'start';
-        LOG.entry(method, securityContext, businessNetworkIdentifier, startTransaction, startOptions);
+        LOG.entry(method, securityContext, businessNetworkName, startTransaction, startOptions);
 
-        if (!businessNetworkIdentifier) {
-            return Promise.reject(new Error('businessNetworkIdentifier not specified'));
-        } else if (!startTransaction) {
-            return Promise.reject(new Error('startTransaction not specified'));
+        if (!businessNetworkName) {
+            throw new Error('Business network name not specified');
+        }
+        if (!businessNetworkVersion) {
+            throw new Error('Business network version not specified');
+        }
+        if (!startTransaction) {
+            throw new Error('Start transaction not specified');
         }
 
-        let finalTxId;
-        let eventHandler;
+        try {
+            LOG.debug(method, 'loading the channel configuration');
+            await this._initializeChannel();
 
-        // initialize the channel ready for instantiation
-        LOG.debug(method, 'loading the channel configuration');
-        return this._initializeChannel()
-            .then(() => {
-                // prepare and send the instantiate proposal
-                finalTxId = this.client.newTransactionID();
+            const transactionId = this.client.newTransactionID();
+            const proposal = {
+                chaincodeType: 'node',
+                chaincodeId: businessNetworkName,
+                chaincodeVersion: businessNetworkVersion,
+                txId: transactionId,
+                fcn: 'init',
+                args: [startTransaction]
+            };
+            this._addEndorsementPolicy(startOptions, proposal);
 
-                const request = {
-                    chaincodePath: runtimeModulePath,
-                    chaincodeVersion: businessNetworkVersion,
-                    chaincodeId: businessNetworkIdentifier,
-                    txId: finalTxId,
-                    fcn: 'init',
-                    args: [startTransaction]
-                };
+            LOG.debug(method, 'sending instantiate proposal', proposal);
+            const proposalResponse = await this.channel.sendInstantiateProposal(proposal);
+            await this._sendTransactionForProposal(proposalResponse, transactionId);
+        } catch(error) {
+            const newError = new Error('Error trying to start business network. ' + error);
+            LOG.error(method, error);
+            throw newError;
+        }
+    }
 
-                if (startOptions) {
-                    this._addEndorsementPolicy(startOptions, request);
-                }
-                LOG.debug(method, 'sending instantiate proposal', request);
-                return this.channel.sendInstantiateProposal(request);
-            })
-            .then((results) => {
-                // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from instantiating the composer runtime chaincode`, results);
-                let proposalResponses = results[0];
-                let {validResponses} = this._validateResponses(proposalResponses, true);
+    /**
+     * Process the endorsing peer results and submit the transaction
+     * @param {Array} proposalResponse - results of the transaction proposal
+     * @param {TransactionID} transactionId transaction ID object used in the proposal
+     * @async
+     * @private
+     */
+    async _sendTransactionForProposal(proposalResponse, transactionId) {
+        const method = '_sendTransactionForProposal';
+        LOG.entry(method, proposalResponse);
 
-                // Submit the endorsed transaction to the primary orderer.
-                const proposal = results[1];
-                const header = results[2];
+        // Validate the instantiate proposal results
+        LOG.debug(method, `Received ${proposalResponse.length} results(s) from instantiating the composer runtime chaincode`, proposalResponse);
+        let peerResponses = proposalResponse[0];
+        let {validResponses} = this._validatePeerResponses(peerResponses, true);
 
-                eventHandler = new HLFTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
-                eventHandler.startListening();
-                return this.channel.sendTransaction({
-                    proposalResponses: validResponses,
-                    proposal: proposal,
-                    header: header
-                });
+        // Submit the endorsed transaction to the primary orderer.
+        const proposal = proposalResponse[1];
+        // const header = proposalResponse[2];
 
-            })
-            .then((response) => {
-                // If the transaction was successful, wait for it to be committed.
-                LOG.debug(method, 'Received response from orderer', response);
-                if (response.status !== 'SUCCESS') {
-                    eventHandler.cancelListening();
-                    throw new Error(`Failed to send peer responses for transaction '${finalTxId.getTransactionID()}' to orderer. Response status '${response.status}'`);
-                }
-                return eventHandler.waitForEvents();
+        const eventHandler = new HLFTxEventHandler(this.eventHubs, transactionId.getTransactionID(), this.commitTimeout);
+        eventHandler.startListening();
+        const response = await this.channel.sendTransaction({
+            proposalResponses: validResponses,
+            proposal: proposal
+            // header: header
+        });
 
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying to instantiate composer runtime. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
+        // If the transaction was successful, wait for it to be committed.
+        LOG.debug(method, 'Received response from orderer', response);
+        if (response.status !== 'SUCCESS') {
+            eventHandler.cancelListening();
+            throw new Error(`Failed to send peer responses for transaction '${transactionId.getTransactionID()}' to orderer. Response status '${response.status}'`);
+        }
+        await eventHandler.waitForEvents();
+        LOG.exit(method);
     }
 
     /**
@@ -568,8 +576,8 @@ class HLFConnection extends Connection {
      * @return {Object} number of ignored errors and valid responses
      * @throws if there are no valid responses at all.
      */
-    _validateResponses(responses, isProposal, pattern) {
-        const method = '_validateResponses';
+    _validatePeerResponses(responses, isProposal, pattern) {
+        const method = '_validatePeerResponses';
         LOG.entry(method, responses, pattern, isProposal);
 
         if (!responses.length) {
@@ -611,12 +619,9 @@ class HLFConnection extends Connection {
             }
         });
         if (validResponses.length === 0 && ignoredErrors < responses.length) {
-            let errorMsg = 'No valid responses from any peers.\n';
-            invalidResponseMsgs.forEach((invalidResponse) => {
-                errorMsg += invalidResponse;
-                errorMsg += '\n';
-            });
-            throw new Error(errorMsg);
+            const errorMessages = [ 'No valid responses from any peers.' ];
+            invalidResponseMsgs.forEach(invalidResponse => errorMessages.push(invalidResponse));
+            throw new Error(errorMessages.join('\n'));
         }
 
         // if it was a proposal and some of the  responses were good, check that they compare
@@ -856,7 +861,7 @@ class HLFConnection extends Connection {
                 // Validate the endorsement results.
                 LOG.debug(method, `Received ${results.length} results(s) from invoking the composer runtime chaincode`, results);
                 const proposalResponses = results[0];
-                let {validResponses} = this._validateResponses(proposalResponses, true);
+                let {validResponses} = this._validatePeerResponses(proposalResponses, true);
 
                 // Submit the endorsed transaction to the primary orderers.
                 const proposal = results[1];
@@ -1016,97 +1021,47 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Upgrade runtime to a newer version
-     * @param {any} securityContext security context
-     * @param {string} businessNetworkName The name of the business network
-     * @param {object} upgradeOptions connector specific options
-     * @return {Promise} A promise that is resolved when the runtime has been upgraded,
-     * or rejected with an error.
-     * @memberof HLFConnection
+     * Upgrade the chaincode.
+     *
+     * @param {any} securityContext the security context
+     * @param {string} businessNetworkName The identifier of the Business network that will be started in this installed runtime
+     * @param {String} businessNetworkVersion The semantic version of the business network
+     * @param {Object} [upgradeOptions] connector specific installation options
+     * @async
      */
-    upgrade(securityContext, businessNetworkName, upgradeOptions) {
+    async upgrade(securityContext, businessNetworkName, businessNetworkVersion, upgradeOptions) {
         const method = 'upgrade';
         LOG.entry(method, securityContext, businessNetworkName, upgradeOptions);
 
         if (!businessNetworkName) {
-            return Promise.reject(new Error('No business network has been specified for upgrade'));
+            throw new Error('Business network name not specified');
         }
-        this.businessNetworkIdentifier = businessNetworkName;
+        if (!businessNetworkVersion) {
+            throw new Error('Business network version not specified');
+        }
 
-        let txId;
-        let eventHandler;
+        try {
+            LOG.debug(method, 'loading the channel configuration');
+            await this._initializeChannel();
 
-        return this.channel.queryInstantiatedChaincodes()
-            .then((results) => {
-                let result = results.chaincodes.filter((chaincode) => {
-                    return chaincode.path.includes('composer-runtime-hlfv1') && chaincode.name === businessNetworkName;
-                });
-                if (result.length === 0) {
-                    throw new Error(`${businessNetworkName} has not been started so cannot be upgraded`);
-                }
-                const runtimeVersion = result[0].version;
-                // Check our new version should be greater than or equal but only a micro version change.
-                const range =  `^${runtimeVersion}`;
-                if (!semver.satisfies(connectorPackageJSON.version, range)) {
-                    throw new Error(`New runtime version (${connectorPackageJSON.version}) compared to current (${runtimeVersion}) has changed major or minor version and cannot be upgraded.`);
-                }
+            const transactionId = this.client.newTransactionID();
+            const proposal = {
+                chaincodeType: 'node',
+                chaincodeId: businessNetworkName,
+                chaincodeVersion: businessNetworkVersion,
+                txId: transactionId,
+                fcn: 'upgrade'
+            };
+            this._addEndorsementPolicy(upgradeOptions, proposal);
 
-                return this._initializeChannel();
-            })
-            .then(() => {
-                txId = this.client.newTransactionID();
-
-                // Submit the upgrade proposal
-                const request = {
-                    chaincodePath: runtimeModulePath,
-                    chaincodeVersion: runtimeHlfPackageJson.version,
-                    chaincodeId: businessNetworkName,
-                    txId: txId,
-                    fcn: 'upgrade'
-                };
-
-                if (upgradeOptions) {
-                    this._addEndorsementPolicy(upgradeOptions, request);
-                }
-                return this.channel.sendUpgradeProposal(request);
-            })
-            .then((results) => {
-                // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
-                let proposalResponses = results[0];
-                let {validResponses} = this._validateResponses(proposalResponses, true);
-
-                // Submit the endorsed transaction to the primary orderer.
-                const proposal = results[1];
-                const header = results[2];
-                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
-                eventHandler.startListening();
-                return this.channel.sendTransaction({
-                    proposalResponses: validResponses,
-                    proposal: proposal,
-                    header: header
-                });
-
-            })
-            .then((response) => {
-
-                // If the transaction was successful, wait for it to be committed.
-                LOG.debug(method, 'Received response from orderer', response);
-                if (response.status !== 'SUCCESS') {
-                    eventHandler.cancelListening();
-                    throw new Error(`Failed to send peer responses for transaction '${txId.getTransactionID()}' to orderer. Response status '${response.status}'`);
-                }
-                return eventHandler.waitForEvents();
-
-            })
-            .then(() => {
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                const newError = new Error(`Error trying upgrade composer runtime for business network ${this.businessNetworkIdentifier}. ` + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
+            LOG.debug(method, 'sending upgrade proposal', proposal);
+            const proposalResults = await this.channel.sendUpgradeProposal(proposal);
+            await this._sendTransactionForProposal(proposalResults, transactionId);
+        } catch(error) {
+            const newError = new Error('Error trying to upgrade business network. ' + error);
+            LOG.error(method, error);
+            throw newError;
+        }
     }
 
    /**

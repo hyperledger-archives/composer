@@ -61,7 +61,6 @@ describe('composer start network CLI unit tests', function () {
 
         mockAdminConnection.connect.resolves();
         mockAdminConnection.start.resolves();
-        mockAdminConnection.update.resolves();
         mockAdminConnection.exportCard.resolves(testCard);
         mockAdminConnection.start.resolves(createCardMap(testCard, adminCard));
         sandbox.stub(cmdUtil, 'createAdminConnection').returns(mockAdminConnection);
