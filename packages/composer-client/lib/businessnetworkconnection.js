@@ -18,7 +18,6 @@ const AssetRegistry = require('./assetregistry');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const EventEmitter = require('events');
-const fs = require('fs');
 const Historian = require('./historian');
 const IdentityRegistry = require('./identityregistry');
 const Logger = require('composer-common').Logger;
@@ -31,7 +30,7 @@ const TransactionRegistry = require('./transactionregistry');
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const Registry = require('./registry');
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const LOG = Logger.getLog('BusinessNetworkConnection');
 
 /**
@@ -55,8 +54,7 @@ class BusinessNetworkConnection extends EventEmitter {
         LOG.entry(method, options);
         options = options || {};
 
-        this.cardStore = options.cardStore || new FileSystemCardStore({fs : options.fs || fs});
-
+        this.cardStore = options.cardStore || NetworkCardStoreManager.getCardStore();
         this.connectionProfileManager = new ConnectionProfileManager();
         this.connection = null;
         this.securityContext = null;
@@ -399,6 +397,9 @@ class BusinessNetworkConnection extends EventEmitter {
                 if (!additionalConnectOptions) {
                     additionalConnectOptions = {};
                 }
+
+                // need to get from the cardstore, a wallet that uses the same backing store
+                additionalConnectOptions.wallet = this.cardStore.getWallet(cardName);
                 additionalConnectOptions.cardName = cardName;
                 return this.connectionProfileManager.connectWithData(this.card.getConnectionProfile(), this.card.getBusinessNetworkName(), additionalConnectOptions);
             })

@@ -44,6 +44,19 @@ describe('PlaygroundBusinessNetworkCardStore', () => {
 
     });
 
+    describe('#getWallet', () => {
+        it('should return the dummy wallet', (done) => {
+            let thisBusinessNetworkCardStore = new PlaygroundBusinessNetworkCardStore();
+            return thisBusinessNetworkCardStore.getWallet()
+                .then((result) => {
+                    result.should.deep.equal({empty: 'playground-wallet'});
+                    done();
+                });
+
+        });
+
+    });
+
     describe('#get', () => {
         it('should get from the browser connection profile store', (done) => {
             mockBrowserBusinessNetworkCardStore.get.withArgs('web-card').resolves({userName: 'web'});

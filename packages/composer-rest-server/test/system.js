@@ -16,11 +16,10 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const { BusinessNetworkDefinition, CertificateUtil, IdCard, MemoryCardStore } = require('composer-common');
+const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
-
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
@@ -104,7 +103,7 @@ describe('System REST API unit tests', () => {
     };
 
     before(() => {
-        const cardStore = new MemoryCardStore();
+        const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';

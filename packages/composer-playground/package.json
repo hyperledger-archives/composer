@@ -98,6 +98,8 @@
         "cheerio": "0.22.0",
         "composer-common": "0.18.0",
         "composer-playground-api": "0.18.0",
+        "composer-wallet-filesystem": "0.18.0",
+        "composer-wallet-inmemory": "0.18.0",        
         "express": "4.15.2",
         "is-docker": "1.1.0",
         "opener": "1.4.2",

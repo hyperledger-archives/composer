@@ -63,3 +63,4 @@ packages/composer-runtime-hlfv1/vendor/gopkg.in/sourcemap.v1/
 packages/composer-playground/e2e/downloads/
 
 package-lock.json
+packages/composer-tests-functional/storage

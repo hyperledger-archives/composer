@@ -14,11 +14,6 @@
 
 'use strict';
 
-/**
- * Currently we have a wallet singleton, but this is temporary until
- * we decide how wallets fit into the administrative and client APIs.
- * @private
- */
 let theWallet = null;
 
 /**
@@ -28,7 +23,6 @@ let theWallet = null;
  * @abstract
  */
 class Wallet {
-
     /**
      * Get the wallet singleton.
      * @return {Wallet} The wallet singleton, or null if one
@@ -45,7 +39,6 @@ class Wallet {
     static setWallet(wallet) {
         theWallet = wallet;
     }
-
     /**
      * List all of the credentials in the wallet.
      * @abstract
@@ -53,7 +46,7 @@ class Wallet {
      * an array of credential names, or rejected with an
      * error.
      */
-    list() {
+    listNames() {
         throw new Error('abstract function called');
     }
 
@@ -86,22 +79,11 @@ class Wallet {
      * @abstract
      * @param {string} name The name of the credentials.
      * @param {string} value The credentials.
+     * @param {Object} [meta] Optional object with meta data
      * @return {Promise} A promise that is resolved when
      * complete, or rejected with an error.
      */
-    add(name, value) {
-        throw new Error('abstract function called');
-    }
-
-    /**
-     * Update existing credentials in the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @param {string} value The credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
-     */
-    update(name, value) {
+    put(name, value, meta = {}) {
         throw new Error('abstract function called');
     }
 
