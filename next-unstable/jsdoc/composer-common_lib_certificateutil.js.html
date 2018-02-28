@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/model/identifiable.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/certificateutil.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/model/identifiable.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/certificateutil.js</h1>
     
 <section>
     <article>
@@ -100,107 +100,64 @@
 
 'use strict';
 
-const ResourceId = require('./resourceid');
-const Typed = require('./typed');
+const { KEYUTIL, KJUR } = require('jsrsasign');
+const Logger = require('./log/logger');
+
+const LOG = Logger.getLog('CertificateUtil');
 
 /**
- * Identifiable is an entity with a namespace, type and an identifier.
- * Applications should retrieve instances from {@link Factory}
- * This class is abstract.
- * @extends Typed
- * @abstract
- * @class
- * @memberof module:composer-common
+ * A class with utilities for generating digital certificates.
  */
-class Identifiable extends Typed {
-    /**
-     * Create an instance.
-     * &lt;p>
-     * &lt;strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Factory}&lt;/strong>
-     * &lt;/p>
-     *
-     * @param {ModelManager} modelManager - The ModelManager for this instance
-     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
-     * @param {string} ns - The namespace this instance.
-     * @param {string} type - The type this instance.
-     * @param {string} id - The identifier of this instance.
-     * @private
-     */
-    constructor(modelManager, classDeclaration, ns, type, id) {
-        super(modelManager, classDeclaration, ns, type);
-        this.$identifier = id;
-    }
+class CertificateUtil {
 
     /**
-     * Get the identifier of this instance
-     * @return {string} The identifier for this object
+     * Generate a certificate and public/private key pair.
+     * @param {Object} options The options.
+     * @param {string} options.commonName The common name for the certificate.
+     * @param {string} options.organization The organization for the certificate, defaults to 'org1.example.com'.
+     * @param {string} options.publicKey An existing PEM encoded public key.
+     * @param {string} options.privateKey An existing PEM encoded private key.
+     * @return {{ publicKey: string, privateKey: string, certificate: string }} The certificate and public/private key pair.
      */
-    getIdentifier() {
-        return this.$identifier;
+    static generate({ commonName, organization = 'org1.example.com', publicKey, privateKey } = {}) {
+        const method = 'generate';
+        LOG.entry(method);
+        let pubKeyObj, prvKeyObj;
+        if (!commonName) {
+            throw new Error('commonName not specified');
+        } else if (!publicKey &amp;&amp; !privateKey) {
+            LOG.debug(method, 'No existing key pair specified, generating');
+            ({ pubKeyObj, prvKeyObj } = KEYUTIL.generateKeypair('EC', 'secp256r1'));
+            publicKey = KEYUTIL.getPEM(pubKeyObj);
+            privateKey = KEYUTIL.getPEM(prvKeyObj, 'PKCS8PRV');
+        } else if (publicKey &amp;&amp; privateKey) {
+            LOG.debug(method, 'Existing key pair specified');
+            pubKeyObj = KEYUTIL.getKey(publicKey);
+            prvKeyObj = KEYUTIL.getKey(privateKey);
+        } else {
+            throw new Error('must specify neither publicKey and privateKey, or both publicKey and privateKey');
+        }
+        const certificate = KJUR.asn1.x509.X509Util.newCertPEM({
+            serial: { int: 4 },
+            sigalg: { name: 'SHA1withECDSA' },
+            issuer: { str: `/O=${organization}` },
+            notbefore: { str: '180101000000Z' },
+            notafter: { str: '280101000000Z' },
+            subject: { str: `/CN=${commonName}` },
+            sbjpubkey: pubKeyObj,
+            ext: [
+              { basicConstraints: { cA: true, critical: true } },
+              { keyUsage: { bin: '11' } },
+            ],
+            cakey: prvKeyObj
+        });
+        LOG.exit(method);
+        return { publicKey, privateKey, certificate };
     }
 
-    /**
-     * Set the identifier of this instance
-     * @param {string} id - the new identifier for this object
-     */
-    setIdentifier(id) {
-        this.$identifier = id;
-        const modelFile = this.$modelManager.getModelFile(this.getNamespace());
-        const typeDeclaration = modelFile.getType(this.getFullyQualifiedType());
-        const idField = typeDeclaration.getIdentifierFieldName();
-        this[idField] = id;
-    }
-
-    /**
-     * Get the fully qualified identifier of this instance.
-     * (namespace '.' type '#' identifier).
-     * @return {string} the fully qualified identifier of this instance
-     */
-    getFullyQualifiedIdentifier() {
-        return this.getFullyQualifiedType() + '#' + this.$identifier;
-    }
-
-    /**
-     * Returns the string representation of this class
-     * @return {String} the string representation of the class
-     */
-    toString() {
-        return 'Identifiable {id=' + this.getFullyQualifiedIdentifier() +'}';
-    }
-
-    /**
-     * Determine if this identifiable is a relationship.
-     * @return {boolean} True if this identifiable is a relationship,
-     * false if not.
-     */
-    isRelationship() {
-        return false;
-    }
-
-    /**
-     * Determine if this identifiable is a resource.
-     * @return {boolean} True if this identifiable is a resource,
-     * false if not.
-     */
-    isResource() {
-        return false;
-    }
-
-    /**
-     * Returns a URI representation of a reference to this identifiable
-     * @return {String} the URI for the identifiable
-     */
-    toURI() {
-        const resourceId = new ResourceId(this.getNamespace(), this.getType(), this.getIdentifier());
-        const result = resourceId.toURI();
-        //console.log( '***** URI for ' + this.toString() + ' is ' + result );
-        return result;
-    }
 }
 
-module.exports = Identifiable;
-</pre>
+module.exports = CertificateUtil;</pre>
     </article>
 </section>
 

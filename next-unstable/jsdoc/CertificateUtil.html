@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/model/identifiable.js</title>
+	<title>Hyperledger Composer Class: CertificateUtil</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,136 +74,423 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/model/identifiable.js</h1>
-    
+	<h1 class="page-title">Class: CertificateUtil</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript linenums">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-'use strict';
+<header>
+    
+        <h2>
+        CertificateUtil
+        </h2>
+        
+            <div class="class-description"><p>A class with utilities for generating digital certificates.</p></div>
+        
+    
+</header>
 
-const ResourceId = require('./resourceid');
-const Typed = require('./typed');
 
-/**
- * Identifiable is an entity with a namespace, type and an identifier.
- * Applications should retrieve instances from {@link Factory}
- * This class is abstract.
- * @extends Typed
- * @abstract
- * @class
- * @memberof module:composer-common
- */
-class Identifiable extends Typed {
-    /**
-     * Create an instance.
-     * &lt;p>
-     * &lt;strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Factory}&lt;/strong>
-     * &lt;/p>
-     *
-     * @param {ModelManager} modelManager - The ModelManager for this instance
-     * @param {ClassDeclaration} classDeclaration - The class declaration for this instance.
-     * @param {string} ns - The namespace this instance.
-     * @param {string} type - The type this instance.
-     * @param {string} id - The identifier of this instance.
-     * @private
-     */
-    constructor(modelManager, classDeclaration, ns, type, id) {
-        super(modelManager, classDeclaration, ns, type);
-        this.$identifier = id;
-    }
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="CertificateUtil"><span class="type-signature"></span>new CertificateUtil()</h4>
+    
+    
+</dt>
+<dd>
 
-    /**
-     * Get the identifier of this instance
-     * @return {string} The identifier for this object
-     */
-    getIdentifier() {
-        return this.$identifier;
-    }
+    
 
-    /**
-     * Set the identifier of this instance
-     * @param {string} id - the new identifier for this object
-     */
-    setIdentifier(id) {
-        this.$identifier = id;
-        const modelFile = this.$modelManager.getModelFile(this.getNamespace());
-        const typeDeclaration = modelFile.getType(this.getFullyQualifiedType());
-        const idField = typeDeclaration.getIdentifierFieldName();
-        this[idField] = id;
-    }
+    
 
-    /**
-     * Get the fully qualified identifier of this instance.
-     * (namespace '.' type '#' identifier).
-     * @return {string} the fully qualified identifier of this instance
-     */
-    getFullyQualifiedIdentifier() {
-        return this.getFullyQualifiedType() + '#' + this.$identifier;
-    }
+    
 
-    /**
-     * Returns the string representation of this class
-     * @return {String} the string representation of the class
-     */
-    toString() {
-        return 'Identifiable {id=' + this.getFullyQualifiedIdentifier() +'}';
-    }
+    
+    
 
-    /**
-     * Determine if this identifiable is a relationship.
-     * @return {boolean} True if this identifiable is a relationship,
-     * false if not.
-     */
-    isRelationship() {
-        return false;
-    }
+    
+<dl class="details">
+    
 
-    /**
-     * Determine if this identifiable is a resource.
-     * @return {boolean} True if this identifiable is a resource,
-     * false if not.
-     */
-    isResource() {
-        return false;
-    }
+	
 
-    /**
-     * Returns a URI representation of a reference to this identifiable
-     * @return {String} the URI for the identifiable
-     */
-    toURI() {
-        const resourceId = new ResourceId(this.getNamespace(), this.getType(), this.getIdentifier());
-        const result = resourceId.toURI();
-        //console.log( '***** URI for ' + this.toString() + ' is ' + result );
-        return result;
-    }
-}
+	
 
-module.exports = Identifiable;
-</pre>
-    </article>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_certificateutil.js.html">composer-common/lib/certificateutil.js</a>,
+				 <a href="composer-common_lib_certificateutil.js.html#sunlight-1-line-25">line 25</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id=".generate"><span class="type-signature">&lt;static> </span>generate(options)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Generate a certificate and public/private key pair.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The options.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>commonName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The common name for the certificate.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>organization</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The organization for the certificate, defaults to 'org1.example.com'.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>publicKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An existing PEM encoded public key.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>privateKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An existing PEM encoded private key.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_certificateutil.js.html">composer-common/lib/certificateutil.js</a>,
+				 <a href="composer-common_lib_certificateutil.js.html#sunlight-1-line-36">line 36</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The certificate and public/private key pair.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -213,6 +500,10 @@ module.exports = Identifiable;
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>
