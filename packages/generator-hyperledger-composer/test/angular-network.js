@@ -2,7 +2,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const assert = require('yeoman-assert');
-const { BusinessNetworkDefinition, MemoryCardStore } = require('composer-common');
+const { BusinessNetworkDefinition, NetworkCardStoreManager } = require('composer-common');
 const fs = require('fs');
 const helpers = require('yeoman-test');
 const IdCard = require('composer-common').IdCard;
@@ -14,7 +14,8 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
 
     before(function() {
         let idCard_PeerAdmin = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw' }, {'x-type' : 'embedded',name:'generatorProfile'});
-        const cardStore = new MemoryCardStore();
+        require('composer-common').NetworkCardStoreManager;
+        const cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
 
         const deployCardName = 'deployer-card';

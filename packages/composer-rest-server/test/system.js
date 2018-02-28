@@ -16,14 +16,10 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const { BusinessNetworkDefinition, CertificateUtil, IdCard, MemoryCardStore } = require('composer-common');
+const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
-<<<<<<< HEAD
-
-=======
->>>>>>> This is a preview implementation of the support for 'Cloud Wallets'.
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));

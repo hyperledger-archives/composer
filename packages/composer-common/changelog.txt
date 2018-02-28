@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.17.4 {8e169177f026377a66f31b9affe6d608} 2018-02-07
+Version 0.18.0 {c4e008425f84c47d61303c19829ceb59} 2018-02-28
 - Updates for cloud wallets
 - File system and Memory cardstore gone as explicit externals
 

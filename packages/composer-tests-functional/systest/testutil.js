@@ -1001,15 +1001,6 @@ class TestUtil {
                 });
         } else if (forceDeploy) {
             throw new Error('should not be using ForceDeploy');
-            // TestUtil.log(`Deploying business network ${businessNetworkDefinition.getName()} using deploy ...`);
-            // // Connect and deploy the network.
-            // return adminConnection.connectWithDetails('composer-systests', 'admin', 'Xurw3yU9zI0l')
-            //     .then(() => {
-            //         return adminConnection.deploy(businessNetworkDefinition, {bootstrapTransactions});
-            //     })
-            //     .then(() => {
-            //         return adminConnection.disconnect();
-            //     });
         } else {
             throw new Error('I do not know what kind of deploy you want me to run!');
         }

@@ -51,7 +51,8 @@ describe('AdminConnection', () => {
     let faultyCard;
 
     const config =
-        { name: 'profile',
+        {
+            name:testProfileName,
             'x-type' : 'hlfv1'
         };
 

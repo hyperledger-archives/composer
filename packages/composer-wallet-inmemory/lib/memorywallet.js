@@ -66,7 +66,7 @@ class MemoryWallet extends Wallet{
     /**
      * Check to see if the named credentials are in
      * the wallet.
-     * @abstract
+
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved with
      * a boolean; true if the named credentials are in the
@@ -81,7 +81,7 @@ class MemoryWallet extends Wallet{
 
     /**
      * Get the named credentials from the wallet.
-     * @abstractreadFile
+     *
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved with
      * the named credentials, or rejected with an error.
@@ -101,7 +101,7 @@ class MemoryWallet extends Wallet{
 
     /**
      * Add a new credential to the wallet.
-     * @abstract
+     *
      * @param {string} name The name of the credentials.
      * @param {string} value The credentials.
      * @return {Promise} A promise that is resolved when
@@ -125,7 +125,7 @@ class MemoryWallet extends Wallet{
 
     /**
      * Remove existing credentials from the wallet.
-     * @abstract
+     *
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved when
      * complete, or rejected with an error.
