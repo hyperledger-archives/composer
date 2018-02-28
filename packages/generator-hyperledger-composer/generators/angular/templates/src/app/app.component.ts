@@ -22,5 +22,9 @@ export class AppComponent {
     $('.dropdown').on('hide.bs.dropdown', function(e){
       $(this).find('.dropdown-menu').first().stop(true, true).slideUp(200);
     });
+
+    $('.dropdown-menu li').on('click', function(){
+      $(this).parent().parent().addClass('active');
+    });
   }
 }

@@ -36,6 +36,7 @@
 
 .navbar-nav > li {
     margin-right: 12px;
+    cursor: pointer;
 }
 
 .navbar-nav > a {
@@ -55,15 +56,15 @@
     font-weight: bold;
 }
 
-.navbar-nav > li > .active > a:hover {
+.navbar-nav > li > .active:hover > a {
     color: #6C4CC4 !important;
 }
 
-.navbar-nav > li > a:hover {
+.navbar-nav > li:hover > a {
     color: #000;
 }
 
-.navbar-nav > .active > a {
+.navbar-nav .active > a {
     background-color: #fff;
     color: #6C4CC4 !important;
 }
@@ -76,13 +77,17 @@
     max-height: 0;
     display: block;
     overflow: hidden;
-    opacity: 0;
+    visibility: hidden;
 
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -ms-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
+}
+
+.dropdown-menu:hover {
+    visibility: visible;
 }
 
 .dropdown-menu > li > a {
@@ -93,22 +98,20 @@
     line-height: 30px;
 }
 
-.dropdown-menu > li > a:hover {
+.dropdown-menu > li:hover > a {
+    background-color: rgb(230, 214, 255);
+}
+
+.dropdown-menu > li:focus > a {
     background-color: #F3ECFE;
 }
 
-.dropdown-menu > li > a:active {
-    background-color: #F3ECFE;
-}
-.dropdown-menu > li > a:focus {
-    background-color: #F3ECFE;
-}
 .dropdown-menu > li > a:visited {
     background-color: #F3ECFE;
 }
 
 .dropdown:hover .dropdown-menu {
-    opacity: 1;
+    visibility: visible;
 }
 
 .scrollable-menu {
