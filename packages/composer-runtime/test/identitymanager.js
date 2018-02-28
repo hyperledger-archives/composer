@@ -215,9 +215,9 @@ describe('IdentityManager', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockIdentityRegistry.add);
                     const identity = mockIdentityRegistry.add.args[0][0];
-                    identity.getIdentifier().should.equal('2be26f6d4757b49fbae46f9fbb0c225b2f77508a882e4dd899700b56f62ad639');
-                    identity.name.should.equal('');
-                    identity.issuer.should.equal('');
+                    identity.getIdentifier().should.equal('114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457');
+                    identity.name.should.equal('Admin@org1.example.com');
+                    identity.issuer.should.equal('ac3dbcbe135ba48b29f97665bb103f8260c38d3872473e584314392797c595f3');
                     identity.certificate.should.equal(pem);
                     identity.state.should.equal('BOUND');
                     identity.participant.getNamespace().should.equal('org.acme');

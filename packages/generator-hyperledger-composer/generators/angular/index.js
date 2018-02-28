@@ -23,9 +23,6 @@ let businessNetworkConnection;
 const FileWriter = require('composer-common').FileWriter;
 const TypescriptVisitor = require('composer-common').TypescriptVisitor;
 
-const BrowserFS = require('browserfs/dist/node/index');
-const bfs_fs = BrowserFS.BFSRequire('fs');
-
 let businessNetworkDefinition;
 let businessNetworkIdentifier;
 let modelManager;
@@ -60,16 +57,8 @@ module.exports = yeoman.Base.extend({
     constructor: function () {
         yeoman.Base.apply(this, arguments);
         this.options = this.env.options;
-        if (arguments[1].skipInstall !== undefined) {
-            skipInstall = arguments[1].skipInstall;
-        }
-        if (arguments[1].embeddedRuntime !== undefined) {
-            businessNetworkConnection = new BusinessNetworkConnection({
-                fs: bfs_fs
-            });
-        } else {
-            businessNetworkConnection = new BusinessNetworkConnection();
-        }
+        skipInstall = !!arguments[1].skipInstall;
+        businessNetworkConnection = new BusinessNetworkConnection({ cardStore: arguments[1].cardStore });
     },
 
     prompting: function () {

@@ -15,19 +15,15 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const IdCard = require('composer-common').IdCard;
+const { BusinessNetworkDefinition, CertificateUtil, IdCard, MemoryCardStore } = require('composer-common');
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
-
-
 
 describe('System REST API unit tests', () => {
 
@@ -301,12 +297,9 @@ describe('System REST API unit tests', () => {
 
     describe('POST /identities/bind', () => {
 
+        const { certificate } = CertificateUtil.generate({ commonName: 'member1' });
+
         it('should bind an identity to a participant in the business network', () => {
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('MEMBER_1').toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
             return chai.request(app)
                 .post('/api/system/identities/bind')
                 .send({
@@ -321,11 +314,6 @@ describe('System REST API unit tests', () => {
         });
 
         it('should return a 500 if the specified participant does not exist', () => {
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('MEMBER_1').toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
             return chai.request(app)
                 .post('/api/system/identities/bind')
                 .send({

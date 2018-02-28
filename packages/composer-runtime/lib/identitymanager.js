@@ -15,7 +15,7 @@
 'use strict';
 
 const createHash = require('sha.js');
-const Logger = require('composer-common').Logger;
+const { Certificate, Logger } = require('composer-common');
 const TransactionHandler = require('./transactionhandler');
 const LOG = Logger.getLog('IdentityManager');
 
@@ -216,39 +216,31 @@ class IdentityManager extends TransactionHandler {
      * Bind an existing identity to a participant in the business network.
      * @param {Api} api The API to use.
      * @param {org.hyperledger.composer.system.BindIdentity} transaction The transaction.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    bindIdentity(api, transaction) {
+    async bindIdentity(api, transaction) {
         const method = 'bindIdentity';
         LOG.entry(method, api, transaction);
-        return this.getIdentityRegistry()
-            .then((identityRegistry) => {
 
-                // Parse the certificate into a byte array.
-                const bytes = transaction.certificate
-                    .replace(/-----BEGIN CERTIFICATE-----/, '')
-                    .replace(/-----END CERTIFICATE-----/, '')
-                    .replace(/[\r\n]+/g, '');
-                const buffer = Buffer.from(bytes, 'base64');
-                const sha256 = createHash('sha256');
-                const identityId = sha256.update(buffer).digest('hex');
+        // Parse the certificate into a byte array.
+        const { participant, certificate } = transaction;
+        const certificateObj = new Certificate(certificate);
+        const identifier = certificateObj.getIdentifier();
+        const name = certificateObj.getName();
+        const issuer = certificateObj.getIssuer();
 
-                // Create the new identity and add it to the identity registry.
-                const identity = this.factory.newResource('org.hyperledger.composer.system', 'Identity', identityId);
-                Object.assign(identity, {
-                    name: '',
-                    issuer: '',
-                    certificate: transaction.certificate,
-                    state: 'BOUND',
-                    participant: transaction.participant
-                });
-                return identityRegistry.add(identity, { convertResourcesToRelationships: true });
+        // Create the new identity and add it to the identity registry.
+        const identity = this.factory.newResource('org.hyperledger.composer.system', 'Identity', identifier);
+        Object.assign(identity, {
+            name,
+            issuer,
+            certificate,
+            state: 'BOUND',
+            participant
+        });
+        const identityRegistry = await this.getIdentityRegistry();
+        await identityRegistry.add(identity, { convertResourcesToRelationships: true });
 
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
+        LOG.exit(method);
     }
 
     /**
