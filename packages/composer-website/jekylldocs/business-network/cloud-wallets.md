@@ -8,13 +8,13 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: "{{site.data.conrefs.composer_full}} Performance"
 ---
 
-# Cloud Storage for Business Network Cards
+# Customising the card store
 
 Business network cards can be stored in a local wallet or a cloud wallet. The local wallet is the default and can be found in the `/home/username/.composer` directory, however, local wallets can be problematic for applications running in cloud environments. By using cloud wallets, users can control where business network cards and the certificates and private keys used for {{site.data.conrefs.hlf_full}} authentication are stored.
 
 >Please note: any custom cloud wallet implementations **must** include the `composer-wallet` prefix in the module name.
 
-## High level architecture
+## Architecture
 
 Whenever a `BusinessNetworkConnection` or `AdminConnection` is made, it has an associated `CardStore`. Each connection can be configured to use a specific `CardStore`. In the {{site.data.conrefs.composer_full}} repository, there are two pre-configured options for stores:
 
@@ -28,30 +28,27 @@ A single implementation of a backend store can be used for both business network
 
 Multiple cloud wallet implementations can be installed using global npm installs.
 
-For more details of the writing a new cloud wallet implementation, see the following [README](https://github.com/ampretia/composer-wallet-ibmcos).
+For more details of the writing a new cloud wallet implementation, see the following [README](https://github.com/ampretia/composer-wallet-redis).
 
-## Configuring a cloud wallet connection
+# Configuring a cloud wallet connection
 
 There are two ways to define the configuration for a cloud wallet, by using a `.json` config file, or by defining environment variables.
 
-### Configuring a cloud wallet using a configuration file
+## Using a configuration file
 
 For production deployments, it is more useful to be able to configure the card store outside of the application,
 {{site.data.conrefs.composer_full}} uses the standard configuration module `config`. The configuration file is loaded from a sub-directory of the current working directory called `config`.  The default configuration file is called `default.json`, the configuration file name can be changed using the `NODE_ENV` environment variable.
 
-The following configuration file uses the IBM Cloud Object Store format as an example:
+The following configuration file uses the Redis format as an example:
 
 ```
 {
   "composer": {
     "wallet": {
-      "type": "@ampretia/composer-wallet-ibmcos",
-      "desc": "Uses the IBM Cloud Object Store",
+      "type": "@ampretia/composer-wallet-redis",
+      "desc": "Uses a local redis instance,
       "options": {
-        "bucketName": "alpha-metal",
-        "endpoint": "s3.eu-gb.objectstorage.softlayer.net",
-        "apikey": "0viPHOY7LbLNa9eLftrtHPpTjoGv6hbLD1QalRXikliJ",
-        "serviceInstanceId": "crn:v1:bluemix:public:cloud-object-storage:global:a/3ag0e9402tyfd5d29761c3e97696b71n:d6f74k03-6k4f-4a82-b165-697354o63903::"
+
       }
     }
   }
@@ -60,21 +57,17 @@ The following configuration file uses the IBM Cloud Object Store format as an ex
 
 - `type` is the name of this module
 - `desc` is some text for the humans
-- `bucketName` is the buckName you created
-- `endpoint` is the *Service Endpoint* from the *Endpoint* section in the Object Store dashboard
-- `apikey` is the API key from the service credentials
-- `serviceInstanceId` is the *resource_instance_id* from the service credentials
 
-> Note that each connection will have a new instance of the card store specified. If these resolve to the same backend store cards can be shared.
+> Please note: Each connection will have a new instance of the card store specified. If these resolve to the same backend store, cards can be shared.
 
-### Configuring a cloud wallet using an environment variable
+## Using an environment variable
 
 As this is using the `config` module specifying the details on the command line via environment variables can be achieved by setting an environment variable containing the same information as the configuration file.
 
 The following environment variable example uses the same format and data as the preceding configuration file.
 
 ```
-export NODE_CONFIG={"composer":{"wallet":{"type":"@ampretia/composer-wallet-ibmcos","desc":"Uses the IBM Cloud Object Store","options":{"bucketName":"alpha-metal","endpoint":"s3.eu-gb.objectstorage.softlayer.net","apikey":"0viPHOY7LbLNa9eLftrtHPpTjoGv6hbLD1QalRXikliJ","serviceInstanceId":"crn:v1:bluemix:public:cloud-object-storage:global:a/3ag0e9402tyfd5d29761c3e97696b71n:d6f74k03-6k4f-4a82-b165-697354o63903::"}}}}
+export NODE_CONFIG={"composer":{"wallet":{"type":"@ampretia/composer-wallet-redis","desc":"Uses  a local redis instance,"options":{}}}}
 ```
 
 Any application that is in this shell will use the cloud wallets.
@@ -132,7 +125,7 @@ Card stores must now be specified differently. There are two approaches using th
         let adminConnection = new AdminConnection({ cardStore });
 ```
 
-## Configuring file system card stores
+# Configuring file system card stores
 
 The location of the file system card store can now be changed using a configuration file or specified as a variable in an API call.
 
