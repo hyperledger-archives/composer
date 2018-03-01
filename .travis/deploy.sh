@@ -222,7 +222,7 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"
     git config user.email "${GH_USER_EMAIL}"
-    git checkout -b master
+    git checkout -b v0.16.x upstream/v0.16.x
     git reset --hard
     git clean -d -f
 
