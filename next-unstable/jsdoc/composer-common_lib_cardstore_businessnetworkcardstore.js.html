@@ -116,7 +116,17 @@ class BusinessNetworkCardStore {
      * @returns {String} A card name
      */
     static getDefaultCardName(card) {
-        const locationName = card.getBusinessNetworkName() || card.getConnectionProfile().name;
+        let locationName;
+        if(card.getBusinessNetworkName()) {
+            locationName = card.getBusinessNetworkName();
+        } else {
+            locationName = card.getConnectionProfile().name;
+            // take out all invalid characters
+            locationName = locationName.replace(/[^a-zA-Z0-9-_\s]/g, '');
+            // swap spaces for -
+            locationName = locationName.replace(/\s/gi, '-');
+        }
+
         return card.getUserName() + '@' + locationName;
     }
 
