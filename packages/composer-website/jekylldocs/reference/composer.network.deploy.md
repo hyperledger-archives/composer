@@ -13,6 +13,9 @@ excerpt: Composer Network Deploy CLI
 The `composer network deploy` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} v1.0 network.
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
+*Please note: It is recommended that users use the `composer runtime install` and `composer network start` commands instead of this command.*
+
+
 ```
 composer network deploy -a digitalPropertyNetwork.bna -A admin -S adminpw -c PeerAdmin@hlfv1 -f admincard
 ```
