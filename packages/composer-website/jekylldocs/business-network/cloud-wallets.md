@@ -94,7 +94,7 @@ The same `.json` snippet may be exported as an environment variable.
 
 The following GitHub repositories contain implementations of cloud custom wallets using Redis and the IBM Cloud Object Store, respectively.
 
-- [@ampretia/composer-wallet-redis](https://github.com/ampretia/composer-wallet-redis) - provides a backing store using a Redis server
+- [composer-tools/composer-wallet-redis](https://github.com/ampretia/composer-wallet-redis) - provides a backing store using a Redis server
 - [@ampretia/composer-wallet-ibmcos](https://github.com/ampretia/composer-wallet-ibmcos) - provides a backing store using the IBM Cloud Object Store. This has an S3 compatible API.
 
 Multiple cloud custom wallet implementations can be installed using global npm installs.
