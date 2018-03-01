@@ -26,7 +26,7 @@ Custom implementations can be written for any given backend database or object s
 
 Multiple cloud wallet implementations can be installed using global npm installs.
 
-For more details of the writing a new cloud wallet implementation, see the following [README](https://github.com/ampretia/composer-wallet-redis).
+For more details of the writing a new cloud wallet implementation, see the following [README](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis).
 
 # Configuring a custom wallet
 
@@ -99,7 +99,7 @@ The following GitHub repositories contain implementations of cloud custom wallet
 
 Multiple cloud custom wallet implementations can be installed using global npm installs.
 
-For more details of the writing a new cloud based custom wallet implementation, see the following [README](https://github.com/ampretia/composer-wallet-redis).
+For more details of the writing a new cloud based custom wallet implementation, see the following [README](https://github.com/hyperledger/composer-tools/tree/master/packages/composer-wallet-redis).
 
 To migrate to either the Redis or IBM Cloud Object Store cloud custom wallet solutions, refer to the README files of the relevant GitHub repository.
 
