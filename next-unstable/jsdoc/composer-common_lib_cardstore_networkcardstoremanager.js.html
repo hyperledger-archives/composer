@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: Introspector</title>
+	<title>Hyperledger Composer Source: composer-common/lib/cardstore/networkcardstoremanager.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,498 +74,96 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Introspector</h1>
+		<h1 class="page-title">Source: composer-common/lib/cardstore/networkcardstoremanager.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
-        
-        Introspector
-        </h2>
-        
-            <div class="class-description"><p>Provides access to the structure of transactions, assets and participants.</p></div>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-<hr>
-<dt>
-    <h4 class="name" id="Introspector"><span class="type-signature"></span>new Introspector(modelManager)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Create the Introspector.</p>
-<p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from BusinessNetworkDefinition</strong><br></p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>modelManager</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ModelManager</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the ModelManager that backs this Introspector</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_introspect_introspector.js.html">composer-common/lib/introspect/introspector.js</a>,
-				 <a href="composer-common_lib_introspect_introspector.js.html#sunlight-1-line-24">line 24</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="getClassDeclaration"><span class="type-signature"></span>getClassDeclaration(fullyQualifiedTypeName)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns the class declaration with the given fully qualified name.<br>Throws an error if the class declaration does not exist.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>fullyQualifiedTypeName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the fully qualified name of the type</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_introspect_introspector.js.html">composer-common/lib/introspect/introspector.js</a>,
-				 <a href="composer-common_lib_introspect_introspector.js.html#sunlight-1-line-69">line 69</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>if the class declaration does not exist</p>
-        </div>
-    </dt>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-
-            </dd>
-        </dl>
-    </dt>
-</dl>
-
-
-        
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>the class declaration</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">ClassDeclaration</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getClassDeclarations"><span class="type-signature"></span>getClassDeclarations()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns all the class declarations for the business network.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_introspect_introspector.js.html">composer-common/lib/introspect/introspector.js</a>,
-				 <a href="composer-common_lib_introspect_introspector.js.html#sunlight-1-line-52">line 52</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>the array of class declarations</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;ClassDeclaration></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+let cardStore;
+const cfg = require('../config/configmediator.js');
+const WalletBackedStore = require('./walletbackedcardstore');
+
+const LoadModule = require('../module/loadModule');
+const path=require('path');
+
+const moduleCache = {};
+/**
+ * Provides the loading mechanism for handling card stores.
+ * This uses system configuration to get the required type of the card store (a NPM module)
+ *
+ * The name of the module must start with 'composer-wallet' to help separate concerns and prevent just anything
+ * from being used.
+ *
+ * Assumptions:
+ *   That the supplied module is installed gloabally
+ *
+ *
+ * @private
+ */
+class NetworkCardStoreManager {
+
+    /**
+     * @param {Object} options Any options to be passed to the card store
+     * @return {BusinessNetworkCardStore} instance of a BusinessNetworkCardStore to use
+     */
+    static getCardStore(options = { 'type': 'composer-wallet-filesystem' }) {
+        let cardStoreCfg = cfg.get('wallet',options );
+        if (cardStoreCfg.type.match(/composer-wallet/)){
+            // the relative path here is to ensure that in a flat structure eg dev build the module can be found
+            let paths = [path.resolve(__dirname,'../../../')];
+            if (options.paths){
+                paths = paths.concat(options.paths);
+            }
+            let StoreModule = moduleCache[cardStoreCfg.type];
+            if (!StoreModule){
+                StoreModule = cardStoreCfg.walletmodule || LoadModule.loadModule(cardStoreCfg.type,{paths});
+                moduleCache[cardStoreCfg.type] = StoreModule;
+            }
+            if (!StoreModule){
+                throw new Error(`Unable to load requested module ${cardStoreCfg.type}`);
+            }
+            if (StoreModule.getStore){
+                let opts = cardStoreCfg.options || options;
+                opts.StoreModule = StoreModule;
+                cardStore = new WalletBackedStore(opts);
+            }else {
+                throw new Error(`Module loaded does not have correct interface ${cardStoreCfg.type}`);
+            }
+        } else {
+            throw new Error(`Module give does not have valid name ${cardStoreCfg.type}`);
+        }
+
+        return cardStore;
+
+    }
+
+}
+
+module.exports = NetworkCardStoreManager;</pre>
+    </article>
 </section>
+
 
 
 
@@ -575,10 +173,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
