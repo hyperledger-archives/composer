@@ -178,7 +178,7 @@
     },
     "type" : "object",
     "properties" : {
-        "name" : { "type" : "string", "pattern" : "^[a-zA-Z0-9_-]*$" },
+        "name" : { "type" : "string" },
         "x-type" : { "enum" : [ "hlfv1", "hlfv11" ] },
         "x-loggingLevel" : { "enum" : [ "info", "debug" ] },
         "x-commitTimeout": { "type" : "number" },
