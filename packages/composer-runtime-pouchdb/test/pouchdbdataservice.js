@@ -245,22 +245,34 @@ describe('PouchDBDataService', () => {
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing1']),
                     thingId: 1,
-                    colour: 'red'
+                    colour: 'red',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.Foo1'
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing2']),
                     thingId: 2,
-                    colour: 'black'
+                    colour: 'black',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'DogesBagOfFoos'
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing3']),
                     thingId: 3,
-                    colour: 'red'
+                    colour: 'red',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'org.acme.Foo2'
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing4']),
                     thingId: 4,
-                    colour: 'green'
+                    colour: 'green',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'DogesBagOfFoos'
                 }
             ]);
         });
@@ -269,10 +281,67 @@ describe('PouchDBDataService', () => {
             return dataService.executeQuery('{"selector":{"colour":{"$eq":"red"}}}')
                 .should.eventually.be.deep.equal([{
                     thingId: 1,
-                    colour: 'red'
+                    colour: 'red',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.Foo1'
                 }, {
                     thingId: 3,
-                    colour: 'red'
+                    colour: 'red',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'org.acme.Foo2'
+                }]);
+        });
+
+        it('should return the query results after transforming the $class variable', () => {
+            return dataService.executeQuery('{"selector":{"\\\\$class":"org.acme.Foo1"}}')
+                .should.eventually.be.deep.equal([{
+                    thingId: 1,
+                    colour: 'red',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'org.acme.Foo1'
+                }, {
+                    thingId: 2,
+                    colour: 'black',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'DogesBagOfFoos'
+                }]);
+        });
+
+        it('should return the query results after transforming the $registryType variable', () => {
+            return dataService.executeQuery('{"selector":{"\\\\$registryType":"Participant"}}')
+                .should.eventually.be.deep.equal([{
+                    thingId: 3,
+                    colour: 'red',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'org.acme.Foo2'
+                }, {
+                    thingId: 4,
+                    colour: 'green',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'DogesBagOfFoos'
+                }]);
+        });
+
+        it('should return the query results after transforming the $registryId variable', () => {
+            return dataService.executeQuery('{"selector":{"\\\\$registryId":"DogesBagOfFoos"}}')
+                .should.eventually.be.deep.equal([{
+                    thingId: 2,
+                    colour: 'black',
+                    $class: 'org.acme.Foo1',
+                    $registryType: 'Asset',
+                    $registryId: 'DogesBagOfFoos'
+                }, {
+                    thingId: 4,
+                    colour: 'green',
+                    $class: 'org.acme.Foo2',
+                    $registryType: 'Participant',
+                    $registryId: 'DogesBagOfFoos'
                 }]);
         });
 

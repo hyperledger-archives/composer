@@ -196,6 +196,14 @@ class PouchDBDataService extends DataService {
         const method = 'executeQuery';
         LOG.entry(method, queryString);
         const query = JSON.parse(queryString);
+        // PouchDB doesn't deal with $class in the same way that CouchDB does, so
+        // we need to adapt the selector slightly.
+        ['$class', '$registryType', '$registryId'].forEach((prop) => {
+            if (query.selector[`\\${prop}`]) {
+                query.selector[prop] = query.selector[`\\${prop}`];
+                delete query.selector[`\\${prop}`];
+            }
+        });
         return this.db.find(query)
             .then((response) => {
                 const docs = response.docs.map((doc) => {

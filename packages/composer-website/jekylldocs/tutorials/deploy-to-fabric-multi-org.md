@@ -61,7 +61,7 @@ In order to follow this tutorial, you must start up a fresh {{site.data.conrefs.
     
 2. Download the platform binaries, including cryptogen :
   
-        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0-alpha
+        curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0-rc1
 
     Verify the list of docker images downloaded without issues
     

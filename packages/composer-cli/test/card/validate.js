@@ -55,20 +55,6 @@ describe('Unit test of profiles against schemas', function() {
         expect(validate.validateProfile(profile)).to.deep.equal([EXPECTED]);
     });
 
-    it('should return an error for a json connection profile with an invalid name', function() {
-        let EXPECTED = {
-            'dataPath': '.name',
-            'keyword': 'pattern',
-            'message': 'should match pattern \"^[a-zA-Z0-9_-]*$\"',
-            'params': {
-                'pattern': '^[a-zA-Z0-9_-]*$',
-            },
-            'schemaPath': '#/properties/name/pattern'
-        };
-        let profile = require('../../test/card/data/connection.invalid.name.json');
-        expect(validate.validateProfile(profile)).to.deep.equal([EXPECTED]);
-    });
-
     it('should return 2 errors for connection profile with neither name nor xtype', function() {
         let profile = require('../../test/card/data/connection.no.name.no.xtype.json');
         expect(validate.validateProfile(profile).length).to.equal(2);
