@@ -13,6 +13,7 @@
  */
 
 'use strict';
+let common = require('composer-common');
 let path = require('path');
 let fs = require('fs');
 let assert = require('yeoman-assert');
@@ -41,7 +42,7 @@ function getFiles(dir, fileList){
     return fileList;
 }
 
-describe('hyperledger-composer:businessnetwork for generating a template business network', function () {
+describe('hyperledger-composer:model for generating a template business network model file', function () {
 
     let tmpDir;
     const passedBusNetName = 'my-template-busnet';
@@ -53,7 +54,7 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
 
     // Run the business network generator
     before(function() {
-        return helpers.run(path.join(__dirname, '../generators/businessnetwork'))
+        return helpers.run(path.join(__dirname, '../generators/model'))
         .inTmpDir(function (dir) {
             tmpDir = dir;
         })
@@ -73,12 +74,9 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
     it('should create all required business network files within a directory that is the passed business network name', () => {
         let busNetDir = tmpDir + '/' + passedBusNetName;
         let myExpectedFiles = [
-            busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
-            busNetDir + '/models/' + passedNS +'.cto',
-            busNetDir + '/lib/logic.js',
-            busNetDir + '/test/logic.js'
+            busNetDir + '/models/' + passedNS +'.cto'
         ];
         assert.file(myExpectedFiles);
     });
@@ -88,12 +86,9 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
 
         let busNetDir = tmpDir + '/' + passedBusNetName;
         let myExpectedFiles = [
-            busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
-            busNetDir + '/models/' + passedNS +'.cto',
-            busNetDir + '/lib/logic.js',
-            busNetDir + '/test/logic.js'
+            busNetDir + '/models/' + passedNS +'.cto'
         ];
 
         let unexpectedFiles =[];
@@ -120,10 +115,38 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
         assert(fs.existsSync(packageFile), 'No package.json file detected in test run');
 
         let myPackage = require(packageFile);
-        assert(myPackage.name === passedBusNetName, 'incorrect name in packaage file');
-        assert(myPackage.author === passedAuthor, 'incorrect author in packaage file');
-        assert(myPackage.email === passedEmail, 'incorrect email in packaage file');
-        assert(myPackage.license === passedLic, 'incorrect license in packaage file');
+        assert(myPackage.name === passedBusNetName, 'incorrect name in package file');
+        assert(myPackage.author === passedAuthor, 'incorrect author in package file');
+        assert(myPackage.email === passedEmail, 'incorrect email in package file');
+        assert(myPackage.license === passedLic, 'incorrect license in package file');
+    });
+
+    it('should create a valid model file that contains mapped input', () => {
+        let modelFilePath = tmpDir + '/' + passedBusNetName + '/models/' + passedNS +'.cto';
+        let definitions = '/**\n * Write your model definitions here\n */\n\nnamespace test.template.namespace\n\nparticipant User identified by email {\n  o String email\n}\n\nasset SampleAsset identified by assetId {\n  o String assetId\n  o String value\n}\n\ntransaction ChangeAssetValue {\n  o String newValue\n  --> Asset relatedAsset\n}\n';
+        assert(fs.existsSync(modelFilePath), 'No model file detected in test run');
+
+        let manager = new common.ModelManager();
+        let model = fs.readFileSync(modelFilePath,'utf8');
+        // add to model manager, which will throw if invalid
+        manager.addModelFile(model, passedNS, false);
+
+        let modelFile = manager.getModelFile(passedNS);
+
+        // Check resulting model file
+        // -namespace
+        assert.equal(modelFile.getNamespace(), passedNS);
+        assert.equal(modelFile.getDefinitions(), definitions);
+
+        // -assets, number and FQN
+        let assets = modelFile.getAssetDeclarations();
+        assert.equal(assets.length, 1);
+        assert.equal(assets[0].getFullyQualifiedName(), 'test.template.namespace.SampleAsset');
+
+        // -participants, number and FQN
+        let participants = modelFile.getParticipantDeclarations();
+        assert.equal(participants.length, 1);
+        assert.equal(participants[0].getFullyQualifiedName(), 'test.template.namespace.User');
     });
 
 });
