@@ -47,14 +47,16 @@ class Composer {
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
      * @param {Object} tasks - current background tasks accessible to all scenarios
+     * @param {Object} busnets - current busnets deployed
      * @param {Object} aliasMap - current map of alias names to functional items
      */
-    constructor(uri, errorExpected, tasks, aliasMap) {
+    constructor(uri, errorExpected, tasks, busnets, aliasMap) {
         this.uri = uri;
         this.errorExpected = errorExpected;
         this.error = null;
         this.lastResp = null;
         this.tasks = tasks;
+        this.busnets = busnets;
         this.aliasMap = aliasMap;
     }
 
@@ -178,9 +180,11 @@ class Composer {
                             adminConnection.hasCard(cardName)
                             .then((exists) => {
                                 if(exists) {
+                                    // eslint-disable-next-line no-console
                                     console.log('skipping card import of existing card: ', cardName);
                                     return Promise.resolve();
                                 } else {
+                                    // eslint-disable-next-line no-console
                                     console.log('importing card: ', cardName);
                                     return adminConnection.importCard(cardName, idCard);
                                 }
@@ -355,14 +359,14 @@ class Composer {
 
     /**
      * Run a composer CLI command
-     * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
+     * @param {DataTable} cmd -  CLI command with parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    _runCLI(table) {
-        if (typeof table !== 'string') {
+    _runCLI(cmd) {
+        if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
-            let command = table;
+            let command = cmd;
             let stdout = '';
             let stderr = '';
 
@@ -628,8 +632,8 @@ class Composer {
                 await adminConnection.deleteCard(cardName);
             }
         } catch(err) {
+            // eslint-disable-next-line no-console
             console.log(`failed to convert to HSM and Import. Error was ${err}`);
-            console.log(err);
         }
     }
 

@@ -25,15 +25,16 @@ let version = lernaFile.version;
  * @returns {Promise} - a Promise that is resolved or rejected
  */
 function invokeCmd(cmd) {
-    console.log('running command: ', cmd);
     return new Promise((resolve, reject) => {
         let proc = exec(cmd);
-        // Log all output of Protractor run
+        // Log all output
         proc.stdout.on('data', function(data) {
+            // eslint-disable-next-line no-console
             console.log(data);
         });
         // Log ony error output
         proc.stderr.on('data', function(data) {
+            // eslint-disable-next-line no-console
             console.log('stdErr: ' + data);
         });
         // Capture Protactor return code
@@ -71,6 +72,7 @@ let testPackages = [
 return packages.reduce((promiseChain, p) => {
     // Set registry and publish
     return promiseChain.then(() => {
+        // eslint-disable-next-line no-console
         console.log('Publishing package ' + p + ' to local npm server');
         return invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
     });
@@ -79,6 +81,7 @@ return packages.reduce((promiseChain, p) => {
     // Globally install test packages
     return testPackages.reduce((promiseChain, p) => {
         return promiseChain.then(() => {
+            // eslint-disable-next-line no-console
             console.log('installing package ' + p + '@' + version + ' from npm server');
             return invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
         });
