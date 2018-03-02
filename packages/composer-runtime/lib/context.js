@@ -23,13 +23,9 @@ const QueryCompiler = require('./querycompiler');
 const RegistryManager = require('./registrymanager');
 const ResourceManager = require('./resourcemanager');
 const Resolver = require('./resolver');
-const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
 
 const LOG = Logger.getLog('Context');
-
-// Populated in Context.setBusinessNetwork()
-let installedBusinessNetwork = null;
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -38,44 +34,18 @@ let installedBusinessNetwork = null;
  * @memberof module:composer-runtime
  */
 class Context {
-
-    /**
-     * Set the business network to be used by all Context instances.
-     * @param {BusinessNetworkDefinition} networkDefinition The business network for this global context
-     */
-    static async setBusinessNetwork(networkDefinition) {
-        const method = 'setBusinessNetwork';
-
-        const scriptManager = networkDefinition.getScriptManager();
-        const queryManager = networkDefinition.getQueryManager();
-        const aclManager = networkDefinition.getAclManager();
-
-        installedBusinessNetwork = {
-            definition: networkDefinition,
-            compiledScriptBundle: new ScriptCompiler().compile(scriptManager),
-            compiledQueryBundle: new QueryCompiler().compile(queryManager),
-            compiledAclBundle: new AclCompiler().compile(aclManager, scriptManager),
-            archive: await networkDefinition.toArchive()
-        };
-        LOG.debug(method, 'installed business network', installedBusinessNetwork);
-    }
-
     /**
      * Constructor.
      * @param {Engine} engine The chaincode engine that owns this context.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork Information associated with the installed business network
      */
-    constructor(engine) {
+    constructor(engine, installedBusinessNetwork) {
         if (!installedBusinessNetwork) {
-            throw new Error('No business network registered with this Context');
+            throw new Error('No business network specified');
         }
 
-        this.networkDefinition = installedBusinessNetwork.definition;
-        this.networkArchive = installedBusinessNetwork.archive;
-        this.compiledScriptBundle = installedBusinessNetwork.compiledScriptBundle;
-        this.compiledQueryBundle = installedBusinessNetwork.compiledQueryBundle;
-        this.compiledAclBundle = installedBusinessNetwork.compiledAclBundle;
-
         this.engine = engine;
+        this.installedBusinessNetwork = installedBusinessNetwork;
         this.eventNumber = 0;
     }
 
@@ -229,7 +199,7 @@ class Context {
      * @return {Serializer} The serializer.
      */
     getSerializer() {
-        return this.networkDefinition.getSerializer();
+        return this.installedBusinessNetwork.getDefinition().getSerializer();
     }
     /**
      * Get the event service provided by the chaincode container.
@@ -245,7 +215,7 @@ class Context {
      * @return {ModelManager} The model manager.
      */
     getModelManager() {
-        return this.networkDefinition.getModelManager();
+        return this.installedBusinessNetwork.getDefinition().getModelManager();
     }
 
     /**
@@ -253,7 +223,7 @@ class Context {
      * @return {ScriptManager} The script manager.
      */
     getScriptManager() {
-        return this.networkDefinition.getScriptManager();
+        return this.installedBusinessNetwork.getDefinition().getScriptManager();
     }
 
     /**
@@ -261,7 +231,7 @@ class Context {
      * @return {AclManager} The ACL manager.
      */
     getAclManager() {
-        return this.networkDefinition.getAclManager();
+        return this.installedBusinessNetwork.getDefinition().getAclManager();
     }
 
     /**
@@ -269,7 +239,7 @@ class Context {
      * @return {Factory} The factory.
      */
     getFactory() {
-        return this.networkDefinition.getFactory();
+        return this.installedBusinessNetwork.getDefinition().getFactory();
     }
 
 
@@ -278,7 +248,7 @@ class Context {
      * @return {Introspector} The serializer.
      */
     getIntrospector() {
-        return this.networkDefinition.getIntrospector();
+        return this.installedBusinessNetwork.getDefinition().getIntrospector();
     }
 
     /**
@@ -468,7 +438,7 @@ class Context {
      * @returns {BusinessNetworkDefinition} business network definition
     */
     getBusinessNetworkDefinition() {
-        return this.networkDefinition;
+        return this.installedBusinessNetwork.getDefinition();
     }
 
     /**
@@ -476,7 +446,7 @@ class Context {
      * @return {Buffer} business network archive.
      */
     getBusinessNetworkArchive() {
-        return this.networkArchive;
+        return this.installedBusinessNetwork.getArchive();
     }
 
     /**
@@ -484,7 +454,7 @@ class Context {
      * @return {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
      */
     getCompiledScriptBundle() {
-        return this.compiledScriptBundle;
+        return this.installedBusinessNetwork.getCompiledScriptBundle();
     }
 
     /**
@@ -503,7 +473,7 @@ class Context {
      * @return {CompiledQueryBundle} The compiled query bundle.
      */
     getCompiledQueryBundle() {
-        return this.compiledQueryBundle;
+        return this.installedBusinessNetwork.getCompiledQueryBundle();
     }
 
     /**
@@ -522,7 +492,7 @@ class Context {
      * @return {CompiledAclBundle} The compiled ACL bundle.
      */
     getCompiledAclBundle() {
-        return this.compiledAclBundle;
+        return this.installedBusinessNetwork.getCompiledAclBundle();
     }
 
     /** Obtains the logging service

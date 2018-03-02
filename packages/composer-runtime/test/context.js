@@ -32,6 +32,7 @@ const Factory = require('composer-common').Factory;
 const HTTPService = require('../lib/httpservice');
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
+const InstalledBusinessNetwork = require('../lib/installedbusinessnetwork');
 const Introspector = require('composer-common').Introspector;
 const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
@@ -53,10 +54,15 @@ describe('Context', () => {
     const sandbox = sinon.sandbox.create();
     let mockEngine;
     let testNetworkDefinition;
+    let context;
 
     beforeEach(() => {
         mockEngine = sinon.createStubInstance(Engine);
         testNetworkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+        return InstalledBusinessNetwork.newInstance(testNetworkDefinition)
+            .then(installedBusinessNetwork => {
+                context = new Context(mockEngine, installedBusinessNetwork);
+            });
     });
 
     afterEach(() => {
@@ -64,828 +70,805 @@ describe('Context', () => {
     });
 
     describe('#constructor', () => {
-        it('should throw if no business network installed', () => {
+        it('should throw if no business network provided', () => {
             (() => {
                 new Context(mockEngine);
-            }).should.throw('No business network registered with this Context');
-        });
-
-        it('should store the engine', () => {
-            return Context.setBusinessNetwork(testNetworkDefinition).then(() => {
-                const context = new Context(mockEngine);
-                context.engine.should.equal(mockEngine);
-            });
+            }).should.throw(/No business network/i);
         });
     });
 
-    describe('instance tests', () => {
-        let context;
+    describe('#getFunction', () => {
+
+        it('should return the current function', () => {
+            context.function = 'suchfunc';
+            context.getFunction().should.equal('suchfunc');
+        });
+
+    });
+
+    describe('#getArguments', () => {
+
+        it('should return the current arguments', () => {
+            context.arguments = ['arg1', 'arg2'];
+            context.getArguments().should.deep.equal(['arg1', 'arg2']);
+        });
+
+    });
+
+    describe('#getIdentity', () => {
+
+        let mockIdentity;
 
         beforeEach(() => {
-            return Context.setBusinessNetwork(testNetworkDefinition).then(() => {
-                context = new Context(mockEngine);
-            });
+            mockIdentity = sinon.createStubInstance(Resource);
         });
 
-        describe('#getFunction', () => {
-
-            it('should return the current function', () => {
-                context.function = 'suchfunc';
-                context.getFunction().should.equal('suchfunc');
-            });
-
+        it('should get the current identity', () => {
+            context.currentIdentity = mockIdentity;
+            context.getIdentity().should.equal(mockIdentity);
         });
 
-        describe('#getArguments', () => {
+    });
 
-            it('should return the current arguments', () => {
-                context.arguments = ['arg1', 'arg2'];
-                context.getArguments().should.deep.equal(['arg1', 'arg2']);
-            });
+    describe('#setIdentity', () => {
 
+        let mockIdentity;
+
+        beforeEach(() => {
+            mockIdentity = sinon.createStubInstance(Resource);
         });
 
-        describe('#getIdentity', () => {
-
-            let mockIdentity;
-
-            beforeEach(() => {
-                mockIdentity = sinon.createStubInstance(Resource);
-            });
-
-            it('should get the current identity', () => {
-                context.currentIdentity = mockIdentity;
-                context.getIdentity().should.equal(mockIdentity);
-            });
-
+        it('should set the current identity', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
         });
 
-        describe('#setIdentity', () => {
-
-            let mockIdentity;
-
-            beforeEach(() => {
-                mockIdentity = sinon.createStubInstance(Resource);
-            });
-
-            it('should set the current identity', () => {
+        it('should throw if a current identity has been set', () => {
+            context.setIdentity(mockIdentity);
+            context.currentIdentity.should.equal(mockIdentity);
+            (() => {
                 context.setIdentity(mockIdentity);
-                context.currentIdentity.should.equal(mockIdentity);
-            });
-
-            it('should throw if a current identity has been set', () => {
-                context.setIdentity(mockIdentity);
-                context.currentIdentity.should.equal(mockIdentity);
-                (() => {
-                    context.setIdentity(mockIdentity);
-                }).should.throw(/A current identity has already been specified/);
-            });
-
+            }).should.throw(/A current identity has already been specified/);
         });
 
-        describe('#loadCurrentParticipant', () => {
+    });
 
-            let mockIdentityManager;
-            let mockIdentityService;
-            let mockIdentity;
-            let mockParticipant;
+    describe('#loadCurrentParticipant', () => {
 
-            beforeEach(() => {
-                mockIdentityManager = sinon.createStubInstance(IdentityManager);
-                sinon.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-                mockIdentityService = sinon.createStubInstance(IdentityService);
-                sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
-                mockIdentity = sinon.createStubInstance(Resource);
-                mockParticipant = sinon.createStubInstance(Resource);
-            });
+        let mockIdentityManager;
+        let mockIdentityService;
+        let mockIdentity;
+        let mockParticipant;
 
-            it('should get the identity, validate it, and get the participant', () => {
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-                return context.loadCurrentParticipant()
-                    .should.eventually.be.equal(mockParticipant)
-                    .then(() => {
-                        sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
-                        sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
-                    });
-            });
-
-            it('should ignore an activation required message when calling the activate current identity transaction', () => {
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-                context.function = 'submitTransaction';
-                context.arguments = [
-                    JSON.stringify({ $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
-                ];
-                const error = new Error('such error');
-                error.activationRequired = true;
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-                return context.loadCurrentParticipant()
-                    .should.eventually.be.null
-                    .then(() => {
-                        sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
-                        sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
-                    });
-            });
-
-            it('should throw an activation required message when calling another transaction', () => {
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-                context.function = 'submitTransaction';
-                context.arguments = [
-                    '45ea5b75-cc00-40bb-afad-4952ad97d469',
-                    JSON.stringify({ $class: 'org.hyperledger.composer.system.BindIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
-                ];
-                const error = new Error('such error');
-                error.activationRequired = true;
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-                return context.loadCurrentParticipant()
-                    .should.be.rejectedWith(/such error/);
-            });
-
-            it('should throw an activation required message when calling another function', () => {
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-                context.function = 'bindIdentity';
-                const error = new Error('such error');
-                error.activationRequired = true;
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
-                return context.loadCurrentParticipant()
-                    .should.be.rejectedWith(/such error/);
-            });
-
-            it('should throw an non-activation required message', () => {
-                mockIdentityManager.getIdentity.resolves(mockIdentity);
-                mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
-                mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
-                return context.loadCurrentParticipant()
-                    .should.be.rejectedWith(/such error/);
-            });
-
+        beforeEach(() => {
+            mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            sinon.stub(context, 'getIdentityManager').returns(mockIdentityManager);
+            mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            mockIdentity = sinon.createStubInstance(Resource);
+            mockParticipant = sinon.createStubInstance(Resource);
         });
 
-        describe('#initialize', () => {
-
-            let mockSystemRegistries;
-
-            beforeEach(() => {
-                sinon.stub(context, 'loadCurrentParticipant').resolves(null);
-                let mockDataService = sinon.createStubInstance(DataService);
-                sinon.stub(context, 'getDataService').returns(mockDataService);
-                mockSystemRegistries = sinon.createStubInstance(DataCollection);
-                mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
-                sinon.stub(context, 'initializeInner').resolves();
-            });
-
-            it('should not initialize the context with the current participant if deploying', () => {
-                return context.initialize({ function: 'init' })
-                    .then(() => {
-                        sinon.assert.notCalled(context.loadCurrentParticipant);
-                        should.not.exist(context.participant);
-                    });
-            });
-
-            it('should initialize the context with the current participant if found', () => {
-                let mockParticipant = sinon.createStubInstance(Resource);
-                mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-                context.loadCurrentParticipant.resolves(mockParticipant);
-                return context.initialize()
-                    .then(() => {
-                        context.participant.should.equal(mockParticipant);
-                    });
-            });
-            it('should  initialize the context with the correct loggingservices', () => {
-                let mockParticipant = sinon.createStubInstance(Resource);
-                mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-                context.loadCurrentParticipant.resolves(mockParticipant);
-                let mockContainer = sinon.createStubInstance(Container);
-                let mockLoggingService = sinon.createStubInstance(LoggingService);
-                mockContainer.getLoggingService.returns(mockLoggingService);
-                return context.initialize({ container: mockContainer })
-                    .then(() => {
-                        context.getLoggingService().should.deep.equal(mockLoggingService);
-                    });
-            });
-
-            it('should initialize the context with a specified system registries collection', () => {
-                let mockSystemRegistries2 = sinon.createStubInstance(DataCollection);
-                return context.initialize({ sysregistries: mockSystemRegistries2 })
-                    .then(() => {
-                        context.sysregistries.should.equal(mockSystemRegistries2);
-                    });
-            });
-
-            it('should initialize the context with the specified container', () => {
-                let mockContainer = sinon.createStubInstance(Container);
-                return context.initialize({ container: mockContainer })
-                    .then(() => {
-                        context.getContainer().should.equal(mockContainer);
-                    });
-            });
-
-            it('should initialize the context with the specified function name', () => {
-                return context.initialize({ function: 'suchfunc' })
-                    .then(() => {
-                        context.function.should.equal('suchfunc');
-                    });
-            });
-
-            it('should initialize the context with the original function name if no function name specified', () => {
-                context.function = 'suchfunc';
-                return context.initialize({})
-                    .then(() => {
-                        context.function.should.equal('suchfunc');
-                    });
-            });
-
-            it('should initialize the context with the specified arguments', () => {
-                return context.initialize({ arguments: ['sucharg1', 'sucharg2'] })
-                    .then(() => {
-                        context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
-                    });
-            });
-
-            it('should initialize the context with the original function name if no function name specified', () => {
-                context.arguments = ['sucharg1', 'sucharg2'];
-                return context.initialize({})
-                    .then(() => {
-                        context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
-                    });
-            });
-
+        it('should get the identity, validate it, and get the participant', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            return context.loadCurrentParticipant()
+                .should.eventually.be.equal(mockParticipant)
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
+                });
         });
 
-        describe('#getServices', () => {
-
-            it('should return all of the services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                sinon.stub(context, 'getDataService').returns(mockDataService);
-                sinon.stub(context, 'getEventService').returns(mockEventService);
-                sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
-                sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
-                context.getServices().should.deep.equal([
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ]);
-            });
-
+        it('should ignore an activation required message when calling the activate current identity transaction', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'submitTransaction';
+            context.arguments = [
+                JSON.stringify({ $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
+            ];
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            return context.loadCurrentParticipant()
+                .should.eventually.be.null
+                .then(() => {
+                    sinon.assert.calledOnce(mockIdentityManager.validateIdentity);
+                    sinon.assert.calledWith(mockIdentityManager.validateIdentity, mockIdentity);
+                });
         });
 
-        describe('#getDataService', () => {
-
-            it('should throw as abstract method', () => {
-                (() => {
-                    context.getDataService();
-                }).should.throw(/abstract function called/);
-            });
-
+        it('should throw an activation required message when calling another transaction', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'submitTransaction';
+            context.arguments = [
+                '45ea5b75-cc00-40bb-afad-4952ad97d469',
+                JSON.stringify({ $class: 'org.hyperledger.composer.system.BindIdentity', transactionId: '45b17dfd-827e-4458-84e0-a3e30e2aa9e6' })
+            ];
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
         });
 
-        describe('#getIdentityService', () => {
-
-            it('should throw as abstract method', () => {
-                (() => {
-                    context.getIdentityService();
-                }).should.throw(/abstract function called/);
-            });
-
+        it('should throw an activation required message when calling another function', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            context.function = 'bindIdentity';
+            const error = new Error('such error');
+            error.activationRequired = true;
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(error);
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
         });
 
-        describe('#getEventService', () => {
-
-            it('should throw as abstract method', () => {
-                (() => {
-                    context.getEventService();
-                }).should.throw(/abstract function called/);
-            });
-
+        it('should throw an non-activation required message', () => {
+            mockIdentityManager.getIdentity.resolves(mockIdentity);
+            mockIdentityManager.getParticipant.withArgs(mockIdentity).resolves(mockParticipant);
+            mockIdentityManager.validateIdentity.withArgs(mockIdentity).throws(new Error('such error'));
+            return context.loadCurrentParticipant()
+                .should.be.rejectedWith(/such error/);
         });
 
-        describe('#getHTTPService', () => {
+    });
 
-            it('should throw as abstract method', () => {
-                (() => {
-                    context.getHTTPService();
-                }).should.throw(/abstract function called/);
-            });
+    describe('#initialize', () => {
 
+        let mockSystemRegistries;
+
+        beforeEach(() => {
+            sinon.stub(context, 'loadCurrentParticipant').resolves(null);
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
+            sinon.stub(context, 'initializeInner').resolves();
         });
 
-        describe('#getModelManager', () => {
-            it('should return the business networks model manager', () => {
-                context.getModelManager().should.equal(testNetworkDefinition.getModelManager());
-            });
+        it('should not initialize the context with the current participant if deploying', () => {
+            return context.initialize({ function: 'init' })
+                .then(() => {
+                    sinon.assert.notCalled(context.loadCurrentParticipant);
+                    should.not.exist(context.participant);
+                });
         });
 
-        describe('#getScriptManager', () => {
-            it('should return the business networks script manager', () => {
-                context.getScriptManager().should.equal(testNetworkDefinition.getScriptManager());
-            });
+        it('should initialize the context with the current participant if found', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            return context.initialize()
+                .then(() => {
+                    context.participant.should.equal(mockParticipant);
+                });
+        });
+        it('should  initialize the context with the correct loggingservices', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            let mockContainer = sinon.createStubInstance(Container);
+            let mockLoggingService = sinon.createStubInstance(LoggingService);
+            mockContainer.getLoggingService.returns(mockLoggingService);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getLoggingService().should.deep.equal(mockLoggingService);
+                });
         });
 
-        describe('#getAclManager', () => {
-            it('should return the business networks ACL manager', () => {
-                context.getAclManager().should.equal(testNetworkDefinition.getAclManager());
-            });
+        it('should initialize the context with a specified system registries collection', () => {
+            let mockSystemRegistries2 = sinon.createStubInstance(DataCollection);
+            return context.initialize({ sysregistries: mockSystemRegistries2 })
+                .then(() => {
+                    context.sysregistries.should.equal(mockSystemRegistries2);
+                });
         });
 
-        describe('#getFactory', () => {
-            it('should return the business networks model manager', () => {
-                context.getFactory().should.equal(testNetworkDefinition.getFactory());
-            });
+        it('should initialize the context with the specified container', () => {
+            let mockContainer = sinon.createStubInstance(Container);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getContainer().should.equal(mockContainer);
+                });
         });
 
-        describe('#getSerializer', () => {
-            it('should return the business networks model manager', () => {
-                context.getSerializer().should.equal(testNetworkDefinition.getSerializer());
-            });
+        it('should initialize the context with the specified function name', () => {
+            return context.initialize({ function: 'suchfunc' })
+                .then(() => {
+                    context.function.should.equal('suchfunc');
+                });
         });
 
-        describe('#getIntrospector', () => {
-            it('should return the business networks model manager', () => {
-                context.getIntrospector().should.equal(testNetworkDefinition.getIntrospector());
-            });
+        it('should initialize the context with the original function name if no function name specified', () => {
+            context.function = 'suchfunc';
+            return context.initialize({})
+                .then(() => {
+                    context.function.should.equal('suchfunc');
+                });
         });
 
-        describe('#getRegistryManager', () => {
-
-            it('should return a new registry manager', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                sinon.stub(context, 'getDataService').returns(mockDataService);
-                let mockIntrospector = sinon.createStubInstance(Introspector);
-                sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
-                let mockSerializer = sinon.createStubInstance(Serializer);
-                sinon.stub(context, 'getSerializer').returns(mockSerializer);
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                sinon.stub(context, 'getAccessController').returns(mockAccessController);
-                let mockSystemRegistries = sinon.createStubInstance(DataCollection);
-                sinon.stub(context, 'getSystemRegistries').returns(mockSystemRegistries);
-                let mockFactory = sinon.createStubInstance(Factory);
-                sinon.stub(context, 'getFactory').returns(mockFactory);
-                context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
-            });
-
-            it('should return an existing registry manager', () => {
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                context.registryManager = mockRegistryManager;
-                context.getRegistryManager().should.equal(mockRegistryManager);
-            });
-
+        it('should initialize the context with the specified arguments', () => {
+            return context.initialize({ arguments: ['sucharg1', 'sucharg2'] })
+                .then(() => {
+                    context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
+                });
         });
 
-        describe('#getResolver', () => {
-
-            it('should return a new registry manager', () => {
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockIntrospector = sinon.createStubInstance(Introspector);
-                sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
-                let mockFactory = sinon.createStubInstance(Factory);
-                sinon.stub(context, 'getFactory').returns(mockFactory);
-                context.getResolver().should.be.an.instanceOf(Resolver);
-            });
-
-            it('should return an existing registry manager', () => {
-                let mockResolver = sinon.createStubInstance(Resolver);
-                context.resolver = mockResolver;
-                context.getResolver().should.equal(mockResolver);
-            });
-
-        });
-        describe('#getApi', () => {
-
-            it('should return a new API', () => {
-                let mockFactory = sinon.createStubInstance(Factory);
-                sinon.stub(context, 'getFactory').returns(mockFactory);
-                let mockParticipant = sinon.createStubInstance(Resource);
-                sinon.stub(context, 'getParticipant').returns(mockParticipant);
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockEventService = sinon.createStubInstance(EventService);
-                sinon.stub(context, 'getEventService').returns(mockEventService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
-                let mockDataService = sinon.createStubInstance(DataService);
-                sinon.stub(context, 'getDataService').returns(mockDataService);
-                context.getApi().should.be.an.instanceOf(Api);
-            });
-
-            it('should return an existing API', () => {
-                let mockApi = sinon.createStubInstance(Api);
-                context.api = mockApi;
-                context.getApi().should.equal(mockApi);
-            });
-
+        it('should initialize the context with the original function name if no function name specified', () => {
+            context.arguments = ['sucharg1', 'sucharg2'];
+            return context.initialize({})
+                .then(() => {
+                    context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
+                });
         });
 
-        describe('#getIdentityManager', () => {
+    });
 
-            it('should return a new identity manager', () => {
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockFactory = sinon.createStubInstance(Factory);
-                sinon.stub(context, 'getFactory').returns(mockFactory);
-                context.getIdentityManager().should.be.an.instanceOf(IdentityManager);
-            });
+    describe('#getServices', () => {
 
-            it('should return an existing registry manager', () => {
-                let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-                context.identityManager = mockIdentityManager;
-                context.getIdentityManager().should.equal(mockIdentityManager);
-            });
-
+        it('should return all of the services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            context.getServices().should.deep.equal([
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ]);
         });
 
-        describe('#getResourceManager', () => {
+    });
 
-            it('should return a new resource manager', () => {
-                let mockSerializer = sinon.createStubInstance(Serializer);
-                sinon.stub(context, 'getSerializer').returns(mockSerializer);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockFactory = sinon.createStubInstance(Factory);
-                sinon.stub(context, 'getFactory').returns(mockFactory);
-                let mockResolver = sinon.createStubInstance(Resolver);
-                sinon.stub(context,'getResolver').returns(mockResolver);
-                context.getResourceManager().should.be.an.instanceOf(ResourceManager);
-            });
+    describe('#getDataService', () => {
 
-            it('should return an existing resource manager', () => {
-                let mockResourceManager = sinon.createStubInstance(ResourceManager);
-                context.resourceManager = mockResourceManager;
-                context.getResourceManager().should.equal(mockResourceManager);
-            });
-
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getDataService();
+            }).should.throw(/abstract function called/);
         });
 
-        describe('#getParticipant', () => {
+    });
 
-            it('should return the current participant', () => {
-                let mockParticipant = sinon.createStubInstance(Resource);
-                context.participant = mockParticipant;
-                context.getParticipant().should.equal(mockParticipant);
-            });
+    describe('#getIdentityService', () => {
 
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getIdentityService();
+            }).should.throw(/abstract function called/);
         });
 
-        describe('#setParticipant', () => {
+    });
 
-            it('should set the current participant and create a participant logger', () => {
-                let mockParticipant = sinon.createStubInstance(Resource);
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
+    describe('#getEventService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getEventService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getHTTPService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getHTTPService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getModelManager', () => {
+        it('should return the business networks model manager', () => {
+            context.getModelManager().should.equal(testNetworkDefinition.getModelManager());
+        });
+    });
+
+    describe('#getScriptManager', () => {
+        it('should return the business networks script manager', () => {
+            context.getScriptManager().should.equal(testNetworkDefinition.getScriptManager());
+        });
+    });
+
+    describe('#getAclManager', () => {
+        it('should return the business networks ACL manager', () => {
+            context.getAclManager().should.equal(testNetworkDefinition.getAclManager());
+        });
+    });
+
+    describe('#getFactory', () => {
+        it('should return the business networks model manager', () => {
+            context.getFactory().should.equal(testNetworkDefinition.getFactory());
+        });
+    });
+
+    describe('#getSerializer', () => {
+        it('should return the business networks model manager', () => {
+            context.getSerializer().should.equal(testNetworkDefinition.getSerializer());
+        });
+    });
+
+    describe('#getIntrospector', () => {
+        it('should return the business networks model manager', () => {
+            context.getIntrospector().should.equal(testNetworkDefinition.getIntrospector());
+        });
+    });
+
+    describe('#getRegistryManager', () => {
+
+        it('should return a new registry manager', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            let mockIntrospector = sinon.createStubInstance(Introspector);
+            sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            sinon.stub(context, 'getAccessController').returns(mockAccessController);
+            let mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            sinon.stub(context, 'getSystemRegistries').returns(mockSystemRegistries);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            context.registryManager = mockRegistryManager;
+            context.getRegistryManager().should.equal(mockRegistryManager);
+        });
+
+    });
+
+    describe('#getResolver', () => {
+
+        it('should return a new registry manager', () => {
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockIntrospector = sinon.createStubInstance(Introspector);
+            sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            context.getResolver().should.be.an.instanceOf(Resolver);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockResolver = sinon.createStubInstance(Resolver);
+            context.resolver = mockResolver;
+            context.getResolver().should.equal(mockResolver);
+        });
+
+    });
+    describe('#getApi', () => {
+
+        it('should return a new API', () => {
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockParticipant = sinon.createStubInstance(Resource);
+            sinon.stub(context, 'getParticipant').returns(mockParticipant);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockEventService = sinon.createStubInstance(EventService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            context.getApi().should.be.an.instanceOf(Api);
+        });
+
+        it('should return an existing API', () => {
+            let mockApi = sinon.createStubInstance(Api);
+            context.api = mockApi;
+            context.getApi().should.equal(mockApi);
+        });
+
+    });
+
+    describe('#getIdentityManager', () => {
+
+        it('should return a new identity manager', () => {
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            context.getIdentityManager().should.be.an.instanceOf(IdentityManager);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            context.identityManager = mockIdentityManager;
+            context.getIdentityManager().should.equal(mockIdentityManager);
+        });
+
+    });
+
+    describe('#getResourceManager', () => {
+
+        it('should return a new resource manager', () => {
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockResolver = sinon.createStubInstance(Resolver);
+            sinon.stub(context,'getResolver').returns(mockResolver);
+            context.getResourceManager().should.be.an.instanceOf(ResourceManager);
+        });
+
+        it('should return an existing resource manager', () => {
+            let mockResourceManager = sinon.createStubInstance(ResourceManager);
+            context.resourceManager = mockResourceManager;
+            context.getResourceManager().should.equal(mockResourceManager);
+        });
+
+    });
+
+    describe('#getParticipant', () => {
+
+        it('should return the current participant', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            context.participant = mockParticipant;
+            context.getParticipant().should.equal(mockParticipant);
+        });
+
+    });
+
+    describe('#setParticipant', () => {
+
+        it('should set the current participant and create a participant logger', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.setParticipant(mockParticipant);
+            context.participant.should.equal(mockParticipant);
+            sinon.assert.calledOnce(mockAccessController.setParticipant);
+            sinon.assert.calledWith(mockAccessController.setParticipant, mockParticipant);
+        });
+
+        it('should throw if a participant has already been set', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.setParticipant(mockParticipant);
+            (() => {
                 context.setParticipant(mockParticipant);
-                context.participant.should.equal(mockParticipant);
-                sinon.assert.calledOnce(mockAccessController.setParticipant);
-                sinon.assert.calledWith(mockAccessController.setParticipant, mockParticipant);
-            });
-
-            it('should throw if a participant has already been set', () => {
-                let mockParticipant = sinon.createStubInstance(Resource);
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
-                context.setParticipant(mockParticipant);
-                (() => {
-                    context.setParticipant(mockParticipant);
-                }).should.throw(/A current participant has already been specified/);
-            });
-
+            }).should.throw(/A current participant has already been specified/);
         });
 
-        describe('#getTransaction', () => {
+    });
 
-            it('should return the current transaction', () => {
-                let mockTransaction = sinon.createStubInstance(Resource);
-                context.transaction = mockTransaction;
-                context.getTransaction().should.equal(mockTransaction);
-            });
+    describe('#getTransaction', () => {
 
+        it('should return the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            context.transaction = mockTransaction;
+            context.getTransaction().should.equal(mockTransaction);
         });
 
-        describe('#setTransaction', () => {
+    });
 
-            it('should set the current transaction and create a transaction logger', () => {
-                let mockTransaction = sinon.createStubInstance(Resource);
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockSerializer = sinon.createStubInstance(Serializer);
-                sinon.stub(context, 'getSerializer').returns(mockSerializer);
+    describe('#setTransaction', () => {
+
+        it('should set the current transaction and create a transaction logger', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            context.setTransaction(mockTransaction);
+            context.transaction.should.equal(mockTransaction);
+            context.transactionLogger.should.be.an.instanceOf(TransactionLogger);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, mockTransaction);
+        });
+
+        it('should throw if a transaction has already been set', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            context.setTransaction(mockTransaction);
+            (() => {
                 context.setTransaction(mockTransaction);
-                context.transaction.should.equal(mockTransaction);
-                context.transactionLogger.should.be.an.instanceOf(TransactionLogger);
-                sinon.assert.calledOnce(mockAccessController.setTransaction);
-                sinon.assert.calledWith(mockAccessController.setTransaction, mockTransaction);
-            });
-
-            it('should throw if a transaction has already been set', () => {
-                let mockTransaction = sinon.createStubInstance(Resource);
-                let mockRegistryManager = sinon.createStubInstance(RegistryManager);
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
-                sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
-                let mockSerializer = sinon.createStubInstance(Serializer);
-                sinon.stub(context, 'getSerializer').returns(mockSerializer);
-                context.setTransaction(mockTransaction);
-                (() => {
-                    context.setTransaction(mockTransaction);
-                }).should.throw(/A current transaction has already been specified/);
-            });
-
+            }).should.throw(/A current transaction has already been specified/);
         });
 
-        describe('#clearTransaction', () => {
+    });
 
-            it('should clear the current transaction', () => {
-                let mockTransaction = sinon.createStubInstance(Resource);
-                let mockTransactionLogger = sinon.createStubInstance(TransactionLogger);
-                context.transaction = mockTransaction;
-                context.transactionLogger = mockTransactionLogger;
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
-                context.clearTransaction();
-                should.equal(context.transaction, null);
-                should.equal(context.transactionLogger, null);
-                sinon.assert.calledOnce(mockAccessController.setTransaction);
-                sinon.assert.calledWith(mockAccessController.setTransaction, null);
-            });
+    describe('#clearTransaction', () => {
 
+        it('should clear the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockTransactionLogger = sinon.createStubInstance(TransactionLogger);
+            context.transaction = mockTransaction;
+            context.transactionLogger = mockTransactionLogger;
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.clearTransaction();
+            should.equal(context.transaction, null);
+            should.equal(context.transactionLogger, null);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, null);
         });
 
-        describe('#getAccessController', () => {
+    });
 
-            it('should return a new access controller', () => {
-                let mockAclManager = sinon.createStubInstance(AclManager);
-                sinon.stub(context, 'getAclManager').returns(mockAclManager);
-                context.getAccessController().should.be.an.instanceOf(AccessController);
-            });
+    describe('#getAccessController', () => {
 
-            it('should return an existing query executor', () => {
-                let mockAccessController = sinon.createStubInstance(AccessController);
-                context.accessController = mockAccessController;
-                context.getAccessController().should.equal(mockAccessController);
-            });
-
+        it('should return a new access controller', () => {
+            let mockAclManager = sinon.createStubInstance(AclManager);
+            sinon.stub(context, 'getAclManager').returns(mockAclManager);
+            context.getAccessController().should.be.an.instanceOf(AccessController);
         });
 
-        describe('#getSystemRegistries', () => {
-
-            it('should throw if not initialized', () => {
-                (() => {
-                    context.getSystemRegistries();
-                }).should.throw(/must call initialize before calling this function/);
-            });
-
-            it('should return the system registries data collection', () => {
-                let mockSystemRegistries = sinon.createStubInstance(DataCollection);
-                context.sysregistries = mockSystemRegistries;
-                context.getSystemRegistries().should.equal(mockSystemRegistries);
-            });
-
+        it('should return an existing query executor', () => {
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.getAccessController().should.equal(mockAccessController);
         });
 
-        describe('#getEventNumber', () => {
-            it('should get the current event number', () => {
-                context.getEventNumber().should.equal(0);
-            });
+    });
+
+    describe('#getSystemRegistries', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getSystemRegistries();
+            }).should.throw(/must call initialize before calling this function/);
         });
 
-        describe('#incrementEventNumber', () => {
-            it('should get the incremenet current event number', () => {
-                context.incrementEventNumber();
-                context.getEventNumber().should.equal(1);
-            });
+        it('should return the system registries data collection', () => {
+            let mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            context.sysregistries = mockSystemRegistries;
+            context.getSystemRegistries().should.equal(mockSystemRegistries);
         });
 
-        describe('#getCompiledScriptBundle', () => {
+    });
 
-            it('should return the compiled script bundle', () => {
-                let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-                context.compiledScriptBundle = mockCompiledScriptBundle;
-                context.getCompiledScriptBundle().should.equal(mockCompiledScriptBundle);
-            });
+    describe('#getEventNumber', () => {
+        it('should get the current event number', () => {
+            context.getEventNumber().should.equal(0);
+        });
+    });
 
+    describe('#incrementEventNumber', () => {
+        it('should get the incremenet current event number', () => {
+            context.incrementEventNumber();
+            context.getEventNumber().should.equal(1);
+        });
+    });
+
+    describe('#getCompiledScriptBundle', () => {
+
+        it('should return the compiled script bundle', () => {
+            context.getCompiledScriptBundle().should.be.an.instanceOf(CompiledScriptBundle);
         });
 
-        describe('#getQueryCompiler', () => {
+    });
 
-            it('should return a new query compiler', () => {
-                context.getQueryCompiler().should.be.an.instanceOf(QueryCompiler);
-            });
+    describe('#getQueryCompiler', () => {
 
-            it('should return an existing query compiler', () => {
-                let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
-                context.queryCompiler = mockQueryCompiler;
-                context.getQueryCompiler().should.equal(mockQueryCompiler);
-            });
-
+        it('should return a new query compiler', () => {
+            context.getQueryCompiler().should.be.an.instanceOf(QueryCompiler);
         });
 
-        describe('#getCompiledQueryBundle', () => {
-
-            it('should return the compiled query bundle', () => {
-                let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
-                context.compiledQueryBundle = mockCompiledQueryBundle;
-                context.getCompiledQueryBundle().should.equal(mockCompiledQueryBundle);
-            });
-
+        it('should return an existing query compiler', () => {
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            context.queryCompiler = mockQueryCompiler;
+            context.getQueryCompiler().should.equal(mockQueryCompiler);
         });
 
-        describe('#getAclCompiler', () => {
+    });
 
-            it('should return a new ACL compiler', () => {
-                context.getAclCompiler().should.be.an.instanceOf(AclCompiler);
-            });
+    describe('#getCompiledQueryBundle', () => {
 
-            it('should return an existing ACL compiler', () => {
-                let mockAclCompiler = sinon.createStubInstance(AclCompiler);
-                context.aclCompiler = mockAclCompiler;
-                context.getAclCompiler().should.equal(mockAclCompiler);
-            });
-
+        it('should return the compiled query bundle', () => {
+            context.getCompiledQueryBundle().should.be.an.instanceOf(CompiledQueryBundle);
         });
 
-        describe('#getCompiledAclBundle', () => {
+    });
 
-            it('should return the compiled query bundle', () => {
-                let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
-                context.compiledAclBundle = mockCompiledAclBundle;
-                context.getCompiledAclBundle().should.equal(mockCompiledAclBundle);
-            });
+    describe('#getAclCompiler', () => {
 
+        it('should return a new ACL compiler', () => {
+            context.getAclCompiler().should.be.an.instanceOf(AclCompiler);
         });
 
-        describe('#getTransactionHandlers', () => {
-
-            it('should return the compiled query bundle', () => {
-                let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-                let mockResourceManager = sinon.createStubInstance(ResourceManager);
-                let mockNetworkManager = sinon.createStubInstance(NetworkManager);
-                context.identityManager = mockIdentityManager;
-                context.resourceManager = mockResourceManager;
-                context.getTransactionHandlers().should.have.lengthOf(3);
-                context.getTransactionHandlers().should.include(mockIdentityManager);
-                context.getTransactionHandlers().should.include(mockResourceManager);
-                context.getTransactionHandlers().should.include(mockNetworkManager);
-            });
-
+        it('should return an existing ACL compiler', () => {
+            let mockAclCompiler = sinon.createStubInstance(AclCompiler);
+            context.aclCompiler = mockAclCompiler;
+            context.getAclCompiler().should.equal(mockAclCompiler);
         });
 
-        describe('#transactionStart', () => {
+    });
 
-            it('should notify all services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                let services = [
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ];
-                sinon.stub(context, 'getServices').returns(services);
-                return context.transactionStart(true)
-                    .then(() => {
-                        services.forEach((service) => {
-                            sinon.assert.calledOnce(service.transactionStart);
-                            sinon.assert.calledWith(service.transactionStart, true);
-                        });
+    describe('#getCompiledAclBundle', () => {
+
+        it('should return the compiled acl bundle', () => {
+            context.getCompiledAclBundle().should.be.an.instanceOf(CompiledAclBundle);
+        });
+
+    });
+
+    describe('#getTransactionHandlers', () => {
+
+        it('should return the compiled query bundle', () => {
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            let mockResourceManager = sinon.createStubInstance(ResourceManager);
+            let mockNetworkManager = sinon.createStubInstance(NetworkManager);
+            context.identityManager = mockIdentityManager;
+            context.resourceManager = mockResourceManager;
+            context.getTransactionHandlers().should.have.lengthOf(3);
+            context.getTransactionHandlers().should.include(mockIdentityManager);
+            context.getTransactionHandlers().should.include(mockResourceManager);
+            context.getTransactionHandlers().should.include(mockNetworkManager);
+        });
+
+    });
+
+    describe('#transactionStart', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionStart(true)
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionStart);
+                        sinon.assert.calledWith(service.transactionStart, true);
                     });
-            });
-
+                });
         });
 
-        describe('#transactionPrepare', () => {
+    });
 
-            it('should notify all services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                let services = [
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ];
-                sinon.stub(context, 'getServices').returns(services);
-                return context.transactionPrepare()
-                    .then(() => {
-                        services.forEach((service) => {
-                            sinon.assert.calledOnce(service.transactionPrepare);
-                            sinon.assert.calledWith(service.transactionPrepare);
-                        });
+    describe('#transactionPrepare', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionPrepare()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionPrepare);
+                        sinon.assert.calledWith(service.transactionPrepare);
                     });
-            });
-
+                });
         });
 
-        describe('#transactionRollback', () => {
+    });
 
-            it('should notify all services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                let services = [
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ];
-                sinon.stub(context, 'getServices').returns(services);
-                return context.transactionRollback()
-                    .then(() => {
-                        services.forEach((service) => {
-                            sinon.assert.calledOnce(service.transactionRollback);
-                            sinon.assert.calledWith(service.transactionRollback);
-                        });
+    describe('#transactionRollback', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionRollback()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionRollback);
+                        sinon.assert.calledWith(service.transactionRollback);
                     });
-            });
-
+                });
         });
 
-        describe('#transactionCommit', () => {
+    });
 
-            it('should notify all services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                let services = [
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ];
-                sinon.stub(context, 'getServices').returns(services);
-                return context.transactionCommit()
-                    .then(() => {
-                        services.forEach((service) => {
-                            sinon.assert.calledOnce(service.transactionCommit);
-                            sinon.assert.calledWith(service.transactionCommit);
-                        });
+    describe('#transactionCommit', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionCommit()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionCommit);
+                        sinon.assert.calledWith(service.transactionCommit);
                     });
-            });
-
+                });
         });
 
-        describe('#transactionEnd', () => {
+    });
 
-            it('should notify all services', () => {
-                let mockDataService = sinon.createStubInstance(DataService);
-                let mockEventService = sinon.createStubInstance(EventService);
-                let mockIdentityService = sinon.createStubInstance(IdentityService);
-                let mockHTTPService = sinon.createStubInstance(HTTPService);
-                let services = [
-                    mockDataService,
-                    mockEventService,
-                    mockIdentityService,
-                    mockHTTPService
-                ];
-                sinon.stub(context, 'getServices').returns(services);
-                return context.transactionEnd()
-                    .then(() => {
-                        services.forEach((service) => {
-                            sinon.assert.calledOnce(service.transactionEnd);
-                            sinon.assert.calledWith(service.transactionEnd);
-                        });
+    describe('#transactionEnd', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionEnd()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionEnd);
+                        sinon.assert.calledWith(service.transactionEnd);
                     });
-            });
-
+                });
         });
 
-        describe('#getNativeAPI', () => {
+    });
 
-            it('should throw as abstract method', () => {
-                (() => {
-                    context.getNativeAPI();
-                }).should.throw(/abstract function called/);
-            });
+    describe('#getNativeAPI', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getNativeAPI();
+            }).should.throw(/abstract function called/);
         });
+    });
 
-        describe('#getBusinessNetworkDefinition', () => {
-            it('should return business network', () => {
-                context.getBusinessNetworkDefinition().should.equal(testNetworkDefinition);
-            });
+    describe('#getBusinessNetworkDefinition', () => {
+        it('should return business network', () => {
+            context.getBusinessNetworkDefinition().should.equal(testNetworkDefinition);
         });
+    });
 
-        describe('#getBusinessNetworkArchive', () => {
-            it('should return business network archive', () => {
-                const archive = context.getBusinessNetworkArchive();
-                return BusinessNetworkDefinition.fromArchive(archive).should.be.fulfilled;
-            });
+    describe('#getBusinessNetworkArchive', () => {
+        it('should return business network archive', () => {
+            const archive = context.getBusinessNetworkArchive();
+            return BusinessNetworkDefinition.fromArchive(archive).should.be.fulfilled;
         });
     });
 

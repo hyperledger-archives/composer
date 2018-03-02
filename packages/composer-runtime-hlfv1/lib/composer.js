@@ -16,8 +16,7 @@
 
 const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
-const Engine = require('composer-runtime').Engine;
-const Context = require('composer-runtime').Context;
+const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const NodeContainer = require('./nodecontainer');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 
@@ -38,17 +37,19 @@ class Composer {
      */
     static async start() {
         const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.', { processDependencies: false });
-        await Context.setBusinessNetwork(networkDefinition);
-        shim.start(new Composer());
+        const installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+        shim.start(new Composer(installedBusinessNetwork));
     }
 
     /**
      * Creates an instance of Composer chaincode.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork installed business network information information
      */
-    constructor() {
+    constructor(installedBusinessNetwork) {
         const method = 'constructor';
-        LOG.entry(method);
+        LOG.entry(method, installedBusinessNetwork);
         this.container = new NodeContainer();
+        this.installedBusinessNetwork = installedBusinessNetwork;
         LOG.exit(method);
     }
 
@@ -69,7 +70,7 @@ class Composer {
      * @return {NodeContext} an instance of the Composer context.
      */
     _createContext(engine, stub) {
-        return new NodeContext(engine, stub);
+        return new NodeContext(engine, stub, this.installedBusinessNetwork);
     }
 
     /**

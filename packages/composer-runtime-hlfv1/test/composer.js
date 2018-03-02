@@ -17,8 +17,7 @@
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Composer = require('../lib/composer');
 const NodeContainer = require('../lib/nodecontainer');
-const Engine = require('composer-runtime').Engine;
-const Context = require('composer-runtime').Context;
+const { Context, Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const shim = require('fabric-shim');
 const ChaincodeStub = require('fabric-shim/lib/stub');
 
@@ -26,17 +25,23 @@ require('chai').should();
 const sinon = require('sinon');
 
 describe('Composer', () => {
+    const sandbox = sinon.sandbox.create();
 
-    let sandbox;
-    let composer, mockStub, mockEngine, mockContext;
+    let composer;
+    let mockStub;
+    let mockEngine;
+    let mockContext;
+    let testBusinessNetwork;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        composer = new Composer();
         mockStub = sinon.createStubInstance(ChaincodeStub);
         mockEngine = sinon.createStubInstance(Engine);
         mockContext = sinon.createStubInstance(Context);
-
+        testBusinessNetwork = new BusinessNetworkDefinition('business-network@1.0.0-test');
+        return InstalledBusinessNetwork.newInstance(testBusinessNetwork)
+            .then(installedBusinessNetwork => {
+                composer = new Composer(installedBusinessNetwork);
+            });
     });
 
     afterEach(() => {
@@ -44,11 +49,8 @@ describe('Composer', () => {
     });
 
     describe('#start', () => {
-        const testBusinessNetwork = new BusinessNetworkDefinition('business-network@1.0.0-test');
-
         beforeEach(() => {
             sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').resolves(testBusinessNetwork);
-            sandbox.spy(Context, 'setBusinessNetwork');
             sandbox.stub(shim, 'start').returns();
         });
 
@@ -58,9 +60,10 @@ describe('Composer', () => {
             });
         });
 
-        it('should call Context.setBusinessNetworkDefinition()', () => {
+        it('should pass a Composer instance with installed business network', () => {
             return Composer.start().then(() => {
-                sinon.assert.calledOnce(Context.setBusinessNetwork);
+                sinon.assert.calledWith(shim.start,
+                    sinon.match(composer => composer.installedBusinessNetwork.getDefinition() === testBusinessNetwork));
             });
         });
     });
@@ -259,8 +262,8 @@ describe('Composer', () => {
 
     describe('#_createContext', () => {
         it('should create a context', () => {
-            let engine = composer._createContext(mockEngine, mockStub);
-            engine.should.be.instanceOf(Context);
+            const context = composer._createContext(mockEngine, mockStub);
+            context.should.be.instanceOf(Context);
         });
     });
 
