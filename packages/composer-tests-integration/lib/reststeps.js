@@ -18,12 +18,12 @@ module.exports = function () {
 
     this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
         // These steps assume that the arg «name» is the business network name,
-        // and is packaged in the BNA file ./resources/sample-networks/«name».bna
+        // and the business network resources are located at ./resources/sample-networks/«name»
         if(this.composer.tasks.REST_SVR) {
             // REST API server already running
             return;
         }
-        const bnaFile = `./resources/sample-networks/${name}.bna`;
+        const bnaFile = `./tmp/${name}.bna`;
         const adminId = `admin@${name}`;
         const success = /Command succeeded/;
         const checkOutput = (response) => {
@@ -32,6 +32,8 @@ module.exports = function () {
             }
         };
         let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(`composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
         checkOutput(response);
         response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
         checkOutput(response);

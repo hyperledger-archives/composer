@@ -1,5 +1,6 @@
-@busnet-gen
+@generator-busnet
 Feature: Business Network Generator
+
     Background:
         Given I have admin business cards available
 

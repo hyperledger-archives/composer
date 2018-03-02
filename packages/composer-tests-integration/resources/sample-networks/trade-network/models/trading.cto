@@ -1,0 +1,34 @@
+/**
+ * Commodity trading network
+ */
+namespace org.acme.trading
+
+asset Commodity identified by tradingSymbol {
+    o String tradingSymbol
+    o String description
+    o String mainExchange
+    o Double quantity
+    --> Trader owner
+}
+
+participant Trader identified by tradeId {
+    o String tradeId
+    o String firstName
+    o String lastName
+}
+
+transaction Trade {
+    --> Commodity commodity
+    --> Trader newOwner
+}
+
+event TradeNotification {
+    --> Commodity commodity
+}
+
+transaction RemoveHighQuantityCommodities {
+}
+
+event RemoveNotification {
+    --> Commodity commodity
+}
