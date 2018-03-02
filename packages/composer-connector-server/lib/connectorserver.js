@@ -218,6 +218,7 @@ class ConnectorServer {
     connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
         const method = 'connectionManagerRemoveIdentity';
         LOG.entry(method, connectionProfile, id);
+        connectionOptions.wallet = this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
         return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);

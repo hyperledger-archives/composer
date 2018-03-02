@@ -15,8 +15,12 @@
 'use strict';
 
 let generators = require('yeoman-generator');
+let optionOrPrompt = require('yeoman-option-or-prompt');
+let Util = require('../util');
 
 module.exports = generators.Base.extend({
+
+    _optionOrPrompt: optionOrPrompt,
 
     constructor: function() {
         generators.Base.apply(this, arguments);
@@ -24,10 +28,10 @@ module.exports = generators.Base.extend({
     },
 
     /**
-   * @returns {Object} List of questions to ask
-   */
+    * @returns {Object} List of questions to ask
+    */
     prompting: function() {
-        console.log('Welcome to the Hyperledger Composer project generator');
+        Util.log('Welcome to the Hyperledger Composer project generator');
         const questions = [{
             type: 'list',
             name: 'generatorType',
@@ -47,35 +51,27 @@ module.exports = generators.Base.extend({
                 }
             ],
             store: true,
-            validate: function(input) {
-                if(input !== null && input !== undefined) {
-                    return true;
-                } else {
-                    return 'Generator type must be defined';
-                }
-            }
+            validate: Util.validateGeneratorType
         }];
-        return this.prompt(questions).then(answers => {
-            this.generatorType = answers.generatorType;
-        });
+
+        return this._optionOrPrompt(questions)
+            .then((answers) => {
+                this.generatorType = answers.generatorType;
+            });
     },
 
     configuring: function() {
         if(this.generatorType === 'Angular'){
-            console.log('You can run this generator using: \'yo hyperledger-composer:angular\'');
+            Util.log('You can run this generator using: \'yo hyperledger-composer:angular\'');
             this.composeWith(require.resolve('../angular'));
         } else if (this.generatorType === 'businessnetwork') {
-            console.log('You can run this generator using: \'yo hyperledger-composer:businessnetwork\'');
+            Util.log('You can run this generator using: \'yo hyperledger-composer:businessnetwork\'');
             this.composeWith(require.resolve('../businessnetwork'));
         } else if (this.generatorType === 'model') {
-            console.log('You can run this generator using: \'yo hyperledger-composer:model\'');
+            Util.log('You can run this generator using: \'yo hyperledger-composer:model\'');
             this.composeWith(require.resolve('../model'));
         } else{
-            console.log('Generator type not recognised');
+            Util.log('Generator type not recognised');
         }
     },
-
-
-
-
 });

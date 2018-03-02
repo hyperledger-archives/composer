@@ -483,19 +483,19 @@ Feature: Cli steps
         Then A new file matching this regex should be created /composer-report-/
 
 
-
     @ccpvalidation
     Scenario: Using the CLI, I get a relevant message when I import a card that has invalid name format created from an invalid common connection profile.
         Given I have the following files
             | ../resources/cards/PeerAdminInvalidName@hlfv1.card |
-        When I run the following CLI command	
+        When I run the following CLI command
             """
-            composer card import --file ./resources/cards/PeerAdminInvalidName@hlfv1.card 
+            composer card import --file ./resources/cards/PeerAdminInvalidName@hlfv1.card
             """
         Then The stdout information should include text matching /Failed to import the business network card/
-        Then The stdout information should include text matching /keyword:    pattern/
+        Then The stdout information should include text matching /keyword:    type/
         Then The stdout information should include text matching /dataPath:   .name/
-        Then The stdout information should include text matching /schemaPath: #/properties/name/pattern/
+        Then The stdout information should include text matching /schemaPath: #/properties/name/type/
+        Then The stdout information should include text matching /message:    should be string/
         Then The stdout information should include text matching /Errors found in the connection profile in the card/
 
 

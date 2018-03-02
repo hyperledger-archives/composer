@@ -1,10 +1,10 @@
-{ 
+{
     "$schema" : "http://json-schema.org/schema#",
     "definitions" : {
         "client" : {
             "type" : "object",
             "properties" : {
-                "organization" : { "type" : "string" } 
+                "organization" : { "type" : "string" }
             },
             "required" : [ "organization" ]
         },
@@ -57,20 +57,20 @@
         "channel-peer" : {
             "type" : "object",
             "patternProperties": {
-                "^.*$" : { 
+                "^.*$" : {
                     "endorsingPeer" : { "type" : "boolean" },
                     "chaincodeQuery" : { "type" : "boolean" },
                     "ledgerQuery" : { "type" : "boolean" },
                     "eventSource" : { "type" : "boolean" }
                 },
-                "additionalProperties": false                
+                "additionalProperties": false
             },
             "minimum" : 1
         },
         "orderers" : {
             "type" : "object",
             "patternProperties": {
-                "^.*$" : { "$ref": "#/definitions/orderer" } 
+                "^.*$" : { "$ref": "#/definitions/orderer" }
             },
             "minimum": 1
         },
@@ -112,7 +112,7 @@
                 "^.*$" : { "$ref": "#/definitions/organization" }
             },
             "minimum": 1
-        }, 
+        },
         "organization" : {
             "type" : "object",
             "properties": {
@@ -127,41 +127,58 @@
         "adminPrivateKey" : {
             "type" : "object",
             "properties": {
-                "oneOf" : {
-                    "pem" : { "type" : "string" },
-                    "path" : { "type" : "string" }
+                "pem" : { "type" : "string" },
+                "path": {
+                    "type": "string"
                 }
             },
-            "required" : [ "pem" ]
+            "oneOf" : [{
+                "anyOf" : [{
+                    "required" : ["path"]
+                }, {
+                    "required" : ["pem"]
+                }
+                ]
+            }]
         },
         "signedCert" : {
             "type" : "object",
             "properties": {
-                "path" : { "type" : "string" }
+                    "pem" : { "type" : "string" },
+                    "path": {
+                        "type": "string"
+                    }
             },
-            "required" : [ "path" ]
+            "oneOf" : [{
+                "anyOf" : [{
+                    "required" : ["path"]
+                }, {
+                    "required" : ["pem"]
+                }
+                ]
+            }]
         },
         "peers" : {
             "type" : "object",
             "patternProperties": {
-                "^.*$" : { "$ref": "#/definitions/peer" } 
+                "^.*$" : { "$ref": "#/definitions/peer" }
             },
             "minimum": 1
         },
         "peer" : {
-            "type" : "object", 
+            "type" : "object",
             "properties": {
                 "url" : { "format" : "uri" },
                 "eventUrl" : { "format" : "uri" },
                 "grpcOptions" : { "$ref": "#/definitions/grpcOptions" },
-                "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" }                
+                "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" }
             },
             "required": [ "url", "eventUrl"]
         }
     },
     "type" : "object",
     "properties" : {
-        "name" : { "type" : "string", "pattern" : "^[a-zA-Z0-9_-]*$" },
+        "name" : { "type" : "string" },
         "x-type" : { "enum" : [ "hlfv1", "hlfv11" ] },
         "x-loggingLevel" : { "enum" : [ "info", "debug" ] },
         "x-commitTimeout": { "type" : "number" },
@@ -173,5 +190,5 @@
         "organizations" : { "$ref" : "#/definitions/organizations" },
         "peers" : { "$ref":  "#/definitions/peers" }
     },
-    "required" : ["name", "x-type", "client", "certificateAuthorities", "channels", "orderers", "peers"] 
+    "required" : ["name", "x-type", "client", "certificateAuthorities", "channels", "orderers", "peers"]
 }
