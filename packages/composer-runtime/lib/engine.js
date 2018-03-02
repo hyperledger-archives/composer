@@ -79,28 +79,32 @@ class Engine {
      * @param {Context} context The request context.
      * @param {string} fcn The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} promise of completion
      * @async
      */
     async init(context, fcn, args) {
-        const method = 'init';
-        LOG.entry(method, context, fcn, args);
-
-        // chaincode was upgraded, no change to business network and obviously
-        // nothing the runtime can do to stop it.
-        if (fcn === 'upgrade') {
-            LOG.info(method, 'business network has been upgraded');
-            //TODO: Here we would need to invoke migrations if we are to support
-            //upgrading from anything more than just micro version changes of the
-            //runtime. Currently not supported and the connector will not allow
-            //the upgrade. We could add a check here as well and reject the upgrade
-            //but it's overkill at the moment.
-            return;
-        }
-        if (fcn !== 'init') {
+        switch (fcn) {
+        case 'start':
+            return this.start(context, args);
+        case 'upgrade':
+            return this.upgrade(context, args);
+        default:
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
         }
+    }
+
+    /**
+     * Perform a start of the business network.
+     * @param {Context} context transaction context
+     * @param {Array} args chaincode invocation arguments
+     * @async
+     */
+    async start(context, args) {
+        const method = 'start';
+        LOG.entry(method, context, args);
+
         if (args.length !== 1) {
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['serializedResource']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, method, ['serializedResource']));
         }
 
         // Parse the transaction from the JSON string..
@@ -133,7 +137,7 @@ class Engine {
 
         LOG.debug(method, 'Initializing context', this.getContainer().getVersion());
         await context.initialize({
-            function: fcn,
+            function: 'init',
             arguments: args,
             sysregistries: sysregistries,
             container: this.getContainer()
@@ -180,6 +184,41 @@ class Engine {
             await context.transactionEnd();
             throw error;
         }
+
+        LOG.exit(method);
+    }
+
+    /**
+     * Perform an upgrade of the business network.
+     * @param {Context} context transaction context
+     * @param {Array} args chaincode invocation arguments
+     * @async
+     */
+    async upgrade(context, args) {
+        const method = 'upgrade';
+        LOG.entry(method, context, args);
+
+        const dataService = context.getDataService();
+
+        LOG.debug(method, 'Updating metanetwork in $sysdata collection');
+        const sysdata = await dataService.ensureCollection('$sysdata');
+        const networkIdentifier = context.getBusinessNetworkDefinition().getIdentifier();
+        await sysdata.update('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': networkIdentifier });
+
+        LOG.debug(method, 'Ensuring that sysregistries collection exists');
+        const sysregistries = await dataService.ensureCollection('$sysregistries');
+
+        LOG.debug(method, 'Initializing context', this.getContainer().getVersion());
+        await context.initialize({
+            function: 'init',
+            arguments: args,
+            sysregistries: sysregistries,
+            container: this.getContainer()
+        });
+
+        LOG.debug(method, 'Creating default registries');
+        const registryManager = context.getRegistryManager();
+        await registryManager.createDefaults();
 
         LOG.exit(method);
     }

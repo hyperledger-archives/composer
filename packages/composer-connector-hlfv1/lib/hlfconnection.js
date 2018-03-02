@@ -514,7 +514,7 @@ class HLFConnection extends Connection {
                 chaincodeId: businessNetworkName,
                 chaincodeVersion: businessNetworkVersion,
                 txId: transactionId,
-                fcn: 'init',
+                fcn: 'start',
                 args: [startTransaction]
             };
             this._addEndorsementPolicy(startOptions, proposal);

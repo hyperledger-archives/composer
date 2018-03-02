@@ -719,7 +719,7 @@ describe('HLFConnection', () => {
 
         describe('#start', () => {
             beforeEach(() => {
-                expectedProposal.fcn = 'init';
+                expectedProposal.fcn = 'start';
                 expectedProposal.args = ['{"start":"json"}'];
                 mockChannel.sendInstantiateProposal.callsFake(fakeSuccessfulProposal);
             });

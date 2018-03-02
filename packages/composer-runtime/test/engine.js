@@ -147,19 +147,19 @@ describe('Engine', () => {
         });
 
         it('should reject for invalid arguments', () => {
-            return engine.init(mockContext, 'init', ['no', 'args', 'supported'])
-                .should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"serializedResource\"\]"/);
+            return engine.init(mockContext, 'start', ['no', 'args', 'supported'])
+                .should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "start", expecting "\[\"serializedResource\"\]"/);
         });
 
         it('should reject for a missing $class', () => {
             delete json.$class;
-            return engine.init(mockContext, 'init', [JSON.stringify(json)])
+            return engine.init(mockContext, 'start', [JSON.stringify(json)])
                 .should.be.rejectedWith(/The transaction data specified is not valid/);
         });
 
         it('should reject for an invalid $class', () => {
             json.$class = 'WoopWoop';
-            return engine.init(mockContext, 'init', [JSON.stringify(json)])
+            return engine.init(mockContext, 'start', [JSON.stringify(json)])
                 .should.be.rejectedWith(/The transaction data specified is not valid/);
         });
 
@@ -169,28 +169,28 @@ describe('Engine', () => {
 
         it('should enable logging if logging specified on the init', () => {
             json.logLevel = 'DEBUG';
-            return engine.init(mockContext, 'init', [JSON.stringify(json)]).then(() => {
+            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
                 sinon.assert.calledOnce(mockLoggingService.setLogLevel);
                 sinon.assert.calledWithExactly(mockLoggingService.setLogLevel, 'DEBUG');
             });
         });
 
         it('should create system collections', () => {
-            return engine.init(mockContext, 'init', [JSON.stringify(json)]).then(() => {
+            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
                 sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                 sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
             });
         });
 
         it('should create default registries', () => {
-            return engine.init(mockContext, 'init', [JSON.stringify(json)]).then(() => {
+            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
                 sinon.assert.called(mockRegistryManager.createDefaults);
             });
         });
 
         it('should rollback if an error occurs', () => {
             stubSubmitTransaction.rejects();
-            return engine.init(mockContext, 'init', [JSON.stringify(json)])
+            return engine.init(mockContext, 'start', [JSON.stringify(json)])
                 .should.be.rejected
                 .then(() => {
                     sinon.assert.calledWithExactly(mockContext.transactionStart, false);
@@ -223,7 +223,7 @@ describe('Engine', () => {
                     certificate: '----BEGIN CERTIFICATE\nsuch certificate\n----END CERTIFICATE-----\n'
                 }
             ];
-            return engine.init(mockContext, 'init', [JSON.stringify(json)]).then(() => {
+            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
                 const txs = engine.submitTransaction.args.map((arg) => {
                     return JSON.parse(arg[1]);
                 });
@@ -256,7 +256,7 @@ describe('Engine', () => {
                     certificate: '----BEGIN CERTIFICATE\nsuch certificate\n----END CERTIFICATE-----\n'
                 }
             ];
-            return engine.init(mockContext, 'init', [JSON.stringify(json)]).then(() => {
+            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
                 sinon.assert.calledThrice(engine.submitTransaction);
                 const txs = engine.submitTransaction.args.map((arg) => {
                     return JSON.parse(arg[1]);
