@@ -5,7 +5,7 @@ Feature: Cli steps
         Given I have admin business cards available
 
     Scenario: Using the CLI, I can run a composer report command to create a file about the current environment
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer report
             """

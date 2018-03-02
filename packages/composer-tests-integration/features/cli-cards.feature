@@ -9,7 +9,7 @@ Feature: CLI cards steps
             | ../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts |
             | ../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore |
             | ../profiles/basic-connection-org1.json |
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             | command | composer card create |
             | -p | ./profiles/basic-connection-org1.json |
             | -u | PeerAdmin |
@@ -26,7 +26,7 @@ Feature: CLI cards steps
     Scenario: Using the CLI, I can import a business network card
         Given I have the following files
             | ../tmp/PeerAdmin.card |
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card import --file ./tmp/PeerAdmin.card
             """
@@ -36,7 +36,7 @@ Feature: CLI cards steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can see the card that I just imported in the list of cards
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card list
             """
@@ -54,7 +54,7 @@ Feature: CLI cards steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: When using the CLI, I can see the details of the card that I just imported
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card list -n PeerAdmin@hlfv1
             """
@@ -72,14 +72,14 @@ Feature: CLI cards steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I should get an error if I try to delete a card which doesn't exist
-        When I run the following CLI command
+        When I run the following expected fail CLI command
             """
             composer card delete -n nobody@penguin
             """
         Then The stdout information should include text matching /Command failed/
 
     Scenario: Using the CLI, I can export a card that exists in my wallet
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card export --name PeerAdmin@hlfv1 --file ./tmp/ExportedPeerAdmin.card
             """
@@ -88,7 +88,7 @@ Feature: CLI cards steps
             | ../tmp/PeerAdmin.card |
 
     Scenario: Using the CLI, I can delete a named card that exists
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card delete --name PeerAdmin@hlfv1
             """
@@ -97,12 +97,13 @@ Feature: CLI cards steps
     Scenario: Using the CLI, I get a relevant message when I import a card that has invalid name format created from an invalid common connection profile.
         Given I have the following files
             | ../resources/cards/PeerAdminInvalidName@hlfv1.card |
-        When I run the following CLI command
+        When I run the following expected fail CLI command
             """
             composer card import --file ./resources/cards/PeerAdminInvalidName@hlfv1.card
             """
         Then The stdout information should include text matching /Failed to import the business network card/
-        And The stdout information should include text matching /keyword:    pattern/
+        And The stdout information should include text matching /keyword:    type/
         And The stdout information should include text matching /dataPath:   .name/
-        And The stdout information should include text matching /schemaPath: #/properties/name/pattern/
+        And The stdout information should include text matching /schemaPath: #/properties/name/type/
+        And The stdout information should include text matching /message:    should be string/
         And The stdout information should include text matching /Errors found in the connection profile in the card/

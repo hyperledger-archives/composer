@@ -6,17 +6,35 @@ Feature: Cli-identities steps
         And I have deployed the business network basic-sample-network
 
     Scenario: Using the CLI, I can create new Participants
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"bob","firstName":"bob","lastName":"bobbington"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create new Participants
+        When I run the following expected pass CLI command
+            """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"sal","firstName":"sally","lastName":"sallyington"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create new Participants
+        When I run the following expected pass CLI command
+            """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"fra","firstName":"frank","lastName":"frankington"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create new Participants
+        When I run the following expected pass CLI command
+            """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"ange","firstName":"angela","lastName":"angleton"}'
             """
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can check that my new Participants were created
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network list --card admin@basic-sample-network
             """
@@ -37,7 +55,7 @@ Feature: Cli-identities steps
             Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can list all the current Identities
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity list --card admin@basic-sample-network
             """
@@ -47,7 +65,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can issue an Identity to the participant called Sal
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity issue --card admin@basic-sample-network -u sal -a org.acme.sample.SampleParticipant#sal -f ./tmp/sal_DONOTIMPORT@basic-sample-network.card
             """
@@ -60,7 +78,7 @@ Feature: Cli-identities steps
            """
            ./tmp/sal_DONOTIMPORT@basic-sample-network.card
            """
-        When I substitue the alias SAL_SECRET and run the following CLI command
+        When I substitue the alias SAL_SECRET and run an expected pass CLI command
            """
            composer identity request --card admin@basic-sample-network -u sal -s SAL_SECRET -d ./tmp
            """
@@ -70,7 +88,7 @@ Feature: Cli-identities steps
             | ../tmp/sal-priv.pem |
 
     Scenario: Using the CLI, I can create a card for the sal identity
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             | command | composer card create |
             | -p | ./profiles/basic-connection-org1.json |
             | -u | sal |
@@ -86,7 +104,7 @@ Feature: Cli-identities steps
     Scenario: Using the CLI, I can import the card that was just created
         Given I have the following files
             | ../tmp/sal@basic-sample-network.card |
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card import --file ./tmp/sal@basic-sample-network.card
             """
@@ -96,7 +114,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can validate my user sal through a network ping
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network ping --card sal@basic-sample-network
             """
@@ -106,7 +124,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can issue an Identity with issuer authority to the participant called Ange
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity issue -x --card admin@basic-sample-network -u ange -a org.acme.sample.SampleParticipant#ange -f ./tmp/ange@basic-sample-network.card
             """
@@ -117,7 +135,7 @@ Feature: Cli-identities steps
     Scenario: Using the CLI, I can import Ange into my card store
         Given I have the following files
             | ../tmp/ange@basic-sample-network.card |
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card import --file ./tmp/ange@basic-sample-network.card
             """
@@ -127,7 +145,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can issue an Identity to the participant called Frank using Ange
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity issue --card admin@basic-sample-network -u fra -a org.acme.sample.SampleParticipant#fra -f ./tmp/frank@basic-sample-network.card
             """
@@ -136,7 +154,7 @@ Feature: Cli-identities steps
             | ../tmp/frank@basic-sample-network.card |
 
     Scenario: Using the CLI, I can issue an Identity to the participant called Bob
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity issue --card admin@basic-sample-network -u bob -a org.acme.sample.SampleParticipant#bob -f ./tmp/bob@basic-sample-network.card
             """
@@ -145,7 +163,7 @@ Feature: Cli-identities steps
             | ../tmp/bob@basic-sample-network.card |
 
     Scenario: Using the CLI, I can validate that Bob's identity was created and is in the ISSUED state
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity list --card admin@basic-sample-network
             """
@@ -161,7 +179,7 @@ Feature: Cli-identities steps
     Scenario: Using the CLI, I can import the card for bob
         Given I have the following items
             | ../tmp/bob@basic-sample-network.card |
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card import --file ./tmp/bob@basic-sample-network.card
             """
@@ -171,7 +189,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can verify that Bob's card was imported
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer card list
             """
@@ -191,7 +209,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can connect to the business network using the newly imported card
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network list --card bob@basic-sample-network
             """
@@ -208,7 +226,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can see that connecting to the business network as Bob has ACTIVATED the identity
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity list --card admin@basic-sample-network
             """
@@ -223,7 +241,7 @@ Feature: Cli-identities steps
         Then I save group 1 from the console output matching pattern ^[\S\s]*identityId:\s+([\S\s]*)\n\s+name:\s+bob[\S\s]*$ as alias BOBID
 
     Scenario: Using the CLI, I can revoke Bob's identity
-        When I substitue the alias BOBID and run the following CLI command
+        When I substitue the alias BOBID and run an expected pass CLI command
             """
             composer identity revoke --identityId BOBID --card admin@basic-sample-network
             """
@@ -231,7 +249,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can see that Bob's identity has now been REVOKED
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer identity list --card admin@basic-sample-network
             """
@@ -245,7 +263,7 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can no longer access things using Bob's card
-        When I run the following CLI command
+        When I run the following expected fail CLI command
             """
             composer network list --card bob@basic-sample-network
             """

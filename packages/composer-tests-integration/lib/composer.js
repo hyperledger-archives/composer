@@ -225,24 +225,26 @@ class Composer {
 
     /**
      * Prepare CLI Command to run
+     * @param {Boolean} pass - Boolean pass/fail case expected
      * @param {DataTable} table -  Information listing the CLI command and parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    runCLI(table) {
+    runCLI(pass, table) {
         if (typeof table === 'string') {
-            return this._runCLI(table);
+            return this._runCLI(pass, table);
         } else {
-            return this._runCLI(this.convertTableToCommand(table));
+            return this._runCLI(pass, this.convertTableToCommand(table));
         }
     }
 
     /**
      * Run a CLI Command with a substituted alias
      * @param {*} alias -  The alias to substitue in the command
+     * @param {Boolean} pass - Boolean pass/fail case expected
      * @param {*} table -  Information listing the CLI command and parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    runCLIWithAlias(alias, table) {
+    runCLIWithAlias(alias, pass, table) {
         if (typeof table !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
@@ -250,7 +252,7 @@ class Composer {
                 return Promise.reject('Unable to use passed Alias: ' + alias + ' does not exist');
             } else {
                 let command = table.replace(alias, this.aliasMap.get(alias));
-                return this._runCLI(command);
+                return this._runCLI(pass, command);
             }
         }
     }
@@ -359,10 +361,11 @@ class Composer {
 
     /**
      * Run a composer CLI command
+     * @param {Boolean} pass - Boolean pass/fail case expected, undefined if unchecked case
      * @param {DataTable} cmd -  CLI command with parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    _runCLI(cmd) {
+    _runCLI(pass, cmd) {
         if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
@@ -387,13 +390,24 @@ class Composer {
 
                 childCliProcess.on('error', (error) => {
                     this.lastResp = { error: error, stdout: stdout, stderr: stderr };
-                    reject(this.lastResp);
+                    if (pass){
+                        reject(this.lastResp);
+                    }
                 });
 
                 childCliProcess.on('close', (code) => {
-                    if (code && code !== 0) {
+                    if (pass === undefined) {
+                        // don't care case
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
+                    } else if (code && code !== 0 && pass) {
+                        // non zero return code, should pass
+                        this.lastResp = { code: code, stdout: stdout, stderr: stderr };
+                        reject(this.lastResp);
+                    } else if (code && code === 0 && !pass) {
+                        // zero return code, should fail
+                        this.lastResp = { code: code, stdout: stdout, stderr: stderr };
+                        reject(this.lastResp);
                     } else {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
@@ -632,8 +646,7 @@ class Composer {
                 await adminConnection.deleteCard(cardName);
             }
         } catch(err) {
-            // eslint-disable-next-line no-console
-            console.log(`failed to convert to HSM and Import. Error was ${err}`);
+            throw new Error(`failed to convert to HSM and Import. Error was ${err}`);
         }
     }
 

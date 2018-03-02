@@ -6,7 +6,7 @@ Feature: Cli network steps
         And I have deployed the business network marbles-network
 
     Scenario: Using the CLI, I can ping the network that I just started
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network ping --card admin@marbles-network
             """
@@ -16,7 +16,7 @@ Feature: Cli network steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can verify that there no assets have been created yet
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.Marble
             """
@@ -35,18 +35,18 @@ Feature: Cli network steps
     Scenario: Using the CLI, I can update the network to a newer version
         Given I have the following folders
             | ../resources/sample-networks/marbles-network-update |
-        And I run the following CLI command
+        And I run the following expected pass CLI command
             """
             composer archive create -t dir -a ./tmp/marbles-network-update.bna -n ./resources/sample-networks/marbles-network-update
             """
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network update --card admin@marbles-network -a ./tmp/marbles-network-update.bna
             """
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can validate my network update
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network ping --card admin@marbles-network
             """
@@ -56,7 +56,7 @@ Feature: Cli network steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can validate that listing all the networks includes my update
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network list --card admin@marbles-network
             """
@@ -64,7 +64,7 @@ Feature: Cli network steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can create new Assets by submitting transactions
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.hyperledger_composer.marbles.NewMarble", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
             """
@@ -72,7 +72,7 @@ Feature: Cli network steps
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can check that the assets were created
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.NewMarble
             """
@@ -88,9 +88,9 @@ Feature: Cli network steps
         And The stdout information should include text matching /registryType: Asset/
         And The stdout information should include text matching /assets: /
         And The stdout information should include text matching /101: /
-        And The stdout information should include text matching /\$class:  org.hyperledger_composer.marbles.NewMarble/
+        And The stdout information should include text matching /\$class:   org.hyperledger_composer.marbles.NewMarble/
         And The stdout information should include text matching /marbleId: 101/
-        And The stdout information should include text matching /size: SMALL/
-        And The stdout information should include text matching /color: RED/
-        And The stdout information should include text matching /owner:   resource:org.hyperledger_composer.marbles.Player#bob/
+        And The stdout information should include text matching /size:     SMALL/
+        And The stdout information should include text matching /color:    RED/
+        And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
         And The stdout information should include text matching /Command succeeded/

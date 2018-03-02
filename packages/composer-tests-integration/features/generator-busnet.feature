@@ -5,7 +5,7 @@ Feature: Business Network Generator
         Given I have admin business cards available
 
     Scenario: Using the Composer generator, I can generate a template network
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             | command | yo hyperledger-composer:businessnetwork |
             | --appname | my-bus-net |
             | --appdescription | a description for my business network |
@@ -22,21 +22,21 @@ Feature: Business Network Generator
             | ../my-bus-net/test/logic.js |
 
     Scenario: Using the Composer generator, I can install the business network packages
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
              npm install --prefix ./my-bus-net
             """
         Then The stdout information should include text matching /added .* packages/
 
     Scenario: Using the Composer generator, I can generate a testable template network
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
              npm test --prefix ./my-bus-net
             """
         Then The stdout information should include text matching /1 passing/
 
     Scenario: I can build a bna from the generated template network
-        When I run the following CLI command
+        When I run the following expected pass CLI command
             """
             composer archive create -t dir -a ./tmp/my-bus-net.bna -n ./my-bus-net
             """
@@ -45,8 +45,8 @@ Feature: Business Network Generator
             | ../tmp/my-bus-net.bna |
 
     Scenario: I can deploy a bna created from a generated template business network
-        Given I have a deployed the bna for template network my-bus-net
-        When I run the following CLI command
+        Given I have a deployed the bna my-bus-net
+        When I run the following expected pass CLI command
             """
             composer network ping --card admin@my-bus-net
             """
@@ -54,7 +54,7 @@ Feature: Business Network Generator
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: I can create an asset in the deployed template business network
-         When I run the following CLI command
+         When I run the following expected pass CLI command
             """
             composer transaction submit --card admin@my-bus-net -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "conga.busnet.SampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#conga.busnet.SampleAsset", "resources": [{"$class": "conga.busnet.SampleAsset","assetId": "newAsset","value": "101"}]}'
             """
@@ -62,7 +62,7 @@ Feature: Business Network Generator
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: I can list all assets in the deployed templeate business network and the asset
-         When I run the following CLI command
+         When I run the following expected pass CLI command
             """
             composer network list --card admin@my-bus-net -r conga.busnet.SampleAsset
             """
@@ -73,7 +73,7 @@ Feature: Business Network Generator
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: I can submit the template transaction in the deployed template business network
-         When I run the following CLI command
+         When I run the following expected pass CLI command
             """
             composer transaction submit --card admin@my-bus-net -d '{"$class": "conga.busnet.ChangeAssetValue", "relatedAsset": "resource:conga.busnet.SampleAsset#newAsset", "newValue": "5"}'
             """
@@ -81,7 +81,7 @@ Feature: Business Network Generator
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: I can list all assets in the deployed templeate business network and see the updated asset
-         When I run the following CLI command
+         When I run the following expected pass CLI command
             """
             composer network list --card admin@my-bus-net -r conga.busnet.SampleAsset
             """
