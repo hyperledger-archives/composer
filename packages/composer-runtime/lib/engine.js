@@ -79,8 +79,7 @@ class Engine {
      * @param {Context} context The request context.
      * @param {string} fcn The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * @async
      */
     async init(context, fcn, args) {
         const method = 'init';
@@ -89,7 +88,7 @@ class Engine {
         // chaincode was upgraded, no change to business network and obviously
         // nothing the runtime can do to stop it.
         if (fcn === 'upgrade') {
-            LOG.info(method, 'runtime has been upgraded');
+            LOG.info(method, 'business network has been upgraded');
             //TODO: Here we would need to invoke migrations if we are to support
             //upgrading from anything more than just micro version changes of the
             //runtime. Currently not supported and the connector will not allow

@@ -315,38 +315,6 @@ describe('Context', () => {
 
         });
 
-        describe('#initializeInner', () => {
-
-            it('should call _initializeInner and handle no error', () => {
-                sinon.stub(context, '_initializeInner').yields(null);
-                return context.initializeInner()
-                    .then(() => {
-                        sinon.assert.calledWith(context._initializeInner);
-                    });
-            });
-
-            it('should call _initializeInner and handle an error', () => {
-                sinon.stub(context, '_initializeInner').yields(new Error('error'));
-                return context.initializeInner()
-                    .should.be.rejectedWith(/error/)
-                    .then(() => {
-                        sinon.assert.calledWith(context._initializeInner);
-                    });
-            });
-
-        });
-
-        describe('#_initializeInner', () => {
-
-            it('should not throw', () => {
-                const cb = sinon.stub();
-                context._initializeInner(cb);
-                sinon.assert.calledOnce(cb);
-                sinon.assert.calledWith(cb, null);
-            });
-
-        });
-
         describe('#getServices', () => {
 
             it('should return all of the services', () => {
