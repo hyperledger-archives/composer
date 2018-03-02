@@ -46,6 +46,10 @@ class ConfigMediator {
                 return config.get(key);
             }
         } catch (e) {
+            let msg = e.message;
+            if (msg && msg.match(/Cannot parse config file/)){
+                throw e;
+            }
             // We don't care if we can't find the config module, it won't be
             // there when the code is running inside a webpacked or similar environment
         }
