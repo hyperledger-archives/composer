@@ -1,0 +1,36 @@
+/**
+ * Defines a data model for a marble trading network
+ */
+namespace org.hyperledger_composer.marbles
+
+enum MarbleColor {
+  o RED
+  o GREEN
+  o BLUE
+  o PURPLE
+  o ORANGE
+}
+
+enum MarbleSize {
+  o SMALL
+  o MEDIUM
+  o LARGE
+}
+
+asset Marble identified by marbleId {
+  o String marbleId
+  o MarbleSize size
+  o MarbleColor color
+  --> Player owner
+}
+
+participant Player identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+transaction TradeMarble {
+  --> Marble marble
+  --> Player newOwner
+}

@@ -97,6 +97,22 @@ describe('ConfigMediator', function() {
             });
         });
 
+        it('should correctly re throw the error if the config file can not be parsed', () => {
+            // would be good if we could get mockerty to throw an error... but have to sort of work around that..
+            const mockConfig = {
+                has: sinon.stub().throws(new Error('Computer says Cannot parse config file  huh ')),
+                get: sinon.stub()
+            };
+
+            mockery.registerMock('config', mockConfig);
+
+            (()=>{
+                ConfigMediator.get('thingy',{
+                    thingy: 'getaroundtoit'
+                });
+            }).should.throw(/Cannot parse config file/);
+        });
+
     });
 
 
