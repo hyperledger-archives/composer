@@ -43,7 +43,8 @@
       "**/*.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
-      "!./out/**/*"
+      "!./out/**/*",
+      "!./resources/**/*"
     ],
     "path": "header.txt",
     "blocking": true,

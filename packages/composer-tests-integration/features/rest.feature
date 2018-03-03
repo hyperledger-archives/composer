@@ -1,6 +1,9 @@
 @rest
 Feature: Rest steps
 
+    Background:
+        Given I have admin business cards available
+
     Scenario: Using the REST API, I can ping the network
         Given I have a REST API server for tutorial-network
         When I make a GET request to /api/system/ping

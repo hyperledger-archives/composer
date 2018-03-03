@@ -18,12 +18,12 @@ module.exports = function () {
 
     this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
         // These steps assume that the arg «name» is the business network name,
-        // and is packaged in the BNA file ./resources/sample-networks/«name».bna
+        // and the business network resources are located at ./resources/sample-networks/«name»
         if(this.composer.tasks.REST_SVR) {
             // REST API server already running
             return;
         }
-        const bnaFile = `./resources/sample-networks/${name}.bna`;
+        const bnaFile = `./tmp/${name}.bna`;
         const adminId = `admin@${name}`;
         const success = /Command succeeded/;
         const checkOutput = (response) => {
@@ -31,15 +31,17 @@ module.exports = function () {
                 throw new Error(response);
             }
         };
-        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        let response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        response = await this.composer.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
+        response = await this.composer.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.composer.runCLI(undefined, `composer card delete -n ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success
         // if it didn't exist then you get a failed message. however if there is a problem then the
         // import won't work so check the response to this.
-        response = await this.composer.runCLI('composer card import --file networkadmin.card');
+        response = await this.composer.runCLI(true, 'composer card import --file networkadmin.card');
         checkOutput(response);
         await this.composer.runBackground('REST_SVR', `composer-rest-server --card ${adminId} -n never -w true`, /Browse your REST API/);
     });

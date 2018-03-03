@@ -1,4 +1,12 @@
 # Composer-Integration-Tests
+
+Welcome to the Composer Integration test readme. Below are some notes on these tests, but before you go any further, here are some general contribution guide lines:
+ - Each feature file must have its own tag
+ - Each feature must be isolated from another (no relying on other test to create things for you!)
+ - Each feature must runnable in isolation
+ - If using a business network, each feature *must* use a different one
+ - Break tests into different feature files when possible to ease maintainability
+ 
 ## Integration tests for Hyperledger Composer
 
 To run the tests, make sure you've lerna bootstrapped and then run the script that starts the integration tests with 
@@ -20,15 +28,16 @@ may have to do a manual clean up.
 ## Features
 
 We are testing the following:
- - General CLI commands (cli.feature)
+ - General CLI commands (cli-X.feature)
  - REST server (rest.feature)
  - Queries against a REST server (queries.feature)
  - The business network generator (generator-busnet.feature)
 
 Usefull information:
- - The `check stdout` is based upon the last command run within the framework
+ - The `check stdout` is based upon the last command run within the framework. This means that if you run mulitple commands, you will only be able to check the stdout of the last command run.
  - It is possible to save an alias from the stdout to substitute back later in a future command (grep cli.feature for `alias`)
  - The REST server tests establish a series of background processes that are accessed via a `tasks` object
+ - The CLI tests establish a series of busnets that are deployed ... be careful which you try to use each feature *must* use its own busnet to prevent cross contamination
 
 ## Manual testing
 Cucumber features and individual scenarios can be run in isolation through the use of tags. Each feature file has a tag at the top; if you are adding new features, ensure that you have a tag for that feature file so that it can be run in isolation. Running a single scenario can be useful for debugging and can be achieved thorugh use of a tag above the sceanrio itself:
@@ -50,6 +59,3 @@ Then you can modify the `test-inner` task in the `package.json` file to add your
 ```
 
 The above will run the single scenario; to run the feature file in isolation, use the feature file tag.
-
-
-
