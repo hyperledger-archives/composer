@@ -1,16 +1,29 @@
-'use strict';
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const Util = require('./../util');
+'use strict';
 
 let yeoman = require('yeoman-generator');
 let optionOrPrompt = require('yeoman-option-or-prompt');
+let Util = require('../util');
 
 module.exports = yeoman.Base.extend({
 
     _optionOrPrompt: optionOrPrompt,
 
     prompting: function() {
-        console.log('Welcome to the business network generator');
+        Util.log('Welcome to the business network generator');
 
         let questions = [
             {
@@ -79,6 +92,7 @@ module.exports = yeoman.Base.extend({
         this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
         this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
         this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
+        /* istanbul ignore else */
         if (!this.ismodel) {
             this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
             this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);

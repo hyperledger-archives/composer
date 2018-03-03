@@ -1,0 +1,27 @@
+
+query selectCommodities {
+  description: "Select all commodities"
+  statement:
+      SELECT org.acme.trading.Commodity
+}
+
+query selectCommoditiesByExchange {
+  description: "Select all commodities based on their main exchange"
+  statement:
+      SELECT org.acme.trading.Commodity
+          WHERE (mainExchange==_$exchange)
+}
+
+query selectCommoditiesByOwner {
+  description: "Select all commodities based on their owner"
+  statement:
+      SELECT org.acme.trading.Commodity
+          WHERE (owner == _$owner)
+}
+
+query selectCommoditiesWithHighQuantity {
+  description: "Select commodities based on quantity"
+  statement:
+      SELECT org.acme.trading.Commodity
+          WHERE (quantity > 60)
+}

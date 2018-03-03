@@ -28,7 +28,43 @@ module.exports = function () {
         return this.composer.extractSecret(alias, cardFile);
     });
 
-    this.Given(/^I have a deployed the bna for template network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
+    this.Given(/^I have deployed the business network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
+        // These steps assume that the arg «name» is the business network path,
+        // and is located in ./resource/sample-networks
+
+        if(this.composer.busnets[name]) {
+            // Already deployed
+            return;
+        } else {
+            this.composer.busnets[name] = name;
+        }
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        let response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(true, `composer archive create -t dir -a ./tmp/${name}.bna -n ./resources/sample-networks/${name}`);
+        checkOutput(response);
+        response = await this.composer.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.composer.runCLI(undefined, `composer card delete -n ${adminId}`);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
+        response = await this.composer.runCLI(true, 'composer card import --file networkadmin.card');
+        checkOutput(response);
+    });
+
+    this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {
         // These steps assume that the arg «name» is the business network archive file name,
         // and is located in ./tmp/«name».bna
 
@@ -41,26 +77,27 @@ module.exports = function () {
             }
         };
 
-        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        let response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        response = await this.composer.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
         checkOutput(response);
-        response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
+        response = await this.composer.runCLI(undefined, `composer card delete -n ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success
         // if it didn't exist then you get a failed message. however if there is a problem then the
         // import won't work so check the response to this.
-        response = await this.composer.runCLI('composer card import --file networkadmin.card');
+        response = await this.composer.runCLI(true, 'composer card import --file networkadmin.card');
         checkOutput(response);
     });
 
-    this.When(/^I run the following CLI command/, {timeout: 240 * 1000}, function (table) {
-        return this.composer.runCLI(table);
+    this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
+        let pass = condition === 'pass' ? true : false;
+        return this.composer.runCLI(pass, table);
     });
 
-    this.When(/^I substitue the alias (.*?) and run the following CLI command$/, {timeout: 240 * 1000}, function (alias, table) {
-        return this.composer.runCLIWithAlias(alias, table);
+    this.When(/^I substitue the alias (.*?) and run an expected (.*?) CLI command$/, {timeout: 240 * 1000}, function (alias, pass, table) {
+        return this.composer.runCLIWithAlias(alias, pass, table);
     });
 
     this.When(/^I spawn the following background task (.+?), and wait for \/(.+?)\/$/, {timeout: 240 * 1000}, function (label, regex, table) {

@@ -16,8 +16,6 @@
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('composer-connector-server');
-const fs = require('fs');
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const http = require('http');
 const socketIO = require('socket.io');
 const Logger = require('composer-common').Logger;
@@ -25,7 +23,7 @@ const Util = require('./lib/util');
 const npmRoute = require('./routes/npm');
 
 const LOG = Logger.getLog('PlaygroundAPI');
-
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 /**
  * Create an Express.js application that hosts both the REST API for Composer Playground
  * and the Connector Server for supporting the proxy connector.
@@ -41,7 +39,7 @@ function createServer (port, testMode) {
 
     npmRoute(app, testMode);
 
-    const businessNetworkCardStore = new FileSystemCardStore(fs);
+    const businessNetworkCardStore = NetworkCardStoreManager.getCardStore();
     const connectionProfileManager = new ConnectionProfileManager();
 
     // Create the Express server.

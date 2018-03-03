@@ -23,7 +23,6 @@ const VersionChecker = require('./versionchecker');
  * package.json and the public API signature
  * @private
  */
-
 let program = yargs
 .usage('$0 [options]')
 .options({

@@ -107,4 +107,13 @@ export class BrowserBusinessNetworkCardStore extends BusinessNetworkCardStore {
     delete(cardName) {
         return Promise.resolve(this.webStorage.removeItem(this.prefix + cardName));
     }
+
+    /** Implement the getWallet method - this is not needed within playground so return dummy object
+     * The connector server will handle getting the wallet
+     *
+     * @return {Promise} Resolved with a dummy object
+     */
+    getWallet(): Promise<any> {
+        return Promise.resolve({empty: 'browser-wallet'});
+    }
 }

@@ -39,6 +39,14 @@ describe('BusinessNetworkCardStore', function() {
             const result = BusinessNetworkCardStore.getDefaultCardName(card);
             result.should.include(metadata.userName).and.include(connectionProfile.name);
         });
+
+        it('should update the name given in the connection profile if invalid', () => {
+            const metadata = { userName: 'PeerAdmin', roles: [ 'PeerAdmin', 'ChannelAdmin' ] };
+            const connectionProfile = { name: 'profile-name_that\'s got spaces and &^%$# characters' };
+            const card = new IdCard(metadata, connectionProfile);
+            const result = BusinessNetworkCardStore.getDefaultCardName(card);
+            result.should.include(metadata.userName).and.include('profile-name_thats-got-spaces-and--characters');
+        });
     });
 
     describe('#get', function() {
@@ -76,4 +84,10 @@ describe('BusinessNetworkCardStore', function() {
         });
     });
 
+    describe('#getWallet', function() {
+        it('should throw as abstract method', function() {
+            const store = new BusinessNetworkCardStore();
+            return store.getWallet().should.be.rejectedWith(/Abstract/);
+        });
+    });
 });

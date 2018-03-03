@@ -1,6 +1,8 @@
 {
   "name": "generator-hyperledger-composer",
-  "version": "0.17.7",
+  "version": "0.18.0",
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0",
   "description": "Generates projects from Hyperledger Composer business network definitions",
   "engines": {
     "node": ">=8",
@@ -10,11 +12,15 @@
     "yeoman-generator"
   ],
   "scripts": {
-    "test": "mocha -t 0 test/*.js"
+    "pretest": "npm run lint && npm run licchk",
+    "lint": "eslint .",
+    "tslint": "tslint",
+    "licchk": "license-check",
+    "test": "nyc mocha -t 0 test/*.js"
   },
   "dependencies": {
-    "composer-client": "0.17.7",
-    "composer-common": "0.17.7",
+    "composer-client": "0.18.0",
+    "composer-common": "0.18.0",
     "shelljs": "0.7.7",
     "underscore.string": "3.3.4",
     "yeoman-generator": "0.24.1",
@@ -24,15 +30,55 @@
     "type": "git",
     "url": "https://github.com/hyperledger/composer.git"
   },
-  "author": "Hyperledger Composer",
-  "license": "Apache-2.0",
   "devDependencies": {
     "@angular/cli": "1.0.0-rc.0",
-    "composer-admin": "0.17.7",
-    "composer-connector-embedded": "0.17.7",
+    "@types/chai": "3.4.35",
+    "@types/jasmine": "2.5.38",
+    "@types/node": "7.0.5",
+    "@types/sinon": "2.3.3",
+    "@types/sinon-chai": "2.7.29",
+    "composer-admin": "0.18.0",
+    "composer-connector-embedded": "0.18.0",
+    "eslint": "3.17.1",
+    "license-check": "1.1.5",
     "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "tslint": "4.5.1",
+    "tslint-loader": "3.3.0",
     "typings": "2.1.0",
     "yeoman-assert": "3.0.0",
     "yeoman-test": "1.6.0"
+  },
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "generators/businessnetwork/templates/**",
+      "generators/angular/templates/**",
+      "generators/util.js",
+      "generators/angular"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
   }
 }

@@ -30,12 +30,15 @@ rm -rf ${HOME}/.composer/client-data/ange*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
 rm -f ./networkadmin.card
+
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
     cd ../composer-runtime-hlfv1
     rm .npmrc
     cd "${DIR}"
 fi
+
+
 
 # Switch into the integration tests directory.
 cd "${DIR}"
@@ -66,11 +69,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-alpha
-        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-alpha
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-alpha
-        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-alpha
-        docker pull hyperledger/fabric-couchdb:$ARCH-0.4.5
+        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-rc1
+        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-rc1
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-rc1
+        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-rc1
+        docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
         fi
