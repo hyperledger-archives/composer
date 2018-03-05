@@ -1,0 +1,23 @@
+namespace systest.transactions.http
+
+transaction Basic {
+    o String method
+}
+
+transaction Error {
+    o String method
+}
+
+transaction AssetIn {
+    o String method
+}
+
+transaction AssetOut {
+    o String method
+}
+
+asset DummyAsset identified by assetId {
+    o String assetId
+    o String stringValue
+    o Integer integerValue
+}

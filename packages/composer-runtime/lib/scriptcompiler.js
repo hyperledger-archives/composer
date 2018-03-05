@@ -18,6 +18,7 @@ const Api = require('./api');
 const assert = require('assert');
 const CompiledScriptBundle = require('./compiledscriptbundle');
 const Logger = require('composer-common').Logger;
+const request = require('request-promise-any');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const SourceNode = require('source-map').SourceNode;
@@ -51,7 +52,8 @@ class ScriptCompiler {
 
         // Define the globals.
         const globals = {
-            assert: assert
+            assert,
+            request
         };
 
         // Add the start section.

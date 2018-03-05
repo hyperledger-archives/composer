@@ -90,12 +90,7 @@ module.exports = function(options) {
             extensions: ['.ts', '.js', '.json'],
 
             // An array of directory names to be resolved to the current directory
-            modules: [helpers.root('src'), 'node_modules'],
-
-            // Use our versions of Node modules.
-            alias: {
-                request$: require.resolve('xhr') // used for HTTP POST
-            }
+            modules: [helpers.root('src'), 'node_modules']
 
         },
 
@@ -351,7 +346,9 @@ module.exports = function(options) {
         ],
 
         node: {
-            fs: 'empty'
+            fs: 'empty',
+            net: 'empty',
+            tls: 'empty'
         }
     };
 };

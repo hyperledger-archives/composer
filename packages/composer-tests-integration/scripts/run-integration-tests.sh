@@ -95,9 +95,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         cd ${DIR}
         cd ../composer-runtime-hlfv1
         if [ `uname` = "Darwin" ]; then
-            GATEWAY=docker.for.mac.localhost
+            export GATEWAY=docker.for.mac.localhost
         else
-            GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+            export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > .npmrc
     fi
