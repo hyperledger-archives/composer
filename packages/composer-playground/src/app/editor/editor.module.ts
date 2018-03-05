@@ -19,6 +19,7 @@ import { CodemirrorModule } from 'ng2-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { EditorComponent } from './editor.component';
+import { EditorFilesPipe } from './editor-files.pipe';
 import { EditorFileComponent } from './editor-file/editor-file.component';
 import { EditorService } from './editor.service';
 import { EditorRoutingModule } from './editor-routing.module';
@@ -31,7 +32,7 @@ import { FooterModule } from '../footer/footer.module';
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, PerfectScrollbarModule, CodemirrorModule, DirectivesModule, FileImporterModule, DeployModule, EditorRoutingModule, FooterModule],
     entryComponents: [AddFileComponent],
-    declarations: [EditorComponent, EditorFileComponent, AddFileComponent]
+    declarations: [EditorComponent, EditorFilesPipe, EditorFileComponent, AddFileComponent]
 })
 
 export class EditorModule {
