@@ -32,8 +32,8 @@ module.exports = function () {
         await this.composer.deployBusinessNetworkFromDirectory(name);
     });
 
-    this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {
-        await this.composer.deployBusinessNetworkArchive(name);
+    this.Given(/^I have a deployed the bna (.+?) at version (.+?)$/, {timeout: 360 * 1000}, async function (name, version) {
+        await this.composer.deployBusinessNetworkArchive(name, version);
     });
 
     this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
