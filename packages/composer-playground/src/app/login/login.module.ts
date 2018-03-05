@@ -26,14 +26,14 @@ import { DrawerModule } from '../common/drawer';
 import { TutorialLinkModule } from '../common/tutorial-link';
 import { FileImporterModule } from '../common/file-importer/file-importer.module';
 import { ConnectionProfileModule } from '../connection-profile/connection-profile.module';
-import { ImportModule } from '../import/import.module';
+import { DeployModule } from '../deploy/deploy.module';
 import { FooterModule } from '../footer/footer.module';
 import { IdentityCardModule } from '../common/identity-card/identity-card.module';
 import { IdentityModule } from '../identity/identity.module';
 import { CredentialsModule } from '../common/credentials/credentials.module';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule, FooterModule, FileImporterModule, DrawerModule, ImportModule, IdentityModule, TutorialLinkModule, IdentityCardModule, CredentialsModule],
+    imports: [CommonModule, FormsModule, NgbModule, LoginRoutingModule, ConnectionProfileModule, FooterModule, FileImporterModule, DrawerModule, DeployModule, IdentityModule, TutorialLinkModule, IdentityCardModule, CredentialsModule],
     entryComponents: [ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent],
     declarations: [LoginComponent, ImportIdentityComponent, CreateIdentityCardComponent, EditCardCredentialsComponent]
 })

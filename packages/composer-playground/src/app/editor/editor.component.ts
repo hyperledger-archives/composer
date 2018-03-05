@@ -14,11 +14,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -79,7 +77,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                 private clientService: ClientService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
-                private drawerService: DrawerService,
                 private fileService: FileService) {
     }
 
@@ -355,35 +352,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.files = this.fileService.getEditorFiles();
             this.noError = this.editorFilesValidate();
         }
-    }
-
-    openImportModal() {
-        const importModalRef = this.drawerService.open(UpdateComponent);
-        importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
-            if (result.deployed) {
-                this.files = this.fileService.loadFiles();
-                this.updatePackageInfo();
-                if (this.files.length) {
-                    let currentFile = this.files.find((file) => {
-                        return file.isReadMe();
-                    });
-                    if (!currentFile) {
-                        currentFile = this.files[0];
-                    }
-                    this.setCurrentFile(currentFile);
-                    this.alertService.successStatus$.next({
-                        title: 'Import Successful',
-                        text: 'Business network imported successfully',
-                        icon: '#icon-deploy_24'
-                    });
-                }
-            } else {
-                importModalRef.close();
-                if (result.error && result.error !== DrawerDismissReasons.ESC) {
-                    this.alertService.errorStatus$.next(result.error);
-                }
-            }
-        });
     }
 
     exportBNA() {

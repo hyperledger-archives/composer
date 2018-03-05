@@ -37,7 +37,7 @@ import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
 import { DrawerModule } from './common/drawer';
 import { TutorialLinkModule } from './common/tutorial-link';
-import { ImportModule } from './import/import.module';
+import { DeployModule } from './deploy/deploy.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -78,7 +78,7 @@ type StoreType = {
     imports: [ // import Angular's modules
         AppRoutingModule,
         BasicModalsModule,
-        ImportModule,
+        DeployModule,
         BrowserAnimationsModule,
         BrowserModule,
         HttpModule,
