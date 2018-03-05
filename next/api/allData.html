@@ -119,6 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/next/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
 </ul></li>
 <li><p><a href="/composer/next/playground/playground-index"><b>Using Playground</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -137,6 +138,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/next/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/next/applications/applications-index"><b>Developing Applications</b><img src="/composer/next/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -210,12 +212,10 @@ ga('send', 'pageview');
 <li><a href="/composer/next/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/next/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/next/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/next/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/next/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/next/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/next/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/next/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/next/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/next/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/next/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/next/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -332,10 +332,6 @@ ga('send', 'pageview');
 <td style="text-align: left">Use the Factory to create instances of Resource: transactions, participants and assets</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="common-filesystemcardstore.html">FileSystemCardStore</a></td>
-<td style="text-align: left">Manages persistence of business network cards to a Node file system implementation</td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="common-functiondeclaration.html">FunctionDeclaration</a></td>
 <td style="text-align: left">FunctionDeclaration defines a function that has been defined in a model file</td>
 </tr>
@@ -350,10 +346,6 @@ ga('send', 'pageview');
 <tr>
 <td style="text-align: left"><a href="common-introspector.html">Introspector</a></td>
 <td style="text-align: left">Provides access to the structure of transactions, assets and participants</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="common-memorycardstore.html">MemoryCardStore</a></td>
-<td style="text-align: left">Transient in-memory storage of business network cards, useful for testing</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="common-modelfile.html">ModelFile</a></td>
