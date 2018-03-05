@@ -6,7 +6,7 @@
 .tern-project
 
 # test directory
-test
+/test
 
 # scripts directory
 scripts
