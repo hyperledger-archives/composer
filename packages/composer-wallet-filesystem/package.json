@@ -1,6 +1,6 @@
 {
   "name": "composer-wallet-filesystem",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "The Hyperledger Fabric v1.x Node.JS runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -55,9 +55,9 @@
     "logError": true
   },
   "dependencies": {
-   "composer-common": "0.18.0",
-   "mkdirp": "0.5.1",
-   "rimraf": "2.5.4"
+    "composer-common": "0.18.1",
+    "mkdirp": "0.5.1",
+    "rimraf": "2.5.4"
   },
   "nyc": {
     "exclude": [
