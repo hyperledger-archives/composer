@@ -7,7 +7,7 @@ exports.config = {
     allScriptsTimeout: 20000,
     framework: 'jasmine',
     directConnect: true,
-    baseUrl: 'http://127.0.0.1:3001',
+    baseUrl: 'http://127.0.0.1:3002',
     specs: ['./e2e/specs/round-trip.spec.ts',
         './e2e/specs/playground-tutorial.spec.ts'],
     capabilities: {
@@ -17,7 +17,7 @@ exports.config = {
                 download: {
                     'prompt_for_download': false,
                     'directory_upgrade': true,
-                    'default_directory': './e2e/downloads'
+                    'default_directory': './e2e/downloads' //matches that specified in /utils/constants.ts file
                 }
             }
         }
