@@ -132,6 +132,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     # Verdaccio server requires a dummy user if publishing via npm
     touch ${HOME}/.npmrc
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
+    export npm_config_registry=http://localhost:4873
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
