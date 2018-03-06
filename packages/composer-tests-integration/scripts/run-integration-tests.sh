@@ -134,12 +134,19 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
     export npm_config_registry=http://localhost:4873
 
+    # Start all test programs.
+    npm run stop_ldap
+    npm run start_ldap
+
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
         npm run int-test-nohsm 2>&1 | tee
     else
         npm run int-test 2>&1 | tee
     fi
+
+    # Stop all test programs.
+    npm run stop_ldap
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then

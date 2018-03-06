@@ -15,15 +15,15 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const IdCard = require('composer-common').IdCard;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
+const childProcess = require('child_process');
+const fs = require('fs');
+const IdCard = require('composer-common').IdCard;
+const matchPattern = require('lodash-match-pattern');
 const net = require('net');
 const path = require('path');
+const request = require('request-promise-any');
 const sleep = require('sleep-promise');
-const fs = require('fs');
-const childProcess = require('child_process');
-const http = require('http');
-const matchPattern = require('lodash-match-pattern');
 
 let generated = false;
 
@@ -36,11 +36,20 @@ function dynamicRequire(id) {
     return require(id);
 }
 
+let jar = request.jar();
+
 /**
  * A class that handles all of the interactions with a business network for
  * a currently executing Cucumber scenario and steps.
  */
 class Composer {
+
+    /**
+     * Clear the cookie jar.
+     */
+    static clearCookieJar() {
+        jar = request.jar();
+    }
 
     /**
      * Constructor.
@@ -299,46 +308,25 @@ class Composer {
      * @param {*} data - request body
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    request(method, path, data) {
+    async request(method, path, data) {
         const options = {
-            hostname: 'localhost',
-            port: 3000,
-            path: path,
-            method: method
+            method,
+            uri: `http://localhost:3000${path}`,
+            resolveWithFullResponse: true,
+            simple: false,
+            followAllRedirects: true,
+            jar
         };
-        if(data) {
+        if (data) {
+            options.body = data;
             options.headers = {
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(data)
             };
         }
-
-        let response = '';
-
-        return new Promise( (resolve, reject) => {
-            const req = http.request(options, (res) => {
-                res.setEncoding('utf8');
-                res.on('data', (chunk) => {
-                    response += chunk;
-                });
-                res.on('end', () => {
-                    this.lastResp = { code: res.statusCode, response: response };
-                    resolve(this.lastResp);
-                });
-            });
-
-            req.on('error', (e) => {
-                this.lastResp = { code: e.statusCode, response: response, error: e };
-                reject(this.lastResp);
-            });
-
-            if(data) {
-                // write data to request body
-                req.write(data);
-            }
-            req.end();
-        });
-
+        const response = await request(options);
+        this.lastResp = { code: response.statusCode, response: response.body };
+        return this.lastResp;
     }
 
     /**
@@ -661,6 +649,83 @@ class Composer {
 
         this.aliasMap.set(alias, curCard.getEnrollmentCredentials().secret);
     }
+
+    /**
+     * deploy the specified business network from a directory
+     * @param {*} name the name of the business network
+     */
+    async deployBusinessNetworkFromDirectory(name) {
+        // These steps assume that the arg «name» is the business network path,
+        // and is located in ./resource/sample-networks
+
+        if(this.busnets[name]) {
+            // Already deployed
+            return;
+        } else {
+            this.busnets[name] = name;
+        }
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        let response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer archive create -t dir -a ./tmp/${name}.bna -n ./resources/sample-networks/${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
+        response = await this.runCLI(true, 'composer card import --file networkadmin.card');
+        checkOutput(response);
+    }
+
+    /**
+     * deploy the specified business network archive
+     * @param {*} name the name of the business network
+     */
+    async deployBusinessNetworkArchive(name) {
+
+        if(this.busnets[name]) {
+            // Already deployed
+            return;
+        } else {
+            this.busnets[name] = name;
+        }
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        let response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
+        response = await this.runCLI(true, 'composer card import --file networkadmin.card');
+        checkOutput(response);
+    }
+
 }
 
 module.exports = Composer;

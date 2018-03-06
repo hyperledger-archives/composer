@@ -1,4 +1,4 @@
-@generator-busnet
+@generator @generator-busnet
 Feature: Business Network Generator
 
     Background:

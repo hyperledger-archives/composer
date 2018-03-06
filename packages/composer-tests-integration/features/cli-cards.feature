@@ -1,4 +1,4 @@
-@cli-cards
+@cli @cli-cards
 Feature: CLI cards steps
 
     Background:

@@ -14,36 +14,57 @@
 
 'use strict';
 
+const Composer = require('./composer');
+const fs = require('fs');
+const path = require('path');
+
 module.exports = function () {
 
-    this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
-        // These steps assume that the arg «name» is the business network name,
-        // and the business network resources are located at ./resources/sample-networks/«name»
+    /**
+     * Start the REST server.
+     * @param {string} name The name of the REST server.
+     * @param {*} [additionalArguments] Any additional command line arguments for the REST server.
+     */
+    async function startRestServer(name, additionalArguments = []) {
         if(this.composer.tasks.REST_SVR) {
-            // REST API server already running
-            return;
+            await this.composer.killBackground('REST_SVR');
         }
-        const bnaFile = `./tmp/${name}.bna`;
+        await this.composer.deployBusinessNetworkFromDirectory(name);
         const adminId = `admin@${name}`;
-        const success = /Command succeeded/;
-        const checkOutput = (response) => {
-            if(!response.stdout.match(success)) {
-                throw new Error(response);
+        const command = [`composer-rest-server --card ${adminId} -n never -w true`].concat(additionalArguments).join(' ');
+        await this.composer.runBackground('REST_SVR', command, /Browse your REST API/);
+    }
+
+    this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        delete process.env.COMPOSER_PROVIDERS;
+        await startRestServer.apply(this, [name]);
+    });
+
+    this.Given(/^I have an authenticated REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        const port = fs.readFileSync(path.resolve(__dirname, '..', 'ldap.port'));
+        process.env.COMPOSER_PROVIDERS = JSON.stringify({
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/failure',
+                authScheme: 'ldap',
+                server: {
+                    url: `ldap://localhost:${port}`,
+                    bindDN: 'cn=root,dc=example,dc=org',
+                    bindCredentials: 'secret',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
             }
-        };
-        let response = await this.composer.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
-        checkOutput(response);
-        response = await this.composer.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
-        checkOutput(response);
-        response = await this.composer.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
-        checkOutput(response);
-        response = await this.composer.runCLI(undefined, `composer card delete -n ${adminId}`);
-        // can't check the response here, if it exists the card is deleted and you get a success
-        // if it didn't exist then you get a failed message. however if there is a problem then the
-        // import won't work so check the response to this.
-        response = await this.composer.runCLI(true, 'composer card import --file networkadmin.card');
-        checkOutput(response);
-        await this.composer.runBackground('REST_SVR', `composer-rest-server --card ${adminId} -n never -w true`, /Browse your REST API/);
+        });
+        await startRestServer.apply(this, [name, ['-a']]);
+    });
+
+    this.Given('I have cleared the cookie jar', function () {
+        return Composer.clearCookieJar();
     });
 
     this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, path) {
