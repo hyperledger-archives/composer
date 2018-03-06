@@ -24,7 +24,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 chai.should();
 
-describe.only('Transaction (HTTP specific) system tests', function() {
+describe('Transaction (HTTP specific) system tests', function() {
 
     this.retries(TestUtil.retries());
 
