@@ -1,4 +1,4 @@
-@rest
+@rest @rest-apis
 Feature: Rest steps
 
     Background:
@@ -6,6 +6,7 @@ Feature: Rest steps
 
     Scenario: Using the REST API, I can ping the network
         Given I have a REST API server for tutorial-network
+        And I have cleared the cookie jar
         When I make a GET request to /api/system/ping
         Then The response code should be 200
         And The response body should be JSON matching
@@ -18,7 +19,6 @@ Feature: Rest steps
             """
 
     Scenario: Using the REST API, I get the list of Traders
-        Given I have a REST API server for tutorial-network
         When I make a GET request to /api/Trader
         Then The response code should be 200
         And The response body should be JSON matching

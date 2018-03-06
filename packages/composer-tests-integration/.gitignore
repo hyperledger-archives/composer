@@ -71,6 +71,9 @@ index.d.ts
 
 #temp files
 scripts/storage
+.pm2
+ldap.port
+networkadmin.card
 
 #lock files
 package-lock.json
