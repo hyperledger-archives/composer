@@ -462,6 +462,80 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name + 'Component');
             });
+             
+            shell.mkdir('-p', destinationPath + /src/concepts/'');
+            namespaceList.forEach((namespace) => {
+            
+            let modelFile = modelManager.getModelFile(namespace);
+            let conceptDeclarations = modelfile.getConceptDeclarations();
+            
+            conceptDeclarations
+            .filter((conceptDeclarations) =>{
+                return conceptDeclaration.isAbstract();
+            })
+            .filter((conceptDeclaration) => {
+                if (conceptDeclaration.isSystemType()) {
+                    return conceptDeclaration.isSystemCoreType();
+                }
+                return true;
+            })
+            .forEach((concept) => {
+                let tempList = [];
+                        conceptProperties = concept.getProperties();
+            
+            conceptProperties.forEach((property) => {
+                                    if (property.constructor.name === 'Field') {
+                                        if (property.isTypeEnum()) {
+                                            // handle enumerations
+                                            let enumValues = [];
+                                            // compose array of enumeration values
+                                            enumerations.forEach(enumeration => {
+                                                if (enumeration.name === property.getType()) {
+                                                    enumValues = enumeration.properties;
+                                                }
+                                            });
+            // add meta information to the field list
+                                            tempList.push({
+                                                'name': property.getName(),
+                                                'type': property.getType(),
+                                                'enum': true,
+                                                'array': property.array === true,
+                                                enumValues,
+                                            });
+            } else if (property.isPrimitive() || !property.isPrimitive()) {
+            
+                                            tempList.push({
+                                                'name': property.getName(),
+                                                'type': property.getType()
+                                            });
+                                        } else {
+                                            console.log('Unknown property type: ' + property);
+                                        }
+                                    } else if (property.constructor.name === 'RelationshipDeclaration') {
+                                        tempList.push({
+                                            'name': property.getName(),
+                                            'type': property.getType()
+                                        });
+            } else {
+                                        console.log('Unknown property constructor name: ' + property );
+                                    }
+                                });
+            conceptList.push({
+                                    'name': concept.name,
+                                    'namespace': concept.getNamespace(),
+                                    'properties': tempList,
+                                    'identifier': concept.getIdentifierFieldName()
+                                });
+                                shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
+            
+                            });
+                        });
+            conceptList.forEach((concept) => {
+                            conceptServiceNames.push(concept.name + 'Service');
+                        });
+            conceptList.forEach((concept) => {
+                            conceptComponentNames.push(concept.name + 'Component');
+                        });
 
             let model = this._generateTemplateModel();
             this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|Transaction)*'), this.destinationPath(), model);
@@ -511,12 +585,57 @@ module.exports = yeoman.Base.extend({
             let parameters = {
                 fileWriter: new FileWriter(this.destinationPath() + '/src/app')
             };
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|concept|Transaction)*'), this.destinationPath(), model);
+            this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
+            this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
+            this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
+
+            for (let x = 0; x < conceptList.length; x++) {
+                this.fs.copyTpl(
+                    this.templatePath('src/app/concept/concept.component.ts'),
+                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.ts'), {
+                        currentConcept: conceptList[x],
+                        namespace: conceptList[x].namespace,
+                        conceptIdentifier: conceptList[x].identifier
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/concept/concept.service.ts'),
+                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.service.ts'), {
+                        conceptName: conceptList[x].name,
+                        namespace: conceptList[x].namespace,
+                        apiNamespace: apiNamespace
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/concept/concept.component.spec.ts'),
+                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.spec.ts'), {
+                        conceptName: conceptList[x].name
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/concept/concept.component.html'),
+                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.html'), {
+                        currentConcept: conceptList[x]
+                    }
+                );
+
+                this.fs.copyTpl(
+                    this.templatePath('src/app/concept/concept.component.css'),
+                    this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
+                );
+            }
 
             modelManager.accept(visitor, parameters);
 
             assetList = [];
             assetComponentNames = [];
             assetServiceNames = [];
+            conceptList = [];
+            conceptComponentNames = [];
+            conceptServiceNames = [];
 
             resolve();
         });
