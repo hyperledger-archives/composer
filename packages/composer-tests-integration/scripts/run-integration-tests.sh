@@ -95,9 +95,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         cd ${DIR}
         cd ../composer-runtime-hlfv1
         if [ `uname` = "Darwin" ]; then
-            GATEWAY=docker.for.mac.localhost
+            export GATEWAY=docker.for.mac.localhost
         else
-            GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+            export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > .npmrc
     fi
@@ -132,6 +132,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     # Verdaccio server requires a dummy user if publishing via npm
     touch ${HOME}/.npmrc
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
+    export npm_config_registry=http://localhost:4873
 
     # Start all test programs.
     npm run stop_ldap

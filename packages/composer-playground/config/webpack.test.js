@@ -279,7 +279,9 @@ module.exports = function (options) {
         ],
 
         node: {
-            fs: 'empty'
+            fs: 'empty',
+            net: 'empty',
+            tls: 'empty'
         }
     };
 };

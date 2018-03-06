@@ -14,9 +14,10 @@
 
 'use strict';
 
-let yeoman = require('yeoman-generator');
-let optionOrPrompt = require('yeoman-option-or-prompt');
-let Util = require('../util');
+const optionOrPrompt = require('yeoman-option-or-prompt');
+const Util = require('../util');
+const version = require('../../package.json').version;
+const yeoman = require('yeoman-generator');
 
 module.exports = yeoman.Base.extend({
 
@@ -101,6 +102,7 @@ module.exports = yeoman.Base.extend({
 
     _generateTemplateModel: function() {
         return {
+            composerversion: `^${version}`,
             appname: this.appname,
             appemail: this.appemail,
             namespace: this.namespace,

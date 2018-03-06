@@ -242,6 +242,7 @@ class Api {
          * @param {string} url The URL to post the data to
          * @param {Typed} typed The typed instance to be posted. The instance will be serialized to JSON.
          * @param {object} options The options that are passed to Serializer.toJSON
+         * @deprecated since v0.18.1, use the built-in request module instead
          * @return {Promise} A promise. The promise is resolved with a HttpResponse
          * that represents the result of the HTTP POST.
          * @public

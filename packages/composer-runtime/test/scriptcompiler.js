@@ -18,6 +18,7 @@ const Api = require('../lib/api');
 const assert = require('assert');
 const ModelManager = require('composer-common').ModelManager;
 const path = require('path');
+const request = require('request-promise-any');
 const ScriptManager = require('composer-common').ScriptManager;
 const ScriptCompiler = require('../lib/scriptcompiler');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
@@ -55,6 +56,7 @@ describe('ScriptCompiler', () => {
              */
             function doIt(transaction) {
                 assert.ok(true);
+                request.post('http://some.url');
                 getFactory();
                 emit();
             }
@@ -97,6 +99,7 @@ describe('ScriptCompiler', () => {
 
         it('should compile all of the scripts in the specified script manager into a bundle', () => {
             sandbox.stub(assert, 'ok');
+            sandbox.stub(request, 'post');
             const compiledScriptBundle = scriptCompiler.compile(scriptManager);
             const functionDeclarations = compiledScriptBundle.functionDeclarations;
             const generatorFunction = compiledScriptBundle.generatorFunction;
@@ -111,6 +114,8 @@ describe('ScriptCompiler', () => {
             result.doIt();
             sinon.assert.calledOnce(assert.ok);
             sinon.assert.calledWith(assert.ok, true);
+            sinon.assert.calledOnce(request.post);
+            sinon.assert.calledWith(request.post, 'http://some.url');
             sinon.assert.calledOnce(mockApi.getFactory);
             sinon.assert.calledOnce(mockApi.emit);
         });
@@ -168,7 +173,7 @@ describe('ScriptCompiler', () => {
             sourceMapConsumer.eachMapping((mapping) => {
                 mappings.push(mapping);
             });
-            mappings.should.have.lengthOf(37);
+            mappings.should.have.lengthOf(44);
             sourceMapConsumer.sourceContentFor(path.resolve(process.cwd(), 'script1')).should.match(/function doIt3a\(transaction\) {/);
         });
 

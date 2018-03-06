@@ -119,6 +119,8 @@ describe('hyperledger-composer:model for generating a template business network 
         assert(myPackage.author === passedAuthor, 'incorrect author in package file');
         assert(myPackage.email === passedEmail, 'incorrect email in package file');
         assert(myPackage.license === passedLic, 'incorrect license in package file');
+        assert.strictEqual(myPackage.dependencies, undefined, 'there should be no production dependencies in package file');
+        assert.strictEqual(myPackage.devDependencies, undefined, 'incorrect development dependencies in package file');
     });
 
     it('should create a valid model file that contains mapped input', () => {
