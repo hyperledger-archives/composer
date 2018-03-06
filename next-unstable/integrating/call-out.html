@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Calling external REST services | Hyperledger Composer</title>
+    <title>Calling external HTTP or REST services | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Calling external REST services</p>
+          <p>Calling external HTTP or REST services</p>
           </div>
 
           <nav class="context-nav">
@@ -157,7 +157,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/next-unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/next-unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/next-unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/next-unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -264,69 +264,178 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="calling-a-rest-api-from-transaction-processor-functions">Calling a REST API from Transaction Processor Functions</h1>
+              <h1 id="calling-an-http-or-rest-api-from-transaction-processor-functions">Calling an HTTP or REST API from Transaction Processor Functions</h1>
 
-<hr>
+<p>In some cases it is desirable to be able to call HTTP or REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. Calling the REST API allows the transaction processor function to off-board complex or expensive computation to a centrally or peer hosted service.</p>
+
+<p>Alternatively, a transaction processor function may wish to call third party HTTP or REST APIs that provides external data. For example, a third party API may provide data about the current price of a stock, or the current weather and temperature, which can be used to determine whether or not the conditions of a contract have been fufilled.</p>
+
+<p>Hyperledger Composer provides built-in functionality that allows a transaction processor function developer to call an HTTP or REST API from within a transaction processor function.</p>
 
 <blockquote>
-<p>The status of this feature is experimental. We welcome your feedback on the utility of this feature. We may evolve the feature in the future to make it more generally useful. While we will strive to ensure backwards compatibility this cannot be guaranteed.</p>
+<p>Please note that using this functionality can easily lead to errors that are caused by consensus failures, and should only be used with care. For more information, read the section &quot;consensus considerations&quot; below.</p>
 </blockquote>
 
-<h2 id="scenario">Scenario</h2>
+<h2 id="using-the-request-module">Using the request module</h2>
 
-<p>In some cases it is desirable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. Calling the REST API allows the transaction processor function to off-board complex or expensive computation to a centrally or peer hosted service.</p>
+<p>The <code>request</code> module (<a href="https://github.com/request/request">https://github.com/request/request</a>), is a popular HTTP client used by many Node.js applications. Hyperledger Composer embeds the <code>request</code> module, so that transaction processor functions can use it to make calls to HTTP or REST APIs.</p>
 
-<h2 id="calling-an-external-rest-service">Calling an External REST Service</h2>
+<p>The standard <code>request</code> module uses a callback oriented API. However, transaction processor functions are promise based, and callback oriented APIs result in a lot of unnecessary code to wrap the callbacks in promises. To make the experience easier for transaction processor function developers, we have exposed the promise based <code>request-promise</code> module (<a href="https://github.com/request/request-promise">https://github.com/request/request-promise</a>) instead.</p>
 
-<p>The <code>post(url,data)</code> function is available to transaction processor functions, allowing them to pass a concept, transaction, asset or participant to an external service. The data is serialized to JSON and the data is sent to the url using an HTTP POST using the <code>application/json</code> content encoding.</p>
+<p>The <code>request-promise</code> module is automatically available to all transaction processor functions via the <code>request</code> global variable. You do not need to add the <code>request</code> or <code>request-promise</code> modules to your <code>package.json</code> file, nor do you need to use the <code>require</code> function to load the modules.</p>
 
-<p>The <code>post</code> function is supported in all runtime environments: web (playground), Node.js (embedded) and Hyperledger Fabric v1.1.</p>
+<p>The global <code>request</code> method and all of the convenience methods for the various HTTP methods (<code>request.get</code>, <code>request.post</code>, etc.) are available to transaction processor functions. These methods provide a full set of options for handling request bodies, response bodies, HTTP headers, authentication, cookies, proxies, and TLS/SSL.</p>
 
-<h2 id="handling-results">Handling Results</h2>
-
-<p>The <code>post</code> method returns a <code>Promise</code> to a JS Object that contains the results returned by the remote server. The JS Object has the following properties:</p>
-
-<ul>
-<li>statusCode : the HTTP statusCode</li>
-<li>body : the HTTP response body</li>
-</ul>
-
-<p>Note that HTTP response codes from 200 to 300 are returned as a resolved Promise, while any other response codes cause the Promise to be rejected. Rejected promises may be handled using a <code>.catch</code> Promise handler.</p>
-
-<p>The <code>body</code> property of the response is automatically converted to a JS Object if possible, otherwise it is returned as a <code>string</code>.</p>
-
-<p>Transaction processor functions may optionally call the <code>getSerializer().fromJSON(object)</code> function to convert a reponse body JS Object back into a Composer asset/participant/transaction.</p>
+<p>For detailed information on these methoids and the options available, please review the the documentation for the <code>request</code> and <code>request-promise</code> modules.</p>
 
 <h2 id="examples">Examples</h2>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
- * Handle a POST transaction, calling Node-RED running on Bluemix
- * @param {org.example.sample.PostTransaction} postTransaction - the transaction to be processed
- * @transaction
- * @return [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) a promise that resolves when transaction processing is complete
- */</span>
-<span class="k">async</span> <span class="kd">function</span> <span class="nx">handlePost</span><span class="p">(</span><span class="nx">postTransaction</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">'https://composer-node-red.mybluemix.net/compute'</span><span class="p">;</span>
 
-    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">post</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">postTransaction</span><span class="p">);</span>
-    <span class="c1">// alert(JSON.stringify(result));</span>
-    <span class="nx">postTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">'Count is '</span> <span class="o">+</span> <span class="nx">result</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">sum</span><span class="p">;</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.sample.SampleAsset'</span><span class="p">)</span>
-    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">postTransaction</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
+<p>Make an HTTP GET request to an HTTP server that returns the current stock price as a string:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Buy a given amount of CONGA stocks.
+ * @param {org.example.BuyStocks} transaction The transaction.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Look up the current price of the CONGA stock, and parse it into a float.</span>
+    <span class="kd">const</span> <span class="nx">priceAsStr</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'http://stocks.org/CONGA'</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">priceAsStr</span><span class="p">);</span>
+
+    <span class="c1">// Get the current participant, and update their stock and balance.</span>
+    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">stockUnits</span> <span class="o">+=</span> <span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
+
+    <span class="c1">// Update the current participant in the participant registry.</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
+    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+
 <span class="p">}</span>
 </code></pre></div>
-<h2 id="idempotency-and-consensus">Idempotency and Consensus</h2>
+<p>Make an HTTP GET request to an HTTP server that returns the current stock price as a JSON structure:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Buy a given amount of CONGA stocks.
+ * @param {org.example.BuyStocks} transaction The transaction.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
 
-<p>The result of the REST request should be a pure function (idempotent) to ensure that all peers get the same results with the same inputs. If this restriction is honored then the risk of consensus failure is minimized.</p>
+    <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
+    <span class="c1">// The option "json: true" automatically parses JSON from the HTTP response.</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
 
-<p><em>Each</em> peer will make a call to the REST service.</p>
+    <span class="c1">// Get the current participant, and update their stock and balance.</span>
+    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">stockUnits</span> <span class="o">+=</span> <span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
 
-<h2 id="cors">CORS</h2>
+    <span class="c1">// Update the current participant in the participant registry.</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
+    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
 
-<p>HTTP requests from the web browser will need to be CORS compliant. This requires the server be setup to receive the OPTIONS method and return appropriate headers.</p>
+<span class="p">}</span>
+</code></pre></div>
+<p>Make an HTTP POST request to an HTTP server that includes the current participant as the HTTP request body, and returns the current stock price as a string:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Buy a given amount of CONGA stocks.
+ * @param {org.example.BuyStocks} transaction The transaction.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Get the current participant, and serialize them into a JavaScript object.</span>
+    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializer</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
+
+    <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
+    <span class="c1">// The option "json" sends the serialized participant as the HTTP request body,</span>
+    <span class="c1">// and automatically parses JSON from the HTTP response.</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="nx">json</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
+
+    <span class="c1">// Get the current participant, and update their stock and balance.</span>
+    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">stockUnits</span> <span class="o">+=</span> <span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
+
+    <span class="c1">// Update the current participant in the participant registry.</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
+    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>Make an HTTP POST request to an HTTP server that returns a serialized instance of a stock asset:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Buy a given amount of CONGA stocks.
+ * @param {org.example.BuyStocks} transaction The transaction.
+ * @transaction
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
+    <span class="c1">// The option "json: true" automatically parses JSON from the HTTP response.</span>
+    <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+
+    <span class="c1">// Parse the JavaScript object into the stock asset.</span>
+    <span class="kd">const</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="nx">serializer</span><span class="p">.</span><span class="nx">fromJSON</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
+
+    <span class="c1">// Get the current participant, and update their stock and balance.</span>
+    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">stockUnits</span> <span class="o">+=</span> <span class="nx">units</span><span class="p">;</span>
+    <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>
+
+    <span class="c1">// Update the current participant in the participant registry.</span>
+    <span class="kd">const</span> <span class="nx">participantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Trader'</span><span class="p">);</span>
+    <span class="kr">await</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="consensus-considerations">Consensus considerations</h2>
+
+<p>In Hyperledger Fabric, consensus in a business network is achieved by having peer nodes in multiple organisations endorse transactions. Transactions are endorsed by executing chaincode, and signing the results of that execution. In order for the transaction to be committed by the blockchain network, all peer nodes endorsing the transaction must produce the same results from executing chaincode.</p>
+
+<p>When a business network makes an HTTP request using the APIs described above, those HTTP requests will be executed on all peer nodes endorsing the transaction. This will result in <em>n</em> HTTP requests, where <em>n</em> is the number of peer nodes endorsing the transaction.</p>
+
+<p>In order for consensus to be achieved when business networks make HTTP requests, you must be careful to ensure that transaction processor functions make the same HTTP requests on all peer nodes, and then perform the same processing on the HTTP responses on all peer nodes.</p>
+
+<p>For example, consider a business network that uses an HTTP request to look up a stock price from an external symbol. The business network then uses the stock price to adjust the balance on a participants account. If different peer nodes receive different stock prices, then they will attempt to make different adjustments to the balance on the participants account. This will result in a consensus failure, and the transaction being rejected.</p>
+
+<p>HTTP requests may result in different responses for multiple reasons:</p>
+
+<ul>
+<li>Peer nodes in different organisations may run in different data centers, in different countries, in different time zones.</li>
+<li>Peer nodes in different organisations may not have access to the HTTP server depending on public internet access and firewall restrictions.</li>
+<li>Peer nodes in different organisations may authenticate to the HTTP server as different users, resulting in different HTTP responses.</li>
+</ul>
+
+<p>In order to minimize the risks of consensus failures when making HTTP requests from a transaction processor function, it is recommended you use make HTTP requests that are either:</p>
+
+<ul>
+<li>Safe, in that the HTTP request does not modify any state on the HTTP server.</li>
+<li>Idempotent, in that the same HTTP request can be made many times without different outcomes.</li>
+</ul>
+
+<h2 id="cors-cross-origin-resource-sharing">CORS (Cross-Origin Resource Sharing)</h2>
+
+<p>Business networks deployed to the Web Browser connection from the Hyperledger Composer Playground run inside the web browser. When transaction processor functions inside these business networks make HTTP requests using the APIs described above, those HTTP requests are handled using the HTTP client built into the web browser.</p>
+
+<p>HTTP clients built into the web browser require that the HTTP server is CORS (Cross-Origin Resource Sharing) compliant. If you deploy business networks to the Web Browser connection, then you must ensure that the HTTP server has been configured to be CORS compliant. For more information, see: <a href="https://enable-cors.org">https://enable-cors.org</a></p>
 
 <h2 id="docker-network-resolution">Docker Network Resolution</h2>
 
-<p>HTTP request from the HLF chaincode container require DNS resolution and network are in place. For example, with the default Docker container one cannot use <a href="http://localhost">http://localhost</a> as this does not resolve to the host machine inside the Docker container. The easiest workaround is to use a DNS name that is publicly resolvable.</p>
+<p>Business networks deployed to Hyperledger Fabric run within a chaincode Docker container. This means that the business networks are subject to the DNS resolution and network services provided by Docker, instead of those services provided by the host machine. Additionally, the chaincode Docker container has its own IP address.</p>
+
+<p>This means that <code>localhost</code> resolves to the chaincode Docker container, rather than the host machine. Any HTTP requests made to <code>localhost</code>, for example <a href="http://localhost:3000/api/Vehicle">http://localhost:3000/api/Vehicle</a>, will not work as expected. The easiest workaround is to use a DNS name for your REST server that is publicly resolvable.</p>
 
             
           </section>
