@@ -40,7 +40,7 @@ function invokeCmd(cmd) {
         // Capture Protactor return code
         proc.on('close', function(code) {
             if(code !== 0) {
-                reject();
+                return reject(new Error(`Failed to execute "${cmd}" with return code ${code}`));
             }
             resolve();
         });
@@ -48,7 +48,7 @@ function invokeCmd(cmd) {
 }
 
 // Required packages for serving
-let packages = [
+const packages = [
     'composer-runtime',
     'composer-common',
     'composer-runtime-hlfv1',
@@ -67,26 +67,47 @@ let packages = [
     'generator-hyperledger-composer'];
 
 // Packages to be installed in integration test(s)
-let testPackages = [
+const testPackages = [
     'composer-cli',
+    'composer-rest-server',
     'generator-hyperledger-composer'
 ];
 
-return packages.reduce((promiseChain, p) => {
-    // Set registry and publish
-    return promiseChain.then(() => {
-        // eslint-disable-next-line no-console
-        console.log('Publishing package ' + p + ' to local npm server');
-        return invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
-    });
-}, Promise.resolve())
-.then(() => {
-    // Globally install test packages
-    return testPackages.reduce((promiseChain, p) => {
-        return promiseChain.then(() => {
-            // eslint-disable-next-line no-console
-            console.log('installing package ' + p + '@' + version + ' from npm server');
-            return invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
-        });
-    }, Promise.resolve());
-});
+// Third party packages.
+const thirdPartyPackages = [
+    // Required for running the generators.
+    'yo',
+    // Required for REST server authentication.
+    'passport-ldapauth',
+    // Required for REST server persistence.
+    'loopback-connector-mongodb'
+];
+
+(async function () {
+
+    try {
+
+        // Set registry and publish
+        for (const p of packages) {
+            console.log('Publishing package ' + p + ' to local npm server');
+            await invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
+        }
+
+        // Globally install test packages
+        for (const p of testPackages) {
+            console.log('Installing test package ' + p + '@' + version + ' from local npm server');
+            await invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
+        }
+
+        // Globally install third party packages
+        for (const p of thirdPartyPackages) {
+            console.log('Installing third party package ' + p + ' from public npm server');
+            await invokeCmd('npm install -g ' + p);
+        }
+
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+
+})();

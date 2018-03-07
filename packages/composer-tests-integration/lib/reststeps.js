@@ -63,20 +63,71 @@ module.exports = function () {
         await startRestServer.apply(this, [name, ['-a']]);
     });
 
+    this.Given(/^I have a multiple user REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        const port = fs.readFileSync(path.resolve(__dirname, '..', 'ldap.port'));
+        process.env.COMPOSER_PROVIDERS = JSON.stringify({
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/failure',
+                authScheme: 'ldap',
+                server: {
+                    url: `ldap://localhost:${port}`,
+                    bindDN: 'cn=root,dc=example,dc=org',
+                    bindCredentials: 'secret',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
+            }
+        });
+        process.env.COMPOSER_DATASOURCES = JSON.stringify({
+            db: {
+                name: 'db',
+                connector: 'mongodb',
+                host: 'localhost'
+            }
+        });
+        await startRestServer.apply(this, [name, ['-a', '-m']]);
+    });
+
     this.Given('I have cleared the cookie jar', function () {
         return Composer.clearCookieJar();
     });
 
-    this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, path) {
-        return this.composer.request(method, path);
+    this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, urlPath) {
+        return this.composer.request(method, urlPath);
     });
 
-    this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, path, data) {
-        return this.composer.request(method, path, data);
+    this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, urlPath, data) {
+        return this.composer.request(method, urlPath, data);
     });
 
-    this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (path, filter) {
-        return this.composer.request('GET', path + '?filter=' + encodeURIComponent(filter));
+    this.When(/^I make a (POST|PUT) request with form data to (.+?)$/, function (method, urlPath, table) {
+        const options = {
+            formData: {}
+        };
+        table.hashes().forEach((hash) => {
+            let { name, value } = hash;
+            if (fs.existsSync(value)) {
+                const fileName = value;
+                const fileContents = fs.readFileSync(fileName);
+                value = {
+                    value: fileContents,
+                    options: {
+                        filename: path.basename(fileName)
+                    }
+                };
+            }
+            options.formData[name] = value;
+        });
+        return this.composer.request(method, urlPath, null, options);
+    });
+
+    this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (urlPath, filter) {
+        return this.composer.request('GET', urlPath + '?filter=' + encodeURIComponent(filter));
     });
 
     this.When('I shutdown the REST server', function() {
