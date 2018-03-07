@@ -28,13 +28,17 @@ let businessNetworkDefinition;
 let businessNetworkIdentifier;
 let modelManager;
 let assetList = [];
+let conceptList = [];
 let assetServiceNames = [];
 let assetComponentNames = [];
+let concepterviceNames = [];
+let conceptComponentNames = [];
 let transactionList = [];
 let namespaceList;
 let enumerations;
 let introspector;
 let assetProperties;
+let conceptProperties;
 let destinationPath;
 let liveNetwork;
 let skipInstall = false;
@@ -467,10 +471,10 @@ module.exports = yeoman.Base.extend({
             namespaceList.forEach((namespace) => {
             
             let modelFile = modelManager.getModelFile(namespace);
-            let conceptDeclarations = modelfile.getConceptDeclarations();
+            let conceptDeclarations = modelFile.getConceptDeclarations();
             
             conceptDeclarations
-            .filter((conceptDeclarations) =>{
+            .filter((conceptDeclaration) =>{
                 return conceptDeclaration.isAbstract();
             })
             .filter((conceptDeclaration) => {
@@ -526,7 +530,7 @@ module.exports = yeoman.Base.extend({
                                     'properties': tempList,
                                     'identifier': concept.getIdentifierFieldName()
                                 });
-                                shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
+                                shell.mkdir('-p', destinationPath + '/src/app/' + concept.name);
             
                             });
                         });
