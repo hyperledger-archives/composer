@@ -45,7 +45,7 @@ Feature: Business Network Generator
             | ../tmp/my-bus-net.bna |
 
     Scenario: I can deploy a bna created from a generated template business network
-        Given I have a deployed the bna my-bus-net at version 0.0.1
+        Given I have a deployed the bna my-bus-net
         When I run the following expected pass CLI command
             """
             composer network ping --card admin@my-bus-net
