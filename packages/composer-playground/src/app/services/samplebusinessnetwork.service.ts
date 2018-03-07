@@ -149,42 +149,6 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public updateBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        let currentBusinessNetworkName = this.fileService.getBusinessNetworkName();
-        let currentBusinessNetworkDescription = this.fileService.getBusinessNetworkDescription();
-
-        let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
-        packageJson.name = currentBusinessNetworkName;
-        packageJson.description = currentBusinessNetworkDescription;
-
-        let newNetwork = this.buildNetwork(currentBusinessNetworkName, currentBusinessNetworkDescription, packageJson, businessNetworkDefinition);
-
-        let cardName = this.identityCardService.getCurrentCardRef();
-        let card = this.identityCardService.getCurrentIdentityCard();
-
-        return this.adminService.connect(cardName, card, true)
-            .then(() => {
-                this.alertService.busyStatus$.next({
-                    title: 'Updating business network'
-                });
-
-                return this.adminService.update(newNetwork);
-            })
-            .then(() => {
-                return this.clientService.refresh();
-            })
-            .then(() => {
-                return this.adminService.reset(newNetwork.getName());
-            })
-            .then(() => {
-                this.alertService.busyStatus$.next(null);
-            })
-            .catch((error) => {
-                this.alertService.busyStatus$.next(null);
-                throw error;
-            });
-    }
-
     buildNetwork(businessNetworkName: string, businessNetworkDescription, packageJson, businessNetworkDefinition) {
         let newNetwork = this.createNewBusinessDefinition(businessNetworkName, businessNetworkDescription, packageJson, businessNetworkDefinition.getMetadata().getREADME());
 
