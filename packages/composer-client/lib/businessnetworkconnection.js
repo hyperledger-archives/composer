@@ -387,36 +387,31 @@ class BusinessNetworkConnection extends EventEmitter {
      * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    connect (cardName, additionalConnectOptions) {
-        const method = 'connectWithCard';
-        LOG.entry(method, cardName);
+    async connect (cardName, additionalConnectOptions) {
+        const method = 'connect';
+        LOG.entry(method, cardName, additionalConnectOptions);
 
-        return this.cardStore.get(cardName)
-            .then((retrievedCard) => {
-                this.card = retrievedCard;
-                if (!additionalConnectOptions) {
-                    additionalConnectOptions = {};
-                }
+        this.card = await this.cardStore.get(cardName);
+        if (!additionalConnectOptions) {
+            additionalConnectOptions = {};
+        }
 
-                // need to get from the cardstore, a wallet that uses the same backing store
-                additionalConnectOptions.wallet = this.cardStore.getWallet(cardName);
-                additionalConnectOptions.cardName = cardName;
-                return this.connectionProfileManager.connectWithData(this.card.getConnectionProfile(), this.card.getBusinessNetworkName(), additionalConnectOptions);
-            })
-            .then((connection) => {
-                LOG.exit(method);
+        // need to get from the cardstore, a wallet that uses the same backing store
+        const wallet = await this.cardStore.getWallet(cardName);
+        additionalConnectOptions.wallet = wallet;
+        additionalConnectOptions.cardName = cardName;
+        const connection = await this.connectionProfileManager.connectWithData(this.card.getConnectionProfile(), this.card.getBusinessNetworkName(), additionalConnectOptions);
 
-                let secret = this.card.getEnrollmentCredentials();
-                if (!secret) {
-                    secret = 'na';
-                } else {
-                    secret = secret.secret;
-                }
+        let secret = this.card.getEnrollmentCredentials();
+        if (!secret) {
+            secret = 'na';
+        } else {
+            secret = secret.secret;
+        }
 
-                return this._connectionLogin(connection, this.card.getUserName(), secret);
-
-            });
-
+        const businessNetworkDefinition = await this._connectionLogin(connection, this.card.getUserName(), secret);
+        LOG.exit(method, businessNetworkDefinition);
+        return businessNetworkDefinition;
     }
 
     /**

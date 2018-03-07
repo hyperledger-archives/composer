@@ -5,7 +5,7 @@ class AdminConnection {
    + Promise getAllCards() 
    + Promise deleteCard(String) 
    + Promise hasCard(String) 
-   + Promise connect(String) 
+   + void connect(String) 
    + Promise disconnect() 
    + Promise install(String,Object) 
    + Promise start(BusinessNetworkDefinition,Object) 

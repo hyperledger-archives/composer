@@ -33,7 +33,8 @@ function processFile(file, fileProcessor) {
     let filePath = path.parse(file);
     if (filePath.ext === '.js' && filePath.base !== 'parser.js') {  //ignore the generated parsers
         let fileContents = fs.readFileSync(file, 'utf8');
-        const parser = new JavaScriptParser(fileContents, program.private, null, false);
+        // Specify ES2017 (ES8) as that has async/await, which we use in our APIs.
+        const parser = new JavaScriptParser(fileContents, program.private, 8, false);
         fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
     }
 }
