@@ -103,6 +103,10 @@ describe('ConnectorServer', () => {
 
     describe('#constructor', () => {
 
+        const isFunction = (object) => {
+            return !!(object && object.constructor && object.call && object.apply);
+        };
+
         it('should register handlers for all exposed functions', () => {
             const functions = mockSocket.on.args.map((args) => {
                 return args[0];
@@ -132,7 +136,7 @@ describe('ConnectorServer', () => {
                 '/api/connectionCreateTransactionId'
             ].sort());
             mockSocket.on.args.forEach((args) => {
-                args[1].should.be.a('function');
+                isFunction(args[1]).should.be.true;
             });
         });
 
@@ -141,7 +145,7 @@ describe('ConnectorServer', () => {
             try {
                 connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
                 mockSocket.on.args.forEach((args) => {
-                    args[1].should.be.a('function');
+                    isFunction(args[1]).should.be.true;
                 });
             } finally {
                 delete ConnectorServer.prototype.foo;

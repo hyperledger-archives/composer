@@ -29,122 +29,94 @@ describe('LoopBackWallet', () => {
     let app;
     let Card, card, lbCard;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         app = loopback();
-        return new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             boot(app, path.resolve(__dirname, '..', '..', 'server'), (err) => {
                 if (err) {
                     return reject(err);
                 }
                 resolve();
             });
-        })
-        .then(() => {
-            const user = app.models.user;
-            Card = app.models.Card;
-            const dataSource = loopback.createDataSource({
-                connector: loopback.Memory
-            });
-            user.attachTo(dataSource);
-            Card.attachTo(dataSource);
-            return user.create({ email: 'alice@email.com', password: 'password' });
-        })
-        .then((user) => {
-            return Card.create({ userId: user.id, name: 'admin@biznet', base64: 'aGVsbG8gd29ybGQK', data: { test1: 'hello this is a cert', test2: 'nay' } });
-        })
-        .then((card_) => {
-            card = card_;
-            lbCard = new LoopBackWallet(card);
         });
+        Card = app.models.Card;
+        const dataSource = loopback.createDataSource({
+            connector: loopback.Memory
+        });
+        app.models.user.attachTo(dataSource);
+        Card.attachTo(dataSource);
+        const user = await app.models.user.create({ email: 'alice@email.com', password: 'password' });
+        card = await Card.create({ userId: user.id, name: 'admin@biznet', base64: 'aGVsbG8gd29ybGQK', data: { test1: 'hello this is a cert', test2: 'nay' } });
+        lbCard = new LoopBackWallet(card);
     });
 
-    describe('#list', () => {
+    describe('#listNames', () => {
 
-        it('should return an empty array when no keys exist', () => {
-            return Card.findOne({ where: { name: 'admin@biznet' } })
-                .then((card) => {
-                    card.data = {};
-                    return card.save();
-                })
-                .then(() => {
-                    return lbCard.list();
-                })
-                .should.eventually.be.deep.equal([]);
+        it('should return an empty array when no keys exist', async () => {
+            const card = await Card.findOne({ where: { name: 'admin@biznet' } });
+            card.data = {};
+            await card.save();
+            const result = await lbCard.listNames();
+            result.should.deep.equal([]);
         });
 
-        it('should return a list of keys', () => {
-            return lbCard.list()
-                .should.eventually.be.deep.equal(['test1', 'test2']);
+        it('should return a list of keys', async () => {
+            const result = await lbCard.listNames();
+            result.should.deep.equal(['test1', 'test2']);
         });
 
     });
 
     describe('#contains', () => {
 
-        it('should return false for a key that does not exist', () => {
-            return lbCard.contains('test0')
-                .should.eventually.be.false;
+        it('should return false for a key that does not exist', async () => {
+            const result = await lbCard.contains('test0');
+            result.should.be.false;
         });
 
-        it('should return true for a key that does exist', () => {
-            return lbCard.contains('test2')
-                .should.eventually.be.true;
+        it('should return true for a key that does exist', async () => {
+            const result = await lbCard.contains('test2');
+            result.should.be.true;
         });
 
     });
 
     describe('#get', () => {
 
-        it('should return undefined for a key that does not exist', () => {
-            return lbCard.get('test0')
-                .should.eventually.be.undefined;
+        it('should return undefined for a key that does not exist', async () => {
+            const result = await lbCard.get('test0');
+            should.equal(result, undefined);
         });
 
-        it('should return the value for a key that does exist', () => {
-            return lbCard.get('test1')
-                .should.eventually.be.equal('hello this is a cert');
-        });
-
-    });
-
-    describe('#add', () => {
-
-        it('should set the value for a key', () => {
-            return lbCard.add('testA', 'hello this is a test set cert')
-                .then(() => {
-                    return Card.findOne({ where: { name: 'admin@biznet' } });
-                })
-                .then((card) => {
-                    card.data.testA.should.equal('hello this is a test set cert');
-                });
+        it('should return the value for a key that does exist', async () => {
+            const result = await lbCard.get('test1');
+            result.should.equal('hello this is a cert');
         });
 
     });
 
-    describe('#update', () => {
+    describe('#put', () => {
 
-        it('should update the value for a key', () => {
-            return lbCard.update('test2', 'hello this is a test set cert')
-                .then(() => {
-                    return Card.findOne({ where: { name: 'admin@biznet' } });
-                })
-                .then((card) => {
-                    card.data.test2.should.equal('hello this is a test set cert');
-                });
+        it('should set the value for a key', async () => {
+            await lbCard.put('testA', 'hello this is a test set cert');
+            const card = await Card.findOne({ where: { name: 'admin@biznet' } });
+            card.data.testA.should.equal('hello this is a test set cert');
+        });
+
+        it('should update the value for a key', async () => {
+            await lbCard.put('test2', 'hello this is a test set cert');
+            const card = await Card.findOne({ where: { name: 'admin@biznet' } });
+            card.data.test2.should.equal('hello this is a test set cert');
         });
 
     });
 
     describe('#remove', () => {
 
-        it('should remove the key', () => {
-            return lbCard.remove('test2')
-                .then(() => {
-                    return Card.findOne({ where: { name: 'admin@biznet' } });
-                })
-                .then((card) => {
-                    should.equal(card.data.test2, undefined);
-                });
+        it('should remove the key', async () => {
+            await lbCard.remove('test2');
+            const card = await Card.findOne({ where: { name: 'admin@biznet' } });
+            should.equal(card.data.test2, undefined);
         });
 
     });

@@ -51,11 +51,11 @@ class WalletBackedCardStore extends BusinessNetworkCardStore {
      * @param {String} name the name to return
      * @return {Wallet} Returns the wallet
     */
-    getWallet(name){
+    async getWallet(name){
         name = name || 'wallet';
         let walletOptions = _.cloneDeep(this.storeOptions);
         walletOptions.namePrefix=path.join('client-data',name);
-        let wallet = walletOptions.StoreModule.getStore(walletOptions);
+        let wallet = await walletOptions.StoreModule.getStore(walletOptions);
         return wallet;
     }
 

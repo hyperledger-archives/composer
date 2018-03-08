@@ -57,3 +57,6 @@ jsdoc.json
 LICENSE.txt
 README.md
 
+# We need to include this in the package if it exists.
+# The npm command ignores this by default.
+!.npmrc
