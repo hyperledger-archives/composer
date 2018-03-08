@@ -83,7 +83,7 @@ describe('LoopBackCardStore', () => {
             card.name.should.equal('charlie1@bond-network');
         });
 
-        it('should replace the specified business network card', async () => {
+        it('should replace the specified business network card without merging any data', async () => {
             const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
             await cardStore.put('charlie1@bond-network', idCard);
             let count = await Card.count({ name: 'charlie1@bond-network' });
@@ -91,6 +91,18 @@ describe('LoopBackCardStore', () => {
             await cardStore.put('charlie1@bond-network', idCard);
             count = await Card.count({ name: 'charlie1@bond-network' });
             count.should.equal(1);
+        });
+
+        it('should replace the specified business network card and merge any data', async () => {
+            const idCard = new IdCard({ userName: 'charlie1', enrollmentSecret: 'charlieSecret', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
+            await cardStore.put('charlie1@bond-network', idCard);
+            let card = await Card.findOne({ where: { name: 'charlie1@bond-network' }});
+            card.data.should.deep.equal({});
+            card.data = { key1: 'value1', key2: 'value2' };
+            await card.save();
+            await cardStore.put('charlie1@bond-network', idCard);
+            card = await Card.findOne({ where: { name: 'charlie1@bond-network' }});
+            card.data.should.deep.equal({ key1: 'value1', key2: 'value2' });
         });
 
     });

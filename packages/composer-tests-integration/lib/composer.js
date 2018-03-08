@@ -448,6 +448,7 @@ class Composer {
 
                 childCliProcess.stdout.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log(label, 'STDOUT', data);
                     stdout += data;
                     if(stdout.match(regex)) {
                         success = true;
@@ -457,6 +458,7 @@ class Composer {
 
                 childCliProcess.stderr.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log(label, 'STDERR', data);
                     stderr += data;
                 });
 

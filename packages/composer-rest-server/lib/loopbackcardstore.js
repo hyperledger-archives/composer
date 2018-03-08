@@ -63,6 +63,18 @@ class LoopBackCardStore extends BusinessNetworkCardStore {
      * @inheritdoc
      */
     async put(cardName, card) {
+
+        // Check for an existing card, so we can merge the data contents
+        // if such a card exists.
+        const lbCard = await this.Card.findOne({
+            where: {
+                userId: this.userId,
+                name: cardName
+            }
+        });
+        const data = lbCard ? lbCard.data : {};
+
+        // Now we can safely update the card.
         const cardData = await card.toArchive({ type: 'nodebuffer' });
         await this.Card.upsertWithWhere({
             userId: this.userId,
@@ -70,9 +82,10 @@ class LoopBackCardStore extends BusinessNetworkCardStore {
         }, {
             name: cardName,
             base64: cardData.toString('base64'),
-            data: {},
+            data,
             userId: this.userId
         });
+
     }
 
     /**
