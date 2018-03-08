@@ -85,17 +85,20 @@ class ProxyConnection extends Connection {
     /**
      * Install the Hyperledger Composer runtime.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {BusinessNetworkDefinition} networkDefinition The business network to install
      * @param {Object} installOptions connector specific install options
      * @return {Promise} A promise that is resolved once the runtime has been installed, or rejected with an error.
      */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
+    install(securityContext, networkDefinition, installOptions) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionInstall', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, installOptions, (error) => {
-                if (error) {
-                    return reject(ProxyUtil.inflaterr(error));
-                }
-                resolve();
+            return networkDefinition.toArchive().then(networkArchive => {
+                const networkArchiveBase64 = networkArchive.toString('base64');
+                this.socket.emit('/api/connectionInstall', this.connectionID, securityContext.securityContextID, networkArchiveBase64, installOptions, (error) => {
+                    if (error) {
+                        return reject(ProxyUtil.inflaterr(error));
+                    }
+                    resolve();
+                });
             });
         });
     }
@@ -103,33 +106,16 @@ class ProxyConnection extends Connection {
     /**
      * Start a business network definition.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkName The name of the business network
+     * @param {string} networkVersion The version of the business network
      * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network has been started,
      * or rejected with an error.
      */
-    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+    start(securityContext, networkName, networkVersion, startTransaction, startOptions) {
         return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionStart', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, startTransaction, startOptions, (error) => {
-                if (error) {
-                    return reject(ProxyUtil.inflaterr(error));
-                }
-                resolve();
-            });
-        });
-    }
-
-    /**
-     * Undeploy a business network definition.
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
-     */
-    undeploy(securityContext, businessNetworkIdentifier) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('/api/connectionUndeploy', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, (error) => {
+            this.socket.emit('/api/connectionStart', this.connectionID, securityContext.securityContextID, networkName, networkVersion, startTransaction, startOptions, (error) => {
                 if (error) {
                     return reject(ProxyUtil.inflaterr(error));
                 }

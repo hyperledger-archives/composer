@@ -128,8 +128,6 @@ describe('ConnectorServer', () => {
                 '/api/connectionPing',
                 '/api/connectionQueryChainCode',
                 '/api/connectionStart',
-                '/api/connectionUndeploy',
-                '/api/connectionUpdate',
                 '/api/connectionManagerExportIdentity',
                 '/api/connectionManagerRemoveIdentity',
                 '/api/connectionCreateTransactionId'
@@ -572,10 +570,10 @@ describe('ConnectorServer', () => {
             mockConnection.install.withArgs(mockSecurityContext, businessNetworkIdentifier).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.install);
-                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkIdentifier);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -583,7 +581,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(invalidID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(invalidID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -595,7 +593,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, invalidID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, invalidID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -608,7 +606,7 @@ describe('ConnectorServer', () => {
         it('should handle install errors', () => {
             mockConnection.install.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -628,13 +626,13 @@ describe('ConnectorServer', () => {
         });
 
         it('should start', () => {
-            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
+            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1});
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -642,7 +640,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -654,7 +652,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -667,128 +665,7 @@ describe('ConnectorServer', () => {
         it('should handle start errors', () => {
             mockConnection.start.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.equal('such error');
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-    });
-
-    describe('#connectionUpdate', () => {
-
-        beforeEach(() => {
-            connectorServer.connections[connectionID] = mockConnection;
-            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
-        });
-
-        it('should update', () => {
-            mockConnection.update.withArgs(mockSecurityContext, mockBusinessNetworkDefinition).resolves();
-            sandbox.stub(uuid, 'v4').returns(securityContextID);
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                    const buffer = BusinessNetworkDefinition.fromArchive.args[0][0];
-                    Buffer.isBuffer(buffer).should.be.true;
-                    Buffer.from('hello world').compare(buffer).should.equal(0);
-                    sinon.assert.calledOnce(mockConnection.update);
-                    sinon.assert.calledWith(mockConnection.update, mockSecurityContext, mockBusinessNetworkDefinition);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should handle an invalid connection ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(invalidID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No connection found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle an invalid security context ID ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, invalidID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No security context found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle update errors', () => {
-            mockConnection.update.rejects(new Error('such error'));
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.equal('such error');
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-    });
-
-    describe('#connectionUndeploy', () => {
-
-        beforeEach(() => {
-            connectorServer.connections[connectionID] = mockConnection;
-            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
-        });
-
-        it('should undeploy', () => {
-            mockConnection.undeploy.withArgs(mockSecurityContext, businessNetworkIdentifier).resolves();
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.undeploy);
-                    sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, businessNetworkIdentifier);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should handle an invalid connection ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(invalidID, securityContextID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No connection found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle an invalid security context ID ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, invalidID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No security context found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle undeploy errors', () => {
-            mockConnection.undeploy.rejects(new Error('such error'));
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];

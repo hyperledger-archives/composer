@@ -142,14 +142,14 @@ class Connection extends EventEmitter {
      * Install the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkDefinition The business network that will be installed.
      * @param {Object} installOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been installed, or rejected with an error.
      */
-    install(securityContext, businessNetworkIdentifier, installOptions) {
+    install(securityContext, networkDefinition, installOptions) {
         return new Promise((resolve, reject) => {
-            this._install(securityContext, businessNetworkIdentifier, installOptions, (error) => {
+            this._install(securityContext, networkDefinition, installOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -168,11 +168,11 @@ class Connection extends EventEmitter {
      * Install the Hyperledger Composer runtime.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkDefinition The business network that will be installed.
      * @param {Object} installOptions connector specific installation options
      * @param {installCallback} callback The callback function to call when complete.
      */
-    _install(securityContext, businessNetworkIdentifier, installOptions, callback) {
+    _install(securityContext, networkDefinition, installOptions, callback) {
         throw new Error('abstract function called');
     }
 
@@ -180,15 +180,16 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkName The name of the business network that will be started
+     * @param {string} networkVersion The version of the business network that will be started
      * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific installation options
      * @return {Promise} A promise that is resolved once the business network
      * artefacts have been installed, or rejected with an error.
      */
-    start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+    start(securityContext, networkName, networkVersion, startTransaction, startOptions) {
         return new Promise((resolve, reject) => {
-            this._start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, (error) => {
+            this._start(securityContext, networkName, networkVersion, startTransaction, startOptions, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -207,12 +208,13 @@ class Connection extends EventEmitter {
      * Start a business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkName The name of the business network that will be started
+     * @param {string} networkVersion The version of the business network that will be started
      * @param {string} startTransaction The serialized start transaction.
-     * @param {Object} startOptions connector specific statement options
+     * @param {Object} startOptions connector specific installation options
      * @param {startCallback} callback The callback function to call when complete.
      */
-    _start(securityContext, businessNetworkIdentifier, startTransaction, startOptions, callback) {
+    _start(securityContext, networkName, networkVersion, startTransaction, startOptions, callback) {
         throw new Error('abstract function called');
     }
 

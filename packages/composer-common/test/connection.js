@@ -161,18 +161,18 @@ describe('Connection', () => {
 
         it('should call _install and handle no error', () => {
             sinon.stub(connection, '_install').yields(null);
-            return connection.install(mockSecurityContext, 'org-acme-biznet', { install: 'options' })
+            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
                 });
         });
 
         it('should call _install and handle an error', () => {
             sinon.stub(connection, '_install').yields(new Error('error'));
-            return connection.install(mockSecurityContext, 'org-acme-biznet', { install: 'options' })
+            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
                 });
         });
 
@@ -182,7 +182,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._install(mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                connection._install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
             }).should.throw(/abstract function called/);
         });
 
@@ -192,18 +192,18 @@ describe('Connection', () => {
 
         it('should call _start and handle no error', () => {
             sinon.stub(connection, '_start').yields(null);
-            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
         it('should call _start and handle an error', () => {
             sinon.stub(connection, '_start').yields(new Error('error'));
-            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
@@ -213,7 +213,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
+                connection._start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
             }).should.throw(/abstract function called/);
         });
 

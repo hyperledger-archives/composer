@@ -76,8 +76,6 @@ export class SampleBusinessNetworkService {
         packageJson.name = networkName;
         packageJson.description = networkDescription;
 
-        let channelAdminCardRef: string;
-        let channelAdminCard: IdCard;
         let peerAdminCardRef: string = this.identityCardService.getCurrentCardRef();
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
@@ -118,11 +116,11 @@ export class SampleBusinessNetworkService {
                 return this.adminService.install(newNetwork);
             })
             .then(() => {
-                let connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
-                let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
+                const connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
+                const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                const channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
 
-                channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
+                const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
                 return this.adminService.connect(channelAdminCardRef, channelAdminCard, true);
             })
             .then(() => {
