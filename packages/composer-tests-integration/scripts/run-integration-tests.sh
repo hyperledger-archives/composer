@@ -27,6 +27,8 @@ rm -rf ${HOME}/.composer/cards/sal*
 rm -rf ${HOME}/.composer/client-data/sal*
 rm -rf ${HOME}/.composer/cards/ange*
 rm -rf ${HOME}/.composer/client-data/ange*
+rm -rf ${HOME}/.composer/cards/charlie*
+rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
 rm -f ./networkadmin.card
