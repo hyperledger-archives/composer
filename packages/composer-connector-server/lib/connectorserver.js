@@ -189,9 +189,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
+    async connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
         LOG.entry(method, connectionProfile, id, certificate, privateKey);
+        connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
         return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
@@ -239,9 +240,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} Promise that resolves to credentials.
      */
-    connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
+    async connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
         const method = 'connectionManagerExportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
+        connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
         return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
