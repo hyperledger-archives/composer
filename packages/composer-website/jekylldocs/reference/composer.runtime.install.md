@@ -25,7 +25,7 @@ composer runtime install [options]
 Options:
   --help                     Show help  [boolean]
   -v, --version              Show version number  [boolean]
-  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o               Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O          A file containing options that are specific to connection  [string]
   --card, -c                 The cardname to use to install the network  [string] [required]
   --businessNetworkName, -n  The business network name  [string] [required]
