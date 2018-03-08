@@ -34,8 +34,10 @@ const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManag
 const LOG = Logger.getLog('BusinessNetworkConnection');
 
 /**
- * Use this class to connect to and then interact with a deployed BusinessNetworkDefinition.
- * Use the AdminConnection class in the composer-admin module to deploy BusinessNetworksDefinitions.
+ * Use this class to connect to and then interact with a deployed
+ * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.
+ * Use the AdminConnection class in the composer-admin module to deploy
+ * BusinessNetworksDefinitions.
  * @extends EventEmitter
  * @class
  * @memberof module:composer-client
@@ -43,12 +45,14 @@ const LOG = Logger.getLog('BusinessNetworkConnection');
 class BusinessNetworkConnection extends EventEmitter {
 
     /**
-     * Create an instance of the BusinessNetworkConnection class.
-     * must be called to connect to a deployed BusinessNetworkDefinition.
-     * @param {Object} [options] - an optional set of options to configure the instance.
-     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card store implementation to use.
+     * Creates an instance of the BusinessNetworkConnection class.
+     * Must be called to connect to a deployed BusinessNetworkDefinition.
+     * @param {Object} [options] - an optional set of options to configure the
+     * instance.
+     * @param {BusinessNetworkCardStore} [options.cardStore] specify a card
+     * store implementation to use.
      */
-    constructor (options) {
+    constructor(options) {
         super();
         const method = 'constructor';
         LOG.entry(method, options);
@@ -64,275 +68,281 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Returns the currently connected BusinessNetworkDefinition
+     * Gets the currently connected
+     * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.
      * @example
      * // Get the Business Network Definition
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getBusinessNetwork();
-     * })
-     * .then(function(BusinessNetworkDefinition){
-     *     // Retrieved Business Network Definition
-     * });
-     * @returns {BusinessNetworkDefinition} the business network
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         // Retrieved Business Network Definition
+     *         console.log(definition === connection.getBusinessNetwork());  // true
+     *     });
+     * @returns {BusinessNetworkDefinition} the business network definition
      */
-    getBusinessNetwork () {
+    getBusinessNetwork() {
         return this.businessNetwork;
     }
 
+
     /**
-     * Get a list of all existing asset registries.
+     * Gets a list of all existing asset registries.
      * @example
      * // Get all asset registries
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getAllAssetRegistries();
-     * })
-     * .then(function(assetRegistries){
-     *     // Retrieved Asset Registries
-     * });
-     * @return {Promise} - A promise that will be resolved with a list of existing
-     * asset registries
-     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getAllAssetRegistries();
+     *     })
+     *     .then(function (assetRegistries) {
+     *         // Retrieved Asset Registries
+     *     });
+     * @param {boolean} [includeSystem] if true the returned list will include
+     * the system transaction registries (optional, default to false)
+     * @returns {Promise} - A promise that will be resolved with a list of
+     * existing {@link AssetRegistry asset registries}.
      */
-    getAllAssetRegistries (includeSystem) {
+    getAllAssetRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
         return AssetRegistry.getAllAssetRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
     /**
-     * Get an existing asset registry.
+     * Gets an existing asset registry.
      * @example
-     * // Get a asset registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getAssetRegistry('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(assetRegistry){
-     *     // Retrieved Asset Registry
-     * });
+     * // Get an asset registry
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getAssetRegistry('org.acme.SampleAsset');
+     *     })
+     *     .then(function (assetRegistry) {
+     *         // Retrieved Asset Registry
+     *     });
      * @param {string} id - The unique identifier of the asset registry
-     * @return {Promise} - A promise that will be resolved with the existing asset
-     * registry, or rejected if the asset registry does not exist.
+     * @returns {Promise} - A promise that will be resolved with the existing
+     * {@link AssetRegistry}, or rejected if it does not exist.
      */
-    getAssetRegistry (id) {
+    getAssetRegistry(id) {
         Util.securityCheck(this.securityContext);
         return AssetRegistry.getAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
-     * Determine whether a asset registry exists.
+     * Determines whether an asset registry exists.
      * @example
      * // Determine whether an asset registry exists
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.assetRegistryExists('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(exists){
-     *     // if (exists === true) {
-     *     // logic here...
-     *     //}
-     * });
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.assetRegistryExists('org.acme.SampleAsset');
+     *     })
+     *     .then(function (exists) {
+     *         if (exists === true) {
+     *             // logic here...
+     *         }
+     *     });
      * @param {string} id - The unique identifier of the asset registry
-     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the asset
-     * registry exists.
+     * @returns {Promise} - A promise that will be resolved with a boolean
+     * indicating whether the {@link AssetRegistry} exists.
      */
-    assetRegistryExists (id) {
+    assetRegistryExists(id) {
         Util.securityCheck(this.securityContext);
         return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
-     * Add a new asset registry.
+     * Adds a new asset registry.
      * @example
      * // Add a new asset registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.addAssetRegistry('registryId','registryName');
-     * });
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.addAssetRegistry('registryId', 'registryName');
+     *     });
      * @param {string} id - The unique identifier of the asset registry
      * @param {string} name - The name of the asset registry
-     * @return {Promise} - A promise that will be resolved with the new asset
-     * registry after it has been added.
+     * @returns {Promise} - A promise that will be resolved with the new
+     * {@link AssetRegistry} after it has been added.
      */
-    addAssetRegistry (id, name) {
+    addAssetRegistry(id, name) {
         Util.securityCheck(this.securityContext);
         return AssetRegistry.addAssetRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
+
     /**
-     * Get a list of all existing participant registries.
+     * Gets a list of all existing participant registries.
      * @example
      * // Get all participant registries
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getAllParticipantRegistries();
-     * })
-     * .then(function(participantRegistries){
-     *     // Retrieved Participant Registries
-     * });
-     *
-     * @return {Promise} - A promise that will be resolved with a list of existing
-     * participant registries
-     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getAllParticipantRegistries();
+     *     })
+     *     .then(function (participantRegistries) {
+     *         // Retrieved Participant Registries
+     *     });
+     * @param {boolean} [includeSystem] if true the returned list will include
+     * the system transaction registries (optional, default to false)
+     * @returns {Promise} - A promise that will be resolved with a list of
+     * existing {@link ParticipantRegistry participant registries}.
      */
-    getAllParticipantRegistries (includeSystem) {
+    getAllParticipantRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
         return ParticipantRegistry.getAllParticipantRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
     /**
-     * Get an existing participant registry.
+     * Gets an existing participant registry.
      * @example
      * // Get a participant registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getParticipantRegistry('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(participantRegistry){
-     *     // Retrieved Participant Registry
-     * });
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getParticipantRegistry('org.acme.SampleParticipant');
+     *     })
+     *     .then(function (participantRegistry) {
+     *         // Retrieved Participant Registry
+     *     });
      * @param {string} id - The unique identifier of the participant registry
-     * @return {Promise} - A promise that will be resolved with the existing participant
-     * registry, or rejected if the participant registry does not exist.
+     * @returns {Promise} - A promise that will be resolved with the existing
+     * {@link ParticipantRegistry}, or rejected if it does not exist.
      */
-    getParticipantRegistry (id) {
+    getParticipantRegistry(id) {
         Util.securityCheck(this.securityContext);
         return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
-     * Determine whether a participant registry exists.
+     * Determines whether a participant registry exists.
      * @example
      * // Determine whether an asset registry exists
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.participantRegistryExists('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(exists){
-     *     // if (exists === true) {
-     *     // logic here...
-     *     //}
-     * });
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.participantRegistryExists('org.acme.SampleParticipant');
+     *     })
+     *     .then(function (exists) {
+     *         if (exists === true) {
+     *             // logic here...
+     *         }
+     *     });
      * @param {string} id - The unique identifier of the participant registry
-     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the participant
-     * registry exists.
+     * @returns {Promise} - A promise that will be resolved with a boolean
+     * indicating whether the {@link ParticipantRegistry} exists.
      */
-    participantRegistryExists (id) {
+    participantRegistryExists(id) {
         Util.securityCheck(this.securityContext);
         return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
-     * Add a new participant registry.
+     * Adds a new participant registry.
      * @example
      * // Add a new participant registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.addParticipantRegistry('registryId','registryName');
-     * });
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.addParticipantRegistry('registryId', 'registryName');
+     *     });
      * @param {string} id - The unique identifier of the participant registry
      * @param {string} name - The name of the participant registry
-     * @return {Promise} - A promise that will be resolved with the new participant
-     * registry after it has been added.
+     * @returns {Promise} - A promise that will be resolved with the new
+     * {@link ParticipantRegistry} after it has been added.
      */
-    addParticipantRegistry (id, name) {
+    addParticipantRegistry(id, name) {
         Util.securityCheck(this.securityContext);
         return ParticipantRegistry.addParticipantRegistry(this.securityContext, id, name, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
+
     /**
-     * Get the transaction registry.
+     * Gets an existing transaction registry.
      * @example
-     * // Get the transaction registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getTransactionRegistry('org.acme.exampleTransaction');
-     * })
-     * .then(function(transactionRegistry){
-     *     // Retrieved transaction registry.
-     * });
+     * // Get a transaction registry
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getTransactionRegistry('org.acme.SampleTransaction');
+     *     })
+     *     .then(function (transactionRegistry) {
+     *         // Retrieved Transaction Registry.
+     *     });
      * @param {string} id - The unique identifier of the transaction registry
-     * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
+     * @returns {Promise} - A promise that will be resolved with the existing
+     * {@link TransactionRegistry}, or rejected if it does not exist.
      */
-    getTransactionRegistry (id) {
+    getTransactionRegistry(id) {
         Util.securityCheck(this.securityContext);
         return TransactionRegistry.getTransactionRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
     /**
-     * Get all transaction registries.
+     * Gets a list of all existing transaction registries.
      * @example
-     * // Get the transaction registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getAllTransactionRegistries();
-     * })
-     * .then(function(transactionRegistries){
-     *     // Retrieved transaction Registries
-     * });
-     * @param {boolean} [includeSystem] if true the returned list will include the system transaction registries (optional, default to false)
-     * @return {Promise} - A promise that will be resolved to the {@link TransactionRegistry}
+     * // Get all transaction registries
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getAllTransactionRegistries();
+     *     })
+     *     .then(function (transactionRegistries) {
+     *         // Retrieved Transaction Registries
+     *     });
+     * @param {boolean} [includeSystem] if true the returned list will include
+     * the system transaction registries (optional, default to false)
+     * @returns {Promise} - A promise that will be resolved with a list of
+     * existing {@link TransactionRegistry transaction registries}.
      */
-    getAllTransactionRegistries (includeSystem) {
+    getAllTransactionRegistries(includeSystem) {
         Util.securityCheck(this.securityContext);
         let sysReg = includeSystem || false;
         return TransactionRegistry.getAllTransactionRegistries(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this, sysReg);
     }
 
-
     /**
-     * Determine whether a transaction registry exists.
+     * Determines whether a transaction registry exists.
      * @example
-     * // Determine whether an transaction registry exists
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetwork){
-     *     return businessNetwork.transactionRegistryExists('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(exists){
-     *     // if (exists === true) {
-     *     // logic here...
-     *     //}
-     * });
+     * // Determine whether a transaction registry exists
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.transactionRegistryExists('org.acme.SampleTransaction');
+     *     })
+     *     .then(function (exists) {
+     *         if (exists === true) {
+     *             // logic here...
+     *         }
+     *     });
      * @param {string} id - The unique identifier of the transaction registry
-     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the transaction
-     * registry exists.
+     * @returns {Promise} - A promise that will be resolved with a boolean
+     * indicating whether the {@link TransactionRegistry} exists.
      */
-    transactionRegistryExists (id) {
+    transactionRegistryExists(id) {
         Util.securityCheck(this.securityContext);
         return TransactionRegistry.transactionRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer(), this);
     }
 
 
     /**
-     * Get the historian
+     * Gets the historian.
      * @example
      * // Get the historian
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getHistorian();
-     * })
-     * .then(function(historian){
-     *     // Retrieved historian
-     * });
-     * @return {Promise} - A promise that will be resolved to the {@link Historian}
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getHistorian();
+     *     })
+     *     .then(function (historian) {
+     *         // Retrieved historian
+     *     });
+     * @returns {Promise} - A promise that will be resolved with the
+     * {@link Historian}.
      */
-    getHistorian () {
+    getHistorian() {
         Util.securityCheck(this.securityContext);
         return Historian
             .getHistorian(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
@@ -345,21 +355,23 @@ class BusinessNetworkConnection extends EventEmitter {
             });
     }
 
+
     /**
-     * Get the identity registry.
+     * Gets the identity registry.
      * @example
      * // Get the identity registry
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.getIdentityRegistry();
-     * })
-     * .then(function(identityRegistry){
-     *     // Retrieved identity registry
-     * });
-     * @return {Promise} - A promise that will be resolved to the {@link IdentityRegistry}
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getIdentityRegistry();
+     *     })
+     *     .then(function (identityRegistry) {
+     *         // Retrieved identity registry
+     *     });
+     * @returns {Promise} - A promise that will be resolved with the
+     * {@link IdentityRegistry}.
      */
-    getIdentityRegistry () {
+    getIdentityRegistry() {
         Util.securityCheck(this.securityContext);
         return IdentityRegistry
             .getIdentityRegistry(this.securityContext, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer())
@@ -372,22 +384,27 @@ class BusinessNetworkConnection extends EventEmitter {
             });
     }
 
+
     /**
-     * Connects to a business network using a business network card, and authenticates to the Hyperledger Fabric.
+     * Connects to a business network using a business network card, and
+     * authenticates to the Hyperledger Fabric.
      * @example
      * // Connect and log in to HLF
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('cardName')
-     * .then(function(businessNetworkDefinition){
-     *     // Connected
-     * });
-     * @param {String} cardName  businessNetworkCard Name (must have been imported already)
-     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * at runtime that override options set in the connection profile.
-     * which will override those in the specified connection profile.
-     * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('admin@acme-network')
+     *     .then(function (definition) {
+     *         // Connected
+     *     });
+     * @param {String} cardName  businessNetworkCard Name (must have been
+     * imported already)
+     * @param {Object} [additionalConnectOptions] Additional configuration
+     * options supplied at runtime that override options set in the connection
+     * profile, which will override those in the specified connection profile.
+     * @returns {Promise} A promise that will be resolved with a
+     * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}
+     * that indicates the connection is completed.
      */
-    connect (cardName, additionalConnectOptions) {
+    connect(cardName, additionalConnectOptions) {
         const method = 'connectWithCard';
         LOG.entry(method, cardName);
 
@@ -420,25 +437,29 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Get the business network card used by this connection, if a business network card was used.
-     * @return {IdCard} The business network card used by this connection, or null if a business
-     * network card was not used.
+     * Get the business network card used by this connection, if a business
+     * network card was used.
+     * @returns {IdCard} The business network card (an instance of
+     * {@link module:composer-common.IdCard IdCard}) used by this connection,
+     * or null if a business network card was not used.
      * @private
      */
-    getCard () {
+    getCard() {
         return this.card;
     }
 
     /**
-     * Internal method to login and process the connection
+     * Internal method to login and process the connection.
      * @private
-     * @param {Connection} connection connection just established
-     * @param {String} enrollId enrollment id
-     * @param {String} enrollmentSecret enrollment secret
-     * @return {Promise} resolved promise to a BusinessNetworkDefinition when complete
-     *
+     * @param {Connection} connection connection just established (an instance
+     * of {@link module:composer-common.Connection Connection})
+     * @param {string} enrollId enrollment id
+     * @param {string} enrollmentSecret enrollment secret
+     * @returns {Promise} A promise that will be resolved with a
+     * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}
+     * when completed.
      */
-    _connectionLogin (connection, enrollId, enrollmentSecret) {
+    _connectionLogin(connection, enrollId, enrollmentSecret) {
         const method = '_connectionLogin';
         LOG.entry(method);
 
@@ -474,51 +495,62 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Given a fully qualified name, works out and looks up the registry that this resource will be found in.
-     * This only gives back the default registry - it does not look in any application defined registry.
+     * Given a fully qualified name, works out and looks up the registry that
+     * this resource will be found in.
+     * This only gives back the default registry - it does not look in any
+     * application defined registry.
      * @example
      * // Locate the registry for a fully qualififed name
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetwork){
-     *     var sampleAssetRegistry = businessNetwork.getRegistry('org.acme.sampleAsset');
-     *     var sampleTransactionRegistry = businessNetwork.getRegistry('org.acme.sampleTransaction');
-     *      var sampleParticipantRegistry = businessNetwork.getRegistry('org.acme.sampleParticipant');
-     * });
-     * @param {String} fullyQualifiedName The fully qualified name of the resources
-     * @return {Promise} resolved with the registry that this fqn could be found in by default
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.getRegistry('org.acme.SampleAsset');
+     *     })
+     *     .then(function (sampleAssetRegistry) {
+     *         return connection.getRegistry('org.acme.SampleParticipant');
+     *     })
+     *     .then(function (sampleParticipantRegistry) {
+     *         return connection.getRegistry('org.acme.SampleTransaction');
+     *     })
+     *     .then(function (sampleTransactionRegistry) {
+     *         // ...
+     *     });
+     * @param {string} fullyQualifiedName The fully qualified name of the
+     * resource registry
+     * @returns {Promise} A promise that will be resolved with the registry that
+     * this fully qualified name could be found in by default.
      */
-    getRegistry (fullyQualifiedName) {
+    getRegistry(fullyQualifiedName) {
         Util.securityCheck(this.securityContext);
         let businessNetwork = this.getBusinessNetwork();
         let type = businessNetwork.getModelManager().getType(fullyQualifiedName).getSystemType();
         return Registry.getRegistry(this.securityContext, type, fullyQualifiedName)
             .then((registry) => {
                 switch (type) {
-                case 'Transaction':
-                    return new TransactionRegistry(registry.id,
-                                                   registry.name,
-                                                   this.securityContext,
-                                                   businessNetwork.getModelManager(),
-                                                   businessNetwork.getFactory(),
-                                                   businessNetwork.getSerializer(),
-                                                   this);
-                case 'Asset':
-                    return new AssetRegistry(registry.id,
-                                             registry.name,
-                                             this.securityContext,
-                                             businessNetwork.getModelManager(),
-                                             businessNetwork.getFactory(),
-                                             businessNetwork.getSerializer(),
-                                             this);
-                case 'Participant':
-                    return new ParticipantRegistry(registry.id,
-                                                   registry.name,
-                                                   this.securityContext,
-                                                   businessNetwork.getModelManager(),
-                                                   businessNetwork.getFactory(),
-                                                   businessNetwork.getSerializer(),
-                                                   this);
+                    case 'Transaction':
+                        return new TransactionRegistry(registry.id,
+                            registry.name,
+                            this.securityContext,
+                            businessNetwork.getModelManager(),
+                            businessNetwork.getFactory(),
+                            businessNetwork.getSerializer(),
+                            this);
+                    case 'Asset':
+                        return new AssetRegistry(registry.id,
+                            registry.name,
+                            this.securityContext,
+                            businessNetwork.getModelManager(),
+                            businessNetwork.getFactory(),
+                            businessNetwork.getSerializer(),
+                            this);
+                    case 'Participant':
+                        return new ParticipantRegistry(registry.id,
+                            registry.name,
+                            this.securityContext,
+                            businessNetwork.getModelManager(),
+                            businessNetwork.getFactory(),
+                            businessNetwork.getSerializer(),
+                            this);
                 }
             });
 
@@ -527,19 +559,19 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Disconnects from the Hyperledger Fabric.
      * @example
-     * // Disconnects from HLF
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.disconnect();
-     * })
-     * .then(function(){
-     *     // Disconnected.
-     * });
-     * @return {Promise} A promise that will be resolved when the connection is
+     * // Disconnect from HLF
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.disconnect();
+     *     })
+     *     .then(function () {
+     *         // Disconnected.
+     *     });
+     * @returns {Promise} A promise that will be resolved when the connection is
      * terminated.
      */
-    disconnect () {
+    disconnect() {
         const method = 'disconnect';
         LOG.entry(method);
         if (!this.connection) {
@@ -560,25 +592,27 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Submit a transaction for processing by the currently connected business network.
+     * Submit a transaction for processing by the currently connected business
+     * network.
      * @example
      * // Submits a transaction
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     var factory = businessNetworkDefinition.getBusinessNetwork().getFactory();
-     *     var transaction = factory.newTransaction('network.transactions', 'TransactionType');
-     *     return businessNetworkDefinition.submitTransaction(transaction);
-     * })
-     * .then(function(){
-     *     // Submitted a transaction.
-     * });
-     * @param {Resource} transaction - The transaction to submit. Use {@link
-        * common-Factory#newTransaction newTransaction} to create this object.
-     * @return {Promise} A promise that will be fulfilled when the transaction has
-     * been processed.
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         var factory = definition.getFactory();
+     *         var transaction = factory.newTransaction('org.acme', 'SampleTransaction');
+     *         return connection.submitTransaction(transaction);
+     *     })
+     *     .then(function () {
+     *         // Submitted a transaction.
+     *     });
+     * @param {Resource} transaction - The transaction to submit. Use
+     * {@link module:composer-common.Factory#newTransaction newTransaction} to
+     * create this object.
+     * @returns {Promise} A promise that will be fulfilled when the transaction
+     * has been processed.
      */
-    submitTransaction (transaction) {
+    submitTransaction(transaction) {
         Util.securityCheck(this.securityContext);
         if (!transaction) {
             throw new Error('transaction not specified');
@@ -593,38 +627,35 @@ class BusinessNetworkConnection extends EventEmitter {
                 transaction.setIdentifier(id.idStr);
                 transaction.timestamp = new Date();
                 let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], {transactionId : id.id});
+                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], { transactionId: id.id });
             });
 
     }
 
     /**
-     * Build a query ready for later execution. The specified query string must be written
-     * in the Composer query language.
+     * Build a query ready for later execution. The specified query string must
+     * be written in the Composer Query Language.
      *
-     * This functionality is Blockchain platform dependent. For example, when a Composer
-     * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
-     * configured with the CouchDB database for the world state.
+     * This functionality is Blockchain platform dependent. For example, when a
+     * Composer business network is deployed to Hyperledger Fabric v1.0,
+     * Hyperledger Fabric must be configured with the CouchDB database for the
+     * world state.
      * @example
      * // Build and execute a query.
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *   .then(function () {
-     *     var query = businessNetwork.buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
-     *     return businessNetwork.query(query, { inputValue: 'blue' })
-     *   })
-     *   .then(function (assets) {
-     *     assets.forEach(function (asset) {
-     *       // Process each asset.
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function () {
+     *         var query = connection.buildQuery('SELECT org.acme.SampleAsset WHERE (value == _$inputValue)');
+     *         return connection.query(query, { inputValue: 'blue' })
+     *     })
+     *     .then(function (assets) {
+     *         // Retrieved Assets
      *     });
-     *   })
-     *   .catch(function (error) {
-     *     // Add optional error handling here.
-     *   });
-     * @param {string} query The query string, written using the Composer query language.
-     * @return {Query} The built query, which can be passed in a call to query.
+     * @param {string} query The query string, written in the Composer Query
+     * Language.
+     * @returns {Query} The built query, which can be passed in a call to query.
      */
-    buildQuery (query) {
+    buildQuery(query) {
         const method = 'buildQuery';
         LOG.entry(method, query);
         const builtQuery = this.dynamicQueryFile.buildQuery('Dynamic query', 'Dynamic query', query);
@@ -635,33 +666,30 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Execute a query defined in a Composer query file, or execute a query built with buildQuery.
+     * Execute a query defined in a Composer query file, or execute a query
+     * built with buildQuery.
      *
-     * This functionality is Blockchain platform dependent. For example, when a Composer
-     * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
-     * configured with the CouchDB database for the world state.
+     * This functionality is Blockchain platform dependent. For example, when a
+     * Composer business network is deployed to Hyperledger Fabric v1.0,
+     * Hyperledger Fabric must be configured with the CouchDB database for the
+     * world state.
      * @example
      * // Execute the query.
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *   .then(function () {
-     *     return query('Q1', { inputValue: 'blue' })
-     *   })
-     *   .then(function (assets) {
-     *     assets.forEach(function (asset) {
-     *       // Process each asset.
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function () {
+     *         return query('Q1', { inputValue: 'blue' })
+     *     })
+     *     .then(function (assets) {
+     *         // Retrieved Assets
      *     });
-     *   })
-     *   .catch(function (error) {
-     *     // Add optional error handling here.
-     *   });
      * @param {string|Query} query The name of the query, or a built query.
      * @param {Object} [parameters] The parameters for the query.
-     * @return {Promise} A promise that will be resolved with an array of
+     * @returns {Promise} A promise that will be resolved with an array of
      * {@link module:composer-common.Resource Resource} representing the
      * resources returned by the query.
      */
-    query (query, parameters) {
+    query(query, parameters) {
         const method = 'query';
         LOG.entry(method, query, parameters);
         let queryType, identifier;
@@ -693,18 +721,19 @@ class BusinessNetworkConnection extends EventEmitter {
      * runtime is compatible with this level of the client node.js module.
      * @example
      * // Test the connection to the runtime
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
-     *     return businessNetwork.ping();
-     * })
-     * .then(function(){
-     *     // Connection tested.
-     * });
-     * @return {Promise} A promise that will be fulfilled when the connection has
-     * been tested. The promise will be rejected if the version is incompatible.
+     * var connection = new BusinessNetworkConnection();
+     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *     .then(function (definition) {
+     *         return connection.ping();
+     *     })
+     *     .then(function () {
+     *         // Connection tested.
+     *     });
+     * @returns {Promise} A promise that will be fulfilled when the connection
+     * has been tested. The promise will be rejected if the version is
+     * incompatible.
      */
-    ping () {
+    ping() {
         const method = 'ping';
         LOG.entry(method);
         return this.pingInner()
@@ -728,10 +757,11 @@ class BusinessNetworkConnection extends EventEmitter {
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the client node.js module.
      * @private
-     * @return {Promise} A promise that will be fulfilled when the connection has
-     * been tested. The promise will be rejected if the version is incompatible.
+     * @returns {Promise} A promise that will be fulfilled when the connection
+     * has been tested. The promise will be rejected if the version is
+     * incompatible.
      */
-    pingInner () {
+    pingInner() {
         const method = 'pingInner';
         LOG.entry(method);
         Util.securityCheck(this.securityContext);
@@ -743,18 +773,20 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Activate the current identity on the currently connected business network.
+     * Activate the current identity on the currently connected business
+     * network.
      * @private
-     * @return {Promise} A promise that will be fulfilled when the connection has
-     * been tested. The promise will be rejected if the version is incompatible.
+     * @returns {Promise} A promise that will be fulfilled when the connection
+     * has been tested. The promise will be rejected if the version is
+     * incompatible.
      */
-    activate () {
+    activate() {
         const method = 'activate';
         LOG.entry(method);
         const json = {
-            $class : 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId : uuid.v4(),
-            timestamp : new Date().toISOString()
+            $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
+            transactionId: uuid.v4(),
+            timestamp: new Date().toISOString()
         };
         return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
             .then(() => {
@@ -769,15 +801,15 @@ class BusinessNetworkConnection extends EventEmitter {
      * relationship to the participant, or the fully qualified identifier of
      * the participant. The participant must already exist.
      * @param {string} identityName The name for the new identity.
-     * @param {object} [options] Options for the new identity.
-     * @param {boolean} [options.issuer] Whether or not the new identity should have
-     * permissions to create additional new identities. False by default.
-     * @return {Promise} A promise that will be fulfilled when the identity has
+     * @param {Object} [options] Options for the new identity.
+     * @param {boolean} [options.issuer] Whether or not the new identity should
+     * have permissions to create additional new identities. False by default.
+     * @returns {Promise} A promise that will be fulfilled when the identity has
      * been added to the specified participant. The promise will be rejected if
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    issueIdentity (participant, identityName, options) {
+    issueIdentity(participant, identityName, options) {
         const method = 'issueIdentity';
         LOG.entry(method, participant, identityName);
         if (!participant) {
@@ -837,15 +869,16 @@ class BusinessNetworkConnection extends EventEmitter {
 
     /**
      * Bind an existing identity to the specified participant.
-     * @param {Resource|string} participant The participant, or the fully qualified
-     * identifier of the participant. The participant must already exist.
+     * @param {Resource|string} participant The participant, or the fully
+     * qualified identifier of the participant. The participant must already
+     * exist.
      * @param {string} certificate The certificate for the existing identity.
-     * @return {Promise} A promise that will be fulfilled when the identity has
+     * @returns {Promise} A promise that will be fulfilled when the identity has
      * been added to the specified participant. The promise will be rejected if
      * the participant does not exist, or if the identity is already mapped to
      * another participant.
      */
-    bindIdentity (participant, certificate) {
+    bindIdentity(participant, certificate) {
         const method = 'bindIdentity';
         LOG.entry(method, participant, certificate);
         if (!participant) {
@@ -873,14 +906,16 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Revoke the specified identity by removing any existing mapping to a participant.
-     * @param {Resource|string} identity The identity, or the identifier of the identity.
-     * @return {Promise} A promise that will be fulfilled when the identity has
-     * been removed from the specified participant. The promise will be rejected if
-     * the participant does not exist, or if the identity is not mapped to the
+     * Revoke the specified identity by removing any existing mapping to a
      * participant.
+     * @param {Resource|string} identity The identity, or the identifier of the
+     * identity.
+     * @returns {Promise} A promise that will be fulfilled when the identity has
+     * been removed from the specified participant. The promise will be rejected
+     * if the participant does not exist, or if the identity is not mapped to
+     * the participant.
      */
-    revokeIdentity (identity) {
+    revokeIdentity(identity) {
         const method = 'revokeIdentity';
         LOG.entry(method, identity);
         if (!identity) {
@@ -898,8 +933,8 @@ class BusinessNetworkConnection extends EventEmitter {
         Object.assign(transaction, {
             identity
         });
-        // It is not currently possible to revoke the certificate, so we just call
-        // the runtime to remove the mapping.
+        // It is not currently possible to revoke the certificate, so we just
+        // call the runtime to remove the mapping.
         return this.submitTransaction(transaction)
             .then(() => {
                 LOG.exit(method);
