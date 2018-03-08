@@ -33,8 +33,9 @@ chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('AdminConnection', () => {
-    const testProfileName = 'profile';
     const sandbox = sinon.sandbox.create();
+
+    const testProfileName = 'profile';
     const config = {
         name: testProfileName,
         'x-type': 'hlfv1'

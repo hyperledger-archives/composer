@@ -96,24 +96,25 @@ export class AdminService {
         return this.getAdminConnection().reset(businessNetworkDefinitionName);
     }
 
-    public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().deploy(businessNetworkDefinition);
+    // public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+    //     return this.getAdminConnection().deploy(businessNetworkDefinition);
+    // }
+
+    public upgrade(businessNetworkName: String, businessNetworkVersion: String): Promise<void> {
+        return this.getAdminConnection().upgrade(businessNetworkName, businessNetworkVersion);
     }
 
-    public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().update(businessNetworkDefinition);
+    public install(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        return this.getAdminConnection().install(businessNetworkDefinition);
     }
 
-    public install(businessNetworkDefinitionName: string): Promise<void> {
-        return this.getAdminConnection().install(businessNetworkDefinitionName);
-    }
-
-    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<Map<string, IdCard>> {
-        return this.getAdminConnection().start(businessNetworkDefinition, startOptions);
+    public start(businessNetworkName: String, businessNetworkVersion: String, startOptions?: object): Promise<Map<string, IdCard>> {
+        return this.getAdminConnection().start(businessNetworkName, businessNetworkVersion, startOptions);
     }
 
     public undeploy(businessNetworkDefinitionName: string): Promise<void> {
-        return this.getAdminConnection().undeploy(businessNetworkDefinitionName);
+        // return this.getAdminConnection().undeploy(businessNetworkDefinitionName);
+        return Promise.resolve();
     }
 
     public importCard(cardName: string, card: IdCard): Promise<void> {

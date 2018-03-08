@@ -402,10 +402,11 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     deploy(): Promise<any> {
+        const networkDefinition = this.fileService.getBusinessNetwork();
         // Gets the definition for the currently deployed business network
         this.alertService.busyStatus$.next({
-            title: 'Updating updated business network',
-            text: 'updating ' + this.fileService.getBusinessNetworkName()
+            title: 'Upgrading business network',
+            text: `upgrading ${networkDefinition.getName()} to version ${networkDefinition.getVersion()}`
         });
         return Promise.resolve()
             .then(() => {
@@ -413,7 +414,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                     return;
                 }
                 this.deploying = true;
-                return this.adminService.update(this.fileService.getBusinessNetwork());
+                return this.adminService.upgrade(networkDefinition.getName(), networkDefinition.getVersion());
             })
             .then(() => {
                 this.deploying = false;
@@ -425,8 +426,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.fileService.changesDeployed();
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({
-                    title: 'Update Successful',
-                    text: 'Business network updated successfully',
+                    title: 'Upgrade Successful',
+                    text: 'Business network upgraded successfully',
                     icon: '#icon-deploy_24'
                 });
             })
