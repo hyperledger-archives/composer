@@ -331,6 +331,19 @@ describe('ConnectorServer', () => {
                 });
         });
 
+        it('should import an identity, using the wallet from the internal cardstore', () => {
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.importIdentity.resolves();
+            const cb = sinon.stub();
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'public key', 'private key');
+                });
+        });
+
     });
 
     describe('#connectionManagerExportIdentity', function () {
@@ -358,6 +371,22 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledWith(callback, ConnectorServer.serializerr(expected));
                 });
         });
+
+        it('should export an identity, using correct card store', function () {
+            const id = 'bob1';
+            const expected = {key : 'value'};
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.exportIdentity.withArgs(connectionProfile, connectionOptions, id).resolves(expected);
+            const callback = sinon.stub();
+            return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, id, callback)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.exportIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), id);
+                });
+        });
+
     });
 
     describe('#connectionManagerRemoveIdentity', () => {
@@ -386,6 +415,20 @@ describe('ConnectorServer', () => {
                     serializedError.name.should.equal('Error');
                     serializedError.message.should.equal('import error');
                     serializedError.stack.should.be.a('string');
+                });
+        });
+
+        it('should remove an identity, using the correct cardstore', () => {
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.removeIdentity.resolves(true);
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1');
+
                 });
         });
 
