@@ -159,37 +159,23 @@ class AdminConnection {
      * @param {IdCard} card The card to import
      * @return {Promise} Resolved when the card is imported, resolves to true if updated, false if added.
      */
-    importCard(name, card) {
-        let connectionProfileData = card.getConnectionProfile();
-        let connectionManager;
+    async importCard(name, card) {
+        const connectionProfileData = card.getConnectionProfile();
         connectionProfileData.cardName = name;
-        let updated = false;
-        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
-            .then((connectionManager_) => {
-                connectionManager = connectionManager_;
-                return this.cardStore.has(name);
-            })
-            .then((exists) => {
-                updated = exists;
-                if (exists) {
-                    return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
-                }
-            })
-            .then(() => {
-                // if we have a certificate and optionally a privateKey we should ask the connection manager to import
-                let certificate = card.getCredentials().certificate;
-                let privateKey = card.getCredentials().privateKey;
-                connectionProfileData.wallet=this.cardStore.getWallet(name);
-                if (certificate){
-                    return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
-                }
-            })
-            .then(() => {
-                return this.cardStore.put(name, card);
-            })
-            .then(() => {
-                return updated;
-            });
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        const exists = this.cardStore.has(name);
+        if (exists) {
+            await connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+        }
+        // if we have a certificate and optionally a privateKey we should ask the connection manager to import
+        const certificate = card.getCredentials().certificate;
+        const privateKey = card.getCredentials().privateKey;
+        connectionProfileData.wallet = await this.cardStore.getWallet(name);
+        if (certificate){
+            await connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
+        }
+        await this.cardStore.put(name, card);
+        return exists;
     }
 
     /**
@@ -199,33 +185,24 @@ class AdminConnection {
      * @param {String} cardName The name of the card that needs to be exported
      * @return {Promise} resolved with an instance of the network id card populated
      */
-    exportCard (cardName) {
-        let card;
-        return this.cardStore.get(cardName)
-            .then((result) => {
-                card = result;
-                let credentials = card.getCredentials();
-                //anything set? if so don't go and get the credentials again
-                if (credentials.certificate || credentials.privateKey) {
-                    return card;
-                } else {
-                    // check to make sure the credentials are present and if not then extract them.
-                    let connectionProfileData = card.getConnectionProfile();
-                    connectionProfileData.cardName = cardName;
-                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
-                        .then((connectionManager) => {
-                            connectionProfileData.wallet=this.cardStore.getWallet(cardName);
-                            return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
-                        })
-                        .then((result) => {
-                            if (result) {
-                                //{ certificate: String, privateKey: String }
-                                card.setCredentials(result);
-                            }
-                            return card;
-                        });
-                }
-            });
+    async exportCard (cardName) {
+        const card = await this.cardStore.get(cardName);
+        const credentials = card.getCredentials();
+        //anything set? if so don't go and get the credentials again
+        if (credentials.certificate || credentials.privateKey) {
+            return card;
+        }
+        // check to make sure the credentials are present and if not then extract them.
+        const connectionProfileData = card.getConnectionProfile();
+        connectionProfileData.cardName = cardName;
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        connectionProfileData.wallet = await this.cardStore.getWallet(cardName);
+        const identity = await connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+        if (identity) {
+            //{ certificate: String, privateKey: String }
+            card.setCredentials(identity);
+        }
+        return card;
     }
 
     /**
@@ -242,32 +219,16 @@ class AdminConnection {
      * @returns {Promise} Resolves with true if the existing card was deleted; rejected otherwise.
      * @private
      */
-    _deleteCard(name) {
-        let connectionManager;
-        let connectionProfileData;
-        let cardUserName;
-        let deleted;
-
-        return this.cardStore.get(name)
-        .then((card) => {
-            connectionProfileData = card.getConnectionProfile();
-            cardUserName = card.getUserName();
-            connectionProfileData.cardName = name;
-            connectionProfileData.wallet=this.cardStore.getWallet(name);
-            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
-        })
-        .then((connectionManager_) => {
-            connectionManager = connectionManager_;
-            return this.cardStore.delete(name);
-        })
-        .then((deleted_) => {
-            deleted = deleted_;
-            return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, cardUserName);
-        })
-        .then(() => {
-            return deleted;
-        });
-
+    async _deleteCard(name) {
+        const card = await this.cardStore.get(name);
+        const connectionProfileData = card.getConnectionProfile();
+        const cardUserName = card.getUserName();
+        connectionProfileData.cardName = name;
+        connectionProfileData.wallet = await this.cardStore.getWallet(name);
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        const deleted = await this.cardStore.delete(name);
+        await connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, cardUserName);
+        return deleted;
     }
 
     /**
@@ -309,42 +270,29 @@ class AdminConnection {
      *     // Add optional error handling here.
      * }
      * @param {String} cardName - The name of the business network card
-     * @return {Promise} A promise that when resolved indicates the connection is complete
      */
-    connect (cardName) {
-        const method = 'connectWithCard';
+    async connect (cardName) {
+        const method = 'connect';
         LOG.entry(method, cardName);
-
-        let card;
-
-        return this.cardStore.get(cardName)
-            .then((card_) => {
-                card = card_;
-                return this.connectionProfileManager.connectWithData(
-                    card.getConnectionProfile(),
-                    card.getBusinessNetworkName(),
-                    {cardName : cardName,
-                        wallet: this.cardStore.getWallet(cardName)});
-            })
-            .then((connection) => {
-                this.connection = connection;
-                let secret = card.getEnrollmentCredentials();
-                if (!secret) {
-                    secret = 'na';
-                } else {
-                    secret = secret.secret;
-                }
-                return connection.login(card.getUserName(), secret);
-            })
-            .then((securityContext) => {
-                this.securityContext = securityContext;
-                this.securityContext.card = card;
-                if (card.getBusinessNetworkName()) {
-                    return this.ping(this.securityContext);
-                }
-            }).then(() => {
-                return;
-            });
+        const card = await this.cardStore.get(cardName);
+        const wallet = await this.cardStore.getWallet(cardName);
+        this.connection = await this.connectionProfileManager.connectWithData(
+            card.getConnectionProfile(),
+            card.getBusinessNetworkName(),
+            { cardName, wallet }
+        );
+        let secret = card.getEnrollmentCredentials();
+        if (!secret) {
+            secret = 'na';
+        } else {
+            secret = secret.secret;
+        }
+        this.securityContext = await this.connection.login(card.getUserName(), secret);
+        this.securityContext.card = card;
+        if (card.getBusinessNetworkName()) {
+            await this.ping(this.securityContext);
+        }
+        LOG.exit(method);
     }
 
     /**

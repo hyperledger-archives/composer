@@ -110,6 +110,7 @@
  * @memberof module:composer-common
  */
 class BusinessNetworkCardStore {
+
     /**
      * Get a default name for a given business network card.
      * @param {IdCard} card A business network card
@@ -136,8 +137,8 @@ class BusinessNetworkCardStore {
      * @param {String} cardName The name of the card to get
      * @return {Promise} A promise that is resolved with an IdCard, or rejected if the card does not exist.
      */
-    get(cardName) {
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - get'));
+    async get(cardName) {
+        throw new Error('BusinessNeworkCardStore Abstract function called - get');
     }
 
     /**
@@ -147,8 +148,8 @@ class BusinessNetworkCardStore {
      * @param {IdCard} card The card
      * @return {Promise} A promise that resolves once the data is written
      */
-    put(cardName, card) {
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - put'));
+    async put(cardName, card) {
+        throw new Error('BusinessNeworkCardStore Abstract function called - put');
     }
 
     /**
@@ -157,8 +158,8 @@ class BusinessNetworkCardStore {
      * @param {String} cardName The name of the card to check
      * @return {Promise} A promise resolved with true or false.
      */
-    has(cardName){
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - has'));
+    async has(cardName){
+        throw new Error('BusinessNeworkCardStore Abstract function called - has');
     }
 
     /**
@@ -167,8 +168,8 @@ class BusinessNetworkCardStore {
      * @return {Promise} A promise that is resolved with a Map where
      * the keys are identity card names and the values are IdCard objects.
      */
-    getAll() {
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - getAll'));
+    async getAll() {
+        throw new Error('BusinessNeworkCardStore Abstract function called - getAll');
     }
 
     /**
@@ -177,18 +178,19 @@ class BusinessNetworkCardStore {
      * @param {String} cardName The name of the card to delete.
      * @return {Promise} A promise that resolves to true if the card existed; otherwise false.
      */
-    delete(cardName) {
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - delete'));
+    async delete(cardName) {
+        throw new Error('BusinessNeworkCardStore Abstract function called - delete');
     }
 
-     /**
+    /**
      * Get's a wallet back using the same backing store
      * @abstract
      * @private
+     * @param {String} cardName The name of the card to get the wallet for.
      * @return {Promise} A promise that resolves to the wallet
      */
-    getWallet(){
-        return Promise.reject(new Error('BusinessNeworkCardStore Abstract function called - getWallet'));
+    async getWallet(cardName) {
+        throw new Error('BusinessNeworkCardStore Abstract function called - getWallet');
     }
 
 }
