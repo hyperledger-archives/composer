@@ -515,7 +515,7 @@ class BusinessNetworkConnection extends EventEmitter {
      *     .then(function (sampleTransactionRegistry) {
      *         // ...
      *     });
-     * @param {string} fullyQualifiedName The fully qualified name of the
+     * @param {String} fullyQualifiedName The fully qualified name of the
      * resource registry
      * @returns {Promise} A promise that will be resolved with the registry that
      * this fully qualified name could be found in by default.
@@ -527,30 +527,30 @@ class BusinessNetworkConnection extends EventEmitter {
         return Registry.getRegistry(this.securityContext, type, fullyQualifiedName)
             .then((registry) => {
                 switch (type) {
-                    case 'Transaction':
-                        return new TransactionRegistry(registry.id,
-                            registry.name,
-                            this.securityContext,
-                            businessNetwork.getModelManager(),
-                            businessNetwork.getFactory(),
-                            businessNetwork.getSerializer(),
-                            this);
-                    case 'Asset':
-                        return new AssetRegistry(registry.id,
-                            registry.name,
-                            this.securityContext,
-                            businessNetwork.getModelManager(),
-                            businessNetwork.getFactory(),
-                            businessNetwork.getSerializer(),
-                            this);
-                    case 'Participant':
-                        return new ParticipantRegistry(registry.id,
-                            registry.name,
-                            this.securityContext,
-                            businessNetwork.getModelManager(),
-                            businessNetwork.getFactory(),
-                            businessNetwork.getSerializer(),
-                            this);
+                case 'Transaction':
+                    return new TransactionRegistry(registry.id,
+                        registry.name,
+                        this.securityContext,
+                        businessNetwork.getModelManager(),
+                        businessNetwork.getFactory(),
+                        businessNetwork.getSerializer(),
+                        this);
+                case 'Asset':
+                    return new AssetRegistry(registry.id,
+                        registry.name,
+                        this.securityContext,
+                        businessNetwork.getModelManager(),
+                        businessNetwork.getFactory(),
+                        businessNetwork.getSerializer(),
+                        this);
+                case 'Participant':
+                    return new ParticipantRegistry(registry.id,
+                        registry.name,
+                        this.securityContext,
+                        businessNetwork.getModelManager(),
+                        businessNetwork.getFactory(),
+                        businessNetwork.getSerializer(),
+                        this);
                 }
             });
 
@@ -801,7 +801,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * relationship to the participant, or the fully qualified identifier of
      * the participant. The participant must already exist.
      * @param {string} identityName The name for the new identity.
-     * @param {Object} [options] Options for the new identity.
+     * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should
      * have permissions to create additional new identities. False by default.
      * @returns {Promise} A promise that will be fulfilled when the identity has
