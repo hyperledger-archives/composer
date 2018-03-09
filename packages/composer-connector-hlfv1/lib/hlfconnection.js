@@ -23,8 +23,10 @@ const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
 const thenifyAll = require('thenify-all');
+
 const User = require('fabric-client/lib/User.js');
 const TransactionID = require('fabric-client/lib/TransactionID');
+const FABRIC_CONSTANTS = require('fabric-client/lib/Constants');
 
 const LOG = Logger.getLog('HLFConnection');
 
@@ -44,11 +46,24 @@ class HLFConnection extends Connection {
      * @param {string} identity The identity of the user.
      * @param {Client} client The client.
      * @return {User} A new user.
+     * @private
      */
     static createUser(identity, client) {
         let user = new User(identity);
         user.setCryptoSuite(client.getCryptoSuite());
         return user;
+    }
+
+    /**
+     * Create a new Event Handler to listen for txId and chaincode events
+     * @param {array} eventHubs An array of event hubs.
+     * @param {string} txId The transaction id string to listen for.
+     * @param {number} commitTimeout the commit timeout
+     * @returns {HLFTxEventHandler} the event handler to use
+     * @private
+     */
+    static createTxEventHandler(eventHubs, txId, commitTimeout) {
+        return new HLFTxEventHandler(eventHubs, txId, commitTimeout);
     }
 
     /**
@@ -83,7 +98,7 @@ class HLFConnection extends Connection {
         this.client = client;
         this.channel = channel;
         this.eventHubs = [];
-        this.ccEvents = [];
+        this.ccEvent;
         this.caClient = caClient;
         this.initialized = false;
         this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
@@ -112,16 +127,16 @@ class HLFConnection extends Connection {
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
-                this.eventHubs.forEach((eventHub, index) => {
+                if (this.ccEvent) {
+                    // unregister the eventhub chaincode event registration as disconnect will
+                    // fire the onError callback.
+                    this.ccEvent.eventHub.unregisterChaincodeEvent(this.ccEvent.handle);
+                }
+
+                this.eventHubs.forEach((eventHub) => {
                     if (eventHub.isconnected()) {
                         eventHub.disconnect();
                     }
-
-                    // unregister any eventhub chaincode event registrations
-                    if (this.ccEvents[index]) {
-                        this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
-                    }
-
                 });
                 LOG.exit(method);
             })
@@ -184,48 +199,98 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * process the event hub defs to create event hubs and connect
-     * to them
+     * check the status of the event hubs and attempt to reconnect any event hubs.
+     */
+    _checkEventhubs() {
+        const method = '_checkEventHubs';
+        LOG.entry(method);
+
+        this.eventHubs.forEach((eh) => {
+            eh.checkConnection(true);
+        });
+
+        LOG.exit(method);
+    }
+
+    /**
+     * check the status of the Chaincode Listener and if it isn't registered then try to register one.
+     */
+    _checkCCListener() {
+        const method = '_checkCCListener';
+        LOG.entry(method);
+
+        if (!this.ccEvent) {
+            // find a connected event hub and register with it.
+            for (const eh of this.eventHubs) {
+                if (eh.isconnected()) {
+                    this._registerForChaincodeEvents(eh);
+                    LOG.exit(method);
+                    return;
+                }
+            }
+            LOG.warn(method, `could not find any connected event hubs out of ${this.eventHubs.length} defined hubs to listen on for chaincode events`);
+        }
+        LOG.exit(method);
+    }
+
+    /**
+     * register a listener for chaincode events
+     * @param {ChannelEventHub} eventHub the event hub to listen for events on.
+     * @private
+     */
+    _registerForChaincodeEvents(eventHub) {
+        const method = '_registerForChaincodeEvents';
+        LOG.entry(method);
+
+        if (this.businessNetworkIdentifier) {
+            LOG.debug(method, `registering for chaincode events on ${eventHub.getPeerAddr()}`);
+            this.ccEvent = {eventHub: eventHub};
+            this.ccEvent.handle = eventHub.registerChaincodeEvent(this.businessNetworkIdentifier, 'composer',
+                (event, blockNum, txID, status) => {
+                    if (status && status === 'VALID') {
+                        let evt = event.payload.toString('utf8');
+                        evt = JSON.parse(evt);
+                        this.emit('events', evt);
+                    }
+                },
+                (err) => {
+                    this.ccEvent = undefined;
+                    LOG.warn(method, `Eventhub for CC Events disconnected with error ${err.message}`);
+                    this._checkCCListener();
+                }
+            );
+        }
+        LOG.exit(method);
+
+    }
+
+    /**
+     * Create and connect to channel event hubs for each peer that is an event source.
+     * @private
      */
     _connectToEventHubs() {
         const method = '_connectToEventHubs';
         LOG.entry(method);
 
-        //TODO: To do this properly will require a fix from the node sdk, should work ok for now if CCP has a single channel defined.
-        //we want the eventhubs for all peers in a channel that have the eventSource role
-        //This will change with channel based event messages, so have to leave it like this for now.
-        //basically even though we could get all the event hubs for a channel, you would receive all events
-        //from those peers regardless of business network.
-        this.eventHubs = this.client.getEventHubsForOrg();
-        this.eventHubs.forEach((eventHub) => {
-            eventHub.connect();
+        this.eventHubs = [];
+        this.channel.getPeers().forEach((peer) => {
+            if (peer.isInRole(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE)) {
+                let eventHub = this.channel.newChannelEventHub(peer);
+                this.eventHubs.push(eventHub);
+                eventHub.connect(true); // request full blocks, not filtered blocks.
+            }
         });
 
-        if (this.businessNetworkIdentifier && this.eventHubs.length > 0) {
-
-            // register a chaincode event listener on the first peer only.
-            let ccid = this.businessNetworkIdentifier;
-            LOG.debug(method, 'registerChaincodeEvent', ccid, 'composer');
-            let ccEvent  = this.eventHubs[0].registerChaincodeEvent(ccid, 'composer', (event) => {
-                let evt = event.payload.toString('utf8');
-                evt = JSON.parse(evt);
-                this.emit('events', evt);
-            });
-            this.ccEvents[0] = ccEvent;
-        }
-
-        LOG.debug(method, 'register exit listener for connector');
-
         if (this.eventHubs.length > 0) {
+            LOG.debug(method, 'register exit listener for connector');
             this.exitListener = () => {
+                if (this.ccEvent) {
+                    // unregister the chaincode event registration as disconnect will fire it's error handler
+                    this.ccEvent.eventHub.unregisterChaincodeEvent(this.ccEvent.handle);
+                }
                 this.eventHubs.forEach((eventHub, index) => {
                     if (eventHub.isconnected()) {
                         eventHub.disconnect();
-                    }
-
-                    // unregister any eventhub chaincode event registrations
-                    if (this.ccEvents[index]) {
-                        this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
                     }
                 });
             };
@@ -324,7 +389,7 @@ class HLFConnection extends Connection {
             chaincodeVersion: runtimePackageJSON.version,
             chaincodeId: businessNetworkIdentifier,
             txId: txId,
-            targets: this.getChannelPeersInOrg(['endorsingPeer', 'chaincodeQuery'])
+            targets: this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.ENDORSING_PEER_ROLE, FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE])
         };
         // the following should have been used for request but the node sdk is broken
         // channelNames: this.channel.getName() // this will drive getting all the Peers to install on
@@ -378,6 +443,7 @@ class HLFConnection extends Connection {
      * initialize the channel if it hasn't been done
      *
      * @returns {Promise} a promise that the channel is initialized
+     * @private
      */
     _initializeChannel() {
         const method = '_initializeChannel';
@@ -398,6 +464,7 @@ class HLFConnection extends Connection {
      *
      * @param {object} options the start or upgrade options that may contain endorsement policy information
      * @param {object} request the request to modify.
+     * @private
      */
     _addEndorsementPolicy(options, request) {
         const method = '_addEndorsementPolicy';
@@ -445,6 +512,9 @@ class HLFConnection extends Connection {
         LOG.debug(method, 'loading the channel configuration');
         return this._initializeChannel()
             .then(() => {
+                // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
+                this._checkEventhubs();
+
                 // prepare and send the instantiate proposal
                 finalTxId = this.client.newTransactionID();
 
@@ -473,7 +543,7 @@ class HLFConnection extends Connection {
                 const proposal = results[1];
                 const header = results[2];
 
-                eventHandler = new HLFTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
+                eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, finalTxId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: validResponses,
@@ -572,6 +642,7 @@ class HLFConnection extends Connection {
      * @param {regexp} pattern optional regular expression for message which isn't an error
      * @return {Object} number of ignored errors and valid responses
      * @throws if there are no valid responses at all.
+     * @private
      */
     _validateResponses(responses, isProposal, pattern) {
         const method = '_validateResponses';
@@ -624,8 +695,8 @@ class HLFConnection extends Connection {
             throw new Error(errorMsg);
         }
 
-        // if it was a proposal and some of the  responses were good, check that they compare
-        // but we can't reject it as we don't know if it would pass the endorsement policy
+        // if it was a proposal and some of the responses were good, check that they compare
+        // but we can't reject it as we don't know if it would still pass the endorsement policy
         // and if we did this would allow a malicious peer to stop transactions so we
         // issue a warning so that it get's logged, but we don't know which peer(s) it was
         if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
@@ -709,6 +780,7 @@ class HLFConnection extends Connection {
      * @param {HLFSecurityContext} securityContext The participant's security context.
      * @returns {Promise} which resolves to an array containing whether runtimes are compatible and the ping response,
      * or is rejected with an error.
+     * @private
      */
     _checkRuntimeVersions(securityContext) {
         const method = '_checkRuntimeVersions';
@@ -770,7 +842,7 @@ class HLFConnection extends Connection {
         // determine a peer to use for querying if we haven't before
         if (!this.queryPeer) {
 
-            const availablePeers = this.getChannelPeersInOrg(['chaincodeQuery']);
+            const availablePeers = this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]);
             if (availablePeers.length > 0) {
                 this.queryPeer = availablePeers[0];
             }
@@ -779,7 +851,7 @@ class HLFConnection extends Connection {
 
                 for (let i in allPeersInChannel) {
                     let peer = allPeersInChannel[i];
-                    if (peer.isInRole('chaincodeQuery')) {
+                    if (peer.isInRole(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE)) {
                         this.queryPeer = peer;
                         break;
                     }
@@ -882,6 +954,9 @@ class HLFConnection extends Connection {
         return this._initializeChannel()
             .then(() => {
 
+                // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
+                this._checkEventhubs();
+
                 // Submit the transaction to the endorsers.
                 const request = {
                     chaincodeId: this.businessNetworkIdentifier,
@@ -902,7 +977,9 @@ class HLFConnection extends Connection {
                 const proposal = results[1];
                 const header = results[2];
 
-                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+                // check that we have a Chaincode listener setup and ready.
+                this._checkCCListener();
+                eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: validResponses,
@@ -1050,6 +1127,7 @@ class HLFConnection extends Connection {
     /**
      * return the logged in user
      * @returns {User} the logged in user
+     * @private
      */
     _getLoggedInUser() {
         return this.user;
@@ -1094,6 +1172,9 @@ class HLFConnection extends Connection {
                 return this._initializeChannel();
             })
             .then(() => {
+                // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
+                this._checkEventhubs();
+
                 txId = this.client.newTransactionID();
 
                 // Submit the upgrade proposal
@@ -1119,7 +1200,8 @@ class HLFConnection extends Connection {
                 // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
-                eventHandler = new HLFTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
+
+                eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, txId.getTransactionID(), this.commitTimeout);
                 eventHandler.startListening();
                 return this.channel.sendTransaction({
                     proposalResponses: validResponses,
@@ -1172,31 +1254,12 @@ class HLFConnection extends Connection {
      * @returns {Array} the list of any peers that satisfy all the criteria.
      */
     getChannelPeersInOrg(peerRoles) {
-        const channelPeers = this.channel.getPeers();
-        const orgPeers = this.client.getPeersForOrg();
-
-        let orgPeersInChannel = [];
-        for (let cpIndex in channelPeers) {
-            const cPeer = channelPeers[cpIndex];
-
-            const hasRole = peerRoles.every((peerRole) => {
+        let peers = this.client.getPeersForOrgOnChannel(this.channel.getName());
+        return peers.filter((cPeer) => {
+            return peerRoles.every((peerRole) => {
                 return cPeer.isInRole(peerRole);
             });
-
-            if (hasRole) {
-                const inOrgPeer = orgPeers.some((orgPeer) => {
-                    return cPeer.getName() === orgPeer.getName();
-                });
-                const inOrgPeersInChannel = orgPeersInChannel.some((orgPeer) => {
-                    cPeer.getName() === orgPeer.getName();
-                });
-
-                if (inOrgPeer && !inOrgPeersInChannel) {
-                    orgPeersInChannel.push(cPeer);
-                }
-            }
-        }
-        return orgPeersInChannel;
+        });
     }
 }
 

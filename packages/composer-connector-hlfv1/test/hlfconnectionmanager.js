@@ -671,15 +671,8 @@ describe('HLFConnectionManager', () => {
             sandbox.stub(HLFConnectionManager, 'createHLFConnection').returns();
             mockClient.getCertificateAuthority.returns(mockCAClient);
             mockClient.getMspid.returns('MSP1Org');
-            mockClient._network_config = {
-                '_network_config': {
-                    channels: {
-                        composerchannel: {}
-                    }
-                }
-            };
             mockChannel = sinon.createStubInstance(Channel);
-            mockClient.getChannel.withArgs('composerchannel').returns(mockChannel);
+            mockClient.getChannel.withArgs().returns(mockChannel);
         });
 
         it('should throw if connectionProfile not specified', () => {
