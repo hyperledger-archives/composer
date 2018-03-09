@@ -9,12 +9,10 @@ app-test {
 
         .registries {
             & > * {
-                padding: $space-smedium $space-large;
+                padding: $space-medium $space-large;
             }
-            margin-top: $space-large;
 
-            span {
-                color: $secondary-text;
+            h2 {
                 display: inline-block;
             }
 
