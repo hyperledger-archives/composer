@@ -410,7 +410,7 @@ describe('FileService', () => {
             testArray[4].getType().should.equal('query');
         })));
 
-        it('should return readme + model + script + acl + query + pacakage files if they are only items stored in the file service', fakeAsync(inject([FileService], (fileService: FileService) => {
+        it('should return readme + pacakage + model + script + acl + query files if they are only items stored in the file service', fakeAsync(inject([FileService], (fileService: FileService) => {
             let file = new EditorFile('1', '1', 'this is the readme', 'readme');
             let file2 = new EditorFile('1', '1', 'this is the model', 'model');
             let file3 = new EditorFile('1', '1', 'this is the script', 'script');
@@ -431,34 +431,31 @@ describe('FileService', () => {
             fileService['queryFile'] = file5;
             fileService['packageJson'] = file6;
 
-            fileService['includePackageJson'] = true;
-            let includePackageJson = true;
-
-            let testArray = fileService.getEditorFiles(includePackageJson);
+            let testArray = fileService.getEditorFiles();
 
             testArray[0].getId().should.equal('1');
             testArray[0].getContent().should.equal('this is the readme');
             testArray[0].getType().should.equal('readme');
 
             testArray[1].getId().should.equal('1');
-            testArray[1].getContent().should.equal('this is the model');
-            testArray[1].getType().should.equal('model');
+            testArray[1].getContent().should.equal('this is the package');
+            testArray[1].getType().should.equal('package');
 
             testArray[2].getId().should.equal('1');
-            testArray[2].getContent().should.equal('this is the script');
-            testArray[2].getType().should.equal('script');
+            testArray[2].getContent().should.equal('this is the model');
+            testArray[2].getType().should.equal('model');
 
             testArray[3].getId().should.equal('1');
-            testArray[3].getContent().should.equal('this is the acl');
-            testArray[3].getType().should.equal('acl');
+            testArray[3].getContent().should.equal('this is the script');
+            testArray[3].getType().should.equal('script');
 
             testArray[4].getId().should.equal('1');
-            testArray[4].getContent().should.equal('this is the query');
-            testArray[4].getType().should.equal('query');
+            testArray[4].getContent().should.equal('this is the acl');
+            testArray[4].getType().should.equal('acl');
 
             testArray[5].getId().should.equal('1');
-            testArray[5].getContent().should.equal('this is the package');
-            testArray[5].getType().should.equal('package');
+            testArray[5].getContent().should.equal('this is the query');
+            testArray[5].getType().should.equal('query');
         })));
     });
 

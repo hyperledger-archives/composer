@@ -189,10 +189,14 @@ export class FileService {
         return this.packageJson;
     }
 
-    getEditorFiles(includePackageJson = false): Array<EditorFile> {
+    getEditorFiles(): Array<EditorFile> {
         let files = [];
+
         if (this.getEditorReadMe() !== null) {
             files.push(this.getEditorReadMe());
+        }
+        if (this.getEditorPackageFile() !== null) {
+            files.push(this.getEditorPackageFile());
         }
 
         files = files.concat(this.getEditorModelFiles());
@@ -203,9 +207,7 @@ export class FileService {
         if (this.getEditorQueryFile() !== null) {
             files.push(this.getEditorQueryFile());
         }
-        if (includePackageJson && this.getEditorPackageFile() !== null) {
-            files.push(this.getEditorPackageFile());
-        }
+
         return files;
     }
 
@@ -397,6 +399,11 @@ export class FileService {
             default:
                 throw new Error('Attempted deletion of file unknown type: ' + type);
         }
+
+        if (this.currentFile && this.currentFile.id === id) {
+            this.currentFile = null;
+        }
+
         this.dirty = true;
     }
 
