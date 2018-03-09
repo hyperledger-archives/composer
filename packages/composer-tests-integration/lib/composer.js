@@ -24,6 +24,7 @@ const net = require('net');
 const path = require('path');
 const request = require('request-promise-any');
 const sleep = require('sleep-promise');
+const stripAnsi = require('strip-ansi');
 
 let generated = false;
 
@@ -306,17 +307,18 @@ class Composer {
      * @param {String} method - HTTP method
      * @param {String} path - path
      * @param {*} data - request body
+     * @param {Object} [inputOptions] - options for request
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    async request(method, path, data) {
-        const options = {
+    async request(method, path, data, inputOptions = {}) {
+        const options = Object.assign({}, {
             method,
             uri: `http://localhost:3000${path}`,
             resolveWithFullResponse: true,
             simple: false,
             followAllRedirects: true,
             jar
-        };
+        });
         if (data) {
             options.body = data;
             options.headers = {
@@ -324,8 +326,9 @@ class Composer {
                 'Content-Length': Buffer.byteLength(data)
             };
         }
-        const response = await request(options);
-        this.lastResp = { code: response.statusCode, response: response.body };
+        const finalOptions = Object.assign({}, options, inputOptions);
+        const response = await request(finalOptions);
+        this.lastResp = { code: response.statusCode, response: response.body || response.error };
         return this.lastResp;
     }
 
@@ -369,10 +372,12 @@ class Composer {
                 childCliProcess.stderr.setEncoding('utf8');
 
                 childCliProcess.stdout.on('data', (data) => {
+                    data = stripAnsi(data);
                     stdout += data;
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
+                    data = stripAnsi(data);
                     stderr += data;
                 });
 
@@ -442,6 +447,8 @@ class Composer {
                 }, 60000);
 
                 childCliProcess.stdout.on('data', (data) => {
+                    data = stripAnsi(data);
+                    console.log(label, 'STDOUT', data);
                     stdout += data;
                     if(stdout.match(regex)) {
                         success = true;
@@ -450,6 +457,8 @@ class Composer {
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
+                    data = stripAnsi(data);
+                    console.log(label, 'STDERR', data);
                     stderr += data;
                 });
 

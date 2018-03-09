@@ -36,6 +36,10 @@ const users = [{
     cn: 'bob',
     name: 'Bob B',
     credentials: 'b0bIsB3tt3r'
+}, {
+    cn: 'charlie',
+    name: 'Charlie "Chuck" Norris',
+    credentials: 'bl0ckn0rr1sw0zh3re'
 }];
 
 const db = {};

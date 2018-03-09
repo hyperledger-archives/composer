@@ -27,9 +27,12 @@ rm -rf ${HOME}/.composer/cards/sal*
 rm -rf ${HOME}/.composer/client-data/sal*
 rm -rf ${HOME}/.composer/cards/ange*
 rm -rf ${HOME}/.composer/client-data/ange*
+rm -rf ${HOME}/.composer/cards/charlie*
+rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
 rm -f ./networkadmin.card
+rm -f ./composer-report-*
 
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
@@ -137,6 +140,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     # Start all test programs.
     npm run stop_ldap
     npm run start_ldap
+    docker rm -f mongo || true
+    docker run -d --name mongo -p 27017:27017 mongo
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
@@ -146,6 +151,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     fi
 
     # Stop all test programs.
+    docker rm -f mongo || true
     npm run stop_ldap
 
     # Kill and remove any started Docker images.
@@ -176,6 +182,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.npmrc
     rm ./*.tgz
     rm -f ./networkadmin.card
+    rm -f ./composer-report-*
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm .npmrc
