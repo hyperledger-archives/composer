@@ -14,17 +14,14 @@ index-order: 900
 
 >Please note: {{site.data.conrefs.composer_full}} is a framework - so your application will need to have it's own logging framework. Also, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging.
 
-For application level prodblem diagnosis, this information here will not be required. This is for finding out information to help diagnose problems with the 
-{site.data.conrefs.composer_full}} itself.
+For application level problem diagnosis, it is unlikely that you will need to be very familar with all of the information here. However a basic understanding and ability to enable the default levels of logging will be useful. 
 
-# Diagnosing Composer Problems
+# Diagnosing Issues
 
 There are two places or environments where logging takes place
 
 - the one the application is running in
 - the chain code container that executes the transaction functions.
-
-Internally, {{site.data.conrefs.composer_full}} uses the  node.js logging package by default, with an initial level of log points and destinations set up.
 
 ## Overview
 
@@ -36,9 +33,9 @@ The framework will log information at these levels, as defined by Winston inline
 - Verbose
 - Debug
 
-The 'Silly' level doesn't get used.
+The code has different levels of logging that can be enabled that are the standard NPM log levels of, Error, Warn, Info, Verbose, Debug, Silly are used. (Silly is used just to be log everything - we don't have any specific points at this level. Also a None level is used to signify nothing).
 
-Within in the code, log messages are written at a selection of these levels depending on the type of message. 
+Within in the code, log messages are written at a selection of these levels depending on the type of message.  Entry and Exit to functions in the code are logged specifically at the Debug level. 
 
 Application side there are two locations where these log messages are written. A text file contain the log messages, and stdout. Within the chaincode container, by default only stdout is used.
 
@@ -46,74 +43,43 @@ Application side there are two locations where these log messages are written. A
 
 To control both the location and the type of information that is produced a simple JSON based object configuration is used. The [Config] module is used to help assemble this JSON structure - therefore end user control can be done by environment variables and other formats that Config supports. 
 
-Control can be broke into two parts
+> Short cut environment variables are provided to make working with this JSON structure easy!
+
+With that structure, control can be broke into two parts
 
 - What level log messages are produced at
 - Where these messages are sent
 
-### LogLevel
+### What is produced?
 
-This is the most important and primary way logging is controlled. 
-
-
-For example
+What to log and at what level and components are controlled by the *DEBUG* control string, as used by many node applications. This is a comma-separated list of components. A single * means everything, and a - sign infront of any component means do *not\* log this
 
 ```
-{
-    "gettingstarted": {
-       "cardname": "admin@digitalproperty-network"
-    },
-    "ComposerConfig": {
-        "debug": {
-            "logger": "default",
-            "config": {
-                "console": {
-                    "enabledLevel": "info",
-                    "alwaysLevel": "none"
-                },
-                "file": {
-                    "filename": "./trace_PID.log",
-                    "enabledLevel": "silly",
-                    "alwaysLevel": "info"
-                }
-            }
-        }
-    }
-}
+DEBUG=<moduleA>,<moduleB>
 ```
-The first section is specific to the Getting Started application, the second `ComposerConfig` section is for the {{site.data.conrefs.composer_full}}.
 
-- `logger` is used to refer the module that does actual logging. default is implying that this is the winston framework
-- `config` is passed to the logger to control what it does.  So this section is specific to the logger in use.
-
-## Enabling more (or less) information
-
-The standard way of enabling node.js applications for debug is to use the `DEBUG` environment variable. So therefore
-
-What to log is controlled by the DEBUG control string, as used by many node applications. This is a comma-separated list of components. A single * means everything, and a - sign infront of any component means do *not* log this.  {{site.data.conrefs.composer_full}} is a component. For example
+The string 'composer' is used to indetify Hyperledger Composer. For example
 
 ```
 DEBUG=express,composer,http
 ```
 
-Would log all the {{site.data.conrefs.composer_full}} data, as well as whatever Express and HTTP wanted to do.
-
-As this is a large amount of detail,  the syntax is extended to be
+Would log all the composer log points, as well as whatever Express and HTTP wanted to do.
+To specifically control the Composer information a string can accept further detail.
 
 ```
 DEBUG=composer[tracelevel]:fqn/class/name
 ```
 
-The [tracelevel] including the [ ] is optional and defaults to *error*;  the `fqn/class/name` is dependant on how the code is written and the name of the logger that it requests. 
+The [tracelevel] including the [ ] is optional and defaults to _error_; the `fqn/class/name` is dependant on how the code is written and the name of the logger that it requests. (subject for more work later)
 
 Examples are
 
-- `composer:*`  Everything at *error* level
-- `composer[error]:*`  Everything at *error* level
-- `composer[info]:*` Everything at *info* level
-- `composer[info]:BusinessNetworkConnection`  Solely *BusinessNetworkConnection* at the *info* level
-- `-composer:BusinessNetworkConnection,composer[error]:*`  Do not trace anything in the BusinessNetworkConnection class, but do trace anywhere else that has errors.  *the do not takes effect at all levels of trace*
-
+* `composer:*` Everything at _error_ level
+* `composer[error]:*` Everything at _error_ level
+* `composer[info]:*` Everything at _info_ level
+* `composer[info]:BusinessNetworkConnection` Solely _BusinessNetworkConnection_ at the _info_ level
+* `-composer:BusinessNetworkConnection,composer[error]:*` Do not trace anything in the BusinessNetworkConnection class, but do trace anywhere else that has errors. _the do not takes effect at all levels of trace_
 
 >The values above are called the *debug control string*
 
@@ -236,6 +202,17 @@ The logging level was successfully changed to: composer[debug]:TransactionHandle
 
 Command succeeded
 ```
+## Component Profiles
+
+Using the debug string for another other than broad logging, requires a knowledge of what file/class to trace. If you want to take logging from say ACLs, then 
+this there is the concept of 'profiles'. For example for ACLs, you can enable trace with
+
+```
+DEBUG=composer[debug]:acls
+```
+
+The syntax is the same, but internally 'acls' is expanded to a debug string specifically for ACLs. 
+
 
 
 

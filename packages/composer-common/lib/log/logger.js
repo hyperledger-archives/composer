@@ -66,7 +66,7 @@ const _logLevelAsString = {
     none: LOG_LEVEL_NONE
 };
 
-// additional trace control strings to add if
+// If  composer[debug]:acls is provided, the debug level of trace will be used for specified string.
 const PROFILES = {
     'acls' : ['composer[#]:AccessController']
 };
@@ -470,7 +470,7 @@ class Logger {
 
         // if no debug ctrl variable
         if (!localConfig.debug){
-            localConfig.debug = (process.env.DEBUG || _envDebug);
+            localConfig.debug = (process.env.DEBUG || _envDebug );
         }
 
         // if no console setting
@@ -645,6 +645,14 @@ class Logger {
     }
 
     /**
+     * Get the function set as a callback
+     * @return {Function} function set as the callback
+     */
+    static getCallBack(){
+        return _callback;
+    }
+
+    /**
      * Resets the logger - for test and emergency use only
      */
     static __reset(){
@@ -653,6 +661,22 @@ class Logger {
         _envDebug = 'composer[error]:*';
         _clInstances = {};
 
+    }
+
+    /**
+     * Sets up the config for the cli appls
+     */
+    static setCLIDefaults(){
+        let envVariable = process.env.DEBUG;
+        if (!envVariable){
+            envVariable = 'composer[info]:*';
+        }
+        Logger.setLoggerCfg({
+            'console': {
+                'maxLevel': 'silly'
+            },
+            'debug' : envVariable
+        },true);
     }
 
     /**

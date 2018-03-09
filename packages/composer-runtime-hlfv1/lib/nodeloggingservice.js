@@ -31,18 +31,30 @@ class NodeLoggingService extends LoggingService {
         this.stub = null;
     }
 
+
+
+    /**
+     *
+     * @param {Object} stub node chaincode stub
+     */
     async initLogging(stub) {
         this.stub = stub;
 
         let json = await this.getLoggerCfg();
         Logger.setLoggerCfg(json,true);
-        Logger.setCallBack(function(){return stub.getTxID().substring(0, 8);});
+        Logger.setCallBack(function(){
+            return stub.getTxID().substring(0, 8);
+        });
         if( json.origin && json.origin==='default-logger-module'){
             await this.setLoggerCfg(this.getDefaultCfg());
         }
 
     }
 
+    /**
+     *
+     * @param {Object} cfg to set
+     */
     async setLoggerCfg(cfg) {
         await this.stub.putState(LOGLEVEL_KEY, Buffer.from(JSON.stringify(cfg)));
     }
@@ -50,6 +62,8 @@ class NodeLoggingService extends LoggingService {
     /**
      * Return the logger config... basically the usual default setting for debug
      * Console only. maxLevel needs to be high here as all the logs goto the stdout/stderr
+     *
+     * @returns {Object} configuration
      */
     async getLoggerCfg(){
 
@@ -66,18 +80,24 @@ class NodeLoggingService extends LoggingService {
 
     }
 
+    /**
+     * @returns {String} information to add
+     */
     callback(){
         if (this.stub) {
             const shortTxId = this.stub.getTxID().substring(0, 8);
             return `[${shortTxId}]`;
 
         } else {
-            return('xxxxxx no stub');
+            return('Warning - No stub');
 
         }
 
     }
 
+    /**
+     * @return {Object} the default cfg
+     */
     getDefaultCfg(){
 
         let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
@@ -85,16 +105,6 @@ class NodeLoggingService extends LoggingService {
             envVariable = 'composer[error]:*';
         }
         return {
-            // 'logger': './winstonInjector.js',
-            // 'debug': 'composer[error]:*',
-            // 'console': {
-            //     'maxLevel': 'silly'
-
-            // },
-            // 'file': {
-            //     'maxLevel': 'none'
-            // },
-            // 'origin':'default-runtime-hlfv1'
             'file': {
                 'maxLevel': 'none'
             },

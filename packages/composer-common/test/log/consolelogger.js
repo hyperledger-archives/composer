@@ -15,7 +15,7 @@
 'use strict';
 
 const ConsoleLogger = require('../../lib/log/consolelogger');
-const util = require('util');
+
 
 require('chai').should();
 const sinon = require('sinon');
@@ -24,31 +24,43 @@ describe('ConsoleLogger', () => {
 
     let sandbox;
     let logger;
-    // let utilMock;
-
-
 
     describe('#format', () => {
+        let stdout;
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+            logger = ConsoleLogger.getLogger();
+            stdout = sandbox.spy(console, 'log');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
 
         it('should handle no arguments', () => {
-            logger.format('func1', 'some msg').should.equal('func1 some msg');
+            logger.log('debug','func1', 'some msg');
+            sinon.assert.calledWith(stdout,'func1 some msg');
         });
 
         it('should handle basic arguments', () => {
-            logger.format('func1', 'some msg', [ 'arg1', 3.142, true, null, undefined ]).should.equal('func1 some msg arg1, 3.142, true, null, undefined');
+            logger.log('debug','func1', 'some msg', [ 'arg1', 3.142, true, null, undefined ]);
+            sinon.assert.calledWith(stdout,'func1 some msg arg1, 3.142, true, null, undefined');
         });
 
         it('should handle object arguments', () => {
-            logger.format('func1', 'some msg', [ { prop1: 'value1' } ]).should.equal('func1 some msg {"prop1":"value1"}');
+            logger.log('debug','func1', 'some msg', [ { prop1: 'value1' } ]);
+            sinon.assert.calledWith(stdout,'func1 some msg {"prop1":"value1"}');
         });
 
         it('should handle array arguments', () => {
-            logger.format('func1', 'some msg', [ [ 'value1', 'value2' ] ]).should.equal('func1 some msg ["value1","value2"]');
+            logger.log('debug','func1', 'some msg', [ [ 'value1', 'value2' ] ]);
+            sinon.assert.calledWith(stdout,'func1 some msg ["value1","value2"]');
         });
 
         it('should handle function arguments', () => {
             const cb = () => { };
-            logger.format('func1', 'some msg', [ cb ]).should.equal('func1 some msg <function>');
+            logger.log('debug','func1', 'some msg', [ cb ]);
+            sinon.assert.calledWith(stdout,'func1 some msg <function>');
         });
 
         it('should handle JSON serialization errors', () => {
@@ -58,19 +70,20 @@ describe('ConsoleLogger', () => {
                     throw new Error('mwahahaha');
                 }
             };
-            logger.format('func1', 'some msg', [ badObject ]).should.equal('func1 some msg [object Object]');
+            logger.log('debug','func1', 'some msg', [ badObject ]);
+            sinon.assert.calledWith(stdout,'func1 some msg [object Object]');
         });
 
 
     });
 
     describe('#log', () => {
-
+        let sandbox;
         beforeEach(() => {
             sandbox = sinon.sandbox.create();
             logger = ConsoleLogger.getLogger();
-            // sandbox.stub(util,'format');
-            sandbox.stub(console, 'log');
+            sandbox.stub(logger,'format');
+
         });
 
         afterEach(() => {
@@ -78,38 +91,37 @@ describe('ConsoleLogger', () => {
         });
 
         it('should log debug level', () => {
+            const spy = sandbox.spy(console, 'log');
             logger.log('debug', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
-            sinon.assert.calledOnce(console.log);
-            sinon.assert.calledWith(console.log, 'func1 some msg arg1, arg2');
-            sinon.assert.calledOnce(util.format);
+            sinon.assert.calledOnce(spy);
         });
 
         it('should log warn level', () => {
             const spy = sandbox.spy(console, 'warn');
             logger.log('warn', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
+
         });
 
         it('should log info level', () => {
             const spy = sandbox.spy(console, 'info');
             logger.log('info', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
+
         });
 
         it('should log verbose level', () => {
             const spy = sandbox.spy(console, 'log');
             logger.log('verbose', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
+
         });
 
         it('should log error level', () => {
             const spy = sandbox.spy(console, 'error');
             logger.log('error', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
+
         });
 
     });

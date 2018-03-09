@@ -15,6 +15,7 @@
 'use strict';
 
 const LoggingService = require('composer-runtime').LoggingService;
+const Logger = require('composer-common').Logger;
 const NodeLoggingService = require('../lib/nodeloggingservice');
 const ChaincodeStub = require('fabric-shim/lib/stub');
 
@@ -22,6 +23,8 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+let chaiSubset = require('chai-subset');
+chai.use(chaiSubset);
 
 describe('NodeLoggingService', () => {
 
@@ -50,4 +53,66 @@ describe('NodeLoggingService', () => {
 
     });
 
+
+    describe('#getDefaultCfg', () => {
+
+        it('should return the default values', () => {
+            let value = loggingService.getDefaultCfg();
+            value.debug.should.equal('composer[error]:*');
+        });
+
+        it('should return the enviroment variable values', () => {
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='wibble';
+            let value = loggingService.getDefaultCfg();
+            value.debug.should.equal('wibble');
+        });
+
+    });
+
+    describe('#callback',  () => {
+
+        it('should return warning if no stub',  () => {
+            loggingService.stub = undefined;
+            loggingService.callback().should.equal('Warning - No stub');
+        });
+
+        it('should return the fake tx id', () => {
+            loggingService.callback().should.equal('[1548a95f]');
+        });
+
+    });
+
+
+    describe('#getLoggerCfg',async  () => {
+
+        it('should default if nothing in state', async () => {
+            loggingService.stub.getState.returns([]);
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({'origin':'default-runtime-hlfv1'});
+        });
+
+        it('should return what was in state',async () => {
+            loggingService.stub.getState.returns(JSON.stringify({batman:'hero'}));
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({batman:'hero'});
+        });
+        mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+    });
+
+    describe('#initLogging', async  () => {
+
+        it('should default if nothing in state', async () => {
+            mockStub.getState.returns(JSON.stringify({batman:'hero'}));
+            await loggingService.initLogging(mockStub);
+
+        });
+
+        it('should return what was in state',async () => {
+            mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+            await loggingService.initLogging(mockStub);
+            (Logger.getCallBack())();
+        });
+
+    });
 });

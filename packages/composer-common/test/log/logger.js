@@ -91,6 +91,24 @@ describe('Logger', () => {
             sinon.assert.calledOnce(callbackFn);
         });
 
+        it('should make the callback to get extra data - but it returns undefined', () => {
+            let stubLogger=  {
+                log: sinon.stub()
+            };
+
+            let callbackFn = sinon.stub().returns(undefined);
+            Logger.setCallBack(callbackFn);
+            Logger.getCallBack().should.equal(callbackFn);
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            let logger = new Logger('ScriptManager');
+
+            logger.intlog('debug','methodname','message');
+            sinon.assert.calledOnce(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message');
+            sinon.assert.calledOnce(callbackFn);
+        });
+
         it('should log to the functional logger, multiargs', () => {
             let stubLogger=  {
                 log: sinon.stub()
@@ -268,11 +286,9 @@ describe('Logger', () => {
                 }
             };
 
-            sandbox.stub(Logger,'getLoggerConfig');
             sandbox.stub(Logger,'_loadLogger');
             sandbox.stub(Logger,'_setupLog');
             Logger.setLoggerCfg(cfg);
-            sinon.assert.calledOnce(Logger.getLoggerConfig);
             sinon.assert.calledOnce(Logger._loadLogger);
             sinon.assert.notCalled(Logger._setupLog);
 
@@ -289,13 +305,13 @@ describe('Logger', () => {
                 }
             };
 
-            sandbox.stub(Logger,'getLoggerConfig');
+
             sandbox.stub(Logger,'_loadLogger');
             sandbox.stub(Logger,'_setupLog');
             Logger.getLog('wibble');
             Logger.setLoggerCfg(cfg,true);
 
-            sinon.assert.calledOnce(Logger.getLoggerConfig);
+
             sinon.assert.calledOnce(Logger._loadLogger);
             sinon.assert.calledTwice(Logger._setupLog);
         });
@@ -311,19 +327,17 @@ describe('Logger', () => {
                 }
             };
 
-            sandbox.stub(Logger,'getLoggerConfig');
             sandbox.stub(Logger,'_loadLogger');
             sandbox.stub(Logger,'_setupLog');
             Logger.setLoggerCfg(cfg,true);
             Logger.getLog('wibble');
             Logger.setLoggerCfg(cfg,true);
-            sinon.assert.calledTwice(Logger.getLoggerConfig);
             sinon.assert.calledTwice(Logger._loadLogger);
             sinon.assert.calledTwice(Logger._setupLog);
         });
     });
 
-    describe('#getLoggerConfig', () => {
+    describe('#getLoggerCfg', () => {
         let sandbox;
 
         beforeEach(()=>{
@@ -363,7 +377,7 @@ describe('Logger', () => {
             sandbox.stub(Logger,'_parseLoggerConfig').returns(treeStub);
 
 
-            let localConfig = Logger.getLoggerConfig();
+            let localConfig = Logger.processLoggerConfig();
             sinon.assert.calledOnce(Logger._parseLoggerConfig);
             localConfig.logger.should.equal('./myOwnLogger.js');
             localConfig.file.should.equal('filename');
@@ -387,8 +401,7 @@ describe('Logger', () => {
             let treeStub = sinon.createStubInstance(Tree);
             sandbox.stub(Logger,'_parseLoggerConfig').returns(treeStub);
 
-            // let spy = sandbox.spy(Logger,'getLoggerConfig');
-            let localConfig = Logger.getLoggerConfig();
+            let localConfig = Logger.processLoggerConfig();
             sinon.assert.calledOnce(Logger._parseLoggerConfig);
             localConfig.logger.should.equal('./winstonInjector.js');
 
@@ -466,7 +479,7 @@ describe('Logger', () => {
             };
             let treeStub = sinon.createStubInstance(Tree);
             let nodeStub = sinon.createStubInstance(TreeNode);
-            sandbox.stub(Logger, 'getLoggerConfig').returns({'config':'set'});
+            sandbox.stub(Logger, 'getLoggerCfg').returns({'config':'set'});
             sandbox.stub(Logger, '_loadLogger').returns(composerLogger);
             sandbox.stub(Logger,'getSelectionTree').returns(treeStub);
             treeStub.getNode.returns(nodeStub);
@@ -483,7 +496,7 @@ describe('Logger', () => {
             };
             let treeStub = sinon.createStubInstance(Tree);
             let nodeStub = sinon.createStubInstance(TreeNode);
-            sandbox.stub(Logger, 'getLoggerConfig').returns({'config':'set'});
+            sandbox.stub(Logger, 'getLoggerCfg').returns({'config':'set'});
             sandbox.stub(Logger, '_loadLogger').returns(composerLogger);
             sandbox.stub(Logger,'getSelectionTree').returns(treeStub);
             treeStub.getNode.returns(nodeStub);
@@ -543,6 +556,14 @@ describe('Logger', () => {
             tree.getInclusion('Connection').should.be.false;
             tree.getInclusion('ModelUtil').should.be.false;
             tree.getInclusion('ScriptManager').should.be.true;
+        });
+
+        it('should parse a single profile configuration', () => {
+            const configElements ={ 'debug':'composer:acls'};
+            const tree = Logger._parseLoggerConfig(configElements);
+            tree.should.be.an.instanceOf(Tree);
+            tree.root.isIncluded().should.be.false;
+            tree.getInclusion('AccessController').should.be.true;
         });
 
         it('should parse a multiple logger configuration', () => {
@@ -607,12 +628,52 @@ describe('Logger', () => {
             };
             const mockLogger = {};
             loggerModule.getLogger.withArgs(loggerConfig).returns(mockLogger);
-            sandbox.stub(Logger, 'getLoggerConfig').returns(loggerConfig);
+            sandbox.stub(Logger, 'getLoggerCfg').returns(loggerConfig);
             const actualLogger = Logger._loadLogger(loggerConfig);
             sinon.assert.calledWith(spy, sinon.match(/Failed to load logger module dontexist/));
             actualLogger.log('foo', 'bar');
         });
 
+    });
+
+    describe('#setCLIDefaults', () => {
+        let sandbox;
+
+        beforeEach(()=>{
+            Logger.__reset();
+            delete process.env.DEBUG;
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(()=>{
+            Logger.__reset();
+            sandbox.restore();
+        });
+
+        it('should call setLoggerCfg with defaults for the cli', () => {
+            sandbox.stub(Logger,'setLoggerCfg');
+            Logger.setCLIDefaults();
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg,{
+                'console': {
+                    'maxLevel': 'silly'
+                },
+                'debug' : 'composer[info]:*'
+            },true);
+        });
+
+        it('should call setLoggerCfg with defaults for the cli, custom debug string', () => {
+            sandbox.stub(Logger,'setLoggerCfg');
+            process.env.DEBUG='Everything';
+            Logger.setCLIDefaults();
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg,{
+                'console': {
+                    'maxLevel': 'silly'
+                },
+                'debug' : 'Everything'
+            },true);
+        });
     });
 
     describe('#WinstonInjector',()=>{

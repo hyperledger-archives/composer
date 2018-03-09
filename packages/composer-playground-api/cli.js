@@ -36,22 +36,7 @@ const argv = require('yargs')
     .argv;
 
 const Logger = require('composer-common').Logger;
-
-Logger.setLoggerCfg(
-
-    {
-        'file': {
-            'maxLevel': 'none'
-        },
-        'console': {
-            'maxLevel': 'silly'
-        },
-        'debug' : 'composer[error]:*',
-        'logger': './consolelogger.js',
-        'origin':'default-runtime-hlfv1'
-    }
-    ,true
-);
+Logger.setCLIDefaults();
 const LOG = Logger.getLog('PlaygroundAPI');
 
 

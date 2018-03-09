@@ -36,21 +36,7 @@ const Logger = require('composer-common').Logger;
 const opener = require('opener');
 
 const LOG = Logger.getLog('Composer');
-
-Logger.setLoggerCfg(
-    {
-        'file': {
-            'maxLevel': 'none'
-        },
-        'console': {
-            'maxLevel': 'silly'
-        },
-        'debug' : 'composer[error]:*',
-        'logger': './consolelogger.js',
-        'origin':'default-runtime-hlfv1'
-    }
-    ,true
-);
+Logger.setCLIDefaults();
 
 
 let config;
