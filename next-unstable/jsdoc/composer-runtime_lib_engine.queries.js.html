@@ -157,18 +157,24 @@ class EngineQueries {
                 objects.forEach((object) => {
                     Registry.removeInternalProperties(object);
                 });
-                return objects.reduce((promiseChain, object) => {
-                    return promiseChain.then((objects) => {
-                        return accessController.check(serializer.fromJSON(object), 'READ')
-                            .then(() => {
-                                objects.push(object);
-                                return objects;
-                            })
-                            .catch((error) => {
-                                return objects;
-                            });
-                    });
-                }, Promise.resolve([]));
+
+                if (!context.getAclManager().getAclFile()) {
+                    LOG.debug(method, 'No ACL file');
+                    return Promise.resolve(objects);
+                } else {
+                    return objects.reduce((promiseChain, object) => {
+                        return promiseChain.then((objects) => {
+                            return accessController.check(serializer.fromJSON(object), 'READ')
+                                .then(() => {
+                                    objects.push(object);
+                                    return objects;
+                                })
+                                .catch((error) => {
+                                    return objects;
+                                });
+                        });
+                    }, Promise.resolve([]));
+                }
             })
             .then((objects) => {
                 LOG.exit(method, objects);
