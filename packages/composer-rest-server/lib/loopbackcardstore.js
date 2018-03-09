@@ -41,102 +41,118 @@ class LoopBackCardStore extends BusinessNetworkCardStore {
     /**
      * @inheritdoc
      */
-    get(cardName) {
-        return this.Card.findOne({
+    async get(cardName) {
+        const lbCard = await this.Card.findOne({
             where: {
                 userId: this.userId,
                 name: cardName
             }
-        }).then((lbCard) => {
-            if (!lbCard) {
-                const error = new Error(`The business network card "${cardName}" does not exist`);
-                error.statusCode = error.status = 404;
-                throw error;
-            }
-            const cardData = Buffer.from(lbCard.base64, 'base64');
-            return IdCard.fromArchive(cardData)
-                .then((card) => {
-                    card.connectionProfile.wallet = new LoopBackWallet(lbCard);
-                    return card;
-                });
         });
+        if (!lbCard) {
+            const error = new Error(`The business network card "${cardName}" does not exist`);
+            error.statusCode = error.status = 404;
+            throw error;
+        }
+        const cardData = Buffer.from(lbCard.base64, 'base64');
+        const card = await IdCard.fromArchive(cardData);
+        card.connectionProfile.wallet = new LoopBackWallet(lbCard);
+        return card;
     }
 
     /**
      * @inheritdoc
      */
-    put(cardName, card) {
-        return card.toArchive({ type: 'nodebuffer' })
-            .then((cardData) => {
-                return this.Card.upsertWithWhere({
-                    userId: this.userId,
-                    name: cardName
-                }, {
-                    name: cardName,
-                    base64: cardData.toString('base64'),
-                    data: {},
-                    userId: this.userId
-                });
-            });
+    async put(cardName, card) {
+
+        // Check for an existing card, so we can merge the data contents
+        // if such a card exists.
+        const lbCard = await this.Card.findOne({
+            where: {
+                userId: this.userId,
+                name: cardName
+            }
+        });
+        const data = lbCard ? lbCard.data : {};
+
+        // Now we can safely update the card.
+        const cardData = await card.toArchive({ type: 'nodebuffer' });
+        await this.Card.upsertWithWhere({
+            userId: this.userId,
+            name: cardName
+        }, {
+            name: cardName,
+            base64: cardData.toString('base64'),
+            data,
+            userId: this.userId
+        });
+
     }
 
     /**
      * @inheritdoc
      */
-    getAll() {
+    async getAll() {
         const result = new Map();
-        return this.Card.find({
+        const lbCards = await this.Card.find({
             where: {
                 userId: this.userId
             }
-        }).then((lbCards) => {
-            return lbCards.reduce((promise, lbCard) => {
-                return promise.then(() => {
-                    const cardData = Buffer.from(lbCard.base64, 'base64');
-                    return IdCard.fromArchive(cardData)
-                        .then((card) => {
-                            card.connectionProfile.wallet = new LoopBackWallet(lbCard);
-                            result.set(lbCard.name, card);
-                        });
-                });
-            }, Promise.resolve());
-        }).then(() => {
-            return result;
         });
+        for (const lbCard of lbCards) {
+            const cardData = Buffer.from(lbCard.base64, 'base64');
+            const card = await IdCard.fromArchive(cardData);
+            card.connectionProfile.wallet = new LoopBackWallet(lbCard);
+            result.set(lbCard.name, card);
+        }
+        return result;
     }
 
     /**
      * @inheritdoc
      */
-    delete(cardName) {
-        return this.Card.destroyAll({
+    async delete(cardName) {
+        const info = await this.Card.destroyAll({
             userId: this.userId,
             name: cardName
-        }).then((info) => {
-            if (!info.count) {
-                const error = new Error(`The business network card "${cardName}" does not exist`);
-                error.statusCode = error.status = 404;
-                throw error;
-            }
         });
+        if (!info.count) {
+            const error = new Error(`The business network card "${cardName}" does not exist`);
+            error.statusCode = error.status = 404;
+            throw error;
+        }
     }
 
     /**
      * @inheritdoc
      */
-    has(cardName) {
-        return this.Card.findOne({
+    async has(cardName) {
+        const lbCard = await this.Card.findOne({
             where: {
                 userId: this.userId,
                 name: cardName
             }
-        }).then((lbCard) => {
-            if (!lbCard) {
-                return false;
-            }
-            return true;
         });
+        return !!lbCard;
     }
+
+    /**
+     * @inheritdoc
+     */
+    async getWallet(cardName) {
+        const lbCard = await this.Card.findOne({
+            where: {
+                userId: this.userId,
+                name: cardName
+            }
+        });
+        if (!lbCard) {
+            const error = new Error(`The business network card "${cardName}" does not exist`);
+            error.statusCode = error.status = 404;
+            throw error;
+        }
+        return new LoopBackWallet(lbCard);
+    }
+
 }
 
 module.exports = LoopBackCardStore;

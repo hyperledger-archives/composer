@@ -1,4 +1,4 @@
-@cli-network
+@cli @cli-network
 Feature: Cli network steps
 
     Background:

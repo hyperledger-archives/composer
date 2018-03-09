@@ -1,4 +1,4 @@
-@cli-report
+@cli @cli-report
 Feature: Cli steps
 
     Background:

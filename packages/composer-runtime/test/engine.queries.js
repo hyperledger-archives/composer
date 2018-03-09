@@ -21,6 +21,8 @@ const Context = require('../lib/context');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
+const AclManager = require('composer-common').AclManager;
+const AclFile = require('composer-common').AclFile;
 const Resource = require('composer-common').Resource;
 const Serializer = require('composer-common').Serializer;
 
@@ -37,6 +39,7 @@ describe('EngineQueries', () => {
     let mockContext;
     let mockDataService;
     let mockCompiledQueryBundle;
+    let mockAclMananger;
     let mockAccessController;
     let mockSerializer;
     let mockResource1, mockResource2;
@@ -60,6 +63,9 @@ describe('EngineQueries', () => {
         mockAccessController = sinon.createStubInstance(AccessController);
         mockAccessController.check.resolves();
         mockContext.getAccessController.returns(mockAccessController);
+        mockAclMananger = sinon.createStubInstance(AclManager);
+        mockAclMananger.getAclFile.returns(sinon.createStubInstance(AclFile));
+        mockContext.getAclManager.returns(mockAclMananger);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockContext.getSerializer.returns(mockSerializer);
         mockResource1 = sinon.createStubInstance(Resource);
@@ -146,6 +152,18 @@ describe('EngineQueries', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockResource2, 'READ');
                     resources.should.deep.equal([
                         { $identifier: 'ASSET_1' }
+                    ]);
+                });
+        });
+
+        it('should not perform any acceess checks if no ACL file is present', () => {
+            mockAclMananger.getAclFile.returns(undefined);
+            return engine.query(mockContext, 'executeQuery', ['named', 'Q1', '{"param1":true}'])
+                .then((resources) => {
+                    sinon.assert.notCalled(mockAccessController.check);
+                    resources.should.deep.equal([
+                        { $identifier: 'ASSET_1' },
+                        { $identifier: 'ASSET_2' }
                     ]);
                 });
         });

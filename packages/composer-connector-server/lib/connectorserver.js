@@ -189,9 +189,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
+    async connectionManagerImportIdentity (connectionProfile, connectionOptions, id, certificate, privateKey, callback) {
         const method = 'connectionManagerImportIdentity';
         LOG.entry(method, connectionProfile, id, certificate, privateKey);
+        connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
         return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
@@ -213,25 +214,21 @@ class ConnectorServer {
      * @param {object} connectionOptions The connection options loaded from the profile
      * @param {string} id the id to associate with the identity
      * @param {function} callback The callback to call when complete.
-     * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
+    async connectionManagerRemoveIdentity(connectionProfile, connectionOptions, id, callback) {
         const method = 'connectionManagerRemoveIdentity';
         LOG.entry(method, connectionProfile, id);
-        connectionOptions.wallet = this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
-            .then((connectionManager) => {
-                return connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
-            })
-            .then((deleted) => {
-                callback(null, deleted);
-                LOG.exit(method);
-            })
-            .catch((error) => {
-                LOG.error(error);
-                callback(ConnectorServer.serializerr(error));
-                LOG.exit(method, null);
-            });
+        try {
+            connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
+            const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type']);
+            const deleted = await connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
+            callback(null, deleted);
+            LOG.exit(method);
+        } catch (error) {
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+        }
     }
 
 
@@ -243,9 +240,10 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} Promise that resolves to credentials.
      */
-    connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
+    async connectionManagerExportIdentity (connectionProfileName, connectionOptions, id, callback) {
         const method = 'connectionManagerExportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
+        connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
         return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
             .then((connectionManager) => {
                 return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
@@ -267,26 +265,22 @@ class ConnectorServer {
      * @param {string} businessNetworkIdentifier The business network identifier.
      * @param {Object} connectionOptions The connection profile options to use.
      * @param {function} callback The callback to call when complete.
-     * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
+    async connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
         const method = 'connectionManagerConnect';
-        connectionOptions.wallet = this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
-
-        return this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
-            .then((connection) => {
-                let connectionID = uuid.v4();
-                this.connections[connectionID] = connection;
-                callback(null, connectionID);
-                LOG.exit(method, connectionID);
-            })
-            .catch((error) => {
-                LOG.error(error);
-                callback(ConnectorServer.serializerr(error));
-                LOG.exit(method, null);
-            });
+        try {
+            connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
+            const connection = await this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions);
+            const connectionID = uuid.v4();
+            this.connections[connectionID] = connection;
+            callback(null, connectionID);
+            LOG.exit(method, connectionID);
+        } catch (error) {
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+        }
     }
 
     /**

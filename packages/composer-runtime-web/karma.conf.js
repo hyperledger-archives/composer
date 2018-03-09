@@ -117,7 +117,9 @@ module.exports = function(config) {
                 ]
             },
             node: {
-                net: 'empty'
+                fs: 'empty',
+                net: 'empty',
+                tls: 'empty'
             }
         },
 

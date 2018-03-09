@@ -11,28 +11,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../basic-modals/alert.service';
+import { ConfigService } from '../services/config.service';
+import { IdentityCardService } from '../services/identity-card.service';
 
 import { BusinessNetworkDefinition } from 'composer-common';
 
 @Component({
-    selector: 'import-business-network',
-    template: ``
+    selector: 'deploy-business-network',
+    templateUrl: './deploy.component.html',
+    styleUrls: ['./deploy.component.scss'.toString()],
 })
-export abstract class ImportComponent implements OnInit {
+export class DeployComponent implements OnInit {
+
+    @Input() showCredentials: boolean;
 
     @Output() finishedSampleImport = new EventEmitter<any>();
 
-    protected networkName: string;
-    protected deployInProgress: boolean = false;
-    protected currentBusinessNetwork = null;
-    protected networkDescription: string;
-
+    private currentBusinessNetwork = null;
+    private deployInProgress: boolean = false;
     private npmInProgress: boolean = false;
     private sampleNetworks = [];
     private chosenNetwork = null;
@@ -40,10 +42,20 @@ export abstract class ImportComponent implements OnInit {
     private sampleDropped: boolean = false;
     private uploadedNetwork = null;
 
-    private maxFileSize: number = 5242880;
-    private supportedFileTypes: string[] = ['.bna'];
+    private networkDescription: string;
+    private networkName: string;
+    private networkNameValid: boolean = true;
+    private cardNameValid: boolean = true;
+
+    private userId: string = '';
+    private userSecret: string = null;
+    private credentials = null;
+    private cardName: string = null;
 
     private currentBusinessNetworkPromise: Promise<BusinessNetworkDefinition>;
+
+    private maxFileSize: number = 5242880;
+    private supportedFileTypes: string[] = ['.bna'];
 
     private lastName = 'empty-business-network';
     private lastDesc = '';
@@ -91,15 +103,53 @@ export abstract class ImportComponent implements OnInit {
         } else {
             this.deployEmptyNetwork();
         }
-
     }
 
-    removeFile() {
-        this.expandInput = false;
-        this.currentBusinessNetwork = null;
+    addEmptyNetworkOption(networks: any[]): any[] {
+        let newOrder = [];
+        newOrder.push(this.EMPTY_BIZNET);
+        for (let i = 0; i < networks.length; i++) {
+            newOrder.push(networks[i]);
+        }
+        return newOrder;
     }
 
-    abstract deploy()
+    updateBusinessNetworkNameAndDesc(network) {
+        let nameEl = this.networkName;
+        let descEl = this.networkDescription;
+        let name = network.name;
+        let desc = (typeof network.description === 'undefined') ? '' : network.description;
+        if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
+            this.networkName = name;
+            this.lastName = name;
+        }
+        if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
+            this.networkDescription = desc;
+            this.lastDesc = desc;
+        }
+    }
+
+    deploy() {
+        let deployed: boolean = true;
+
+        this.deployInProgress = true;
+
+        return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork, this.cardName, this.networkName, this.networkDescription, this.userId, this.userSecret, this.credentials)
+            .then(() => {
+                this.cardNameValid = true;
+                this.deployInProgress = false;
+                this.finishedSampleImport.emit({deployed: deployed});
+            })
+            .catch((error) => {
+                this.deployInProgress = false;
+                if (error.message.startsWith('Card already exists: ')) {
+                    this.cardNameValid = false;
+                } else {
+                    this.alertService.errorStatus$.next(error);
+                    this.finishedSampleImport.emit({deployed: false, error: error});
+                }
+            });
+    }
 
     deployEmptyNetwork(): void {
         let readme = 'This is the readme file for the Business Network Definition created in Playground';
@@ -168,33 +218,46 @@ rule NetworkAdminSystem {
         });
     }
 
+    updateCredentials($event) {
+        // credentials not valid yet
+        if (!$event || !$event.userId) {
+            this.userId = null;
+            this.userSecret = null;
+            this.credentials = null;
+            return;
+        }
+
+        if ($event.secret) {
+            this.userSecret = $event.secret;
+            this.credentials = null;
+
+        } else {
+            this.userSecret = null;
+            this.credentials = {
+                certificate: $event.cert,
+                privateKey: $event.key
+            };
+        }
+
+        this.userId = $event.userId;
+    }
+
+    isInvalidDeploy() {
+        if (!this.networkName || !this.networkNameValid || this.deployInProgress || !this.cardNameValid || (this.showCredentials && !this.userId)) {
+            return true;
+        }
+
+        return false;
+    }
+
     closeSample() {
         this.sampleDropped = false;
         this.selectNetwork(this.sampleNetworks[0]);
     }
 
-    addEmptyNetworkOption(networks: any[]): any[] {
-        let newOrder = [];
-        newOrder.push(this.EMPTY_BIZNET);
-        for (let i = 0; i < networks.length; i++) {
-            newOrder.push(networks[i]);
-        }
-        return newOrder;
-    }
-
-    updateBusinessNetworkNameAndDesc(network) {
-        let nameEl = this.networkName;
-        let descEl = this.networkDescription;
-        let name = network.name;
-        let desc = (typeof network.description === 'undefined') ? '' : network.description;
-        if ((nameEl === '' || nameEl === this.lastName || typeof nameEl === 'undefined')) {
-            this.networkName = name;
-            this.lastName = name;
-        }
-        if ((descEl === '' || descEl === this.lastDesc || typeof descEl === 'undefined')) {
-            this.networkDescription = desc;
-            this.lastDesc = desc;
-        }
+    removeFile() {
+        this.expandInput = false;
+        this.currentBusinessNetwork = null;
     }
 
     private fileDetected() {
@@ -238,6 +301,23 @@ rule NetworkAdminSystem {
     private fileRejected(reason: string): void {
         this.alertService.errorStatus$.next(reason);
         this.expandInput = false;
+    }
+
+    private setNetworkName(name) {
+        this.networkName = name;
+        if (!name) {
+            this.networkNameValid = true;
+        } else {
+            let pattern = /^[a-z0-9-]+$/;
+            this.networkNameValid = pattern.test(this.networkName);
+        }
+    }
+
+    private setCardName(name) {
+        if (this.cardName !== name) {
+            this.cardName = name;
+            this.cardNameValid = true;
+        }
     }
 
     private initNetworkList(sampleNetworkList): void {

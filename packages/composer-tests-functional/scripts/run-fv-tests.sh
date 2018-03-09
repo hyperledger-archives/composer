@@ -81,9 +81,9 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         npm publish --registry http://localhost:4873
 
         if [ `uname` = "Darwin" ]; then
-            GATEWAY=docker.for.mac.localhost
+            export GATEWAY=docker.for.mac.localhost
         else
-            GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+            export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > /tmp/npmrc
         cd "${DIR}"
@@ -131,8 +131,15 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         fi
     fi
 
+    # Start all test programs.
+    npm run stop_http
+    npm run start_http
+
     # Run the system tests.
     npm run systest:${FVTEST} 2>&1 | tee
+
+    # Stop all test programs.
+    npm run stop_http
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then

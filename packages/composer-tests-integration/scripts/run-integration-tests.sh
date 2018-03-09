@@ -27,9 +27,12 @@ rm -rf ${HOME}/.composer/cards/sal*
 rm -rf ${HOME}/.composer/client-data/sal*
 rm -rf ${HOME}/.composer/cards/ange*
 rm -rf ${HOME}/.composer/client-data/ange*
+rm -rf ${HOME}/.composer/cards/charlie*
+rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
 rm -f ./networkadmin.card
+rm -f ./composer-report-*
 
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
@@ -95,9 +98,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         cd ${DIR}
         cd ../composer-runtime-hlfv1
         if [ `uname` = "Darwin" ]; then
-            GATEWAY=docker.for.mac.localhost
+            export GATEWAY=docker.for.mac.localhost
         else
-            GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+            export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > .npmrc
     fi
@@ -132,6 +135,13 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     # Verdaccio server requires a dummy user if publishing via npm
     touch ${HOME}/.npmrc
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
+    export npm_config_registry=http://localhost:4873
+
+    # Start all test programs.
+    npm run stop_ldap
+    npm run start_ldap
+    docker rm -f mongo || true
+    docker run -d --name mongo -p 27017:27017 mongo
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
@@ -139,6 +149,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     else
         npm run int-test 2>&1 | tee
     fi
+
+    # Stop all test programs.
+    docker rm -f mongo || true
+    npm run stop_ldap
 
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
@@ -168,6 +182,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.npmrc
     rm ./*.tgz
     rm -f ./networkadmin.card
+    rm -f ./composer-report-*
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm .npmrc

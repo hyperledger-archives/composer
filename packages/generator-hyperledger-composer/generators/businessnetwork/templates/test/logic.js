@@ -19,10 +19,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const IdCard = require('composer-common').IdCard;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
-
+const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
 const path = require('path');
 
 require('chai').should();
@@ -32,7 +29,7 @@ const assetType = 'SampleAsset';
 
 describe('#' + namespace, () => {
     // In-memory card store for testing so cards are not persisted to the file system
-    const cardStore = new MemoryCardStore();
+    const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
     let adminConnection;
     let businessNetworkConnection;
 
@@ -43,10 +40,7 @@ describe('#' + namespace, () => {
             'x-type': 'embedded'
         };
         // Embedded connection does not need real credentials
-        const credentials = {
-            certificate: 'FAKE CERTIFICATE',
-            privateKey: 'FAKE PRIVATE KEY'
-        };
+        const credentials = CertificateUtil.generate({ commonName: 'admin' });
 
         // PeerAdmin identity used with the admin connection to deploy business networks
         const deployerMetadata = {

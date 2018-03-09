@@ -1,4 +1,4 @@
-@cli-identities
+@cli @cli-identities
 Feature: Cli-identities steps
 
     Background:

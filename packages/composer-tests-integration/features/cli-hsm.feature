@@ -1,4 +1,4 @@
-@hsm
+@cli @hsm
 Feature: Cli steps
 
     Background:

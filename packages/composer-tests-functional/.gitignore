@@ -47,3 +47,5 @@ out
 
 # Build generated files should be ignored by git, but not by npm.
 storage
+.pm2
+http.port

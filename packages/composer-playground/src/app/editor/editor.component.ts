@@ -14,11 +14,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { UpdateComponent } from '../import/update.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -50,6 +48,8 @@ import { saveAs } from 'file-saver';
 export class EditorComponent implements OnInit, OnDestroy {
 
     private files: any = [];
+    private aboutFileNames: any[] = [];
+    private invalidAboutFileIDs: any[] = [];
     private currentFile: any = null;
     private deletableFile: boolean = false;
 
@@ -62,7 +62,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     private noError: boolean = true;
 
     private editActive: boolean = false; // Are the input boxes visible?
-    private editingPackage: boolean = false; // Is the package.json being edited?
     private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
     private deployedPackageVersion; // This is the deployed BND's package version
@@ -79,7 +78,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                 private clientService: ClientService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
-                private drawerService: DrawerService,
                 private fileService: FileService) {
     }
 
@@ -106,17 +104,10 @@ export class EditorComponent implements OnInit, OnDestroy {
 
                 if (this.fileService.getEditorFiles().length === 0) {
                     this.files = this.fileService.loadFiles();
-                } else {
-                    this.files = this.fileService.getEditorFiles();
                 }
 
+                this.updateFiles();
                 this.updatePackageInfo();
-
-                if (this.fileService.getCurrentFile() !== null) {
-                    this.setCurrentFile(this.fileService.getCurrentFile());
-                } else {
-                    this.setInitialFile();
-                }
             })
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
@@ -133,26 +124,20 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.inputPackageVersion = metaData.getVersion();
     }
 
-    setInitialFile() {
-        if (this.files && this.files.length > 0) {
-            let initialFile = this.files.find((file) => {
-                return file.isReadMe();
-            });
-            if (!initialFile) {
-                initialFile = this.files[0];
-            }
-            this.setCurrentFile(initialFile);
-        }
-    }
-
     setCurrentFile(file) {
-        this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
+        let listItemIndex;
+        if (file.isPackage() || file.isReadMe()) {
+            listItemIndex = 'About';
+        } else {
+            listItemIndex = this.findFileIndex(true, file.id) - this.aboutFileNames.length;
+        }
+        this.listItem = 'editorFileList' + listItemIndex;
+
         let always = (this.currentFile === null || file.isPackage() || file.isReadMe() || file.isAcl() || file.isQuery());
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
-            if (this.editingPackage) {
+            if (this.currentFile && this.currentFile.isPackage()) {
                 this.updatePackageInfo();
-                this.editingPackage = false;
             }
             if (file.isScript() || file.isModel() || file.isQuery()) {
                 this.deletableFile = true;
@@ -183,8 +168,33 @@ export class EditorComponent implements OnInit, OnDestroy {
         return name;
     }
 
-    updateFiles() {
+    updateFiles(selectFile = null) {
+        let initialFile;
         this.files = this.fileService.getEditorFiles();
+
+        this.aboutFileNames = [];
+        for (let i = 0; i < this.files.length; i++) {
+            let file = this.files[i];
+            if (file.isPackage() || file.isReadMe()) {
+                if (file.isReadMe()) {
+                    initialFile = file;
+                }
+                this.aboutFileNames.push(file.displayID);
+            } else {
+                if (!initialFile) {
+                    initialFile = file;
+                }
+                break;
+            }
+        }
+
+        if (selectFile) {
+            this.setCurrentFile(selectFile);
+        } else if (this.fileService.getCurrentFile()) {
+            this.setCurrentFile(this.fileService.getCurrentFile());
+        } else if (initialFile) {
+            this.setCurrentFile(initialFile);
+        }
     }
 
     addModelFile(contents = null) {
@@ -214,14 +224,13 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
 
         let newFile = this.fileService.addFile(newModelNamespace, modelName, code, 'model');
-        this.setCurrentFile(newFile);
         try {
             let error = this.fileService.validateFile(newFile.getId(), newFile.getType());
             if (!error) {
                 this.fileService.updateBusinessNetwork(newFile.getId(), newFile);
             }
         } finally {
-            this.files = this.fileService.getEditorFiles();
+            this.updateFiles(newFile);
             this.noError = this.editorFilesValidate();
         }
     }
@@ -256,14 +265,13 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
 
         let newFile = this.fileService.addFile(scriptName, scriptName, code, 'script');
-        this.setCurrentFile(newFile);
         try {
             let error = this.fileService.validateFile(newFile.getId(), newFile.getType());
             if (!error) {
                 this.fileService.updateBusinessNetwork(newFile.getId(), newFile);
             }
         } finally {
-            this.files = this.fileService.getEditorFiles();
+            this.updateFiles(newFile);
             this.noError = this.editorFilesValidate();
         }
     }
@@ -289,14 +297,13 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     processQueryFileAddition(query) {
         let newFile = this.fileService.addFile(query.getIdentifier(), query.getIdentifier(), query.getDefinitions(), 'query');
-        this.setCurrentFile(newFile);
         try {
             let error = this.fileService.validateFile(newFile.getId(), newFile.getType());
             if (!error) {
                 this.fileService.updateBusinessNetwork(newFile.getId(), newFile);
             }
         } finally {
-            this.files = this.fileService.getEditorFiles();
+            this.updateFiles(newFile);
             this.noError = this.editorFilesValidate();
         }
     }
@@ -309,8 +316,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             confirmModalRef.componentInstance.resource = 'file';
             confirmModalRef.result.then((result) => {
                 this.fileService.setBusinessNetworkReadme(readme);
-                this.files = this.fileService.getEditorFiles();
-                this.setCurrentFile(this.files[0]);
+                this.updateFiles(this.files[0]);
             }, (reason) => {
                 if (reason && reason !== 1) {
                     this.alertService.errorStatus$.next(reason);
@@ -318,8 +324,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             });
         } else {
             this.fileService.setBusinessNetworkReadme(readme);
-            this.files = this.fileService.getEditorFiles();
-            this.setCurrentFile(this.files[0]);
+            this.updateFiles(readme);
         }
     }
 
@@ -345,45 +350,15 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     processRuleFileAddition(rules) {
         let newFile = this.fileService.addFile(rules.getIdentifier(), rules.getIdentifier(), rules.getDefinitions(), 'acl');
-        this.setCurrentFile(newFile);
         try {
             let error = this.fileService.validateFile(newFile.getId(), newFile.getType());
             if (!error) {
                 this.fileService.updateBusinessNetwork(newFile.getId(), newFile);
             }
         } finally {
-            this.files = this.fileService.getEditorFiles();
+            this.updateFiles(newFile);
             this.noError = this.editorFilesValidate();
         }
-    }
-
-    openImportModal() {
-        const importModalRef = this.drawerService.open(UpdateComponent);
-        importModalRef.componentInstance.finishedSampleImport.subscribe((result) => {
-            if (result.deployed) {
-                this.files = this.fileService.loadFiles();
-                this.updatePackageInfo();
-                if (this.files.length) {
-                    let currentFile = this.files.find((file) => {
-                        return file.isReadMe();
-                    });
-                    if (!currentFile) {
-                        currentFile = this.files[0];
-                    }
-                    this.setCurrentFile(currentFile);
-                    this.alertService.successStatus$.next({
-                        title: 'Import Successful',
-                        text: 'Business network imported successfully',
-                        icon: '#icon-deploy_24'
-                    });
-                }
-            } else {
-                importModalRef.close();
-                if (result.error && result.error !== DrawerDismissReasons.ESC) {
-                    this.alertService.errorStatus$.next(result.error);
-                }
-            }
-        });
     }
 
     exportBNA() {
@@ -470,6 +445,11 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     setReadmePreview(preview: boolean) {
         this.previewReadme = preview;
+        this.setCurrentFile(this.fileService.getEditorReadMe());
+    }
+
+    editPackageJson() {
+        this.setCurrentFile(this.fileService.getEditorPackageFile());
     }
 
     /*
@@ -477,11 +457,6 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     toggleEditActive() {
         this.editActive = !this.editActive;
-        if (this.editActive && this.fileType(this.currentFile) === 'Readme') {
-            let mockPackageFile = new EditorFile('package', 'package.json', JSON.stringify(this.fileService.getMetaData().packageJson), 'package');
-            this.setCurrentFile(mockPackageFile);
-            this.hideEdit();
-        }
     }
 
     /*
@@ -524,11 +499,6 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
     }
 
-    hideEdit() {
-        this.editActive = false;
-        this.editingPackage = true;
-    }
-
     /*
      * User selects to delete the current editor file
      */
@@ -564,10 +534,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                     }
 
                     // remove file from list view
-                    this.files = this.fileService.getEditorFiles();
-
-                    // Make sure we set a file to remove the deleted file from the view
-                    this.setInitialFile();
+                    this.updateFiles();
 
                     // validate the remaining (acl/cto files and conditionally enable deploy
                     this.noError = this.editorFilesValidate();
@@ -601,13 +568,15 @@ export class EditorComponent implements OnInit, OnDestroy {
             return 'ACL';
         } else if (resource.isQuery()) {
             return 'Query';
+        } else if (resource.isPackage()) {
+            return 'Package';
         } else {
             return 'Readme';
         }
     }
 
     preventNameEdit(resource: EditorFile): boolean {
-        if (resource.isAcl() || resource.isQuery()) {
+        if (resource.isReadMe() || resource.isPackage() || resource.isAcl() || resource.isQuery()) {
             return true;
         } else {
             return false;
@@ -623,6 +592,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     editorFilesValidate(): boolean {
+        this.invalidAboutFileIDs = [];
         let allValid: boolean = true;
         for (let file of this.files) {
             if (file.isModel()) {
@@ -632,7 +602,6 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
-
             } else if (file.isAcl()) {
                 if (this.fileService.validateFile(file.id, 'acl') !== null) {
                     allValid = false;
@@ -654,11 +623,15 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
+            } else if (file.isPackage()) {
+                if (this.fileService.validateFile(file.id, 'package') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                    this.invalidAboutFileIDs.push(file.id);
+                } else {
+                    file.invalid = false;
+                }
             }
-        }
-
-        if (this.fileService.validateFile('package', 'package') !== null) {
-            allValid = false;
         }
 
         if (allValid) {

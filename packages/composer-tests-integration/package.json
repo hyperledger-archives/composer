@@ -1,11 +1,13 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
-    "start_verdaccio": "verdaccio -l 0.0.0.0:4873 -c ./scripts/config.yaml >/dev/null &",
-    "stop_verdaccio": "pkill verdaccio | true",
+    "start_verdaccio": "PM2_HOME=.pm2 pm2 start verdaccio -- -l 0.0.0.0:4873 -c scripts/config.yaml",
+    "stop_verdaccio": "PM2_HOME=.pm2 pm2 stop verdaccio || true",
+    "start_ldap": "PM2_HOME=.pm2 pm2 start --wait-ready scripts/ldap.js",
+    "stop_ldap": "PM2_HOME=.pm2 pm2 stop scripts/ldap.js || true",
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run lint",
@@ -30,13 +32,18 @@
   },
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
-    "chai-as-promised": "6.0.0",
+    "composer-admin": "0.18.1",
+    "composer-common": "0.18.1",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
+    "ldapjs": "1.0.1",
     "license-check": "1.1.5",
     "lodash-match-pattern": "2.0.1",
-    "mocha": "3.4.2",
-    "nyc": "11.1.0"
+    "pm2": "2.10.1",
+    "request": "2.81.0",
+    "request-promise-any": "1.0.5",
+    "strip-ansi": "3.0.1",
+    "verdaccio": "2.6.4"
   },
   "license-check-config": {
     "src": [
@@ -50,37 +57,5 @@
     "blocking": true,
     "logInfo": false,
     "logError": true
-  },
-  "nyc": {
-    "exclude": [
-      "coverage/**",
-      "features/**",
-      "scripts/**",
-      "systest/**",
-      "test/**"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "all": true,
-    "check-coverage": true,
-    "statements": 100,
-    "branches": 100,
-    "functions": 100,
-    "lines": 100
-  },
-  "dependencies": {
-    "browserfs": "1.1.0",
-    "chai": "3.5.0",
-    "composer-admin": "0.18.0",
-    "composer-cli": "0.18.0",
-    "composer-client": "0.18.0",
-    "composer-common": "0.18.0",
-    "composer-rest-server": "0.18.0",
-    "generator-hyperledger-composer": "0.18.0",
-    "thenify-all": "1.6.0",
-    "verdaccio": "2.6.4",
-    "yo": "2.0.1"
   }
 }

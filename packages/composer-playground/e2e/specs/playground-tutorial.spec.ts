@@ -99,7 +99,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Connecting to the business network', (() => {
       it('should let the user connect to their sample network', (() => {
-        let expectedFiles = ['About\nREADME.md', 'Access Control\npermissions.acl'];
+        let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl'];
         return Login.connectViaIdCard(profile, networkName)
         .then(() => {
             // Should now be on main editor page for the business network
@@ -277,7 +277,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Deploying the updated business network', (() => {
       it('should have the right number of files', (() => {
-          let expectedFiles = ['About\nREADME.md', 'Access Control\npermissions.acl', 'Model File\nmodels/org.acme.model.cto', 'Script File\nlib/script.js'];
+          let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/org.acme.model.cto', 'Script File\nlib/script.js'];
           Editor.retrieveNavigatorFileNames()
           .then((filelist: any) => {
               expect(filelist).to.be.an('array').lengthOf(4);

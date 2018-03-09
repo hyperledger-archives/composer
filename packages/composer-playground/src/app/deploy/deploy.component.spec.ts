@@ -20,8 +20,6 @@ import { Directive, EventEmitter, Output, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
-import { ImportComponent } from './import.component';
-
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -134,7 +132,7 @@ describe('DeployComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [DeployComponent, ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective, MockCredentialsDirective],
+            declarations: [DeployComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective, MockCredentialsDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: ClientService, useValue: mockClientService},

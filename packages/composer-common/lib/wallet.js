@@ -23,6 +23,7 @@ let theWallet = null;
  * @abstract
  */
 class Wallet {
+
     /**
      * Get the wallet singleton.
      * @return {Wallet} The wallet singleton, or null if one
@@ -46,7 +47,7 @@ class Wallet {
      * an array of credential names, or rejected with an
      * error.
      */
-    listNames() {
+    async listNames() {
         throw new Error('abstract function called');
     }
 
@@ -59,7 +60,7 @@ class Wallet {
      * a boolean; true if the named credentials are in the
      * wallet, false otherwise.
      */
-    contains(name) {
+    async contains(name) {
         throw new Error('abstract function called');
     }
 
@@ -70,7 +71,7 @@ class Wallet {
      * @return {Promise} A promise that is resolved with
      * the named credentials, or rejected with an error.
      */
-    get(name) {
+    async get(name) {
         throw new Error('abstract function called');
     }
 
@@ -83,7 +84,7 @@ class Wallet {
      * @return {Promise} A promise that is resolved when
      * complete, or rejected with an error.
      */
-    put(name, value, meta = {}) {
+    async put(name, value, meta = {}) {
         throw new Error('abstract function called');
     }
 
@@ -94,7 +95,7 @@ class Wallet {
      * @return {Promise} A promise that is resolved when
      * complete, or rejected with an error.
      */
-    remove(name) {
+    async remove(name) {
         throw new Error('abstract function called');
     }
 

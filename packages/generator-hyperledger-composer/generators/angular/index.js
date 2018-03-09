@@ -13,17 +13,18 @@
  */
 
 'use strict';
-const Util = require('./../util');
-let yeoman = require('yeoman-generator');
-let fs = require('fs');
-let shell = require('shelljs');
 
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-let businessNetworkConnection;
 const FileWriter = require('composer-common').FileWriter;
+const fs = require('fs');
+const shell = require('shelljs');
 const TypescriptVisitor = require('composer-common').TypescriptVisitor;
+const Util = require('./../util');
+const version = require('../../package.json').version;
+const yeoman = require('yeoman-generator');
 
+let businessNetworkConnection;
 let businessNetworkDefinition;
 let businessNetworkIdentifier;
 let modelManager;
@@ -657,6 +658,7 @@ module.exports = yeoman.Base.extend({
 
     _generateTemplateModel: function () {
         return {
+            composerversion: `^${version}`,
             appName: appName,
             appDescription: appDescription,
             authorName: authorName,

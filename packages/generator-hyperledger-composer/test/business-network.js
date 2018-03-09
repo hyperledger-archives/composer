@@ -13,10 +13,12 @@
  */
 
 'use strict';
-let path = require('path');
-let fs = require('fs');
-let assert = require('yeoman-assert');
-let helpers = require('yeoman-test');
+
+const assert = require('yeoman-assert');
+const fs = require('fs');
+const helpers = require('yeoman-test');
+const path = require('path');
+const version = require('../package.json').version;
 
 /**
  * Get all files recursively in a directoy
@@ -124,6 +126,18 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
         assert(myPackage.author === passedAuthor, 'incorrect author in packaage file');
         assert(myPackage.email === passedEmail, 'incorrect email in packaage file');
         assert(myPackage.license === passedLic, 'incorrect license in packaage file');
+        assert.strictEqual(myPackage.dependencies, undefined, 'there should be no production dependencies in package file');
+        assert.deepStrictEqual(myPackage.devDependencies, {
+            chai: 'latest',
+            'composer-admin': `^${version}`,
+            'composer-client': `^${version}`,
+            'composer-common': `^${version}`,
+            'composer-connector-embedded': `^${version}`,
+            eslint: 'latest',
+            istanbul: 'latest',
+            mkdirp: 'latest',
+            mocha: 'latest'
+        }, 'incorrect development dependencies in package file');
     });
 
 });
