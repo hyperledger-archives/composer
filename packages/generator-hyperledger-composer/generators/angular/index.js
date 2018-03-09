@@ -31,7 +31,7 @@ let assetList = [];
 let conceptList = [];
 let assetServiceNames = [];
 let assetComponentNames = [];
-let concepterviceNames = [];
+let conceptServiceNames = [];
 let conceptComponentNames = [];
 let transactionList = [];
 let namespaceList;
@@ -542,7 +542,7 @@ module.exports = yeoman.Base.extend({
                         });
 
             let model = this._generateTemplateModel();
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|Transaction)*'), this.destinationPath(), model);
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|concept|Transaction)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
@@ -589,11 +589,7 @@ module.exports = yeoman.Base.extend({
             let parameters = {
                 fileWriter: new FileWriter(this.destinationPath() + '/src/app')
             };
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|concept|Transaction)*'), this.destinationPath(), model);
-            this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
-            this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
-            this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
-
+            
             for (let x = 0; x < conceptList.length; x++) {
                 this.fs.copyTpl(
                     this.templatePath('src/app/concept/concept.component.ts'),
