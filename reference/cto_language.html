@@ -313,8 +313,8 @@ asset Vehicle identified by vin {
 </code></pre></div></li>
 <li><p>An optional super-type, which the resource definition extends. The resource will take all properties and fields required by the super-type and add any additional properties or fields from its own definition.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
- * A car asset. A car is related to a list of parts
- */
+* A car asset. A car is related to a list of parts
+*/
 asset Car extends Vehicle {
   o String model
   --&gt; Part[] Parts
@@ -334,9 +334,9 @@ abstract asset Vehicle identified by vin {
  * A Field asset. A Field is related to a list of animals
  */
 asset Field identified by fieldId {
-o String fieldId
-o String name
---&gt; Animal[] animals
+  o String fieldId
+  o String name
+  --&gt; Animal[] animals
 }
 </code></pre></div></li>
 </ol>
