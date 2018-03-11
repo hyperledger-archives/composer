@@ -672,7 +672,7 @@ describe('HLFConnectionManager', () => {
             mockClient.getCertificateAuthority.returns(mockCAClient);
             mockClient.getMspid.returns('MSP1Org');
             mockChannel = sinon.createStubInstance(Channel);
-            mockClient.getChannel.withArgs().returns(mockChannel);
+            mockClient.getChannel.returns(mockChannel);
         });
 
         it('should throw if connectionProfile not specified', () => {

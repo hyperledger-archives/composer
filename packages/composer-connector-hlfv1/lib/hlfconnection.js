@@ -397,7 +397,7 @@ class HLFConnection extends Connection {
 
         try {
             let results = await this.client.installChaincode(request);
-            LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
+            LOG.debug(method, `Received ${results.length} result(s) from installing the chaincode`, results);
             const CCAlreadyInstalledPattern = /chaincode .+ exists/;
             let {ignoredErrors, validResponses, invalidResponseMsgs} = this._validateResponses(results[0], false, CCAlreadyInstalledPattern);
 
@@ -535,7 +535,7 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from instantiating the composer runtime chaincode`, results);
+                LOG.debug(method, `Received ${results.length} result(s) from instantiating the composer runtime chaincode`, results);
                 let proposalResponses = results[0];
                 let {validResponses} = this._validateResponses(proposalResponses, true);
 
@@ -969,7 +969,7 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 // Validate the endorsement results.
-                LOG.debug(method, `Received ${results.length} results(s) from invoking the composer runtime chaincode`, results);
+                LOG.debug(method, `Received ${results.length} result(s) from invoking the composer runtime chaincode`, results);
                 const proposalResponses = results[0];
                 let {validResponses} = this._validateResponses(proposalResponses, true);
 
@@ -1193,7 +1193,7 @@ class HLFConnection extends Connection {
             })
             .then((results) => {
                 // Validate the instantiate proposal results
-                LOG.debug(method, `Received ${results.length} results(s) from upgrading the chaincode`, results);
+                LOG.debug(method, `Received ${results.length} result(s) from upgrading the chaincode`, results);
                 let proposalResponses = results[0];
                 let {validResponses} = this._validateResponses(proposalResponses, true);
 
