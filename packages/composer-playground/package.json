@@ -134,6 +134,7 @@
         "@types/source-map": "0.5.0",
         "@types/uglify-js": "2.6.28",
         "@types/webpack": "2.1.0",
+        "@types/tapable": "0.2.4",
         "angular-2-local-storage": "1.0.0",
         "angular-router-loader": "0.5.0",
         "angular2-template-loader": "0.6.2",
