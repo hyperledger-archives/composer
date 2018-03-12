@@ -9,7 +9,7 @@ const snowWhite = require('sleep');
 let childServer = spawn('node', ['cli.js', '-p', '3001', '-test']);
 
 // Execute protractor and attach to listeners
-var childProtractor = exec('webdriver-manager update && protractor -- protractor.conf.js');
+var childProtractor = exec('webdriver-manager update --gecko false && protractor -- protractor.conf.js');
 // Log all output of Protractor run
 childProtractor.stdout.on('data', function(data) {
     // do not log return characters or "green dot progress"

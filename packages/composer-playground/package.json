@@ -69,7 +69,7 @@
         "watch": "npm run watch:dev",
         "webdriver-manager": "webdriver-manager",
         "webdriver:start": "npm run webdriver-manager start",
-        "webdriver:update": "npm run webdriver-manager update",
+        "webdriver:update": "npm run webdriver-manager update --gecko false",
         "webpack-dev-server": "webpack-dev-server",
         "webpack": "webpack"
     },
@@ -117,6 +117,7 @@
         "@types/sinon": "2.3.3",
         "@types/sinon-chai": "2.7.29",
         "@types/source-map": "0.5.0",
+        "@types/tapable": "0.2.4",
         "@types/uglify-js": "2.6.28",
         "@types/webpack": "2.1.0",
         "angular-2-local-storage": "1.0.0",
