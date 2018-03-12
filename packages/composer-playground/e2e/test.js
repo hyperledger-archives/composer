@@ -50,7 +50,7 @@ function runTests(connection) { // eslint-disable-line
     let childServer = spawn('node', ['cli.js', '-p', '3001', '-test']);
 
     // Execute protractor and attach to listeners
-    let childProtractor = exec(`webdriver-manager update && protractor -- protractor.${connection}.conf.js`);
+    let childProtractor = exec(`webdriver-manager update --gecko false && protractor -- protractor.${connection}.conf.js`);
     // Log all output of Protractor run
     childProtractor.stdout.on('data', function(data) {
         // do not log return characters or 'green dot progress'

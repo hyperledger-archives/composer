@@ -34,6 +34,7 @@ class NodeUtils {
         const method = 'getAllResults';
         LOG.entry(method, iterator);
 
+        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -57,6 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF NodeUtils.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
                 return results;
             }
         }
@@ -74,6 +76,7 @@ class NodeUtils {
         const method = 'deleteAllResults';
         LOG.entry(method, iterator, stub);
 
+        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -94,6 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF NodeUtils.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
                 return results;
             }
         }

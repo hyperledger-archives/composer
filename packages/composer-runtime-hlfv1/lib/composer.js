@@ -71,6 +71,8 @@ class Composer {
     async Init(stub) {
         const method = 'Init';
         LOG.entry(method, stub);
+
+        let t0 = process.hrtime();
         let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
         let engine = this._createEngine();
         let nodeContext = this._createContext(engine, stub);
@@ -78,10 +80,12 @@ class Composer {
             await this.container.initLogging(stub);
             await engine.init(nodeContext, fcn, params);
             LOG.exit(method);
+            LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
+            LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             return shim.error(err);
         }
     }
@@ -98,6 +102,7 @@ class Composer {
         LOG.entry(method, stub);
 
         let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
+        let t0 = process.hrtime();
 
         let engine = this._createEngine();
         let nodeContext = this._createContext(engine, stub);
@@ -106,13 +111,16 @@ class Composer {
             let payload = await engine.invoke(nodeContext, fcn, params);
             if (payload !== null && payload !== undefined) {
                 LOG.exit(method, payload);
+                LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
                 return shim.success(Buffer.from(JSON.stringify(payload)));
             }
             LOG.exit(method);
+            LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
+            LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             return shim.error(err);
         }
     }
