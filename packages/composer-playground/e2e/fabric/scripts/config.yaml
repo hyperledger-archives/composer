@@ -17,6 +17,7 @@ auth:
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
+    max_fails: 1000
 packages:
   '@*/*':
     # scoped packages

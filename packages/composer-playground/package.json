@@ -78,7 +78,7 @@
         "server": "npm run server:dev",
         "start:hmr": "npm run server:dev:hmr",
         "start": "npm run server:dev",
-        "start_verdaccio": "touch ${HOME}/.npmrc && echo '//localhost:4873/:_authToken=\"foo\"' > ${HOME}/.npmrc && verdaccio -l 0.0.0.0:4873 -c ./e2e/fabric/scripts/config.yaml >/dev/null &",
+        "start_verdaccio": "echo '//localhost:4873/:_authToken=\"foo\"' > ${HOME}/.npmrc && echo fetch-retries=10 >> ${HOME}/.npmrc && verdaccio -l 0.0.0.0:4873 -c ./e2e/fabric/scripts/config.yaml >/dev/null &",
         "test": "karma start ./config/karma.conf.js",
         "tslint": "tslint",
         "typedoc": "typedoc",
