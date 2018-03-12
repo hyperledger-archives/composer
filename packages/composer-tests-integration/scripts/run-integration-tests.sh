@@ -103,6 +103,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
             export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > .npmrc
+        echo fetch-retries=10 >> .npmrc
     fi
 
     # configure v1 to run the tests
@@ -133,8 +134,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     cd "${DIR}"
 
     # Verdaccio server requires a dummy user if publishing via npm
-    touch ${HOME}/.npmrc
     echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
+    echo fetch-retries=10 >> ${HOME}/.npmrc
     export npm_config_registry=http://localhost:4873
 
     # Start all test programs.
