@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-web",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "description": "The web client connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -61,9 +61,9 @@
     "watchify": "3.7.0"
   },
   "dependencies": {
-    "composer-common": "0.16.6",
-    "composer-runtime": "0.16.6",
-    "composer-runtime-web": "0.16.6",
+    "composer-common": "0.16.7",
+    "composer-runtime": "0.16.7",
+    "composer-runtime-web": "0.16.7",
     "uuid": "3.0.1"
   }
 }
