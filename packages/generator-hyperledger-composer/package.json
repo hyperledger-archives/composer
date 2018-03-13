@@ -1,6 +1,8 @@
 {
   "name": "generator-hyperledger-composer",
+
   "version": "0.18.1",
+
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "description": "Generates projects from Hyperledger Composer business network definitions",
