@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "description": "The proxying client connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -53,7 +53,7 @@
     "watchify": "3.7.0"
   },
   "dependencies": {
-    "composer-common": "0.16.6",
+    "composer-common": "0.16.7",
     "socket.io-client": "1.7.3"
   },
   "nyc": {
