@@ -63,3 +63,6 @@ npm-debug.log
 
 # Usabilla code template
 usabilla.html.template
+
+#pm2 files
+*.pm2

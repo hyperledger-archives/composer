@@ -15,8 +15,9 @@
 'use strict';
 
 const exec = require('child_process').exec;
+const path = require('path');
 
-const lernaFile = require('../../../../../lerna.json');
+const lernaFile = require('../../../../lerna.json');
 let version = lernaFile.version;
 
 /**
@@ -53,32 +54,46 @@ let packages = [
     'composer-runtime-hlfv1',
     'composer-connector-hlfv1',
     'composer-admin',
+    'composer-wallet-inmemory',
+    'composer-wallet-filesystem',
     'composer-client',
-    'loopback-connector-composer',
-    'composer-rest-server',
     'composer-report',
-    'composer-cli'];
+    'composer-cli',
+    'composer-connector-server',
+    'composer-playground-api',
+    'composer-playground'
+];
 
 // Packages to be installed in integration test(s)
 let testPackages = [
     'composer-cli',
-    'composer-runtime-hlfv1',
-    'composer-runtime'
+    'composer-playground'
 ];
 
-return packages.reduce((promiseChain, p) => {
-    // Set registry and publish
-    return promiseChain.then(() => {
-        console.log('Publishing package ' + p + ' to local npm server');
-        return invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
-    });
-}, Promise.resolve())
+return invokeCmd(path.join(__dirname, '../scripts/cleanTestFolders.sh'))
+.then(() => {
+    return invokeCmd(path.join(__dirname, '../scripts/configureGateway.sh'));
+})
+.then(() => {
+    return packages.reduce((promiseChain, p) => {
+        // Set registry and publish
+        return promiseChain.then(() => {
+            // eslint-disable-next-line no-console
+            console.log('Publishing package ' + p + ' to local npm server');
+            return invokeCmd('npm publish --registry http://localhost:4874 ../' + p);
+        });
+    }, Promise.resolve());
+})
 .then(() => {
     // Globally install test packages
     return testPackages.reduce((promiseChain, p) => {
         return promiseChain.then(() => {
+            // eslint-disable-next-line no-console
             console.log('installing package ' + p + '@' + version + ' from npm server');
-            return invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
+            return invokeCmd('npm install --registry http://localhost:4874 -g ' + p + '@' + version);
         });
     }, Promise.resolve());
+})
+.catch((err) => {
+    process.exit(1);
 });

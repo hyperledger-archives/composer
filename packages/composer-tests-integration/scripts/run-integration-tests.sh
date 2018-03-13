@@ -10,11 +10,13 @@ ARCH=`uname -m`
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# Switch into the integration tests directory.
+cd "${DIR}"
+
 # Delete any existing configuration.
-rm -fr ./verdaccio
-rm -fr ./storage
-rm -fr ./scripts/storage
-rm -fr ${HOME}/.config/verdaccio
+rm -rf ./pm2
+rm -rf ./scripts/storage
+rm -rf ${HOME}/.config/verdaccio
 rm -rf ${HOME}/.composer/cards/Test*
 rm -rf ${HOME}/.composer/client-data/Test*
 rm -rf ${HOME}/.composer/cards/bob*
@@ -40,11 +42,6 @@ if [ "${DOCKER_FILE}" != "" ]; then
     rm .npmrc
     cd "${DIR}"
 fi
-
-
-
-# Switch into the integration tests directory.
-cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
 if [ "${INTEST}" = "" ]; then
@@ -146,9 +143,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
-        npm run int-test-nohsm 2>&1 | tee
+        npm run int-test-nohsm 2>&1 || :
     else
-        npm run int-test 2>&1 | tee
+        npm run int-test 2>&1 || :
     fi
 
     # Stop all test programs.
@@ -162,9 +159,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     fi
 
     # Delete any written configuration.
-    rm -fr ./verdaccio
-    rm -fr ./storage
-    rm -fr ${HOME}/.config/verdaccio
+    rm -rf ./pm2
+    rm -rf ./scripts/storage
+    rm -rf ${HOME}/.config/verdaccio
     rm -rf ${HOME}/.composer/cards/Test*
     rm -rf ${HOME}/.composer/client-data/Test*
     rm -rf ${HOME}/.composer/cards/bob*
