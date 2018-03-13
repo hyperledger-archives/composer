@@ -151,7 +151,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
         assert.deepStrictEqual(myPackage.devDependencies, {
             '@angular/cli': '1.0.1',
             '@angular/compiler-cli': '^4.0.0',
-            '@types/jasmine': '2.5.38',
+            '@types/jasmine': '2.5.52',
             '@types/node': '7.0.5',
             codelyzer: '~2.0.0',
             'jasmine-core': '~2.5.2',

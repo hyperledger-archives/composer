@@ -21,6 +21,8 @@ const JSONSchemaVisitor = require('../../lib/codegen/fromcto/jsonschema/jsonsche
 const ModelManager = require('../../lib/modelmanager');
 const path = require('path');
 
+const schema = require('ajv/lib/refs/json-schema-draft-04.json');
+
 require('chai').should();
 const sinon = require('sinon');
 
@@ -34,7 +36,8 @@ describe('JSONSchemaVisitor', () => {
     let sandbox;
 
     beforeEach(() => {
-        ajv = new Ajv();
+        ajv = new Ajv({schemaId: 'id'});
+        ajv.addMetaSchema(schema);
         mockFileWriter = sinon.createStubInstance(FileWriter);
         modelManager = new ModelManager();
         modelManager.addModelFile(fs.readFileSync(path.resolve(__dirname, '../data/model/model-base.cto'), 'utf8'), 'model-base.cto');
