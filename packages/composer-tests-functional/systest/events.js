@@ -24,7 +24,7 @@ const TestUtil = require('./testutil');
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
-chai.should();
+const should = chai.should();
 
 describe('Event system tests', function() {
 
@@ -169,4 +169,45 @@ describe('Event system tests', function() {
                 return promise;
             });
     });
+
+
+    if (TestUtil.isHyperledgerFabricV1()) {
+
+        // This test can only work on a real fabric where a r/w set from 2 different organisations
+        // are returned and they disagree on the simulation results.
+        it('should not emit an Event if tx not committed', async () => {
+            this.timeout(1000);
+            let emitted = 0;
+            let factory = client.getBusinessNetwork().getFactory();
+            let transactionDet1 = factory.newTransaction('systest.events', 'EmitBasicEvent');
+
+            let transactionNonDet2 = factory.newTransaction('systest.events', 'EmitBasicEventNonDeterministic');
+            let transactionDet3 = factory.newTransaction('systest.events', 'EmitBasicEvent');
+
+            // Listen for the event
+            const promise = new Promise((resolve, reject) => {
+                client.on('event', (ev) => {
+                    if (ev.$type.match(/BasicEvent/)) {
+                        emitted++;
+                        ev.nonDeterministic.should.be.false;
+                        if (emitted === 2) {
+                            resolve();
+                        }
+                    }
+                });
+            });
+
+            await client.submitTransaction(transactionDet1);
+
+            try {
+                await client.submitTransaction(transactionNonDet2);
+                should.fail('Should have got an endorsement policy failure');
+            } catch(error) {
+                error.message.should.match(/ENDORSEMENT_POLICY_FAILURE/);
+            }
+
+            await client.submitTransaction(transactionDet3);
+            await promise;
+        });
+    }
 });

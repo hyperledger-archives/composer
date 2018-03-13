@@ -1,6 +1,6 @@
 {
   "name": "generator-hyperledger-composer",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "description": "Generates projects from Hyperledger Composer business network definitions",
@@ -19,8 +19,8 @@
     "test": "nyc mocha -t 0 test/*.js"
   },
   "dependencies": {
-    "composer-client": "0.18.1",
-    "composer-common": "0.18.1",
+    "composer-client": "0.18.2",
+    "composer-common": "0.18.2",
     "shelljs": "0.7.7",
     "underscore.string": "3.3.4",
     "yeoman-generator": "0.24.1",
@@ -33,12 +33,12 @@
   "devDependencies": {
     "@angular/cli": "1.0.0-rc.0",
     "@types/chai": "3.4.35",
-    "@types/jasmine": "2.5.38",
+    "@types/jasmine": "2.5.52",
     "@types/node": "7.0.5",
     "@types/sinon": "2.3.3",
     "@types/sinon-chai": "2.7.29",
-    "composer-admin": "0.18.1",
-    "composer-connector-embedded": "0.18.1",
+    "composer-admin": "0.18.2",
+    "composer-connector-embedded": "0.18.2",
     "eslint": "3.17.1",
     "license-check": "1.1.5",
     "mocha": "3.4.2",
