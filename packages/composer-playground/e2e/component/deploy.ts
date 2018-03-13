@@ -16,7 +16,7 @@ import { ExpectedConditions } from 'protractor';
 
 import { OperationsHelper } from '../utils/operations-helper';
 import { dragDropFile } from '../utils/fileUtils';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 
 let baseTiles = ['basic-sample-network', 'empty-business-network', 'drag-drop'];
 
@@ -33,10 +33,7 @@ export class Deploy {
 
     // Wait for disappear
     static waitToDisappear(fabric?) {
-        let wait = Constants.shortWait;
-        if (fabric) {
-            wait = null;
-        }
+        let wait = fabric ? Constants.vlongwait : Constants.shortWait;
         return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.choose-network'))), wait);
     }
 
@@ -86,7 +83,7 @@ export class Deploy {
         })
         .then(() => {
             return userSecret.sendKeys(secret);
-        })
+        });
     };
 
     static retrieveBaseTileOptions() {

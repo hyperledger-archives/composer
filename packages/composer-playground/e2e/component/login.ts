@@ -15,7 +15,7 @@ import { browser, element, by, ElementFinder, WebElement } from 'protractor';
 import { dragDropFile } from '../utils/fileUtils';
 import { ExpectedConditions } from 'protractor';
 
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 import { OperationsHelper } from '../utils/operations-helper';
 import { BusyAlert } from './alert';
 import * as fs from 'fs';
@@ -48,7 +48,7 @@ export class Login {
         });
     }
 
-    // Connect to Playground via named ID Card under named connectino profile
+    // Connect to Playground via named ID Card under named connection profile
     static connectViaIdCard(profile: string, networkName: string) {
         return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.connection-profile'))), Constants.longWait)
             .then(() => {

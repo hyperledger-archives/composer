@@ -13,9 +13,8 @@
  */
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
+import { Constants } from '../constants';
 import { OperationsHelper } from '../utils/operations-helper';
-
-import { Constants } from '../utils/constants';
 
 describe('Welcome Splash', (() => {
 
