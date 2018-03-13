@@ -100,13 +100,14 @@ describe('parsejs', function () {
         mockery.registerMock('path',  { parse:parseStub, resolve: sandbox.stub() } );
 
 
-        // The next section of code, is .... not the greatest IMHO
-        // This was the only way I could get the Generator classes spied on in such
+        // The next section of code, is to get the Generator classes spied on in such
         // a way that would be loaded by the test code and made to be certain
         // they where being called.
 
         // This creates a fake class with the generate method ( that we're interested in )
         // Spies on that generate fn, and use mockery to inject that.
+
+        // eslint disable as these are test classes
 
 
         // eslint-disable-next-line require-jsdoc
@@ -226,7 +227,7 @@ describe('parsejs', function () {
             require(pathToCode);
             sinon.assert.notCalled(plantGenerateSpy);
         });
-        it('should cope with files that wibble files', function(){
+        it('should cope with files that have .wibble extensioms', function(){
             optionsStub.returns(yargs(['--outputDir=/tmp','--inputDir=in']));
             parseStub.returns({ext:'.wibble',base:'parser.wibble'});
 
