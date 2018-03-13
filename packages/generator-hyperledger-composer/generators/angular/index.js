@@ -481,7 +481,7 @@ module.exports = yeoman.Base.extend({
             });
             shell.mkdir('-p', destinationPath + '/src/participants/');
             namespaceList.forEach((namespace) => {
-            
+
                 let modelFile = modelManager.getModelFile(namespace);
                 let participantDeclarations = modelFile.getParticipantDeclarations();
 
@@ -496,10 +496,10 @@ module.exports = yeoman.Base.extend({
                     return true;
                 })
                 .forEach((participant) => {
-            
+
                     let tempList = [];
                     participantProperties = participant.getProperties();
-            
+
                     participantProperties.forEach((property) => {
                         if (property.constructor.name === 'Field') {
                             if (property.isTypeEnum()) {
@@ -520,7 +520,7 @@ module.exports = yeoman.Base.extend({
                                     enumValues,
                                 });
                             } else if (property.isPrimitive() || !property.isPrimitive()) {
-            
+
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
@@ -537,7 +537,7 @@ module.exports = yeoman.Base.extend({
                             console.log('Unknown property constructor name: ' + property );
                         }
                     });
-            
+
                     participantList.push({
                         'name': participant.name,
                         'namespace': participant.getNamespace(),
@@ -545,14 +545,14 @@ module.exports = yeoman.Base.extend({
                         'identifier': participant.getIdentifierFieldName()
                     });
                     shell.mkdir('-p', destinationPath + '/src/app/' + participant.name);
-            
+
                 });
             });
-            
+
             participantList.forEach((participant) => {
                 participantServiceNames.push(participant.name + 'Service');
             });
-            
+
             participantList.forEach((participant) => {
                 participantComponentNames.push(participant.name + 'Component');
             });
@@ -633,10 +633,10 @@ module.exports = yeoman.Base.extend({
 
             shell.mkdir('-p', destinationPath + '/src/transactions/');
             namespaceList.forEach((namespace) => {
-            
+
                 let modelFile = modelManager.getModelFile(namespace);
                 let transactionDeclarations = modelFile.getTransactionDeclarations();
-            
+
                 transactionDeclarations
                 .filter((transactionDeclaration) =>{
                     return !transactionDeclaration.isAbstract();
@@ -648,10 +648,10 @@ module.exports = yeoman.Base.extend({
                     return true;
                 })
                 .forEach((transaction) => {
-            
+
                     let tempList = [];
                     transactionProperties = transaction.getProperties();
-            
+
                     transactionProperties.forEach((property) => {
                         if (property.constructor.name === 'Field') {
                             if (property.isTypeEnum()) {
@@ -672,7 +672,7 @@ module.exports = yeoman.Base.extend({
                                     enumValues,
                                 });
                             } else if (property.isPrimitive() || !property.isPrimitive()) {
-            
+
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
@@ -689,7 +689,7 @@ module.exports = yeoman.Base.extend({
                             console.log('Unknown property constructor name: ' + property );
                         }
                     });
-            
+
                     transactionList.push({
                         'name': transaction.name,
                         'namespace': transaction.getNamespace(),
@@ -697,14 +697,14 @@ module.exports = yeoman.Base.extend({
                         'identifier': transaction.getIdentifierFieldName()
                     });
                     shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
-            
+
                 });
             });
-            
+
             transactionList.forEach((transaction) => {
                 transactionServiceNames.push(transaction.name + 'Service');
             });
-            
+
             transactionList.forEach((transaction) => {
                 transactionComponentNames.push(transaction.name + 'Component');
             });
@@ -781,7 +781,7 @@ module.exports = yeoman.Base.extend({
                         currentParticipant: participantList[x]
                     }
                 );
-            
+
                 this.fs.copyTpl(
                     this.templatePath('src/app/participant/participant.component.css'),
                     this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.css'), {
@@ -818,7 +818,7 @@ module.exports = yeoman.Base.extend({
                         currentTransaction: transactionList[x]
                     }
                 );
-            
+
                 this.fs.copyTpl(
                     this.templatePath('src/app/transaction/transaction.component.css'),
                     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.css'), {

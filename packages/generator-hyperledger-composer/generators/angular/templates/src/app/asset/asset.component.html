@@ -32,6 +32,8 @@
                   </label>
                 <%}%>
               </div>
+            <%} else if(currentAsset.properties[x].concept === true){ %>
+              <% console.log('HEY CONCEPTO', currentAsset.properties[x].name) %>
             <%}else{%>
               <div class="form-group text-left">
                 <label for="<%=currentAsset.properties[x].name%>"><%=currentAsset.properties[x].name%></label>
@@ -60,9 +62,6 @@
     </div>
   </div>
 </div>
-
-
-
 
 <div class="modal fade" id="updateAssetModal" tabindex="-1" role="dialog" aria-labelledby="updateAssetModalLabel">
   <div class="modal-dialog" role="document">
