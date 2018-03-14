@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
+import { browser } from 'protractor';
 import { Login } from '../component/login';
 import { OperationsHelper } from '../utils/operations-helper';
-import { browser, element, by, ElementFinder, WebElement } from 'protractor';
-import * as  fs from 'fs';
-import { Deploy } from '../component/deploy';
 import { BusyAlert, SuccessAlert } from '../component/alert';
-import * as child from 'child_process';
+import { Constants } from '../constants';
 import { CliHelper } from '../utils/cli-helper';
-import * as chai from 'chai';
+import { Deploy } from '../component/deploy';
 
+import * as  fs from 'fs';
+import * as chai from 'chai';
 let expect = chai.expect;
 
 describe('Fabric round trip', (() => {
@@ -37,14 +37,15 @@ describe('Fabric round trip', (() => {
     });
 
     it('should add the TestPeerAdmin card', () => {
-        return Login.importBusinessNetworkCard('/tmp/TestPeerAdmin.card')
+        return Login.importBusinessNetworkCard(Constants.tempDir + '/' + Constants.peerAdminCardName)
         .then(() => {
             return SuccessAlert.waitToDisappear();
         });
     });
 
     it('should be able to deploy a business network against TestPeerAdmin', () => {
-        return Login.deployNewToProfile(JSON.parse(fs.readFileSync(__dirname + '/../fabric/hlfv1/profiles/basic-connection-org1.json').toString()).name)
+        let connectionProfile = JSON.parse(fs.readFileSync(Constants.fabricConfigDir + '/profiles/basic-connection-org1.json').toString());
+        return Login.deployNewToProfile(connectionProfile.name)
         .then(() => {
             return Deploy.waitToAppear();
         })
@@ -77,15 +78,19 @@ describe('Fabric round trip', (() => {
 
     it('should be able to import the downloaded card into composer-cli and ping', () => {
         const cardName = 'adminCLI@fabric-business-network';
-        return CliHelper.importCard(__dirname + '/../downloads/admin.card', cardName)
-        .then((out) => {
-            expect(out).to.include(`Card name: ${cardName}`);
-            expect(out).to.include('Command succeeded');
+        const cardPath = Constants.downloadLocation + '/admin.card';
+
+        return CliHelper.importCard(cardPath, cardName)
+        .then((repsonse) => {
+            expect(repsonse).to.include(`Card name: ${cardName}`);
+            expect(repsonse).to.include('Command succeeded');
+        })
+        .then(() => {
             return CliHelper.pingCard(cardName);
         })
-        .then((out) => {
-            expect(out).to.include('participant: org.hyperledger.composer.system.NetworkAdmin#admin');
-            expect(out).to.include('Command succeeded');
+        .then((repsonse) => {
+            expect(repsonse).to.include('participant: org.hyperledger.composer.system.NetworkAdmin#admin');
+            expect(repsonse).to.include('Command succeeded');
         });
     });
 }));

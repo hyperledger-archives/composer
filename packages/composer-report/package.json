@@ -1,6 +1,6 @@
 {
   "name": "composer-report",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Hyperledger Composer diagnostics",
   "bin": "bin/cmd.js",
   "main": "lib/report.js",
@@ -37,7 +37,7 @@
   "dependencies": {
     "moment": "2.19.3",
     "node-report": "2.2.1",
-    "tar": "4.3.0"
+    "tar": "3.1.5"
   },
   "license-check-config": {
     "src": [

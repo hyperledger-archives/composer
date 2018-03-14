@@ -86,3 +86,36 @@ function onEmitMultipleDifferentEvents(transaction) {
     emit(event1);
     emit(event2);
 }
+
+/**
+ *
+ * @param {systest.events.EmitBasicEvent} transaction
+ * @transaction
+ */
+function onEmitBasicEvent(transaction) {
+    var factory = getFactory();
+    var event = factory.newEvent('systest.events', 'BasicEvent');
+    event.nonDeterministic = false;
+
+    emit(event);
+}
+
+
+/**
+ *
+ * @param {systest.events.EmitBasicEventNonDeterministic} transaction
+ * @transaction
+ */
+async function onEmitBasicEventNonDeterministic(transaction) {
+    var factory = getFactory();
+    var event = factory.newEvent('systest.events', 'BasicEvent');
+    event.nonDeterministic = true;
+
+    let ar = await getAssetRegistry('systest.events.NonDeterministicAsset');
+    var a = factory.newResource('systest.events', 'NonDeterministicAsset', 'badAsset');
+    a.dateTime = '' + Date.now();
+    a.random = Math.random();
+    await ar.add(a);
+    emit(event);
+}
+

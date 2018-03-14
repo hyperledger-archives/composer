@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "licchk": "license-check",
     "postlicchk": "npm run lint",
     "lint": "eslint .",
+    "test": "exit 0",
     "test-tagged": "cucumber-js --tags @busnet",
     "test-inner": "cucumber-js",
     "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
@@ -32,8 +33,8 @@
   },
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
-    "composer-admin": "0.18.1",
-    "composer-common": "0.18.1",
+    "composer-admin": "0.18.2",
+    "composer-common": "0.18.2",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
     "ldapjs": "1.0.1",

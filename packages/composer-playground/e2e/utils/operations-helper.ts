@@ -17,7 +17,7 @@ import { ExpectedConditions, ElementFinder } from 'protractor';
 import { Editor } from '../component/editor';
 import { Import } from '../component/import';
 import { Replace } from '../component/replace';
-import { Constants } from './constants';
+import { Constants } from '../constants';
 
 export class OperationsHelper {
 

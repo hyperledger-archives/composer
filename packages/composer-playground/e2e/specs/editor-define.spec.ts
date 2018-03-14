@@ -11,22 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { browser, element, by } from 'protractor';
-import { ExpectedConditions } from 'protractor';
-import { OperationsHelper } from '../utils/operations-helper';
-import { Editor } from '../component/editor';
-import { Import } from '../component/import';
-import { Login } from '../component/login';
-import { Replace } from '../component/replace';
+import { browser, by } from 'protractor';
 import { AddFile } from '../component/add-file';
+import { Editor } from '../component/editor';
 import { EditorFile } from '../component/editor-file';
 import { ErrorAlert } from '../component/error-alert';
-import { dragDropFile, waitForFileToExist, retrieveZipContentList } from '../utils/fileUtils';
+import { Import } from '../component/import';
+import { OperationsHelper } from '../utils/operations-helper';
+import { Replace } from '../component/replace';
+import { waitForFileToExist, retrieveZipContentList } from '../utils/fileUtils';
 
-import * as chai from 'chai';
 import * as  fs from 'fs';
 import * as JSZip from 'jszip';
-
+import * as chai from 'chai';
 let expect = chai.expect;
 
 describe('Editor Define', (() => {
