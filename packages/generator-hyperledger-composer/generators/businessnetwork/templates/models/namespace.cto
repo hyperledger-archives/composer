@@ -4,13 +4,15 @@
 
 namespace <%= namespace %>
 
-participant User identified by email {
-  o String email
+participant SampleParticipant identified by email {
+   o String email
+   o String name
 }
 
 asset SampleAsset identified by assetId {
   o String assetId
   o String value
+  --> SampleParticipant owner
 }
 
 transaction ChangeAssetValue {

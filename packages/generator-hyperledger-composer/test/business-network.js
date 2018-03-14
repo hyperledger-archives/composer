@@ -78,6 +78,7 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
             busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
+            busNetDir + '/permissions.acl',
             busNetDir + '/models/' + passedNS +'.cto',
             busNetDir + '/lib/logic.js',
             busNetDir + '/test/logic.js'
@@ -93,6 +94,7 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
             busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
+            busNetDir + '/permissions.acl',
             busNetDir + '/models/' + passedNS +'.cto',
             busNetDir + '/lib/logic.js',
             busNetDir + '/test/logic.js'

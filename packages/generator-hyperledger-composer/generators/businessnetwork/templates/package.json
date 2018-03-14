@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "<%= appdescription %>",
   "scripts": {
-    "test": "mocha --recursive"
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "test": "nyc mocha -t 0 test/*.js"
   },
   "author": "<%= appauthor %>",
   "email": "<%= appemail %>",
@@ -14,8 +16,9 @@
     "composer-common": "<%= composerversion %>",
     "composer-connector-embedded": "<%= composerversion %>",
     "chai": "latest",
+    "chai-as-promised": "latest",
     "eslint": "latest",
-    "istanbul": "latest",
+    "nyc": "latest",
     "mkdirp": "latest",
     "mocha": "latest"
   }

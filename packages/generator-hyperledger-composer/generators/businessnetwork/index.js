@@ -92,6 +92,7 @@ module.exports = yeoman.Base.extend({
         let model = this._generateTemplateModel();
         this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
         this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
+        this.fs.copyTpl(this.templatePath('permissions.acl'), this.destinationPath('permissions.acl'), model);
         this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
         /* istanbul ignore else */
         if (!this.ismodel) {
