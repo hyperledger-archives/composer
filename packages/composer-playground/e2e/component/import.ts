@@ -15,7 +15,7 @@ import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { dragDropFile } from '../utils/fileUtils';
 import { OperationsHelper } from '../utils/operations-helper';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 
 // Initialise known tile orderings
 let baseTiles = ['basic-sample-network', 'empty-business-network', 'drag-drop'];

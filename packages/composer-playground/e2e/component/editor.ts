@@ -14,7 +14,7 @@
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 import { EditorFile } from './editor-file';
 
 let scrollMe = (target) => {

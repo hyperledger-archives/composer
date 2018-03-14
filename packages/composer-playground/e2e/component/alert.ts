@@ -16,7 +16,7 @@
 
 import { browser, element, by } from 'protractor';
 import { ExpectedConditions } from 'protractor';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 
 export class BusyAlert {
 
