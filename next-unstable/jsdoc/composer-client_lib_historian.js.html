@@ -130,7 +130,7 @@ class Historian extends Registry {
      * @param {ModelManager} modelManager The ModelManager to use for this historian.
      * @param {Factory} factory The factory to use for this historian.
      * @param {Serializer} serializer The Serializer to use for this historian.
-     * @return {Promise} A promise that will be resolved with a {@link IdentityRegistry}
+     * @return {Promise} A promise that will be resolved with a {@link Historian}
      * instance representing the historian.
      */
     static getHistorian(securityContext, modelManager, factory, serializer) {
@@ -172,8 +172,6 @@ class Historian extends Registry {
      * This method will always throw an exception when called.
      *
      * @param {Resource} resource The resource to be added to the registry.
-     * @param {string} data The data for the resource.
-     *
      */
     add(resource) {
         throw new Error('cannot add historian records to the historian');
