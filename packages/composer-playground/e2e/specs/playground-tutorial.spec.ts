@@ -12,26 +12,20 @@
  * limitations under the License.
  */
 
-import { browser, element, by } from 'protractor';
-import { ExpectedConditions } from 'protractor';
-import { OperationsHelper } from '../utils/operations-helper';
-import { Editor } from '../component/editor';
-import { Test } from '../component/test';
-import { Import } from '../component/import';
-import { Deploy } from '../component/deploy';
-import { Login } from '../component/login';
-import { Replace } from '../component/replace';
+import { ExpectedConditions, browser, element, by } from 'protractor';
+
 import { AddFile } from '../component/add-file';
-import { EditorFile } from '../component/editor-file';
-import { ErrorAlert } from '../component/error-alert';
-import { dragDropFile, waitForFileToExist, retrieveZipContentList } from '../utils/fileUtils';
 import { BusyAlert } from '../component/alert';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
+import { Deploy } from '../component/deploy';
+import { Editor } from '../component/editor';
+import { EditorFile } from '../component/editor-file';
+import { Login } from '../component/login';
+import { OperationsHelper } from '../utils/operations-helper';
+import { Test } from '../component/test';
 
-import * as chai from 'chai';
 import * as  fs from 'fs';
-import * as JSZip from 'jszip';
-
+import * as chai from 'chai';
 let expect = chai.expect;
 
 describe('Playground Tutorial Define', (() => {
@@ -99,7 +93,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Connecting to the business network', (() => {
       it('should let the user connect to their sample network', (() => {
-        let expectedFiles = ['About\nREADME.md', 'Access Control\npermissions.acl'];
+        let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl'];
         return Login.connectViaIdCard(profile, networkName)
         .then(() => {
             // Should now be on main editor page for the business network
@@ -277,7 +271,7 @@ describe('Playground Tutorial Define', (() => {
 
   describe('Deploying the updated business network', (() => {
       it('should have the right number of files', (() => {
-          let expectedFiles = ['About\nREADME.md', 'Access Control\npermissions.acl', 'Model File\nmodels/org.acme.model.cto', 'Script File\nlib/script.js'];
+          let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/org.acme.model.cto', 'Script File\nlib/script.js'];
           Editor.retrieveNavigatorFileNames()
           .then((filelist: any) => {
               expect(filelist).to.be.an('array').lengthOf(4);

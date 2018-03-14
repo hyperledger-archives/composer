@@ -11,15 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Pipe, PipeTransform } from '@angular/core';
 
-export class Constants {
+import { EditorFile } from '../services/editor-file';
 
-    static readonly shortWait = 5000;
-
-    static readonly longWait = 10000;
-
-    static readonly mlongwait = 30000;
-
-    static readonly vlongwait = 60000;
-
+@Pipe({ name: 'editorFilesFilter' })
+export class EditorFilesPipe implements PipeTransform {
+    transform(allFiles: EditorFile[]) {
+        return allFiles.filter((file) => !(file.isPackage() || file.isReadMe()));
+    }
 }

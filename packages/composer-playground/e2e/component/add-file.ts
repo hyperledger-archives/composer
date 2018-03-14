@@ -16,7 +16,7 @@ import { ExpectedConditions } from 'protractor';
 
 import { OperationsHelper } from '../utils/operations-helper';
 import { dragDropFile } from '../utils/fileUtils';
-import { Constants } from '../utils/constants';
+import { Constants } from '../constants';
 
 export class AddFile {
 

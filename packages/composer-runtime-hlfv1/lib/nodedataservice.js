@@ -58,20 +58,24 @@ class NodeDataService extends DataService {
         const method = 'createCollection';
         LOG.entry(method, id, force);
 
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(collectionObjectType, [id]);
         if (!force) {
             let value = await this.stub.getState(key);
             if (value.length === 0) {
                 let result = await this._storeCollection(key, id);
                 LOG.exit(method, result);
+                LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
                 return result;
             }
             else {
+                LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
                 throw new Error(`Failed to create collection with ID ${id} as it already exists`);
             }
         } else {
             let result = await this._storeCollection(key, id);
             LOG.exit(method, result);
+            LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             return result;
         }
     }
@@ -87,9 +91,12 @@ class NodeDataService extends DataService {
     async _storeCollection(key, id) {
         const method = '_storeCollection';
         LOG.entry(method, key, id);
+
+        let t0 = process.hrtime();
         await this.stub.putState(key, Buffer.from(JSON.stringify({'id': id})));
         let retVal = new NodeDataCollection(this, this.stub, id);
         LOG.exit(method, retVal);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
         return retVal;
     }
 
@@ -100,14 +107,18 @@ class NodeDataService extends DataService {
     async deleteCollection(id) {
         const method = 'deleteCollection';
         LOG.entry(method, id);
+
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(collectionObjectType, [id]);
         let exists = await this.existsCollection(id);
         if (!exists) {
+            LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             throw new Error(`Collection with ID ${id} does not exist`);
         }
         await this.clearCollection(id);
         await this.stub.deleteState(key);
         LOG.exit(method);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
     }
 
    /**
@@ -119,13 +130,17 @@ class NodeDataService extends DataService {
     async getCollection(id) {
         const method = 'getCollection';
         LOG.entry(method, id);
+
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(collectionObjectType, [id]);
         let value = await this.stub.getState(key);
         if (value.length === 0) {
+            LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
             throw new Error(`Collection with ID ${id} does not exist`);
         }
         let retVal = new NodeDataCollection(this, this.stub, id);
         LOG.exit(method, retVal);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
         return retVal;
     }
 
@@ -138,10 +153,13 @@ class NodeDataService extends DataService {
     async existsCollection(id) {
         const method = 'existsCollection';
         LOG.entry(method, id);
+
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(collectionObjectType, [id]);
         let value = await this.stub.getState(key);
         let retVal = value.length !== 0;
         LOG.exit(method, retVal);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
         return retVal;
     }
 
@@ -155,9 +173,12 @@ class NodeDataService extends DataService {
     async executeQuery(query) {
         const method = 'executeQuery';
         LOG.entry(method, query);
+
+        let t0 = process.hrtime();
         let iterator = await this.stub.getQueryResult(query);
         let results = await NodeUtils.getAllResults(iterator);
         LOG.exit(method, results);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
         return results;
     }
 
@@ -169,9 +190,11 @@ class NodeDataService extends DataService {
         const method = 'clearCollection';
         LOG.entry(method, id);
 
+        let t0 = process.hrtime();
         let iterator = await this.stub.getStateByPartialCompositeKey(id, []);
         await NodeUtils.deleteAllResults(iterator, this.stub);
         LOG.exit(method);
+        LOG.debug('@PERF NodeDataService.' + method + ' total duration ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
     }
 }
 

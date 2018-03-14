@@ -15,9 +15,9 @@
 'use strict';
 
 const exec = require('child_process').exec;
+const version = require('../../../lerna.json').version;
 
-const lernaFile = require('../../../lerna.json');
-let version = lernaFile.version;
+const NPM_RETRIES = 10;
 
 /**
  * Invoke a promisified exec
@@ -89,20 +89,65 @@ const thirdPartyPackages = [
 
         // Set registry and publish
         for (const p of packages) {
-            console.log('Publishing package ' + p + ' to local npm server');
-            await invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Publishing package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm publish --registry http://localhost:4873 ../${p}`);
+                    console.log(`Published package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to publish package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not publish package ${p} to local npm server`);
+                process.exit(1);
+            }
         }
 
         // Globally install test packages
         for (const p of testPackages) {
-            console.log('Installing test package ' + p + '@' + version + ' from local npm server');
-            await invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Installing test package ${p}@${version} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm install --registry http://localhost:4873 -g ${p}@${version}`);
+                    console.log(`Installed test package ${p} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to install test package ${p} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not install test package ${p} from local npm server`);
+                process.exit(1);
+            }
         }
 
         // Globally install third party packages
         for (const p of thirdPartyPackages) {
-            console.log('Installing third party package ' + p + ' from public npm server');
-            await invokeCmd('npm install -g ' + p);
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Installing third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm install -g ${p}`);
+                    console.log(`Installed third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to install third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not install third party package ${p} from public npm server`);
+                process.exit(1);
+            }
         }
 
     } catch (error) {

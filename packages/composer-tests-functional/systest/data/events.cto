@@ -7,6 +7,10 @@ enum SimpleEnum {
     o MUCH
 }
 
+event BasicEvent {
+  o Boolean nonDeterministic
+}
+
 event SimpleEvent {
   o String stringValue
   o String[] stringValues
@@ -33,6 +37,12 @@ asset SimpleAsset identified by assetId {
   o String assetId
 }
 
+asset NonDeterministicAsset identified by assetId {
+  o String assetId
+  o String dateTime
+  o Double random
+}
+
 transaction EmitSimpleEvent {
 
 }
@@ -48,3 +58,12 @@ transaction EmitMultipleEvents {
 transaction EmitMultipleDifferentEvents {
 
 }
+
+transaction EmitBasicEvent {
+
+}
+
+transaction EmitBasicEventNonDeterministic {
+
+}
+

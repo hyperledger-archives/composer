@@ -156,6 +156,7 @@ class HLFConnectionManager extends ConnectionManager {
         if (!pin) {
             throw new Error('no value provided for HSM pin property');
         }
+        LOG.info(method, `HSM enabled to use library ${library} and slot ${slot}`);
 
         //check the cache for an HSM cryptosuite
         let key = '' + slot + '-' + pin;
@@ -163,7 +164,9 @@ class HLFConnectionManager extends ConnectionManager {
         if (!cryptoSuite) {
             LOG.debug(method, 'creating a new cryptosuite');
             cryptoSuite = Client.newCryptoSuite({ software: false, lib: library, slot: slot * 1, pin: pin + '' });
-            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath})); // TODO: Do we need this yes, otherwise it makes it ephemeral and doesn't store the key in hsm
+            // we need to set a path in the CryptoKeyStore even though it is using HSM otherwise
+            // it will make the private key ephemeral and not store it in the HSM
+            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
             HSMSuite.set(key, cryptoSuite);
         } else {
             LOG.debug(method, 'reusing an new cryptosuite');
@@ -407,7 +410,6 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('publicCert not specified or not a string');
         }
 
-        //TODO check if mspId, organisation is defined ? need to test nodesdk to see what it does
         let client = await HLFConnectionManager.createClient(connectionOptions, true);
         const mspID = client.getMspid();
 
@@ -464,10 +466,8 @@ class HLFConnectionManager extends ConnectionManager {
         // Create a new client instance.
         const client = await HLFConnectionManager.createClient(connectOptions, true);
 
-        // TODO: check mspId and organisation have been defined node-sdk should handle nicely
-        // TODO: find a channel, should be provided by node sdk
-        let channelNames = Object.keys(client._network_config._network_config.channels);
-        const channel = client.getChannel(channelNames[0]);
+        // this should return the first defined channel.
+        const channel = client.getChannel();
         // Create a CA client.
         const caClient = client.getCertificateAuthority();
 

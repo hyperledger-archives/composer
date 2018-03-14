@@ -74,6 +74,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
 
         echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
+        echo fetch-retries=10 >> ${HOME}/.npmrc
         cd "${DIR}"
         cd ../composer-runtime
         npm publish --registry http://localhost:4873
@@ -86,6 +87,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
             export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
         echo registry=http://${GATEWAY}:4873 > /tmp/npmrc
+        echo fetch-retries=10 >> /tmp/npmrc
         cd "${DIR}"
     fi
 
