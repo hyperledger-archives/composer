@@ -67,7 +67,7 @@ describe('#' + namespace, () => {
         let businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
 
         // Install the Composer runtime for the new business network
-        await adminConnection.install(businessNetworkDefinition.getName());
+        await adminConnection.install(businessNetworkDefinition);
 
         // Start the business network and configure an network admin identity
         const startOptions = {
@@ -79,7 +79,7 @@ describe('#' + namespace, () => {
             ]
         };
 
-        let adminCards = await adminConnection.start(businessNetworkDefinition, startOptions);
+        let adminCards = await adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), startOptions);
         // Import the network admin identity for us to use
         adminCardName = `${adminUserName}@${businessNetworkDefinition.getName()}`;
         await adminConnection.importCard(adminCardName, adminCards.get(adminUserName));

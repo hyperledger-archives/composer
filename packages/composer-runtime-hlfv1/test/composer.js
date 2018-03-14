@@ -68,6 +68,22 @@ describe('Composer', () => {
         });
     });
 
+    describe('#start error', () => {
+        beforeEach(() => {
+            sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').throws(new Error('FromDirectory Error'));
+        });
+
+        it('should not call shim.start()', () => {
+            try {
+                return Composer.start().then(() => {
+                });
+            } catch (error) {
+                sinon.assert.not.calledOnce(shim.start);
+                sinon.match(error.message, 'FromDirectory Error');
+            }
+        });
+    });
+
     describe('#constructor', () => {
         it('should construct with a new NodeContainer', () => {
             composer.container.should.be.an.instanceOf(NodeContainer);

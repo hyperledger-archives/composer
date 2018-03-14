@@ -36,7 +36,8 @@ const runtimeHlfPackageJson = require('composer-runtime-hlfv1/package.json');
 const composerVersion = runtimeHlfPackageJson.version;
 
 const installDependencies = {
-    'composer-runtime-hlfv1': composerVersion
+    'composer-common' : composerVersion,
+    'composer-runtime-hlfv1' : composerVersion
 };
 
 /**
@@ -616,7 +617,6 @@ class HLFConnection extends Connection {
 
         // Submit the endorsed transaction to the primary orderer.
         const proposal = proposalResponse[1];
-
         const eventHandler = HLFConnection.createTxEventHandler(this.eventHubs, transactionId.getTransactionID(), this.commitTimeout);
         eventHandler.startListening();
         const response = await this.channel.sendTransaction({

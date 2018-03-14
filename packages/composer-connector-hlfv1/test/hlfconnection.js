@@ -576,6 +576,7 @@ describe('HLFConnection', () => {
             const testVersion = '0.0.1-banana';
             const dependencies = {
                 'composer-runtime-hlfv1': testVersion,
+                'composer-common' : testVersion,
                 'banana': testVersion
             };
             connection._createPackageDependencies(dependencies).should.equal(dependencies);
@@ -583,7 +584,7 @@ describe('HLFConnection', () => {
 
         it('should add required dependencies if none supplied', () => {
             connection._createPackageDependencies().should.have.all.keys(
-                'composer-runtime-hlfv1'
+                'composer-runtime-hlfv1', 'composer-common'
             );
         });
     });

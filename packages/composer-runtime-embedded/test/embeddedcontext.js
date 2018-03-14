@@ -15,6 +15,7 @@
 'use strict';
 
 const Serializer = require('composer-common').Serializer;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Context = require('composer-runtime').Context;
 const Engine = require('composer-runtime').Engine;
 const EmbeddedContainer = require('..').EmbeddedContainer;
@@ -41,6 +42,8 @@ describe('EmbeddedContext', () => {
     let mockEmbeddedContainer;
     let mockSerializer;
     let mockEngine;
+    let mockEventSink;
+    let mockInstalledBusinessNetwork;
     let context;
 
     beforeEach(() => {
@@ -49,7 +52,9 @@ describe('EmbeddedContext', () => {
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockEmbeddedContainer);
         mockSerializer = sinon.createStubInstance(Serializer);
-        context = new EmbeddedContext(mockEngine, identity);
+        mockEventSink = {};
+        mockInstalledBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+        context = new EmbeddedContext(mockEngine, identity, mockEventSink, mockInstalledBusinessNetwork);
     });
 
     describe('#constructor', () => {
