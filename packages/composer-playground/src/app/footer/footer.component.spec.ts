@@ -164,7 +164,7 @@ describe('FooterComponent', () => {
             component['config'].should.deep.equal(myConfig);
         })));
 
-        xit('should handle error from about service', fakeAsync(inject([ConfigService, XHRBackend], (configService, mockBackend) => {
+        it('should handle error from about service', fakeAsync(inject([ConfigService, XHRBackend], (configService, mockBackend) => {
             let myConfig = new Config();
             myConfig.webonly = true;
             myConfig.title = 'My Title';

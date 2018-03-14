@@ -49,11 +49,6 @@ export class IdentityCardService {
 
     constructor(private adminService: AdminService,
                 private localStorageService: LocalStorageService) {
-        // Logger.setFunctionalLogger({
-        //     // tslint:disable-next-line:no-empty
-        //     log: () => {
-        //     }
-        // });
     }
 
     public getCurrentCardRef(): string {
