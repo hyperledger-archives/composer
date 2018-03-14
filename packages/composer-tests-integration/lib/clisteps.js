@@ -32,7 +32,7 @@ module.exports = function () {
         await this.composer.deployBusinessNetworkFromDirectory(name);
     });
 
-    this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name, version) {
+    this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {
         await this.composer.deployBusinessNetworkArchive(name);
     });
 
