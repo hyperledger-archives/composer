@@ -21,7 +21,7 @@ const nunjucks=require('nunjucks');
 const targetFile = path.resolve(__dirname, '..', 'lib','systemmodel.js');
 const templatePath = path.resolve(__dirname, '..', 'lib','_template');
 const modelDirectory = path.resolve(__dirname, '..', 'lib','system');
-const modelFiles = fs.readdirSync(modelDirectory);
+const modelFiles = fs.readdirSync(modelDirectory).filter((f)=>{  return path.extname(f)==='.cto';});
 
 // nunjucks is already used in other parts of the codebase
 // that is the primary reason for choosing it!

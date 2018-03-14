@@ -1,0 +1,200 @@
+================================================================================
+==== Node Report ===============================================================
+
+Event: exception, location: "OnUncaughtException"
+Filename: node-report.20180314.150248.11145.001.txt
+Dump event time:  2018/03/14 15:02:48
+Module load time: 2018/03/14 15:02:48
+Process ID: 11145
+Command line: node ./packages/composer-cli/bin/composer generator 
+
+Node.js version: v8.9.4
+(http_parser: 2.7.0, v8: 6.1.534.50, uv: 1.15.0, zlib: 1.2.11, ares: 1.10.1-DEV,
+ modules: 57, nghttp2: 1.25.0, openssl: 1.0.2n, icu: 59.1, unicode: 9.0,
+ cldr: 31.0.1, tz: 2017b)
+
+node-report version: 2.2.1 (built against Node.js v8.9.4, glibc 2.26, 64 bit)
+
+OS version: Linux 4.13.0-36-generic #40-Ubuntu SMP Fri Feb 16 20:07:48 UTC 2018
+(glibc: 2.26)
+
+Machine: matthew-VirtualBox x86_64
+
+================================================================================
+==== JavaScript Stack Trace ====================================================
+
+Object.parseArgs [as _parseArgs] (/home/matthew/github/composer/node_modules/yargs/yargs.js:1:1)
+Object.get [as argv] (/home/matthew/github/composer/node_modules/yargs/yargs.js:1:1)
+Object.<anonymous> (/home/matthew/github/composer/packages/composer-cli/bin/composer:1:1)
+Module._compile (module.js:1:1)
+Object.Module._extensions..js (module.js:1:1)
+Module.load (module.js:1:1)
+tryModuleLoad (module.js:1:1)
+Function.Module._load (module.js:1:1)
+Function.Module.runMain (module.js:1:1)
+startup (bootstrap_node.js:1:1)
+bootstrap_node.js:1:1
+
+================================================================================
+==== Native Stack Trace ========================================================
+
+ 0: [pc=0x7f4e7acd608b] nodereport::OnUncaughtException(v8::Isolate*) [/home/matthew/github/composer/node_modules/node-report/api.node]
+ 1: [pc=0xf521c2] v8::internal::Isolate::Throw(v8::internal::Object*, v8::internal::MessageLocation*) [node]
+ 2: [pc=0x10c6f0d] v8::internal::Runtime_Throw(int, v8::internal::Object**, v8::internal::Isolate*) [node]
+ 3: [pc=0x250289e8463d] 
+
+================================================================================
+==== JavaScript Heap and Garbage Collector =====================================
+
+Heap space name: new_space
+    Memory size: 16,777,216 bytes, committed memory: 14,772,728 bytes
+    Capacity: 8,249,344 bytes, used: 6,303,712 bytes, available: 1,945,632 bytes
+Heap space name: old_space
+    Memory size: 13,455,360 bytes, committed memory: 13,279,040 bytes
+    Capacity: 13,191,960 bytes, used: 13,052,168 bytes, available: 139,792 bytes
+Heap space name: code_space
+    Memory size: 2,097,152 bytes, committed memory: 1,326,720 bytes
+    Capacity: 1,261,184 bytes, used: 1,261,184 bytes, available: 0 bytes
+Heap space name: map_space
+    Memory size: 1,593,344 bytes, committed memory: 1,158,312 bytes
+    Capacity: 1,508,120 bytes, used: 1,123,496 bytes, available: 384,624 bytes
+Heap space name: large_object_space
+    Memory size: 4,595,712 bytes, committed memory: 4,595,712 bytes
+    Capacity: 1,465,465,368 bytes, used: 4,529,176 bytes, available: 1,460,936,192 bytes
+
+Total heap memory size: 38,518,784 bytes
+Total heap committed memory: 35,132,512 bytes
+Total used heap memory: 26,269,736 bytes
+Total available heap memory: 1,463,406,240 bytes
+
+Heap memory limit: 1,501,560,832
+
+================================================================================
+==== Resource Usage ============================================================
+
+Process total resource usage:
+  User mode CPU: 0.404165 secs
+  Kernel mode CPU: 0.303124 secs
+  Average CPU Consumption : 70.7289%
+  Maximum resident set size: 66,387,968 bytes
+  Page faults: 0 (I/O required) 14978 (no I/O required)
+  Filesystem activity: 0 reads 16 writes
+
+Event loop thread resource usage:
+  User mode CPU: 0.377012 secs
+  Kernel mode CPU: 0.306322 secs
+  Average CPU Consumption : 68.3334%
+  Filesystem activity: 0 reads 16 writes
+
+================================================================================
+==== Node.js libuv Handle Summary ==============================================
+
+(Flags: R=Ref, A=Active)
+Flags  Type      Address             Details
+[-A]   async     0x00000000037ecd60  
+[--]   check     0x00007ffc86192010  
+[R-]   idle      0x00007ffc86192088  
+[--]   prepare   0x00007ffc86192198  
+[--]   check     0x00007ffc86192210  
+[R-]   timer     0x00007ffc86192100  repeat: 0, timeout expired: 98170932 ms ago
+[-A]   async     0x00000000021cf4c0  
+[-A]   async     0x00007f4e70001bf0  
+[-A]   async     0x00007f4e70001da0  
+[R-]   timer     0x000000000385f800  repeat: 0, timeout expired: 98170932 ms ago
+[R-]   tty       0x000000000385be08  width: 170, height: 47, file descriptor: 9, write queue size: 0, writable
+[-A]   signal    0x000000000385b5d0  signum: 28 (SIGWINCH)
+[R-]   tty       0x0000000003840b98  width: 170, height: 47, file descriptor: 11, write queue size: 0, writable
+[-A]   async     0x0000000003889070  
+[-A]   async     0x00007f4e64002220  
+[-A]   async     0x00007f4e74002e40  
+[-A]   async     0x00007f4e640023d0  
+[-A]   async     0x00000000038b2120  
+[-A]   async     0x00007f4e64001fe0  
+[-A]   async     0x00007f4e6c001c80  
+[-A]   async     0x00007f4e7aedece0  
+
+================================================================================
+==== System Information ========================================================
+
+Environment variables
+  DBUS_STARTER_ADDRESS=unix:path=/run/user/1000/bus,guid=361d82d563020936e414d2d95aa5195d
+  LANG=en_GB.UTF-8
+  DISPLAY=:0
+  PWD=/home/matthew/github/composer
+  SYSTEMD_NSS_BYPASS_BUS=1
+  LANGUAGE=en_GB:en
+  INVOCATION_ID=bef9811b41174e67af49ba73e8906e5d
+  LOGNAME=matthew
+  SHLVL=1
+  XDG_VTNR=2
+  JOURNAL_STREAM=9:25159
+  COLORTERM=truecolor
+  XDG_SESSION_ID=2
+  DESKTOP_SESSION=ubuntu
+  XDG_SESSION_DESKTOP=ubuntu
+  GDMSESSION=ubuntu
+  GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+  USERNAME=matthew
+  WAYLAND_DISPLAY=wayland-0
+  DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus,guid=361d82d563020936e414d2d95aa5195d
+  VTE_VERSION=4804
+  DBUS_STARTER_BUS_TYPE=session
+  _=/home/matthew/github/composer/./packages/composer-cli/bin/composer
+  XDG_MENU_PREFIX=gnome-
+  GNOME_SHELL_SESSION_MODE=ubuntu
+  OLDPWD=/home/matthew/github/composer/packages
+  SHELL=/usr/bin/zsh
+  XDG_SESSION_TYPE=wayland
+  QT_IM_MODULE=ibus
+  MANAGERPID=1794
+  TERM=xterm-256color
+  SESSION_MANAGER=local/matthew-VirtualBox:@/tmp/.ICE-unix/1810,unix/matthew-VirtualBox:/tmp/.ICE-unix/1810
+  XDG_CURRENT_DESKTOP=ubuntu:GNOME
+  SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+  PATH=/home/matthew/.rbenv/shims:/home/matthew/.rbenv/bin:/home/matthew/.rbenv/bin:/home/matthew/.nvm/versions/node/v8.9.4/bin:/home/matthew/.rbenv/shims:/home/matthew/.rbenv/bin:/home/matthew/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+  XDG_SEAT=seat0
+  USER=matthew
+  XMODIFIERS=@im=ibus
+  XDG_RUNTIME_DIR=/run/user/1000
+  TILIX_ID=cb206d4a-863c-4667-94c9-d8103581b6cf
+  HOME=/home/matthew
+  ZSH=/home/matthew/.oh-my-zsh
+  PAGER=less
+  LESS=-R
+  LC_CTYPE=en_GB.UTF-8
+  LSCOLORS=Gxfxcxdxbxegedabagacad
+  LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+  NVM_DIR=/home/matthew/.nvm
+  NVM_CD_FLAGS=-q
+  NVM_NODEJS_ORG_MIRROR=https://nodejs.org/dist
+  NVM_IOJS_ORG_MIRROR=https://iojs.org/dist
+  MANPATH=/home/matthew/.nvm/versions/node/v8.9.4/share/man:/usr/local/man:/usr/local/share/man:/usr/share/man
+  NVM_PATH=/home/matthew/.nvm/versions/node/v8.9.4/lib/node
+  NVM_BIN=/home/matthew/.nvm/versions/node/v8.9.4/bin
+  RBENV_SHELL=zsh
+  SUPPRESS_NO_CONFIG_WARNING=true
+
+Resource limits                        soft limit      hard limit
+  core file size (blocks)                       0       unlimited
+  data seg size (kbytes)                unlimited       unlimited
+  file size (blocks)                    unlimited       unlimited
+  max locked memory (bytes)                 65536           65536
+  max memory size (kbytes)              unlimited       unlimited
+  open files                                 4096            4096
+  stack size (bytes)                      8388608       unlimited
+  cpu time (seconds)                    unlimited       unlimited
+  max user processes                        91344           91344
+  virtual memory (kbytes)               unlimited       unlimited
+
+Loaded libraries
+  /lib/x86_64-linux-gnu/libdl.so.2
+  /lib/x86_64-linux-gnu/librt.so.1
+  /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+  /lib/x86_64-linux-gnu/libm.so.6
+  /lib/x86_64-linux-gnu/libgcc_s.so.1
+  /lib/x86_64-linux-gnu/libpthread.so.0
+  /lib/x86_64-linux-gnu/libc.so.6
+  /lib64/ld-linux-x86-64.so.2
+  /home/matthew/github/composer/node_modules/node-report/api.node
+
+================================================================================

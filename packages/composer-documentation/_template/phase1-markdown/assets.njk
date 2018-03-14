@@ -1,0 +1,28 @@
+# Asset Model
+
+{% for asset in types.asset %}
+### {{asset.name}}
+The fully qualified name is **{{asset.fqn}}** 
+
+{% if asset.decorators.docs %}
+    {{asset.description}}
+{% else %}
+    {% for extra in asset.decorators.docs %}
+    {{ asset.decorators[extra] }}
+    {% endfor %}
+{% endif %}
+
+{% if asset.properties.length > 0 %}
+| Name | Type | Description |
+| --------  | ---- | ----------- |
+{% for id,info in asset.properties %}|{{id}}|{{info.type}}|{{info.description}}|
+{% endfor %}
+{% else %}
+No properties defined.
+{% endif %}
+
+
+{% endfor %}
+
+
+
