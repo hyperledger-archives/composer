@@ -77,7 +77,7 @@ Feature: Cli steps
             """
             composer card list --name bob2@trade-network
             """
-        Then The stdout information should include text matching /credentials:      Credentials set, HSM managed/
+        Then The stdout information should include text matching /credentials:         Credentials set, HSM managed/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can export an HSM managed card
@@ -167,7 +167,7 @@ Feature: Cli steps
             """
             composer card list --name fred@trade-network
             """
-        Then The stdout information should include text matching /credentials:      Credentials set, HSM managed/
+        Then The stdout information should include text matching /credentials:         Credentials set, HSM managed/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can validate my user fred

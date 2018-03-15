@@ -67,7 +67,7 @@ Feature: CLI cards steps
         And The stdout information should include text matching /connectionProfile:/
         And The stdout information should include text matching /  name:   hlfv1/
         And The stdout information should include text matching /  x-type: hlfv1/
-        And The stdout information should include text matching /credentials:      Credentials set/
+        And The stdout information should include text matching /credentials:         Credentials set/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I should get an error if I try to delete a card which doesn't exist

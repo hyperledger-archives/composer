@@ -129,7 +129,6 @@ class List {
         };
 
         let credCount = Object.keys(card.getCredentials()).length;
-        console.log(credCount);
         switch(credCount) {
         case 1:
             listOutput.credentials = 'Credentials set, HSM managed';
