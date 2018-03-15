@@ -16,9 +16,7 @@ The `composer network upgrade` utility is used to upgrade the {{site.data.conref
 composer network upgrade -n <business-network-name> -c <business-network-card>
 ```
 
-`composer network upgrade` upgrades the {{site.data.conrefs.composer_full}} runtime of the named business network to use a new micro version. Before running the `composer network upgrade` command, a new version of the {{site.data.conrefs.composer_full}} runtime must have been installed to a blockchain node by using the `composer runtime install` command.
-
-*Please Note*: `composer network upgrade` is only suitable for upgrading between micro versions of the {{site.data.conrefs.composer_full}} runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.
+`composer network upgrade` upgrades the {{site.data.conrefs.composer_full}} the named business network. Before running the `composer network upgrade` command, a new version of the {{site.data.conrefs.composer_full}} business network must have been installed to a blockchain node by using the `composer network install` command.
 
 ### Options
 
@@ -29,7 +27,9 @@ Options:
   --help                     Show help  [boolean]
   -v, --version              Show version number  [boolean]
   --card, -c                 The cardname to use to upgrade the network  [string] [required]
-  --businessNetworkName, -n  The business network name  [string] [required]
+  --loglevel, -l             The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
+  --networkName, -n          Name of the business network to start  [required]
+  --networkVersion, -V       Version of the business network to start  [required]
   --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```

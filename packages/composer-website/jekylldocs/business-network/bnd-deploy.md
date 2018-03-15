@@ -19,7 +19,7 @@ For example:
     composer network install --archiveFile tutorial-network@1.0.0.bna --card PeerAdmin@fabric-network
     composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@Fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
 
-To update the business network definition for an already deployed business network use the [`composer network update`](../reference/composer.network.update.html) CLI command.
+To upgrade the business network definition for an already deployed business network use the [`composer network upgrade`](../reference/composer.network.upgrade.html) CLI command.
 
 ## Deploying business networks to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}
 

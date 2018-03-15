@@ -54,10 +54,6 @@ Lists all cards currently in your wallet: [composer card list](./composer.card.l
 
 ## Business Network management
 
-`composer network undeploy`
-
-Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.html)
-
 `composer network install`
 
 Install a business network archive to a {{site.data.conrefs.hlf_full}} peer: [composer network install](./composer.network.install.html)
@@ -77,10 +73,6 @@ Return or update the log level for the composer runtime: [`composer network logl
 `composer network ping`
 
 Test the connection to a deployed a Business Network: [composer network ping](./composer.network.ping.html)
-
-`composer network update`
-
-Update a deployed Business Network: [composer network update](./composer.network.update.html)
 
 `composer network upgrade`
 

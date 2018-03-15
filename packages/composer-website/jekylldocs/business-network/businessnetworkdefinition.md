@@ -28,7 +28,7 @@ The JavaScript files are typically created by developers who are implementing bu
 
 The Access Control file contains a set of access control rules that define the rights of the different participants in the business network.
 
-Once defined, a Business Network Definition can be packaged into an archive using the `composer` command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the `AdminConnection` class from the `composer-admin` module.
+Once defined, a Business Network Definition can be packaged into an archive using the `composer` command line interface. These archives can then be deployed or updated on a Fabric, using the `AdminConnection` class from the `composer-admin` module.
 
 ## References
 

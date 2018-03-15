@@ -16,7 +16,7 @@ After you have deployed a business network definition it is often useful to run 
 
 At the other end of the spectrum you can write full-blown system tests using Docker Compose and Mocha/Chai, that start a runtime, deploy your business network definition and then programmatically creates assets, submits transactions and inspect the state of asset registries.
 
-In between fall unit tests. Unit tests focus on ensuring that the correct changes to the world-state take place when a transaction is processed.
+Unit tests focus on ensuring that the correct changes to the world-state take place when a transaction is processed.
 
 The execution of both unit tests and system tests may be automated using a CI/CD build pipeline, such as Jenkins, Travis CI, or Circle CI or alternatives.
 

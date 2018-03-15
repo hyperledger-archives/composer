@@ -139,7 +139,7 @@ After the command has run, a business network archive file called `tutorial-netw
 
 ## Step Four: Deploying the business network
 
-After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlf_full}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to deploy chaincode to the peer. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
+After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlf_full}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to install chaincode to the peer as well as start chaincode on the `composerchannel` channel. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
 
 After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.
 
@@ -149,19 +149,19 @@ A `PeerAdmin` business network card with the correct credentials is already crea
 
 #### Deploying the business network
 
-Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the {{site.data.conrefs.composer_full}} chaincode to be installed on the peer, then the business network archive (`.bna`) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
+Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the {{site.data.conrefs.composer_full}} business network to be installed on the peer, then the business network is ready to be started, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
 
-1. To install the composer runtime, run the following command:
+1. To install the business network, from the `tutorial-network` directory, run the following command:
 
-        composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
+        composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
 
-    The `composer runtime install` command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the name of the business network.
+    The `composer network install` command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the the file path of the `.bna` which defines the business network.
 
-2. To deploy the business network, from the `tutorial-network` directory, run the following command:
+2. To start the business network, run the following command:
 
-        composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkadmin.card
+        composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
 
-    The `composer network start` command requires a business network card, as well as the name of the admin identity for the business network, the file path of the `.bna` and the name of the file to be created ready to import as a business network card.
+    The `composer network start` command requires a business network card, as well as the name of the admin identity for the business network, the name and version of the business network and the name of the file to be created ready to import as a business network card.
 
 3. To import the network administrator identity as a usable business network card, run the following command:
 
