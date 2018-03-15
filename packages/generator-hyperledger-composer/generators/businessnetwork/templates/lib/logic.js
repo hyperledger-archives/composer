@@ -19,13 +19,25 @@
 
 /**
  * Sample transaction
- * @param {<%= namespace%>.ChangeAssetValue} changeAssetValue
+ * @param {<%= namespace%>.SampleTransaction} sampleTransaction
  * @transaction
  */
-async function onChangeAssetValue(changeAssetValue) {
-    let id = changeAssetValue.relatedAsset.assetId;
-    let assetRegistry = await getAssetRegistry('<%= namespace%>.SampleAsset');
-    let asset = await assetRegistry.get(id);
-    asset.value = changeAssetValue.newValue;
-    await assetRegistry.update(asset);
+async function sampleTransaction(tx) {
+    // Save the old value of the asset.
+    const oldValue = tx.asset.value;
+
+    // Update the asset with the new value.
+    tx.asset.value = tx.newValue;
+
+    // Get the asset registry for the asset.
+    const assetRegistry = await getAssetRegistry('<%= namespace%>.SampleAsset');
+    // Update the asset in the asset registry.
+    await assetRegistry.update(tx.asset);
+
+    // Emit an event for the modified asset.
+    let event = getFactory().newEvent('<%= namespace%>', 'SampleEvent');
+    event.asset = tx.asset;
+    event.oldValue = oldValue;
+    event.newValue = tx.newValue;
+    emit(event);
 }
