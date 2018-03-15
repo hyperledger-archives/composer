@@ -112,9 +112,8 @@ export class AdminService {
         return this.getAdminConnection().start(businessNetworkName, businessNetworkVersion, startOptions);
     }
 
-    public undeploy(businessNetworkDefinitionName: string): Promise<void> {
-        // return this.getAdminConnection().undeploy(businessNetworkDefinitionName);
-        return Promise.resolve();
+    public undeploy(businessNetworkName: String): Promise<void> {
+        return this.getAdminConnection().undeploy(businessNetworkName);
     }
 
     public importCard(cardName: string, card: IdCard): Promise<void> {
