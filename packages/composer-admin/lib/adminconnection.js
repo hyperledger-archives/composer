@@ -538,6 +538,21 @@ class AdminConnection {
     }
 
     /**
+     * Undeploys a business network.
+     * <p>
+     * <strong>Note: this this currently not supported with Hyperledger Fabric and will throw an error.</strong>
+     * @param {String} businessNetworkName The name of business network to remove.
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * undeployed.
+     */
+    undeploy(businessNetworkName) {
+        return Promise.resolve().then(() => {
+            Util.securityCheck(this.securityContext);
+            return this.connection.undeploy(this.securityContext, businessNetworkName);
+        });
+    }
+
+    /**
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the node.js module.
      * @example

@@ -219,6 +219,16 @@ class Connection extends EventEmitter {
     }
 
     /**
+     * Undeploy a business network.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} networkName The name of the business network to remove.
+     * @return {Promise} Resolved when the network is undeployed.
+     */
+    undeploy(securityContext, networkName) {
+        return Promise.reject(new Error('Abstract function called'));
+    }
+
+    /**
      * Resets an existing deployed business network definition.
      * @abstract
      * @param {SecurityContext} securityContext The participant's security context.

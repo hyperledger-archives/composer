@@ -29,11 +29,12 @@ class WebContext extends Context {
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork Information on the installed business network.
      * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
      */
-    constructor(engine, identity, eventSink) {
-        super(engine);
+    constructor(engine, installedBusinessNetwork, identity, eventSink) {
+        super(engine, installedBusinessNetwork);
         this.dataService = new WebDataService(engine.getContainer().getName());
         this.identityService = new WebIdentityService(identity);
         this.eventSink = eventSink;

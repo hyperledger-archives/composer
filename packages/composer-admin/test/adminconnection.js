@@ -430,6 +430,16 @@ describe('AdminConnection', () => {
         });
     });
 
+    describe('#undeploy', () => {
+        it('should call undeploy on the connection', async () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            const networkName = 'conga';
+            await adminConnection.undeploy(networkName);
+            sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, networkName);
+        });
+    });
+
     describe('#reset', () => {
 
         it('should be able to reset a composer runtime', () => {

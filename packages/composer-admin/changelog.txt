@@ -11,9 +11,11 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.18.2 {2eaf92e11c0efbe6a90c35e6e91b5577} 2018-03-15
+- Update AdminConnection.undeploy function
+
 Version 0.18.1 {46a3b7260056aafce0549512bae8f606} 2018-03-07
 - Converted AdminConnection.connect to async/await
-- Remove AdminConnection.undeploy function
 - Remove AdminConnection.update function
 - Changed AdminConnection.upgrade parameters
 - Remove deprecated AdminConnection.deploy function

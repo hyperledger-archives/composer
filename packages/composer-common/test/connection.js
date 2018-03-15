@@ -346,6 +346,12 @@ describe('Connection', () => {
 
     });
 
+    describe('undeploy', () => {
+        it('should throw as abstract', () => {
+            return connection.undeploy(mockSecurityContext, 'name').should.be.rejectedWith(/abstract function called/i);
+        });
+    });
+
     describe('#ping', () => {
 
         it('should call _ping and handle no error', () => {
