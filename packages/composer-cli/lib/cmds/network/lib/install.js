@@ -14,6 +14,7 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
@@ -36,14 +37,17 @@ class Install {
         const adminConnection = cmdUtil.createAdminConnection();
 
         const spinner = ora('Installing business network. This may take a minute...').start();
+        let definition;
 
         return adminConnection.connect(cardName).then(() => {
             const businessNetworkArchive = cmdUtil.getArchiveFileContents(argv.archiveFile);
             return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-        }).then((definition) => {
+        }).then((definition_) => {
+            definition = definition_;
             return adminConnection.install(definition, installOptions);
         }).then((result) => {
             spinner.succeed();
+            cmdUtil.log(chalk.bold.blue(`Successfully installed business network ${definition.getName()}, version ${definition.getVersion()}`));
             cmdUtil.log();
             return result;
         }).catch((error) => {
