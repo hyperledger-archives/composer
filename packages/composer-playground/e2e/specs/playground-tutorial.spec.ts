@@ -51,44 +51,44 @@ describe('Playground Tutorial Define', (() => {
   });
 
   describe('Creating a new business network', (() => {
-      it('should allow a user to select the empty-business-network and call it tutorial network and deploy', (() => {
+      it('should allow a user to select the empty-business-network and call it tutorial network and deploy', () => {
 
-          // Click to deploy on desired profile
-          return Login.deployNewToProfile(profile)
-          .then(() => {
-              return Deploy.waitToAppear();
-          })
-          .then(() => {
-              return Deploy.waitToLoadDeployBasisOptions();
-          })
-          .then(() => {
-              return Deploy.selectDeployBasisOption('empty-business-network');
-          })
-          .then(() => {
+        // Click to deploy on desired profile
+        return Login.deployNewToProfile(profile)
+        .then(() => {
+            return Deploy.waitToAppear();
+        })
+        .then(() => {
+            return Deploy.waitToLoadDeployBasisOptions();
+        })
+        .then(() => {
+            return Deploy.selectDeployBasisOption('empty-business-network');
+        })
+        .then(() => {
             return Deploy.clearBusinessNetworkName();
-          })
-          .then(() => {
-              return Deploy.nameBusinessNetwork(networkName);
-          })
-          .then(() => {
+        })
+        .then(() => {
+            return Deploy.nameBusinessNetwork(networkName);
+        })
+        .then(() => {
             if (isFabricTest) {
-              return Deploy.selectUsernameAndSecret('admin', 'adminpw');
+                return Deploy.selectUsernameAndSecret('admin', 'adminpw');
             }
             return;
         })
-          .then(() => {
-              return Deploy.clickDeploy();
-          })
-          .then(() => {
-              return Deploy.waitToDisappear(isFabricTest);
-          })
-          .then(() => {
-              return BusyAlert.waitToDisappear();
-          })
-          .catch((err) => {
-              fail(err);
-          });
-      }));
+        .then(() => {
+            return Deploy.clickDeploy();
+        })
+        .then(() => {
+            return Deploy.waitToDisappear(isFabricTest);
+        })
+        .then(() => {
+            return BusyAlert.waitToDisappear();
+        })
+        .catch((err) => {
+            fail(err);
+        });
+    }, Constants.vlongwait);
   }));
 
   describe('Connecting to the business network', (() => {

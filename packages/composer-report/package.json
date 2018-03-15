@@ -37,7 +37,7 @@
   "dependencies": {
     "moment": "2.19.3",
     "node-report": "2.2.1",
-    "tar": "4.3.0"
+    "tar": "3.1.5"
   },
   "license-check-config": {
     "src": [

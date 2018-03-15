@@ -49,25 +49,40 @@ class HLFTxEventHandler {
         LOG.entry(method);
 
         this.eventHubs.forEach((eh) => {
-            let handle;
-            let txPromise = new Promise((resolve, reject) => {
-                handle = setTimeout(() => {
-                    eh.unregisterTxEvent(this.txId);
-                    reject(new Error(`Failed to receive commit notification for transaction '${this.txId}' within the timeout period`));
-                }, this.timeout);
+            if (eh.isconnected()) {
 
-                eh.registerTxEvent(this.txId, (tx, code) => {
-                    clearTimeout(handle);
-                    eh.unregisterTxEvent(this.txId);
-                    if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${this.txId}' with code ${code}`));
-                    } else {
-                        resolve();
-                    }
+                let handle;
+                let txPromise = new Promise((resolve, reject) => {
+                    handle = setTimeout(() => {
+                        eh.unregisterTxEvent(this.txId);
+
+                        // We reject to let the application know that the commit did not complete within the timeout
+                        reject(new Error(`Failed to receive commit notification from ${eh.getPeerAddr()} for transaction '${this.txId}' within the timeout period`));
+                    }, this.timeout);
+
+                    eh.registerTxEvent(this.txId,
+                        (tx, code) => {
+                            clearTimeout(handle);
+                            eh.unregisterTxEvent(this.txId);
+                            if (code !== 'VALID') {
+                                reject(new Error(`Peer ${eh.getPeerAddr()} has rejected transaction '${this.txId}' with code ${code}`));
+                            } else {
+                                resolve();
+                            }
+                        },
+                        (err) => {
+                            LOG.warn(method, `event hub ${eh.getPeerAddr()} has disconnected with error ${err.message}`);
+                            clearTimeout(handle);
+                            eh.unregisterTxEvent(this.txId);
+
+                            // We resolve rather than reject as we can still wait for other peers.
+                            resolve();
+                        }
+                    );
                 });
-            });
-            this.listenerPromises.push(txPromise);
-            this.timeoutHandles.push(handle);
+                this.listenerPromises.push(txPromise);
+                this.timeoutHandles.push(handle);
+            }
         });
         LOG.exit(method);
     }
@@ -79,8 +94,13 @@ class HLFTxEventHandler {
     waitForEvents() {
         const method = 'waitForEvents';
         LOG.entry(method);
+        if (this.listenerPromises.length > 0) {
+            LOG.exit(method);
+            return Promise.all(this.listenerPromises);
+        }
+        LOG.warn(method, 'No event hubs available to listen on to wait for transaction commits');
         LOG.exit(method);
-        return Promise.all(this.listenerPromises);
+        return Promise.resolve();
     }
 
     /**
