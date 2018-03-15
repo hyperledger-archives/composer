@@ -17,6 +17,8 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const { ConnectionProfileManager, IdCard, NetworkCardStoreManager } = require('composer-common');
+const commonPackageJson = require('composer-common/package.json');
+const composerVersion = commonPackageJson.version;
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -814,6 +816,19 @@ class TestUtil {
     }
 
     /**
+     * Inject the available dependencies.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition the bnd to be deployed
+     */
+    static injectDependencies(businessNetworkDefinition) {
+        let packageJSON = businessNetworkDefinition.getMetadata().getPackageJson();
+        packageJSON.dependencies = {
+            'composer-common' : `../composer-common/composer-common-${composerVersion}.tgz`,
+            'composer-runtime-hlfv1' : `../composer-runtime-hlfv1/composer-runtime-hlfv1-${composerVersion}.tgz`,
+            'composer-runtime' : `../composer-runtime/composer-runtime-${composerVersion}.tgz`
+        };
+    }
+
+    /**
      * Deploy the specified business network definition.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - the business network definition to deploy.
      * @param {string} cardName - the name of the card to create when deploying
@@ -863,9 +878,11 @@ class TestUtil {
                 })
                 .then(() => {
                     console.log('Installing network to org1');
-                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
                     return adminConnection.disconnect();
                 })
                 .then(() => {
@@ -879,9 +896,11 @@ class TestUtil {
                 })
                 .then(() => {
                     console.log('Installing network to org2');
-                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
                     return adminConnection.disconnect();
                 })
                 .then(() => {
@@ -983,9 +1002,11 @@ class TestUtil {
                     return adminConnection.connect(deployCardName);
                 })
                 .then(() => {
-                    return adminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
                     return adminConnection.start(businessNetworkDefinition.getName(),
                         businessNetworkDefinition.getVersion(),
                         {bootstrapTransactions});
