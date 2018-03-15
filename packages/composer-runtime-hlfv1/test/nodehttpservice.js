@@ -50,28 +50,24 @@ describe('NodeHTTPService', () => {
         it('should return JS Object', () => {
             sandbox.stub(request, 'post').yields(null, {statusCode : 200}, {sum: 3});
             const data = {foo : 'bar'};
-            httpService.post( 'url', data);
             return expect(httpService.post('url', data)).to.eventually.have.property('body');
         });
 
         it('should include error if present in JS Object', () => {
             sandbox.stub(request, 'post').yields('error', {statusCode : 200}, {sum: 3});
             const data = {foo : 'bar'};
-            httpService.post( 'url', data);
             return expect(httpService.post('url', data)).to.eventually.deep.equal({statusCode : 200, body : 'error'});
         });
 
         it('should reject if there is no response', () => {
             sandbox.stub(request, 'post').yields(null, null, {sum: 3});
             const data = {foo : 'bar'};
-            httpService.post( 'url', data);
             return expect(httpService.post('url', data)).to.eventually.be.rejected;
         });
 
         it('should reject if there is no response and return error', () => {
             sandbox.stub(request, 'post').yields('error', null, {sum: 3});
             const data = {foo : 'bar'};
-            httpService.post( 'url', data);
             return expect(httpService.post('url', data)).to.eventually.be.rejected;
         });
     });

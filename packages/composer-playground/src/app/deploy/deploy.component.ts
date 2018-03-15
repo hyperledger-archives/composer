@@ -170,7 +170,7 @@ export class DeployComponent implements OnInit {
                 'jsdoc': '^3.4.1',
                 'mkdirp': '^0.5.1',
                 'mocha': '^3.2.0',
-                'moment': '^2.17.1'
+                'moment': '^2.19.3'
             },
             keywords: [],
             license: 'Apache 2.0',

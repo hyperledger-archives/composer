@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-hlfv1",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "The Hyperledger Fabric v1.x Node.JS runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -54,8 +54,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "0.18.1",
-    "composer-runtime": "0.18.1",
+    "composer-common": "0.18.2",
+    "composer-runtime": "0.18.2",
     "fabric-shim": "1.1.0-snapshot.12",
     "jsrsasign": "8.0.3",
     "request": "2.81.0"
