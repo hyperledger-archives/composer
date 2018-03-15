@@ -128,23 +128,23 @@ class List {
             connectionProfile:cpData
         };
 
-        if(card.getEnrollmentCredentials()===null){
-            listOutput.secretSet='No secret set';
-        }else {
-            listOutput.secretSet='Secret set';
+        let credCount = Object.keys(card.getCredentials()).length;
+        console.log(credCount);
+        switch(credCount) {
+        case 1:
+            listOutput.credentials = 'Credentials set, HSM managed';
+            break;
+        case 2:
+            listOutput.credentials = 'Credentials set';
+            break;
+        default:
+            if (card.getEnrollmentCredentials() === null){
+                listOutput.credentials = 'No secret or credentials set';
+            } else {
+                listOutput.credentials = 'One time use only secret set';
+            }
         }
 
-        let credCount = Object.keys(card.getCredentials()).length;
-        if (credCount > 0) {
-            if (credCount  === 1){
-                listOutput.credentialsSet = 'Credentials set, HSM managed';
-            }
-            else {
-                listOutput.credentialsSet='Credentials set';
-            }
-        } else {
-            listOutput.credentialsSet='No Credentials set';
-        }
         cmdUtil.log(Pretty.render(listOutput,{
             keysColor: 'blue',
             dashColor: 'blue',
