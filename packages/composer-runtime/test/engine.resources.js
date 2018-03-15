@@ -23,7 +23,7 @@ const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
 const Serializer = require('composer-common').Serializer;
-
+const Logger = require('composer-common').Logger;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -41,6 +41,7 @@ describe('EngineResources', () => {
     let mockResolver;
     let mockSerializer;
     let engine;
+    let sandbox;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -61,7 +62,14 @@ describe('EngineResources', () => {
         mockContext.getSerializer.returns(mockSerializer);
         mockResolver = sinon.createStubInstance(Resolver);
         mockContext.getResolver.returns(mockResolver);
+        sandbox = sinon.sandbox.create();
+        sandbox.stub(Logger,'setLoggerCfg');
+
         engine = new Engine(mockContainer);
+    });
+
+    afterEach(()=>{
+        sandbox.restore();
     });
 
     describe('#getAllResourcesInRegistry', () => {

@@ -45,6 +45,10 @@ describe('NodeDataCollection', () => {
         it('should be a type of DataCollection', () => {
             dataCollection.should.be.an.instanceOf(DataCollection);
         });
+
+        it('should produce something useful as toString', ()=>{
+            dataCollection.toString().should.equal('[DataCollection: + anID]');
+        });
     });
 
     describe('#get', () => {

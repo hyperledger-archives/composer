@@ -50,7 +50,7 @@ class EngineLogging {
                 return context.getAccessController().check(resource, 'READ');
             })
             .then(() => {
-                let ll = context.getLoggingService().getLogLevel();
+                let ll = Logger.getLoggerCfg();
                 LOG.exit(method,'loglevel',ll);
                 return ll;
             });

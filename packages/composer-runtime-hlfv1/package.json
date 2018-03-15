@@ -15,7 +15,9 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "test": "nyc mocha test",
-    "start": "node start.js"
+    "start": "node start.js",
+    "mocha": "mocha test",
+    "nyc": "nyc mocha test"
   },
   "repository": {
     "type": "git",
