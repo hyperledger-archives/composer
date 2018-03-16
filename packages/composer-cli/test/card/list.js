@@ -109,8 +109,7 @@ describe('composer card list CLI', () => {
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identityId:.*[0-9a-z]{64}/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/roles:[^]*PeerAdmin[^]*ChannelAdmin/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/connectionProfile:[^]*name:.*profileName/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/secretSet:.*No secret set/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentialsSet:.*Credentials set/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*Credentials set/));
     });
 
     it('show card details for one card with certificates', async () => {
@@ -124,8 +123,7 @@ describe('composer card list CLI', () => {
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identityId:.*[0-9a-z]{64}/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/roles:[^]*PeerAdmin[^]*ChannelAdmin/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/connectionProfile:[^]*name:.*profileName/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/secretSet:.*No secret set/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentialsSet:.*Credentials set, HSM managed/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*Credentials set, HSM managed/));
     });
 
     it('show card details for one card without certificates', async () => {
@@ -138,8 +136,21 @@ describe('composer card list CLI', () => {
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/identityId:/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/roles:.*none/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/connectionProfile:[^]*name:.*profileName/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/secretSet:.*Secret set/));
-        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentialsSet:.*No Credentials set/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*secret set/));
     });
+
+    it('show card details for without certificates or secret', async () => {
+        const testCard = new IdCard({ userName: 'conga', description: '', enrollmentSecret:null }, { name: 'profileName' });
+        adminConnectionStub.exportCard.resolves(testCard);
+        await ListCmd.handler({ name: 'cardname' });
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/description:/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/businessNetworkName:/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/identityId:/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/roles:.*none/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/connectionProfile:[^]*name:.*profileName/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*No secret or credentials set/));
+    });
+
 
 });
