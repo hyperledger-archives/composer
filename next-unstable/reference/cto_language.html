@@ -327,38 +327,35 @@ asset Car extends Vehicle {
 </code></pre></div></li>
 <li><p>An optional &#39;abstract&#39; declaration, to indicate that this type cannot be created. Abstract resources can be used as a basis for other classes to extend. Extensions of abstract classes do not inherit the abstract status. For example, the asset <code>Vehicle</code> defined above should never be created, as there should be more specific asset classes defined to extend it.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
-* An abstract Vehicle asset.
-*/
+ * An abstract Vehicle asset.
+ */
 abstract asset Vehicle identified by vin {
   o String vin
 }
 </code></pre></div></li>
 <li><p>A set of named properties. The properties must be named, and the primitive data type defined.The properties and their data are owned by each resource, for example, a <code>Car</code> asset has a <code>vin</code>, and a <code>model</code> property, both of which are strings.</p></li>
 <li><p>A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.</p>
-
-<p>/**</p>
-
-<ul>
-<li>A Field asset. A Field is related to a list of animals
-*/
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * A Field asset. A Field is related to a list of animals
+ */
 asset Field identified by fieldId {
-o String fieldId
-o String name
---&gt; Animal[] animals
-}</li>
-</ul></li>
+  o String fieldId
+  o String name
+  --&gt; Animal[] animals
+}
+</code></pre></div></li>
 </ol>
 
 <h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
 
 <p>Enumerated types are used to specify a type that may have 1 or N possible values. The example below defines the ProductType enumeration, which may have the value <code>DAIRY</code> or <code>BEEF</code> or <code>VEGETABLES</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
-* An enumerated type
-*/
+ * An enumerated type
+ */
 enum ProductType {
-o DAIRY
-o BEEF
-o VEGETABLES
+  o DAIRY
+  o BEEF
+  o VEGETABLES
 }
 </code></pre></div>
 <p>When another resource is created, for example, a participant, a property of that resource can be defined in terms of an enumerated type.</p>
