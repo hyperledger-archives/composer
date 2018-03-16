@@ -19,6 +19,7 @@ const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
 const HLFUtil = require('./hlfutil');
 const HLFTxEventHandler = require('./hlftxeventhandler');
+const HLFQueryHandler = require('./hlfqueryhandler');
 const Logger = require('composer-common').Logger;
 const path = require('path');
 const semver = require('semver');
@@ -55,11 +56,20 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Create a new Event Handler to listen for txId and chaincode events
+     * create a new Query Handler.
+     * @param {HLFConnection} connection The connection to be used by the query handler.
+     * @return {HLFQueryManager} A new query manager.
+     */
+    static createQueryHandler(connection) {
+        return new HLFQueryHandler(connection);
+    }
+
+    /**
+     * Create a new Event Handler to listen for txId and chaincode events.
      * @param {array} eventHubs An array of event hubs.
      * @param {string} txId The transaction id string to listen for.
-     * @param {number} commitTimeout the commit timeout
-     * @returns {HLFTxEventHandler} the event handler to use
+     * @param {number} commitTimeout the commit timeout.
+     * @returns {HLFTxEventHandler} the event handler to use.
      * @private
      */
     static createTxEventHandler(eventHubs, txId, commitTimeout) {
@@ -102,7 +112,7 @@ class HLFConnection extends Connection {
         this.caClient = caClient;
         this.initialized = false;
         this.commitTimeout = connectOptions['x-commitTimeout'] ? connectOptions['x-commitTimeout'] * 1000 : 300 * 1000;
-        this.queryPeer;
+        this.queryHandler = HLFConnection.createQueryHandler(this);
         LOG.debug(method, `commit timeout set to ${this.commitTimeout}`);
 
         // We create promisified versions of these APIs.
@@ -810,7 +820,7 @@ class HLFConnection extends Connection {
      * @return {Promise} A promise that is resolved with the data returned by the
      * chaincode function once it has been invoked, or rejected with an error.
      */
-    queryChainCode(securityContext, functionName, args) {
+    async queryChainCode(securityContext, functionName, args) {
         const method = 'queryChainCode';
         LOG.entry(method, securityContext, functionName, args);
 
@@ -838,62 +848,7 @@ class HLFConnection extends Connection {
         }
 
         let txId = this.client.newTransactionID();
-
-        // determine a peer to use for querying if we haven't before
-        if (!this.queryPeer) {
-
-            const availablePeers = this.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]);
-            if (availablePeers.length > 0) {
-                this.queryPeer = availablePeers[0];
-            }
-            else {
-                let allPeersInChannel = this.channel.getPeers();
-
-                for (let i in allPeersInChannel) {
-                    let peer = allPeersInChannel[i];
-                    if (peer.isInRole(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE)) {
-                        this.queryPeer = peer;
-                        break;
-                    }
-                }
-            }
-            if (!this.queryPeer) {
-
-                const newError = new Error('Unable to determine a peer to query');
-                LOG.error(method, newError);
-                return Promise.reject(newError);
-            }
-        }
-
-        // Submit the query request.
-        const request = {
-            targets: [this.queryPeer],
-            chaincodeId: this.businessNetworkIdentifier,
-            chaincodeVersion: runtimePackageJSON.version,
-            txId: txId,
-            fcn: functionName,
-            args: args
-        };
-        return this.channel.queryByChaincode(request)
-            .then((payloads) => {
-                LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the composer runtime chaincode`, payloads);
-                if (!payloads.length) {
-                    throw new Error('No payloads were returned from the query request:' + functionName);
-                }
-                const payload = payloads[0];
-                if (payload instanceof Error) {
-                    // will be handled by the catch block
-                    throw payload;
-                }
-                LOG.exit(method, payload);
-                return payload;
-            })
-            .catch((error) => {
-                const newError = new Error('Error trying to query business network. ' + error);
-                LOG.error(method, newError);
-                throw newError;
-            });
-
+        return this.queryHandler.queryChaincode(txId, functionName, args);
     }
 
     /**
