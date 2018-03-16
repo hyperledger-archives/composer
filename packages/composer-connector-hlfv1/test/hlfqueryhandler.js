@@ -23,7 +23,7 @@ const FABRIC_CONSTANTS = require('fabric-client/lib/Constants');
 
 const sinon = require('sinon');
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('HLFQueryHandler', () => {
@@ -48,7 +48,7 @@ describe('HLFQueryHandler', () => {
         mockTransactionID = sinon.createStubInstance(TransactionID);
         mockChannel = sinon.createStubInstance(Channel);
         mockConnection.channel = mockChannel;
-        mockConnection.getChannelPeersInOrg.withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2]);
+        mockConnection.getChannelPeersInOrg.withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer1, mockPeer3]);
         mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
         queryHandler = new HLFQueryHandler(mockConnection);
 
@@ -57,96 +57,37 @@ describe('HLFQueryHandler', () => {
         sandbox.restore();
     });
 
-    describe('#isPeerInList', () => {
-        it('should find a peer in the list', () => {
-            let result = HLFQueryHandler.isPeerInList(mockPeer1, [mockPeer1, mockPeer3]);
-            result.should.be.true;
-            result = HLFQueryHandler.isPeerInList(mockPeer2, [mockPeer1, mockPeer2, mockPeer3]);
-            result.should.be.true;
-            result = HLFQueryHandler.isPeerInList(mockPeer1, [mockPeer3, mockPeer1]);
-            result.should.be.true;
-        });
-
-        it('should not find a peer in the list', () => {
-            let result = HLFQueryHandler.isPeerInList(mockPeer1, [mockPeer2, mockPeer3]);
-            result.should.be.false;
-        });
-
-    });
-
-    describe('#getResidualQueryPeers', () => {
-        it('should find a query peer in another org #1', () => {
-            let allPeers = [mockPeer1, mockPeer2, mockPeer3];
-            let orgQueryPeers = [mockPeer2];
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-
-            let result = HLFQueryHandler.getResidualQueryPeers(allPeers, orgQueryPeers);
-            result.length.should.equal(2);
-            result.should.deep.equal([mockPeer1, mockPeer3]);
-
-        });
-
-        it('should find a query peer in another org #2', () => {
-            let allPeers = [mockPeer1, mockPeer2, mockPeer3];
-            let orgQueryPeers = [mockPeer2];
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-
-            let result = HLFQueryHandler.getResidualQueryPeers(allPeers, orgQueryPeers);
-            result.length.should.equal(1);
-            result.should.deep.equal([mockPeer1]);
-
-        });
-
-        it('should find a query peer in another org #3', () => {
-            let allPeers = [mockPeer1, mockPeer2, mockPeer3];
-            let orgQueryPeers = [];
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-
-            let result = HLFQueryHandler.getResidualQueryPeers(allPeers, orgQueryPeers);
-            result.length.should.equal(2);
-            result.should.deep.equal([mockPeer1, mockPeer2]);
-        });
-
-        it('should find no query peer in another org ', () => {
-            let allPeers = [mockPeer1, mockPeer2, mockPeer3];
-            let orgQueryPeers = [mockPeer2];
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-
-            let result = HLFQueryHandler.getResidualQueryPeers(allPeers, orgQueryPeers);
-            result.length.should.equal(0);
-        });
-
-
-
-    });
-
     describe('#constructor', () => {
         it('should create a list of all queryable peers', () => {
-            sandbox.stub(HLFQueryHandler, 'getResidualQueryPeers').withArgs([mockPeer1, mockPeer2, mockPeer3], [mockPeer2]).returns([mockPeer3]);
             let queryHandler = new HLFQueryHandler(mockConnection);
-            queryHandler.allQueryPeers.length.should.equal(2);
-            queryHandler.allQueryPeers.should.deep.equal([mockPeer2, mockPeer3]);
+            queryHandler.allQueryPeers.length.should.equal(3);
+            queryHandler.allQueryPeers.should.deep.equal([mockPeer2, mockPeer1, mockPeer3]);
         });
     });
 
     describe('#queryChaincode', () => {
         beforeEach(() => {
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
             queryHandler = new HLFQueryHandler(mockConnection);
         });
 
+        it('should not switch to another peer if peer returns a payload which is an error', async () => {
+            const response = new Error('my chaincode error');
+            mockChannel.queryByChaincode.resolves([response]);
+            let qspSpy = sinon.spy(queryHandler, 'querySinglePeer');
+            try {
+                await queryHandler.queryChaincode(mockTransactionID, 'myfunc', ['arg1', 'arg2']);
+                should.fail('expected error to be thrown');
+            } catch(error) {
+                error.message.should.equal('my chaincode error');
+                sinon.assert.calledOnce(qspSpy);
+                sinon.assert.calledWith(qspSpy, mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
+                queryHandler.queryPeerIndex.should.equal(0);
+            }
 
-        it('should choose a valid peer from the same org', async () => {
+        });
+
+
+        it('should choose a valid peer', async () => {
             const response = Buffer.from('hello world');
             sandbox.stub(queryHandler, 'querySinglePeer').resolves(response);
 
@@ -169,23 +110,7 @@ describe('HLFQueryHandler', () => {
             result.equals(response).should.be.true;
         });
 
-        it('should choose a valid peer from another org if no suitable in current org was provided', async () => {
-            const response = Buffer.from('hello world');
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            mockConnection.getChannelPeersInOrg.withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([]);
-            queryHandler = new HLFQueryHandler(mockConnection);
-            sandbox.stub(queryHandler, 'querySinglePeer').resolves(response);
-
-            let result = await queryHandler.queryChaincode(mockTransactionID, 'myfunc', ['arg1', 'arg2']);
-            sinon.assert.calledOnce(queryHandler.querySinglePeer);
-            sinon.assert.calledWith(queryHandler.querySinglePeer, mockPeer3, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
-            queryHandler.queryPeerIndex.should.equal(0);  // index 0, is the first in the list of other org peers
-            result.equals(response).should.be.true;
-        });
-
-        it('should choose a valid peer from another org if current org one responds with error', async () => {
+        it('should choose a valid peer if any respond with an error', async () => {
             const response = Buffer.from('hello world');
             const qsp = sandbox.stub(queryHandler, 'querySinglePeer');
 
@@ -236,9 +161,6 @@ describe('HLFQueryHandler', () => {
         });
 
         it('should throw if no peers are suitable to query', () => {
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
             mockConnection.getChannelPeersInOrg.withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([]);
             queryHandler = new HLFQueryHandler(mockConnection);
 
@@ -273,13 +195,30 @@ describe('HLFQueryHandler', () => {
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
-        it('should throw any responses that are errors', () => {
+        it('should return any responses that are errors', async () => {
             const response = [ new Error('such error') ];
-            mockChannel.queryByChaincode.resolves(response);
+            mockChannel.queryByChaincode.resolves([response]);
+            mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
+            let result = await queryHandler.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
+            sinon.assert.calledOnce(mockChannel.queryByChaincode);
+            sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                chaincodeId: 'org-acme-biznet',
+                txId: mockTransactionID,
+                fcn: 'myfunc',
+                args: ['arg1', 'arg2'],
+                targets: [mockPeer2]
+            });
+            result[0].should.be.instanceOf(Error);
+            result[0].message.should.equal('such error');
+        });
+
+        it('should throw if query request fails', () => {
+            mockChannel.queryByChaincode.rejects(new Error('Connect Failed'));
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/such error/);
+                .should.be.rejectedWith(/Connect Failed/);
 
         });
+
 
     });
 

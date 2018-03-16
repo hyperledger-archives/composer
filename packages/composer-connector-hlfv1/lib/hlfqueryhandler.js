@@ -33,44 +33,13 @@ const LOG = Logger.getLog('HLFQueryHandler');
 class HLFQueryHandler {
 
     /**
-     * See if a peer is already in the list of peers provided. It uses the name of
-     * the peer as the node-sdk uses this as a unique identity.
-     * @param {Peer} peer the peer to check
-     * @param {Peer[]} listOfPeers the list of peers to check against
-     * @returns {boolean} true if peer is in the list, false otherwise
-     */
-    static isPeerInList(peer, listOfPeers) {
-        return listOfPeers.some((peerInList) => {
-            return peer.getName() === peerInList.getName();
-        });
-    }
-
-    /**
-     * Get a list of all query peers that are not in the other list of peers
-     * @param {Peer[]} allPeers a list of all the peers
-     * @param {Peer[]} peersAlreadyKnown a list of peers already known
-     * @return {Peer[]} list of other query peers or an empty array if none found
-     *
-     */
-    static getResidualQueryPeers(allPeers, peersAlreadyKnown) {
-        return allPeers.filter((peer) => {
-            return peer.isInRole(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE) && !HLFQueryHandler.isPeerInList(peer, peersAlreadyKnown);
-        });
-    }
-
-
-    /**
      * constructor
      * @param {HLFConnection} connection the connection to the hlfv1 fabric
      */
     constructor(connection) {
         const method = 'constructor';
         LOG.entry(method);
-        this.orgQueryPeers = connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]);
-        this.otherOrgQueryPeers = HLFQueryHandler.getResidualQueryPeers(connection.channel.getPeers(), this.orgQueryPeers);
-
-        // all query peers in org first followed by non org order
-        this.allQueryPeers = this.orgQueryPeers.concat(this.otherOrgQueryPeers);
+        this.allQueryPeers = connection.getChannelPeersInOrg([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]);
         this.queryPeerIndex = -1;
 
         this.connection = connection;
@@ -80,8 +49,8 @@ class HLFQueryHandler {
     /**
      * Query Chaincode using the following rules
      * 1. try the last successful peer
-     * 2. If that fails or this is the first time try all the peers in order
-     * starting with peers from the org and moving onto other org peers.
+     * 2. If that fails or this is the first time try all query peers in order
+     * Currently the implementation restricts to only peers in the same organisation, not across the channel.
      * @param {TransactionID} txId the transaction id to use
      * @param {string} functionName the function name to invoke
      * @param {string[]} args the arguments
@@ -142,6 +111,11 @@ class HLFQueryHandler {
             throw newError;
         }
 
+        if (payload instanceof Error) {
+            LOG.warn(method, 'query payload returned an error: ' + payload);
+            throw payload;
+        }
+
         LOG.exit(method, payload);
         return payload;
 
@@ -173,11 +147,6 @@ class HLFQueryHandler {
             throw new Error('No payloads were returned from the query request:' + functionName);
         }
         const payload = payloads[0];
-
-        if (payload instanceof Error) {
-            LOG.error(method, 'query payload returned an error: ' + payload);
-            throw payload;
-        }
         LOG.exit(method, payload);
         return payload;
 
