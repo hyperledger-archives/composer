@@ -32,3 +32,4 @@ module.exports.InstalledBusinessNetwork = require('./lib/installedbusinessnetwor
 module.exports.Logger = require('composer-common').Logger;
 module.exports.LoggingService = require('./lib/loggingservice');
 module.exports.ScriptCompiler = require('./lib/scriptcompiler');
+module.exports.QueryCompiler = require('./lib/querycompiler');

@@ -29,6 +29,8 @@ const User = require('fabric-client/lib/User.js');
 const TransactionID = require('fabric-client/lib/TransactionID');
 const FABRIC_CONSTANTS = require('fabric-client/lib/Constants');
 
+const QueryCompiler = require('composer-runtime').QueryCompiler;
+
 const LOG = Logger.getLog('HLFConnection');
 
 const connectorPackageJSON = require('../package.json');
@@ -405,6 +407,24 @@ class HLFConnection extends Connection {
         const packageContent = JSON.stringify(bnaPackage);
         fs.writeFileSync(packagePath, packageContent);
 
+        // write the query indexes to statedb/couchdb/indexes
+        const queryManager = businessNetworkDefinition.getQueryManager();
+        const queryCompiler = new QueryCompiler();
+        const queries = queryCompiler.compile(queryManager);
+        let indexDir = path.join(installDir, 'statedb');
+        fs.mkdirSync(indexDir);
+        indexDir = path.join(indexDir, 'couchdb');
+        fs.mkdirSync(indexDir);
+        indexDir = path.join(indexDir, 'indexes');
+        fs.mkdirSync(indexDir);
+
+        queries.compiledQueries.forEach(query => {
+            const json = JSON.parse(query.index);
+            const designDoc = json.ddoc + '.json';
+            const indexFile = path.resolve(indexDir, designDoc);
+            fs.writeFileSync(indexFile, query.index);
+        });
+
         // copy over a .npmrc file, should be part of the business network definition.
         if (installOptions && installOptions.npmrcFile) {
             try {
@@ -421,6 +441,7 @@ class HLFConnection extends Connection {
         const request = {
             chaincodeType: 'node',
             chaincodePath: installDir,
+            metadataPath: installDir,
             chaincodeVersion: businessNetworkDefinition.getVersion(),
             chaincodeId: businessNetworkDefinition.getName(),
             txId: txId,

@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "composer-common": "0.18.2",
+    "composer-runtime": "0.18.2",
     "composer-runtime-hlfv1": "0.18.2",
     "fabric-ca-client": "1.1.0-snapshot.83",
     "fabric-client": "1.1.0-snapshot.85",
