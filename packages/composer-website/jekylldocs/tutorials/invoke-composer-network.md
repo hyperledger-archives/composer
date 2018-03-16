@@ -54,19 +54,19 @@ If these commands fail, then you have business network cards from a previous ver
                 
                 /**
                  * Track the trade of a commodity from one trader to another
-                 * @param {org.acme.biznet.Trade} trade - the trade to be processed
+                 * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
                  * @transaction
                  */
                 async function tradeCommodity(trade) {
                     trade.commodity.owner = trade.newOwner;
                     
-                    const otherNetworkData = await getNativeAPI().invokeChaincode('other-tutorial-network', ['getResourceInRegistry', 'Asset', 'org.acme.biznet.Commodity', trade.commodity.tradingSymbol], 'composerchannel');                    
+                    const otherNetworkData = await getNativeAPI().invokeChaincode('other-tutorial-network', ['getResourceInRegistry', 'Asset', 'org.acme.mynetwork.Commodity', trade.commodity.tradingSymbol], 'composerchannel');                    
                     const stringAsset = new Buffer(otherNetworkData.payload.toArrayBuffer()).toString('utf8');
                     const asset = getSerializer().fromJSON(JSON.parse(stringAsset));
                     
                     trade.commodity.quantity = asset.quantity;
                   
-                    const assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+                    const assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
                     await assetRegistry.update(trade.commodity);
                 }    
                 
@@ -94,19 +94,19 @@ If these commands fail, then you have business network cards from a previous ver
 
 1. Create a participant in business network A. Run the following command.
 
-        composer participant add --card networkA -d '{"$class": "org.acme.biznet.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
+        composer participant add --card networkA -d '{"$class": "org.acme.mynetwork.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
 
 2. Create an asset in business network  A
 
-        composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.biznet.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.biznet.Commodity", "resources": [{"$class": "org.acme.biznet.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.biznet.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
+        composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.mynetwork.Commodity", "resources": [{"$class": "org.acme.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
                 
 3. Create a participant in business network B. Run the following command.
 
-        composer participant add --card networkB -d '{"$class": "org.acme.biznet.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
+        composer participant add --card networkB -d '{"$class": "org.acme.mynetwork.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
 
 4. Create an asset in business network B. Run the following command. Note the different quantity property.
 
-        composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.biznet.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.biznet.Commodity", "resources": [{"$class": "org.acme.biznet.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.biznet.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
+        composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.mynetwork.Commodity", "resources": [{"$class": "org.acme.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
      
 ## Step Five: Bind the identity on network A to the participant on network B  
 1. Export the networkA card to get the credentials
@@ -135,17 +135,17 @@ If these commands fail, then you have business network cards from a previous ver
 
 View the asset to see that the quantity is 250.
 
-        composer network list --card networkA -r org.acme.biznet.Commodity -a Ag        
+        composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag        
 
 ## Step Seven: Submit a transaction
 
 Submit a transaction to see the effect of querying an asset on a different business network
 
-        composer transaction submit --card networkA -d '{"$class": "org.acme.biznet.Trade", "commodity": "resource:org.acme.biznet.Commodity#Ag", "newOwner": "resource:org.acme.biznet.Trader#bobId"}'
+        composer transaction submit --card networkA -d '{"$class": "org.acme.mynetwork.Trade", "commodity": "resource:org.acme.mynetwork.Commodity#Ag", "newOwner": "resource:org.acme.mynetwork.Trader#bobId"}'
         
 ## Step Eight: Check the updated asset
 
 View the updated asset to check that the quantity was correctly updated to 500.
 
-        composer network list --card networkA -r org.acme.biznet.Commodity -a Ag
+        composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag
 

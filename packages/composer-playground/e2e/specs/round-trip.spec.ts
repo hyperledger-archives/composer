@@ -70,7 +70,7 @@ describe('Fabric round trip', (() => {
         .then(() => {
             return Deploy.waitToDisappear(true);
         });
-    });
+    }, Constants.vlongwait);
 
     it('should be able to download the created card', () => {
         return Login.exportBusinessNetworkCard('admin@fabric-business-network');
