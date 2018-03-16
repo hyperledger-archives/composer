@@ -143,9 +143,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
-        npm run int-test-nohsm 2>&1 || :
+        npm run int-test-nohsm 2>&1 | tee
     else
-        npm run int-test 2>&1 || :
+        npm run int-test 2>&1 | tee
     fi
 
     # Stop all test programs.
@@ -178,7 +178,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ./my-bus-net
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
-    rm ./*.tgz
     rm -f ./networkadmin.card
     rm -f ./composer-report-*
     if [ "${DOCKER_FILE}" != "" ]; then
