@@ -24,10 +24,10 @@ export COMPOSER_TIMEOUT_SECS=500
 
 DOCKER_FILE=${DIR}/fabric/hlfv1/docker-compose.yml
 
-docker pull hyperledger/fabric-peer:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-ca:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-rc1
+docker pull hyperledger/fabric-peer:$ARCH-1.1.0
+docker pull hyperledger/fabric-ca:$ARCH-1.1.0
+docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
+docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
 docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
 
 if [ -d ./hlfv1/crypto-config ]; then
