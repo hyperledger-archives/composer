@@ -22,6 +22,7 @@ const IdentityManager = require('../lib/identitymanager');
 const LoggingService = require('../lib/loggingservice');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
+const Logger = require('composer-common').Logger;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -40,7 +41,7 @@ describe('EngineLogging', () => {
     let mockDataCollection;
     let mockSerializer;
     let mockAccessController;
-
+    let sandbox;
     beforeEach(() => {
         mockSerializer = sinon.createStubInstance(Serializer);
         mockAccessController = sinon.createStubInstance(AccessController);
@@ -63,8 +64,16 @@ describe('EngineLogging', () => {
         mockDataService.getCollection.resolves(mockDataCollection);
         mockIdentityManager = sinon.createStubInstance(IdentityManager);
         mockContext.getIdentityManager.returns(mockIdentityManager);
-        engine = new Engine(mockContainer);
+
         mockSerializer.fromJSON.returns();
+
+        sandbox = sinon.sandbox.create();
+        sandbox.stub(Logger,'getLoggerCfg').returns('composer[error]:*');
+
+        engine = new Engine(mockContainer);
+    });
+    afterEach(() => {
+        sandbox.restore();
     });
 
 
@@ -73,9 +82,9 @@ describe('EngineLogging', () => {
 
         it('should work for the good path', () => {
             mockAccessController.check.resolves();
-            mockLoggingService.getLogLevel.returns('LEVEL');
+
             return engine.invoke(mockContext, 'getLogLevel', ['wrong', 'args', 'count', 'here'])
-            .should.eventually.be.deep.equal('LEVEL');
+            .should.eventually.be.deep.equal('composer[error]:*');
         });
 
         it('should throw if not authorized', () => {
@@ -83,27 +92,6 @@ describe('EngineLogging', () => {
             let result = engine.invoke(mockContext, 'getLogLevel', []);
             return result.should.be.rejectedWith(/Authorization Failure/);
         });
-
-        it('should set the log level if user authorised and empty args array', () => {
-            mockContext.getParticipant.returns(null);
-            mockLoggingService.getLogLevel.returns('ERROR');
-            return engine.invoke(mockContext, 'getLogLevel', [])
-                .then((response) => {
-                    sinon.assert.calledOnce(mockLoggingService.getLogLevel);
-                    response.should.equal('ERROR');
-                });
-        });
-
-        it('should set the log level if user authorised and no args', () => {
-            mockContext.getParticipant.returns(null);
-            mockLoggingService.getLogLevel.returns('ERROR');
-            return engine.invoke(mockContext, 'getLogLevel')
-                .then((response) => {
-                    sinon.assert.calledOnce(mockLoggingService.getLogLevel);
-                    response.should.equal('ERROR');
-                });
-        });
-
 
     });
 

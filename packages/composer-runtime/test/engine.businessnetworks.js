@@ -25,7 +25,7 @@ const RegistryManager = require('../lib/registrymanager');
 const version = require('../package.json').version;
 const Serializer = require('composer-common').Serializer;
 const AccessController = require('../lib/accesscontroller');
-
+const Logger = require('composer-common').Logger;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -67,8 +67,11 @@ describe('EngineBusinessNetworks', () => {
         mockAccessController = sinon.createStubInstance(AccessController);
         mockContext.getAccessController.returns(mockAccessController);
 
-        engine = new Engine(mockContainer);
+
         sandbox = sinon.sandbox.create();
+        sandbox.stub(Logger,'setLoggerCfg');
+
+        engine = new Engine(mockContainer);
     });
 
     afterEach(() => {

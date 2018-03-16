@@ -30,7 +30,7 @@ const Resource = require('composer-common').Resource;
 const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
 const Factory = require('composer-common').Factory;
-
+const Logger = require('composer-common').Logger;
 const TransactionHandler = require('../lib/transactionhandler');
 
 const chai = require('chai');
@@ -61,6 +61,7 @@ describe('EngineTransactions', () => {
     let mockParticipant;
     let mockEventService;
     let mockIdentity;
+    let sandbox;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -73,7 +74,7 @@ describe('EngineTransactions', () => {
         mockContext.transactionCommit.resolves();
         mockContext.transactionRollback.resolves();
         mockContext.transactionEnd.resolves();
-        engine = new Engine(mockContainer);
+
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockResourceManager = sinon.createStubInstance(ResourceManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
@@ -111,7 +112,14 @@ describe('EngineTransactions', () => {
         mockIdentityManager.getIdentity.resolves(mockIdentity);
         mockParticipant = sinon.createStubInstance(Resource);
         mockEventService = sinon.createStubInstance(EventService);
+        sandbox = sinon.sandbox.create();
+        sandbox.stub(Logger,'setLoggerCfg');
 
+        engine = new Engine(mockContainer);
+    });
+
+    afterEach(()=>{
+        sandbox.restore();
     });
 
     describe('#submitTransaction', () => {
