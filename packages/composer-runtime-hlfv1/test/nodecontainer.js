@@ -18,17 +18,18 @@ const Container = require('composer-runtime').Container;
 const LoggingService = require('composer-runtime').LoggingService;
 const NodeContainer = require('../lib/nodecontainer');
 const version = require('../package.json').version;
-
+const ChaincodeStub = require('fabric-shim/lib/stub');
 require('chai').should();
 const sinon = require('sinon');
 
 describe('NodeContainer', () => {
 
-    let sandbox, container;
+    let sandbox, container,mockStub;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         container = new NodeContainer();
+        mockStub = sinon.createStubInstance(ChaincodeStub);
     });
 
     afterEach(() => {
@@ -58,13 +59,14 @@ describe('NodeContainer', () => {
         });
     });
 
-    describe('#initLogging', () => {
 
-        it('should initialise the logging service', () => {
-            let initLoggingStub = sinon.stub(container.getLoggingService(), 'initLogging').resolves();
-            container.initLogging('a stub');
-            sinon.assert.calledOnce(initLoggingStub);
-            sinon.assert.calledWith(initLoggingStub, 'a stub');
+    describe('#getLoggingService', () => {
+
+        it('should return the container logging service',async () => {
+            mockStub.getState.returns([]);
+            container.loggingService = { initLogging: sinon.stub() };
+            await container.initLogging(mockStub);
+
         });
     });
 
