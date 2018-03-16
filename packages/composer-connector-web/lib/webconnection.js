@@ -18,132 +18,14 @@ const { Certificate, CertificateUtil, Connection } = require('composer-common');
 const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const uuid = require('uuid');
 const { WebContainer, WebContext, WebDataService } = require('composer-runtime-web');
+const ChaincodeStore = require('./chaincodestore');
 const WebSecurityContext = require('./websecuritycontext');
 
-// A mapping of chaincode IDs to their instance objects.
-const installedChaincodes = new Map();
-// Map of business network names to chaincode IDs
-const startedChaincodes = new Map();
-
 /**
- * Base class representing a connection to a business network.
+ * Represents a Web profile connection to a business network.
  * @protected
- * @abstract
  */
 class WebConnection extends Connection {
-    /**
-     * Reset the static state of the WebConnection. Used only for unit testing.
-     * @private
-     */
-    static _reset() {
-        installedChaincodes.clear();
-        startedChaincodes.clear();
-    }
-
-    /**
-     * Delete all installed chaincode for the specified business network.
-     * @param {String} networkName business network name.
-     */
-    static deleteChaincodeForNetwork(networkName) {
-        startedChaincodes.delete(networkName);
-
-        const networkMatch = networkName + '@';
-        for (let networkId of installedChaincodes.keys()) {
-            if (networkId.startsWith(networkMatch)) {
-                installedChaincodes.delete(networkId);
-            }
-        }
-    }
-
-    /**
-     * Start installed chaincode for a business network.
-     * @param {String} networkName business network name.
-     * @param {String} networkVersion business network version.
-     * @return {Object} chaincode.
-     */
-    static startChaincode(networkName, networkVersion) {
-        if (startedChaincodes.has(networkName)) {
-            throw new Error('Chaincode already started: ' + networkName + '@' + startedChaincodes.get(networkName));
-        }
-        return WebConnection._setActiveChaincodeVersion(networkName, networkVersion);
-    }
-
-    /**
-     * Upgrade previously started chaincode for a business network.
-     * @param {String} networkName business network name.
-     * @param {String} networkVersion business network version.
-     * @return {Object} chaincode.
-     */
-    static upgradeChaincode(networkName, networkVersion) {
-        if (!startedChaincodes.has(networkName)) {
-            throw new Error('Chaincode not yet started: ' + networkName);
-        }
-        return WebConnection._setActiveChaincodeVersion(networkName, networkVersion);
-    }
-
-    /**
-     * Mark the currently active (started) chaincode version for a business network.
-     * @param {String} networkName business network name.
-     * @param {String} networkVersion business network version.
-     * @return {Object} chaincode.
-     */
-    static _setActiveChaincodeVersion(networkName, networkVersion) {
-        const networkId = networkName + '@' + networkVersion;
-        const chaincode = installedChaincodes.get(networkId);
-        if (!chaincode) {
-            throw new Error('Chaincode not installed: ' + networkId);
-        }
-
-        startedChaincodes.set(networkName, networkVersion);
-        return chaincode;
-    }
-
-    /**
-     * Install chaincode for a business network.
-     * @param {InstalledBusinessNetwork} installedNetwork Information about the business network
-     */
-    static installChaincode(installedNetwork) {
-        const networkId = installedNetwork.getDefinition().getIdentifier();
-        if (installedChaincodes.has(networkId)) {
-            throw new Error('Chaincode already installed: ' + networkId);
-        }
-
-        const networkName = installedNetwork.getDefinition().getName();
-        const container = WebConnection.createContainer(networkName);
-        const engine = WebConnection.createEngine(container);
-
-        installedChaincodes.set(networkId, {
-            id: networkId,
-            installedNetwork: installedNetwork,
-            container: container,
-            engine: engine
-        });
-    }
-
-    /**
-     * Get the chaincode information for a started business network.
-     * @param {String} networkName business network name.
-     * @return {Object} The chaincode.
-     */
-    static getActiveChaincode(networkName) {
-        const networkVersion = startedChaincodes.get(networkName);
-        if (!networkVersion) {
-            throw new Error('Chaincode not started: ' + networkName);
-        }
-
-        const networkId = networkName + '@' + networkVersion;
-        return WebConnection.getInstalledChaincode(networkId);
-    }
-
-    /**
-     * Get the chaincode information for an installed business network.
-     * @param {String} networkId Business network identifier.
-     * @return {Object} The chaincode.
-     */
-    static getInstalledChaincode(networkId) {
-        return installedChaincodes.get(networkId);
-    }
-
     /**
      * Create a new container.
      * @param {string} [uuid] The UUID to use.
@@ -170,7 +52,17 @@ class WebConnection extends Connection {
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
-        this.dataService = new WebDataService(null, true);
+        this.dataService = WebDataService.newComposerDataService();
+        this.savedNetwork = null;
+    }
+
+    /**
+     * Get the chaincode store used to manage install, start and undeploy of chaincode.
+     * @return {ChaincodeStore} chaincode store.
+     */
+    async getChaincodeStore() {
+        const collection = await this.dataService.ensureCollection('chaincodes');
+        return new ChaincodeStore(collection);
     }
 
     /**
@@ -178,7 +70,8 @@ class WebConnection extends Connection {
      * @async
      */
     async disconnect() {
-
+        this.engine = null;
+        this.installedNetwork = null;
     }
 
     /**
@@ -194,9 +87,8 @@ class WebConnection extends Connection {
         if (!this.businessNetworkIdentifier) {
             return new WebSecurityContext(this, identity);
         }
-        const networkName = this.businessNetworkIdentifier.split('@')[0];
-        // Ensure the network is installed and started
-        WebConnection.getActiveChaincode(networkName);
+
+        const networkName = this.businessNetworkIdentifier;
         const result = new WebSecurityContext(this, identity);
         result.setNetworkName(networkName);
         return result;
@@ -210,8 +102,8 @@ class WebConnection extends Connection {
      * @async
      */
     async install(securityContext, networkDefinition, installOptions) {
-        const installedNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
-        WebConnection.installChaincode(installedNetwork);
+        const chaincodeStore = await this.getChaincodeStore();
+        await chaincodeStore.install(networkDefinition);
     }
 
     /**
@@ -224,19 +116,37 @@ class WebConnection extends Connection {
      * @async
      */
     async start(securityContext, networkName, networkVersion, startTransaction, startOptions) {
-        const chaincode = WebConnection.startChaincode(networkName, networkVersion);
-        const engine = chaincode.engine;
+        const chaincodeStore = await this.getChaincodeStore();
+        const networkDefinition = await chaincodeStore.start(networkName, networkVersion);
+
+        const container = WebConnection.createContainer(networkName);
+        const engine = WebConnection.createEngine(container);
         const identity = securityContext.getIdentity();
-        let context = new WebContext(engine, chaincode.installedNetwork, identity, this);
-        try {
-            await engine.init(context, 'start', [startTransaction]);
-        } catch (error) {
-            if (error.message.includes('as the object already exists')) {
-                throw new Error('business network with name ' + networkName + ' already exists');
-            } else {
-                throw error;
-            }
-        }
+        const installedNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+
+        const context = new WebContext(engine, installedNetwork, identity, this);
+        await engine.init(context, 'start', [startTransaction]);
+    }
+
+    /**
+     * Upgrade a business network.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {string} networkName The name of the business network to start.
+     * @param {String} networkVersion The version of the business network to start.
+     * @param {Object} upgradeOptions connector specific start options
+     * @async
+     */
+    async upgrade(securityContext, networkName, networkVersion, upgradeOptions) {
+        const chaincodeStore = await this.getChaincodeStore();
+        const networkDefinition = await chaincodeStore.upgrade(networkName, networkVersion);
+
+        const container = WebConnection.createContainer(networkName);
+        const engine = WebConnection.createEngine(container);
+        const identity = securityContext.getIdentity();
+        const installedNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+
+        const context = new WebContext(engine, installedNetwork, identity, this);
+        await engine.init(context, 'upgrade');
     }
 
     /**
@@ -246,8 +156,10 @@ class WebConnection extends Connection {
      * @async
      */
     async undeploy(securityContext, networkName) {
-        await new WebDataService(networkName, true).destroy();
-        WebConnection.deleteChaincodeForNetwork(networkName);
+        await WebDataService.newNetworkDataService(networkName, true).destroy();
+        const chaincodeStore = await this.getChaincodeStore();
+        await chaincodeStore.removeNetwork(networkName);
+        this.savedNetwork = null;
     }
 
     /**
@@ -273,11 +185,33 @@ class WebConnection extends Connection {
      */
     async queryChainCode(securityContext, functionName, args) {
         const identity = securityContext.getIdentity();
-        const networkName = securityContext.getNetworkName();
-        const chaincode = WebConnection.getActiveChaincode(networkName);
-        const context = new WebContext(chaincode.engine, chaincode.installedNetwork, identity, this);
-        const data = await chaincode.engine.query(context, functionName, args);
+        const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
+        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
+        const data = await networkInfo.engine.query(context, functionName, args);
         return Buffer.from(JSON.stringify(data));
+    }
+
+    /**
+     * Get saved details related to the current business network.
+     * @param {String} networkName business network name.
+     * @return {Object} network information in the form { name, engine, installedNetwork }.
+     * @async
+     */
+    async _getNetworkInfo(networkName) {
+        if (!this.savedNetwork || this.savedNetwork.name !== networkName) {
+            const container = WebConnection.createContainer(networkName);
+
+            const chaincodeStore = await this.getChaincodeStore();
+            const networkDefinition = await chaincodeStore.getStartedChaincode(networkName);
+
+            this.savedNetwork = {
+                name: networkName,
+                engine: WebConnection.createEngine(container),
+                installedNetwork: await InstalledBusinessNetwork.newInstance(networkDefinition)
+            };
+        }
+
+        return this.savedNetwork;
     }
 
     /**
@@ -289,10 +223,9 @@ class WebConnection extends Connection {
      */
     async invokeChainCode(securityContext, functionName, args) {
         const identity = securityContext.getIdentity();
-        const networkName = securityContext.getNetworkName();
-        const chaincode = WebConnection.getActiveChaincode(networkName);
-        const context = new WebContext(chaincode.engine, chaincode.installedNetwork, identity, this);
-        await chaincode.engine.invoke(context, functionName, args);
+        const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
+        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
+        await networkInfo.engine.invoke(context, functionName, args);
     }
 
     /**

@@ -31,7 +31,7 @@ chai.use(require('chai-as-promised'));
 const should = chai.should();
 const sinon = require('sinon');
 
-describe.only('WebConnection', () => {
+describe('WebConnection', () => {
     const sandbox = sinon.sandbox.create();
 
     let mockConnectionManager;
@@ -40,9 +40,7 @@ describe.only('WebConnection', () => {
     let identity;
     let connection;
 
-
     beforeEach(() => {
-        WebConnection._reset();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionManager.getConnectionProfileManager.returns(mockConnectionProfileManager);
@@ -61,8 +59,11 @@ describe.only('WebConnection', () => {
         connection = new WebConnection(mockConnectionManager, 'devFabric1', 'org.acme.business');
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         sandbox.restore();
+        if (await connection.dataService.existsCollection('chaincodes')) {
+            await connection.dataService.deleteCollection('chaincodes');
+        }
     });
 
     describe('#createContainer', () => {
@@ -137,14 +138,14 @@ describe.only('WebConnection', () => {
     describe('#install', () => {
         it('should install a business network', async () => {
             const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
-            await connection.install(mockSecurityContext, networkDefinition);
-            WebConnection.getInstalledChaincode(networkDefinition.getIdentifier()).should.exist;
+            await connection.install(mockSecurityContext, networkDefinition)
+                .should.not.be.rejected;
         });
 
         it('should error installing a business network twice', async () => {
             const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
             await connection.install(mockSecurityContext, networkDefinition);
-            return connection.install(mockSecurityContext, networkDefinition)
+            await connection.install(mockSecurityContext, networkDefinition)
                 .should.be.rejected;
         });
     });
@@ -204,8 +205,8 @@ describe.only('WebConnection', () => {
             const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
             await connection.install(mockSecurityContext, networkDefinition);
             await connection.undeploy(mockSecurityContext, networkDefinition.getName());
-
-            should.not.exist(WebConnection.getInstalledChaincode(networkDefinition.getIdentifier()));
+            await connection.install(mockSecurityContext, networkDefinition)
+                .should.not.be.rejected;
         });
     });
 

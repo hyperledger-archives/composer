@@ -35,7 +35,7 @@ class WebContext extends Context {
      */
     constructor(engine, installedBusinessNetwork, identity, eventSink) {
         super(engine, installedBusinessNetwork);
-        this.dataService = new WebDataService(engine.getContainer().getName());
+        this.dataService = WebDataService.newNetworkDataService(engine.getContainer().getName());
         this.identityService = new WebIdentityService(identity);
         this.eventSink = eventSink;
     }
