@@ -15,29 +15,8 @@
 'use strict';
 
 const LoggingService = require('composer-runtime').LoggingService;
-
-
-const LOG_LEVELS = {
-    CRITICAL: 0,
-    ERROR:    100,
-    WARNING:  200,
-    NOTICE:   300,
-    INFO:     400,
-    DEBUG:    500
-};
-
-const LOOKUP_LOG_LEVELS = {
-    '-1':  'NOT_ENABLED',
-    0:   'CRITICAL',
-    100: 'ERROR',
-    200: 'WARNING',
-    300: 'NOTICE',
-    400: 'INFO',
-    500: 'DEBUG'
-};
-
-const LOGLEVEL_KEY = 'ComposerLogLevel';
-
+const LOGLEVEL_KEY = 'ComposerLogCfg';
+const Logger = require('composer-common').Logger;
 /**
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
@@ -50,151 +29,92 @@ class NodeLoggingService extends LoggingService {
     constructor() {
         super();
         this.stub = null;
-        this.currentLogLevel = -1;
     }
 
-    /**
-     * Log a message.
-     * @private
-     * @param {string} message The message to log.
-     * @param {*} logLevel The log level.
-     */
-    _outputMessage(message, logLevel) {
-        const timestamp = new Date().toISOString();
-        const logStr = LOOKUP_LOG_LEVELS[logLevel].padEnd(8);
-        if (this.stub) {
-            const shortTxId = this.stub.getTxID().substring(0, 8);
-            console.log(timestamp, `[${shortTxId}]`, `[${logStr}]`, message);
 
-        } else {
-            console.log(timestamp, `[${logStr}]`, message);
-        }
-    }
 
     /**
-     * Initialise the logging service for the incoming request.
-     * This will need to stub for the request so it saves the stub for later use.
-     * And enables the logging level currently set.
      *
-     * @param {any} stub The stub to save
+     * @param {Object} stub node chaincode stub
      */
     async initLogging(stub) {
         this.stub = stub;
-        if (this.currentLogLevel >= 0) {
-            return;
+
+        let json = await this.getLoggerCfg();
+        Logger.setLoggerCfg(json,true);
+        Logger.setCallBack(function(){
+            return stub.getTxID().substring(0, 8);
+        });
+        if( json.origin && json.origin==='default-logger-module'){
+            await this.setLoggerCfg(this.getDefaultCfg());
         }
-        await this._enableLogging();
+
     }
 
     /**
-     * Enable logging for the current request based on the level set in the world state
-     * or the CORE_CHAINCODE_LOGGING_LEVEL environment variable. If neither are set
-     * then default to INFO.
+     *
+     * @param {Object} cfg to set
      */
-    async _enableLogging() {
-        try {
-            let result = await this.stub.getState(LOGLEVEL_KEY);
-            if (result.length === 0) {
-                result = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
-                if (!result) {
-                    result = 'INFO';
-                }
-            }
-            this.currentLogLevel = LOG_LEVELS[result] ? LOG_LEVELS[result] : LOG_LEVELS.INFO;
-        }
-        catch(err) {
-            this.currentLogLevel = LOG_LEVELS.INFO;
-            this.logWarning('failed to get logging level from world state: ' + err);
-        }
+    async setLoggerCfg(cfg) {
+        await this.stub.putState(LOGLEVEL_KEY, Buffer.from(JSON.stringify(cfg)));
     }
 
     /**
-     * Write a critical message to the log.
-     * @param {string} message The message to write to the log.
+     * Return the logger config... basically the usual default setting for debug
+     * Console only. maxLevel needs to be high here as all the logs goto the stdout/stderr
+     *
+     * @returns {Object} configuration
      */
-    logCritical(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.CRITICAL) {
-            this._outputMessage(message, LOG_LEVELS.CRITICAL);
+    async getLoggerCfg(){
+
+        let result = await this.stub.getState(LOGLEVEL_KEY);
+        if (result.length === 0) {
+            let d = this.getDefaultCfg();
+            await this.setLoggerCfg(d);
+            return d;
+
+        } else {
+            let json = JSON.parse(result.toString());
+            return json;
         }
+
     }
 
     /**
-     * Write a debug message to the log.
-     * @param {string} message The message to write to the log.
+     * @returns {String} information to add
      */
-    logDebug(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.DEBUG) {
-            this._outputMessage(message, LOG_LEVELS.DEBUG);
+    callback(){
+        if (this.stub) {
+            const shortTxId = this.stub.getTxID().substring(0, 8);
+            return `[${shortTxId}]`;
+
+        } else {
+            return('Warning - No stub');
+
         }
+
     }
 
     /**
-     * Write an error message to the log.
-     * @param {string} message The message to write to the log.
+     * @return {Object} the default cfg
      */
-    logError(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.ERROR) {
-            this._outputMessage(message, LOG_LEVELS.ERROR);
-        }
-    }
+    getDefaultCfg(){
 
-    /**
-     * Write a informational message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logInfo(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.INFO) {
-            this._outputMessage(message, LOG_LEVELS.INFO);
+        let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
+        if (!envVariable){
+            envVariable = 'composer[error]:*';
         }
-    }
-
-    /**
-     * Write a notice message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logNotice(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.NOTICE) {
-            this._outputMessage(message, LOG_LEVELS.NOTICE);
-        }
-    }
-
-    /**
-     * Write a warning message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logWarning(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.WARNING) {
-            this._outputMessage(message, LOG_LEVELS.WARNING);
-        }
-    }
-
-    /**
-     * Set the log level for the runtime.
-     * @param {string} newLogLevel The new log level to apply.
-     */
-    async setLogLevel(newLogLevel) {
-        newLogLevel = newLogLevel.toUpperCase();
-        if (LOG_LEVELS[newLogLevel]) {
-            try {
-                await this.stub.putState(LOGLEVEL_KEY, newLogLevel);
-                this.currentLogLevel = LOG_LEVELS[newLogLevel];
-                this.logWarning('Setting Composer log level to ' + newLogLevel);
-            }
-            catch(err) {
-                throw new Error('failed to set the new log level. ' + err);
-            }
-        }
-        else {
-            throw new Error(`${newLogLevel} is not a valid log level. Log level not changed.`);
-        }
-    }
-
-    /**
-     * Get the current log level for the runtime.
-     * @return {string} the current log level.
-     */
-    getLogLevel() {
-        return LOOKUP_LOG_LEVELS[this.currentLogLevel];
+        return {
+            'file': {
+                'maxLevel': 'none'
+            },
+            'console': {
+                'maxLevel': 'silly'
+            },
+            'debug' : envVariable,
+            'logger': './consolelogger.js',
+            'origin':'default-runtime-hlfv1'
+        };
     }
 }
 

@@ -651,6 +651,7 @@ describe('HLFConnectionManager', () => {
         it('should create a new HLFConnection', () => {
             let mockChannel = sinon.createStubInstance(Channel);
             let mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
+            sandbox.stub(HLFConnection, 'createQueryHandler').returns('');
             let connection = HLFConnectionManager.createHLFConnection(connectionManager, 'profile', 'bn', {}, mockClient, mockChannel, mockCAClient);
             connection.should.be.an.instanceOf(HLFConnection);
         });

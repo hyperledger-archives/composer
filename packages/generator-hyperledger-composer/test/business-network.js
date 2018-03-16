@@ -78,9 +78,12 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
             busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
+            busNetDir + '/permissions.acl',
             busNetDir + '/models/' + passedNS +'.cto',
             busNetDir + '/lib/logic.js',
-            busNetDir + '/test/logic.js'
+            busNetDir + '/test/logic.js',
+            busNetDir + '/features/sample.feature',
+            busNetDir + '/features/support/index.js'
         ];
         assert.file(myExpectedFiles);
     });
@@ -93,9 +96,12 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
             busNetDir + '/.eslintrc.yml',
             busNetDir + '/README.md',
             busNetDir + '/package.json',
+            busNetDir + '/permissions.acl',
             busNetDir + '/models/' + passedNS +'.cto',
             busNetDir + '/lib/logic.js',
-            busNetDir + '/test/logic.js'
+            busNetDir + '/test/logic.js',
+            busNetDir + '/features/sample.feature',
+            busNetDir + '/features/support/index.js'
         ];
 
         let unexpectedFiles =[];
@@ -122,21 +128,25 @@ describe('hyperledger-composer:businessnetwork for generating a template busines
         assert(fs.existsSync(packageFile), 'No package.json file detected in test run');
 
         let myPackage = require(packageFile);
-        assert(myPackage.name === passedBusNetName, 'incorrect name in packaage file');
-        assert(myPackage.author === passedAuthor, 'incorrect author in packaage file');
-        assert(myPackage.email === passedEmail, 'incorrect email in packaage file');
-        assert(myPackage.license === passedLic, 'incorrect license in packaage file');
+        assert(myPackage.name === passedBusNetName, 'incorrect name in package file');
+        assert(myPackage.author === passedAuthor, 'incorrect author in package file');
+        assert(myPackage.email === passedEmail, 'incorrect email in package file');
+        assert(myPackage.license === passedLic, 'incorrect license in package file');
         assert.strictEqual(myPackage.dependencies, undefined, 'there should be no production dependencies in package file');
         assert.deepStrictEqual(myPackage.devDependencies, {
             chai: 'latest',
+            'chai-as-promised': 'latest',
             'composer-admin': `^${version}`,
+            'composer-cli': `^${version}`,
             'composer-client': `^${version}`,
             'composer-common': `^${version}`,
             'composer-connector-embedded': `^${version}`,
+            'composer-cucumber-steps': `^${version}`,
+            cucumber: '^2.2.0',
             eslint: 'latest',
-            istanbul: 'latest',
             mkdirp: 'latest',
-            mocha: 'latest'
+            mocha: 'latest',
+            nyc: 'latest'
         }, 'incorrect development dependencies in package file');
     });
 

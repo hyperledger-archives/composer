@@ -44,6 +44,9 @@ describe('NodeHTTPService', () => {
         it('should create an instance', () => {
             httpService.should.be.an.instanceOf(HTTPService);
         });
+        it('should produce something useful as toString', ()=>{
+            httpService.toString().should.equal('Instance of HTTPService');
+        });
     });
 
     describe('#post', () => {

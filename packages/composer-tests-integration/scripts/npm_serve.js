@@ -61,6 +61,7 @@ const packages = [
     'loopback-connector-composer',
     'composer-rest-server',
     'composer-report',
+    'composer-cucumber-steps',
     'composer-cli',
     'composer-wallet-inmemory',
     'composer-wallet-filesystem',

@@ -38,7 +38,7 @@ The easiest way to get started is to use the Yeoman generator to create a skelet
 
 3. Select `Apache-2.0` as the license.
 
-4. Select `org.acme.biznet` as the namespace.
+4. Select `org.acme.mynetwork` as the namespace.
 
 ## Step Two: Defining a business network
 
@@ -48,14 +48,14 @@ A business network is made up of assets, participants, transactions, access cont
 
 The first document to update is the model (`.cto`) file. This file is written using the [{{site.data.conrefs.composer_full}} Modelling Language](../reference/cto_language.html). The model file contains the definitions of each class of asset, transaction, participant, and event. It implicitly extends the {{site.data.conrefs.composer_full}} System Model described in the modelling language documentation.
 
-1. Open the `org.acme.biznet.cto` model file.
+1. Open the `org.acme.mynetwork.cto` model file.
 
 2. Replace the contents with the following:
 
         /**
          * My commodity trading network
          */
-        namespace org.acme.biznet
+        namespace org.acme.mynetwork
         asset Commodity identified by tradingSymbol {
             o String tradingSymbol
             o String description
@@ -73,7 +73,7 @@ The first document to update is the model (`.cto`) file. This file is written us
             --> Trader newOwner
         }
 
-3. Save your changes to `org.acme.biznet.cto`.
+3. Save your changes to `org.acme.mynetwork.cto`.
 
 #### Adding JavaScript transaction logic
 
@@ -87,12 +87,12 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
 
         /**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.biznet.Trade} trade - the trade to be processed
+         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
         async function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
             await assetRegistry.update(trade.commodity);
         }
 
@@ -111,7 +111,7 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
             description: "Allow all participants access to all resources"
             participant: "ANY"
             operation: ALL
-            resource: "org.acme.biznet.*"
+            resource: "org.acme.mynetwork.*"
             action: ALLOW
         }
 
