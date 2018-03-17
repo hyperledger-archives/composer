@@ -195,12 +195,26 @@ Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the 
 
 The generated API is connected to the deployed blockchain and business network.
 
-<!--After generating a REST API,
-
 ## Step Six: Generating an application
 
+{{site.data.conrefs.composer_full}} can also generate an Angular 4 application running against the REST API.
 
-**This section doesn't work yet so be chill k?**
+1.  To create your Angular 4 application, navigate to `tutorial-network` directory and run the following command:
 
-`yo hyperledger-composer`
--->
+        yo hyperledger-composer:angular
+
+2.  Select **Yes** when asked to connect to running business network.
+
+3.  Enter standard `package.json` questions (project name, description, author name, author email, license)
+
+4.  Enter `admin@tutorial-network` for the business network card.
+
+5.  Select **Connect to an existing REST API**
+
+6.  Enter `http://localhost` for the REST server address.
+
+7.  Enter `3000` for server port.
+
+8.  Select **Namespaces are not used**
+
+The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run `ng serve`. This will fire up an Angular 4 application running against your REST AyPI at `http://localhost:4200`.
