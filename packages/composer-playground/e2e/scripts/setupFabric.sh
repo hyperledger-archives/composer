@@ -10,10 +10,8 @@ ARCH=`uname -m`
 # Grab the fabric directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-rm -rf ${HOME}/.composer/cards/Test*
-rm -rf ${HOME}/.composer/client-data/Test*
-rm -rf ${HOME}/.composer/cards/admin*
-rm -rf ${HOME}/.composer/client-data/admin*
+# have to have a clean card store or the tests will fail
+rm -rf ${HOME}/.composer
 
 cd "${DIR}"
 
@@ -24,10 +22,10 @@ export COMPOSER_TIMEOUT_SECS=500
 
 DOCKER_FILE=${DIR}/fabric/hlfv1/docker-compose.yml
 
-docker pull hyperledger/fabric-peer:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-ca:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-rc1
-docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-rc1
+docker pull hyperledger/fabric-peer:$ARCH-1.1.0
+docker pull hyperledger/fabric-ca:$ARCH-1.1.0
+docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
+docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
 docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
 
 if [ -d ./hlfv1/crypto-config ]; then
@@ -48,6 +46,8 @@ ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
 ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
 ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
 
+# wait for the fabric to start
+sleep 10
 # Create the channel
 docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c composerchannel -f /etc/hyperledger/configtx/composer-channel.tx
 # Join peer0 from org1 to the channel.

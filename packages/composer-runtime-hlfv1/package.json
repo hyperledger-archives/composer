@@ -58,7 +58,7 @@
   "dependencies": {
     "composer-common": "0.18.2",
     "composer-runtime": "0.18.2",
-    "fabric-shim": "1.1.0-snapshot.12",
+    "fabric-shim": "1.1.0",
     "jsrsasign": "8.0.3",
     "request": "2.81.0"
   },
