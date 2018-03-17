@@ -217,4 +217,4 @@ The generated API is connected to the deployed blockchain and business network.
 
 8.  Select **Namespaces are not used**
 
-The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run `ng serve`. This will fire up an Angular 4 application running against your REST API at `http://localhost:4200`.
+The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run `ng serve`. This will start an Angular 4 application running against your REST API at `http://localhost:4200`.
