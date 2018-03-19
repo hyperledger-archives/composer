@@ -16,11 +16,14 @@
 
 const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const Factory = require('composer-common').Factory;
+const ParticipantRegistry = Client.ParticipantRegistry;
 const IdentityRegistry = Client.IdentityRegistry;
-const ModelManager = require('composer-common').ModelManager;
-const Serializer = require('composer-common').Serializer;
+const Common = require('composer-common');
+const BusinessNetworkDefinition = Common.BusinessNetworkDefinition;
+const Factory = Common.Factory;
+const Resource = Common.Resource;
+const ModelManager = Common.ModelManager;
+const Serializer = Common.Serializer;
 
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 const List = require('../../lib/cmds/identity/listCommand.js');
@@ -69,7 +72,24 @@ describe('composer identity list CLI unit tests', () => {
             certificate: '',
             participant: factory.newRelationship('org.hyperledger.composer.system', 'Participant', 'alice@email.com')
         });
-        mockIdentityRegistry.getAll.resolves([identity1, identity2]);
+        const identity3 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'bfb8c488c0cdec07d9beeef6d97c27a77965ed9a8e30b57e40ea1eb399d8a1bd');
+        Object.assign(identity3, {
+            name: 'admin',
+            issuer: 'ac3dbcbe135ba48b29f97665bb103f8260c38d3872473e584314392797c595f3',
+            state: 'ACTIVATED',
+            certificate: '',
+            participant: factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', 'admin')
+        });
+
+        const identity4 = factory.newResource('org.hyperledger.composer.system', 'Identity', 'd1fa10f09219c13aeecbbbc4823a391f769b64f17124f2c136a9c09d7fd3789f');
+        Object.assign(identity4, {
+            name: 'bob',
+            issuer: 'bfb8c488c0cdec07d9beeef6d97c27a77965ed9a8e30b57e40ea1eb399d8a1be',
+            state: 'REVOKED',
+            certificate: '',
+            participant: factory.newRelationship('org.hyperledger.composer.system', 'Participant', 'bob@email.com')
+        });
+        mockIdentityRegistry.getAll.resolves([identity1, identity2, identity3, identity4]);
         sandbox.spy(console, 'log');
     });
 
@@ -77,7 +97,13 @@ describe('composer identity list CLI unit tests', () => {
         sandbox.restore();
     });
 
-    it('should list all identities in the business network using the specified profile', () => {
+    it('should list all identities in the business network using the specified profile marking those where the participant does not exist', () => {
+        let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegistry);
+        let mockParticipant1 = sinon.createStubInstance(Resource);
+        mockParticipant1.getFullyQualifiedIdentifier.returns('org.hyperledger.composer.system.Participant#alice@email.com');
+        mockParticpantRegistry.getAll.returns([mockParticipant1]);
+        mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([mockParticpantRegistry]));
+
         let argv = {
             card :'cardName',
             participantId: 'org.doge.Doge#DOGE_1',
@@ -89,12 +115,20 @@ describe('composer identity list CLI unit tests', () => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardName');
                 sinon.assert.calledOnce(mockIdentityRegistry.getAll);
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.getAllParticipantRegistries);
                 sinon.assert.calledWith(console.log, sinon.match(/identityId:.*eac9f8ff4e0a0df8017a40313c12bdfb9597928526d651e620598d17c9c875ca/));
                 sinon.assert.calledWith(console.log, sinon.match(/identityId:.*3b6cf18fe92474b6bc720401d5fb9590a3e2e3b67b1aa64ba7d3db85e746a3ba/));
+                sinon.assert.calledWith(console.log, sinon.match(/identityId:.*bfb8c488c0cdec07d9beeef6d97c27a77965ed9a8e30b57e40ea1eb399d8a1bd/));
+                sinon.assert.calledWith(console.log, sinon.match(/identityId:.*d1fa10f09219c13aeecbbbc4823a391f769b64f17124f2c136a9c09d7fd3789f/));
+                sinon.assert.calledWith(console.log, sinon.match(/state:.*ISSUED/));
+                sinon.assert.calledWith(console.log, sinon.match(/state:.*BOUND PARTICIPANT NOT FOUND/));
+                sinon.assert.calledWith(console.log, sinon.match(/state:.*ACTIVATED/));
+                sinon.assert.calledWith(console.log, sinon.match(/state:.*REVOKED/));
             });
     });
 
     it('should error if the identities cannot be listed', () => {
+        mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([]));
         mockIdentityRegistry.getAll.rejects(new Error('such error'));
 
         let argv = {

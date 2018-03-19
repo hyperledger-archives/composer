@@ -13,21 +13,24 @@
                 <div class="id">ID Name</div>
                 <div class="status">Status</div>
             </div>
-            <div class="identity" *ngFor="let cardRef of cardRefs" (dblclick)="setCurrentIdentity(cardRef, true)">
+            <div class="identity" *ngFor="let ID of myIDs" (dblclick)="setCurrentIdentity(ID, true)">
                 <div class="selected-border"
-                     [ngClass]="{'selected-border--selected': cardRef === currentIdentity}"></div>
+                     [ngClass]="{'selected-border--selected': ID.ref === currentIdentity}"></div>
                 <div class="id">
-                    {{identityCards.get(cardRef).getUserName()}}
+                    {{identityCards.get(ID.ref).getUserName()}}
                 </div>
-                <div class="flex" *ngIf="cardRef===currentIdentity">
+                <div class="flex" *ngIf="ID.ref===currentIdentity">
                     In Use
                 </div>
-                <div class="flex" *ngIf="cardRef!==currentIdentity">
+                <div class="flex" *ngIf="ID.ref!==currentIdentity && ID.usable ">
                     <i>In my wallet</i>
                 </div>
-                <div class="actions" *ngIf="cardRef!==currentIdentity">
-                    <button class="clear" (click)="setCurrentIdentity(cardRef, true)">Use now</button>
-                    <button class="clear" (click)="openRemoveModal(cardRef); $event.stopPropagation()">Remove</button>
+                <div class="flex" *ngIf="ID.ref!==currentIdentity && !ID.usable">
+                    <i>Bound participant not found</i>
+                </div>
+                <div class="actions" *ngIf="ID.ref!==currentIdentity">
+                    <button class="clear" *ngIf="ID.usable" (click)="setCurrentIdentity(ID, true)">Use now</button>
+                    <button class="clear" (click)="openRemoveModal(ID.ref); $event.stopPropagation()">Remove</button>
                 </div>
             </div>
         </div>
