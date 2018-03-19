@@ -125,6 +125,20 @@ class ProxyConnection extends Connection {
     }
 
     /**
+     * @inheritdoc
+     */
+    upgrade(securityContext, networkName, networkVersion, upgradeOptions) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionUpgrade', this.connectionID, securityContext.securityContextID, networkName, networkVersion, upgradeOptions, (error) => {
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                resolve();
+            });
+        });
+    }
+
+    /**
      * Test ("ping") the connection to the business network.
      * @param {SecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the

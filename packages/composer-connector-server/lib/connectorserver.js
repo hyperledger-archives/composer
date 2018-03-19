@@ -421,8 +421,8 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionStart (connectionID, securityContextID, networkName, networkVersion, startTransaction, startOptions, callback) {
-        const method = 'connectionDeploy';
+    connectionStart(connectionID, securityContextID, networkName, networkVersion, startTransaction, startOptions, callback) {
+        const method = 'connectionStart';
         LOG.entry(method, connectionID, securityContextID, networkName, networkVersion, startTransaction, startOptions);
         let connection = this.connections[connectionID];
         if (!connection) {
@@ -441,6 +441,47 @@ class ConnectorServer {
             return Promise.resolve();
         }
         return connection.start(securityContext, networkName, networkVersion, startTransaction, startOptions)
+            .then(() => {
+                callback(null);
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(error);
+                callback(ConnectorServer.serializerr(error));
+                LOG.exit(method);
+            });
+    }
+
+    /**
+     * Handle a request from the client to upgrade a business network.
+     * @param {string} connectionID The connection ID.
+     * @param {string} securityContextID The security context ID.
+     * @param {string} networkName The identifier of the business network that will be upgraded
+     * @param {string} networkVersion The version to which the business network will be upgraded
+     * @param {Object} upgradeOptions connector specific installation options.
+     * @param {function} callback The callback to call when complete.
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    connectionUpgrade(connectionID, securityContextID, networkName, networkVersion, upgradeOptions, callback) {
+        const method = 'connectionUpgrade';
+        LOG.entry(method, connectionID, securityContextID, networkName, networkVersion, upgradeOptions);
+        let connection = this.connections[connectionID];
+        if (!connection) {
+            let error = new Error(`No connection found with ID ${connectionID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        let securityContext = this.securityContexts[securityContextID];
+        if (!securityContext) {
+            let error = new Error(`No security context found with ID ${securityContextID}`);
+            LOG.error(error);
+            callback(ConnectorServer.serializerr(error));
+            LOG.exit(method, null);
+            return Promise.resolve();
+        }
+        return connection.upgrade(securityContext, networkName, networkVersion, upgradeOptions)
             .then(() => {
                 callback(null);
                 LOG.exit(method);

@@ -319,18 +319,18 @@ describe('Connection', () => {
 
         it('should call _upgrade and handle no error', () => {
             sinon.stub(connection, '_upgrade').yields(null);
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'})
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
                 .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
+                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
                 });
         });
 
         it('should call _upgrade and handle an error', () => {
             sinon.stub(connection, '_upgrade').yields(new Error('error'));
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'})
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
+                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
                 });
         });
 

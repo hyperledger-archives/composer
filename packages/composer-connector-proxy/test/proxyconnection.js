@@ -142,6 +142,23 @@ describe('ProxyConnection', () => {
 
     });
 
+    describe('#upgrade', () => {
+        it('should send upgrade call to connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionUpgrade', connectionID, securityContextID, businessNetworkName, businessNetworkVersion, { opt: 1 }, sinon.match.func).yields(null);
+            return connection.upgrade(mockSecurityContext, businessNetworkName, businessNetworkVersion, { opt: 1 })
+                .then(() => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionUpgrade', connectionID, securityContextID, businessNetworkName, businessNetworkVersion, { opt: 1 }, sinon.match.func);
+                });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionUpgrade', connectionID, securityContextID, businessNetworkName, businessNetworkVersion, { opt: 1 }, sinon.match.func).yields(serializedError);
+            return connection.upgrade(mockSecurityContext, businessNetworkName, businessNetworkVersion, { opt: 1 })
+                .should.be.rejectedWith(TypeError, /such type error/);
+        });
+    });
+
     describe('#ping', () => {
 
         it('should send a ping call to the connector server', () => {

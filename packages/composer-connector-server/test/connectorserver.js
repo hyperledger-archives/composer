@@ -138,6 +138,7 @@ describe('ConnectorServer', () => {
                 '/api/connectionPing',
                 '/api/connectionQueryChainCode',
                 '/api/connectionStart',
+                '/api/connectionUpgrade',
                 '/api/connectionManagerExportIdentity',
                 '/api/connectionManagerRemoveIdentity',
                 '/api/connectionCreateTransactionId'
@@ -731,6 +732,63 @@ describe('ConnectorServer', () => {
                 });
         });
 
+    });
+
+    describe('#connectionUpgrade', () => {
+        beforeEach(() => {
+            connectorServer.connections[connectionID] = mockConnection;
+            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
+        });
+
+        it('should upgrade', () => {
+            mockConnection.upgrade.withArgs(mockSecurityContext, 'org-acme-biznet', '1.0.0', {opt : 1}).resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionUpgrade(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.upgrade);
+                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'org-acme-biznet', '1.0.0', {opt : 1});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                });
+        });
+
+        it('should handle an invalid connection ID', () => {
+            const cb = sinon.stub();
+            return connectorServer.connectionUpgrade(invalidID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.match(/No connection found with ID/);
+                    serializedError.stack.should.be.a('string');
+                });
+        });
+
+        it('should handle an invalid security context ID ID', () => {
+            const cb = sinon.stub();
+            return connectorServer.connectionUpgrade(connectionID, invalidID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.match(/No security context found with ID/);
+                    serializedError.stack.should.be.a('string');
+                });
+        });
+
+        it('should handle start errors', () => {
+            mockConnection.upgrade.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return connectorServer.connectionUpgrade(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(cb);
+                    const serializedError = cb.args[0][0];
+                    serializedError.name.should.equal('Error');
+                    serializedError.message.should.equal('such error');
+                    serializedError.stack.should.be.a('string');
+                });
+        });
     });
 
     describe('#connectionPing', () => {
