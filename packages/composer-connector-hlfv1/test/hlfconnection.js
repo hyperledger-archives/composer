@@ -1673,7 +1673,6 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
                     sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
                         chaincodeId: mockBusinessNetwork.getName(),
-                        chaincodeVersion: connectorPackageJSON.version,
                         txId: mockTransactionID,
                         fcn: 'myfunc',
                         args: ['arg1', 'arg2']
@@ -1708,7 +1707,6 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
                     sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
                         chaincodeId: mockBusinessNetwork.getName(),
-                        chaincodeVersion: connectorPackageJSON.version,
                         txId: mockTransactionID,
                         fcn: 'myfunc',
                         args: ['arg1', 'arg2']
@@ -1744,7 +1742,6 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
                     sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
                         chaincodeId: mockBusinessNetwork.getName(),
-                        chaincodeVersion: connectorPackageJSON.version,
                         txId: mockTransactionID,
                         fcn: 'myfunc',
                         args: ['arg1', 'arg2']

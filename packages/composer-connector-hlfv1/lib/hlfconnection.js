@@ -35,8 +35,7 @@ const QueryCompiler = require('composer-runtime').QueryCompiler;
 const LOG = Logger.getLog('HLFConnection');
 
 const connectorPackageJSON = require('../package.json');
-const runtimeHlfPackageJson = require('composer-runtime-hlfv1/package.json');
-const composerVersion = runtimeHlfPackageJson.version;
+const composerVersion = connectorPackageJSON.version;
 
 const installDependencies = {
     'composer-common' : composerVersion,
@@ -898,7 +897,6 @@ class HLFConnection extends Connection {
                 // Submit the transaction to the endorsers.
                 const request = {
                     chaincodeId: this.businessNetworkIdentifier,
-                    chaincodeVersion: runtimeHlfPackageJson.version,
                     txId: txId,
                     fcn: functionName,
                     args: args
