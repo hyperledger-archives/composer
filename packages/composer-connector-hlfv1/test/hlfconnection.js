@@ -18,6 +18,8 @@ const sinon = require('sinon');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
 const Logger = require('composer-common').Logger;
+const QueryFile = require('composer-common').QueryFile;
+const QueryManager = require('composer-common').QueryManager;
 
 const Channel = require('fabric-client/lib/Channel');
 const Peer = require('fabric-client/lib/Peer');
@@ -638,6 +640,42 @@ describe('HLFConnection', () => {
                 .then(() => {
                     const unexpected = /.tgz$/;
                     sinon.assert.neverCalledWithMatch(connection.fs.copy, unexpected, unexpected);
+                });
+        });
+
+        it('should install the query indexes', () => {
+            // This is the install proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+
+            const testModel = `
+                namespace org.acme
+                asset Car identified by id {
+                  o String id
+                }`;
+
+            const queryContents = `
+                query Q1 {
+                    description: "Select all cars"
+                    statement: SELECT org.acme.Car
+                }`;
+            mockBusinessNetwork.getModelManager().addModelFile(testModel);
+            const queryFile = new QueryFile('test.qry', mockBusinessNetwork.getModelManager(), queryContents);
+            const queryManager = new QueryManager(mockBusinessNetwork.getModelManager());
+            queryManager.setQueryFile(queryFile);
+
+            sandbox.stub(mockBusinessNetwork, 'getQueryManager').callsFake(() => { console.log('STUB', queryManager); return queryManager; } );
+
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            return connection.install(mockSecurityContext, mockBusinessNetwork)
+                .then(() => {
+                    sinon.assert.calledWith(connection.fs.writeFileSync, sinon.match(/.*\/statedb\/couchdb\/indexes\/Q1Doc\.json/), sinon.match(/.*/));
                 });
         });
 

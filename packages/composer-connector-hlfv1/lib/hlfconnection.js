@@ -414,7 +414,7 @@ class HLFConnection extends Connection {
         await businessNetworkDefinition.toDirectory(installDir);
         const packagePath = path.join(installDir, 'package.json');
         const packageContent = JSON.stringify(bnaPackage);
-        fs.writeFileSync(packagePath, packageContent);
+        this.fs.writeFileSync(packagePath, packageContent);
 
         // write the query indexes to statedb/couchdb/indexes
         const queryManager = businessNetworkDefinition.getQueryManager();
@@ -431,7 +431,7 @@ class HLFConnection extends Connection {
             const json = JSON.parse(query.index);
             const designDoc = json.ddoc + '.json';
             const indexFile = path.resolve(indexDir, designDoc);
-            fs.writeFileSync(indexFile, query.index);
+            this.fs.writeFileSync(indexFile, query.index);
         });
 
         // copy over a .npmrc file, should be part of the business network definition.
