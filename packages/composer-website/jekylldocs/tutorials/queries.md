@@ -58,17 +58,17 @@ Now that the domain model has been updated, we can write the additional business
 
         /**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.biznet.Trade} trade - the trade to be processed
+         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
         async function tradeCommodity(trade) {
 
             // set the new owner of the commodity
             trade.commodity.owner = trade.newOwner;
-            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
 
             // emit a notification that a trade has occurred
-            let tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
+            let tradeNotification = getFactory().newEvent('org.acme.mynetwork', 'TradeNotification');
             tradeNotification.commodity = trade.commodity;
             emit(tradeNotification);
 
@@ -78,19 +78,19 @@ Now that the domain model has been updated, we can write the additional business
 
         /**
          * Remove all high volume commodities
-         * @param {org.acme.biznet.RemoveHighQuantityCommodities} remove - the remove to be processed
+         * @param {org.acme.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
          * @transaction
          */
         async function removeHighQuantityCommodities(remove) {
 
-            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
             let results = await query('selectCommoditiesWithHighQuantity');
 
             for (let n = 0; n < results.length; n++) {
                 let trade = results[n];
 
                 // emit a notification that a trade was removed
-                let removeNotification = getFactory().newEvent('org.acme.biznet','RemoveNotification');
+                let removeNotification = getFactory().newEvent('org.acme.mynetwork','RemoveNotification');
                 removeNotification.commodity = trade;
                 emit(removeNotification);
                 await assetRegistry.remove(trade);
@@ -117,27 +117,27 @@ The queries used by the Transaction Processor logic are defined in a file which 
         query selectCommodities {
           description: "Select all commodities"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.acme.mynetwork.Commodity
         }
 
         query selectCommoditiesByExchange {
           description: "Select all commodities based on their main exchange"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.acme.mynetwork.Commodity
                   WHERE (mainExchange==_$exchange)
         }
 
         query selectCommoditiesByOwner {
           description: "Select all commodities based on their owner"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.acme.mynetwork.Commodity
                   WHERE (owner == _$owner)
         }
 
         query selectCommoditiesWithHighQuantity {
           description: "Select commodities based on quantity"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.acme.mynetwork.Commodity
                   WHERE (quantity > 60)
         }
 
@@ -204,7 +204,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 1. First, click on 'Trader' in the REST Explorer, then click on the 'POST' method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER1",
           "firstName": "Jenny",
           "lastName": "Jones"
@@ -215,7 +215,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 3. Create another trader by copying the following JSON:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER2",
           "firstName": "Jack",
           "lastName": "Sock"
@@ -224,7 +224,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 4. Create a third trader by coping the following JSON:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER3",
           "firstName": "Rainer",
           "lastName": "Valens"
@@ -236,23 +236,23 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 
 ```
 {
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "EMA",
   "description": "Corn",
   "mainExchange": "EURONEXT",
   "quantity": 10,
-  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
 }
 ```
 
 ```
 {
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "CC",
   "description": "Cocoa",
   "mainExchange": "ICE",
   "quantity": 80,
-  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER2"
 }
 ```
 

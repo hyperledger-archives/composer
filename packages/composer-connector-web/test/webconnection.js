@@ -88,6 +88,7 @@ describe.only('WebConnection', () => {
             let mockContainer = sinon.createStubInstance(WebContainer);
             let mockLoggingService = sinon.createStubInstance(LoggingService);
             mockContainer.getLoggingService.returns(mockLoggingService);
+            mockLoggingService.getLoggerCfg.returns({});
             WebConnection.createEngine(mockContainer).should.be.an.instanceOf(Engine);
         });
 
