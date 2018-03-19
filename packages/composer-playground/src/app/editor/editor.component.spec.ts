@@ -1297,6 +1297,7 @@ describe('EditorComponent', () => {
             mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
             mockFileService.getBusinessNetwork.returns(new BusinessNetworkDefinition('test-network@1.0.0'));
 
+            mockAdminService.install.returns(Promise.resolve());
             mockAdminService.upgrade.returns(Promise.resolve());
             mockClientService.refresh.returns(Promise.resolve());
 
@@ -1324,6 +1325,7 @@ describe('EditorComponent', () => {
 
             component.deploy();
 
+            mockAdminService.install.should.not.have.been.called;
             mockAdminService.upgrade.should.not.have.been.called;
         });
 
