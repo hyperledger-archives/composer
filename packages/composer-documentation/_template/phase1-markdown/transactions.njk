@@ -15,9 +15,10 @@ The fully qualified name is **{{tx.fqn}}**
 {% endif %}
 
 | Name | Type | Description |
-| --------  | ---- | ----------- |
-{% for id,info in tx.properties %}|{{id}}|{{info.type}}|{{info.description}}|
+| ---  | ---- | ----------- |
+{% for id,info in tx.properties %}| {{id}} | {{info.type}} | {{info.description}} |
 {% endfor %}
+
 {% endfor %}
 
 

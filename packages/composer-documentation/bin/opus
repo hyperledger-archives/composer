@@ -33,7 +33,7 @@ let result = opus(results);
 
 result.then(()=>{
     console.log('All done');
-    process.exit(0);
+    // process.exit(0);
 }).catch(
     (err)=>{
         console.log('Fail');

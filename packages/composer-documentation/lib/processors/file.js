@@ -18,15 +18,25 @@ const vfs = require('vinyl-fs');
 const path = require('path');
 const winston = require('winston');
 const LOG = winston.loggers.get('opus');
+const map = require('map-stream');
+
+let logname = function(file,cb){
+    // console.log('debug '+file.path);
+    LOG.info(`Input glob is ${file.path}`);
+    cb(null,file);
+};
 
 let copy = async function(context,meta){
 
     // use the vinyl fs to move the names
     await new Promise( (resolve)=>{
         LOG.info(`Copying from ${meta.srcdir} to ${meta.destdir}`);
-        vfs.src([meta.srcdir])
+        vfs.src([meta.srcdir]).pipe(map(logname))
             .pipe(vfs.dest(path.resolve(meta.destdir)))
-            .on('finish',resolve);
+            .on('finish',resolve)
+            .on('close',()=>{
+                // console.log('close');
+                resolve();});
     });
 
 

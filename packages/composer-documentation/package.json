@@ -9,15 +9,30 @@
   "scripts": {
     "pretest": "pegjs  ./lib/grammar/modelfile-cmts.pegjs ./lib/processors/parsers/modelfile-cmts.js",
     "systemnsDocs": "./bin/opus --archive dummy.bna --outdir ./out --config ./_configs/sns-config.yaml --nsDocsRoot=../composer-common/lib/system/",
-    "test": "./test/usage/go.sh && cp -r ./test/usage/out/* ./docs/"
+    "lint": "eslint .",
+    "postlint": "npm run licchk",
+    "licchk": "license-check",
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
+    "nyc": "nyc mocha --recursive -t 10000"
   },
   "keywords": [],
   "author": "MBW",
   "license": "Apache-2",
   "devDependencies": {
-    "eslint": "^4.16.0",
-    "mermaid": "^7.1.0",
-    "pegjs": "0.9.0"
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "chai-things": "0.2.0",
+    "eslint": "3.17.1",
+    "folder-zip-sync": "1.0.4",
+    "jsdoc": "3.5.5",
+    "license-check": "1.1.5",
+    "mocha": "3.4.2",
+    "mockery": "2.0.0",
+    "moxios": "0.4.0",
+    "nyc": "11.1.0",
+    "pegjs": "0.9.0",
+    "sinon": "2.3.8"
   },
   "dependencies": {
     "chalk": "^2.3.0",
@@ -32,7 +47,7 @@
     "jsome": "^2.5.0",
     "lodash": "^4.17.5",
     "lodash.clonedeep": "^4.5.0",
-    "map-stream": "0.0.7",
+    "map-stream": "0.1.0",
     "markdown-it": "^8.4.0",
     "markdown-it-anchor": "^4.0.0",
     "mkdirp": "^0.5.1",
@@ -42,5 +57,42 @@
     "rimraf": "^2.6.2",
     "vinyl-fs": "^2.4.4",
     "yargs": "^8.0.2"
+  }
+  ,
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "lib/codegen/javascriptparser.js",
+      "lib/codegen/parsejs.js",
+      "lib/introspect/parser.js",
+      "lib/acl/parser.js",
+      "lib/query/parser.js",
+      "out/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
   }
 }

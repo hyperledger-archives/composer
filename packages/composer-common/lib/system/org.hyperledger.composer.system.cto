@@ -123,8 +123,7 @@ participant NetworkAdmin identified by participantId {
  * @param {Event[]} eventsEmitted The events that were emitted by this transactionId
  * @param {DateTime} transactionTimestamp Use the transaction's timestamp
  */
-@docs('historian.md')
-@docsuri('Composer Documentation','/business-network/historian')
+@docsuri('Composer Documentation','../business-network/historian')
 asset HistorianRecord identified by transactionId {
   o String        transactionId
   o String        transactionType

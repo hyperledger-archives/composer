@@ -1,16 +1,20 @@
 # Asset Model
 
 {% for asset in types.asset %}
-### {{asset.name}}
+## {{asset.name}}
 The fully qualified name is **{{asset.fqn}}** 
 
+{{asset.description}}
+
+### Additional Information
+
 {% if asset.decorators.docs %}
-    {{asset.description}}
-{% else %}
     {% for extra in asset.decorators.docs %}
-    {{ asset.decorators[extra] }}
+{{ asset.decorators[extra] }}
     {% endfor %}
 {% endif %}
+
+### Properties
 
 {% if asset.properties.length > 0 %}
 | Name | Type | Description |
@@ -21,7 +25,10 @@ The fully qualified name is **{{asset.fqn}}**
 No properties defined.
 {% endif %}
 
-
+### References
+{% if asset.decorators.docsuri %}
+[{{asset.decorators.docsuri[0]}}]({{asset.decorators.docsuri[1]}})
+{% endif %}
 {% endfor %}
 
 
