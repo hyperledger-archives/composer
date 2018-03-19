@@ -32,18 +32,10 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     export COMPOSER_TIMEOUT_SECS=500
 
     # Delete any existing configuration.
-    rm -rf ${HOME}/.composer-connection-profiles/composer-systests*
-    rm -rf ${HOME}/.composer-credentials/composer-systests*
     rm -rf ${HOME}/.composer/*
 
     # Pull any required Docker images.
     if [[ ${FVTEST} == hlfv1* ]]; then
-        npm run stop_verdaccio
-        rm -fr ./storage
-        rm -fr ./verdaccio
-        rm -fr ${HOME}/.config/verdaccio
-        npm run start_verdaccio
-        sleep 5
         if [[ ${FVTEST} == *tls ]]; then
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
         else
@@ -73,22 +65,20 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
 
-        echo '//localhost:4873/:_authToken="foo"' > ${HOME}/.npmrc
-        echo fetch-retries=10 >> ${HOME}/.npmrc
         cd "${DIR}"
         cd ../composer-runtime
-        npm publish --registry http://localhost:4873
+        npm pack
         cd ../composer-common
-        npm publish --registry http://localhost:4873
+        npm pack
+        cd ../composer-runtime-hlfv1
+        npm pack
+        cd "${DIR}"
 
         if [ `uname` = "Darwin" ]; then
             export GATEWAY=docker.for.mac.localhost
         else
             export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
-        echo registry=http://${GATEWAY}:4873 > /tmp/npmrc
-        echo fetch-retries=10 >> /tmp/npmrc
-        cd "${DIR}"
     fi
 
     # configure v1 to run the tests
@@ -147,26 +137,20 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     if [ "${DOCKER_FILE}" != "" ]; then
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
-        npm run stop_verdaccio
     fi
 
     # Delete any written configuration.
-    rm -fr ./verdaccio
-    rm -fr ./storage
-    rm -fr ${HOME}/.config/verdaccio
     rm -fr ${HOME}/.composer
-    rm -rf ${HOME}/.composer-connection-profiles/composer-systests*
-    rm -rf ${HOME}/.composer-credentials/composer-systests*
-
-    if [ "${DOCKER_FILE}" != "" ]; then
-        rm ${HOME}/.npmrc
-        rm /tmp/npmrc
-    fi
 
     # Delete any crypto-config material
     cd "${DIR}"
     if [ -d ./hlfv1/crypto-config ]; then
         rm -rf ./hlfv1/crypto-config
     fi
+
+    # remove the npm pack files
+    rm ../composer-common/composer-common-*.tgz
+    rm ../composer-runtime/composer-runtime-*.tgz
+    rm ../composer-runtime-hlfv1/composer-runtime-hlfv1-*.tgz
 
 done

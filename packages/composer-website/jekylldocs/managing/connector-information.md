@@ -10,7 +10,7 @@ index-order: 810
 
 # {{site.data.conrefs.hlf_full}}
 
-There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network deploy`, and `composer identity issue`. The `--option, -o` option and the `--optionsFile, -O` option allow connector specific information to be sent.
+There are several cases where information specific to {{site.data.conrefs.hlf_full}} must be included in {{site.data.conrefs.composer_full}} commands, including `composer network install`, `composer network start` and `composer identity issue`. The `--option, -o` option and the `--optionsFile, -O` option allow connector specific information to be sent.
 
 Multiple options can be specified using the `--option, -o` by repeating the tag, for example:
 
@@ -33,10 +33,10 @@ composer somecmd --optionsFile=someCmdOpts.txt
 
 Some API's will also include the option to pass a generic options object including `AdminConnection.start()` and `AdminConnection.install()`
 
-## Providing npm config settings for install and deploy
+## Providing npm config settings for install
 
 ### CLI
-The `npmrcFile` option is available is available on the `composer runtime install` and `composer network start` commands.
+The `npmrcFile` option is available on the `composer network install` command.
 
 The `npmrcFile` option allows you to specify npm configuration information when {{site.data.conrefs.hlf_full}} builds the chaincode image for the {{site.data.conrefs.composer_full}} runtime.
 
@@ -46,18 +46,18 @@ For example rather than using the default npm registry, you can specify an inter
 registry=http://mycompanynpmregistry.com:4873
 ```
 
-Supply the fully qualified filename as part of an install or deploy command, for example if the file was called npmConfig
+Supply the fully qualified filename as part of an install command, for example if the file was called npmConfig
 in your /home/user1/config directory:
 
 ```
-composer runtime install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
+composer network install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
 ```
 
 The file contents can be anything that permitted in the `.npmrc` configuration files of npm.
 
 ### Admin API
 
-You can supply the name of the file as part of the AdminConnection api on the install or deploy methods by specifying the `npmrcFile` property on the `installOptions` or `deployOptions` object. For example to pass the name of the npm configuration options file to be provided on install:
+You can supply the name of the file as part of the AdminConnection api on the install method by specifying the `npmrcFile` property on the `installOptions` object. For example to pass the name of the npm configuration options file to be provided on install:
 
 ```javascript
 await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
@@ -74,11 +74,11 @@ You can provide {{site.data.conrefs.hlf_full}} endorsement policies to both netw
 - Using the `-o` option, the endorsement policy can be sent either as a single-line JSON string or as a fully qualified file path:
 
 ```
-composer network start -o endorsementPolicy='{"identities": [.... }'
+composer network start ... -o endorsementPolicy='{"identities": [.... }'
 ```
 
 ```
-composer network start -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+composer network start ... -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
 ```
 
 When a file path is specified, the endorsement policy file should follow this format:
@@ -88,7 +88,7 @@ When a file path is specified, the endorsement policy file should follow this fo
 
 - Using the `-O` option, the endorsement policy must be sent as a file path as follows:
 
-        composer network start -O /path/to/file/options.json
+        composer network start ... -O /path/to/file/options.json
 
 	In this case, the options file should follow this format:
 
@@ -105,7 +105,7 @@ For more information on writing {{site.data.conrefs.hlf_full}} endorsement polic
 To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the `startOptions` or `deployOptions` objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property `endorsementPolicyFile`. To supply the policy as a JSON object, the `endorsementPolicy` object property must be specified.
 
 ```javascript
-await adminConnection.start(businessNetworkDefinition, { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
+await adminConnection.start('tutorial-network', '0.0.1', { networkAdmins: networkAdmins,  endorsementPolicyFile: 'endorsement-policy.json'} );
 ```
 
 ## Identity Issue

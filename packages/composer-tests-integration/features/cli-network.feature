@@ -39,9 +39,14 @@ Feature: Cli network steps
             """
             composer archive create -t dir -a ./tmp/marbles-network-update.bna -n ./resources/sample-networks/marbles-network-update
             """
+        And I run the following expected pass CLI command
+            """
+            composer network install --card TestPeerAdmin@org1 --archiveFile ./tmp/marbles-network-update.bna -o npmrcFile=/tmp/npmrc
+            """
+
         When I run the following expected pass CLI command
             """
-            composer network update --card admin@marbles-network -a ./tmp/marbles-network-update.bna
+            composer network upgrade --card TestPeerAdmin@org1 --networkName marbles-network --networkVersion 0.2.0
             """
         Then The stdout information should include text matching /Command succeeded/
 

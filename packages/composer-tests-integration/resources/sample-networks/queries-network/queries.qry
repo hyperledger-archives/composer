@@ -27,3 +27,17 @@ query selectCommoditiesWithHighQuantity {
       SELECT org.acme.biznet.Commodity
           WHERE (quantity > 60)
 }
+
+query selectCommoditiesOrdered {
+  description: "Select commodities ordered by quantity"
+  statement:
+      SELECT org.acme.biznet.Commodity
+      ORDER BY [quantity ASC]
+}
+
+query selectCommoditiesOrderedReverse {
+  description: "Select commodities ordered by quantity"
+  statement:
+      SELECT org.acme.biznet.Commodity
+      ORDER BY [quantity DESC]
+}

@@ -104,7 +104,7 @@ describe('#' + namespace, () => {
         // Generate a business network definition from the project directory.
         let businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
         businessNetworkName = businessNetworkDefinition.getName();
-        await adminConnection.install(businessNetworkName);
+        await adminConnection.install(businessNetworkDefinition);
         const startOptions = {
             networkAdmins: [
                 {

@@ -32,16 +32,14 @@ const Factory = require('composer-common').Factory;
 const HTTPService = require('../lib/httpservice');
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
+const InstalledBusinessNetwork = require('../lib/installedbusinessnetwork');
 const Introspector = require('composer-common').Introspector;
-const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
 const ResourceManager = require('../lib/resourcemanager');
 const NetworkManager = require('../lib/networkmanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('composer-common').Resource;
-const ScriptCompiler = require('../lib/scriptcompiler');
-const ScriptManager = require('composer-common').ScriptManager;
 const Serializer = require('composer-common').Serializer;
 const TransactionLogger = require('../lib/transactionlogger');
 const LoggingService = require('../lib/loggingservice');
@@ -53,17 +51,18 @@ const sinon = require('sinon');
 
 
 describe('Context', () => {
-
-    let mockBusinessNetworkDefinition;
+    const sandbox = sinon.sandbox.create();
     let mockEngine;
+    let testNetworkDefinition;
     let context;
-    let sandbox;
 
     beforeEach(() => {
         mockEngine = sinon.createStubInstance(Engine);
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        context = new Context(mockEngine);
-        sandbox = sinon.sandbox.create();
+        testNetworkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+        return InstalledBusinessNetwork.newInstance(testNetworkDefinition)
+            .then(installedBusinessNetwork => {
+                context = new Context(mockEngine, installedBusinessNetwork);
+            });
     });
 
     afterEach(() => {
@@ -71,11 +70,11 @@ describe('Context', () => {
     });
 
     describe('#constructor', () => {
-
-        it('should store the engine', () => {
-            context.engine.should.equal(mockEngine);
+        it('should throw if no business network provided', () => {
+            (() => {
+                new Context(mockEngine);
+            }).should.throw(/No business network/i);
         });
-
     });
 
     describe('#getFunction', () => {
@@ -92,207 +91,6 @@ describe('Context', () => {
         it('should return the current arguments', () => {
             context.arguments = ['arg1', 'arg2'];
             context.getArguments().should.deep.equal(['arg1', 'arg2']);
-        });
-
-    });
-
-    describe('#loadBusinessNetworkRecord', () => {
-
-        it('should load the business record', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkRecord()
-                .then((businessNetworkRecord) => {
-                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-                });
-        });
-
-        it('should not load the business record twice', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkRecord()
-                .then((businessNetworkRecord) => {
-                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-                    return context.loadBusinessNetworkRecord();
-                })
-                .then((businessNetworkRecord) => {
-                    businessNetworkRecord.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-                    sinon.assert.calledOnce(mockDataCollection.get);
-                });
-        });
-
-        it('should throw an error if the business network has been undeployed', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', undeployed: true });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.loadBusinessNetworkRecord()
-                .should.be.rejectedWith(/The business network has been undeployed/);
-        });
-
-    });
-
-    describe('#loadBusinessNetworkDefinition', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        let mockBusinessNetworkDefinition;
-
-        beforeEach(() => {
-            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        });
-
-        it('should load the business network if it is not already in the cache', () => {
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
-                .then((businessNetworkDefinition) => {
-                    businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
-                });
-        });
-
-        it('should not load the business network if it is already in the cache', () => {
-            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
-            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
-                .then((businessNetworkDefinition) => {
-                    businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
-                });
-        });
-
-        it('should handle any errors thrown loading the business network', () => {
-            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects(new Error('such error'));
-            return context.loadBusinessNetworkDefinition(businessNetworkRecord)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
-    describe('#loadCompiledScriptBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        let mockScriptCompiler;
-        let mockCompiledScriptBundle;
-
-        beforeEach(() => {
-            mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
-            context.scriptCompiler = mockScriptCompiler;
-        });
-
-        it('should load the compiled script bundle if it is not already in the cache', () => {
-            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledScriptBundle) => {
-                    compiledScriptBundle.should.equal(mockCompiledScriptBundle);
-                });
-        });
-
-        it('should not load the compiled script bundle if it is already in the cache', () => {
-            Context.cacheCompiledScriptBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
-            mockScriptCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledScriptBundle) => {
-                    compiledScriptBundle.should.equal(mockCompiledScriptBundle);
-                });
-        });
-
-        it('should handle any errors thrown loading the compiled script bundle', () => {
-            Context.cacheCompiledScriptBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
-            mockScriptCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
-    describe('#loadCompiledQueryBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        let mockQueryCompiler;
-        let mockCompiledQueryBundle;
-
-        beforeEach(() => {
-            mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
-            mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
-            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
-            context.queryCompiler = mockQueryCompiler;
-        });
-
-        it('should load the compiled query bundle if it is not already in the cache', () => {
-            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledQueryBundle) => {
-                    compiledQueryBundle.should.equal(mockCompiledQueryBundle);
-                });
-        });
-
-        it('should not load the compiled query bundle if it is already in the cache', () => {
-            Context.cacheCompiledQueryBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledQueryBundle);
-            mockQueryCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledQueryBundle) => {
-                    compiledQueryBundle.should.equal(mockCompiledQueryBundle);
-                });
-        });
-
-        it('should handle any errors thrown loading the compiled query bundle', () => {
-            Context.cacheCompiledQueryBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
-            mockQueryCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
-    describe('#loadCompiledAclBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        let mockAclCompiler;
-        let mockCompiledAclBundle;
-
-        beforeEach(() => {
-            mockAclCompiler = sinon.createStubInstance(AclCompiler);
-            mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
-            mockAclCompiler.compile.returns(mockCompiledAclBundle);
-            context.aclCompiler = mockAclCompiler;
-        });
-
-        it('should load the compiled ACL bundle if it is not already in the cache', () => {
-            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledAclBundle) => {
-                    compiledAclBundle.should.equal(mockCompiledAclBundle);
-                });
-        });
-
-        it('should not load the compiled ACL bundle if it is already in the cache', () => {
-            Context.cacheCompiledAclBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledAclBundle);
-            mockAclCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
-                .then((compiledAclBundle) => {
-                    compiledAclBundle.should.equal(mockCompiledAclBundle);
-                });
-        });
-
-        it('should handle any errors thrown loading the compiled ACL bundle', () => {
-            Context.cacheCompiledAclBundle('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', null);
-            mockAclCompiler.compile.throws(new Error('such error'));
-            return context.loadCompiledAclBundle(businessNetworkRecord, businessNetworkDefinition)
-                .should.be.rejectedWith(/such error/);
         });
 
     });
@@ -416,146 +214,11 @@ describe('Context', () => {
 
     });
 
-    describe('#findBusinessNetworkDefinition', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-
-        beforeEach(() => {
-            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
-            sinon.stub(context, 'loadBusinessNetworkDefinition').resolves(businessNetworkDefinition);
-        });
-
-        it('should load the business network definition if not specified', () => {
-            return context.findBusinessNetworkDefinition()
-                .then((foundBusinessNetworkDefinition) => {
-                    sinon.assert.calledOnce(context.loadBusinessNetworkDefinition);
-                    sinon.assert.calledWith(context.loadBusinessNetworkDefinition, businessNetworkRecord);
-                    foundBusinessNetworkDefinition.should.equal(businessNetworkDefinition);
-                });
-        });
-
-        it('should use the business network definition in the options', () => {
-            const options = {
-                businessNetworkDefinition: sinon.createStubInstance(BusinessNetworkDefinition)
-            };
-            return context.findBusinessNetworkDefinition(options)
-                .then((foundBusinessNetworkDefinition) => {
-                    foundBusinessNetworkDefinition.should.equal(options.businessNetworkDefinition);
-                });
-        });
-
-    });
-
-    describe('#findCompiledScriptBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        const compiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-
-        beforeEach(() => {
-            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
-            sinon.stub(context, 'loadCompiledScriptBundle').resolves(compiledScriptBundle);
-        });
-
-        it('should load the compiled script bundle if not specified', () => {
-            return context.findCompiledScriptBundle(businessNetworkDefinition)
-                .then((foundCompiledScriptBundle) => {
-                    sinon.assert.calledOnce(context.loadCompiledScriptBundle);
-                    sinon.assert.calledWith(context.loadCompiledScriptBundle, businessNetworkRecord, businessNetworkDefinition);
-                    foundCompiledScriptBundle.should.equal(compiledScriptBundle);
-                });
-        });
-
-        it('should use the compiled script bundle in the options', () => {
-            const options = {
-                compiledScriptBundle: sinon.createStubInstance(CompiledScriptBundle)
-            };
-            return context.findCompiledScriptBundle(businessNetworkDefinition, options)
-                .then((foundCompiledScriptBundle) => {
-                    foundCompiledScriptBundle.should.equal(options.compiledScriptBundle);
-                });
-        });
-
-    });
-
-    describe('#findCompiledQueryBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        const compiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
-
-        beforeEach(() => {
-            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
-            sinon.stub(context, 'loadCompiledQueryBundle').resolves(compiledQueryBundle);
-        });
-
-        it('should load the compiled query bundle if not specified', () => {
-            return context.findCompiledQueryBundle(businessNetworkDefinition)
-                .then((foundCompiledQueryBundle) => {
-                    sinon.assert.calledOnce(context.loadCompiledQueryBundle);
-                    sinon.assert.calledWith(context.loadCompiledQueryBundle, businessNetworkRecord, businessNetworkDefinition);
-                    foundCompiledQueryBundle.should.equal(compiledQueryBundle);
-                });
-        });
-
-        it('should use the compiled query bundle in the options', () => {
-            const options = {
-                compiledQueryBundle: sinon.createStubInstance(CompiledQueryBundle)
-            };
-            return context.findCompiledQueryBundle(businessNetworkDefinition, options)
-                .then((foundCompiledQueryBundle) => {
-                    foundCompiledQueryBundle.should.equal(options.compiledQueryBundle);
-                });
-        });
-
-    });
-
-    describe('#findCompiledAclBundle', () => {
-
-        const businessNetworkRecord = { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' };
-        const businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        const compiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
-
-        beforeEach(() => {
-            sinon.stub(context, 'loadBusinessNetworkRecord').resolves(businessNetworkRecord);
-            sinon.stub(context, 'loadCompiledAclBundle').resolves(compiledAclBundle);
-        });
-
-        it('should load the compiled ACL bundle if not specified', () => {
-            return context.findCompiledAclBundle(businessNetworkDefinition)
-                .then((foundCompiledAclBundle) => {
-                    sinon.assert.calledOnce(context.loadCompiledAclBundle);
-                    sinon.assert.calledWith(context.loadCompiledAclBundle, businessNetworkRecord, businessNetworkDefinition);
-                    foundCompiledAclBundle.should.equal(compiledAclBundle);
-                });
-        });
-
-        it('should use the compiled ACL bundle in the options', () => {
-            const options = {
-                compiledAclBundle: sinon.createStubInstance(CompiledAclBundle)
-            };
-            return context.findCompiledAclBundle(businessNetworkDefinition, options)
-                .then((foundCompiledAclBundle) => {
-                    foundCompiledAclBundle.should.equal(options.compiledAclBundle);
-                });
-        });
-
-    });
-
     describe('#initialize', () => {
 
-        let mockBusinessNetworkDefinition, mockCompiledScriptBundle, mockCompiledQueryBundle, mockSystemRegistries, mockCompiledAclBundle;
+        let mockSystemRegistries;
 
         beforeEach(() => {
-            mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
-            mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
-            sinon.stub(context, 'findBusinessNetworkDefinition').resolves(mockBusinessNetworkDefinition);
-            sinon.stub(context, 'findCompiledScriptBundle').resolves(mockCompiledScriptBundle);
-            sinon.stub(context, 'findCompiledQueryBundle').resolves(mockCompiledQueryBundle);
-            sinon.stub(context, 'findCompiledAclBundle').resolves(mockCompiledAclBundle);
             sinon.stub(context, 'loadCurrentParticipant').resolves(null);
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
@@ -564,34 +227,11 @@ describe('Context', () => {
             sinon.stub(context, 'initializeInner').resolves();
         });
 
-        it('should initialize the context', () => {
-            const options = {};
-            return context.initialize(options)
-                .then(() => {
-                    sinon.assert.calledOnce(context.findBusinessNetworkDefinition);
-                    sinon.assert.calledWith(context.findBusinessNetworkDefinition, options);
-                    sinon.assert.calledOnce(context.findCompiledScriptBundle);
-                    sinon.assert.calledWith(context.findCompiledScriptBundle, mockBusinessNetworkDefinition, options);
-                    sinon.assert.calledOnce(context.findCompiledQueryBundle);
-                    sinon.assert.calledWith(context.findCompiledQueryBundle, mockBusinessNetworkDefinition, options);
-                    sinon.assert.calledOnce(context.findCompiledAclBundle);
-                    sinon.assert.calledWith(context.findCompiledAclBundle, mockBusinessNetworkDefinition, options);
-                    context.businessNetworkDefinition.should.equal(mockBusinessNetworkDefinition);
-                    context.compiledScriptBundle.should.equal(mockCompiledScriptBundle);
-                    context.compiledQueryBundle.should.equal(mockCompiledQueryBundle);
-                    context.compiledAclBundle.should.equal(mockCompiledAclBundle);
-                    sinon.assert.calledOnce(context.loadCurrentParticipant);
-                    should.equal(context.participant, null);
-                    context.sysregistries.should.equal(mockSystemRegistries);
-                    sinon.assert.calledOnce(context.initializeInner);
-                });
-        });
-
         it('should not initialize the context with the current participant if deploying', () => {
             return context.initialize({ function: 'init' })
                 .then(() => {
                     sinon.assert.notCalled(context.loadCurrentParticipant);
-                    should.equal(context.participant, null);
+                    should.not.exist(context.participant);
                 });
         });
 
@@ -614,18 +254,6 @@ describe('Context', () => {
             return context.initialize({ container: mockContainer })
                 .then(() => {
                     context.getLoggingService().should.deep.equal(mockLoggingService);
-                });
-        });
-        it('should not initialize the context with the current participant if reinitializing', () => {
-            let mockParticipant = sinon.createStubInstance(Resource);
-            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            context.loadCurrentParticipant.resolves(mockParticipant);
-            let mockContainer = sinon.createStubInstance(Container);
-
-            mockContainer.getLoggingService.returns();
-            return context.initialize({ reinitialize: true })
-                .then(() => {
-                    should.equal(context.participant, null);
                 });
         });
 
@@ -673,38 +301,6 @@ describe('Context', () => {
                 .then(() => {
                     context.arguments.should.deep.equal(['sucharg1', 'sucharg2']);
                 });
-        });
-
-    });
-
-    describe('#initializeInner', () => {
-
-        it('should call _initializeInner and handle no error', () => {
-            sinon.stub(context, '_initializeInner').yields(null);
-            return context.initializeInner()
-                .then(() => {
-                    sinon.assert.calledWith(context._initializeInner);
-                });
-        });
-
-        it('should call _initializeInner and handle an error', () => {
-            sinon.stub(context, '_initializeInner').yields(new Error('error'));
-            return context.initializeInner()
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(context._initializeInner);
-                });
-        });
-
-    });
-
-    describe('#_initializeInner', () => {
-
-        it('should not throw', () => {
-            const cb = sinon.stub();
-            context._initializeInner(cb);
-            sinon.assert.calledOnce(cb);
-            sinon.assert.calledWith(cb, null);
         });
 
     });
@@ -771,105 +367,39 @@ describe('Context', () => {
     });
 
     describe('#getModelManager', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getModelManager();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks model manager', () => {
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getModelManager.returns(mockModelManager);
-            context.getModelManager().should.equal(mockModelManager);
+            context.getModelManager().should.equal(testNetworkDefinition.getModelManager());
         });
-
     });
 
     describe('#getScriptManager', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getScriptManager();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks script manager', () => {
-            let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getScriptManager.returns(mockScriptManager);
-            context.getScriptManager().should.equal(mockScriptManager);
+            context.getScriptManager().should.equal(testNetworkDefinition.getScriptManager());
         });
-
     });
 
     describe('#getAclManager', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getAclManager();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks ACL manager', () => {
-            let mockAclManager = sinon.createStubInstance(AclManager);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getAclManager.returns(mockAclManager);
-            context.getAclManager().should.equal(mockAclManager);
+            context.getAclManager().should.equal(testNetworkDefinition.getAclManager());
         });
-
     });
 
     describe('#getFactory', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getFactory();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks model manager', () => {
-            let mockFactory = sinon.createStubInstance(Factory);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getFactory.returns(mockFactory);
-            context.getFactory().should.equal(mockFactory);
+            context.getFactory().should.equal(testNetworkDefinition.getFactory());
         });
-
     });
 
     describe('#getSerializer', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getSerializer();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks model manager', () => {
-            let mockSerializer = sinon.createStubInstance(Serializer);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getSerializer.returns(mockSerializer);
-            context.getSerializer().should.equal(mockSerializer);
+            context.getSerializer().should.equal(testNetworkDefinition.getSerializer());
         });
-
     });
 
     describe('#getIntrospector', () => {
-
-        it('should throw if not initialized', () => {
-            (() => {
-                context.getIntrospector();
-            }).should.throw(/must call initialize before calling this function/);
-        });
-
         it('should return the business networks model manager', () => {
-            let mockIntrospector = sinon.createStubInstance(Introspector);
-            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            context.businessNetworkDefinition.getIntrospector.returns(mockIntrospector);
-            context.getIntrospector().should.equal(mockIntrospector);
+            context.getIntrospector().should.equal(testNetworkDefinition.getIntrospector());
         });
-
     });
 
     describe('#getRegistryManager', () => {
@@ -932,7 +462,6 @@ describe('Context', () => {
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
-            context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
 
@@ -1128,26 +657,10 @@ describe('Context', () => {
         });
     });
 
-    describe('#getScriptCompiler', () => {
-
-        it('should return a new script compiler', () => {
-            context.getScriptCompiler().should.be.an.instanceOf(ScriptCompiler);
-        });
-
-        it('should return an existing script compiler', () => {
-            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            context.scriptCompiler = mockScriptCompiler;
-            context.getScriptCompiler().should.equal(mockScriptCompiler);
-        });
-
-    });
-
     describe('#getCompiledScriptBundle', () => {
 
         it('should return the compiled script bundle', () => {
-            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            context.compiledScriptBundle = mockCompiledScriptBundle;
-            context.getCompiledScriptBundle().should.equal(mockCompiledScriptBundle);
+            context.getCompiledScriptBundle().should.be.an.instanceOf(CompiledScriptBundle);
         });
 
     });
@@ -1169,9 +682,7 @@ describe('Context', () => {
     describe('#getCompiledQueryBundle', () => {
 
         it('should return the compiled query bundle', () => {
-            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
-            context.compiledQueryBundle = mockCompiledQueryBundle;
-            context.getCompiledQueryBundle().should.equal(mockCompiledQueryBundle);
+            context.getCompiledQueryBundle().should.be.an.instanceOf(CompiledQueryBundle);
         });
 
     });
@@ -1192,10 +703,8 @@ describe('Context', () => {
 
     describe('#getCompiledAclBundle', () => {
 
-        it('should return the compiled query bundle', () => {
-            let mockCompiledAclBundle = sinon.createStubInstance(CompiledAclBundle);
-            context.compiledAclBundle = mockCompiledAclBundle;
-            context.getCompiledAclBundle().should.equal(mockCompiledAclBundle);
+        it('should return the compiled acl bundle', () => {
+            context.getCompiledAclBundle().should.be.an.instanceOf(CompiledAclBundle);
         });
 
     });
@@ -1349,4 +858,18 @@ describe('Context', () => {
             }).should.throw(/abstract function called/);
         });
     });
+
+    describe('#getBusinessNetworkDefinition', () => {
+        it('should return business network', () => {
+            context.getBusinessNetworkDefinition().should.equal(testNetworkDefinition);
+        });
+    });
+
+    describe('#getBusinessNetworkArchive', () => {
+        it('should return business network archive', () => {
+            const archive = context.getBusinessNetworkArchive();
+            return BusinessNetworkDefinition.fromArchive(archive).should.be.fulfilled;
+        });
+    });
+
 });

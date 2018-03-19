@@ -39,7 +39,7 @@ rm -f ./composer-report-*
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
     cd ../composer-runtime-hlfv1
-    rm .npmrc
+    rm /tmp/npmrc
     cd "${DIR}"
 fi
 
@@ -99,7 +99,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
         fi
-        echo registry=http://${GATEWAY}:4873 > .npmrc
+        echo registry=http://${GATEWAY}:4873 > /tmp/npmrc
         echo fetch-retries=10 >> .npmrc
     fi
 
@@ -182,7 +182,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -f ./composer-report-*
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
-        rm .npmrc
+        rm /tmp/npmrc
         cd "${DIR}"
     fi
 

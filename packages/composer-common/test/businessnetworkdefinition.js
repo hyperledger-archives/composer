@@ -17,8 +17,13 @@
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const ModelFile = require('../lib/introspect/modelfile');
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const JSZip = require('jszip');
 const moxios = require('moxios');
+const nodeUtil = require('util');
+
+const rimraf = nodeUtil.promisify(require('rimraf'));
 
 const chai = require('chai');
 const should = chai.should();
@@ -33,6 +38,17 @@ describe('BusinessNetworkDefinition', () => {
     let baseModel = fs.readFileSync('./test/data/model/base.cto', 'utf8');
     let addressModel = fs.readFileSync('./test/data/model/address.cto', 'utf8');
     let organizationModel = fs.readFileSync('./test/data/model/organization.cto', 'utf8');
+
+    /**
+     * Assert that the persistent representation of two business networks is the same.
+     * @param {BusinessNetworkDefinition} actual The actual value.
+     * @param {BusinessNetworkDefinition} expected The expected value.
+     */
+    function assertBusinessNetworkEquals(actual, expected) {
+        const actualFiles = actual._getAllArchiveFiles();
+        const expectedFiles = expected._getAllArchiveFiles();
+        actualFiles.should.deep.equal(expectedFiles);
+    }
 
     beforeEach(() => {
         businessNetworkDefinition = new BusinessNetworkDefinition('id@1.0.0', 'description');
@@ -352,8 +368,36 @@ describe('BusinessNetworkDefinition', () => {
             });
         });
 
+        it('should write a valid archive directory', () => {
+            const bnaPath = fs.mkdtempSync(path.join(os.tmpdir(), 'composer-test-bna-'));
+            const rimrafOptions = { disableGlob: true };
 
-    } );
+            let sourceNetwork;
+            let savedNetwork;
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive')
+                .then(businessNetwork => {
+                    sourceNetwork = businessNetwork;
+                    return sourceNetwork.toDirectory(bnaPath);
+                }).then(() => {
+                    return BusinessNetworkDefinition.fromDirectory(bnaPath);
+                }).then(businessNetwork => {
+                    savedNetwork = businessNetwork;
+                    return rimraf(bnaPath, rimrafOptions);
+                }).then(() => {
+                    assertBusinessNetworkEquals(savedNetwork, sourceNetwork);
+                });
+        });
+
+        it('should not fail on load with bad dependencies if dependency processing disabled', () => {
+            const bnaDirectory = path.join(__dirname, 'data', 'zip', 'test-archive-broken-dependency');
+            return BusinessNetworkDefinition.fromDirectory(bnaDirectory, { processDependencies: false })
+                .should.be.fulfilled.then(result => {
+                    result.should.be.BusinessNetworkDefinition;
+                });
+        });
+
+    });
 
     describe('#usingArchives', () => {
 

@@ -50,26 +50,26 @@ You can list all of the cards you have installed at any time by running the foll
 composer card list
 ```
 
-### 2. Prepare the {{site.data.conrefs.hlf_full}} peers for your BNA
+### 2. Prepare the {{site.data.conrefs.hlf_full}} peers
 
 In order to install the Business Network Archive onto the {{site.data.conrefs.hlf_full}} network you need to prepare the peers with the underlying Composer runtime.
 
-You will need to have the name of the Business Network to do this, below you can see an example with `tutorial-network` along with the 'PeerAdmin' card for your deployment.
+You will need to have the Business Network archive to do this, below you can see an example with `tutorial-network` along with the 'PeerAdmin' card for your deployment.
 
 ```
-composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
+composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
 ```
 
-### 3. Deploy your BNA onto your {{site.data.conrefs.hlf_full}}
+### 3. Start your Business Network on your {{site.data.conrefs.hlf_full}}
 
 It is recommended you start with a clean directory. Move your BNA into that directory and change your terminal directory to it.
 
-We will use the `composer network start` command to deploy the BNA onto {{site.data.conrefs.hlf_full}}, we will need to use our `PeerAdmin` card to do this. We will also need to create a user on our network, we will use an "Admin" username and password to get started.
+We will use the `composer network start` command to start the business network, we will need to use our `PeerAdmin` card to do this. We will also need to create a user on our network, we will use an "Admin" username and password to get started.
 
 Below is an example using a `tutorial-network` BNA.
 
 ```bash
-composer network start -a tutorial-network.bna -A admin -S adminpw -c PeerAdmin@hlfv1
+composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1
 ```
 
 This will create an 'admin' card for the business network, which for the previous example is `admin@tutorial-network.card`

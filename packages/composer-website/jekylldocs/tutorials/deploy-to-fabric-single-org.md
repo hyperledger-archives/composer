@@ -367,19 +367,19 @@ We are going to deploy the blockchain business network `tutorial-network` that i
 
 In this step, you will install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode install operation.
 
-Run the `composer runtime install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
+Run the `composer network install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
 
-    composer runtime install -c PeerAdmin@fabric-network -n tutorial-network
+    composer network install -c PeerAdmin@fabric-network -a tutorial-network@0.0.1.bna
 
-Let's explore the options that we passed to the `composer runtime install` command.
+Let's explore the options that we passed to the `composer network install` command.
 
     -c PeerAdmin@fabric-network
 
 This is the name of the business network card that we imported into the wallet in step six.
 
-    -n tutorial-network
+    -a tutorial-network@0.0.1.bna
 
-You must install a copy of the {{site.data.conrefs.composer_full}} runtime for each blockchain business network, and specify the name of the blockchain business network. Here we specify the name of the blockchain business network that we are deploying, `tutorial-network`.
+You must install a copy of the business network. Here we specify the file name of the blockchain business network that we are deploying, `tutorial-network@0.0.1.bna`.
 
 ## Step Eight: Starting the blockchain business network
 
@@ -387,7 +387,7 @@ In this step, you will start the blockchain business network. In {{site.data.con
 
 Run the `composer network start` command to start the blockchain business network:
 
-    composer network start -c PeerAdmin@fabric-network -a tutorial-network.bna -A admin -S adminpw
+    composer network start --networkName tutorial-network --networkVersion 0.0.1 -A admin -S adminpw -c PeerAdmin@fabric-network
 
 Let's explore the options that we passed to the `composer network start` command.
 
@@ -395,9 +395,13 @@ Let's explore the options that we passed to the `composer network start` command
 
 This is the name of the business network card that we imported into the wallet in step six.
 
-    -a tutorial-network.bna
+    --networkName tutorial-network
 
-This is the path to the business network archive that contains the business network definition for our blockchain business network called `tutorial-network`.
+This is the name of blockchain business network called `tutorial-network`.
+
+    --networkVersion 0.0.1
+
+This is the version of blockchain business network called `tutorial-network`, defined in the `version` property of the package.json for the business network
 
     -A admin
 

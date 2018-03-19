@@ -28,6 +28,7 @@ const Select = require('composer-common').Select;
 const Skip = require('composer-common').Skip;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const Where = require('composer-common').Where;
+const IndexCompiler = require('./indexcompiler');
 
 const LOG = Logger.getLog('QueryCompiler');
 
@@ -174,13 +175,15 @@ class QueryCompiler {
 
         // Generate a hash for the query.
         const hash = this.generateQueryHash(query);
+        const indexCompiler = new IndexCompiler();
 
         // Generate a result object containing all the data.
         const result = {
             name: query.getName(),
             text: select.getText(),
             hash: hash,
-            generator: compiledQueryGenerator
+            generator: compiledQueryGenerator,
+            index: indexCompiler.compile(query)
         };
 
         LOG.exit(method, result);
@@ -369,14 +372,25 @@ class QueryCompiler {
         LOG.entry(method, orderBy, parameters);
 
         // Iterate over the sort criteria.
-        const result = {
-            sort: []
-        };
+
+        let fields = ['\\$class','\\$registryType','\\$registryId'];
+        let direction = null;
         orderBy.getSortCriteria().forEach((sort) => {
-            const temp = {};
-            temp[sort.getPropertyPath()] = sort.getDirection().toLowerCase();
-            result.sort.push(temp);
+            if(direction === null) {
+                direction = sort.getDirection().toLowerCase();
+            } else if(direction !== sort.getDirection().toLowerCase()) {
+                throw new Error('ORDER BY currently only supports a single direction for all fields.');
+            }
+            fields.push(sort.getPropertyPath());
         });
+
+        const result = {
+            sort: fields.map(field => {
+                const term = {};
+                term[field] = direction;
+                return term;
+            })
+        };
 
         LOG.exit(method, result);
         return result;

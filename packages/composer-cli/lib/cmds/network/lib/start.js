@@ -14,141 +14,73 @@
 
 'use strict';
 
-const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
-const fs = require('fs');
 const ora = require('ora');
 const Export = require('../../card/lib/export');
 
 /**
- * <p>
  * Composer start command
- * </p>
  * @private
  */
 class Start {
-
    /**
     * Command process for start command
     * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
-    * @return {Promise} promise when command complete
     */
-    static handler(argv) {
+    static async handler(argv) {
+        const cardName = argv.card;
+        const networkName = argv.networkName;
+        const networkVersion = argv.networkVersion;
+        const logLevel = argv.loglevel;
 
-        let businessNetworkDefinition;
+        cmdUtil.log(chalk.blue.bold(`Starting business network ${networkName} at version ${networkVersion}`));
+        cmdUtil.log('');
 
-        let adminConnection;
-        let businessNetworkName;
-        let spinner;
-        let logLevel = argv.loglevel;
-        let cardName = argv.card;
-
-        let networkAdmins;
-
-        // needs promise resolve here in case the archive errors
-        return Promise.resolve().then(() => {
-            cmdUtil.log(chalk.blue.bold('Starting business network from archive: ')+argv.archiveFile);
-            let archiveFileContents = null;
-            // Read archive file contents
-            archiveFileContents = Start.getArchiveFileContents(argv.archiveFile);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
-        })
-        .then ((result) => {
-            businessNetworkDefinition = result;
-            businessNetworkName = businessNetworkDefinition.getIdentifier();
-            cmdUtil.log(chalk.blue.bold('Business network definition:'));
-            cmdUtil.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
-            cmdUtil.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
-            cmdUtil.log('');
-            adminConnection = cmdUtil.createAdminConnection();
-
-            return adminConnection.connect(cardName);
-        })
-        .then(() => {
-            // Build the start options.
-            let startOptions = cmdUtil.parseOptions(argv);
-            if (logLevel) {
-                startOptions.logLevel = logLevel;
-            }
-
-            // grab the network admins
-            // what we want is an array of the following
-            // {userName, certificate, secret, file}
-            startOptions.networkAdmins = networkAdmins = cmdUtil.parseNetworkAdmins(argv);
-            cmdUtil.log(chalk.bold.blue('Processing these Network Admins: '));
-            startOptions.networkAdmins.forEach((e)=>{
-                cmdUtil.log(chalk.blue('\tuserName: ')+e.userName);
-            });
-            cmdUtil.log('');
-
-            spinner = ora('Starting business network definition. This may take a minute...').start();
-                // Start the business network.
-
-            return adminConnection.start(businessNetworkDefinition, startOptions);
-        }).then((result) => {
-            let promises = [];
-            for (let card of result.values()){
-                // does the card have it's own business network
-                // check the networkAdmins for matching name and return the file
-                let fileName;
-                let adminMatch = networkAdmins.find( (e)=>{
-                    return (e.userName === card.getUserName());
-                });
-
-                if (adminMatch){
-                    fileName = adminMatch.file;
-                }
-
-                if (!fileName){
-                    let bnn = card.getBusinessNetworkName();
-                    if (bnn){
-                        fileName = card.getUserName()+'@'+ bnn +'.card';
-                    } else {
-                        let cpn = card.getConnectionProfile().name;
-                        fileName = card.getUserName()+'@'+ cpn +'.card';
-                    }
-                }
-
-                promises.push( Export.writeCardToFile(fileName,card)
-                        .then(()=>{
-                            return fileName;
-                        }));
-            }
-
-            return Promise.all(promises);
-        }).then((result)=>{
-            spinner.succeed();
-            let cards = cmdUtil.arrayify(result);
-            cmdUtil.log(chalk.bold.blue('Successfully created business network card'+(cards.length>1? 's:':':')));
-            cards.forEach((e)=>{
-                cmdUtil.log(chalk.blue('\tFilename: ')+e);
-            });
-
-            return result;
-        }).catch((error) => {
-            if (spinner) {
-                spinner.fail();
-            }
-            throw error;
-        });
-    }
-
-    /**
-      * Get contents from archive file
-      * @param {string} archiveFile connection profile name
-      * @return {String} archiveFileContents archive file contents
-      */
-    static getArchiveFileContents(archiveFile) {
-        let archiveFileContents;
-        if (fs.existsSync(archiveFile)) {
-            archiveFileContents = fs.readFileSync(archiveFile);
-        } else {
-            throw new Error('Archive file '+archiveFile+' does not exist.');
+        // Build the start options.
+        const startOptions = cmdUtil.parseOptions(argv);
+        if (logLevel) {
+            startOptions.logLevel = logLevel;
         }
-        return archiveFileContents;
+
+        // grab the network admins
+        // what we want is an array of the following
+        // {userName, certificate, secret, file}
+        const networkAdmins = cmdUtil.parseNetworkAdmins(argv);
+        startOptions.networkAdmins = networkAdmins;
+        cmdUtil.log(chalk.bold.blue('Processing these Network Admins: '));
+        networkAdmins.forEach(e => {
+            cmdUtil.log(chalk.blue('\tuserName: ') + e.userName);
+        });
+        cmdUtil.log('');
+
+        const spinner = ora('Starting business network definition. This may take a minute...').start();
+        try {
+            const adminConnection = cmdUtil.createAdminConnection();
+            await adminConnection.connect(cardName);
+
+            const adminCardMap = await adminConnection.start(networkName, networkVersion, startOptions);
+            const writeNetworkAdminCardPromises = Array.from(adminCardMap.values()).map(card => {
+                // check the networkAdmins for matching name and return the file
+                const adminMatch = networkAdmins.find(e => (e.userName === card.getUserName()));
+                const fileName = (adminMatch && adminMatch.file) || cmdUtil.getDefaultCardName(card) + '.card';
+                return Export.writeCardToFile(fileName, card).then(() => fileName);
+            });
+
+            const cardFileNames = await Promise.all(writeNetworkAdminCardPromises);
+
+            spinner.succeed();
+            cmdUtil.log(chalk.bold.blue('Successfully created business network card'+(cardFileNames.length>1? 's:':':')));
+            cardFileNames.forEach(e => {
+                cmdUtil.log(chalk.blue('\tFilename: ') + e);
+            });
+        } catch (error) {
+            spinner.fail();
+            throw error;
+        }
     }
+
 }
+
 module.exports = Start;

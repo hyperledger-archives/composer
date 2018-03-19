@@ -16,8 +16,9 @@
 
 const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
-const Engine = require('composer-runtime').Engine;
+const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const NodeContainer = require('./nodecontainer');
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Composer');
@@ -26,18 +27,33 @@ const LOG = Logger.getLog('Composer');
  * This is the composer chaincode that implements the
  * interface required by the chaincode shim.
  *
- *
  * @class Composer
  */
 class Composer {
 
     /**
-     * Creates an instance of Composer chaincode.
+     * Initial set up of Composer on a peer, including starting the Fabric shim.
+     * Should be called (only) from the peer startup script.
      */
-    constructor() {
+    static async start() {
+        try {
+            const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.', { processDependencies: false });
+            const installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+            shim.start(new Composer(installedBusinessNetwork));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /**
+     * Creates an instance of Composer chaincode.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork installed business network information information
+     */
+    constructor(installedBusinessNetwork) {
         const method = 'constructor';
-        LOG.entry(method);
+        LOG.entry(method, installedBusinessNetwork);
         this.container = new NodeContainer();
+        this.installedBusinessNetwork = installedBusinessNetwork;
         LOG.exit(method);
     }
 
@@ -58,7 +74,7 @@ class Composer {
      * @return {NodeContext} an instance of the Composer context.
      */
     _createContext(engine, stub) {
-        return new NodeContext(engine, stub);
+        return new NodeContext(engine, stub, this.installedBusinessNetwork);
     }
 
     /**

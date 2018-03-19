@@ -14,43 +14,46 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
 const ora = require('ora');
 
 /**
- * <p>
  * Composer upgrade command
- * </p>
  * @private
  */
 class Upgrade {
-
    /**
     * Command process for upgrade command
     * @param {string} argv argument list from composer command
-    * @return {Promise} promise when command complete
     */
-    static handler(argv) {
+    static async handler(argv) {
+        const cardName = argv.card;
+        const networkName = argv.networkName;
+        const networkVersion = argv.networkVersion;
+        const logLevel = argv.loglevel;
 
-        let adminConnection;
-        let spinner;
+        cmdUtil.log(chalk.blue.bold(`Upgrading business network ${networkName} to version ${networkVersion}`));
+        cmdUtil.log('');
 
-        let cardName = argv.card;
+        // Build the upgrade options.
+        const upgradeOptions = cmdUtil.parseOptions(argv);
+        if (logLevel) {
+            upgradeOptions.logLevel = logLevel;
+        }
 
-        spinner = ora('Upgrading runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
-        adminConnection = cmdUtil.createAdminConnection();
-        return adminConnection.connect(cardName)
-        .then((result) => {
-            let upgradeOptions = cmdUtil.parseOptions(argv);
-            return adminConnection.upgrade(argv.businessNetworkName, upgradeOptions);
-        }).then((result) => {
+        const spinner = ora('Upgrading business network definition. This may take a minute...').start();
+        try {
+            const adminConnection = cmdUtil.createAdminConnection();
+            await adminConnection.connect(cardName);
+            await adminConnection.upgrade(networkName, networkVersion, upgradeOptions);
             spinner.succeed();
-            return result;
-        }).catch((error) => {
+        } catch (error) {
             spinner.fail();
             throw error;
-        });
+        }
     }
+
 }
 
 module.exports = Upgrade;
