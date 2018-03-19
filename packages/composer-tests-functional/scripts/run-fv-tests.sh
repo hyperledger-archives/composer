@@ -149,8 +149,8 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     fi
 
     # remove the npm pack files
-    rm ../composer-common/composer-common-*.tgz
-    rm ../composer-runtime/composer-runtime-*.tgz
-    rm ../composer-runtime-hlfv1/composer-runtime-hlfv1-*.tgz
+    rm ../composer-common/composer-common-*.tgz || true
+    rm ../composer-runtime/composer-runtime-*.tgz || true
+    rm ../composer-runtime-hlfv1/composer-runtime-hlfv1-*.tgz || true
 
 done
