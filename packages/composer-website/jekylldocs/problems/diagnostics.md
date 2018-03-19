@@ -83,7 +83,7 @@ The following are examples of **debug control strings**:
 * `-composer:BusinessNetworkConnection,composer[error]:*` Do not trace anything in the BusinessNetworkConnection class, but do trace anywhere else that has errors.
 
 
-### Log output location for applications
+### Log output location
 
 The details of where the files are written are controlled as follows.
 
@@ -125,7 +125,7 @@ This example does several things.
 
 #### Shortcuts
 
-The config file above, can be specified as a single environment variable on the command line.
+The preceding config file can be specified as a single environment variable on the command line.
 
 ```
 NODE_CONFIG=' { .... JSON HERE  } '
@@ -193,10 +193,7 @@ The 'setLogLevel' and 'getLogLevel' transactions, can be used to set/get the val
 For example issuing the command to get the log level in a fresh setup:
 
 ```
-$> composer network loglevel --card admin@bsn-local                                                                                                              
-The current logging level is: composer[error]:*
-
-Command succeeded
+composer network loglevel --card admin@bsn-local                                                                                                              
 ```
 
 This can then be modified to say include all debug level log points from the TransactionHandler but still errors everywhere else
