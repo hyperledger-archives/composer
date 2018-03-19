@@ -319,11 +319,6 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">Delete an existing card</td>
 </tr>
 <tr>
-<td style="text-align: left"><a href="#deploy">deploy</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric</td>
-</tr>
-<tr>
 <td style="text-align: left"><a href="#disconnect">disconnect</a></td>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Disconnects this connection</td>
@@ -356,7 +351,7 @@ Calling an api after disconnect and before connect will give an error.</p>
 <tr>
 <td style="text-align: left"><a href="#install">install</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation for the business network to be started</td>
+<td style="text-align: left">Installs a business network as chaincode to Hyperledger Fabric in preparation for the business network to be started</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#list">list</a></td>
@@ -386,17 +381,12 @@ Calling an api after disconnect and before connect will give an error.</p>
 <tr>
 <td style="text-align: left"><a href="#undeploy">undeploy</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#update">update</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric</td>
+<td style="text-align: left">Undeploys a business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#upgrade">upgrade</a></td>
 <td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Upgrades an existing business network&#39;s composer runtime to a later level</td>
+<td style="text-align: left">Upgrades an existing business network to a later level</td>
 </tr>
 </tbody></table>
 
@@ -676,9 +666,10 @@ The connection profile must exist in the profile store.</p>
 </code></pre></div>
 <h2 id="install">install</h2>
 
-<p><em>Promise install( String businessnetworkname, Object installoptions )</em></p>
+<p><em>Promise install( String businessnetworkdefinition, Object installoptions )</em></p>
 
-<p>Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation for the business network to be started. The connection must be connected for this method to succeed. You must pass the name of the business network that is defined in your archive that this runtime will be started with.</p>
+<p>Installs a business network as chaincode to Hyperledger Fabric in preparation for the business network to be started.
+The connection must be connected for this method to succeed.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Install the Hyperledger Composer runtime</span>
@@ -686,15 +677,15 @@ The connection profile must exist in the profile store.</p>
 <span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span>
-    <span class="c1">// Business network definition installed</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
+   <span class="c1">// Business network installed</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been installed</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -709,10 +700,10 @@ The connection profile must exist in the profile store.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>businessNetworkName</strong></td>
+<td style="text-align: left"><strong>businessNetworkDefinition</strong></td>
 <td style="text-align: left">String</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of business network which will be used to start this runtime.</td>
+<td style="text-align: left">The business network to be installed</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>installOptions</strong></td>
@@ -728,25 +719,24 @@ The connection profile must exist in the profile store.</p>
 <span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span>
-    <span class="c1">// Business network definition installed</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
+   <span class="c1">// Business network installed</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="start">start</h2>
 
-<p><em>Promise start( BusinessNetworkDefinition businessnetworkdefinition, [Object startoptions] )</em></p>
+<p><em>Promise start( String networkname, String networkversion, [Object startoptions] )</em></p>
 
 <p>Starts a business network within the runtime previously installed to the Hyperledger Fabric with the same name as the business network to be started. The connection must be connected for this method to succeed.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Start a Business Network Definition</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
     <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span>
+    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">networkName</span><span class="p">,</span> <span class="nx">networkVersion</span><span class="p">,</span>
              <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span>
                  <span class="p">[</span> <span class="p">{</span><span class="na">userName</span> <span class="p">:</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="na">enrollmentSecret</span><span class="p">:</span><span class="s1">'adminpw'</span><span class="p">}</span> <span class="p">]</span>
              <span class="p">}</span>
@@ -773,10 +763,16 @@ The connection profile must exist in the profile store.</p>
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>businessNetworkDefinition</strong></td>
-<td style="text-align: left">BusinessNetworkDefinition</td>
+<td style="text-align: left"><strong>networkName</strong></td>
+<td style="text-align: left">String</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The business network to start</td>
+<td style="text-align: left">Name of the business network to start</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>networkVersion</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Version of the business network to start</td>
 </tr>
 <tr>
 <td style="text-align: left"><strong>startOptions</strong></td>
@@ -789,181 +785,14 @@ The connection profile must exist in the profile store.</p>
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Start a Business Network Definition</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
 <span class="k">try</span> <span class="p">{</span>
     <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span>
+    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">networkName</span><span class="p">,</span> <span class="nx">networkVersion</span><span class="p">,</span>
              <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span>
                  <span class="p">[</span> <span class="p">{</span><span class="na">userName</span> <span class="p">:</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="na">enrollmentSecret</span><span class="p">:</span><span class="s1">'adminpw'</span><span class="p">}</span> <span class="p">]</span>
              <span class="p">}</span>
 
     <span class="c1">// Business network definition is started</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h2 id="deploy">deploy</h2>
-
-<p><em>Promise deploy( BusinessNetworkDefinition businessnetworkdefinition, Object deployoptions )</em></p>
-
-<p>Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must be connected for this method to succeed.</p>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Deploy a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">deploy</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span>
-   <span class="c1">// Business network definition deployed</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="returns">Returns</h3>
-
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>businessNetworkDefinition</strong></td>
-<td style="text-align: left">BusinessNetworkDefinition</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The business network to deploy</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>deployOptions</strong></td>
-<td style="text-align: left">Object</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">connector specific deployment options                deployOptions.card the card to use for the NetworkAdmin</td>
-</tr>
-</tbody></table>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Deploy a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">deploy</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span>
-   <span class="c1">// Business network definition deployed</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h2 id="undeploy">undeploy</h2>
-
-<p><em>Promise undeploy( String businessnetworkname )</em></p>
-
-<p>Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no longer be able to process transactions.</p>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Undeploy a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">undeploy</span><span class="p">(</span><span class="s1">'network-name'</span><span class="p">)</span>
-   <span class="c1">// Undeployed Business Network Definition</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="returns">Returns</h3>
-
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been undeployed.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>businessNetworkName</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The name of business network that will be used to start this runtime.</td>
-</tr>
-</tbody></table>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Undeploy a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">undeploy</span><span class="p">(</span><span class="s1">'network-name'</span><span class="p">)</span>
-   <span class="c1">// Undeployed Business Network Definition</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h2 id="update">update</h2>
-
-<p><em>Promise update( BusinessNetworkDefinition businessnetworkdefinition )</em></p>
-
-<p>Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition must have been previously deployed.</p>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Updates a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span>
-   <span class="c1">// Business network definition updated</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="returns">Returns</h3>
-
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been updated.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>businessNetworkDefinition</strong></td>
-<td style="text-align: left">BusinessNetworkDefinition</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The new BusinessNetworkDefinition</td>
-</tr>
-</tbody></table>
-
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Updates a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span>
-   <span class="c1">// Business network definition updated</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
     <span class="c1">// Add optional error handling here.</span>
 <span class="p">}</span>
@@ -1025,16 +854,16 @@ Note this will remove ALL the contents of the network registries, but not any sy
 </code></pre></div>
 <h2 id="upgrade">upgrade</h2>
 
-<p><em>Promise upgrade( string businessnetworkname, [object upgradeoptions] )</em></p>
+<p><em>Promise upgrade( string businessnetworkname, string businessnetworkversion, [object upgradeoptions] )</em></p>
 
-<p>Upgrades an existing business network&#39;s composer runtime to a later level. The connection must be connected specifying the business network identifier as part of the connection for this method to succeed.</p>
+<p>Upgrades an existing business network to a later level.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Upgrade the Hyperledger Composer runtime</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">);</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'PeerAdmin@hlfv1'</span><span class="p">)</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'2.0.0'</span><span class="p">);</span>
 
    <span class="c1">// Business network definition upgraded</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -1064,6 +893,12 @@ Note this will remove ALL the contents of the network registries, but not any sy
 <td style="text-align: left">The name of the business network</td>
 </tr>
 <tr>
+<td style="text-align: left"><strong>businessNetworkVersion</strong></td>
+<td style="text-align: left">string</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The version of the business network</td>
+</tr>
+<tr>
 <td style="text-align: left"><strong>upgradeOptions</strong></td>
 <td style="text-align: left">object</td>
 <td style="text-align: left"><em>Yes</em></td>
@@ -1075,14 +910,44 @@ Note this will remove ALL the contents of the network registries, but not any sy
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Upgrade the Hyperledger Composer runtime</span>
 <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
 <span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">);</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'PeerAdmin@hlfv1'</span><span class="p">)</span>
+   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'2.0.0'</span><span class="p">);</span>
 
    <span class="c1">// Business network definition upgraded</span>
 <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
    <span class="c1">// Add error handling here.</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="undeploy">undeploy</h2>
+
+<p><em>Promise undeploy( String businessnetworkname )</em></p>
+
+<p>Undeploys a business network. <p> <strong>Note: this this currently not supported with Hyperledger Fabric and will throw an error.</strong></p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been undeployed.</p>
+
+<h3 id="see-also">See also</h3>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>businessNetworkName</strong></td>
+<td style="text-align: left">String</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The name of business network to remove.</td>
+</tr>
+</tbody></table>
+
 <h2 id="ping">ping</h2>
 
 <p><em>Promise ping(  )</em></p>
