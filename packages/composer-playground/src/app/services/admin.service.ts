@@ -31,11 +31,6 @@ export class AdminService {
 
     constructor(private alertService: AlertService,
                 private businessNetworkCardStoreService: BusinessNetworkCardStoreService) {
-        Logger.setFunctionalLogger({
-            // tslint:disable-next-line:no-empty
-            log: () => {
-            }
-        });
         // The proxy connection manager defaults to http://localhost:15699,
         // but that is not suitable for anything other than development.
         if (ENV && ENV !== 'development') {

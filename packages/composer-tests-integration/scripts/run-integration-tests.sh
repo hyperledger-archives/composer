@@ -69,10 +69,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         else
             DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
         fi
-        docker pull hyperledger/fabric-peer:$ARCH-1.1.0-rc1
-        docker pull hyperledger/fabric-ca:$ARCH-1.1.0-rc1
-        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0-rc1
-        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0-rc1
+        docker pull hyperledger/fabric-peer:$ARCH-1.1.0
+        docker pull hyperledger/fabric-ca:$ARCH-1.1.0
+        docker pull hyperledger/fabric-ccenv:$ARCH-1.1.0
+        docker pull hyperledger/fabric-orderer:$ARCH-1.1.0
         docker pull hyperledger/fabric-couchdb:$ARCH-0.4.6
         if [ -d ./hlfv1/crypto-config ]; then
             rm -rf ./hlfv1/crypto-config
@@ -143,9 +143,9 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
-        npm run int-test-nohsm 2>&1 || :
+        npm run int-test-nohsm 2>&1 | tee
     else
-        npm run int-test 2>&1 || :
+        npm run int-test 2>&1 | tee
     fi
 
     # Stop all test programs.
@@ -178,7 +178,6 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ./my-bus-net
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
-    rm ./*.tgz
     rm -f ./networkadmin.card
     rm -f ./composer-report-*
     if [ "${DOCKER_FILE}" != "" ]; then

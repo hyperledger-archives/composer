@@ -834,14 +834,16 @@ class TestUtil {
      * @param {string} cardName - the name of the card to create when deploying
      * @param {boolean} otherChannel - if the non default channel should be used to deploy to
      * @param {boolean} [forceDeploy_] - force use of the deploy API instead of install and start.
+     * @param {int} retryCount, current retry number
      * @return {Promise} - a promise that will be resolved when complete.
      */
-    static deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy_) {
+    static deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy_, retryCount) {
         // do not believe there is any code left doing forceDeploy_
         if (forceDeploy_) {
             throw new Error('this should not be deploying');
         }
 
+        retryCount = retryCount || 0;
         cardName = cardName || 'admincard';
         let adminConnection = new AdminConnection({cardStore:cardStoreForDeploy});
         forceDeploy = forceDeploy_;
@@ -976,6 +978,13 @@ class TestUtil {
                     return adminConnection.disconnect();
                 }).then(() => {
                     return cardStoreForDeploy;
+                })
+                .catch((err) => {
+                    if (retryCount >= this.retries) {
+                        throw(err);
+                    } else {
+                        this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
+                    }
                 });
         } else if (TestUtil.isHyperledgerFabricV1() && forceDeploy) {
             throw new Error('force deploy has been specified, this impl is not here anymore');
@@ -1023,6 +1032,13 @@ class TestUtil {
                     return adminConnection.disconnect();
                 }).then(() => {
                     return cardStoreForDeploy;
+                })
+                .catch((err) => {
+                    if (retryCount >= this.retries) {
+                        throw(err);
+                    } else {
+                        this.deploy(businessNetworkDefinition, cardName, otherChannel, forceDeploy, retryCount++);
+                    }
                 });
         } else if (forceDeploy) {
             throw new Error('should not be using ForceDeploy');

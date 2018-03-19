@@ -32,6 +32,7 @@ const FabricCAClientImpl = require('fabric-ca-client');
 const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('../lib/hlfconnectionmanager');
 const HLFSecurityContext = require('../lib/hlfsecuritycontext');
+const HLFQueryHandler = require('../lib/hlfqueryhandler');
 
 const path = require('path');
 const semver = require('semver');
@@ -47,10 +48,10 @@ chai.use(require('chai-as-promised'));
 
 describe('HLFConnection', () => {
 
-    const sandbox = sinon.sandbox.create();
+    let sandbox = sinon.sandbox.create();
 
     let mockConnectionManager, mockChannel, mockClient, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork;
-    let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3;
+    let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
     let connectOptions;
     let connection;
     let mockTransactionID, logWarnSpy;
@@ -88,7 +89,8 @@ describe('HLFConnection', () => {
         mockPeer3.getName.returns('Peer3');
         mockEventHub3 = sinon.createStubInstance(ChannelEventHub);
         mockEventHub3.getPeerAddr.returns('EventHub3');
-
+        mockQueryHandler = sinon.createStubInstance(HLFQueryHandler);
+        sandbox.stub(HLFConnection, 'createQueryHandler').returns(mockQueryHandler);
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', mockBusinessNetwork.getName(), {}, mockClient, mockChannel, mockCAClient);
     });
 
@@ -105,6 +107,23 @@ describe('HLFConnection', () => {
         });
 
     });
+
+    describe('#createQueryHandler', () => {
+
+        it('should create a new query handler', () => {
+            // restore the createQueryHandler implementation as by default it is mocked out.
+            sandbox.restore();
+            sandbox = sinon.sandbox.create();
+            let mockConnection = sinon.createStubInstance(HLFConnection);
+            mockConnection.getChannelPeersInOrg.returns([]);
+            mockConnection.channel = mockChannel;
+            mockChannel.getPeers.returns([]);
+            let queryHandler = HLFConnection.createQueryHandler(mockConnection);
+            queryHandler.should.be.an.instanceOf(HLFQueryHandler);
+        });
+
+    });
+
 
     describe('#_getLoggedInUser', () => {
 
@@ -541,12 +560,14 @@ describe('HLFConnection', () => {
             const header = { header: 'gooooal' };
             mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
             sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
+            //TODO: Really should be mocking out all the fs calls, so we don't just match a string for the paths
             return connection.install(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockClient.installChaincode);
                     sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodeType: 'node',
                         chaincodePath: sinon.match.string,
+                        metadataPath: sinon.match.string,
                         chaincodeVersion: mockBusinessNetwork.getVersion(),
                         chaincodeId: mockBusinessNetwork.getName(),
                         txId: mockTransactionID,
@@ -1568,99 +1589,22 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/invalid arg specified: 3.142/);
         });
 
-        it('should choose a valid peer from the same org', async () => {
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer3]);
-
+        it('should query chaincode and handle a good response', async () => {
             const response = Buffer.from('hello world');
-            mockChannel.queryByChaincode.resolves([response]);
+            mockQueryHandler.queryChaincode.withArgs(mockTransactionID, 'myfunc', ['arg1', 'arg2']).resolves(response);
+
             let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-            sinon.assert.calledOnce(mockChannel.queryByChaincode);
-            sinon.assert.calledWith(mockChannel.queryByChaincode, {
-                chaincodeId: mockBusinessNetwork.getName(),
-                chaincodeVersion: connectorPackageJSON.version,
-                txId: mockTransactionID,
-                fcn: 'myfunc',
-                args: ['arg1', 'arg2'],
-                targets: [mockPeer2]
-            });
+            sinon.assert.calledOnce(mockQueryHandler.queryChaincode);
             result.equals(response).should.be.true;
         });
 
-        it('should cache a valid peer', async () => {
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer3]);
-
-            const response = Buffer.from('hello world');
-            mockChannel.queryByChaincode.resolves([response]);
-            await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-            connection.queryPeer.should.equal(mockPeer2);
-            await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-            connection.queryPeer.should.equal(mockPeer2);
-            sinon.assert.calledTwice(mockChannel.queryByChaincode);
-            sinon.assert.alwaysCalledWith(mockChannel.queryByChaincode, {
-                chaincodeId: mockBusinessNetwork.getName(),
-                chaincodeVersion: connectorPackageJSON.version,
-                txId: mockTransactionID,
-                fcn: 'myfunc',
-                args: ['arg1', 'arg2'],
-                targets: [mockPeer2]
-            });
-            sinon.assert.calledOnce(connection.getChannelPeersInOrg);
-        });
-
-
-        it('should choose a valid peer from all peers if no suitable one in same org', async () => {
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(true);
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([]);
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
-
-            const response = Buffer.from('hello world');
-            mockChannel.queryByChaincode.resolves([response]);
-            let result = await connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-            sinon.assert.calledOnce(mockChannel.queryByChaincode);
-            sinon.assert.calledWith(mockChannel.queryByChaincode, {
-                chaincodeId: mockBusinessNetwork.getName(),
-                chaincodeVersion: connectorPackageJSON.version,
-                txId: mockTransactionID,
-                fcn: 'myfunc',
-                args: ['arg1', 'arg2'],
-                targets: [mockPeer3]
-            });
-            result.equals(response).should.be.true;
-        });
-
-        it('should throw if no suitable peers to query', () => {
-            mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer2.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            mockPeer3.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE).returns(false);
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([]);
-            mockChannel.getPeers.returns([mockPeer1, mockPeer2, mockPeer3]);
-
-            mockChannel.queryByChaincode.resolves([]);
-            return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/Unable to determine/);
-        });
-
-
-        it('should throw if no responses are returned', () => {
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer3]);
-
-            mockChannel.queryByChaincode.resolves([]);
-            return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/No payloads were returned from the query request/);
-        });
-
-        it('should throw any responses that are errors', () => {
-            sandbox.stub(connection, 'getChannelPeersInOrg').withArgs([FABRIC_CONSTANTS.NetworkConfig.CHAINCODE_QUERY_ROLE]).returns([mockPeer2, mockPeer3]);
-
-            const response = [ new Error('such error') ];
-            mockChannel.queryByChaincode.resolves(response);
+        it('should query chaincode and handle an error response', () => {
+            const response = new Error('such error');
+            mockQueryHandler.queryChaincode.withArgs(mockTransactionID, 'myfunc', ['arg1', 'arg2']).rejects(response);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/such error/);
 
         });
-
     });
 
     describe('#invokeChainCode', () => {

@@ -32,7 +32,6 @@ class Engine {
      */
     constructor(container) {
         this.container = container;
-        this.installLogger();
         const method = 'constructor';
         LOG.entry(method);
         LOG.exit(method);
@@ -51,27 +50,27 @@ class Engine {
      */
     installLogger() {
         let loggingService = this.container.getLoggingService();
-        let loggingProxy = {
-            log: (level, method, msg, args) => {
-                args = args || [];
-                let formattedArguments = args.map((arg) => {
-                    return String(arg);
-                }).join(', ');
-                switch (level) {
-                case 'debug':
-                    return loggingService.logDebug(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'warn':
-                    return loggingService.logWarning(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'info':
-                    return loggingService.logInfo(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'verbose':
-                    return loggingService.logDebug(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'error':
-                    return loggingService.logError(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                }
-            }
-        };
-        Logger.setFunctionalLogger(loggingProxy);
+        let loggerCfg = loggingService.getLoggerCfg();
+        Logger.setLoggerCfg(loggerCfg,true);
+
+    }
+
+    /** Internal method to set any log level
+     * @param {Context} context  Context to use
+     * @param {String} level logLevel String
+     *
+     * @return {Promise} resolved when set
+     */
+    _setLogLevel(context,level){
+        if (level){
+            return context.getLoggingService().getLoggerCfg()
+              .then((cfg)=>{
+                  let c =  Logger.setLoggerCfg(Object.assign(cfg,{debug:level}),true);
+                  return context.getLoggingService().setLoggerCfg(c);
+              });
+        }else {
+            return Promise.resolve();
+        }
     }
 
     /**
@@ -118,13 +117,13 @@ class Engine {
             throw new Error('The transaction data specified is not valid');
         }
 
-        // Extract and validate the optional log level property.
-        const logLevel = transactionData.logLevel;
-        if (logLevel) {
-            this.getContainer().getLoggingService().setLogLevel(logLevel);
-        }
+
+
 
         const dataService = context.getDataService();
+
+        // Extract and validate the optional log level property.
+        await this._setLogLevel(context, transactionData.logLevel);
         await context.transactionStart(false);
 
         LOG.debug(method, 'Storing metanetwork in $sysdata collection');
