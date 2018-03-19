@@ -577,7 +577,7 @@ describe('ConnectorServer', () => {
         });
 
         it('should install', () => {
-            mockConnection.install.withArgs(mockSecurityContext, businessNetworkIdentifier).resolves();
+            mockConnection.install.resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
             return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {}, cb)
@@ -588,6 +588,52 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledWith(cb, null);
                 });
         });
+
+        it('should install and provide option of npmrcFile when no install options', () => {
+            process.env.NPMRC_FILE='/tmp/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), null, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
+        it('should install and provide option of npmrcFile along with other install options', () => {
+            process.env.NPMRC_FILE='/tmp2/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {someopt: 'opt'}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp2/npmrc', someopt: 'opt'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
+        it('should not overwrite a provided npmrcFile entry', () => {
+            process.env.NPMRC_FILE='/tmp3/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {npmrcFile: '/tmp/npmrc'}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();

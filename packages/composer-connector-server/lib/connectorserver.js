@@ -384,6 +384,17 @@ class ConnectorServer {
             LOG.exit(method, null);
             return Promise.resolve();
         }
+
+        if (process.env.NPMRC_FILE) {
+            if (!installOptions) {
+                installOptions = {
+                    npmrcFile: process.env.NPMRC_FILE
+                };
+            } else if (!installOptions.npmrcFile) {
+                installOptions.npmrcFile = process.env.NPMRC_FILE;
+            }
+        }
+
         const networkArchiveBuffer = Buffer.from(networkArchiveBase64, 'base64');
         return BusinessNetworkDefinition.fromArchive(networkArchiveBuffer)
             .then(networkDefinition => {
