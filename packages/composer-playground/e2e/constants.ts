@@ -24,6 +24,8 @@ export class Constants {
 
     static readonly vlongwait = 240000;
 
+    static readonly vvlongwait = 320000;
+
     static readonly webPlaygroundPort = 3001;
     static readonly fabricPlaygroundPort = 3002;
 

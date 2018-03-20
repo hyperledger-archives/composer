@@ -147,33 +147,25 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public upgradeBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        let currentBusinessNetworkName = this.fileService.getBusinessNetworkName();
-        let currentBusinessNetworkDescription = this.fileService.getBusinessNetworkDescription();
+    public upgradeBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, peerCard: IdCard, channelCard: IdCard): Promise<void> {
+        let currentCardRef = this.identityCardService.getCurrentCardRef();
 
-        let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
-        packageJson.name = currentBusinessNetworkName;
-        packageJson.description = currentBusinessNetworkDescription;
+        let peerQpn = this.identityCardService.getQualifiedProfileName(peerCard.getConnectionProfile());
+        let peerCardRef = this.identityCardService.getCardRefFromIdentity(peerCard.getUserName(), peerCard.getBusinessNetworkName(), peerQpn);
 
-        let newNetwork = this.buildNetwork(currentBusinessNetworkName, currentBusinessNetworkDescription, packageJson, businessNetworkDefinition);
+        let channelQpn = this.identityCardService.getQualifiedProfileName(channelCard.getConnectionProfile());
+        let channelCardRef = this.identityCardService.getCardRefFromIdentity(channelCard.getUserName(), channelCard.getBusinessNetworkName(), channelQpn);
 
-        let cardName = this.identityCardService.getCurrentCardRef();
-        let card = this.identityCardService.getCurrentIdentityCard();
-
-        return this.adminService.connect(cardName, card, true)
+        return this.adminService.connect(peerCardRef, peerCard, true)
             .then(() => {
                 this.alertService.busyStatus$.next({
                     title: 'Installing Business Network',
                     force: true
                 });
-                return this.adminService.install(newNetwork);
+                return this.adminService.install(businessNetworkDefinition);
             })
             .then(() => {
-                let connectionProfile = card.getConnectionProfile();
-                let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                const channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
-                const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
-                return this.adminService.connect(channelAdminCardRef, channelAdminCard, true);
+                return this.adminService.connect(channelCardRef, channelCard, true);
             })
             .then(() => {
                 this.alertService.busyStatus$.next({
@@ -181,13 +173,15 @@ export class SampleBusinessNetworkService {
                     force: true
                 });
 
-                return this.adminService.upgrade(newNetwork.getName(), newNetwork.getVersion());
+                return this.adminService.upgrade(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion());
+            })
+            .then(() => {
+                // switch back to original card
+                let currentCard = this.identityCardService.getIdentityCard(currentCardRef);
+                return this.adminService.connect(currentCardRef, currentCard, true);
             })
             .then(() => {
                 return this.clientService.refresh();
-            })
-            .then(() => {
-                return this.adminService.reset(newNetwork.getName());
             })
             .then(() => {
                 this.alertService.busyStatus$.next(null);
