@@ -30,7 +30,7 @@ const User = require('fabric-client/lib/User.js');
 const TransactionID = require('fabric-client/lib/TransactionID');
 const FABRIC_CONSTANTS = require('fabric-client/lib/Constants');
 
-const QueryCompiler = require('composer-runtime').QueryCompiler;
+const IndexCompiler = require('composer-common').IndexCompiler;
 
 const LOG = Logger.getLog('HLFConnection');
 
@@ -418,8 +418,8 @@ class HLFConnection extends Connection {
 
         // write the query indexes to statedb/couchdb/indexes
         const queryManager = businessNetworkDefinition.getQueryManager();
-        const queryCompiler = new QueryCompiler();
-        const queries = queryCompiler.compile(queryManager);
+        const indexCompiler = new IndexCompiler();
+        const indexes = indexCompiler.compile(queryManager);
         let indexDir = path.join(installDir, 'statedb');
         fs.mkdirSync(indexDir);
         indexDir = path.join(indexDir, 'couchdb');
@@ -427,11 +427,11 @@ class HLFConnection extends Connection {
         indexDir = path.join(indexDir, 'indexes');
         fs.mkdirSync(indexDir);
 
-        queries.compiledQueries.forEach(query => {
-            const json = JSON.parse(query.index);
+        indexes.forEach(index => {
+            const json = index;
             const designDoc = json.ddoc + '.json';
             const indexFile = path.resolve(indexDir, designDoc);
-            this.fs.writeFileSync(indexFile, query.index);
+            this.fs.writeFileSync(indexFile, JSON.stringify(index));
         });
 
         // copy over a .npmrc file, should be part of the business network definition.

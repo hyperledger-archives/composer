@@ -28,7 +28,6 @@ const Select = require('composer-common').Select;
 const Skip = require('composer-common').Skip;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const Where = require('composer-common').Where;
-const IndexCompiler = require('./indexcompiler');
 
 const LOG = Logger.getLog('QueryCompiler');
 
@@ -175,7 +174,6 @@ class QueryCompiler {
 
         // Generate a hash for the query.
         const hash = this.generateQueryHash(query);
-        const indexCompiler = new IndexCompiler();
 
         // Generate a result object containing all the data.
         const result = {
@@ -183,7 +181,6 @@ class QueryCompiler {
             text: select.getText(),
             hash: hash,
             generator: compiledQueryGenerator,
-            index: indexCompiler.compile(query)
         };
 
         LOG.exit(method, result);
