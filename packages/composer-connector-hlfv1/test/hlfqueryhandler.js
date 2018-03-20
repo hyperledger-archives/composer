@@ -212,8 +212,9 @@ describe('HLFQueryHandler', () => {
             result.message.should.equal('such error');
         });
 
-        it('should throw any responses that are errors and UNAVAILABLE', () => {
+        it('should throw any responses that are errors and code 14 being unavailable.', () => {
             const response = new Error('14 UNAVAILABLE: Connect Failed');
+            response.code = 14;
             mockChannel.queryByChaincode.resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])

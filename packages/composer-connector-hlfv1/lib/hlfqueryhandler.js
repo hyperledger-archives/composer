@@ -147,8 +147,9 @@ class HLFQueryHandler {
         }
         const payload = payloads[0];
 
-        // assume that if it isn't an UNAVAILABLE entry then it was an error from the chaincode itself
-        if (payload instanceof Error && payload.message.includes('UNAVAILABLE')) {
+        // if it has a code value is 14, means unavailable, so throw that error
+        // code 2 looks like it is a chaincode response that was an error.
+        if (payload instanceof Error && payload.code && payload.code === 14) {
             throw payload;
         }
 
