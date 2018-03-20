@@ -87,7 +87,6 @@ class HLFQueryHandler {
             // peer to query.
             let failedPeer = this.queryPeerIndex;  // could be -1 if first attempt
             this.queryPeerIndex = -1;
-            //for (let i in this.allQueryPeers) {  // i is a string
             for (let i = 0; i < this.allQueryPeers.length && !success; i++) {
                 if (i === failedPeer) {
                     continue;
@@ -147,6 +146,12 @@ class HLFQueryHandler {
             throw new Error('No payloads were returned from the query request:' + functionName);
         }
         const payload = payloads[0];
+
+        // assume that if it isn't an UNAVAILABLE entry then it was an error from the chaincode itself
+        if (payload instanceof Error && payload.message.includes('UNAVAILABLE')) {
+            throw payload;
+        }
+
         LOG.exit(method, payload);
         return payload;
 

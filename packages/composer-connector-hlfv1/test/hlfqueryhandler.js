@@ -195,8 +195,8 @@ describe('HLFQueryHandler', () => {
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
-        it('should return any responses that are errors', async () => {
-            const response = [ new Error('such error') ];
+        it('should return any responses that are errors and not UNAVAILABLE', async () => {
+            const response = new Error('such error');
             mockChannel.queryByChaincode.resolves([response]);
             mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             let result = await queryHandler.querySinglePeer(mockPeer2, mockTransactionID, 'myfunc', ['arg1', 'arg2']);
@@ -208,14 +208,23 @@ describe('HLFQueryHandler', () => {
                 args: ['arg1', 'arg2'],
                 targets: [mockPeer2]
             });
-            result[0].should.be.instanceOf(Error);
-            result[0].message.should.equal('such error');
+            result.should.be.instanceOf(Error);
+            result.message.should.equal('such error');
         });
 
-        it('should throw if query request fails', () => {
-            mockChannel.queryByChaincode.rejects(new Error('Connect Failed'));
+        it('should throw any responses that are errors and UNAVAILABLE', () => {
+            const response = new Error('14 UNAVAILABLE: Connect Failed');
+            mockChannel.queryByChaincode.resolves([response]);
+            mockConnection.businessNetworkIdentifier = 'org-acme-biznet';
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Connect Failed/);
+        });
+
+
+        it('should throw if query request fails', () => {
+            mockChannel.queryByChaincode.rejects(new Error('Query Failed'));
+            return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/Query Failed/);
 
         });
 
