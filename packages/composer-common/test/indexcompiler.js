@@ -14,9 +14,10 @@
 
 'use strict';
 
-const ModelManager = require('composer-common').ModelManager;
+const ModelManager = require('../lib/modelmanager');
+const QueryManager = require('../lib/querymanager');
 const IndexCompiler = require('../lib/indexcompiler');
-const QueryFile = require('composer-common').QueryFile;
+const QueryFile = require('../lib/query/queryfile');
 
 const chai = require('chai');
 chai.should();
@@ -28,6 +29,7 @@ describe('IndexCompiler', () => {
     let modelManager;
     let queryFile1;
     let queries;
+    let queryManager;
 
     beforeEach(() => {
         indexCompiler = new IndexCompiler();
@@ -201,107 +203,142 @@ describe('IndexCompiler', () => {
             const name = query.getName();
             queries[name] = query;
         });
+        queryManager = new QueryManager(modelManager);
+        queryManager.setQueryFile(queryFile1);
+    });
+
+    describe('#compile', () => {
+
+        it('should index all of the queries in the specified query manager', () => {
+            const indexes = indexCompiler.compile(queryManager);
+            indexes.should.be.an('array');
+            indexes.should.have.lengthOf(20);
+            indexes.should.all.have.property('name');
+            indexes.should.all.have.property('ddoc');
+            indexes.should.all.have.property('index');
+        });
+
+    });
+
+    describe('#visitQueryManager', () => {
+
+        it('should index all queries in the query manager', () => {
+            const indexes = indexCompiler.visitQueryManager(queryManager);
+            indexes.should.be.an('array');
+            indexes.should.have.lengthOf(20);
+            indexes.should.all.have.property('name');
+            indexes.should.all.have.property('ddoc');
+            indexes.should.all.have.property('index');
+        });
+
+        it('should handle no queries in the query manager', () => {
+            queryManager.queryFile = null;
+            const indexes = indexCompiler.visitQueryManager(queryManager);
+            indexes.should.be.an('array');
+            indexes.should.have.lengthOf(0);
+        });
+
     });
 
     describe('generate query indexes', () => {
         it('should generate index for Q1', () => {
-            const index = indexCompiler.compile(queries.Q1);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","value"]},"name":"Q1","ddoc":"Q1Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q1);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','value']},'name':'Q1','ddoc':'Q1Doc','type':'json'});
         });
 
         it('should generate index for Q2', () => {
-            const index = indexCompiler.compile(queries.Q2);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q2","ddoc":"Q2Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q2);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q2','ddoc':'Q2Doc','type':'json'});
         });
 
         it('should generate index for Q3', () => {
-            const index = indexCompiler.compile(queries.Q3);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q3","ddoc":"Q3Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q3);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q3','ddoc':'Q3Doc','type':'json'});
         });
 
         it('should generate index for Q4', () => {
-            const index = indexCompiler.compile(queries.Q4);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q4","ddoc":"Q4Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q4);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q4','ddoc':'Q4Doc','type':'json'});
         });
 
         it('should generate index for Q5', () => {
-            const index = indexCompiler.compile(queries.Q5);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q5","ddoc":"Q5Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q5);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q5','ddoc':'Q5Doc','type':'json'});
         });
 
         it('should generate index for Q6', () => {
-            const index = indexCompiler.compile(queries.Q6);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q6","ddoc":"Q6Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q6);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q6','ddoc':'Q6Doc','type':'json'});
         });
 
         it('should generate index for Q7', () => {
-            const index = indexCompiler.compile(queries.Q7);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q7","ddoc":"Q7Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q7);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q7','ddoc':'Q7Doc','type':'json'});
         });
 
         it('should generate index for Q8', () => {
-            const index = indexCompiler.compile(queries.Q8);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","value"]},"name":"Q8","ddoc":"Q8Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q8);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','value']},'name':'Q8','ddoc':'Q8Doc','type':'json'});
         });
 
         it('should generate index for Q9', () => {
-            const index = indexCompiler.compile(queries.Q9);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q9","ddoc":"Q9Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q9);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q9','ddoc':'Q9Doc','type':'json'});
         });
 
         it('should generate index for Q10', () => {
-            const index = indexCompiler.compile(queries.Q10);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q10","ddoc":"Q10Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q10);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q10','ddoc':'Q10Doc','type':'json'});
         });
 
         it('should generate index for Q11', () => {
-            const index = indexCompiler.compile(queries.Q11);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q11","ddoc":"Q11Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q11);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q11','ddoc':'Q11Doc','type':'json'});
         });
 
         it('should generate index for Q12', () => {
-            const index = indexCompiler.compile(queries.Q12);
-            index.should.equal('{"index":{"fields":[{"\\\\$class":"desc"},{"\\\\$registryType":"desc"},{"\\\\$registryId":"desc"},{"foo":"desc"}]},"name":"Q12","ddoc":"Q12Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q12);
+            index.should.deep.equal({'index':{'fields':[{'\\$class':'desc'},{'\\$registryType':'desc'},{'\\$registryId':'desc'},{'foo':'desc'}]},'name':'Q12','ddoc':'Q12Doc','type':'json'});
         });
 
         it('should generate index for Q13', () => {
-            const index = indexCompiler.compile(queries.Q13);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId",{"foo":"asc"},{"bar":"asc"}]},"name":"Q13","ddoc":"Q13Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q13);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId',{'foo':'asc'},{'bar':'asc'}]},'name':'Q13','ddoc':'Q13Doc','type':'json'});
         });
 
         it('should generate index for Q14', () => {
-            const index = indexCompiler.compile(queries.Q14);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","baa.moo.neigh.meow.woof"]},"name":"Q14","ddoc":"Q14Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q14);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','baa.moo.neigh.meow.woof']},'name':'Q14','ddoc':'Q14Doc','type':'json'});
         });
 
         it('should generate index for Q15', () => {
-            const index = indexCompiler.compile(queries.Q15);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId"]},"name":"Q15","ddoc":"Q15Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q15);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId']},'name':'Q15','ddoc':'Q15Doc','type':'json'});
         });
 
         it('should generate index for Q16', () => {
-            const index = indexCompiler.compile(queries.Q16);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","noises"]},"name":"Q16","ddoc":"Q16Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q16);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','noises']},'name':'Q16','ddoc':'Q16Doc','type':'json'});
         });
 
         it('should generate index for Q17', () => {
-            const index = indexCompiler.compile(queries.Q17);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","noises"]},"name":"Q17","ddoc":"Q17Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q17);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','noises']},'name':'Q17','ddoc':'Q17Doc','type':'json'});
         });
 
         it('should generate index for Q18', () => {
-            const index = indexCompiler.compile(queries.Q18);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","meows","woof"]},"name":"Q18","ddoc":"Q18Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q18);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','meows','woof']},'name':'Q18','ddoc':'Q18Doc','type':'json'});
         });
 
         it('should generate index for Q19', () => {
-            const index = indexCompiler.compile(queries.Q19);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","meows","woof"]},"name":"Q19","ddoc":"Q19Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q19);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','meows','woof']},'name':'Q19','ddoc':'Q19Doc','type':'json'});
         });
 
         it('should generate index for Q20', () => {
-            const index = indexCompiler.compile(queries.Q20);
-            index.should.equal('{"index":{"fields":["\\\\$class","\\\\$registryType","\\\\$registryId","meows","woof","tweet"]},"name":"Q20","ddoc":"Q20Doc","type":"json"}');
+            const index = indexCompiler.visitQuery(queries.Q20);
+            index.should.deep.equal({'index':{'fields':['\\$class','\\$registryType','\\$registryId','meows','woof','tweet']},'name':'Q20','ddoc':'Q20Doc','type':'json'});
         });
 
     });
@@ -309,7 +346,7 @@ describe('IndexCompiler', () => {
     describe('error handlers', () => {
         it('should throw error for unrecognised AST node', () => {
             (() => {
-                indexCompiler.compile({'type': 'unknown'});
+                indexCompiler.visit({'type': 'unknown'});
             }).should.throw('Unrecognised type: object, value: {"type":"unknown"}');
         });
 

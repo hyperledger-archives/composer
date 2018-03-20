@@ -61,6 +61,9 @@ class IdCard {
    + Promise fromDirectory(String,undefined) 
    + Promise toDirectory(String,undefined) 
 }
+class IndexCompiler {
+   + String compile(QueryManager) 
+}
 class AssetDeclaration extends ClassDeclaration {
    + void constructor(ModelFile,Object) throws IllegalModelException
    + boolean isRelationshipTarget() 

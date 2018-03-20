@@ -19,7 +19,6 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const BusinessNetworkMetadata = require('composer-common').BusinessNetworkMetadata;
 const Logger = require('composer-common').Logger;
 const QueryFile = require('composer-common').QueryFile;
-const QueryManager = require('composer-common').QueryManager;
 
 const Channel = require('fabric-client/lib/Channel');
 const Peer = require('fabric-client/lib/Peer');
@@ -664,17 +663,17 @@ describe('HLFConnection', () => {
                     description: "Select all cars"
                     statement: SELECT org.acme.Car
                 }`;
-            mockBusinessNetwork.getModelManager().addModelFile(testModel);
-            const queryFile = new QueryFile('test.qry', mockBusinessNetwork.getModelManager(), queryContents);
-            const queryManager = new QueryManager(mockBusinessNetwork.getModelManager());
-            queryManager.setQueryFile(queryFile);
 
-            sandbox.stub(mockBusinessNetwork, 'getQueryManager').callsFake(() => { console.log('STUB', queryManager); return queryManager; } );
+            mockBusinessNetwork.getModelManager().addModelFile(testModel);
+            const queryFile =  new QueryFile('test.qry', mockBusinessNetwork.getModelManager(), queryContents);
+            const queryManager = mockBusinessNetwork.getQueryManager();
+            queryManager.setQueryFile(queryFile);
 
             mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
             sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: proposalResponses});
             return connection.install(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
+                    sinon.assert.calledWith(connection.fs.writeFileSync, sinon.match(/.*\/package\.json/), sinon.match(/.*/));
                     sinon.assert.calledWith(connection.fs.writeFileSync, sinon.match(/.*\/statedb\/couchdb\/indexes\/Q1Doc\.json/), sinon.match(/.*/));
                 });
         });

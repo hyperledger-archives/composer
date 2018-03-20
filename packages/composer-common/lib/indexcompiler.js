@@ -14,15 +14,16 @@
 
 'use strict';
 
-const Limit = require('composer-common').Limit;
-const Logger = require('composer-common').Logger;
-const OrderBy = require('composer-common').OrderBy;
-const Query = require('composer-common').Query;
-const Select = require('composer-common').Select;
-const Skip = require('composer-common').Skip;
-const Where = require('composer-common').Where;
+const Limit = require('./query/limit');
+const Query = require('./query/query');
+const QueryFile = require('./query/queryfile');
+const QueryManager = require('./querymanager');
+const OrderBy = require('./query/orderby');
+const Select = require('./query/select');
+const Skip = require('./query/skip');
+const Where = require('./query/where');
 
-const LOG = Logger.getLog('IndexCompiler');
+const LOG = require('./log/logger').getLog('IndexCompiler');
 
 /**
  * A query compiler compiles all queries in a query manager into a compiled
@@ -33,15 +34,15 @@ class IndexCompiler {
 
     /**
      * Index the supplied query
-     * @param {Query} query The query to index.
+     * @param {QueryManager} queryManager The query to index.
      * @return {String} The compiled query index.
      */
-    compile(query) {
+    compile(queryManager) {
         const method = 'compile';
-        LOG.entry(method, query);
-        const result = JSON.stringify(this.visit(query));
-        LOG.exit(method, result);
-        return result;
+        LOG.entry(method, queryManager);
+        const indexes = queryManager.accept(this);
+        LOG.exit(method, indexes);
+        return indexes;
     }
 
     /**
@@ -51,37 +52,83 @@ class IndexCompiler {
      * @return {Object} The result of visiting, or null.
      * @private
      */
-    visit(thing, parameters) {
+    visit(thing) {
         const method = 'visit';
-        LOG.entry(method, thing, parameters);
+        LOG.entry(method, thing);
         let result = null;
-        if (thing instanceof Query) {
-            result = this.visitQuery(thing, parameters);
+        if (thing instanceof QueryManager) {
+            result = this.visitQueryManager(thing);
+        } else if (thing instanceof QueryFile) {
+            result = this.visitQueryFile(thing);
+        } else if (thing instanceof Query) {
+            result = this.visitQuery(thing);
         } else if (thing instanceof Select) {
-            result = this.visitSelect(thing, parameters);
+            result = this.visitSelect(thing);
         } else if (thing instanceof Where) {
-            result = this.visitWhere(thing, parameters);
+            result = this.visitWhere(thing);
         } else if (thing instanceof OrderBy) {
-            result = this.visitOrderBy(thing, parameters);
+            result = this.visitOrderBy(thing);
         } else if (thing instanceof Limit) {
-            result = this.visitLimit(thing, parameters);
+            result = this.visitLimit(thing);
         } else if (thing instanceof Skip) {
-            result = this.visitSkip(thing, parameters);
+            result = this.visitSkip(thing);
         } else if (thing.type === 'BinaryExpression') {
-            result = this.visitBinaryExpression(thing, parameters);
+            result = this.visitBinaryExpression(thing);
         } else if (thing.type === 'Identifier') {
-            result = this.visitIdentifier(thing, parameters);
+            result = this.visitIdentifier(thing);
         } else if (thing.type === 'Literal') {
-            result = this.visitLiteral(thing, parameters);
+            result = this.visitLiteral(thing);
         } else if (thing.type === 'ArrayExpression') {
-            result = this.visitArrayExpression(thing, parameters);
+            result = this.visitArrayExpression(thing);
         } else if (thing.type === 'MemberExpression') {
-            result = this.visitMemberExpression(thing, parameters);
+            result = this.visitMemberExpression(thing);
         } else {
-            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
+            throw new Error('Unrecognised type: ' +  typeof thing + ', value: ' + JSON.stringify(thing));
         }
         LOG.exit(method, result);
         return result;
+    }
+
+    /**
+     * Visitor design pattern; handle a query manager by visiting all of the query files.
+     * @param {QueryManager} queryManager The query manager being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitQueryManager(queryManager) {
+        const method = 'visitQueryManager';
+        LOG.entry(method, queryManager);
+
+        // Compile all of the query files in this query manager.
+        let indexes = [];
+        const queryFile = queryManager.getQueryFile();
+        if (queryFile) {
+            indexes = queryManager.getQueryFile().accept(this);
+        }
+
+        LOG.exit(method, indexes);
+        return indexes;
+    }
+
+    /**
+     * Visitor design pattern; handle a query file by visiting all of the queries.
+     * @param {QueryFile} queryFile The query file being visited.
+     * @param {Object} parameters The parameters.
+     * @return {Object} The result of visiting, or null.
+     * @private
+     */
+    visitQueryFile(queryFile) {
+        const method = 'visitQueryFile';
+        LOG.entry(method, queryFile);
+
+        // Compile all of the queries in this query file.
+        const indexes = queryFile.getQueries().map((query) => {
+            return query.accept(this);
+        });
+
+        LOG.exit(method, indexes);
+        return indexes;
     }
 
     /**
