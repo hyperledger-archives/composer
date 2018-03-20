@@ -48,7 +48,7 @@ services:
     image: hyperledger/fabric-peer:$ARCH-1.1.0
     environment:
       - CORE_LOGGING_PEER=debug
-      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_CHAINCODE_LOGGING_LEVEL=composer[debug]:*
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.org1.example.com
       - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
@@ -85,7 +85,7 @@ services:
     image: hyperledger/fabric-peer:$ARCH-1.1.0
     environment:
       - CORE_LOGGING_PEER=debug
-      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_CHAINCODE_LOGGING_LEVEL=composer[debug]:*
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.org2.example.com
       - CORE_PEER_ADDRESS=peer0.org2.example.com:7051
