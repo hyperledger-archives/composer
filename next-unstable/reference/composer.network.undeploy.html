@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Typical Solution Architecture | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network Undeploy CLI | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Typical Solution Architecture</p>
+          <p>Hyperledger Composer Network Undeploy CLI</p>
           </div>
 
           <nav class="context-nav">
@@ -264,92 +264,30 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="typical-hyperledger-composer-solution-architecture">Typical Hyperledger Composer Solution Architecture</h1>
-
-<p>Hyperledger Composer enables architects and developers to quickly create &quot;full-stack&quot; blockchain solutions. I.e. business logic that runs on the blockchain, REST APIs that expose the blockchain logic to web or mobile applications, as well as integrating the blockchain with existing enterprise systems of record.</p>
-
-<p><img src="../assets/img/ComposerArchitecture.svg" style="border: none;" alt="Diagram of typical Hyperledger Composer architecture"></p>
+              <h1 id="hyperledger-composer-network-undeploy">Hyperledger Composer Network Undeploy</h1>
 
 <hr>
 
-<p>Hyperledger Composer is composed of the following high-level components:</p>
+<p>The <code>composer network undeploy</code> command <strong>permanently disables a business network</strong>. Once a business network has been undeployed, it cannot be redeployed.</p>
 
-<ul>
-<li>Execution Runtimes (four are currently supported!)</li>
-<li>JavaScript SDK</li>
-<li>Command Line Interface</li>
-<li>REST Server</li>
-<li>LoopBack Connector</li>
-<li>Playground Web User Interface</li>
-<li>Yeoman code generator</li>
-<li>VSCode and Atom editor plugins</li>
-</ul>
+<p><strong>Please Note</strong>: When using the <code>undeploy</code> command with a business network running on Hyperledger Fabric v1.1, the business network remains running, but will become unresponsive. The business network <strong>cannot be redeployed or updated once the <code>undeploy</code> command has been issued.</strong> This is because the business network is already deployed, but has been set to be unresponsive.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -c &lt;card-name&gt;
+</code></pre></div>
+<p>Note that <strong>after undeploy the business network definition can no longer be used</strong>, however the docker container
+associated with the business network definition is still running. The docker container for the business network
+definition must be explicitly stopped and removed if no longer needed.</p>
 
-<h2 id="execution-runtimes">Execution Runtimes</h2>
-
-<p>Hyperledger Composer has been designed to support different pluggable runtimes, and currently has three runtime implementations:
-.
-* Hyperledger Fabric v1.1. State is stored on the distributed ledger.
-* Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.
-* Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.</p>
-
-<h3 id="connection-profiles">Connection Profiles</h3>
-
-<p>Connection Profiles are used across Hyperledger Composer to specify how to connect to an execution runtime. There are different configuration options for each <em>type</em> of execution runtime. For example, the connection profile for a Hyperledger Fabric v1.1 runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.</p>
-
-<p>Connection Profiles are part of Business Network cards.</p>
-
-<h2 id="javascript-sdk">JavaScript SDK</h2>
-
-<p>The Hyperledger Composer JavaScript SDK is a set of Node.js APIs the enables developers to create applications to manage and interact with deployed business networks.</p>
-
-<p>The APIs are split between two npm modules:</p>
-
-<ol>
-<li><code>composer-client</code> used to submit transactions to a business network or to perform Create, Read, Update, Delete operations on assets and participants</li>
-<li><code>composer-admin</code> used to manage business networks (deploy, undeploy)</li>
-</ol>
-
-<p>Details of all the APIs are available as JSDocs (see reference).</p>
-
-<h3 id="composer-client">composer-client</h3>
-
-<p>This module would usually be installed as a local dependency of an application. It provides the API that is used by business applications to connect to a business network to access <strong>assets</strong>, <strong>participants</strong> and submitting <strong>transactions</strong>. When in production this is only module that needs to be added as a direct dependency of the application.</p>
-
-<h3 id="composer-admin">composer-admin</h3>
-
-<p>This module would usually be installed as a local dependency of <strong>administrative</strong> applications. This API permits the creation of and deployment of <strong>business network definitions</strong>.</p>
-
-<h2 id="command-line-interface">Command Line Interface</h2>
-
-<p>The <code>composer</code> command line tool enables developers and administrators to deploy and managed business network definitions.</p>
-
-<h2 id="rest-server">REST Server</h2>
-
-<p>The Hyperledger Composer REST Server automatically generates a Open API (Swagger) REST API for a business network. The REST Server (based on LoopBack technology) converts the Composer model for a business network into an Open API definition, and at runtime implements Create, Read, Update and Delete support for assets and participants and allows transactions to be submitted for processing or retrieved.</p>
-
-<h2 id="loopback-connector">LoopBack Connector</h2>
-
-<p>The Hyperledger Composer LoopBack Connector is used by the Composer REST Server, however it may also be used standalone by integration tools that support LoopBack natively. Alternatively it may be used with the LoopBack tools to create more sophisticated customizations of the REST APIs.</p>
-
-<h2 id="playground-web-user-interface">Playground Web User Interface</h2>
-
-<p>Hyperledger Composer Playground is a web user interface to define and test business networks. It allows a business analyst to quickly import samples and prototype business logic that executes on the Web or Hyperledger Fabric runtime.</p>
-
-<h2 id="yeoman-code-generators">Yeoman Code Generators</h2>
-
-<p>Hyperledger Composer uses the Open Source Yeoman code generator framework to create skeleton projects:</p>
-
-<ul>
-<li>Angular web application</li>
-<li>Node.js application</li>
-<li>Skeleton business network</li>
-</ul>
-
-<h2 id="vscode-and-atom-editor-extensions">VSCode and Atom Editor Extensions</h2>
-
-<p>Hyperledger Composer has community contributed editor extensions for VSCode and Atom. The VSCode extension is very powerful and validates Composer model and ACL files, providing syntax highlighting, error detection and snippets support. The Atom plugin is much more rudimentary and only has basic syntax highlighting.</p>
-
+<h3 id="options">Options</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help         Show help  [boolean]
+  -v, --version  Show version number  [boolean]
+  --card, -c     The business network card to use to undeploy the network  [string]
+</code></pre></div>
+<h2 id="example-output">Example Output</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network undeploy -c admin@tutorial-network
+Undeploying business network definition. This may take some seconds...
+Command completed successfully.
+</code></pre></div>
             
           </section>
         </div>

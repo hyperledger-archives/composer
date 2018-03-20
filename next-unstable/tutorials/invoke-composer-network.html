@@ -329,23 +329,23 @@ export FABRIC_VERSION=hlfv11
 
             <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
             <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
-        <span class="p">}</span>
+        <span class="p">}</span>    
 </code></pre></div></li>
-<li><p>Follow step three in the <a href="./developer-tutorial.html">developer tutorial</a>.</p></li>
+<li><p>Follow step three in the <a href="./developer-tutorial.html">developer tutorial</a>.                      </p></li>
 </ol>
 
 <h2 id="step-three-deploy-the-business-networks">Step Three: Deploy the business networks</h2>
 
 <ol>
 <li><p>Install and start business network A using the following commands</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
-composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
+composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkA.card
 composer card import --file networkA.card --name networkA
 </code></pre></div></li>
-<li><p>Install and start business network B using the following commands</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile other-tutorial-network@0.0.1.bna
-composer network start --networkName other-tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkB.card
-composer card import --file networkB.card --name networkB
+<li><p>Install and start business network B using the following commands      </p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName other-tutorial-network
+composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile other-tutorial-network@0.0.1.bna --file networkB.card
+composer card import --file networkB.card --name networkB 
 </code></pre></div></li>
 <li><p>To check that the business networks have been deployed successfully run the following commands to ping the business networks</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card networkA
