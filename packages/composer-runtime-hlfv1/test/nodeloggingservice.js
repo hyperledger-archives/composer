@@ -61,11 +61,31 @@ describe('NodeLoggingService', () => {
             value.debug.should.equal('composer[error]:*');
         });
 
-        it('should return the enviroment variable values', () => {
-
+        it('should return the default value if the enviroment variable is invalid', () => {
             process.env.CORE_CHAINCODE_LOGGING_LEVEL='wibble';
             let value = loggingService.getDefaultCfg();
-            value.debug.should.equal('wibble');
+            value.debug.should.equal('composer[error]:*');
+        });
+
+        it('should map fabric container values to valid composer debug strings', () => {
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='CRITICAL';
+            loggingService.getDefaultCfg().debug.should.equal('composer[error]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='ERROR';
+            loggingService.getDefaultCfg().debug.should.equal('composer[error]:*');
+
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='WARNING';
+            loggingService.getDefaultCfg().debug.should.equal('composer[warning]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='NOTICE';
+            loggingService.getDefaultCfg().debug.should.equal('composer[info]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='INFO';
+            loggingService.getDefaultCfg().debug.should.equal('composer[verbose]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='DEBUG';
+            loggingService.getDefaultCfg().debug.should.equal('composer[debug]:*');
         });
 
     });

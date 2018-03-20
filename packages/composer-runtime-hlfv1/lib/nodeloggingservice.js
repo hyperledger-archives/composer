@@ -101,9 +101,46 @@ class NodeLoggingService extends LoggingService {
     getDefaultCfg(){
 
         let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
-        if (!envVariable){
-            envVariable = 'composer[error]:*';
+        if (envVariable){
+            envVariable = envVariable.toLowerCase().trim();
+        }else{
+            envVariable = 'error';
         }
+        // for reference
+        // NPM log levels are
+        //{
+        //  error: 0,
+        //  warn: 1,
+        //  info: 2,
+        //  verbose: 3,
+        //  debug: 4,
+        //  silly: 5
+        //}
+        let debugString;
+        switch (envVariable){
+        case 'critical':
+            debugString='composer[error]:*';
+            break;
+        case 'error':
+            debugString='composer[error]:*';
+            break;
+        case 'warning':
+            debugString='composer[warning]:*';
+            break;
+        case 'notice':
+            debugString='composer[info]:*';
+            break;
+        case 'info':
+            debugString='composer[verbose]:*';
+            break;
+        case 'debug':
+            debugString='composer[debug]:*';
+            break;
+        default:
+            debugString='composer[error]:*';
+            break;
+        }
+
         return {
             'file': {
                 'maxLevel': 'none'
@@ -111,7 +148,7 @@ class NodeLoggingService extends LoggingService {
             'console': {
                 'maxLevel': 'silly'
             },
-            'debug' : envVariable,
+            'debug' : debugString,
             'logger': './consolelogger.js',
             'origin':'default-runtime-hlfv1'
         };
