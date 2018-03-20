@@ -268,12 +268,13 @@ ga('send', 'pageview');
 
 <p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (.bna) file. The <code>composer archive create</code> command is used to create a business network archive file from a business network definition folder on disk.</p>
 
-<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.runtime.install.html"><code>composer runtime install</code></a> command followed by a <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command.</p>
+<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.network.install.html"><code>composer network install</code></a> command followed by a <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n tutorial-network -c PeerAdmin@fabric-network
+<div class="highlight"><pre><code class="language-" data-lang="">composer network install --archiveFile tutorial-network@1.0.0.bna --card PeerAdmin@fabric-network
+composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@Fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
 </code></pre></div>
-<p>To update the business network definition for an already deployed business network use the <a href="../reference/composer.network.update.html"><code>composer network update</code></a> CLI command.</p>
+<p>To upgrade the business network definition for an already deployed business network use the <a href="../reference/composer.network.upgrade.html"><code>composer network upgrade</code></a> CLI command.</p>
 
 <h2 id="deploying-business-networks-to-hyperledger-fabric-v1-1">Deploying business networks to Hyperledger Fabric v1.1</h2>
 
