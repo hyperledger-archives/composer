@@ -268,11 +268,11 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The <code>composer network start</code> utility is used to start a specific version of a business network that has been previously installed to a Hyperledger Fabric v1.1 network.
+<p>The <code>composer network start</code> utility is used to deploy a business network archive from local disk to a Hyperledger Fabric v1.1 network.
 Before using this command, read the topic <a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a>.</p>
 
-<p><em>Please Note</em>: You <strong>must</strong> first install the business network to the Hyperledger Fabric peers by using the <code>composer network install</code> command.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName &lt;business-network-name&gt; --networkVersion &lt;business-network-version&gt; --networkAdmin &lt;admin-name&gt; --networkAdminEnrollSecret adminpw --card &lt;peer-admin-card&gt; --file &lt;admin-card-file-name&gt;
+<p><em>Please Note</em>: You <strong>must</strong> first install the Hyperledger Composer runtime to the Hyperledger Fabric peers by using the <code>composer runtime install</code> command. The business network name specified in the <code>composer runtime install</code> command must be the same as the business network name specified in the <code>composer network start</code> command.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -a &lt;business-network-archive&gt; -A &lt;admin-name&gt; -S adminpw -c &lt;business-network-card&gt; -f &lt;name-of-admin-card&gt;
 </code></pre></div>
 <h2 id="considerations">Considerations</h2>
 
@@ -284,15 +284,14 @@ Before using this command, read the topic <a href="../business-network/bnd-deplo
 Options:
   --help                             Show help  [boolean]
   -v, --version                      Show version number  [boolean]
-  --networkName, -n                  Name of the business network to start  [required]
-  --networkVersion, -V               Version of the business network to start  [required]
+  --archiveFile, -a                  The business network archive file name  [string] [required]
   --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
-  --networkAdmin, -A                 The identity name of the business network administrator  [string] [required]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
-  --networkAdminEnrollSecret, -S     The enrollment secret for the business network administrator  [string]
-  --card, -c                         The cardname to use to start the network  [string] [required]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [string]
+  --card, -c                         The cardname to use to start the network  [string]
   --file, -f                         File name of the card to be created  [string]
 </code></pre></div>
 <p>Please refer to <a href="../managing/connector-information.html">Connector specific information</a> for more information about connector specific options.</p>

@@ -301,21 +301,21 @@ ga('send', 'pageview');
 <p>You can list all of the cards you have installed at any time by running the following command:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">composer card list
 </code></pre></div>
-<h3 id="2-prepare-the-hyperledger-fabric-peers">2. Prepare the Hyperledger Fabric peers</h3>
+<h3 id="2-prepare-the-hyperledger-fabric-peers-for-your-bna">2. Prepare the Hyperledger Fabric peers for your BNA</h3>
 
 <p>In order to install the Business Network Archive onto the Hyperledger Fabric network you need to prepare the peers with the underlying Composer runtime.</p>
 
-<p>You will need to have the Business Network archive to do this, below you can see an example with <code>tutorial-network</code> along with the &#39;PeerAdmin&#39; card for your deployment.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
+<p>You will need to have the name of the Business Network to do this, below you can see an example with <code>tutorial-network</code> along with the &#39;PeerAdmin&#39; card for your deployment.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
 </code></pre></div>
-<h3 id="3-start-your-business-network-on-your-hyperledger-fabric">3. Start your Business Network on your Hyperledger Fabric</h3>
+<h3 id="3-deploy-your-bna-onto-your-hyperledger-fabric">3. Deploy your BNA onto your Hyperledger Fabric</h3>
 
 <p>It is recommended you start with a clean directory. Move your BNA into that directory and change your terminal directory to it.</p>
 
-<p>We will use the <code>composer network start</code> command to start the business network, we will need to use our <code>PeerAdmin</code> card to do this. We will also need to create a user on our network, we will use an &quot;Admin&quot; username and password to get started.</p>
+<p>We will use the <code>composer network start</code> command to deploy the BNA onto Hyperledger Fabric, we will need to use our <code>PeerAdmin</code> card to do this. We will also need to create a user on our network, we will use an &quot;Admin&quot; username and password to get started.</p>
 
 <p>Below is an example using a <code>tutorial-network</code> BNA.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network start <span class="nt">--networkName</span> tutorial-network <span class="nt">--networkVersion</span> 0.0.1 <span class="nt">--networkAdmin</span> admin <span class="nt">--networkAdminEnrollSecret</span> adminpw <span class="nt">--card</span> PeerAdmin@hlfv1
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network start <span class="nt">-a</span> tutorial-network.bna <span class="nt">-A</span> admin <span class="nt">-S</span> adminpw <span class="nt">-c</span> PeerAdmin@hlfv1
 </code></pre></div>
 <p>This will create an &#39;admin&#39; card for the business network, which for the previous example is <code>admin@tutorial-network.card</code></p>
 

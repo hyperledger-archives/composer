@@ -344,13 +344,8 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 </tr>
 <tr>
 <td style="text-align: left"><a href="#toarchive">toArchive</a></td>
-<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left"><code>Buffer</code></td>
 <td style="text-align: left">Store a BusinessNetworkDefinition as an archive</td>
-</tr>
-<tr>
-<td style="text-align: left"><a href="#todirectory">toDirectory</a></td>
-<td style="text-align: left"><code>Promise</code></td>
-<td style="text-align: left">Store a BusinessNetworkDefinition to a directory</td>
 </tr>
 </tbody></table>
 
@@ -438,7 +433,7 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 
 <h2 id="fromarchive">fromArchive</h2>
 
-<p><em>Promise fromArchive( Buffer zipbuffer )</em></p>
+<p><em>Promise fromArchive( Buffer buffer )</em></p>
 
 <p>Create a BusinessNetworkDefinition from an archive.</p>
 
@@ -459,7 +454,7 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><strong>zipBuffer</strong></td>
+<td style="text-align: left"><strong>Buffer</strong></td>
 <td style="text-align: left">Buffer</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">the Buffer to a zip archive</td>
@@ -468,13 +463,13 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 
 <h2 id="toarchive">toArchive</h2>
 
-<p><em>Promise toArchive( [Object options] )</em></p>
+<p><em>Buffer toArchive( [Object options] )</em></p>
 
 <p>Store a BusinessNetworkDefinition as an archive.</p>
 
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Resolves to a Buffer of the zip file content.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Buffer">Buffer</a></strong> - buffer  - the zlib buffer</p>
 
 <h3 id="see-also">See also</h3>
 
@@ -571,42 +566,6 @@ retrieve instances from <a href="common-businessnetworkdefinition#fromarchive">B
 <td style="text-align: left">object</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">options passed to ModelManager.updateExternalModels</td>
-</tr>
-<tr>
-<td style="text-align: left"><strong>options.processDependencies</strong></td>
-<td style="text-align: left">boolean</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">if false, do not process package dependencies; otherwise package dependencies are processed.</td>
-</tr>
-</tbody></table>
-
-<h2 id="todirectory">toDirectory</h2>
-
-<p><em>Promise toDirectory( String directorypath )</em></p>
-
-<p>Store a BusinessNetworkDefinition to a directory</p>
-
-<h3 id="returns">Returns</h3>
-
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - Resolves when the directory is written.</p>
-
-<h3 id="see-also">See also</h3>
-
-<h3 id="parameters">Parameters</h3>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Name</th>
-<th style="text-align: left">Type</th>
-<th style="text-align: left">Mandatory</th>
-<th style="text-align: left">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left"><strong>directoryPath</strong></td>
-<td style="text-align: left">String</td>
-<td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The directory to write the content of the business network</td>
 </tr>
 </tbody></table>
 
