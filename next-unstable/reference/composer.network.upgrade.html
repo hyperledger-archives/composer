@@ -271,9 +271,7 @@ ga('send', 'pageview');
 <p>The <code>composer network upgrade</code> utility is used to upgrade the Hyperledger Composer runtime.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -n &lt;business-network-name&gt; -c &lt;business-network-card&gt;
 </code></pre></div>
-<p><code>composer network upgrade</code> upgrades the Hyperledger Composer runtime of the named business network to use a new micro version. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer runtime must have been installed to a blockchain node by using the <code>composer runtime install</code> command.</p>
-
-<p><em>Please Note</em>: <code>composer network upgrade</code> is only suitable for upgrading between micro versions of the Hyperledger Composer runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.</p>
+<p><code>composer network upgrade</code> upgrades the Hyperledger Composer the named business network. Before running the <code>composer network upgrade</code> command, a new version of the Hyperledger Composer business network must have been installed to a blockchain node by using the <code>composer network install</code> command.</p>
 
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade [options]
@@ -282,7 +280,9 @@ Options:
   --help                     Show help  [boolean]
   -v, --version              Show version number  [boolean]
   --card, -c                 The cardname to use to upgrade the network  [string] [required]
-  --businessNetworkName, -n  The business network name  [string] [required]
+  --loglevel, -l             The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
+  --networkName, -n          Name of the business network to start  [required]
+  --networkVersion, -V       Version of the business network to start  [required]
   --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O          A file containing options that are specific to connection  [string]
 </code></pre></div>
