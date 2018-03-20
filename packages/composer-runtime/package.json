@@ -66,6 +66,7 @@
     "lru-cache": "4.0.2",
     "request": "2.81.0",
     "request-promise-any": "1.0.5",
+    "semver": "5.3.0",
     "sha.js": "2.4.8",
     "source-map": "0.5.6"
   },

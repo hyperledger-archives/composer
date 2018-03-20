@@ -76,11 +76,13 @@ asset ParticipantRegistry extends Registry { }
 asset TransactionRegistry extends Registry { }
 
 
-/** Asset representing the business networkId
- * @param {String} networkId of the business networkId
+/** Asset representing the business network
+ * @param {String} networkId of the business network
+ * @param {String} runtimeVersion of the business network
  */
 asset Network identified by networkId {
   o String networkId
+  o String runtimeVersion
 }
 
 participant NetworkAdmin identified by participantId {
