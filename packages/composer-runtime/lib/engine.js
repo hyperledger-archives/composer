@@ -15,6 +15,7 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
+const semver = require('semver');
 const util = require('util');
 
 const LOG = Logger.getLog('Engine');
@@ -78,17 +79,21 @@ class Engine {
      * @param {Context} context The request context.
      * @param {string} fcn The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} promise of completion
      * @async
      */
     async init(context, fcn, args) {
-        switch (fcn) {
-        case 'start':
-            return this.start(context, args);
-        case 'upgrade':
-            return this.upgrade(context, args);
-        default:
-            throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
+        const dataService = context.getDataService();
+        try {
+            const sysdata = await dataService.getCollection('$sysdata');
+            const metanetworkJSON = await sysdata.get('metanetwork');
+            const metanetwork = context.getSerializer().fromJSON(metanetworkJSON);
+            if (!metanetwork) {
+                await this.start(context, args);
+            } else {
+                await this.upgrade(context, args, sysdata, metanetwork);
+            }
+        } catch(err) {
+            await this.start(context, args);
         }
     }
 
@@ -117,9 +122,6 @@ class Engine {
             throw new Error('The transaction data specified is not valid');
         }
 
-
-
-
         const dataService = context.getDataService();
 
         // Extract and validate the optional log level property.
@@ -129,7 +131,11 @@ class Engine {
         LOG.debug(method, 'Storing metanetwork in $sysdata collection');
         const sysdata = await dataService.ensureCollection('$sysdata');
         const networkIdentifier = context.getBusinessNetworkDefinition().getIdentifier();
-        await sysdata.add('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': networkIdentifier });
+        await sysdata.add('metanetwork', {
+            '$class': 'org.hyperledger.composer.system.Network',
+            'networkId': networkIdentifier,
+            'runtimeVersion': this.container.getVersion()
+        });
 
         LOG.debug(method, 'Ensuring that sysregistries collection exists');
         const sysregistries = await dataService.ensureCollection('$sysregistries');
@@ -191,33 +197,60 @@ class Engine {
      * Perform an upgrade of the business network.
      * @param {Context} context transaction context
      * @param {Array} args chaincode invocation arguments
+     * @param {DataCollection} sysdata the sysdata collection
+     * @param {object} metanetwork the metanetwork data object
      * @async
      */
-    async upgrade(context, args) {
+    async upgrade(context, args, sysdata, metanetwork) {
         const method = 'upgrade';
         LOG.entry(method, context, args);
 
         const dataService = context.getDataService();
 
+        await context.transactionStart(false);
         LOG.debug(method, 'Updating metanetwork in $sysdata collection');
-        const sysdata = await dataService.ensureCollection('$sysdata');
-        const networkIdentifier = context.getBusinessNetworkDefinition().getIdentifier();
-        await sysdata.update('metanetwork', { '$class': 'org.hyperledger.composer.system.Network', 'networkId': networkIdentifier });
 
-        LOG.debug(method, 'Ensuring that sysregistries collection exists');
-        const sysregistries = await dataService.ensureCollection('$sysregistries');
+        const newRuntimeVersion = this.container.getVersion();
+        // Check our new version should be greater than or equal but only a micro version change.
+        const range =  `^${metanetwork.runtimeVersion}`;
+        if (!semver.satisfies(newRuntimeVersion, range)) {
+            throw new Error(`Cannot upgrade business network. New composer runtime version of (${newRuntimeVersion}) is not compatible with (${metanetwork.runtimeVersion}). Composer runtime has changed major or minor version and cannot be upgraded.`);
+        }
 
-        LOG.debug(method, 'Initializing context', this.getContainer().getVersion());
-        await context.initialize({
-            function: 'init',
-            arguments: args,
-            sysregistries: sysregistries,
-            container: this.getContainer()
-        });
+        try {
+            // update the metanetwork with new identifier and version
+            const networkId = context.getBusinessNetworkDefinition().getIdentifier();
 
-        LOG.debug(method, 'Creating default registries');
-        const registryManager = context.getRegistryManager();
-        await registryManager.createDefaults();
+            LOG.debug(method, `Updating metanetwork. id:${networkId} and version:${newRuntimeVersion}`);
+            await sysdata.update('metanetwork', {
+                '$class': 'org.hyperledger.composer.system.Network',
+                'networkId': networkId,
+                'runtimeVersion': newRuntimeVersion
+            });
+
+            LOG.debug(method, 'Ensuring that sysregistries collection exists');
+            const sysregistries = await dataService.ensureCollection('$sysregistries');
+
+            LOG.debug(method, 'Initializing context', this.getContainer().getVersion());
+            await context.initialize({
+                function: 'init',
+                arguments: args,
+                sysregistries: sysregistries,
+                container: this.getContainer()
+            });
+
+            LOG.debug(method, 'Creating default registries');
+            const registryManager = context.getRegistryManager();
+            await registryManager.createDefaults();
+            await context.transactionPrepare();
+            await context.transactionCommit();
+            await context.transactionEnd();
+        } catch(error) {
+            LOG.error(method, 'Caught error, rethrowing', error);
+            await context.transactionRollback();
+            await context.transactionEnd();
+            throw error;
+        }
 
         LOG.exit(method);
     }

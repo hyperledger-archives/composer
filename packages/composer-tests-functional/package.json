@@ -18,7 +18,7 @@
     "systest:hlf": "mocha -t 0 systest",
     "systest:hlfv1": "mocha -t 0 systest",
     "systest:hlfv1_tls": "mocha -t 0 systest",
-    "systest:hlfv1-1": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
+    "systest:hlfv1-1": "mocha -t 0 systest/[a-a]*.js systest/setup.js",
     "systest:hlfv1-2": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
     "systest:hlfv1-1_tls": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
     "systest:hlfv1-2_tls": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
