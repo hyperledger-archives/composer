@@ -352,7 +352,7 @@ class Logger {
      * @return {Tree} The selection tree.
      */
     static getSelectionTree() {
-        return _config._tree;
+        return _config.tree;
     }
 
     /**
@@ -483,7 +483,7 @@ class Logger {
 
         // This is an important method for parsing the control string and getting the details of what should be logged
         // This creates the tree that permits the efficient determination of what should be logger
-        localConfig._tree = Logger._parseLoggerConfig(localConfig);
+        localConfig.tree = Logger._parseLoggerConfig(localConfig);
 
         // it can be useful at this point to output the config being returned.
         // see the debug_debug() fn in this class for an example on how to do it
