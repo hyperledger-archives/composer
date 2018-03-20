@@ -22,12 +22,12 @@ export class BusyAlert {
 
     // wait to disappear
     static waitToAppear() {
-        return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.busy-text'))), Constants.shortWait);
+        return browser.wait(ExpectedConditions.visibilityOf(element(by.css('busy'))), Constants.shortWait);
     }
 
     // wait to disappear
     static waitToDisappear() {
-        return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.busy-text'))), Constants.shortWait);
+        return browser.wait(ExpectedConditions.invisibilityOf(element(by.css('busy'))), Constants.vvlongwait);
     }
 
 }

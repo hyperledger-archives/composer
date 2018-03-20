@@ -28,11 +28,12 @@ import { FileImporterModule } from '../common/file-importer/file-importer.module
 import { DirectivesModule } from '../directives/directives.module';
 import { DeployModule } from '../deploy/deploy.module';
 import { FooterModule } from '../footer/footer.module';
+import { UpgradeComponent } from './upgrade/upgrade.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgbModule, PerfectScrollbarModule, CodemirrorModule, DirectivesModule, FileImporterModule, DeployModule, EditorRoutingModule, FooterModule],
-    entryComponents: [AddFileComponent],
-    declarations: [EditorComponent, EditorFilesPipe, EditorFileComponent, AddFileComponent]
+    entryComponents: [AddFileComponent, UpgradeComponent],
+    declarations: [EditorComponent, EditorFilesPipe, EditorFileComponent, AddFileComponent, UpgradeComponent]
 })
 
 export class EditorModule {

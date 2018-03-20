@@ -15,7 +15,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { Directive, Input, Component, Pipe, PipeTransform } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -26,10 +26,9 @@ import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, IdCard } from 'composer-common';
 import { EditorFile } from '../services/editor-file';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
-import { BehaviorSubject } from 'rxjs/Rx';
 import { FileService } from '../services/file.service';
 
 import * as sinon from 'sinon';
@@ -37,7 +36,14 @@ import * as chai from 'chai';
 
 import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
+import { DrawerService } from '../common/drawer';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { IdentityCardService } from '../services/identity-card.service';
+import { LocalStorageService } from 'angular-2-local-storage';
+
+import {
+    HttpModule,
+} from '@angular/http';
 
 let should = chai.should();
 
@@ -91,7 +97,7 @@ describe('EditorComponent', () => {
     let mockScriptFile;
     let mockRuleFile;
     let mockQueryFile;
-    let editorService;
+    let mockLocalStorage;
 
     beforeEach(() => {
         mockAdminService = sinon.createStubInstance(AdminService);
@@ -104,6 +110,7 @@ describe('EditorComponent', () => {
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
         mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockLocalStorage = sinon.createStubInstance(LocalStorageService);
 
         mockFileService.getQueryFile.returns(mockQueryFile);
 
@@ -112,7 +119,7 @@ describe('EditorComponent', () => {
         mockAlertService.errorStatus$ = {next: sinon.stub()};
 
         TestBed.configureTestingModule({
-            imports: [FormsModule],
+            imports: [FormsModule, HttpModule],
             declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective, MockFooterComponent, MockEditorFilesPipe],
             providers: [
                 {provide: AdminService, useValue: mockAdminService},
@@ -120,12 +127,16 @@ describe('EditorComponent', () => {
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: FileService, useValue: mockFileService},
-                {provide: DrawerService, useValue: mockDrawer}
+                {provide: DrawerService, useValue: mockDrawer},
+                {provide: LocalStorageService, useValue: mockLocalStorage},
+                SampleBusinessNetworkService,
+                IdentityCardService
             ]
         });
 
         fixture = TestBed.createComponent(EditorComponent);
         component = fixture.componentInstance;
+
     });
 
     describe('ngOnInit', () => {
@@ -1302,63 +1313,137 @@ describe('EditorComponent', () => {
         let mockUpdateFiles;
         let mockSetCurrentFile;
 
-        beforeEach(() => {
+        let peerCard: IdCard;
+        let channelCard: IdCard;
+        let idCard: IdCard;
+        let businessNetworkDef: BusinessNetworkDefinition;
+
+        beforeEach(fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             mockUpdateFiles = sinon.stub(component, 'updateFiles');
             mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-            mockFileService.getBusinessNetwork.returns(new BusinessNetworkDefinition('test-network@1.0.0'));
+            businessNetworkDef = new BusinessNetworkDefinition('test-network@1.0.0');
+            mockFileService.getBusinessNetwork.returns(businessNetworkDef);
 
+            mockAdminService.connect.returns(Promise.resolve());
             mockAdminService.install.returns(Promise.resolve());
-            mockAdminService.upgrade.returns(Promise.resolve());
+            mockAdminService.importCard.returns(Promise.resolve());
+
+            mockAdminService.hasCard.returns(Promise.resolve(false));
+
             mockClientService.refresh.returns(Promise.resolve());
 
+            sinon.stub(component, 'ngOnInit').resolves();
+
+            peerCard = new IdCard({userName: 'peer', roles: ['PeerAdmin']}, {'x-type': 'web', 'name': 'myProfile'});
+            channelCard = new IdCard({userName: 'channel', roles: ['ChannelAdmin']}, {
+                'x-type': 'web',
+                'name': 'myProfile'
+            });
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve({peer: peerCard, channel: channelCard})
+            });
+
+            service.addIdentityCard(idCard, 'myCardRef')
+                .then(() => {
+                    return service.setCurrentIdentityCard('myCardRef');
+                })
+                .then(() => {
+                    return service.addIdentityCard(peerCard, 'peerRef');
+                })
+                .then(() => {
+                    return service.addIdentityCard(channelCard, 'channelRef');
+                });
+
+            tick();
+
+        })));
+
+        afterEach(() => {
+            mockUpdateFiles.reset();
+            mockUpdatePackage.reset();
         });
 
-        it('should deploy the file', fakeAsync(() => {
+        it('should deploy the file', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
             component['currentFile'] = 'my file';
 
-            component.deploy();
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            component['deploying'].should.equal(true);
 
             tick();
 
             component['deploying'].should.equal(false);
 
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, peerCard, channelCard);
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.have.been.called;
-        }));
+        })));
 
-        it('should\'t deploy if already deploying', () => {
-            mockAdminService.upgrade.reset();
+        it('should\'t deploy if already deploying', fakeAsync(inject([IdentityCardService], (identityCardService: IdentityCardService) => {
+            const identitySpy = sinon.spy(identityCardService, 'getCurrentIdentityCard');
             component['deploying'] = true;
 
-            component.deploy();
+            mockFileService.isDirty.returns(true);
 
-            mockAdminService.install.should.not.have.been.called;
-            mockAdminService.upgrade.should.not.have.been.called;
-        });
+            fixture.detectChanges();
+            tick();
 
-        it('should set current file to previous file', fakeAsync(() => {
-            component['previousFile'] = 'my file';
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
 
-            component.deploy();
+            deployButton.triggerEventHandler('click', null);
+
+            identitySpy.should.not.have.been.called;
+        })));
+
+        it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            sinon.stub(sampleBusinessNetworkService, 'upgradeBusinessNetwork').returns(Promise.reject('some error'));
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
 
             tick();
 
             component['deploying'].should.equal(false);
-
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.called;
+        })));
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
+        it('should handle error from modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
 
-        it('should handle error', fakeAsync(() => {
-            mockAdminService.upgrade.returns(Promise.reject('some error'));
-            component.deploy();
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
 
             tick();
 
@@ -1367,7 +1452,70 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
             mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
+        })));
+
+        it('should handle cancel from modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(1)
+            });
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        })));
+
+        it('should not open modal for web version', fakeAsync(inject([SampleBusinessNetworkService, IdentityCardService], (sampleBusinessNetworkService: SampleBusinessNetworkService, identityCardService: IdentityCardService) => {
+            mockModal.open.reset();
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let webIdCard = new IdCard({userName: 'carrot'}, {'x-type': 'web', 'name': 'myProfile'});
+
+            identityCardService.addIdentityCard(webIdCard, 'web-card')
+                .then(() => {
+                    identityCardService.setCurrentIdentityCard('web-card');
+                });
+
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
+            component['currentFile'] = 'my file';
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            component['deploying'].should.equal(true);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+
+            mockModal.open.should.not.have.been.called;
+
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, webIdCard, webIdCard);
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
+        })));
     });
 
     describe('toggleEditVersionActive', () => {

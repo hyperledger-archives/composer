@@ -1,0 +1,22 @@
+@import '../../../assets/styles/base/colors';
+@import '../../../assets/styles/base/variables';
+
+upgrade-modal {
+
+    .card-select {
+        display: flex;
+        color: $secondary-text;
+        justify-content: space-between;
+
+        .card-select-item {
+            order: 1;
+            margin: auto 1rem;
+        }
+
+        .no-cards {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+        }
+    }
+}
