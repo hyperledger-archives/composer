@@ -30,7 +30,7 @@ const Serializer = require('composer-common').Serializer;
 const version = require('../package.json').version;
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
@@ -61,24 +61,20 @@ describe('Engine', () => {
         mockLoggingService.setLoggerCfg.resolves();
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
+        mockDataService = sinon.createStubInstance(DataService);
+        mockRegistryManager = sinon.createStubInstance(RegistryManager);
+
         mockContext.initialize.resolves();
         mockContext.transactionStart.resolves();
         mockContext.transactionPrepare.resolves();
         mockContext.transactionCommit.resolves();
         mockContext.transactionRollback.resolves();
         mockContext.transactionEnd.resolves();
-
-        mockDataService = sinon.createStubInstance(DataService);
-        mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        mockContext.initialize.resolves();
         mockContext.getDataService.returns(mockDataService);
         mockContext.getRegistryManager.returns(mockRegistryManager);
         mockContext.getLoggingService.returns(mockLoggingService);
-
         sandbox.stub(Logger, 'setLoggerCfg').returns('Logger set');
-
         engine = new Engine(mockContainer);
-
         testNetworkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
         mockContext.getBusinessNetworkDefinition.returns(testNetworkDefinition);
     });
@@ -105,6 +101,141 @@ describe('Engine', () => {
     });
 
     describe('#init', () => {
+        beforeEach(() => {
+            engine.start = sinon.stub();
+            engine.upgrade = sinon.stub();
+        });
+
+        it('should call start if $sysdata collection doesn\'t exist by rejection', async () => {
+            mockDataService.getCollection.withArgs('$sysdata').rejects(new Error('no collection'));
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.start);
+            sinon.assert.calledWith(engine.start, mockContext, 'some args');
+            sinon.assert.notCalled(mockContext.getSerializer);
+        });
+
+        it('should call start if $sysdata collection doesn\'t exist with null', async () => {
+            mockDataService.getCollection.withArgs('$sysdata').resolves(null);
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.start);
+            sinon.assert.calledWith(engine.start, mockContext, 'some args');
+            sinon.assert.notCalled(mockContext.getSerializer);
+        });
+
+
+        it('should call start if $sysdata collection exists, but metanetwork doesn\'t by rejection', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            sysdata.get.withArgs('metanetwork').rejects('no meta');
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.start);
+            sinon.assert.calledWith(engine.start, mockContext, 'some args');
+            sinon.assert.notCalled(mockContext.getSerializer);
+        });
+
+        it('should call start if $sysdata collection exists, but metanetwork doesn\'t with null', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            mockSerializer.fromJSON.throws(new Error('an error'));
+            mockContext.getSerializer.returns(mockSerializer);
+            sysdata.get.withArgs('metanetwork').resolves(null);
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.start);
+            sinon.assert.calledWith(engine.start, mockContext, 'some args');
+            sinon.assert.calledOnce(mockContext.getSerializer);
+        });
+
+        it('should call start if $sysdata collection exists, but metanetwork doesn\'t with null, and serializer returns null', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            mockSerializer.fromJSON.returns(null);
+            mockContext.getSerializer.returns(mockSerializer);
+            sysdata.get.withArgs('metanetwork').resolves(null);
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.start);
+            sinon.assert.calledWith(engine.start, mockContext, 'some args');
+            sinon.assert.calledOnce(mockContext.getSerializer);
+        });
+
+        it('should call upgrade if $sysdata collection exists, metanetwork exists and version exists', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            mockSerializer.fromJSON.returns({runtimeVersion: '0.20.0'});
+            mockContext.getSerializer.returns(mockSerializer);
+            sysdata.get.withArgs('metanetwork').resolves('some json');
+
+            await engine.init(mockContext, '', 'some args');
+
+            sinon.assert.calledOnce(engine.upgrade);
+            sinon.assert.calledWith(engine.upgrade, mockContext, 'some args', sysdata, {runtimeVersion: '0.20.0'});
+            sinon.assert.calledOnce(mockContext.getSerializer);
+        });
+
+
+    });
+
+    describe('#upgrade', () => {
+        it('should update the metanetwork with a new version', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockContainer.getVersion.returns('0.20.1');
+
+            await engine.upgrade(mockContext, '', sysdata, {runtimeVersion:'0.20.0'});
+            sinon.assert.calledOnce(sysdata.update);
+            sinon.assert.calledWith(sysdata.update, 'metanetwork', {
+                '$class': 'org.hyperledger.composer.system.Network',
+                'networkId': 'test-network@1.0.0',
+                'runtimeVersion': '0.20.1'
+            });
+            sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+            sinon.assert.calledOnce(mockContext.transactionPrepare);
+            sinon.assert.calledOnce(mockContext.transactionCommit);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
+        });
+
+        it('should throw error if upgrade not allowed', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockContainer.getVersion.returns('0.21.0');
+
+            try {
+                await engine.upgrade(mockContext, '', sysdata, {runtimeVersion:'0.20.0'});
+                should.fail('Expected error to be thrown');
+            } catch(err) {
+                err.message.should.match(/Cannot upgrade/);
+                sinon.assert.notCalled(sysdata.update);
+            }
+        });
+
+        it('should rollback if sysdata update fails', async () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            sysdata.update.rejects(new Error('update failure'));
+            mockContainer.getVersion.returns('0.20.1');
+
+            try {
+                await engine.upgrade(mockContext, '', sysdata, {runtimeVersion:'0.20.0'});
+                should.fail('Expected error to be thrown');
+            } catch(err) {
+                err.message.should.match(/update failure/);
+                sinon.assert.notCalled(mockRegistryManager.createDefaults);
+                sinon.assert.calledOnce(mockContext.transactionRollback);
+                sinon.assert.calledOnce(mockContext.transactionEnd);
+            }
+        });
+    });
+
+    describe('#start', () => {
 
         let tx;
         let json;
@@ -122,35 +253,26 @@ describe('Engine', () => {
             mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
         });
 
-        it('should reject for an unrecognized function', () => {
-            return engine.init(mockContext, 'blahblahblah', [])
-                .should.be.rejectedWith(/Unsupported function "blahblahblah" with arguments "\[\]"/);
-        });
-
         it('should reject for invalid arguments', () => {
-            return engine.init(mockContext, 'start', ['no', 'args', 'supported'])
+            return engine.start(mockContext, ['no', 'args', 'supported'])
                 .should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "start", expecting "\[\"serializedResource\"\]"/);
         });
 
         it('should reject for a missing $class', () => {
             delete json.$class;
-            return engine.init(mockContext, 'start', [JSON.stringify(json)])
+            return engine.start(mockContext, [JSON.stringify(json)])
                 .should.be.rejectedWith(/The transaction data specified is not valid/);
         });
 
         it('should reject for an invalid $class', () => {
             json.$class = 'WoopWoop';
-            return engine.init(mockContext, 'start', [JSON.stringify(json)])
+            return engine.start(mockContext, [JSON.stringify(json)])
                 .should.be.rejectedWith(/The transaction data specified is not valid/);
-        });
-
-        it('should accept upgrade function', () => {
-            return engine.init(mockContext, 'upgrade');
         });
 
         it('should enable logging if logging specified on the init', () => {
             json.logLevel = 'DEBUG';
-            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
+            return engine.start(mockContext, [JSON.stringify(json)]).then(() => {
                 sinon.assert.calledOnce(mockLoggingService.setLoggerCfg);
                 sinon.assert.calledOnce(Logger.setLoggerCfg);
                 sinon.assert.calledWith(Logger.setLoggerCfg, { logger: 'config', debug: 'DEBUG' }, true);
@@ -159,21 +281,21 @@ describe('Engine', () => {
         });
 
         it('should create system collections', () => {
-            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
+            return engine.start(mockContext, [JSON.stringify(json)]).then(() => {
                 sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                 sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
             });
         });
 
         it('should create default registries', () => {
-            return engine.init(mockContext, 'start', [JSON.stringify(json)]).then(() => {
+            return engine.start(mockContext, [JSON.stringify(json)]).then(() => {
                 sinon.assert.called(mockRegistryManager.createDefaults);
             });
         });
 
         it('should rollback if an error occurs', () => {
             stubSubmitTransaction.rejects();
-            return engine.init(mockContext, 'start', [JSON.stringify(json)])
+            return engine.start(mockContext, [JSON.stringify(json)])
                 .should.be.rejected
                 .then(() => {
                     sinon.assert.calledWithExactly(mockContext.transactionStart, false);
