@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/log/node.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/log/consolelogger.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/log/node.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/log/consolelogger.js</h1>
     
 <section>
     <article>
@@ -97,85 +97,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 'use strict';
 
-/** @description Internal class for handling a simple directed tree to support filtering
+const util = require('util');
+
+/**
+ * A functional logger implementation that simply writes to the console.
  * @private
- * @class
- * @memberof module:composer-common
  */
-class Node {
-
-    /** @description creates a new node
-     * @TODO replace the include with a filter level
-     *
-     * @param {String} name name of the node i.e. package &amp; class
-     * @param {boolean} include should this included in the trace
-     *
-     * @private
-     */
-    constructor(name,include){
-        this.name=name;
-        this.include =include;
-        this.children=[];
-    }
-
+class ConsoleLogger {
 
     /**
-     * @description adds a new node as a child of this at the start of the listTitles
-     * @param {Node} node Child node to add
-     *
-     * @private
+     * Called to format.
+     * @param {string} method The method.
+     * @param {string} msg The message.
+     * @param {*} [args] The arguments.
+     * @returns {string} The formatted message.
      */
-    addChildNodeAtStart(node){
-        this.children.push(node);
-    }
-
-    /**
-     * @description what is the name of this node?
-     * @return {String} name as set on constructor
-     *
-     * @private
-     */
-    getName(){
-        return this.name;
+    format(method, msg, args) {
+        if (!args) {
+            return util.format('%s %s', method, msg);
+        }
+        let formattedArguments = args.map((arg) => {
+            if (typeof(arg) === 'function') {
+                return '&lt;function>';
+            } else if (arg === Object(arg)) {
+                // It's an object, array, or function, so serialize it as JSON.
+                try {
+                    return JSON.stringify(arg);
+                } catch (e) {
+                    return arg;
+                }
+            } else {
+                return String(arg);
+            }
+        }).join(', ');
+        return util.format('%s %s %s', method, msg, formattedArguments);
     }
 
     /**
-     * @description is this node included in the set trace settings
-     * @return {boolean} included true or false
-     *
-     * @private
+     * Called to log.
+     * @param {string} level The logging level.
+     * @param {string} method The method.
+     * @param {string} msg The message.
+     * @param {*} [args] The arguments.
      */
-    isIncluded(){
-        return this.include;
-    }
-
-
-    /**
-     * @description Set the node to be an inclusion
-     */
-    setIncluded(){
-        this.include = true;
-    }
-
-   /** Find the node in the children that matches the array
-    *
-    * @param {String} nameToFind which node to try and locate in the children
-    * @return {node} Node that matches -
-    *
-    * @private
-    */
-    findChild(nameToFind){
-     // do an array search of the children and match the nameToFind
-        return this.children.find(function(element){
-            return  element.getName()===this;
-        },nameToFind);
+    log(level, method, msg, args) {
+        const formattedMessage = this.format(method, msg, args);
+        switch (level) {
+        case 'debug':
+            console.log(formattedMessage);
+            break;
+        case 'warn':
+            console.warn(formattedMessage);
+            break;
+        case 'info':
+            console.info(formattedMessage);
+            break;
+        case 'verbose':
+            console.log(formattedMessage);
+            break;
+        case 'error':
+            console.error(formattedMessage);
+            break;
+        }
     }
 
 }
 
-module.exports = Node;
+module.exports = ConsoleLogger;
 </pre>
     </article>
 </section>
