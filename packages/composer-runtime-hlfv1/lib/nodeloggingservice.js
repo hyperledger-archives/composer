@@ -34,7 +34,7 @@ class NodeLoggingService extends LoggingService {
     /**
      * Initialise the logging service for the incoming request.
      * This will need to stub for the request so it saves the stub for later use.
-     * 
+     *
      *
      * @param {Object} stub node chaincode stub
      */

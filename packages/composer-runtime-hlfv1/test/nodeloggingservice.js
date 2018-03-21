@@ -15,6 +15,7 @@
 'use strict';
 
 const LoggingService = require('composer-runtime').LoggingService;
+const Logger = require('composer-common').Logger;
 const NodeLoggingService = require('../lib/nodeloggingservice');
 const ChaincodeStub = require('fabric-shim/lib/stub');
 
@@ -22,12 +23,14 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+let chaiSubset = require('chai-subset');
+chai.use(chaiSubset);
 
 describe('NodeLoggingService', () => {
 
     let loggingService;
     let sandbox, mockStub;
-    let outputStub;
+
 
     beforeEach(() => {
         loggingService = new NodeLoggingService();
@@ -61,12 +64,7 @@ describe('NodeLoggingService', () => {
     });
 
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  // debug
-            loggingService.logDebug('doge2');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge2');
-        });
+    describe('#getDefaultCfg', () => {
 
         it('should return the default values', () => {
             delete  process.env.CORE_CHAINCODE_LOGGING_LEVEL;
@@ -103,50 +101,32 @@ describe('NodeLoggingService', () => {
 
     });
 
-    describe('#logInfo', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+    describe('#callback',  () => {
+
+        it('should return warning if no stub',  () => {
+            loggingService.stub = undefined;
+            loggingService.callback().should.equal('Warning - No stub');
         });
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500; //debug
-            loggingService.logInfo('doge4');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge4');
-
-            loggingService.currentLogLevel = 400; //info
-            loggingService.logInfo('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 300; //notice
-            loggingService.logInfo('doge');
-            sinon.assert.notCalled(outputStub);
+        it('should return the fake tx id', () => {
+            loggingService.callback().should.equal('[1548a95f]');
         });
 
     });
 
-    describe('#logNotice', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+
+    describe('#getLoggerCfg',async  () => {
+
+        it('should default if nothing in state', async () => {
+            loggingService.stub.getState.returns([]);
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({'origin':'default-runtime-hlfv1'});
         });
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  //debug
-            loggingService.logNotice('doge5');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge5');
-
-            loggingService.currentLogLevel = 300;  //notice
-            loggingService.logNotice('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 200;  // warning
-            loggingService.logNotice('doge');
-            sinon.assert.notCalled(outputStub);
+        it('should return what was in state',async () => {
+            loggingService.stub.getState.returns(JSON.stringify({batman:'hero'}));
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({batman:'hero'});
         });
 
         it('should have state set by the default logger module ',async ()=>{
@@ -157,48 +137,18 @@ describe('NodeLoggingService', () => {
 
     });
 
-    describe('#logWarning', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+    describe('#initLogging', async  () => {
+
+        it('should default if nothing in state', async () => {
+            mockStub.getState.returns(JSON.stringify({batman:'hero'}));
+            await loggingService.initLogging(mockStub);
+
         });
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  //debug
-            loggingService.logWarning('doge6');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge6');
-
-            loggingService.currentLogLevel = 200;  //warning
-            loggingService.logWarning('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 100; //error
-            loggingService.logInfo('doge');
-            sinon.assert.notCalled(outputStub);
-        });
-
-
-    });
-
-    describe('#initLogging', () => {
-
-        it('should init logging if not init', () => {
-            let enableStub = sinon.stub(loggingService, '_enableLogging').resolves();
-            return loggingService.initLogging(mockStub)
-                .then(() => {
-                    sinon.assert.calledOnce(enableStub);
-                });
-        });
-
-        it('should no-op if logging already enabled', () => {
-            let enableStub = sinon.stub(loggingService, '_enableLogging').resolves();
-            loggingService.currentLogLevel = 100;
-            return loggingService.initLogging(mockStub)
-                .then(() => {
-                    sinon.assert.notCalled(enableStub);
-                });
+        it('should return what was in state',async () => {
+            mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+            await loggingService.initLogging(mockStub);
+            (Logger.getCallBack())();
         });
 
     });
