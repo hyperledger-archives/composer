@@ -20,10 +20,9 @@ const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Logger = require('composer-common').Logger;
+
 const chai = require('chai');
 chai.should();
-chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
@@ -35,7 +34,6 @@ describe('EngineRegistries', () => {
     let mockContext;
     let mockRegistryManager;
     let engine;
-    let sandbox;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -50,14 +48,7 @@ describe('EngineRegistries', () => {
         mockContext.transactionEnd.resolves();
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
-        sandbox = sinon.sandbox.create();
-        sandbox.stub(Logger,'setLoggerCfg');
-
         engine = new Engine(mockContainer);
-    });
-
-    afterEach(()=>{
-        sandbox.restore();
     });
 
     describe('#getAllRegistries', () => {
