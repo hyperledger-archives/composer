@@ -108,4 +108,12 @@ describe('EmbeddedLoggingService', () => {
         });
 
     });
+
+    describe('#mapCfg', () => {
+
+        it('should return what is sent', () => {
+            loggingService.mapCfg('wibble').should.equal('wibble');
+        });
+
+    });
 });

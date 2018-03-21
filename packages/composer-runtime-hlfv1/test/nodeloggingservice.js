@@ -36,6 +36,7 @@ describe('NodeLoggingService', () => {
         loggingService = new NodeLoggingService();
         sandbox = sinon.sandbox.create();
         mockStub = sinon.createStubInstance(ChaincodeStub);
+        mockStub.putState.resolves();
         mockStub.getTxID.returns('1548a95f57863bce4566');
         loggingService.stub = mockStub;
         mockStub.putState.resolves();
@@ -53,10 +54,20 @@ describe('NodeLoggingService', () => {
 
     });
 
+    describe('#setLoggerCfg',()=>{
+        it('should call the putState method',()=>{
+            let cfg = {debug:'everything'};
+            loggingService.setLoggerCfg(cfg);
+            sinon.assert.calledOnce(mockStub.putState);
+            sinon.assert.calledWith(mockStub.putState,'ComposerLogCfg',Buffer.from(JSON.stringify(cfg)));
+        });
+    });
+
 
     describe('#getDefaultCfg', () => {
 
         it('should return the default values', () => {
+            delete  process.env.CORE_CHAINCODE_LOGGING_LEVEL;
             let value = loggingService.getDefaultCfg();
             value.debug.should.equal('composer[error]:*');
         });
@@ -117,7 +128,13 @@ describe('NodeLoggingService', () => {
             let result = await loggingService.getLoggerCfg();
             chai.expect(result).to.containSubset({batman:'hero'});
         });
-        mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+
+        it('should have state set by the default logger module ',async ()=>{
+            loggingService.stub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset(loggingService.getDefaultCfg());
+        });
+
     });
 
     describe('#initLogging', async  () => {
@@ -132,6 +149,41 @@ describe('NodeLoggingService', () => {
             mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
             await loggingService.initLogging(mockStub);
             (Logger.getCallBack())();
+        });
+
+    });
+
+    describe('#mapCfg', async ()=>{
+        let expectedDefault = 'composer[error]:*';
+        it('should handle an empty string with default value',()=>{
+            loggingService.mapCfg('').should.equal(expectedDefault);
+        });
+        it('should handle an empt-ish string with default value',()=>{
+            loggingService.mapCfg(',').should.equal(expectedDefault);
+        });
+        it('should handle a valid fabric value',()=>{
+            loggingService.mapCfg('CRITICAL').should.equal('composer[error]:*');
+            loggingService.mapCfg('ERROR').should.equal('composer[error]:*');
+            loggingService.mapCfg('WARNING').should.equal('composer[warning]:*');
+            loggingService.mapCfg('NOTICE').should.equal('composer[info]:*');
+            loggingService.mapCfg('INFO').should.equal('composer[verbose]:*');
+            loggingService.mapCfg('DEBUG').should.equal('composer[debug]:*');
+        });
+
+        it('should handle a valid composer value',()=>{
+            loggingService.mapCfg('composer[info]:*').should.equal('composer[info]:*');
+            loggingService.mapCfg('composer[debug]:classname,composer[info]:someother,composer[error]:*').should.equal('composer[debug]:classname,composer[info]:someother,composer[error]:*');
+        });
+        it('should handle a * (everything)',()=>{
+            loggingService.mapCfg('*').should.equal(expectedDefault);
+        });
+        it('should handle a mix of composer and fabric, with fabric the answer',()=>{
+            loggingService.mapCfg('composer[info]:*,Critical').should.equal('composer[error]:*');
+        });
+        it('should handle incorrect strings',()=>{
+            loggingService.mapCfg('wibble').should.equal(expectedDefault);
+            loggingService.mapCfg('wibble,stuff').should.equal(expectedDefault);
+            loggingService.mapCfg('composer[stuff]').should.equal(expectedDefault);
         });
 
     });

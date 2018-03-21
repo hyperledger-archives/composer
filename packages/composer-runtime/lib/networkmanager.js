@@ -79,7 +79,9 @@ class NetworkManager extends TransactionHandler {
                 return this.context.getLoggingService().getLoggerCfg();
             })
             .then((cfg)=>{
-                let c =  Logger.setLoggerCfg(Object.assign(cfg,{debug:transaction.newLogLevel}),true);
+                // ask the logging service to do a pre-assignment map to convert any runtime specific control strings
+                let newLevel = this.context.getLoggingService().mapCfg(transaction.newLogLevel);
+                let c =  Logger.setLoggerCfg(Object.assign(cfg,{debug:newLevel}),true);
                 return this.context.getLoggingService().setLoggerCfg(c);
             });
 

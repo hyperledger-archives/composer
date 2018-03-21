@@ -31,8 +31,6 @@ class NodeLoggingService extends LoggingService {
         this.stub = null;
     }
 
-
-
     /**
      *
      * @param {Object} stub node chaincode stub
@@ -40,14 +38,9 @@ class NodeLoggingService extends LoggingService {
     async initLogging(stub) {
         this.stub = stub;
 
-        let json = await this.getLoggerCfg();
-        Logger.setLoggerCfg(json,true);
         Logger.setCallBack(function(){
             return stub.getTxID().substring(0, 8);
         });
-        if( json.origin && json.origin==='default-logger-module'){
-            await this.setLoggerCfg(this.getDefaultCfg());
-        }
 
     }
 
@@ -66,18 +59,17 @@ class NodeLoggingService extends LoggingService {
      * @returns {Object} configuration
      */
     async getLoggerCfg(){
-
         let result = await this.stub.getState(LOGLEVEL_KEY);
         if (result.length === 0) {
             let d = this.getDefaultCfg();
-            await this.setLoggerCfg(d);
             return d;
-
         } else {
             let json = JSON.parse(result.toString());
+            if( json.origin && json.origin==='default-logger-module'){
+                json = this.getDefaultCfg();
+            }
             return json;
         }
-
     }
 
     /**
@@ -87,12 +79,9 @@ class NodeLoggingService extends LoggingService {
         if (this.stub) {
             const shortTxId = this.stub.getTxID().substring(0, 8);
             return `[${shortTxId}]`;
-
         } else {
             return('Warning - No stub');
-
         }
-
     }
 
     /**
@@ -101,23 +90,86 @@ class NodeLoggingService extends LoggingService {
     getDefaultCfg(){
 
         let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
-        if (envVariable){
-            envVariable = envVariable.toLowerCase().trim();
-        }else{
-            envVariable = 'error';
+        let debugString = this.mapFabricDebug(envVariable);
+
+        return {
+            'file': {
+                'maxLevel': 'none'
+            },
+            'console': {
+                'maxLevel': 'silly'
+            },
+            'debug' : debugString,
+            'logger': './consolelogger.js',
+            'origin':'default-runtime-hlfv1'
+        };
+    }
+
+    /**
+     * Produce a valid and clean debug string
+     * Takes away rubbish, and only permits valid values.
+     * If a Fabic setting is found (see regex below) that is used in preference
+     *
+     * @param {String} string input value to process
+     * @return {String} clean string that can be used for setting up logging.
+     */
+    mapCfg(string){
+        let DEFAULT = 'composer[error]:*';
+        // first split it up into elements based on ,
+        let details = string.split(/[\s,]+/);
+
+        // possible composer debug string
+        let debugString = [];
+        const fabricRegex=/^(NOTICE)|(WARNING)|(ERROR)|(CRITICAL)|(INFO)|(DEBUG)$/gi;
+        const composerRegex=/(-?)composer\[?(info|warn|debug|error|verbose)?\]?:([\w\/\*]*)/;
+        // loop over each
+        for (let i=0; i< details.length;i++){
+            // valid matches are either
+            let e = details[i].trim();
+            if (e === '*'){
+                return DEFAULT;
+            }
+            if (e.match(composerRegex)){
+                debugString.push(e);
+            }else  if (e.match(fabricRegex)){
+                return this.mapFabricDebug(e);
+            }
         }
-        // for reference
-        // NPM log levels are
-        //{
-        //  error: 0,
-        //  warn: 1,
-        //  info: 2,
-        //  verbose: 3,
-        //  debug: 4,
-        //  silly: 5
-        //}
+
+        // final check - if NOTHING has turned up, then again go with the default
+        if (debugString.length===0){
+            return DEFAULT;
+        } else {
+            return debugString.join(',');
+        }
+
+    }
+
+    /**
+     * Need to map the high level fabric debug settings to a more fine grained composer level
+     * For reference the NPM levels, and Composers
+     * {
+          error: 0,
+          warn: 1,
+          info: 2,
+          verbose: 3,
+          debug: 4,
+          silly: 5
+        }
+     * @param {String} fabriclevel incomiong fabric level
+     * @return {String} parsed fabric level string to composer.
+     */
+    mapFabricDebug(fabriclevel){
+        let level;
         let debugString;
-        switch (envVariable){
+
+        if (!fabriclevel){
+            level ='';
+        } else {
+            level = fabriclevel.toLowerCase().trim();
+        }
+
+        switch (level){
         case 'critical':
             debugString='composer[error]:*';
             break;
@@ -140,18 +192,7 @@ class NodeLoggingService extends LoggingService {
             debugString='composer[error]:*';
             break;
         }
-
-        return {
-            'file': {
-                'maxLevel': 'none'
-            },
-            'console': {
-                'maxLevel': 'silly'
-            },
-            'debug' : debugString,
-            'logger': './consolelogger.js',
-            'origin':'default-runtime-hlfv1'
-        };
+        return debugString;
     }
 }
 

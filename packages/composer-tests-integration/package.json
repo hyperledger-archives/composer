@@ -8,6 +8,7 @@
     "stop_verdaccio": "PM2_HOME=.pm2 pm2 stop verdaccio || true",
     "start_ldap": "PM2_HOME=.pm2 pm2 start --wait-ready scripts/ldap.js",
     "stop_ldap": "PM2_HOME=.pm2 pm2 stop scripts/ldap.js || true",
+    "stop_pm2": "PM2_HOME=.pm2 pm2 stop all && PM2_HOME=.pm2 pm2 kill",
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run lint",

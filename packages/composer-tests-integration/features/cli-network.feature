@@ -100,7 +100,7 @@ Feature: Cli network steps
             """
             composer network loglevel --card admin@marbles-network 
             """
-        Then The stdout information should include text matching /composer\[verbose\]:*/
+        Then The stdout information should include text matching /composer\[error\]:*/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can create set the log level of the running network

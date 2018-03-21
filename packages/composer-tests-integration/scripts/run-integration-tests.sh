@@ -14,7 +14,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 cd "${DIR}"
 
 # Delete any existing configuration.
-rm -rf ./pm2
+rm -rf ./.pm2
 rm -rf ./scripts/storage
 rm -rf ${HOME}/.config/verdaccio
 rm -rf ${HOME}/.composer/cards/Test*
@@ -152,6 +152,8 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     docker rm -f mongo || true
     npm run stop_ldap
 
+    npm run stop_pm2
+
     # Kill and remove any started Docker images.
     if [ "${DOCKER_FILE}" != "" ]; then
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
@@ -159,7 +161,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     fi
 
     # Delete any written configuration.
-    rm -rf ./pm2
+    rm -rf ./.pm2
     rm -rf ./scripts/storage
     rm -rf ${HOME}/.config/verdaccio
     rm -rf ${HOME}/.composer/cards/Test*

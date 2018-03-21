@@ -108,6 +108,15 @@ class EmbeddedLoggingService extends LoggingService {
             }
         };
     }
+
+
+    /**
+     * No mapping to do, just return the input
+     * @inheritDoc
+     */
+    mapCfg(str){
+        return str;
+    }
 }
 
 module.exports = EmbeddedLoggingService;

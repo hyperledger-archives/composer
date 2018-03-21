@@ -39,14 +39,16 @@ class LogLevel {
         return adminConnection.connect(cardName)
         .then(() => {
             if (newlevel) {
-                return adminConnection.setLogLevel(newlevel);
+                return adminConnection.setLogLevel(newlevel).then(()=>{
+                    return adminConnection.getLogLevel();
+                });
             } else {
                 return adminConnection.getLogLevel();
             }
         })
         .then((result) => {
             if (newlevel) {
-                cmdUtil.log(chalk.blue.bold('The logging level was successfully changed to: ')+newlevel);
+                cmdUtil.log(chalk.blue.bold('The logging level was successfully processed and changed to: ')+result.debug);
             } else {
                 cmdUtil.log(chalk.blue.bold('The current logging level is: ')+result.debug);
                 if(argv.x){

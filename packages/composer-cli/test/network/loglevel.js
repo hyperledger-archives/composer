@@ -34,7 +34,8 @@ describe('composer network logLevel CLI unit tests', () => {
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
         mockAdminConnection.connect.resolves();
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
-        mockAdminConnection.getLogLevel.resolves('INFO');
+        mockAdminConnection.getLogLevel.resolves({debug:'INFO'});
+        mockAdminConnection.setLogLevel.resolves();
         sandbox.stub(process, 'exit');
     });
 

@@ -58,4 +58,14 @@ describe('LoggingService', () => {
         });
 
     });
+
+    describe('#mapCfg', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.mapCfg();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
 });

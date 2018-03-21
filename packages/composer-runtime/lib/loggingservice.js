@@ -50,6 +50,14 @@ class LoggingService extends Service {
     callback(){
         throw new Error('abstract function called');
     }
+
+    /**
+     * @abstract
+     *
+     */
+    mapCfg(){
+        throw new Error('abstract function called');
+    }
 }
 
 module.exports = LoggingService;
