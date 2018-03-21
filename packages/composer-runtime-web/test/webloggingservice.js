@@ -109,4 +109,21 @@ describe('WebLoggingService', () => {
 
     });
 
+    describe('#getLoggerCfg', () => {
+
+        it('should call the console logger', () => {
+            loggingService.getLoggerCfg();
+        });
+
+    });
+
+
+    describe('#mapCfg', () => {
+
+        it('should return what is sent', () => {
+            loggingService.mapCfg('wibble').should.equal('wibble');
+        });
+
+    });
+
 });

@@ -70,6 +70,31 @@ class WebLoggingService extends LoggingService {
         console.warn(message);
     }
 
+    /**
+     * Return the logger config... basically the usual default setting for debug
+     * Console only maxLevel error, and nothing file based
+     * @return {Object} logging configuration
+     */
+    getLoggerCfg(){
+        return {
+            'logger': './winstonInjector.js',
+            'debug': 'composer[debug]:*',
+            'console': {
+                'maxLevel': 'error'
+            },
+            'file': {
+                'maxLevel': 'none'
+            }
+        };
+    }
+    /**
+     * No mapping to do, just return the input
+     * @inheritDoc
+     */
+    mapCfg(str){
+        return str;
+    }
+
 }
 
 module.exports = WebLoggingService;

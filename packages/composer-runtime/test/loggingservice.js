@@ -82,25 +82,16 @@ describe('LoggingService', () => {
 
     });
 
-    describe('#setLogLevel', () => {
+
+    describe('#mapCfg', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.setLogLevel('wow such log');
+                loggingService.mapCfg();
+
             }).should.throw(/abstract function called/);
         });
 
     });
-
-    describe('#getLogLevel', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.getLogLevel();
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
 
 });

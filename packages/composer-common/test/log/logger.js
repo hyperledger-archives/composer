@@ -244,6 +244,13 @@ describe('Logger', () => {
             Logger.getDebugEnv().should.equal('');
         });
 
+
+    });
+
+    describe('#getLoggerCfg', () => {
+        let sandbox;
+
+
     });
 
     describe('#getLoggerConfig', () => {

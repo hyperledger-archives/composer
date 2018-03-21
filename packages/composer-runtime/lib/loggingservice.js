@@ -51,14 +51,6 @@ class LoggingService extends Service {
         throw new Error('abstract function called');
     }
 
-    /**
-     * Write a informational message to the log.
-     * @abstract
-     * @param {string} message The message to write to the log.
-     */
-    logInfo(message) {
-        throw new Error('abstract function called');
-    }
 
     /**
      * Write a notice message to the log.
@@ -79,19 +71,10 @@ class LoggingService extends Service {
     }
 
     /**
-     * Set the log level for the runtime.
      * @abstract
-     * @param {string} newLogLevel The new log level to apply.
+     *
      */
-    setLogLevel(newLogLevel) {
-        throw new Error('abstract function called');
-    }
-
-    /**
-     * Get the current log level for the runtime.
-     * @abstract
-     */
-    getLogLevel() {
+    mapCfg(){
         throw new Error('abstract function called');
     }
 

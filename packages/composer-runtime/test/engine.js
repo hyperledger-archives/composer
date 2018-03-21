@@ -41,9 +41,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-
-const LOG = Logger.getLog('Engine');
-
 describe('Engine', () => {
 
     let modelManager;
@@ -218,6 +215,7 @@ describe('Engine', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockLoggingService.setLogLevel);
                     sinon.assert.calledWith(mockLoggingService.setLogLevel, 'DEBUG');
+
 
                     sinon.assert.calledTwice(mockDataService.ensureCollection);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');

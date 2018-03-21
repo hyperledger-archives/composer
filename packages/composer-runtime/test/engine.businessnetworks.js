@@ -68,7 +68,7 @@ describe('EngineBusinessNetworks', () => {
         mockContext.getAccessController.returns(mockAccessController);
 
         engine = new Engine(mockContainer);
-        sandbox = sinon.sandbox.create();
+
     });
 
     afterEach(() => {

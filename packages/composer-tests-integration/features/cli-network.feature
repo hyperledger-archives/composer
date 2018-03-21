@@ -94,3 +94,19 @@ Feature: Cli network steps
         And The stdout information should include text matching /color:    RED/
         And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
         And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create get back the log level of the running network
+        When I run the following expected pass CLI command
+            """
+            composer network loglevel --card admin@marbles-network 
+            """
+        Then The stdout information should include text matching /composer\[error\]:*/
+        And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create set the log level of the running network
+        When I run the following expected pass CLI command
+            """
+            composer network loglevel --card admin@marbles-network --newlevel 'composer[debug]:acls'
+            """
+        Then The stdout information should include text matching /composer\[debug\]:acls/
+        And The stdout information should include text matching /Command succeeded/        

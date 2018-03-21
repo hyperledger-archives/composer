@@ -53,37 +53,24 @@ class NodeLoggingService extends LoggingService {
         this.currentLogLevel = -1;
     }
 
-    /**
-     * Log a message.
-     * @private
-     * @param {string} message The message to log.
-     * @param {*} logLevel The log level.
-     */
-    _outputMessage(message, logLevel) {
-        const timestamp = new Date().toISOString();
-        const logStr = LOOKUP_LOG_LEVELS[logLevel].padEnd(8);
-        if (this.stub) {
-            const shortTxId = this.stub.getTxID().substring(0, 8);
-            console.log(timestamp, `[${shortTxId}]`, `[${logStr}]`, message);
-
-        } else {
-            console.log(timestamp, `[${logStr}]`, message);
-        }
-    }
 
     /**
      * Initialise the logging service for the incoming request.
      * This will need to stub for the request so it saves the stub for later use.
-     * And enables the logging level currently set.
+     *
+
      *
      * @param {any} stub The stub to save
      */
     async initLogging(stub) {
         this.stub = stub;
-        if (this.currentLogLevel >= 0) {
-            return;
-        }
-        await this._enableLogging();
+
+
+        Logger.setCallBack(function(){
+            return stub.getTxID().substring(0, 8);
+        });
+
+
     }
 
     /**
@@ -112,9 +99,19 @@ class NodeLoggingService extends LoggingService {
      * Write a critical message to the log.
      * @param {string} message The message to write to the log.
      */
-    logCritical(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.CRITICAL) {
-            this._outputMessage(message, LOG_LEVELS.CRITICAL);
+
+    async getLoggerCfg(){
+        let result = await this.stub.getState(LOGLEVEL_KEY);
+        if (result.length === 0) {
+            let d = this.getDefaultCfg();
+            return d;
+        } else {
+            let json = JSON.parse(result.toString());
+            if( json.origin && json.origin==='default-logger-module'){
+                json = this.getDefaultCfg();
+            }
+            return json;
+
         }
     }
 
@@ -122,40 +119,15 @@ class NodeLoggingService extends LoggingService {
      * Write a debug message to the log.
      * @param {string} message The message to write to the log.
      */
-    logDebug(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.DEBUG) {
-            this._outputMessage(message, LOG_LEVELS.DEBUG);
-        }
-    }
 
-    /**
-     * Write an error message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logError(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.ERROR) {
-            this._outputMessage(message, LOG_LEVELS.ERROR);
+    callback(){
+        if (this.stub) {
+            const shortTxId = this.stub.getTxID().substring(0, 8);
+            return `[${shortTxId}]`;
+        } else {
+            return('Warning - No stub');
         }
-    }
 
-    /**
-     * Write a informational message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logInfo(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.INFO) {
-            this._outputMessage(message, LOG_LEVELS.INFO);
-        }
-    }
-
-    /**
-     * Write a notice message to the log.
-     * @param {string} message The message to write to the log.
-     */
-    logNotice(message) {
-        if (this.currentLogLevel >= LOG_LEVELS.NOTICE) {
-            this._outputMessage(message, LOG_LEVELS.NOTICE);
-        }
     }
 
     /**
@@ -168,33 +140,112 @@ class NodeLoggingService extends LoggingService {
         }
     }
 
-    /**
-     * Set the log level for the runtime.
-     * @param {string} newLogLevel The new log level to apply.
-     */
-    async setLogLevel(newLogLevel) {
-        newLogLevel = newLogLevel.toUpperCase();
-        if (LOG_LEVELS[newLogLevel]) {
-            try {
-                await this.stub.putState(LOGLEVEL_KEY, newLogLevel);
-                this.currentLogLevel = LOG_LEVELS[newLogLevel];
-                this.logWarning('Setting Composer log level to ' + newLogLevel);
-            }
-            catch(err) {
-                throw new Error('failed to set the new log level. ' + err);
-            }
-        }
-        else {
-            throw new Error(`${newLogLevel} is not a valid log level. Log level not changed.`);
-        }
+
+        let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
+        let debugString = this.mapFabricDebug(envVariable);
+
+        return {
+            'file': {
+                'maxLevel': 'none'
+            },
+            'console': {
+                'maxLevel': 'silly'
+            },
+            'debug' : debugString,
+            'logger': './consolelogger.js',
+            'origin':'default-runtime-hlfv1'
+        };
+
     }
 
     /**
-     * Get the current log level for the runtime.
-     * @return {string} the current log level.
+     * Produce a valid and clean debug string
+     * Takes away rubbish, and only permits valid values.
+     * If a Fabic setting is found (see regex below) that is used in preference
+     *
+     * @param {String} string input value to process
+     * @return {String} clean string that can be used for setting up logging.
      */
-    getLogLevel() {
-        return LOOKUP_LOG_LEVELS[this.currentLogLevel];
+    mapCfg(string){
+        let DEFAULT = 'composer[error]:*';
+        // first split it up into elements based on ,
+        let details = string.split(/[\s,]+/);
+
+        // possible composer debug string
+        let debugString = [];
+        const fabricRegex=/^(NOTICE)|(WARNING)|(ERROR)|(CRITICAL)|(INFO)|(DEBUG)$/gi;
+        const composerRegex=/(-?)composer\[?(info|warn|debug|error|verbose)?\]?:([\w\/\*]*)/;
+        // loop over each
+        for (let i=0; i< details.length;i++){
+            // valid matches are either
+            let e = details[i].trim();
+            if (e === '*'){
+                return DEFAULT;
+            }
+            if (e.match(composerRegex)){
+                debugString.push(e);
+            }else  if (e.match(fabricRegex)){
+                return this.mapFabricDebug(e);
+            }
+        }
+
+        // final check - if NOTHING has turned up, then again go with the default
+        if (debugString.length===0){
+            return DEFAULT;
+        } else {
+            return debugString.join(',');
+        }
+
+    }
+
+    /**
+     * Need to map the high level fabric debug settings to a more fine grained composer level
+     * For reference the NPM levels, and Composers
+     * {
+          error: 0,
+          warn: 1,
+          info: 2,
+          verbose: 3,
+          debug: 4,
+          silly: 5
+        }
+     * @param {String} fabriclevel incomiong fabric level
+     * @return {String} parsed fabric level string to composer.
+     */
+    mapFabricDebug(fabriclevel){
+        let level;
+        let debugString;
+
+        if (!fabriclevel){
+            level ='';
+        } else {
+            level = fabriclevel.toLowerCase().trim();
+        }
+
+        switch (level){
+        case 'critical':
+            debugString='composer[error]:*';
+            break;
+        case 'error':
+            debugString='composer[error]:*';
+            break;
+        case 'warning':
+            debugString='composer[warning]:*';
+            break;
+        case 'notice':
+            debugString='composer[info]:*';
+            break;
+        case 'info':
+            debugString='composer[verbose]:*';
+            break;
+        case 'debug':
+            debugString='composer[debug]:*';
+            break;
+        default:
+            debugString='composer[error]:*';
+            break;
+        }
+        return debugString;
     }
 }
 

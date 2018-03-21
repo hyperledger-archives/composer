@@ -35,7 +35,8 @@ class Engine {
      */
     constructor(container) {
         this.container = container;
-        this.installLogger();
+
+
         const method = 'constructor';
         LOG.entry(method);
         LOG.exit(method);
