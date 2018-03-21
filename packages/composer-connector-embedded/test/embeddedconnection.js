@@ -75,7 +75,6 @@ describe('EmbeddedConnection', () => {
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
             let mockLoggingService = sinon.createStubInstance(LoggingService);
             mockContainer.getLoggingService.returns(mockLoggingService);
-            mockLoggingService.getLoggerCfg.returns({});
             EmbeddedConnection.createEngine(mockContainer).should.be.an.instanceOf(Engine);
         });
 

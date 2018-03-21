@@ -90,24 +90,6 @@ class EmbeddedLoggingService extends LoggingService {
             return 'UnsetLogLevel';
         }
     }
-
-    /**
-     * Return the logger config... basically the usual default setting for debug
-     * Console only maxLevel error, and nothing file based
-     * @return {Object} config - console only
-     */
-    getLoggerCfg(){
-        return {
-            'logger': './winstonInjector.js',
-            'debug': 'composer[debug]:*',
-            'console': {
-                'maxLevel': 'error'
-            },
-            'file': {
-                'maxLevel': 'none'
-            }
-        };
-    }
 }
 
 module.exports = EmbeddedLoggingService;
