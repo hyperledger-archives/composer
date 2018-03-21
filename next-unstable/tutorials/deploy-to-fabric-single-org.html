@@ -611,34 +611,31 @@ ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
 
 <p>In this step, you will install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes. In Hyperledger Fabric terms, this is a chaincode install operation.</p>
 
-<p>Run the <code>composer network install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes that you specified in the connection profile file you created in step three:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network install -c PeerAdmin@fabric-network -a tutorial-network@0.0.1.bna
+<p>Run the <code>composer runtime install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes that you specified in the connection profile file you created in step three:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -c PeerAdmin@fabric-network -n tutorial-network
 </code></pre></div>
-<p>Let&#39;s explore the options that we passed to the <code>composer network install</code> command.</p>
+<p>Let&#39;s explore the options that we passed to the <code>composer runtime install</code> command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-c PeerAdmin@fabric-network
 </code></pre></div>
 <p>This is the name of the business network card that we imported into the wallet in step six.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">-a tutorial-network@0.0.1.bna
+<div class="highlight"><pre><code class="language-" data-lang="">-n tutorial-network
 </code></pre></div>
-<p>You must install a copy of the business network. Here we specify the file name of the blockchain business network that we are deploying, <code>tutorial-network@0.0.1.bna</code>.</p>
+<p>You must install a copy of the Hyperledger Composer runtime for each blockchain business network, and specify the name of the blockchain business network. Here we specify the name of the blockchain business network that we are deploying, <code>tutorial-network</code>.</p>
 
 <h2 id="step-eight-starting-the-blockchain-business-network">Step Eight: Starting the blockchain business network</h2>
 
 <p>In this step, you will start the blockchain business network. In Hyperledger Fabric terms, this is a chaincode instantiate operation.</p>
 
 <p>Run the <code>composer network start</code> command to start the blockchain business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 0.0.1 -A admin -S adminpw -c PeerAdmin@fabric-network
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@fabric-network -a tutorial-network.bna -A admin -S adminpw
 </code></pre></div>
 <p>Let&#39;s explore the options that we passed to the <code>composer network start</code> command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-c PeerAdmin@fabric-network
 </code></pre></div>
 <p>This is the name of the business network card that we imported into the wallet in step six.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">--networkName tutorial-network
+<div class="highlight"><pre><code class="language-" data-lang="">-a tutorial-network.bna
 </code></pre></div>
-<p>This is the name of blockchain business network called <code>tutorial-network</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">--networkVersion 0.0.1
-</code></pre></div>
-<p>This is the version of blockchain business network called <code>tutorial-network</code>, defined in the <code>version</code> property of the package.json for the business network</p>
+<p>This is the path to the business network archive that contains the business network definition for our blockchain business network called <code>tutorial-network</code>.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-A admin
 </code></pre></div>
 <p>When a blockchain business network is deployed, you must create at least one participant who will be a blockchain business network administrator. This participant is responsible for onboarding other participants into the blockchain business network. Here, we are specifying that we want to create a single blockchain business network administrator called <code>admin</code>.</p>

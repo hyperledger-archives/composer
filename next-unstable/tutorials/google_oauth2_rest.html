@@ -266,15 +266,17 @@ ga('send', 'pageview');
             
               <h1 id="configuring-google-oauth2-0-authentication-strategy-with-a-persistent-composer-rest-server-instance">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</h1>
 
-<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial. You will run the REST server in <a href="https://hyperledger.github.io/composer/next/integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial (an overview diagram is shown below - a more detailed diagram showing the authentication flow is shown further down). You will run the REST server in <a href="https://hyperledger.github.io/composer/next/integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+
+<p><img src="../assets/img/tutorials/auth/intro_diagram.png" alt="Google Authentication and REST Server Overview"></p>
 
 <p>Note: we have set up the standard &#39;Development Fabric&#39; network as instructed in Step 3 &#39;Setting up your IDE&#39; described <a href="https://hyperledger.github.io/composer/next/installing/development-tools.html">here</a></p>
-
-<p><img src="../assets/img/tutorials/auth/auth_diagram.png" alt="Google+ Authentication and Authorization"></p>
 
 <p>There are many Passport strategies one can choose from. In a business organisational sense, enterprise strategies such as SAML, JSON Web Tokens (JWT) or LDAP are more appropriate obviously - eg an organisational Active Directory server. We use/enable Google+ APIs as the authentication provider for this tutorial, as its easy for anyone to setup a Google account (see Appendix on how to achieve this) and configure the service / do the tutorial without worrying about middleware prereqs to be installed.</p>
 
 <p>OAUTH2.0 is really an &#39;authorization protocol&#39; but can be used as a &#39;delegated authentication scheme&#39; - authentication normally means identifying a user by his or her own credentials, whereas the OAUTH2.0 authentication, as used here, is used as a &#39;delegate&#39; authentication scheme. There are a number of &#39;roles&#39; to expand on here by way of background. The Composer REST server&#39;s role is to provide access to business network resources, which are protected by the Google+ API OAuth2.0 scheme. The resource owner is the Google+ API user account we set up (described in the appendix) its role is to grant consent (or otherwise) to the client application. The Google+ authorization server requests consent of the resource owner and issues access tokens to REST clients (eg web client apps)  to enable them to access the protected resources.  Smaller API providers may use the same application and URL space in Google+ for both the authorization server and resource server. The idea is that, when a web application user (consuming REST APIs to access a business network) comes along,  he/she doesn&#39;t have to pre-register anything ;  the application user is granted consent by virtue of the configured client application (although that does depend on the OAUTH2.0 flow set up). In our tutorial, we are using a browser to consume the REST APIs and see how this authentication flow actually works.</p>
+
+<p><img src="../assets/img/tutorials/auth/auth_diagram.png" alt="Google+ Authentication and Authorization"></p>
 
 <p>An access key is granted following consent ; the token allows a client to access the APIs protected by OAuth2.0. In OAuth 2.0, these access tokens are called “bearer tokens”, and can be used alone, with no signature or cryptography, to access the information. Furthermore, the access token is stored in a cookie in the local storage of the user&#39;s web browser. When the user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated, instead of reauthenticating the user.</p>
 
@@ -525,7 +527,7 @@ myorg/composer-rest-server</p></li>
 <li><p>Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:</p>
 
 <p>sed -e &#39;s/localhost:/orderer.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/ca.org1.example.com:/&#39;  &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network</p></li>
-<li><p>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and thefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</p>
+<li><p>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</p>
 
 <p>composer card export -f jdoe_exp.card -n jdoe@trade-network ; rm jdoe.card</p></li>
 <li><p>Repeat the above steps for participant <strong>Ken Coe</strong> (<code>kcoe</code>) - creating a <code>trader2</code> participant and issuing the identity <code>kcoe</code> - the sequence of commands are:</p>
@@ -573,7 +575,7 @@ Password: composer00</p>
 
 <p>GET /wallets</p></li>
 <li><p>You need to add an identity to the REST client wallet and then set this identity as the default one to use for making API calls. Go to the POST system operation under /Wallets - its called the <code>/Wallets/Import</code> endpoint</p></li>
-<li><p>Choose to import the file jdoe.card  - and provide the name of the card as jdoe@trade-network  and click &#39;Try it Out&#39;</p></li>
+<li><p>Choose to import the file <code>jdoe_exp.card</code>  - and provide the name of the card as jdoe@trade-network  and click &#39;Try it Out&#39;</p></li>
 </ol>
 
 <p><img src="../assets/img/tutorials/auth/import-jdoe-wallet.png" alt="Import jdoe Wallet"></p>
@@ -614,7 +616,7 @@ Password: composer00</p>
 <p>You should now be able to see all Trader participants currently created. If any ACLs have been set then restrictions on what he can see may apply (they haven&#39;t been applied for this current sample network, but examples of ACL rules can be seen in the <a href="./acl-trading.html">ACL tutorial</a> FYI). Suffice to say that REST APIs accessing a business network are subject to access control - like any other interaction with the business network (such as Playground, JS APIs, CLI etc).</p>
 
 <ol>
-<li> Next, return to the <code>POST /wallet/import</code> operation and import the card file <code>kcoe.card</code> with the card name set to <code>kcoe@trade-network</code> and click on &#39;<code>Try it Out</code>to import it - it should return a successful (204) response. </li>
+<li> Next, return to the <code>POST /wallet/import</code> operation and import the card file <code>kcoe_exp.card</code> with the card name set to <code>kcoe@trade-network</code> and click on &#39;<code>Try it Out</code>to import it - it should return a successful (204) response. </li>
 </ol>
 
 <p><img src="../assets/img/tutorials/auth/import-kcoe-wallet.png" alt="Import kcoe to Wallet"></p>
@@ -669,15 +671,15 @@ Password: composer00</p>
 <h2 class='everybody'>Step A2:  Create Credentials Service Account  </h2>
 
 <ol>
-<li><p>Once you have enabled the service you will be prompted to create service account Credentials so that you can use the service.  Click ‘Create Credentials’.</p></li>
+<li><p>Once you have enabled the service you will be prompted to create Service Account Credentials so that you can use the service.  Click ‘Create Credentials’.</p></li>
 <li><p>You will be asked a series of questions to determine what kind of credentials you will need. Give the answers shown in the screenshot below. Choose &#39;Google+ API&#39;  for the API, Web Server (e.g. Node js, Tomcat) and Application data and &#39;No&#39; for the Engine question at the bottom.</p></li>
+<li><p>Click on <code>What credentials do I need</code>  and hit Continue</p></li>
 </ol>
 
 <p><img src="../assets/img/tutorials/auth/google/setup_credentials.png" alt="Setup Credentials"></p>
 
 <ol>
 <li><p>Next, setup a Credentials service account - with the name &#39;GoogleAuthService&#39; - select &#39;Project&#39; in the dropdown and select a role of <code>Owner</code> and a type of JSON and </p></li>
-<li><p>Click on <code>What credentials do I need</code>  and hit Continue</p></li>
 <li><p>Click on &#39;Get your Credentials&#39; - it should download (or prompt to download) the service credentials in JSON format - save these to a safe location.</p></li>
 </ol>
 
@@ -694,7 +696,7 @@ Password: composer00</p>
 <h2 class='everybody'>Step A3:  Create OAUTH2.0 Consent </h2>
 
 <ol>
-<li>Go to the ‘OAuth consent screen&#39; tab = you will neeed to give a &#39;product name&#39;  like &#39;Google Auth REST OAUTH2 service&#39; - a banner that is shown when consent to authorize a request is requested  (ie when we test it on the REST client in the main tutorial) and an email address, click ‘Save’. </li>
+<li>Go to the ‘OAuth consent screen&#39; tab = you will need to give a &#39;product name&#39;  like &#39;Google Auth REST OAUTH2 service&#39; - a banner that is shown when consent to authorize a request is requested  (ie when we test it on the REST client in the main tutorial) and an email address, click ‘Save’. </li>
 </ol>
 
 <p>The OAuth consent screen is what the user (in the tutorial) will see when they are authenticating themselves against the Google Auth REST Service</p>

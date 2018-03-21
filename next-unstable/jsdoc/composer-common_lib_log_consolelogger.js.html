@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-runtime/lib/installedbusinessnetwork.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/log/consolelogger.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-runtime/lib/installedbusinessnetwork.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/log/consolelogger.js</h1>
     
 <section>
     <article>
@@ -100,95 +100,73 @@
 
 'use strict';
 
-const AclCompiler = require('./aclcompiler');
-const QueryCompiler = require('./querycompiler');
-const ScriptCompiler = require('./scriptcompiler');
+const util = require('util');
 
 /**
- * Data associated with the currently installed business network, used by Context.
- * Instances should be created using the newInstance static factory function.
- * @protected
- * @memberof module:composer-runtime
+ * A functional logger implementation that simply writes to the console.
+ * @private
  */
-class InstalledBusinessNetwork {
+class ConsoleLogger {
+
     /**
-     * Factory function for creating new instances of InstalledBusinessNetwork.
-     * @param {BusinessNetworkDefinition} networkDefinition business network definition
-     * @return {InstalledBusinessNetwork} new instance
-     * @async
+     * Called to format.
+     * @param {string} method The method.
+     * @param {string} msg The message.
+     * @param {*} [args] The arguments.
+     * @returns {string} The formatted message.
      */
-    static async newInstance(networkDefinition) {
-        const scriptManager = networkDefinition.getScriptManager();
-        const queryManager = networkDefinition.getQueryManager();
-        const aclManager = networkDefinition.getAclManager();
-
-        const networkInfo = {
-            definition: networkDefinition,
-            compiledScriptBundle: new ScriptCompiler().compile(scriptManager),
-            compiledQueryBundle: new QueryCompiler().compile(queryManager),
-            compiledAclBundle: new AclCompiler().compile(aclManager, scriptManager),
-            archive: await networkDefinition.toArchive()
-        };
-
-        return new InstalledBusinessNetwork(networkInfo);
+    format(method, msg, args) {
+        if (!args) {
+            return util.format('%s %s', method, msg);
+        }
+        let formattedArguments = args.map((arg) => {
+            if (typeof(arg) === 'function') {
+                return '&lt;function>';
+            } else if (arg === Object(arg)) {
+                // It's an object, array, or function, so serialize it as JSON.
+                try {
+                    return JSON.stringify(arg);
+                } catch (e) {
+                    return arg;
+                }
+            } else {
+                return String(arg);
+            }
+        }).join(', ');
+        return util.format('%s %s %s', method, msg, formattedArguments);
     }
 
     /**
-     * Constructor.
-     * @param {Object} networkInfo Information on the installed business network
-     * @private
+     * Called to log.
+     * @param {string} level The logging level.
+     * @param {string} method The method.
+     * @param {string} msg The message.
+     * @param {*} [args] The arguments.
      */
-    constructor(networkInfo) {
-        this.definition = networkInfo.definition;
-        this.compiledScriptBundle = networkInfo.compiledScriptBundle;
-        this.compiledQueryBundle = networkInfo.compiledQueryBundle;
-        this.compiledAclBundle = networkInfo.compiledAclBundle;
-        this.archive = networkInfo.archive;
-    }
-
-    /**
-     * Get the business network definition.
-     * @return {BusinessNetworkDefinition} business network definition.
-     */
-    getDefinition() {
-        return this.definition;
-    }
-
-    /**
-     * Get the compiled versions of all scripts contained in the business network.
-     * @return {Object} compiled script bundle
-     */
-    getCompiledScriptBundle() {
-        return this.compiledScriptBundle;
-    }
-
-    /**
-     * Get the compiled versions of all queries contained in the business network.
-     * @return {Object} compiled query bundle
-     */
-    getCompiledQueryBundle() {
-        return this.compiledQueryBundle;
-    }
-
-    /**
-     * Get the compiled versions of all ACLs contained in the business network.
-     * @return {Object} compiled ACL bundle
-     */
-    getCompiledAclBundle() {
-        return this.compiledAclBundle;
-    }
-
-    /**
-     * Get the business network archive.
-     * @return {BusinessNetworkArchive} business network archive.
-     */
-    getArchive() {
-        return this.archive;
+    log(level, method, msg, args) {
+        const formattedMessage = this.format(method, msg, args);
+        switch (level) {
+        case 'debug':
+            console.log(formattedMessage);
+            break;
+        case 'warn':
+            console.warn(formattedMessage);
+            break;
+        case 'info':
+            console.info(formattedMessage);
+            break;
+        case 'verbose':
+            console.log(formattedMessage);
+            break;
+        case 'error':
+            console.error(formattedMessage);
+            break;
+        }
     }
 
 }
 
-module.exports = InstalledBusinessNetwork;
+module.exports = ConsoleLogger;
 </pre>
     </article>
 </section>
