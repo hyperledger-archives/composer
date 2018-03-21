@@ -15,13 +15,13 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const semver = require('semver');
+const fs = require('fs'),
+      path = require('path'),
+      semver = require('semver'),
 
-const lernaDirectory = path.resolve('.');
-const lernaConfigFile = path.resolve(lernaDirectory, 'lerna.json');
-const lernaConfig = require(lernaConfigFile);
-const targetVersion = semver.inc(lernaConfig.version, 'patch');
+      lernaDirectory = path.resolve('.'),
+      lernaConfigFile = path.resolve(lernaDirectory, 'lerna.json'),
+      lernaConfig = require(lernaConfigFile),
+      targetVersion = semver.inc(lernaConfig.version, 'patch');
 lernaConfig.version = targetVersion;
 fs.writeFileSync(lernaConfigFile, JSON.stringify(lernaConfig, null, 2), 'utf8');
