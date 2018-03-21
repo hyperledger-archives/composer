@@ -148,17 +148,7 @@ label {
     fill: currentColor;
 }
 
-/***.transaction-properties:hover, .transaction-properties:hover span{  
-overflow: visible;
-position: relative;
- make readable design 
-background-color: #FFFFFF;
-border: 1px solid #FFFFFF;
-border-radius: 4px;
-padding: 3px;
-/* compensate padding and border size to avoid jerking 
-margin-left: -4px;
+.attribute {
+    font-size: 18px;
 }
-***/
-
 

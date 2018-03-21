@@ -303,7 +303,6 @@ module.exports = yeoman.Base.extend({
             .then((answers2) => {
                 if (this.liveNetwork) {
                     this.appName = answers2.appName;
-                    Util.log(this.appName);
                     this.appDescription = answers2.appDescription;
                     this.authorName = answers2.authorName;
                     this.autherEmail = answers2.authorEmail;
@@ -710,7 +709,7 @@ module.exports = yeoman.Base.extend({
             });
 
             let model = this._generateTemplateModel();
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|Transaction)*'), this.destinationPath(), model);
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|transaction)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
