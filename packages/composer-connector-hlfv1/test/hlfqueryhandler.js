@@ -225,10 +225,7 @@ describe('HLFQueryHandler', () => {
             mockChannel.queryByChaincode.rejects(new Error('Query Failed'));
             return queryHandler.querySinglePeer(mockPeer2, 'txid', 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Query Failed/);
-
         });
-
-
     });
 
 });
