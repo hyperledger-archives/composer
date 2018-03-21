@@ -315,17 +315,17 @@ event RemoveNotification {
 <li><p>Replace the transaction logic with the following JavaScript:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.biznet.Trade} trade - the trade to be processed
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */</span>
 <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="c1">// set the new owner of the commodity</span>
     <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
-    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
 
     <span class="c1">// emit a notification that a trade has occurred</span>
-    <span class="nx">let</span> <span class="nx">tradeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.biznet'</span><span class="p">,</span> <span class="s1">'TradeNotification'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">tradeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.mynetwork'</span><span class="p">,</span> <span class="s1">'TradeNotification'</span><span class="p">);</span>
     <span class="nx">tradeNotification</span><span class="o">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">;</span>
     <span class="nx">emit</span><span class="p">(</span><span class="nx">tradeNotification</span><span class="p">);</span>
 
@@ -335,19 +335,19 @@ event RemoveNotification {
 
 <span class="sd">/**
  * Remove all high volume commodities
- * @param {org.acme.biznet.RemoveHighQuantityCommodities} remove - the remove to be processed
+ * @param {org.acme.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
  * @transaction
  */</span>
 <span class="k">async</span> <span class="k">function</span> <span class="nf">removeHighQuantityCommodities</span><span class="p">(</span><span class="nx">remove</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.biznet.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
     <span class="nx">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'selectCommoditiesWithHighQuantity'</span><span class="p">);</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="nx">let</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;</span> <span class="nx">results</span><span class="o">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">n</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">let</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span>
 
         <span class="c1">// emit a notification that a trade was removed</span>
-        <span class="nx">let</span> <span class="nx">removeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.biznet'</span><span class="p">,</span><span class="s1">'RemoveNotification'</span><span class="p">);</span>
+        <span class="nx">let</span> <span class="nx">removeNotification</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">()</span><span class="o">.</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.mynetwork'</span><span class="p">,</span><span class="s1">'RemoveNotification'</span><span class="p">);</span>
         <span class="nx">removeNotification</span><span class="o">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">trade</span><span class="p">;</span>
         <span class="nx">emit</span><span class="p">(</span><span class="nx">removeNotification</span><span class="p">);</span>
         <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
@@ -374,27 +374,27 @@ event RemoveNotification {
 query selectCommodities {
   description: "Select all commodities"
   statement:
-      SELECT org.acme.biznet.Commodity
+      SELECT org.acme.mynetwork.Commodity
 }
 
 query selectCommoditiesByExchange {
   description: "Select all commodities based on their main exchange"
   statement:
-      SELECT org.acme.biznet.Commodity
+      SELECT org.acme.mynetwork.Commodity
           WHERE (mainExchange==_$exchange)
 }
 
 query selectCommoditiesByOwner {
   description: "Select all commodities based on their owner"
   statement:
-      SELECT org.acme.biznet.Commodity
+      SELECT org.acme.mynetwork.Commodity
           WHERE (owner == _$owner)
 }
 
 query selectCommoditiesWithHighQuantity {
   description: "Select commodities based on quantity"
   statement:
-      SELECT org.acme.biznet.Commodity
+      SELECT org.acme.mynetwork.Commodity
           WHERE (quantity &gt; 60)
 }
 </code></pre></div></li>
@@ -455,7 +455,7 @@ query selectCommoditiesWithHighQuantity {
 <ol>
 <li><p>First, click on &#39;Trader&#39; in the REST Explorer, then click on the &#39;POST&#39; method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.biznet.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
@@ -464,7 +464,7 @@ query selectCommoditiesWithHighQuantity {
 <li><p>Click &#39;Try it out&#39; to create the Participant. The &#39;Response Code&#39; (scroll down) should be 200 (SUCCESS)</p></li>
 <li><p>Create another trader by copying the following JSON:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.biznet.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER2",
   "firstName": "Jack",
   "lastName": "Sock"
@@ -472,7 +472,7 @@ query selectCommoditiesWithHighQuantity {
 </code></pre></div></li>
 <li><p>Create a third trader by coping the following JSON:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.biznet.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER3",
   "firstName": "Rainer",
   "lastName": "Valens"
@@ -482,20 +482,20 @@ query selectCommoditiesWithHighQuantity {
 <li><p>Click on the POST operation and scroll down to the Parameters section: In the same way as above, create two Commodity Asset records (see below) for owners TRADER1 and TRADER2:</p></li>
 </ol>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "EMA",
   "description": "Corn",
   "mainExchange": "EURONEXT",
   "quantity": 10,
-  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
 }
 </code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "CC",
   "description": "Cocoa",
   "mainExchange": "ICE",
   "quantity": 80,
-  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER2"
 }
 </code></pre></div>
 <h2 id="step-seven-perform-queries-using-the-commodity-trading-rest-api-explorer">Step Seven: Perform queries using the commodity trading REST API explorer</h2>
