@@ -83,17 +83,23 @@ class Engine {
      */
     async init(context, fcn, args) {
         const dataService = context.getDataService();
+        let start = false;
+        let sysdata, metanetwork;
         try {
-            const sysdata = await dataService.getCollection('$sysdata');
+            sysdata = await dataService.getCollection('$sysdata');
             const metanetworkJSON = await sysdata.get('metanetwork');
-            const metanetwork = context.getSerializer().fromJSON(metanetworkJSON);
+            metanetwork = context.getSerializer().fromJSON(metanetworkJSON);
             if (!metanetwork) {
-                await this.start(context, args);
-            } else {
-                await this.upgrade(context, args, sysdata, metanetwork);
+                start = true;
             }
         } catch(err) {
+            start = true;
+        }
+
+        if (start) {
             await this.start(context, args);
+        } else {
+            await this.upgrade(context, args, sysdata, metanetwork);
         }
     }
 

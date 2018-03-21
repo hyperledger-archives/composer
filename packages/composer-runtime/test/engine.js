@@ -184,6 +184,28 @@ describe('Engine', () => {
             sinon.assert.calledOnce(mockContext.getSerializer);
         });
 
+        it('should throw if start throws an error', () => {
+            mockDataService.getCollection.withArgs('$sysdata').rejects(new Error('no collection'));
+            engine.start = sinon.stub();
+            engine.start.rejects(new Error('start error'));
+
+            return engine.init(mockContext, '', 'some args')
+                .should.be.rejectedWith(/start error/);
+        });
+
+        it('should throw if upgrade throws an error', () => {
+            const sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            mockSerializer.fromJSON.returns({runtimeVersion: '0.20.0'});
+            mockContext.getSerializer.returns(mockSerializer);
+            sysdata.get.withArgs('metanetwork').resolves('some json');
+            engine.upgrade = sinon.stub();
+            engine.upgrade.rejects(new Error('upgrade error'));
+
+            return engine.init(mockContext, '', 'some args')
+                .should.be.rejectedWith(/upgrade error/);
+        });
 
     });
 
