@@ -34,6 +34,8 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
+const LOG = Logger.getLog('Engine');
+
 describe('Engine', () => {
     const sandbox = sinon.sandbox.create();
 
@@ -55,10 +57,6 @@ describe('Engine', () => {
         mockContainer = sinon.createStubInstance(Container);
         mockLoggingService = sinon.createStubInstance(LoggingService);
         mockContainer.getLoggingService.returns(mockLoggingService);
-        mockLoggingService.getLoggerCfg.resolves( {
-            'logger':'config'
-        });
-        mockLoggingService.setLoggerCfg.resolves();
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockDataService = sinon.createStubInstance(DataService);
@@ -92,12 +90,35 @@ describe('Engine', () => {
     });
 
     describe('#installLogger', () => {
-
         it('should install a logger for debug level logging', () => {
-            engine.installLogger();
+            LOG.debug('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
         });
 
+        it('should install a logger for warn level logging', () => {
+            LOG.warn('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logWarning, sinon.match(/hello.*world/));
+        });
 
+        it('should install a logger for info level logging', () => {
+            LOG.info('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logInfo, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for verbose level logging', () => {
+            LOG.verbose('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for error level logging', () => {
+            LOG.error('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logError, sinon.match(/hello.*world/));
+        });
+
+        it('should format multiple arguments into a comma separated list', () => {
+            LOG.debug('installLogger', 'hello', 'world', 'i', 'am', 'simon');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/world, i, am, simon/));
+        });
     });
 
     describe('#init', () => {
@@ -292,14 +313,10 @@ describe('Engine', () => {
                 .should.be.rejectedWith(/The transaction data specified is not valid/);
         });
 
-        it('should enable logging if logging specified on the init', () => {
+        it('should enable logging if logging specified on the init', async () => {
             json.logLevel = 'DEBUG';
-            return engine.start(mockContext, [JSON.stringify(json)]).then(() => {
-                sinon.assert.calledOnce(mockLoggingService.setLoggerCfg);
-                sinon.assert.calledOnce(Logger.setLoggerCfg);
-                sinon.assert.calledWith(Logger.setLoggerCfg, { logger: 'config', debug: 'DEBUG' }, true);
-                sinon.assert.calledWithExactly(mockLoggingService.setLoggerCfg, 'Logger set');
-            });
+            await engine.start(mockContext, [JSON.stringify(json)]);
+            sinon.assert.calledWithExactly(mockLoggingService.setLogLevel, json.logLevel);
         });
 
         it('should create system collections', () => {
