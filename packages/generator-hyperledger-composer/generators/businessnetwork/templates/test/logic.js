@@ -113,7 +113,7 @@ describe('#' + namespace, () => {
                 }
             ]
         };
-        const adminCards = await adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), startOptions);
+        const adminCards = await adminConnection.start(businessNetworkName, businessNetworkDefinition.getVersion(), startOptions);
         await adminConnection.importCard(adminCardName, adminCards.get('admin'));
 
         // Create and establish a business network connection
