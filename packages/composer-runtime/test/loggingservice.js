@@ -22,50 +22,76 @@ describe('LoggingService', () => {
 
     let loggingService = new LoggingService();
 
-    describe('#getLoggerCfg', () => {
+    describe('#logCritical', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.getLoggerCfg();
+                loggingService.logCritical('wow such log');
             }).should.throw(/abstract function called/);
         });
 
     });
-    describe('#setLoggerCfg', () => {
+
+    describe('#logDebug', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.setLoggerCfg();
+                loggingService.logDebug('wow such log');
             }).should.throw(/abstract function called/);
         });
 
     });
-    describe('#initLogging', () => {
+
+    describe('#logError', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.initLogging();
+                loggingService.logError('wow such log');
             }).should.throw(/abstract function called/);
         });
 
     });
-    describe('#callback', () => {
+
+    describe('#logInfo', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.callback();
+                loggingService.logInfo('wow such log');
             }).should.throw(/abstract function called/);
         });
 
     });
+
+    describe('#logNotice', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.logNotice('wow such log');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#logWarning', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.logWarning('wow such log');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
 
     describe('#mapCfg', () => {
 
         it('should throw as abstract method', () => {
             (() => {
                 loggingService.mapCfg();
+
             }).should.throw(/abstract function called/);
         });
 
     });
+
 });

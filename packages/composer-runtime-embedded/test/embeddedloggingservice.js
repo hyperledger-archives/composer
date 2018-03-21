@@ -101,6 +101,7 @@ describe('EmbeddedLoggingService', () => {
 
     });
 
+
     describe('#getLoggerCfg', () => {
 
         it('should call the console logger', () => {
@@ -116,4 +117,5 @@ describe('EmbeddedLoggingService', () => {
         });
 
     });
+
 });

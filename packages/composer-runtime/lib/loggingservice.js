@@ -24,31 +24,49 @@ const Service = require('./service');
  */
 class LoggingService extends Service {
 
-    /** Get the config (if possible) for the standard winston logger
+    /**
+     * Write a critical message to the log.
      * @abstract
+     * @param {string} message The message to write to the log.
      */
-    getLoggerCfg() {
+    logCritical(message) {
         throw new Error('abstract function called');
     }
 
     /**
+     * Write a debug message to the log.
      * @abstract
+     * @param {string} message The message to write to the log.
      */
-    setLoggerCfg() {
+    logDebug(message) {
         throw new Error('abstract function called');
     }
 
     /**
+     * Write an error message to the log.
      * @abstract
+     * @param {string} message The message to write to the log.
      */
-    initLogging(){
+    logError(message) {
+        throw new Error('abstract function called');
+    }
+
+
+    /**
+     * Write a notice message to the log.
+     * @abstract
+     * @param {string} message The message to write to the log.
+     */
+    logNotice(message) {
         throw new Error('abstract function called');
     }
 
     /**
+     * Write a warning message to the log.
      * @abstract
+     * @param {string} message The message to write to the log.
      */
-    callback(){
+    logWarning(message) {
         throw new Error('abstract function called');
     }
 
@@ -59,6 +77,7 @@ class LoggingService extends Service {
     mapCfg(){
         throw new Error('abstract function called');
     }
+
 }
 
 module.exports = LoggingService;

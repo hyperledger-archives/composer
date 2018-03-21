@@ -94,6 +94,7 @@ class WebLoggingService extends LoggingService {
     mapCfg(str){
         return str;
     }
+
 }
 
 module.exports = WebLoggingService;

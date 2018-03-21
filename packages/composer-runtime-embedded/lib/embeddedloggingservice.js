@@ -117,6 +117,7 @@ class EmbeddedLoggingService extends LoggingService {
     mapCfg(str){
         return str;
     }
+
 }
 
 module.exports = EmbeddedLoggingService;

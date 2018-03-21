@@ -125,4 +125,5 @@ describe('WebLoggingService', () => {
         });
 
     });
+
 });

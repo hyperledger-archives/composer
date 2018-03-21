@@ -41,7 +41,6 @@ const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-
 describe('Engine', () => {
 
     let modelManager;
@@ -62,10 +61,6 @@ describe('Engine', () => {
         mockContainer = sinon.createStubInstance(Container);
         mockLoggingService = sinon.createStubInstance(LoggingService);
         mockContainer.getLoggingService.returns(mockLoggingService);
-        mockLoggingService.getLoggerCfg.resolves( {
-            'logger':'config'
-        });
-        mockLoggingService.setLoggerCfg.resolves();
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
@@ -74,18 +69,13 @@ describe('Engine', () => {
         mockContext.transactionCommit.resolves();
         mockContext.transactionRollback.resolves();
         mockContext.transactionEnd.resolves();
-
         mockDataService = sinon.createStubInstance(DataService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.initialize.resolves();
         mockContext.getDataService.returns(mockDataService);
         mockContext.getRegistryManager.returns(mockRegistryManager);
-        mockContext.getLoggingService.returns(mockLoggingService);
-
-        sandbox = sinon.sandbox.create();
-        sandbox.stub(Logger,'setLoggerCfg');
-
         engine = new Engine(mockContainer);
+        sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
@@ -103,9 +93,34 @@ describe('Engine', () => {
     describe('#installLogger', () => {
 
         it('should install a logger for debug level logging', () => {
-            engine.installLogger();
+            LOG.debug('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
         });
 
+        it('should install a logger for warn level logging', () => {
+            LOG.warn('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logWarning, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for info level logging', () => {
+            LOG.info('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logInfo, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for verbose level logging', () => {
+            LOG.verbose('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for error level logging', () => {
+            LOG.error('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logError, sinon.match(/hello.*world/));
+        });
+
+        it('should format multiple arguments into a comma separated list', () => {
+            LOG.debug('installLogger', 'hello', 'world', 'i', 'am', 'simon');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/world, i, am, simon/));
+        });
 
     });
 
@@ -198,6 +213,8 @@ describe('Engine', () => {
             json.logLevel = 'DEBUG';
             return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
+                    sinon.assert.calledOnce(mockLoggingService.setLogLevel);
+                    sinon.assert.calledWith(mockLoggingService.setLogLevel, 'DEBUG');
 
 
                     sinon.assert.calledTwice(mockDataService.ensureCollection);
@@ -277,7 +294,7 @@ describe('Engine', () => {
             mockRegistryManager.createDefaults.resolves();
             return engine.init(mockContext, 'init', [JSON.stringify(json)])
                 .then(() => {
-
+                    sinon.assert.notCalled(mockLoggingService.setLogLevel);
                     sinon.assert.calledTwice(mockDataService.ensureCollection);
                     sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);

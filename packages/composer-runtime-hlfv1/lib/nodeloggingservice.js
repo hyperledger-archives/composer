@@ -15,8 +15,29 @@
 'use strict';
 
 const LoggingService = require('composer-runtime').LoggingService;
-const LOGLEVEL_KEY = 'ComposerLogCfg';
-const Logger = require('composer-common').Logger;
+
+
+const LOG_LEVELS = {
+    CRITICAL: 0,
+    ERROR:    100,
+    WARNING:  200,
+    NOTICE:   300,
+    INFO:     400,
+    DEBUG:    500
+};
+
+const LOOKUP_LOG_LEVELS = {
+    '-1':  'NOT_ENABLED',
+    0:   'CRITICAL',
+    100: 'ERROR',
+    200: 'WARNING',
+    300: 'NOTICE',
+    400: 'INFO',
+    500: 'DEBUG'
+};
+
+const LOGLEVEL_KEY = 'ComposerLogLevel';
+
 /**
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
@@ -29,38 +50,56 @@ class NodeLoggingService extends LoggingService {
     constructor() {
         super();
         this.stub = null;
+        this.currentLogLevel = -1;
     }
+
 
     /**
      * Initialise the logging service for the incoming request.
      * This will need to stub for the request so it saves the stub for later use.
      *
+
      *
-     * @param {Object} stub node chaincode stub
+     * @param {any} stub The stub to save
      */
     async initLogging(stub) {
         this.stub = stub;
+
 
         Logger.setCallBack(function(){
             return stub.getTxID().substring(0, 8);
         });
 
+
     }
 
     /**
-     *
-     * @param {Object} cfg to set
+     * Enable logging for the current request based on the level set in the world state
+     * or the CORE_CHAINCODE_LOGGING_LEVEL environment variable. If neither are set
+     * then default to INFO.
      */
-    async setLoggerCfg(cfg) {
-        await this.stub.putState(LOGLEVEL_KEY, Buffer.from(JSON.stringify(cfg)));
+    async _enableLogging() {
+        try {
+            let result = await this.stub.getState(LOGLEVEL_KEY);
+            if (result.length === 0) {
+                result = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
+                if (!result) {
+                    result = 'INFO';
+                }
+            }
+            this.currentLogLevel = LOG_LEVELS[result] ? LOG_LEVELS[result] : LOG_LEVELS.INFO;
+        }
+        catch(err) {
+            this.currentLogLevel = LOG_LEVELS.INFO;
+            this.logWarning('failed to get logging level from world state: ' + err);
+        }
     }
 
     /**
-     * Return the logger config... basically the usual default setting for debug
-     * Console only. maxLevel needs to be high here as all the logs goto the stdout/stderr
-     *
-     * @returns {Object} configuration
+     * Write a critical message to the log.
+     * @param {string} message The message to write to the log.
      */
+
     async getLoggerCfg(){
         let result = await this.stub.getState(LOGLEVEL_KEY);
         if (result.length === 0) {
@@ -72,12 +111,15 @@ class NodeLoggingService extends LoggingService {
                 json = this.getDefaultCfg();
             }
             return json;
+
         }
     }
 
     /**
-     * @returns {String} information to add
+     * Write a debug message to the log.
+     * @param {string} message The message to write to the log.
      */
+
     callback(){
         if (this.stub) {
             const shortTxId = this.stub.getTxID().substring(0, 8);
@@ -85,12 +127,19 @@ class NodeLoggingService extends LoggingService {
         } else {
             return('Warning - No stub');
         }
+
     }
 
     /**
-     * @return {Object} the default cfg
+     * Write a warning message to the log.
+     * @param {string} message The message to write to the log.
      */
-    getDefaultCfg(){
+    logWarning(message) {
+        if (this.currentLogLevel >= LOG_LEVELS.WARNING) {
+            this._outputMessage(message, LOG_LEVELS.WARNING);
+        }
+    }
+
 
         let envVariable = process.env.CORE_CHAINCODE_LOGGING_LEVEL;
         let debugString = this.mapFabricDebug(envVariable);
@@ -106,6 +155,7 @@ class NodeLoggingService extends LoggingService {
             'logger': './consolelogger.js',
             'origin':'default-runtime-hlfv1'
         };
+
     }
 
     /**
