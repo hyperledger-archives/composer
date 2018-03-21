@@ -417,7 +417,7 @@ describe('AdminService', () => {
 
             service.undeploy('myNetwork');
 
-            // adminConnectionMock.undeploy.should.have.been.calledWith('myNetwork');
+            adminConnectionMock.undeploy.should.have.been.calledWith('myNetwork');
         }));
     });
 });
