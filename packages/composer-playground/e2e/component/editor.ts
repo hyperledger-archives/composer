@@ -49,7 +49,6 @@ export class Editor {
   }
 
   static makeFileActive(filename: string) {
-    let startFileData = EditorFile.retrieveEditorCodeMirrorText();
     return OperationsHelper.retrieveMatchingElementsByCSS('.side-bar-nav', '.flex-container', 0)
     .then((elements) => {
         for (var i = 0; i < elements.length; i++) {

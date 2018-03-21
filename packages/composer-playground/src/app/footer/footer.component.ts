@@ -47,9 +47,6 @@ export class FooterComponent implements OnInit {
         return this.aboutService.getVersions()
             .then((versions) => {
                 this.playgroundVersion = versions.playground.version;
-            })
-            .catch((err) => {
-                this.alertService.errorStatus$.next(err);
             });
     }
 }

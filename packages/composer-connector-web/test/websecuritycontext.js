@@ -20,7 +20,7 @@ const WebSecurityContext = require('../lib/websecuritycontext');
 
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
-chai.should();
+const should = chai.should();
 const sinon = require('sinon');
 
 describe('WebSecurityContext', () => {
@@ -66,20 +66,20 @@ describe('WebSecurityContext', () => {
 
     });
 
-    describe('#getChaincodeID', () => {
+    describe('#getNetworkName', () => {
 
-        it('should get the chaincode ID', () => {
-            securityContext.chaincodeID = 'ed916d6a-21af-4a2a-a9be-a86f69aa641b';
-            securityContext.getChaincodeID().should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
+        it('should initially be unset', () => {
+            should.not.exist(securityContext.getNetworkName());
         });
 
     });
 
-    describe('#setChaincodeID', () => {
+    describe('#setNetworkName', () => {
 
-        it('should set the chaincode ID', () => {
-            securityContext.setChaincodeID('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
-            securityContext.chaincodeID.should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
+        it('should set the networkName', () => {
+            const networkName = 'conga';
+            securityContext.setNetworkName(networkName);
+            securityContext.getNetworkName().should.equal(networkName);
         });
 
     });

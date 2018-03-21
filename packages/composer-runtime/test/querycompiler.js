@@ -156,7 +156,7 @@ describe('QueryCompiler', () => {
             description: "Select all drivers aged older than PARAM"
             statement:
                 SELECT org.acme.sample.SampleAsset
-                    ORDER BY [foo ASC, bar DESC]
+                    ORDER BY [foo ASC, bar ASC]
         }
         query Q14 {
             description: "Select all drivers aged older than PARAM"
@@ -439,8 +439,11 @@ describe('QueryCompiler', () => {
                     '\\$class': 'org.acme.sample.SampleAsset'
                 },
                 sort: [
+                    { '\\$class': 'asc' },
+                    { '\\$registryType': 'asc' },
+                    { '\\$registryId': 'asc' },
                     { foo: 'asc' },
-                    { bar: 'desc' }
+                    { bar: 'asc' }
                 ]
             });
         });
@@ -535,6 +538,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitOrderBy(orderBysFromQueries.Q12, {});
             result.should.deep.equal({
                 sort: [
+                    { '\\$class': 'desc' },
+                    { '\\$registryType': 'desc' },
+                    { '\\$registryId': 'desc' },
                     { foo: 'desc' }
                 ]
             });
@@ -544,10 +550,30 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitOrderBy(orderBysFromQueries.Q13, {});
             result.should.deep.equal({
                 sort: [
+                    { '\\$class': 'asc' },
+                    { '\\$registryType': 'asc' },
+                    { '\\$registryId': 'asc' },
                     { foo: 'asc' },
-                    { bar: 'desc' }
+                    { bar: 'asc' }
                 ]
             });
+        });
+
+        it('should reject multiple sorts of different direction', () => {
+            const dodgyQuery = `
+                    query Dodgy {
+                        description: "Illegal use of ORDER BY with different directions"
+                        statement:
+                            SELECT org.acme.sample.SampleAsset
+                                ORDER BY [foo ASC, bar DESC]
+                     }`;
+
+            const dodgyQueryFile1 = new QueryFile('foo.qry', modelManager, dodgyQuery);
+            const dodgyOrderBy = dodgyQueryFile1.getQueries()[0].getSelect().getOrderBy();
+
+            (() => {
+                queryCompiler.visitOrderBy(dodgyOrderBy);
+            }).should.throw(/ORDER BY currently only supports a single direction for all fields/);
         });
 
     });

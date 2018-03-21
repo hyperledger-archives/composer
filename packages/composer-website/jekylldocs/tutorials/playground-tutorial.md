@@ -127,7 +127,7 @@ For more information on access control files, check our [documentation](../refer
 
 Now that we have model, script, and access control files, we need to deploy and test our business network.
 
-Click **Update** to deploy the changes to our business network.
+Click **Upgrade** to deploy the changes to our business network.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />

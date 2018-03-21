@@ -10,13 +10,13 @@ excerpt: Composer Network Start
 
 ---
 
-The `composer network start` utility is used to deploy a business network archive from local disk to a {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} network.
+The `composer network start` utility is used to start a specific version of a business network that has been previously installed to a {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} network.
 Before using this command, read the topic [Deploying and Updating Business Networks](../business-network/bnd-deploy.html).
 
-_Please Note_: You **must** first install the {{site.data.conrefs.composer_full}} runtime to the {{site.data.conrefs.hlf_full}} peers by using the `composer runtime install` command. The business network name specified in the `composer runtime install` command must be the same as the business network name specified in the `composer network start` command.
+_Please Note_: You **must** first install the business network to the {{site.data.conrefs.hlf_full}} peers by using the `composer network install` command.
 
 ```
-composer network start -a <business-network-archive> -A <admin-name> -S adminpw -c <business-network-card> -f <name-of-admin-card>
+composer network start --networkName <business-network-name> --networkVersion <business-network-version> --networkAdmin <admin-name> --networkAdminEnrollSecret adminpw --card <peer-admin-card> --file <admin-card-file-name>
 ```
 
 ## Considerations
@@ -28,15 +28,16 @@ composer network start [options]
 Options:
   --help                             Show help  [boolean]
   -v, --version                      Show version number  [boolean]
-  --archiveFile, -a                  The business network archive file name  [string] [required]
+  --networkName, -n                  Name of the business network to start  [required]
+  --networkVersion, -V               Version of the business network to start  [required]
   --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
   --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
-  --networkAdmin, -A                 The identity name of the business network administrator  [string]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string] [required]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
-  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [string]
-  --card, -c                         The cardname to use to start the network  [string]
+  --networkAdminEnrollSecret, -S     The enrollment secret for the business network administrator  [string]
+  --card, -c                         The cardname to use to start the network  [string] [required]
   --file, -f                         File name of the card to be created  [string]
-```
+  ```
 Please refer to [Connector specific information](../managing/connector-information.html) for more information about connector specific options.
 

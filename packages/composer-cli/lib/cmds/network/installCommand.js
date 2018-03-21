@@ -14,15 +14,17 @@
 
 'use strict';
 
-const Update = require ('./lib/update.js');
+const Install = require ('./lib/install.js');
 
-module.exports.command = 'update [options]';
-module.exports.describe = 'Update a business network';
+module.exports.command = 'install [options]';
+module.exports.describe = 'Installs a business network archive to Hyperledger Fabric';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
-    card: { alias: 'c', required: true, description: 'The cardname to use to update the network', type: 'string'}
+    card: { alias: 'c', required: true, describe: 'The cardname to use to install the network', type:'string'},
+    option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+    optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' }
 };
 
 module.exports.handler = (argv) => {
-    return argv.thePromise = Update.handler(argv);
+    return argv.thePromise = Install.handler(argv);
 };

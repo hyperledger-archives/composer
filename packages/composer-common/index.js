@@ -77,6 +77,7 @@ module.exports.NetworkCardStoreManager = require('./lib/cardstore/networkcardsto
 module.exports.FunctionDeclaration = require('./lib/introspect/functiondeclaration');
 module.exports.Globalize = require('./lib/globalize');
 module.exports.IdCard = require('./lib/idcard');
+module.exports.IndexCompiler = require('./lib/indexcompiler');
 module.exports.Introspector = require('./lib/introspect/introspector');
 module.exports.Limit = require('./lib/query/limit');
 module.exports.Logger = require('./lib/log/logger');

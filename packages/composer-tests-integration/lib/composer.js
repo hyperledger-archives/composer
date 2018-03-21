@@ -16,6 +16,7 @@
 
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const childProcess = require('child_process');
 const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
@@ -683,13 +684,18 @@ class Composer {
             }
         };
 
-        let response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        const packageJsonPath = path.join(__dirname, '../resources/sample-networks/'+name+'/package.json');
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        const networkName = packageJson.name;
+        const networkVersion = packageJson.version;
+
+        let response = await this.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
         checkOutput(response);
-        response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org1 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
         checkOutput(response);
-        response = await this.runCLI(true, `composer archive create -t dir -a ./tmp/${name}.bna -n ./resources/sample-networks/${name}`);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org2 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
         checkOutput(response);
-        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
         checkOutput(response);
         response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success
@@ -721,11 +727,16 @@ class Composer {
             }
         };
 
-        let response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
+        const banana = fs.readFileSync(path.resolve(bnaFile));
+        const definition = await BusinessNetworkDefinition.fromArchive(banana);
+        const networkName = definition.getName();
+        const networkVersion = definition.getVersion();
+
+        let response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org1 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
         checkOutput(response);
-        response = await this.runCLI(true, `composer runtime install --card TestPeerAdmin@org2 --businessNetworkName ${name}`);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org2 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
         checkOutput(response);
-        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
         checkOutput(response);
         response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success

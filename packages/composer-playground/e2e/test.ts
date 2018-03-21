@@ -67,6 +67,9 @@ function runTests(connection) {
     } else if (connection.localeCompare('fabric') === 0) {
         // Integration test, use npm module
         console.log('Targetting npm Playground with fabric connector');
+
+        // set the npmrc file to the one created by configureGateway.sh
+        process.env.NPMRC_FILE='/tmp/npmrc';
         childServer = spawn('composer-playground', ['-p', Constants.fabricPlaygroundPort.toString(), '-test']);
     } else {
         console.log('Unspecified or invalid parameter passed to runTests() method ' + connection + '] exiting.');

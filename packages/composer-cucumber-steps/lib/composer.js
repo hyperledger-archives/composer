@@ -120,10 +120,10 @@ class Composer {
                 this.introspector = this.businessNetworkDefinition.getIntrospector();
                 this.serializer = this.businessNetworkDefinition.getSerializer();
 
-                return this.adminConnection.install(this.businessNetworkDefinition.getName());
+                return this.adminConnection.install(this.businessNetworkDefinition);
             })
             .then(() => {
-                return this.adminConnection.start(this.businessNetworkDefinition, {
+                return this.adminConnection.start(this.businessNetworkDefinition.getName(), this.businessNetworkDefinition.getVersion(), {
                     networkAdmins : [{
                         userName : 'admin',
                         enrollmentSecret  : 'adminpw'
