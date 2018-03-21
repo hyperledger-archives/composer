@@ -17,9 +17,12 @@ Feature: Business Network Generator
             | ../my-bus-net/.eslintrc.yml |
             | ../my-bus-net/README.md |
             | ../my-bus-net/package.json |
+            | ../my-bus-net/permissions.acl |
             | ../my-bus-net/models/conga.busnet.cto |
             | ../my-bus-net/lib/logic.js |
             | ../my-bus-net/test/logic.js |
+            | ../my-bus-net/features/sample.feature |
+            | ../my-bus-net/features/support/index.js |
 
     Scenario: Using the Composer generator, I can install the business network packages
         When I run the following expected pass CLI command
@@ -33,7 +36,8 @@ Feature: Business Network Generator
             """
              npm test --prefix ./my-bus-net
             """
-        Then The stdout information should include text matching /1 passing/
+        Then The stdout information should include text matching /18 scenarios \(18 passed\)/
+        And The stdout information should include text matching /144 steps \(144 passed\)/
 
     Scenario: I can build a bna from the generated template network
         When I run the following expected pass CLI command
@@ -56,7 +60,7 @@ Feature: Business Network Generator
     Scenario: I can create an asset in the deployed template business network
          When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@my-bus-net -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "conga.busnet.SampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#conga.busnet.SampleAsset", "resources": [{"$class": "conga.busnet.SampleAsset","assetId": "newAsset","value": "101"}]}'
+            composer transaction submit --card admin@my-bus-net -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "conga.busnet.SampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#conga.busnet.SampleAsset", "resources": [{"$class": "conga.busnet.SampleAsset","assetId": "newAsset","value": "101", "owner": "conga.busnet.SampleParticipant#bob"}]}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         Then The stdout information should include text matching /Command succeeded/
@@ -75,7 +79,7 @@ Feature: Business Network Generator
     Scenario: I can submit the template transaction in the deployed template business network
          When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@my-bus-net -d '{"$class": "conga.busnet.ChangeAssetValue", "relatedAsset": "resource:conga.busnet.SampleAsset#newAsset", "newValue": "5"}'
+            composer transaction submit --card admin@my-bus-net -d '{"$class": "conga.busnet.SampleTransaction", "asset": "resource:conga.busnet.SampleAsset#newAsset", "newValue": "5"}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         Then The stdout information should include text matching /Command succeeded/
