@@ -33,9 +33,12 @@ let businessNetworkDefinition;
 let businessNetworkIdentifier;
 let modelManager;
 let assetList = [];
+let participantList = [];
 let conceptList = [];
 let assetServiceNames = [];
+let participantServiceNames = [];
 let assetComponentNames = [];
+let participantComponentNames = [];
 let conceptServiceNames = [];
 let conceptComponentNames = [];
 let transactionList = [];
@@ -43,6 +46,7 @@ let namespaceList;
 let enumerations;
 let introspector;
 let assetProperties;
+let participantProperties;
 let conceptProperties;
 let destinationPath;
 let skipInstall = false;
@@ -475,6 +479,83 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name + 'Component');
             });
+            shell.mkdir('-p', destinationPath + '/src/participants/');
+            namespaceList.forEach((namespace) => {
+            
+                let modelFile = modelManager.getModelFile(namespace);
+                let participantDeclarations = modelFile.getParticipantDeclarations();
+
+                participantDeclarations
+                .filter((participantDeclaration) =>{
+                    return !participantDeclaration.isAbstract();
+                })
+                .filter((participantDeclaration) => {
+                    if (participantDeclaration.isSystemType()) {
+                        return participantDeclaration.isSystemCoreType();
+                    }
+                    return true;
+                })
+                .forEach((participant) => {
+            
+                    let tempList = [];
+                    participantProperties = participant.getProperties();
+            
+                    participantProperties.forEach((property) => {
+                        if (property.constructor.name === 'Field') {
+                            if (property.isTypeEnum()) {
+                                // handle enumerations
+                                let enumValues = [];
+                                // compose array of enumeration values
+                                enumerations.forEach(enumeration => {
+                                    if (enumeration.name === property.getType()) {
+                                        enumValues = enumeration.properties;
+                                    }
+                                });
+                                // add meta information to the field list
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType(),
+                                    'enum': true,
+                                    'array': property.array === true,
+                                    enumValues,
+                                });
+                            } else if (property.isPrimitive() || !property.isPrimitive()) {
+            
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType()
+                                });
+                            } else {
+                                console.log('Unknown property type: ' + property);
+                            }
+                        } else if (property.constructor.name === 'RelationshipDeclaration') {
+                            tempList.push({
+                                'name': property.getName(),
+                                'type': property.getType()
+                            });
+                        } else {
+                            console.log('Unknown property constructor name: ' + property );
+                        }
+                    });
+            
+                    participantList.push({
+                        'name': participant.name,
+                        'namespace': participant.getNamespace(),
+                        'properties': tempList,
+                        'identifier': participant.getIdentifierFieldName()
+                    });
+                    shell.mkdir('-p', destinationPath + '/src/app/' + participant.name);
+            
+                });
+            });
+            
+            participantList.forEach((participant) => {
+                participantServiceNames.push(participant.name + 'Service');
+            });
+            
+            participantList.forEach((participant) => {
+                participantComponentNames.push(participant.name + 'Component');
+            });
 
             shell.mkdir('-p', destinationPath + '/src/concepts/');
             namespaceList.forEach((namespace) => {
@@ -551,7 +632,7 @@ module.exports = yeoman.Base.extend({
             });
 
             let model = this._generateTemplateModel();
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|concept|Transaction)*'), this.destinationPath(), model);
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|Transaction)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
@@ -589,6 +670,43 @@ module.exports = yeoman.Base.extend({
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.css'),
                     this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
+                );
+            }
+            for (let x = 0; x < participantList.length; x++) {
+                this.fs.copyTpl(
+                    this.templatePath('src/app/participant/participant.component.ts'),
+                    this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.ts'), {
+                        currentParticipant: participantList[x],
+                        namespace: participantList[x].namespace,
+                        participantIdentifier: participantList[x].identifier
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/participant/participant.service.ts'),
+                    this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.service.ts'), {
+                        participantName: participantList[x].name,
+                        namespace: participantList[x].namespace,
+                        apiNamespace: this.apiNamespace
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/participant/participant.component.spec.ts'),
+                    this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.spec.ts'), {
+                        participantName: participantList[x].name
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/participant/participant.component.html'),
+                    this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.html'), {
+                        currentParticipant: participantList[x]
+                    }
+                );
+            
+                this.fs.copyTpl(
+                    this.templatePath('src/app/participant/participant.component.css'),
+                    this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.css'), {
                         styling: '{}'
                     }
                 );
@@ -642,6 +760,9 @@ module.exports = yeoman.Base.extend({
             assetList = [];
             assetComponentNames = [];
             assetServiceNames = [];
+            participantList = [];
+            participantComponentNames = [];
+            participantServiceNames = [];
             conceptList = [];
             conceptComponentNames = [];
             conceptServiceNames = [];
@@ -684,6 +805,9 @@ module.exports = yeoman.Base.extend({
             assetList: assetList,
             assetServiceNames: assetServiceNames,
             assetComponentNames: assetComponentNames,
+            participantList: participantList,
+            participantServiceNames: participantServiceNames,
+            participantComponentNames: participantComponentNames,
             transactionList: transactionList,
             networkIdentifier: networkIdentifier,
             connectionProfileName: connectionProfileName,
