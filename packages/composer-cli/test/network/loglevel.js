@@ -73,19 +73,5 @@ describe('composer network logLevel CLI unit tests', () => {
             });
     });
 
-    it('should get the logLevel and produce the full-output', () => {
-        let argv = {
-            card:'cardname' ,
-            x: true
-        };
 
-        return LogLevel.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockAdminConnection.getLogLevel);
-
-            });
-    });
 });
