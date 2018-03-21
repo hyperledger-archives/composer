@@ -20,9 +20,8 @@ module.exports.command = 'upgrade [options]';
 module.exports.describe = 'Upgrades to a specific version of a business network that is already installed to Hyperledger Fabric';
 module.exports.builder = {
     card: { alias: 'c', required: true, description: 'The cardname to use to upgrade the network', type:'string'},
-    networkName: { alias: 'n', required: true, description: 'Name of the business network to start' },
-    networkVersion: { alias: 'V', required: true, description: 'Version of the business network to start' },
-    loglevel: { alias: 'l', required: false, describe: 'The initial loglevel to set', choices : ['INFO', 'WARNING', 'ERROR', 'DEBUG']},
+    networkName: { alias: 'n', required: true, description: 'Name of the business network to upgrade' },
+    networkVersion: { alias: 'V', required: true, description: 'Version of the business network to upgrade to' },
     option: { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
     optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' }
 };

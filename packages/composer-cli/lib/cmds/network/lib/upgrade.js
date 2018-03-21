@@ -31,16 +31,12 @@ class Upgrade {
         const cardName = argv.card;
         const networkName = argv.networkName;
         const networkVersion = argv.networkVersion;
-        const logLevel = argv.loglevel;
 
         cmdUtil.log(chalk.blue.bold(`Upgrading business network ${networkName} to version ${networkVersion}`));
         cmdUtil.log('');
 
         // Build the upgrade options.
         const upgradeOptions = cmdUtil.parseOptions(argv);
-        if (logLevel) {
-            upgradeOptions.logLevel = logLevel;
-        }
 
         const spinner = ora('Upgrading business network definition. This may take a minute...').start();
         try {

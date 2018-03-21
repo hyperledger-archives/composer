@@ -51,8 +51,7 @@ describe('composer network ugprade CLI', function () {
             let argv = {
                 card:'cardname',
                 networkName: 'org-acme-biznet',
-                networkVersion: '2.0.0',
-                loglevel: 'debug'
+                networkVersion: '2.0.0'
             };
 
 
@@ -63,7 +62,7 @@ describe('composer network ugprade CLI', function () {
                 sinon.assert.calledOnce(mockAdminConnection.connect);
                 sinon.assert.calledWith(mockAdminConnection.connect, argv.card);
                 sinon.assert.calledOnce(mockAdminConnection.upgrade);
-                sinon.assert.calledWith(mockAdminConnection.upgrade, argv.networkName, argv.networkVersion, sinon.match({'logLevel': argv.loglevel}));
+                sinon.assert.calledWith(mockAdminConnection.upgrade, argv.networkName, argv.networkVersion);
             });
         });
         it('error path  upgrade method fails', ()=>{
