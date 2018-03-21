@@ -76,11 +76,7 @@ class NetworkManager extends TransactionHandler {
                 return this.context.getAccessController().check(resource, 'UPDATE');
             })
             .then(() => {
-                return this.context.getLoggingService().getLoggerCfg();
-            })
-            .then((cfg)=>{
-                let c =  Logger.setLoggerCfg(Object.assign(cfg,{debug:transaction.newLogLevel}),true);
-                return this.context.getLoggingService().setLoggerCfg(c);
+                return this.context.getLoggingService().setLogLevel(transaction.newLogLevel);
             });
 
 
