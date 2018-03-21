@@ -23,6 +23,10 @@ const TypescriptVisitor = require('composer-common').TypescriptVisitor;
 const Util = require('./../util');
 const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
+<<<<<<< HEAD
+=======
+const optionOrPrompt = require('yeoman-option-or-prompt');
+>>>>>>> Kai's CLI changes for angular gen
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
@@ -41,7 +45,6 @@ let introspector;
 let assetProperties;
 let conceptProperties;
 let destinationPath;
-let liveNetwork;
 let skipInstall = false;
 let appName;
 let appDescription;
@@ -60,297 +63,302 @@ let fileName;
 let cardName;
 
 module.exports = yeoman.Base.extend({
-    constructor: function () {
-        yeoman.Base.apply(this, arguments);
-        this.options = this.env.options;
-        skipInstall = !!arguments[1].skipInstall;
-        businessNetworkConnection = new BusinessNetworkConnection({ cardStore: arguments[1].cardStore });
-    },
+
+    _optionOrPrompt: optionOrPrompt,
 
     prompting: function () {
-        console.log('Welcome to the Hyperledger Composer Angular project generator');
+        Util.log('Welcome to the Hyperledger Composer Angular project generator');
 
-        return this.prompt([{
+        let liveConnectQuestion = [{
             type: 'confirm',
             name: 'liveNetwork',
             message: 'Do you want to connect to a running Business Network?',
             default: false,
             store: true
-        }])
-            .then((answers) => {
-                liveNetwork = answers.liveNetwork;
-                let questions;
+        }];
 
-                if (liveNetwork) {
-                    questions = [{
-                        when: !this.options.appName,
-                        type: 'input',
-                        name: 'appName',
-                        message: 'Project name:',
-                        default: 'angular-app',
-                        store: true,
-                        validate: Util.validateAppName
-                    },
-                    {
-                        type: 'input',
-                        name: 'appDescription',
-                        message: 'Description:',
-                        default: 'Hyperledger Composer Angular project',
-                        store: true,
-                        validate: Util.validateDescription
-                    },
-                    {
-                        type: 'input',
-                        name: 'authorName',
-                        message: 'Author name:',
-                        store: true,
-                        validate: Util.validateAuthorName
-                    },
-                    {
-                        type: 'input',
-                        name: 'authorEmail',
-                        message: 'Author email:',
-                        store: true,
-                        validate: Util.validateAuthorEmail
-                    },
-                    {
-                        type: 'input',
-                        name: 'license',
-                        message: 'License:',
-                        default: 'Apache-2.0',
-                        store: true,
-                        validate: Util.validateLicense
-                    },
-                    {
-                        type: 'input',
-                        name: 'cardName',
-                        message: 'Name of the Business Network card:',
-                        store: true,
-                        validate: Util.cardName
-                    },
-                    {
-                        type: 'list',
-                        name: 'apiServer',
-                        message: 'Do you want to generate a new REST API or connect to an existing REST API? ',
-                        default: 'generate',
-                        store: true,
-                        choices: [{
-                            name: 'Generate a new REST API',
-                            value: 'generate'
-                        },
-                        {
-                            name: 'Connect to an existing REST API',
-                            value: 'connect'
-                        }
-                        ],
-                        validate: function (input) {
-                            if (input !== null && input !== undefined && input !== '') {
-                                return true;
-                            } else {
-                                return 'Connection Profile cannot be null or empty.';
-                            }
-                        }
-                    }
-                    ];
-                } else {
-                    questions = [{
-                        when: !this.options.appName,
-                        type: 'input',
-                        name: 'appName',
-                        message: 'Project name:',
-                        default: 'angular-app',
-                        store: true,
-                        validate: Util.validateAppName
-                    },
-                    {
-                        type: 'input',
-                        name: 'appDescription',
-                        message: 'Description:',
-                        default: 'Hyperledger Composer Angular project',
-                        store: true,
-                        validate: Util.validateDescription
-                    },
-                    {
-                        type: 'input',
-                        name: 'authorName',
-                        message: 'Author name:',
-                        store: true,
-                        validate: Util.validateAuthorName
-                    },
-                    {
-                        type: 'input',
-                        name: 'authorEmail',
-                        message: 'Author email:',
-                        store: true,
-
-                        validate: Util.validateAuthorEmail
-                    },
-                    {
-                        type: 'input',
-                        name: 'license',
-                        message: 'License:',
-                        default: 'Apache-2.0',
-                        store: true,
-                        validate: Util.validateLicense
-                    },
-                    {
-                        type: 'input',
-                        name: 'fileName',
-                        message: 'Business network archive file (Path from the current working directory):',
-                        default: 'digitalproperty-network.bna',
-                        store: true,
-                        validate: Util.validateBnaName
-                    }
-                    ];
+        let liveBusinessNetworkQuestions = [
+            {
+                when: !this.options.appName,
+                type: 'input',
+                name: 'appName',
+                message: 'Project name:',
+                default: 'angular-app',
+                store: true,
+                validate: Util.validateAppName
+            },
+            {
+                type: 'input',
+                name: 'appDescription',
+                message: 'Description:',
+                default: 'Hyperledger Composer Angular project',
+                store: true,
+                validate: Util.validateDescription
+            },
+            {
+                type: 'input',
+                name: 'authorName',
+                message: 'Author name:',
+                store: true,
+                validate: Util.validateAuthorName
+            },
+            {
+                type: 'input',
+                name: 'authorEmail',
+                message: 'Author email:',
+                store: true,
+                validate: Util.validateAuthorEmail
+            },
+            {
+                type: 'input',
+                name: 'license',
+                message: 'License:',
+                default: 'Apache-2.0',
+                store: true,
+                validate: Util.validateLicense
+            },
+            {
+                type: 'input',
+                name: 'cardName',
+                message: 'Name of the Business Network card:',
+                store: true,
+                validate: Util.cardName
+            },
+            {
+                type: 'list',
+                name: 'apiServer',
+                message: 'Do you want to generate a new REST API or connect to an existing REST API? ',
+                default: 'generate',
+                store: true,
+                choices: [{
+                    name: 'Generate a new REST API',
+                    value: 'generate'
+                },
+                {
+                    name: 'Connect to an existing REST API',
+                    value: 'connect'
                 }
+                ],
+                validate: Util.validateApi
+            }
+        ];
 
-                let self = this;
-                return this.prompt(questions).then(function (answers) {
+        let notLiveBusinessNetworkQuestions = [{
+            when: !this.options.appName,
+            type: 'input',
+            name: 'appName',
+            message: 'Project name:',
+            default: 'angular-app',
+            store: true,
+            validate: Util.validateAppName
+        },
+        {
+            type: 'input',
+            name: 'appDescription',
+            message: 'Description:',
+            default: 'Hyperledger Composer Angular project',
+            store: true,
+            validate: Util.validateDescription
+        },
+        {
+            type: 'input',
+            name: 'authorName',
+            message: 'Author name:',
+            store: true,
+            validate: Util.validateAuthorName
+        },
+        {
+            type: 'input',
+            name: 'authorEmail',
+            message: 'Author email:',
+            store: true,
 
-                    appName = answers.appName;
-                    appDescription = answers.appDescription;
-                    authorName = answers.authorName;
-                    authorEmail = answers.authorEmail;
-                    license = answers.license;
+            validate: Util.validateAuthorEmail
+        },
+        {
+            type: 'input',
+            name: 'license',
+            message: 'License:',
+            default: 'Apache-2.0',
+            store: true,
+            validate: Util.validateLicense
+        },
+        {
+            type: 'input',
+            name: 'fileName',
+            message: 'Business network archive file (Path from the current working directory):',
+            default: 'digitalproperty-network.bna',
+            store: true,
+            validate: Util.validateBnaName
+        }
+        ];
 
-                    let nextQuestions;
+        let newNextQuestions = [{
+            type: 'input',
+            name: 'apiPort',
+            store: true,
+            message: 'REST server port:',
+            default: '3000'
+        },
+        {
+            type: 'list',
+            name: 'apiNamespace',
+            message: 'Should namespaces be used in the generated REST API?',
+            default: 'never',
+            store: true,
+            choices: [{
+                name: 'Always use namespaces',
+                value: 'always'
+            },
+            {
+                name: 'Never use namespaces',
+                value: 'never'
+            }
+            ],
+            validate: Util.validateNamespace
+        }
+        ];
 
-                    if (liveNetwork) {
-                        cardName = answers.cardName;
-                        apiServer = answers.apiServer;
+        let newNextQuestions2 = [{
+            type: 'input',
+            name: 'apiIP',
+            store: true,
+            message: 'REST server address:',
+            default: 'http://localhost'
+        },
+        {
+            type: 'input',
+            name: 'apiPort',
+            store: true,
+            message: 'REST server port:',
+            default: '3000'
+        },
+        {
+            type: 'list',
+            name: 'apiNamespace',
+            message: 'Should namespaces be used in the generated REST API?',
+            default: 'never',
+            store: true,
+            choices: [{
+                name: 'Namespaces are used',
+                value: 'always'
+            },
+            {
+                name: 'Namespaces are not used',
+                value: 'never'
+            }
+            ],
+            validate: Util.validateNamespace
+        }
+        ];
 
-                        if (apiServer === 'generate') {
+        let newNextQuestions3 = [{
+            type: 'input',
+            name: 'apiIP',
+            store: true,
+            message: 'REST server address:',
+            default: 'http://localhost'
+        },
+        {
+            type: 'input',
+            name: 'apiPort',
+            store: true,
+            message: 'REST server port:',
+            default: '3000'
+        },
+        {
+            type: 'list',
+            name: 'apiNamespace',
+            message: 'Are namespaces used in the generated REST API: ',
+            default: 'never',
+            store: true,
+            choices: [{
+                name: 'Namespaces are used',
+                value: 'always'
+            },
+            {
+                name: 'Namespaces are not used',
+                value: 'never'
+            }
+            ],
+            validate: Util.validateNamespace
+        }
+        ];
 
-                            apiIP = 'http://localhost';
-
-                            nextQuestions = [{
-                                type: 'input',
-                                name: 'apiPort',
-                                store: true,
-                                message: 'REST server port:',
-                                default: '3000'
-                            },
-                            {
-                                type: 'list',
-                                name: 'apiNamespace',
-                                message: 'Should namespaces be used in the generated REST API?',
-                                default: 'never',
-                                store: true,
-                                choices: [{
-                                    name: 'Always use namespaces',
-                                    value: 'always'
-                                },
-                                {
-                                    name: 'Never use namespaces',
-                                    value: 'never'
-                                }
-                                ],
-                                validate: Util.validateNamespace
-                            }
-                            ];
-                        } else if (apiServer === 'connect') {
-                            nextQuestions = [{
-                                type: 'input',
-                                name: 'apiIP',
-                                store: true,
-                                message: 'REST server address:',
-                                default: 'http://localhost'
-                            },
-                            {
-                                type: 'input',
-                                name: 'apiPort',
-                                store: true,
-                                message: 'REST server port:',
-                                default: '3000'
-                            },
-                            {
-                                type: 'list',
-                                name: 'apiNamespace',
-                                message: 'Should namespaces be used in the generated REST API?',
-                                default: 'never',
-                                store: true,
-                                choices: [{
-                                    name: 'Namespaces are used',
-                                    value: 'always'
-                                },
-                                {
-                                    name: 'Namespaces are not used',
-                                    value: 'never'
-                                }
-                                ],
-                                validate: Util.validateNamespace
-                            }
-                            ];
-                        } else {
-                            console.log('Unknown option');
-                        }
-
-                        return self.prompt(nextQuestions).then(function (answers) {
-                            if (apiIP === undefined) {
-                                apiIP = answers.apiIP;
-                            }
-                            apiPort = answers.apiPort;
-                            apiNamespace = answers.apiNamespace;
-                        });
+        return this._optionOrPrompt(liveConnectQuestion)
+            .then((answers) => {
+                this.liveNetwork = answers.liveNetwork;
+            })
+            .then(() => {
+                if (this.liveNetwork) {
+                    return this._optionOrPrompt(liveBusinessNetworkQuestions);
+                } else {
+                    return this._optionOrPrompt(notLiveBusinessNetworkQuestions);
+                }
+            })
+            .then((answers2) => {
+                if (this.liveNetwork) {
+                    this.appName = answers2.appName;
+                    Util.log(this.appName);
+                    this.appDescription = answers2.appDescription;
+                    this.authorName = answers2.authorName;
+                    this.autherEmail = answers2.authorEmail;
+                    this.license = answers2.license;
+                    this.cardName = answers2.cardName;
+                    businessNetworkConnection = new BusinessNetworkConnection(this.cardName);
+                    this.apiServer = answers2.apiServer;
+                } else {
+                    this.appName = answers2.appName;
+                    this.appDescription = answers2.appDescription;
+                    this.authorName = answers2.authorName;
+                    this.autherEmail = answers2.authorEmail;
+                    this.license = answers2.license;
+                    this.fileName = answers2.fileName;
+                }
+            })
+            .then(() => {
+                if (this.liveNetwork) {
+                    if (this.apiServer === 'generate') {
+                        return this._optionOrPrompt(newNextQuestions);
+                    } else if (this.apiServer === 'connect') {
+                        return this._optionOrPrompt(newNextQuestions2);
                     } else {
-                        fileName = answers.fileName;
-
-                        nextQuestions = [{
-                            type: 'input',
-                            name: 'apiIP',
-                            store: true,
-                            message: 'REST server address:',
-                            default: 'http://localhost'
-                        },
-                        {
-                            type: 'input',
-                            name: 'apiPort',
-                            store: true,
-                            message: 'REST server port:',
-                            default: '3000'
-                        },
-                        {
-                            type: 'list',
-                            name: 'apiNamespace',
-                            message: 'Are namespaces used in the generated REST API: ',
-                            default: 'never',
-                            store: true,
-                            choices: [{
-                                name: 'Namespaces are used',
-                                value: 'always'
-                            },
-                            {
-                                name: 'Namespaces are not used',
-                                value: 'never'
-                            }
-                            ],
-                            validate: Util.validateNamespace
-                        }
-                        ];
-
-                        return self.prompt(nextQuestions).then(function (answers) {
-                            if (apiIP === undefined) {
-                                apiIP = answers.apiIP;
-                            }
-                            apiPort = answers.apiPort;
-                            apiNamespace = answers.apiNamespace;
-                        });
+                        Util.log('Unknown API server option');
                     }
-                });
+                } else {
+                    return this._optionOrPrompt(newNextQuestions3);
+                }
+            })
+            .then((answers3) => {
+                if (this.liveNetwork) {
+                    if (this.apiServer === 'generate') {
+                        this.apiIP = 'http://localhost';
+                        this.apiPort = answers3.apiPort;
+                        this.apiNamespace = answers3.apiNamespace;
+                    } else if (this.apiServer === 'connect') {
+                        this.apiIP = answers3.apiIP;
+                        this.apiPort = answers3.apiPort;
+                        this.apiNamespace = answers3.apiNamespace;
+                    }
+                } else {
+                    fileName = answers3.fileName;
+                    this.apiIP = answers3.apiIP;
+                    this.apiPort = answers3.apiPort;
+                    this.apiNamespace = answers3.apiNamespace;
+                }
             });
     },
 
     writing: function () {
         let completedApp = new Promise((resolve, reject) => {
-
-            if (liveNetwork) {
-                return businessNetworkConnection.connect(cardName)
+            if (this.liveNetwork) {
+                return businessNetworkConnection.connect(this.cardName)
                     .then((result) => {
                         businessNetworkDefinition = result;
                         return businessNetworkConnection.disconnect();
                     })
                     .then(() => {
-                        this.destinationRoot(appName);
+                        this.destinationRoot(this.appName);
                         destinationPath = this.destinationPath();
                         resolve(this._createApp());
                     })
@@ -362,7 +370,7 @@ module.exports = yeoman.Base.extend({
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;
-                            this.destinationRoot(appName);
+                            this.destinationRoot(this.appName);
                             destinationPath = this.destinationPath();
                             resolve(this._createApp());
                         })
@@ -467,14 +475,14 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name + 'Component');
             });
-             
-            shell.mkdir('-p', destinationPath + /src/concepts/'');
+
+            shell.mkdir('-p', destinationPath + '/src/concepts/');
             namespaceList.forEach((namespace) => {
-            
-            let modelFile = modelManager.getModelFile(namespace);
-            let conceptDeclarations = modelFile.getConceptDeclarations();
-            
-            conceptDeclarations
+
+                let modelFile = modelManager.getModelFile(namespace);
+                let conceptDeclarations = modelFile.getConceptDeclarations();
+
+                conceptDeclarations
             .filter((conceptDeclaration) =>{
                 return conceptDeclaration.isAbstract();
             })
@@ -486,61 +494,61 @@ module.exports = yeoman.Base.extend({
             })
             .forEach((concept) => {
                 let tempList = [];
-                        conceptProperties = concept.getProperties();
-            
-            conceptProperties.forEach((property) => {
-                                    if (property.constructor.name === 'Field') {
-                                        if (property.isTypeEnum()) {
+                conceptProperties = concept.getProperties();
+
+                conceptProperties.forEach((property) => {
+                    if (property.constructor.name === 'Field') {
+                        if (property.isTypeEnum()) {
                                             // handle enumerations
-                                            let enumValues = [];
+                            let enumValues = [];
                                             // compose array of enumeration values
-                                            enumerations.forEach(enumeration => {
-                                                if (enumeration.name === property.getType()) {
-                                                    enumValues = enumeration.properties;
-                                                }
-                                            });
-            // add meta information to the field list
-                                            tempList.push({
-                                                'name': property.getName(),
-                                                'type': property.getType(),
-                                                'enum': true,
-                                                'array': property.array === true,
-                                                enumValues,
-                                            });
-            } else if (property.isPrimitive() || !property.isPrimitive()) {
-            
-                                            tempList.push({
-                                                'name': property.getName(),
-                                                'type': property.getType()
-                                            });
-                                        } else {
-                                            console.log('Unknown property type: ' + property);
-                                        }
-                                    } else if (property.constructor.name === 'RelationshipDeclaration') {
-                                        tempList.push({
-                                            'name': property.getName(),
-                                            'type': property.getType()
-                                        });
-            } else {
-                                        console.log('Unknown property constructor name: ' + property );
-                                    }
-                                });
-            conceptList.push({
-                                    'name': concept.name,
-                                    'namespace': concept.getNamespace(),
-                                    'properties': tempList,
-                                    'identifier': concept.getIdentifierFieldName()
-                                });
-                                shell.mkdir('-p', destinationPath + '/src/app/' + concept.name);
-            
+                            enumerations.forEach(enumeration => {
+                                if (enumeration.name === property.getType()) {
+                                    enumValues = enumeration.properties;
+                                }
                             });
+            // add meta information to the field list
+                            tempList.push({
+                                'name': property.getName(),
+                                'type': property.getType(),
+                                'enum': true,
+                                'array': property.array === true,
+                                enumValues,
+                            });
+                        } else if (property.isPrimitive() || !property.isPrimitive()) {
+
+                            tempList.push({
+                                'name': property.getName(),
+                                'type': property.getType()
+                            });
+                        } else {
+                            console.log('Unknown property type: ' + property);
+                        }
+                    } else if (property.constructor.name === 'RelationshipDeclaration') {
+                        tempList.push({
+                            'name': property.getName(),
+                            'type': property.getType()
                         });
+                    } else {
+                        console.log('Unknown property constructor name: ' + property );
+                    }
+                });
+                conceptList.push({
+                    'name': concept.name,
+                    'namespace': concept.getNamespace(),
+                    'properties': tempList,
+                    'identifier': concept.getIdentifierFieldName()
+                });
+                shell.mkdir('-p', destinationPath + '/src/app/' + concept.name);
+
+            });
+            });
             conceptList.forEach((concept) => {
-                            conceptServiceNames.push(concept.name + 'Service');
-                        });
+                conceptServiceNames.push(concept.name + 'Service');
+            });
             conceptList.forEach((concept) => {
-                            conceptComponentNames.push(concept.name + 'Component');
-                        });
+                conceptComponentNames.push(concept.name + 'Component');
+            });
 
             let model = this._generateTemplateModel();
             this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|concept|Transaction)*'), this.destinationPath(), model);
@@ -562,7 +570,7 @@ module.exports = yeoman.Base.extend({
                     this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.service.ts'), {
                         assetName: assetList[x].name,
                         namespace: assetList[x].namespace,
-                        apiNamespace: apiNamespace
+                        apiNamespace: this.apiNamespace
                     }
                 );
                 this.fs.copyTpl(
@@ -590,7 +598,7 @@ module.exports = yeoman.Base.extend({
             let parameters = {
                 fileWriter: new FileWriter(this.destinationPath() + '/src/app')
             };
-            
+
             for (let x = 0; x < conceptList.length; x++) {
                 this.fs.copyTpl(
                     this.templatePath('src/app/concept/concept.component.ts'),
@@ -605,7 +613,7 @@ module.exports = yeoman.Base.extend({
                     this.destinationPath('src/app/' + conceptList[x].name + '/' + conceptList[x].name + '.service.ts'), {
                         conceptName: conceptList[x].name,
                         namespace: conceptList[x].namespace,
-                        apiNamespace: apiNamespace
+                        apiNamespace: this.apiNamespace
                     }
                 );
                 this.fs.copyTpl(
@@ -659,11 +667,19 @@ module.exports = yeoman.Base.extend({
     _generateTemplateModel: function () {
         return {
             composerversion: `^${version}`,
+<<<<<<< HEAD
             appName: appName,
             appDescription: appDescription,
             authorName: authorName,
             authorEmail: authorEmail,
             license: license,
+=======
+            appName: this.appName,
+            appDescription: this.appDescription,
+            authorName: this.authorName,
+            authorEmail: this.authorEmail,
+            license: this.license,
+>>>>>>> Kai's CLI changes for angular gen
             businessNetworkIdentifier: businessNetworkIdentifier,
             assetList: assetList,
             assetServiceNames: assetServiceNames,
@@ -673,11 +689,11 @@ module.exports = yeoman.Base.extend({
             connectionProfileName: connectionProfileName,
             enrollmentId: enrollmentId,
             enrollmentSecret: enrollmentSecret,
-            apiServer: apiServer,
-            apiIP: apiIP,
-            apiPort: apiPort,
-            apiNamespace: apiNamespace,
-            cardName: cardName
+            apiServer: this.apiServer,
+            apiIP: this.apiIP,
+            apiPort: this.apiPort,
+            apiNamespace: this.apiNamespace,
+            cardName: this.cardName
         };
     },
 
@@ -685,3 +701,4 @@ module.exports = yeoman.Base.extend({
         shell.exec('pkill yo');
     }
 });
+
