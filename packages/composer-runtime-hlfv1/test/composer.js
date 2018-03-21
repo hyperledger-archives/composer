@@ -112,6 +112,23 @@ describe('Composer', () => {
                 });
         });
 
+        it('initialise logging throws an error', () => {
+            sandbox.stub(shim, 'error').returns();
+            let error = new Error('some loginit error');
+            sinon.stub(composer.container, 'initLogging').rejects(error);
+            mockStub.getFunctionAndParameters.returns({fcn:'someFn', params:[]});
+            mockEngine.init.resolves();
+
+
+            return composer.Init(mockStub)
+                .then(() => {
+                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(mockEngine.init);
+                    sinon.assert.calledOnce(shim.error);
+                    sinon.assert.calledWith(shim.error, error);
+                });
+        });
+
         it('engine invoke throws an error', () => {
             sandbox.stub(shim, 'error').returns();
             sinon.stub(composer.container, 'initLogging').resolves();
@@ -214,6 +231,23 @@ describe('Composer', () => {
                     sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
                     sinon.assert.calledOnce(shim.success);
                     sinon.assert.calledWithExactly(shim.success, Buffer.from('false'));
+                });
+        });
+
+
+        it('initialise logging throws an error', () => {
+            sandbox.stub(shim, 'error').returns();
+            let error = new Error('some loginit error');
+            sinon.stub(composer.container, 'initLogging').rejects(error);
+            mockStub.getFunctionAndParameters.returns({fcn:'someFn', params:[]});
+            mockEngine.invoke.resolves();
+
+            return composer.Invoke(mockStub)
+                .then(() => {
+                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(mockEngine.invoke);
+                    sinon.assert.calledOnce(shim.error);
+                    sinon.assert.calledWith(shim.error, error);
                 });
         });
 
