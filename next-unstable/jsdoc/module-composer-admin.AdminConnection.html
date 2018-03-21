@@ -291,7 +291,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-54">line 54</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-46">line 46</a>
 			</li>
 		</ul>
 	</dd>
@@ -448,7 +448,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-196">line 196</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-188">line 188</a>
 			</li>
 		</ul>
 	</dd>
@@ -599,7 +599,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-161">line 161</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-153">line 153</a>
 			</li>
 		</ul>
 	</dd>
@@ -648,6 +648,216 @@ try {
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="deploy"><span class="type-signature"></span>deploy(businessNetworkDefinition, deployOptions)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must<br>be connected for this method to succeed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>businessNetworkDefinition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">BusinessNetworkDefinition</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The business network to deploy</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deployOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>connector specific deployment options<br>               deployOptions.card the card to use for the NetworkAdmin</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+	<dt class="important tag-deprecated method-doc-label method-doc-details-label">Deprecated:</dt>
+	
+    <dd>
+        <ul class="dummy">
+            <li>Please install() and start()</li>
+        </ul>
+    </dd>
+    
+    
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-543">line 543</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that will be fufilled when the business network has been<br>deployed.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Deploy a Business Network Definition
+let adminConnection = new AdminConnection();
+let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+try {
+   await adminConnection.connect(&#x27;userCard@network&#x27;)
+   await adminConnection.deploy(businessNetworkDefinition)
+   // Business network definition deployed
+} catch(error) {
+    // Add error handling here.
+}</pre>
+
 
     
 </dd>
@@ -711,7 +921,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-236">line 236</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-228">line 228</a>
 			</li>
 		</ul>
 	</dd>
@@ -888,7 +1098,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-110">line 110</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-102">line 102</a>
 			</li>
 		</ul>
 	</dd>
@@ -1000,7 +1210,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-134">line 134</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-126">line 126</a>
 			</li>
 		</ul>
 	</dd>
@@ -1162,7 +1372,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-176">line 176</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-168">line 168</a>
 			</li>
 		</ul>
 	</dd>
@@ -1348,7 +1558,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-84">line 84</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-76">line 76</a>
 			</li>
 		</ul>
 	</dd>
@@ -1405,7 +1615,7 @@ try {
             
 <hr>
 <dt>
-    <h4 class="name" id="install"><span class="type-signature"></span>install(businessNetworkDefinition, installOptions)</h4>
+    <h4 class="name" id="install"><span class="type-signature"></span>install(businessNetworkName, installOptions)</h4>
     
     
 </dt>
@@ -1413,8 +1623,7 @@ try {
 
     
     <div class="description">
-        <p>Installs a business network as chaincode to Hyperledger Fabric in preparation<br>for the business network to be started.</p>
-<p>The connection must be connected for this method to succeed.</p>
+        <p>Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation<br>for the business network to be started. The connection must be connected for this method to succeed.<br>You must pass the name of the business network that is defined in your archive that this<br>runtime will be started with.</p>
     </div>
     
 
@@ -1449,7 +1658,7 @@ try {
 
         <tr>
             
-                <td class="name"><code>businessNetworkDefinition</code></td>
+                <td class="name"><code>businessNetworkName</code></td>
             
 
             <td class="type">
@@ -1466,7 +1675,7 @@ try {
 
             
 
-            <td class="description last"><p>The business network to be installed</p></td>
+            <td class="description last"><p>The name of business network which will be used to start this runtime.</p></td>
         </tr>
 
     
@@ -1535,7 +1744,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-268">line 268</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-261">line 261</a>
 			</li>
 		</ul>
 	</dd>
@@ -1564,7 +1773,7 @@ try {
     
             
 <div class="param-desc">
-    <p>A promise that will be fufilled when the business network has been installed</p>
+    <p>A promise that will be fufilled when the business network has been<br>deployed.</p>
 </div>
 
 
@@ -1593,9 +1802,9 @@ let adminConnection = new AdminConnection();
 let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
 try {
    await adminConnection.connect(&#x27;adminCard@hlfv1&#x27;)
-   await adminConnection.install(businessNetworkDefinition);
-   // Business network installed
-} catch (error) {
+   await adminConnection.install(businessNetworkDefinition.getName());
+    // Business network definition installed
+} catch(error){
     // Add optional error handling here.
 }</pre>
 
@@ -1662,7 +1871,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-701">line 701</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-811">line 811</a>
 			</li>
 		</ul>
 	</dd>
@@ -1790,7 +1999,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-571">line 571</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-681">line 681</a>
 			</li>
 		</ul>
 	</dd>
@@ -1967,7 +2176,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-506">line 506</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-630">line 630</a>
 			</li>
 		</ul>
 	</dd>
@@ -2039,7 +2248,7 @@ try {
             
 <hr>
 <dt>
-    <h4 class="name" id="start"><span class="type-signature"></span>start(networkName, networkVersion [, startOptions])</h4>
+    <h4 class="name" id="start"><span class="type-signature"></span>start(businessNetworkDefinition [, startOptions])</h4>
     
     
 </dt>
@@ -2084,13 +2293,13 @@ try {
 
         <tr>
             
-                <td class="name"><code>networkName</code></td>
+                <td class="name"><code>businessNetworkDefinition</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">BusinessNetworkDefinition</span>
 
 
 
@@ -2109,39 +2318,7 @@ try {
 
             
 
-            <td class="description last"><p>Name of the business network to start</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>networkVersion</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Version of the business network to start</p></td>
+            <td class="description last"><p>The business network to start</p></td>
         </tr>
 
     
@@ -2220,7 +2397,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-441">line 441</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-478">line 478</a>
 			</li>
 		</ul>
 	</dd>
@@ -2275,9 +2452,10 @@ try {
         
     <pre class="sunlight-highlight-javascript">// Start a Business Network Definition
 let adminConnection = new AdminConnection();
+let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
 try {
     await adminConnection.connect(&#x27;userCard@network&#x27;)
-    await adminConnection.start(networkName, networkVersion,
+    await adminConnection.start(businessNetworkDefinition,
              { networkAdmins:
                  [ {userName : &#x27;admin&#x27;, enrollmentSecret:&#x27;adminpw&#x27;} ]
              }
@@ -2303,8 +2481,7 @@ try {
 
     
     <div class="description">
-        <p>Undeploys a business network.</p>
-<p><p><br><strong>Note: this this currently not supported with Hyperledger Fabric and will throw an error.</strong></p>
+        <p>Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no<br>longer be able to process transactions.</p>
     </div>
     
 
@@ -2356,7 +2533,7 @@ try {
 
             
 
-            <td class="description last"><p>The name of business network to remove.</p></td>
+            <td class="description last"><p>The name of business network that will be used to start this runtime.</p></td>
         </tr>
 
     
@@ -2401,7 +2578,7 @@ try {
 		<ul class="dummy">
 			<li>
 				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
-				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-548">line 548</a>
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-577">line 577</a>
 			</li>
 		</ul>
 	</dd>
@@ -2450,6 +2627,197 @@ try {
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Undeploy a Business Network Definition
+let adminConnection = new AdminConnection();
+try {
+   await adminConnection.connect(&#x27;userCard@network&#x27;)
+   await adminConnection.undeploy(&#x27;network-name&#x27;)
+   // Undeployed Business Network Definition
+} catch(error){
+    // Add error handling here.
+}</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="update"><span class="type-signature"></span>update(businessNetworkDefinition)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition<br>must have been previously deployed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>businessNetworkDefinition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">BusinessNetworkDefinition</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The new BusinessNetworkDefinition</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-admin_lib_adminconnection.js.html">composer-admin/lib/adminconnection.js</a>,
+				 <a href="composer-admin_lib_adminconnection.js.html#sunlight-1-line-602">line 602</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that will be fufilled when the business network has been<br>updated.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Updates a Business Network Definition
+let adminConnection = new AdminConnection();
+let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
+try {
+   await adminConnection.connect(&#x27;userCard@network&#x27;)
+   await adminConnection.update(businessNetworkDefinition)
+   // Business network definition updated
+} catch(error){
+    // Add optional error handling here.
+}</pre>
+
 
     
 </dd>
@@ -2510,7 +2878,7 @@ try {
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Tue Mar 20th 2018
+		on Wed Mar 21st 2018
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

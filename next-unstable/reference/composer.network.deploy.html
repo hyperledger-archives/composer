@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Typical Solution Architecture | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network Deploy CLI | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Typical Solution Architecture</p>
+          <p>Hyperledger Composer Network Deploy CLI</p>
           </div>
 
           <nav class="context-nav">
@@ -264,91 +264,74 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="typical-hyperledger-composer-solution-architecture">Typical Hyperledger Composer Solution Architecture</h1>
-
-<p>Hyperledger Composer enables architects and developers to quickly create &quot;full-stack&quot; blockchain solutions. I.e. business logic that runs on the blockchain, REST APIs that expose the blockchain logic to web or mobile applications, as well as integrating the blockchain with existing enterprise systems of record.</p>
-
-<p><img src="../assets/img/ComposerArchitecture.svg" style="border: none;" alt="Diagram of typical Hyperledger Composer architecture"></p>
+              <h1 id="hyperledger-composer-network-deploy">Hyperledger Composer Network Deploy</h1>
 
 <hr>
 
-<p>Hyperledger Composer is composed of the following high-level components:</p>
+<p>The <code>composer network deploy</code> utility is used to deploy a business network archive from local disk to a Hyperledger Fabric v1.1 network.
+Before using this command, read the topic <a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a>.</p>
+
+<p><em>Please note: It is recommended that users use the <code>composer runtime install</code> and <code>composer network start</code> commands instead of this command.</em></p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
+</code></pre></div>
+<h2 id="considerations">Considerations</h2>
+
+<p>This command creates a new card file. The connection profile in this card file comes from the card defined in the <code>-c|--card</code> option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.</p>
+
+<h3 id="options">Options</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy [options]
+
+Options:
+  --help                             Show help  [boolean]
+  -v, --version                      Show version number  [boolean]
+  --archiveFile, -a                  The business network archive file name  [string] [required]
+  --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
+  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O                  A file containing options that are specific to connection  [string]
+  --networkAdmin, -A                 The identity name of the business network administrator  [string]
+  --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
+  --networkAdminEnrollSecret, -S     Use enrollment secret for the business network administrator  [boolean]
+  --card, -c                         The cardname to use to deploy the network  [string]
+  --file, -f                         File name of the card to be created  [string]
+</code></pre></div>
+<h2 id="example-output">Example Output</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a digitalPropertyNetwork.bna -A admin -S -c PeerAdmin@hlfv1 -f admincard
+
+Deploying business network from archive digitalPropertyNetwork.bna
+Business network definition:
+    Identifier: digitalproperty-network@0.0.1
+    Description: Digital Property Network
+Deploying business network definition. This may take a minute...
+Command completed successfully.
+</code></pre></div>
+<h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
+
+<p>The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option allow connection specific information to be sent. Hyperledger Fabric v1.1 endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
 
 <ul>
-<li>Execution Runtimes (four are currently supported!)</li>
-<li>JavaScript SDK</li>
-<li>Command Line Interface</li>
-<li>REST Server</li>
-<li>LoopBack Connector</li>
-<li>Playground Web User Interface</li>
-<li>Yeoman code generator</li>
-<li>VSCode and Atom editor plugins</li>
+<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a single-line JSON string as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicy='{"identities": [.... }'
+</code></pre></div></li>
+<li><p>Using the <code>-o</code> option, the endorsement policy can be sent as a file path as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+</code></pre></div>
+<p>In this case, the endorsement policy file should follow this format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{"identities":[...],
+    "policy": {...}}
+</code></pre></div></li>
+<li><p>Using the <code>-O</code> option, the endorsement policy can be sent as a file path as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -O /path/to/file/options.json
+</code></pre></div>
+<p>In this case, the options file should follow this format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].
+            "policy: {...}"
+          },
+          "someOtherOption": "A Value"
+        }
+</code></pre></div></li>
 </ul>
 
-<h2 id="execution-runtimes">Execution Runtimes</h2>
-
-<p>Hyperledger Composer has been designed to support different pluggable runtimes, and currently has three runtime implementations:
-.
-* Hyperledger Fabric v1.1. State is stored on the distributed ledger.
-* Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.
-* Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.</p>
-
-<h3 id="connection-profiles">Connection Profiles</h3>
-
-<p>Connection Profiles are used across Hyperledger Composer to specify how to connect to an execution runtime. There are different configuration options for each <em>type</em> of execution runtime. For example, the connection profile for a Hyperledger Fabric v1.1 runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.</p>
-
-<p>Connection Profiles are part of Business Network cards.</p>
-
-<h2 id="javascript-sdk">JavaScript SDK</h2>
-
-<p>The Hyperledger Composer JavaScript SDK is a set of Node.js APIs the enables developers to create applications to manage and interact with deployed business networks.</p>
-
-<p>The APIs are split between two npm modules:</p>
-
-<ol>
-<li><code>composer-client</code> used to submit transactions to a business network or to perform Create, Read, Update, Delete operations on assets and participants</li>
-<li><code>composer-admin</code> used to manage business networks (deploy, undeploy)</li>
-</ol>
-
-<p>Details of all the APIs are available as JSDocs (see reference).</p>
-
-<h3 id="composer-client">composer-client</h3>
-
-<p>This module would usually be installed as a local dependency of an application. It provides the API that is used by business applications to connect to a business network to access <strong>assets</strong>, <strong>participants</strong> and submitting <strong>transactions</strong>. When in production this is only module that needs to be added as a direct dependency of the application.</p>
-
-<h3 id="composer-admin">composer-admin</h3>
-
-<p>This module would usually be installed as a local dependency of <strong>administrative</strong> applications. This API permits the creation of and deployment of <strong>business network definitions</strong>.</p>
-
-<h2 id="command-line-interface">Command Line Interface</h2>
-
-<p>The <code>composer</code> command line tool enables developers and administrators to deploy and managed business network definitions.</p>
-
-<h2 id="rest-server">REST Server</h2>
-
-<p>The Hyperledger Composer REST Server automatically generates a Open API (Swagger) REST API for a business network. The REST Server (based on LoopBack technology) converts the Composer model for a business network into an Open API definition, and at runtime implements Create, Read, Update and Delete support for assets and participants and allows transactions to be submitted for processing or retrieved.</p>
-
-<h2 id="loopback-connector">LoopBack Connector</h2>
-
-<p>The Hyperledger Composer LoopBack Connector is used by the Composer REST Server, however it may also be used standalone by integration tools that support LoopBack natively. Alternatively it may be used with the LoopBack tools to create more sophisticated customizations of the REST APIs.</p>
-
-<h2 id="playground-web-user-interface">Playground Web User Interface</h2>
-
-<p>Hyperledger Composer Playground is a web user interface to define and test business networks. It allows a business analyst to quickly import samples and prototype business logic that executes on the Web or Hyperledger Fabric runtime.</p>
-
-<h2 id="yeoman-code-generators">Yeoman Code Generators</h2>
-
-<p>Hyperledger Composer uses the Open Source Yeoman code generator framework to create skeleton projects:</p>
-
-<ul>
-<li>Angular web application</li>
-<li>Node.js application</li>
-<li>Skeleton business network</li>
-</ul>
-
-<h2 id="vscode-and-atom-editor-extensions">VSCode and Atom Editor Extensions</h2>
-
-<p>Hyperledger Composer has community contributed editor extensions for VSCode and Atom. The VSCode extension is very powerful and validates Composer model and ACL files, providing syntax highlighting, error detection and snippets support. The Atom plugin is much more rudimentary and only has basic syntax highlighting.</p>
+<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#Policy">Hyperledger Fabric Node.js SDK documentation</a>.</p>
 
             
           </section>
