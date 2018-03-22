@@ -37,8 +37,8 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
 
-        composer card delete -n PeerAdmin@fabric-network
-        composer card delete -n admin@tutorial-network
+        composer card delete -c PeerAdmin@fabric-network
+        composer card delete -c admin@tutorial-network
 
 If these commands fail, then you have network cards from a previous version and you will have to delete the file system card store.
 

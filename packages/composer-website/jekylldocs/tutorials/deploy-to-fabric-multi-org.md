@@ -90,12 +90,12 @@ If the command works successfully, the first command will generate Fabric networ
 
 Next, delete any 'old' business network cards that may exist in your wallet from previous Fabric environments. It is safe to ignore any errors that state that the business network cards cannot be found:
 
-    composer card delete -n PeerAdmin@byfn-network-org1
-    composer card delete -n PeerAdmin@byfn-network-org2
-    composer card delete -n alice@trade-network
-    composer card delete -n bob@trade-network
-    composer card delete -n admin@trade-network
-    composer card delete -n PeerAdmin@fabric-network
+    composer card delete -c PeerAdmin@byfn-network-org1
+    composer card delete -c PeerAdmin@byfn-network-org2
+    composer card delete -c alice@trade-network
+    composer card delete -c bob@trade-network
+    composer card delete -c admin@trade-network
+    composer card delete -c PeerAdmin@fabric-network
 
 However any other types of failure could indicate you have cards in the card store which are from an older version of {{site.data.conrefs.composer_full}} and you will then have to delete your file system card store in your HOME directory as follows:
 
@@ -467,7 +467,7 @@ If the command works successfully, a business network card file called `PeerAdmi
 
 Run the `composer card import` command to import the business network card for `Org1` into the wallet:
 
-    composer card import -f PeerAdmin@byfn-network-org1.card --name PeerAdmin@byfn-network-org1
+    composer card import -f PeerAdmin@byfn-network-org1.card --card PeerAdmin@byfn-network-org1
 
 If the command works successfully, a business network card called `PeerAdmin@byfn-network-org1` will have been imported into the wallet.
 
@@ -475,7 +475,7 @@ If the command works successfully, a business network card called `PeerAdmin@byf
 
 Run the `composer card import` command to import the business network card for `Org2` into the wallet:
 
-    composer card import -f PeerAdmin@byfn-network-org2.card --name PeerAdmin@byfn-network-org2
+    composer card import -f PeerAdmin@byfn-network-org2.card --card PeerAdmin@byfn-network-org2
 
 If the command works successfully, a business network card called `PeerAdmin@byfn-network-org2` will have been imported into the wallet.
 

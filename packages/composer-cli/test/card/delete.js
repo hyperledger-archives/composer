@@ -42,7 +42,7 @@ describe('composer card delete CLI', function() {
     it('should call AdminConnection.delete()', function() {
         adminConnectionStub.deleteCard.resolves(true);
         const cardName = 'CARD_NAME';
-        const args = { name: cardName };
+        const args = { card: cardName };
         return DeleteCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.deleteCard);
             sinon.assert.calledWith(adminConnectionStub.deleteCard, cardName);
@@ -52,7 +52,7 @@ describe('composer card delete CLI', function() {
     it('should delete existing card', function() {
         adminConnectionStub.deleteCard.resolves(true);
         const cardName = 'CARD_NAME';
-        const args = { name: cardName };
+        const args = { card: cardName };
         return DeleteCmd.handler(args).then(() => {
             // regexp to quickly strip any colour coded console output
             let regexp = new RegExp('.*Deleted Business Network Card:.*'+cardName);
@@ -63,7 +63,7 @@ describe('composer card delete CLI', function() {
     it('should fail deleting non-existent card', function() {
         adminConnectionStub.deleteCard.resolves(false);
         const cardName = 'CARD_NAME';
-        const args = { name: cardName };
+        const args = { card: cardName };
         let regexp = new RegExp('.*Card not found:.*'+cardName);
         DeleteCmd.handler(args).should.be.rejectedWith(regexp);
     });
