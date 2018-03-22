@@ -48,9 +48,9 @@ tasks:
                     extension: ".md"
                     streamId : html1 
     # Finally need to copy the fixed assets to the output directory "
-    # -   taskid : FinalStep
-    #     processor : copy
-    #     options :
-    #         srcdir : "${root.templateroot}/assets.default/**/*" 
-    #         destdir : "${_args.outdir}/assets"  
+    -   taskid : FinalStep
+        processor : copy
+        options :
+            srcdir : "${root.templateroot}/assets.default/**/*" 
+            destdir : "${_args.outdir}"  
          

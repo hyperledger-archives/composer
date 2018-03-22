@@ -18,9 +18,7 @@ const path = require('path');
 const vfs = require('vinyl-fs');
 const map = require('map-stream');
 const winston = require('winston');
-// get the logger
 const LOG = winston.loggers.get('opus');
-
 
 let setupStream = function(context,meta){
 
@@ -33,7 +31,6 @@ let setupStream = function(context,meta){
 };
 
 let logname = function(file,cb){
-    // console.log('debug '+file.path);
     LOG.info(`Input glob is ${file.path}`);
     cb(null,file);
 };
@@ -51,17 +48,9 @@ let execute = function(context,meta){
     // create a promise and attach it to the stream to be resolved when the
     // events on the stream are triggered.
     let streamPromise = new Promise((resolve,reject)=>{
-        stream.on('finish',()=>{
-            // console.log('---------- Stream evt: finish');
-            resolve();
-        });
-        stream.on('error',(err)=>{
-            // console.log(err);
-            reject(err);
-        });
-        stream.on('close',()=>{
-            // console.log('close');
-            resolve();});
+        stream.on('finish',resolve);
+        stream.on('error',reject);
+        stream.on('close',resolve);
     });
 
     for (let element of pipeElements){
@@ -69,9 +58,7 @@ let execute = function(context,meta){
     }
 
     stream.pipe(vfs.dest(path.resolve(meta.outputdir)));
-    // console.log('returning'+streamPromise);
-    // await for the promise to be resolve or rejected.
-    // RETURN await streamPromise;
+    // pass the streamPromise out to be handled outside
     return streamPromise;
 };
 

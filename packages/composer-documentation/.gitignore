@@ -60,3 +60,5 @@ typings/
 # default output place
 logs/
 _tmp/
+
+jekylldocs/*

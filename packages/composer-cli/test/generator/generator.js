@@ -25,7 +25,7 @@ chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 const mockery = require('mockery');
-const docs = require('composer-documentation');
+
 describe('composer generator cmd launcher unit tests', function () {
 
     let sandbox;

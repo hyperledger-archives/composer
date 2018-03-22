@@ -1,13 +1,13 @@
 {
   "name": "composer-documentation",
-  "version": "0.18.2",
+  "version": "0.18.3",
   "description": "Generates documentation packages for Hyperlegder Composer Business Networks",
   "bin": {
     "opus": "bin/opus"
   },
   "main": "index.js",
   "scripts": {
-    "pretest": "pegjs  ./lib/grammar/modelfile-cmts.pegjs ./lib/processors/parsers/modelfile-cmts.js",
+    "pretest": "pegjs  ./lib/grammar/modelfile-cmts.pegjs ./lib/processors/parsers/modelfile-cmts.js && npm run lint",
     "systemnsDocs": "./bin/opus --archive dummy.bna --outdir ./out --config ./_configs/sns-config.yaml --nsDocsRoot=../composer-common/lib/system/",
     "lint": "eslint .",
     "postlint": "npm run licchk",
@@ -35,28 +35,26 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "chalk": "^2.3.0",
-    "comment-parser": "^0.5.0",
-    "composer-admin": "0.18.2",
-    "composer-client": "0.18.2",
-    "composer-common": "0.18.2",
-    "debug-stream": "^3.0.1",
-    "doctrine": "^2.1.0",
-    "js-yaml": "^3.10.0",
-    "js2flowchart": "^1.1.3",
-    "jsome": "^2.5.0",
-    "lodash": "^4.17.5",
-    "lodash.clonedeep": "^4.5.0",
+    "chalk": "2.3.0",
+    "comment-parser": "0.5.0",
+    "composer-admin": "0.18.3",
+    "composer-client": "0.18.3",
+    "composer-common": "0.18.3",
+    "debug-stream": "3.0.1",
+    "doctrine": "2.1.0",
+    "js-yaml": "3.10.0",
+    "lodash": "4.17.5",
+    "lodash.clonedeep": "4.5.0",
     "map-stream": "0.1.0",
-    "markdown-it": "^8.4.0",
-    "markdown-it-anchor": "^4.0.0",
-    "mkdirp": "^0.5.1",
-    "nunjucks": "^3.0.1",
-    "ora": "^1.4.0",
-    "prettyoutput": "^1.1.1",
-    "rimraf": "^2.6.2",
-    "vinyl-fs": "^2.4.4",
-    "yargs": "^8.0.2"
+    "markdown-it": "8.4.0",
+    "markdown-it-anchor": "4.0.0",
+    "mkdirp": "0.5.1",
+    "nunjucks": "3.0.1",
+    "ora": "1.4.0",
+    "prettyoutput": "1.1.1",
+    "rimraf": "2.6.2",
+    "vinyl-fs": "2.4.4",
+    "yargs": "8.0.2"
   }
   ,
   "license-check-config": {
@@ -64,7 +62,11 @@
       "**/*.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
-      "!./out/**/*"
+      "!./out/**/*",
+      "!./lib/processors/parsers/**",
+      "!_bnaTemplate/**",
+      "!_configs/**",
+      "!_template/**"
     ],
     "path": "header.txt",
     "blocking": true,
@@ -74,15 +76,14 @@
   "nyc": {
     "exclude": [
       "coverage/**",
-      "lib/codegen/javascriptparser.js",
-      "lib/codegen/parsejs.js",
-      "lib/introspect/parser.js",
-      "lib/acl/parser.js",
-      "lib/query/parser.js",
+      "lib/processors/parsers/**",
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "_bnaTemplate/**",
+      "_configs/**",
+      "_template/**"
     ],
     "reporter": [
       "text-summary",

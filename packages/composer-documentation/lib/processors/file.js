@@ -21,7 +21,6 @@ const LOG = winston.loggers.get('opus');
 const map = require('map-stream');
 
 let logname = function(file,cb){
-    // console.log('debug '+file.path);
     LOG.info(`Input glob is ${file.path}`);
     cb(null,file);
 };
@@ -34,9 +33,7 @@ let copy = async function(context,meta){
         vfs.src([meta.srcdir]).pipe(map(logname))
             .pipe(vfs.dest(path.resolve(meta.destdir)))
             .on('finish',resolve)
-            .on('close',()=>{
-                // console.log('close');
-                resolve();});
+            .on('close',resolve);
     });
 
 

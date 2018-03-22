@@ -24,18 +24,15 @@ const EnumValueDeclaration = require('composer-common').EnumValueDeclaration;
 const AclRule = require('composer-common').AclRule;
 const Field = require('composer-common').Field;
 const ModelFile = require('composer-common').ModelFile;
-const ModelManager = require('composer-common').ModelManager;
 const Script = require('composer-common').Script;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const RelationshipDeclaration = require('composer-common').RelationshipDeclaration;
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const FunctionDeclaration = require('composer-common').FunctionDeclaration;
-const Decorator = require('composer-common').Decorator;
 const Query = require('composer-common').Query;
 const QueryFile = require('composer-common').QueryFile;
 const debug = require('debug')('concerto:infovisitor');
-const util = require('util');
 
 /**
  * Convert the contents of a {@link ModelManager} instance to a set of JSON
@@ -59,8 +56,6 @@ class InfoVisitor {
 
         if (thing instanceof BusinessNetworkDefinition) {
             return this.visitBusinessNetwork(thing, parameters);
-        } else if (thing instanceof ModelManager) {
-            return this.visitModelManager(thing, parameters);
         } else if (thing instanceof ModelFile) {
             return this.visitModelFile(thing, parameters);
         } else if (thing instanceof AssetDeclaration) {
@@ -92,7 +87,6 @@ class InfoVisitor {
         }else if (thing instanceof Query) {
             return this.visitQuery(thing, parameters);
         } else {
-            //throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: null }));
             throw new Error('Unrecognised type: ' + typeof thing );
         }
     }
@@ -134,30 +128,6 @@ class InfoVisitor {
 
     /**
      * Visitor design pattern
-     * @param {ModelManager} modelManager - the object being visited
-     * @param {Object} parameters - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    visitModelManager(modelManager, parameters) {
-        debug('entering visitModelManager');
-
-        // Save the model manager so that we have access to it later.
-        parameters.modelManager = modelManager;
-
-        // Visit all of the files in the model manager.
-        let jsonSchemas = [];
-        modelManager.getModelFiles().forEach((modelFile) => {
-            if (parameters.system || !modelFile.isSystemModelFile()){
-                jsonSchemas = jsonSchemas.concat(modelFile.accept(this, parameters));
-            }
-        });
-        return jsonSchemas;
-
-    }
-
-    /**
-     * Visitor design pattern
      * @param {AclManager} aclManager - the object being visited
      * @param {Object} parameters - the parameter
      * @return {Object} the result of visiting or null
@@ -172,7 +142,7 @@ class InfoVisitor {
             verb: aclRule.getVerbs(),
             noun: aclRule.getNoun().getFullyQualifiedName(),
 
-            participant: !aclRule.getParticipant() ? 'none' : aclRule.getParticipant().toString().replace(/ModelBinding/i,'').trim(),
+            participant: aclRule.getParticipant().toString().replace(/ModelBinding/i,'').trim(),
             transaction: aclRule.getTransaction(),
             predicate: aclRule.getPredicate().getExpression(),
             action: aclRule.getAction()

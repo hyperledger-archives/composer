@@ -40,7 +40,7 @@ require('./processors/stream')(_processors);
 require('./processors/markdownit')(_processors);
 require('./processors/file')(_processors);
 require('./processors/hc_network')(_processors);
-require('./processors/json')(_processors);
+
 
 /**
  *
@@ -49,9 +49,7 @@ require('./processors/json')(_processors);
  * @param {*} parent
  */
 function setupContext(node, context, parent) {
-    if (!node) {
-        return;
-    }
+
     for (let i in node.subtasks) {
         setupContext(node.subtasks[i], context, node);
     }
@@ -79,15 +77,8 @@ let depth=0;
  * @param {Object} context current context to be processing
  */
 async function processNode(node, context) {
-    if (!node) {
-        // need to ensure this recursion doesn't endless...
-        return;
-    }
 
     let process = _processors[node.processor];
-    if (!process) {
-        throw new Error(`No processor this node  ${node.taskid} ${node.processor} `);
-    }
 
     // do any pre-processing that might be required
     let pad = new Array(depth+1).join('   ');
@@ -133,7 +124,7 @@ function isObject(a) {
  */
 function resolve(path, obj) {
     return path.split('.').reduce(function (prev, curr) {
-        return prev ? prev[curr] : null;
+        return prev[curr];
     }, obj);
 }
 
@@ -228,6 +219,7 @@ async function go(args) {
         LOG.info('All done');
     } catch (error) {
         LOG.error(error);
+        throw error;
     }
 
 

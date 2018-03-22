@@ -1,4 +1,3 @@
-
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +20,6 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 // load the generators
 const basics = require('./generators/basics');
 const classdeclarations = require('./generators/classdeclarations');
-// const acls = require('./generators/acls');
-const txfns = require('./generators/txfns');
-// const queries = require('./generators/queries');
 const InfoVisitor = require('./visitors/info');
 const LOG = winston.loggers.get('opus');
 
@@ -34,10 +30,9 @@ let process = async function(context,options){
 
 
     // generators to use
-    let generators = [basics,txfns, classdeclarations/*, acls, queries*/];
+    let generators = [basics, classdeclarations];
 
     if (options.systemns){
-        console.log(version);
         context._bnd = new BusinessNetworkDefinition('composer@'+version, '', null, '**Hyperledger** Composer');
     }else {
         LOG.info(`Loading BNA from ${bnaFile}`);

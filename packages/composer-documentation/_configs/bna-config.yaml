@@ -13,6 +13,7 @@ tasks:
         processor : composernetwork
         options :
             archive : "${_args.archive}"   
+            docsPrefix : "${_args.extDocsRoot}"  
     #  Uses multiple templates specified in 'inputdir' & 'pattern' to work on the context and produce markdown output files
     -   taskid : CreateMarkdown
         processor : njk_multi

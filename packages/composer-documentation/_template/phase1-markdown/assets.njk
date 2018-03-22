@@ -16,14 +16,12 @@ The fully qualified name is **{{asset.fqn}}**
 
 ### Properties
 
-{% if asset.properties.length > 0 %}
+
 | Name | Type | Description |
 | --------  | ---- | ----------- |
 {% for id,info in asset.properties %}|{{id}}|{{info.type}}|{{info.description}}|
 {% endfor %}
-{% else %}
-No properties defined.
-{% endif %}
+
 
 ### References
 {% if asset.decorators.docsuri %}
