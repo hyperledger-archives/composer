@@ -127,7 +127,7 @@ $callout: #FFD640;
           }
         }
         &.activeBorder {
-          border-right: 3px solid $first-highlight;
+          border-left: 5px solid $first-highlight;
           transition: none;
         }
         a {
@@ -137,7 +137,8 @@ $callout: #FFD640;
           padding-top: 0.5rem;
           padding-bottom: 0.5rem;
           &.active {
-            color: $first-highlight;
+            color: $primary-text;
+            background-color: rgba($first-highlight, 0.3);
           }
         }
 
@@ -161,14 +162,16 @@ $callout: #FFD640;
 
           li {
             border-bottom: none;
-            border-left: 3px solid $white;
+            border-left: 0px solid $white;
             &:hover {
-              border-left: 3px solid $first-highlight;
+              // border-left: 3px solid $first-highlight;
               border-right: none;
+              background-color: rgba($first-highlight, 0.3);
             }
           }
         }
       }
+
 
       .caret {
         float: right;
@@ -230,7 +233,23 @@ $callout: #FFD640;
       }
 
     }
-  }
+
+// Way to override the background colour of the nav title
+      .context-nav {
+        ul {
+          li {
+            p {
+            a {
+              &.active {
+                background-color: white;
+                color: $first-highlight;
+              }
+            }
+          }
+          }
+        }
+      }
+    }
 
   .page-content-grid {
     grid-column-start: 2;
@@ -293,6 +312,33 @@ $callout: #FFD640;
 
           h2 {
             margin-top: 2rem;
+            // new updates
+              border-bottom: 1px solid #c6c6c6;
+              padding-bottom: 1rem;
+          }
+
+          p + h2 {
+            margin-top: 5rem;
+          }
+
+          ul + h2 {
+            margin-top: 5rem;
+          }
+
+          ol + h2 {
+            margin-top: 5rem;
+          }
+
+          pre + h2 {
+            margin-top: 5rem;
+          }
+
+          .highlight + h2 {
+            margin-top: 5rem;
+          }
+
+          table + h2 {
+            margin-top: 5rem;
           }
 
           h3 {
