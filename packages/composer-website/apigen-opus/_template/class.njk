@@ -6,6 +6,7 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: The Client, Admin, and Runtime components of Hyperledger Composer
 index-order: {{index}}
 ---
+
 [Overview](api-doc-index)  -  [Common API](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API](allData#admin-api)  -  [Runtime API](allData#runtime-api)
 # {{name}}
 
@@ -19,8 +20,8 @@ index-order: {{index}}
 
 
 {% if seeAlso %}
-### See also
 {% for sa in seeAlso -%}
+### See also
 - {{sa}}
 {% else %}
 
@@ -71,11 +72,10 @@ _{{method.return.type}} {{method.name}}( {% for args in method.parameters %}{% i
 {% endif %}
 
 {% if method.seeAlso %}
-### See also
 {% for sa in method.seeAlso -%}
+### See also
 - {{sa}}
 {% else %}
-
 {% endfor %}
 {% endif %}
 
@@ -109,7 +109,7 @@ No parameters
 {{method.example}}
 ```
 {% endif %}
-{% endfor %} 
+{% endfor %}
 
 ##Inherited methods
 
@@ -143,8 +143,8 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 {% endif %}
 
 {% if method.seeAlso %}
-### See also
 {% for sa in method.seeAlso -%}
+### See also
 - {{sa}}
 {% else %}
 
@@ -181,4 +181,4 @@ No parameters
 {{method.example}}
 ```
 {% endif %}
-{% endfor %} 
+{% endfor %}
