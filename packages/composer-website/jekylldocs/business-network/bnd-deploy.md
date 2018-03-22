@@ -64,7 +64,7 @@ You can use additional options to the [`composer network start`](../reference/co
 
 If the business network administrator has an enrollment ID and enrollment secret, you can use the `-A` (business network administrator) and `-S` (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing `admin` enrollment ID:
 
-    composer network start -c PeerAdmin@fabric-network -A admin -S
+    composer network start --networkName tutorial-network --networkVersion 1.0.0 --c PeerAdmin@Fabric-network -A admin -S adminpw
 
 ## Deploying business networks using Playground locally
 

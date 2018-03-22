@@ -27,11 +27,11 @@ class Delete {
     * @return {Promise} promise when command complete
     */
     static handler(args) {
-        return cmdUtil.createAdminConnection().deleteCard(args.name).then((cardExisted) => {
+        return cmdUtil.createAdminConnection().deleteCard(args.card).then((cardExisted) => {
             if (cardExisted) {
-                cmdUtil.log(chalk.bold.blue('Deleted Business Network Card: ') + args.name);
+                cmdUtil.log(chalk.bold.blue('Deleted Business Network Card: ') + args.card);
             } else {
-                throw new Error(`Card not found: ${args.name}`);
+                throw new Error(`Card not found: ${args.card}`);
             }
         });
     }

@@ -102,7 +102,7 @@ describe('composer card list CLI', () => {
         const testCard = new IdCard({ userName: 'conga', description: 'such description', roles: ['PeerAdmin', 'ChannelAdmin'] }, { name: 'profileName' });
         testCard.setCredentials({certificate,privateKey});
         adminConnectionStub.exportCard.resolves(testCard);
-        await ListCmd.handler({ name: 'cardname' });
+        await ListCmd.handler({ card: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/description:.*such description/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/businessNetworkName:/));
@@ -116,7 +116,7 @@ describe('composer card list CLI', () => {
         const testCard = new IdCard({ userName: 'conga', description: 'such description', roles: ['PeerAdmin', 'ChannelAdmin'] }, { name: 'profileName' });
         testCard.setCredentials({certificate});
         adminConnectionStub.exportCard.resolves(testCard);
-        await ListCmd.handler({ name: 'cardname' });
+        await ListCmd.handler({ card: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/description:.*such description/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/businessNetworkName:/));
@@ -129,7 +129,7 @@ describe('composer card list CLI', () => {
     it('show card details for one card without certificates', async () => {
         const testCard = new IdCard({ userName: 'conga', description: '', enrollmentSecret:'secret' }, { name: 'profileName' });
         adminConnectionStub.exportCard.resolves(testCard);
-        await ListCmd.handler({ name: 'cardname' });
+        await ListCmd.handler({ card: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/description:/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/businessNetworkName:/));
@@ -139,10 +139,10 @@ describe('composer card list CLI', () => {
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*secret set/));
     });
 
-    it('show card details for without certificates or secret', async () => {
+    it('show card details without certificates or secret', async () => {
         const testCard = new IdCard({ userName: 'conga', description: '', enrollmentSecret:null }, { name: 'profileName' });
         adminConnectionStub.exportCard.resolves(testCard);
-        await ListCmd.handler({ name: 'cardname' });
+        await ListCmd.handler({ card: 'cardname' });
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/userName:.*conga/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/description:/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/businessNetworkName:/));
@@ -151,6 +151,4 @@ describe('composer card list CLI', () => {
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/connectionProfile:[^]*name:.*profileName/));
         sinon.assert.calledWith(CmdUtil.log, sinon.match(/credentials:.*No secret or credentials set/));
     });
-
-
 });
