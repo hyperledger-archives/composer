@@ -529,7 +529,7 @@ myorg/composer-rest-server</p></li>
 <p>sed -e &#39;s/localhost:/orderer.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/ca.org1.example.com:/&#39;  &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network</p></li>
 <li><p>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</p>
 
-<p>composer card export -f jdoe_exp.card -n jdoe@trade-network ; rm jdoe.card</p></li>
+<p>composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card</p></li>
 <li><p>Repeat the above steps for participant <strong>Ken Coe</strong> (<code>kcoe</code>) - creating a <code>trader2</code> participant and issuing the identity <code>kcoe</code> - the sequence of commands are:</p>
 
 <p>composer participant add -c admin@trade-network -d &#39;{&quot;$class&quot;:&quot;org.acme.trading.Trader&quot;,&quot;tradeId&quot;:&quot;trader2&quot;, &quot;firstName&quot;:&quot;Ken&quot;,&quot;lastName&quot;:&quot;Coe&quot;}&#39;</p>
@@ -540,7 +540,7 @@ myorg/composer-rest-server</p></li>
 
 <p>sed -e &#39;s/localhost:/orderer.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/ca.org1.example.com:/&#39;  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network</p>
 
-<p>composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card</p></li>
+<p>composer card export -f kcoe_exp.card -c kcoe@trade-network ; rm kcoe.card</p></li>
 </ol>
 
 <p>These cards can now be imported, then used into the REST client (ie the browser) in the next section.</p>

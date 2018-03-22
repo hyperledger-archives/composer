@@ -340,12 +340,12 @@ _____   _   _   ____
 |_____| |_| \_| |____/
 </code></pre></div>
 <p>Next, delete any &#39;old&#39; business network cards that may exist in your wallet from previous Fabric environments. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -n PeerAdmin@byfn-network-org1
-composer card delete -n PeerAdmin@byfn-network-org2
-composer card delete -n alice@trade-network
-composer card delete -n bob@trade-network
-composer card delete -n admin@trade-network
-composer card delete -n PeerAdmin@fabric-network
+<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -c PeerAdmin@byfn-network-org1
+composer card delete -c PeerAdmin@byfn-network-org2
+composer card delete -c alice@trade-network
+composer card delete -c bob@trade-network
+composer card delete -c admin@trade-network
+composer card delete -c PeerAdmin@fabric-network
 </code></pre></div>
 <p>However any other types of failure could indicate you have cards in the card store which are from an older version of Hyperledger Composer and you will then have to delete your file system card store in your HOME directory as follows:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">rm -fr $HOME/.composer 
@@ -703,14 +703,14 @@ cp -p $ORG2/keystore/*_sk /tmp/composer/org2
 <h2 class='alice'>Step Nine: Importing the business network cards for the Hyperledger Fabric administrator for Org1</h2>
 
 <p>Run the <code>composer card import</code> command to import the business network card for <code>Org1</code> into the wallet:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1.card --name PeerAdmin@byfn-network-org1
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org1.card --card PeerAdmin@byfn-network-org1
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org1</code> will have been imported into the wallet.</p>
 
 <h2 class='bob'>Step Ten: Importing the business network cards for the Hyperledger Fabric administrator for Org2</h2>
 
 <p>Run the <code>composer card import</code> command to import the business network card for <code>Org2</code> into the wallet:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2.card --name PeerAdmin@byfn-network-org2
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import -f PeerAdmin@byfn-network-org2.card --card PeerAdmin@byfn-network-org2
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2</code> will have been imported into the wallet.</p>
 

@@ -315,7 +315,7 @@ rule NetworkAdminSystem {
 <p>You can use additional options to the <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command to specify the business network administrators that should be created during the deployment of the business network.</p>
 
 <p>If the business network administrator has an enrollment ID and enrollment secret, you can use the <code>-A</code> (business network administrator) and <code>-S</code> (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing <code>admin</code> enrollment ID:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@fabric-network -A admin -S
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 1.0.0 --c PeerAdmin@Fabric-network -A admin -S adminpw
 </code></pre></div>
 <h2 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h2>
 

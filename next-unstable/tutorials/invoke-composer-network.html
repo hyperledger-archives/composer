@@ -292,7 +292,7 @@ export FABRIC_VERSION=hlfv11
 ./startFabric.sh
 </code></pre></div></li>
 <li><p>Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -n PeerAdmin@hlfv1
+<div class="highlight"><pre><code class="language-" data-lang="">composer card delete -c PeerAdmin@hlfv1
 </code></pre></div></li>
 </ol>
 
@@ -340,12 +340,12 @@ export FABRIC_VERSION=hlfv11
 <li><p>Install and start business network A using the following commands</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
 composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
-composer card import --file networkA.card --name networkA
+composer card import --file networkA.card --card networkA
 </code></pre></div></li>
 <li><p>Install and start business network B using the following commands</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile other-tutorial-network@0.0.1.bna
 composer network start --networkName other-tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkB.card
-composer card import --file networkB.card --name networkB
+composer card import --file networkB.card --card networkB
 </code></pre></div></li>
 <li><p>To check that the business networks have been deployed successfully run the following commands to ping the business networks</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card networkA
@@ -374,7 +374,7 @@ composer network ping --card networkB
 
 <ol>
 <li><p>Export the networkA card to get the credentials</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card export -n networkA
+<div class="highlight"><pre><code class="language-" data-lang="">composer card export -c networkA
 </code></pre></div></li>
 <li><p>Unzip the card, you may need to rename networkA.card to networkA.zip.</p></li>
 <li><p>Bind the identity to the participant. Run the following command.</p>
@@ -384,7 +384,7 @@ composer network ping --card networkB
 <div class="highlight"><pre><code class="language-" data-lang="">composer card create -p ~/.composer/cards/networkB/connection.json --businessNetworkName other-tutorial-network -u admin -c ./networkA/credentials/certificate  -k ./networkA/credentials/privateKey -f newNetworkB.card
 </code></pre></div></li>
 <li><p>Import the card</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file newNetworkB.card --name newNetworkB
+<div class="highlight"><pre><code class="language-" data-lang="">composer card import --file newNetworkB.card --card newNetworkB
 </code></pre></div></li>
 <li><p>Ping the network to activate the identity</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card newNetworkB
