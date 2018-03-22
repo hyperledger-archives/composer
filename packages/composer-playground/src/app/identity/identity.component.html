@@ -1,9 +1,9 @@
 <section class="main-view">
     <div class="main-view-content">
-        <div class="flex">
+        <div class="flex" id="myIDs">
             <div class="flex-container">
                 <h1 class="flex">My IDs for {{businessNetworkName}}</h1>
-                <button type="button" class="secondary" (click)="issueNewId()">
+                <button id="issueID" type="button" class="secondary" (click)="issueNewId()">
                     <span>Issue New ID</span>
                 </button>
             </div>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex">
+        <div class="flex" id="allIDs">
             <div class="flex-container">
                 <h1 class="flex">All IDs for {{ businessNetworkName }}</h1>
             </div>
