@@ -14,50 +14,49 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
+const Admin = require('composer-admin');
+const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 
 const ora = require('ora');
 
-
 /**
- * <p>
- * Composer install command
- * </p>
+ * Network install command
  * @private
  */
 class Install {
-
    /**
     * Command process for install command
     * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
+        const cardName = argv.card;
+        const installOptions = cmdUtil.parseOptions(argv);
+        const adminConnection = cmdUtil.createAdminConnection();
 
-        let adminConnection;
-        let spinner;
-        let cardName = argv.card;
+        const spinner = ora('Installing business network. This may take a minute...').start();
+        let definition;
 
-        return (() => {
-            spinner = ora('Installing runtime for business network ' + argv.businessNetworkName + '. This may take a minute...').start();
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.connect(cardName);
-        })()
-        .then((result) => {
-            let installOptions = cmdUtil.parseOptions(argv);
-            return adminConnection.install(argv.businessNetworkName, installOptions);
+        return adminConnection.connect(cardName).then(() => {
+            const businessNetworkArchive = cmdUtil.getArchiveFileContents(argv.archiveFile);
+            return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        }).then((definition_) => {
+            definition = definition_;
+            return adminConnection.install(definition, installOptions);
         }).then((result) => {
             spinner.succeed();
+            cmdUtil.log(chalk.bold.blue(`Successfully installed business network ${definition.getName()}, version ${definition.getVersion()}`));
             cmdUtil.log();
-
             return result;
         }).catch((error) => {
             spinner.fail();
             cmdUtil.log();
-
             throw error;
         });
     }
+
 }
 
 module.exports = Install;

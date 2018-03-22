@@ -17,7 +17,7 @@
 const { Certificate, CertificateUtil, Connection } = require('composer-common');
 const { EmbeddedContainer, EmbeddedContext, EmbeddedDataService } = require('composer-runtime-embedded');
 const EmbeddedSecurityContext = require('./embeddedsecuritycontext');
-const Engine = require('composer-runtime').Engine;
+const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const uuid = require('uuid');
 
 // A mapping of business networks to chaincode IDs.
@@ -66,29 +66,18 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * Delete the specified business network.
-     * @param {string} businessNetworkIdentifier The business network identifier.
-     * @param {string} connectionProfile The connection profile name.
-     */
-    static deleteBusinessNetwork(businessNetworkIdentifier, connectionProfile) {
-        let chaincodeUUID = businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        if (chaincodeUUID) {
-            delete chaincodes[chaincodeUUID];
-            delete businessNetworks[`${businessNetworkIdentifier}@${connectionProfile}`];
-        }
-    }
-
-    /**
      * Add a chaincode.
      * @param {string} chaincodeUUID The chaincode UUID.
      * @param {Container} container The container.
      * @param {Engine} engine The engine.
+     * @param {InstalledBusinessNetwork} ibn The Installed Business Network
      */
-    static addChaincode(chaincodeUUID, container, engine) {
+    static addChaincode(chaincodeUUID, container, engine, ibn) {
         chaincodes[chaincodeUUID] = {
             uuid: chaincodeUUID,
             container: container,
-            engine: engine
+            engine: engine,
+            installedBusinessNetwork : ibn
         };
     }
 
@@ -127,6 +116,7 @@ class EmbeddedConnection extends Connection {
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         this.dataService = new EmbeddedDataService(null, true);
+        this.installedBusinessNetwork = null;
     }
 
     /**
@@ -158,57 +148,34 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
-     * For the embedded connector, this is just a no-op, there is nothing to install.
+     * For the embedded connector, this is just a no-op, there is nothing to install. *** I Don't think this is true now ***
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} businessNetworkDefinition The business network definition that will be started
      * @param {Object} installOptions connector specific installation options
      */
-    async install(securityContext, businessNetworkIdentifier, installOptions) {
-
-    }
-
-    /**
-     * Deploy a business network. For the embedded connector this just translates to
-     * a start request as no install is required.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deploy options
-     */
-    async deploy(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        await this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
+    async install(securityContext, businessNetworkDefinition, installOptions) {
+        this.businessNetworkDefinition = businessNetworkDefinition;
     }
 
     /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} businessNetworkVersion The version of the Business network that will be started in this installed runtime
      * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific start options
      */
-    async start(securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
+    async start(securityContext, businessNetworkIdentifier, businessNetworkVersion, startTransaction, startOptions) {
         let container = EmbeddedConnection.createContainer();
         let identity = securityContext.getIdentity();
         let chaincodeUUID = container.getUUID();
         let engine = EmbeddedConnection.createEngine(container);
+        this.installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(this.businessNetworkDefinition);
         EmbeddedConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeUUID);
-        EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
-        let context = new EmbeddedContext(engine, identity, this);
-        await engine.init(context, 'init', [startTransaction]);
+        EmbeddedConnection.addChaincode(chaincodeUUID, container, engine, this.installedBusinessNetwork);
+        let context = new EmbeddedContext(engine, identity, this, this.installedBusinessNetwork);
+        await engine.init(context, 'start', [startTransaction]);
     }
-
-    /**
-     * Undeploy a business network definition.
-     * @abstract
-     * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artefacts have been undeployed, or rejected with an error.
-     */
-    async undeploy(securityContext, businessNetworkIdentifier) {
-        EmbeddedConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-    }
-
 
     /**
      * Test ("ping") the connection to the business network.
@@ -233,7 +200,7 @@ class EmbeddedConnection extends Connection {
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, identity, this);
+        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork);
         const data = await chaincode.engine.query(context, functionName, args);
         return Buffer.from(JSON.stringify(data));
     }
@@ -248,7 +215,7 @@ class EmbeddedConnection extends Connection {
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, identity, this);
+        let context = new EmbeddedContext(chaincode.engine, identity, this, chaincode.installedBusinessNetwork);
         await chaincode.engine.invoke(context, functionName, args);
     }
 

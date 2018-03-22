@@ -161,18 +161,18 @@ describe('Connection', () => {
 
         it('should call _install and handle no error', () => {
             sinon.stub(connection, '_install').yields(null);
-            return connection.install(mockSecurityContext, 'org-acme-biznet', { install: 'options' })
+            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
                 });
         });
 
         it('should call _install and handle an error', () => {
             sinon.stub(connection, '_install').yields(new Error('error'));
-            return connection.install(mockSecurityContext, 'org-acme-biznet', { install: 'options' })
+            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
                 });
         });
 
@@ -182,7 +182,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._install(mockSecurityContext, 'org-acme-biznet', { install: 'options' });
+                connection._install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
             }).should.throw(/abstract function called/);
         });
 
@@ -192,18 +192,18 @@ describe('Connection', () => {
 
         it('should call _start and handle no error', () => {
             sinon.stub(connection, '_start').yields(null);
-            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
         it('should call _start and handle an error', () => {
             sinon.stub(connection, '_start').yields(new Error('error'));
-            return connection.start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
+            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
+                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
                 });
         });
 
@@ -213,38 +213,7 @@ describe('Connection', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                connection._start(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#deploy', () => {
-
-        it('should call _deploy and handle no error', () => {
-            sinon.stub(connection, '_deploy').yields(null);
-            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
-                });
-        });
-
-        it('should call _deploy and handle an error', () => {
-            sinon.stub(connection, '_deploy').yields(new Error('error'));
-            return connection.deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' })
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._deploy, mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
-                });
-        });
-
-    });
-
-    describe('#_deploy', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._deploy(mockSecurityContext, 'org-acme-biznet', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { deploy: 'options' });
+                connection._start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
             }).should.throw(/abstract function called/);
         });
 
@@ -346,95 +315,22 @@ describe('Connection', () => {
 
     });
 
-    describe('#update', () => {
-
-        it('should reject if no network defn given',()=>{
-            (()=>{
-                connection.update(mockSecurityContext,null);
-            }).should.throw(/business network definition not specified/);
-        });
-
-        it('should handle valid data', () => {
-            const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
-            }));
-
-            const buffer2 = Buffer.from(JSON.stringify({
-                data: 'aGsad33VsbG8='
-            }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
-            let mockFactory = sinon.createStubInstance(Factory);
-            let mockSerializer = sinon.createStubInstance(Serializer);
-            let mockTransaction = sinon.createStubInstance(Resource);
-
-            mockFactory.newTransaction.returns(mockTransaction);
-            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.toJSON.returns({key:'value'});
-            mockTransaction.getIdentifier.returns('txid');
-
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-            .then(()=>{
-                sinon.assert.called(Util.invokeChainCode);
-                sinon.assert.called(Util.queryChainCode);
-                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
-            });
-
-        });
-
-        it('should handle valid data minus tx id and with a hardcoded timestamp', () => {
-            const buffer = Buffer.from(JSON.stringify({
-                data: 'aGVsbG8='
-            }));
-
-            const buffer2 = Buffer.from(JSON.stringify({
-                data: 'aGsad33VsbG8='
-            }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(Util, 'invokeChainCode').resolves();
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            mockBusinessNetworkDefinition.toArchive.resolves(buffer2);
-            let mockFactory = sinon.createStubInstance(Factory);
-            let mockSerializer = sinon.createStubInstance(Serializer);
-            let mockTransaction = sinon.createStubInstance(Resource);
-
-            mockFactory.newTransaction.returns(mockTransaction);
-            mockBusinessNetworkDefinition.getFactory.returns(mockFactory);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.toJSON.returns({key:'value'});
-            mockTransaction.getIdentifier.returns(null);
-            mockTransaction.timestamp='the epoch';
-
-            return connection.update(mockSecurityContext, mockBusinessNetworkDefinition)
-            .then(()=>{
-                sinon.assert.called(Util.invokeChainCode);
-                sinon.assert.called(Util.queryChainCode);
-                sinon.assert.calledWith(mockBusinessNetworkDefinition.toArchive, { date: new Date(545184000000) });
-            });
-
-        });
-
-    });
-
     describe('#upgrade', () => {
 
         it('should call _upgrade and handle no error', () => {
             sinon.stub(connection, '_upgrade').yields(null);
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'})
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
                 .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
+                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
                 });
         });
 
         it('should call _upgrade and handle an error', () => {
             sinon.stub(connection, '_upgrade').yields(new Error('error'));
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'})
+            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
                 .should.be.rejectedWith(/error/)
                 .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
+                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
                 });
         });
 
@@ -450,35 +346,10 @@ describe('Connection', () => {
 
     });
 
-    describe('#undeploy', () => {
-
-        it('should call _undeploy and handle no error', () => {
-            sinon.stub(connection, '_undeploy').yields(null);
-            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
-                .then(() => {
-                    sinon.assert.calledWith(connection._undeploy, mockSecurityContext, 'org-acme-biznet');
-                });
+    describe('undeploy', () => {
+        it('should throw as abstract', () => {
+            return connection.undeploy(mockSecurityContext, 'name').should.be.rejectedWith(/abstract function called/i);
         });
-
-        it('should call _undeploy and handle an error', () => {
-            sinon.stub(connection, '_undeploy').yields(new Error('error'));
-            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._undeploy, mockSecurityContext), 'org-acme-biznet';
-                });
-        });
-
-    });
-
-    describe('#_undeploy', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._undeploy(mockSecurityContext, 'org-acme-biznet');
-            }).should.throw(/abstract function called/);
-        });
-
     });
 
     describe('#ping', () => {

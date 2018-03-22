@@ -5,8 +5,9 @@ class BusinessNetworkDefinition {
    + String getVersion() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
-   + Buffer toArchive(Object) 
-   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object) 
+   + Promise toArchive(Object) 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object,boolean) 
+   + Promise toDirectory(String) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
@@ -59,6 +60,9 @@ class IdCard {
    + Promise toArchive(Object,String) 
    + Promise fromDirectory(String,undefined) 
    + Promise toDirectory(String,undefined) 
+}
+class IndexCompiler {
+   + String compile(QueryManager) 
 }
 class AssetDeclaration extends ClassDeclaration {
    + void constructor(ModelFile,Object) throws IllegalModelException

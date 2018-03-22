@@ -11,15 +11,22 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.18.0 {c4e008425f84c47d61303c19829ceb59} 2018-02-28
+Version 0.18.2 {354087f4e85b14e02e7c8284cca2583f} 2018-03-20
+- Add CouchDB index compiler
+
+Version 0.18.0 {fe7cf822029dc013cdf3c272bd9d2a59} 2018-02-28
 - Updates for cloud wallets
 - File system and Memory cardstore gone as explicit externals
 
 Version 0.17.7 {9b23cddaef6ca9a26d5515dafbec861e} 2018-02-22
 - Added CertificateUtil to public API
 
-Version 0.17.5 {e38ff1f271a22310f84db4813f6016ec} 2018-02-13
+Version 0.17.6 {9e7162818f534ebe111e74b98449f36e} 2018-02-21
+- Add option to disable dependency processing in BusinessNetworkDefinition.fromDirectory
+
+Version 0.17.5 {e7ec4335f8faa9e7b3845dddc4adc7ee} 2018-02-13
 - Added Certificate to public API
+- Add BusinessNetworkDefinition.toDirectory function
 
 Version 0.17.3 {205addc32fc3286a787edec70c6a952f} 2018-01-30
 - Added ability to load models from URL

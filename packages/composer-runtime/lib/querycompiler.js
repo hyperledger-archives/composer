@@ -180,7 +180,7 @@ class QueryCompiler {
             name: query.getName(),
             text: select.getText(),
             hash: hash,
-            generator: compiledQueryGenerator
+            generator: compiledQueryGenerator,
         };
 
         LOG.exit(method, result);
@@ -369,14 +369,25 @@ class QueryCompiler {
         LOG.entry(method, orderBy, parameters);
 
         // Iterate over the sort criteria.
-        const result = {
-            sort: []
-        };
+
+        let fields = ['\\$class','\\$registryType','\\$registryId'];
+        let direction = null;
         orderBy.getSortCriteria().forEach((sort) => {
-            const temp = {};
-            temp[sort.getPropertyPath()] = sort.getDirection().toLowerCase();
-            result.sort.push(temp);
+            if(direction === null) {
+                direction = sort.getDirection().toLowerCase();
+            } else if(direction !== sort.getDirection().toLowerCase()) {
+                throw new Error('ORDER BY currently only supports a single direction for all fields.');
+            }
+            fields.push(sort.getPropertyPath());
         });
+
+        const result = {
+            sort: fields.map(field => {
+                const term = {};
+                term[field] = direction;
+                return term;
+            })
+        };
 
         LOG.exit(method, result);
         return result;

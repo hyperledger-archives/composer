@@ -49,19 +49,19 @@ class WebSecurityContext extends SecurityContext {
     }
 
     /**
-     * Get the chaincode ID.
-     * @return {string} The chaincode ID.
+     * Get the name of the business network (chaincode).
+     * @return {string} business network name.
      */
-    getChaincodeID() {
-        return this.chaincodeID;
+    getNetworkName() {
+        return this.networkName;
     }
 
     /**
-     * Set the chaincode ID.
-     * @param {string} chaincodeID - The chaincode ID.
+     * Set the name of the business network (chaincode).
+     * @param {string} networkName business network name.
      */
-    setChaincodeID(chaincodeID) {
-        this.chaincodeID = chaincodeID;
+    setNetworkName(networkName) {
+        this.networkName = networkName;
     }
 
 }

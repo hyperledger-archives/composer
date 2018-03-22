@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-web",
-  "version": "0.18.2",
+  "version": "0.18.3",
   "description": "The web client connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -49,6 +49,7 @@
     "brfs": "1.4.3",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
+    "composer-runtime-pouchdb": "0.18.3",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "karma": "1.3.0",
@@ -64,9 +65,9 @@
     "watchify": "3.7.0"
   },
   "dependencies": {
-    "composer-common": "0.18.2",
-    "composer-runtime": "0.18.2",
-    "composer-runtime-web": "0.18.2",
+    "composer-common": "0.18.3",
+    "composer-runtime": "0.18.3",
+    "composer-runtime-web": "0.18.3",
     "uuid": "3.0.1"
   }
 }

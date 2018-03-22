@@ -76,8 +76,6 @@ export class SampleBusinessNetworkService {
         packageJson.name = networkName;
         packageJson.description = networkDescription;
 
-        let channelAdminCardRef: string;
-        let channelAdminCard: IdCard;
         let peerAdminCardRef: string = this.identityCardService.getCurrentCardRef();
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
@@ -115,14 +113,14 @@ export class SampleBusinessNetworkService {
                     title: 'Installing Business Network',
                     force: true
                 });
-                return this.adminService.install(newNetwork.getName());
+                return this.adminService.install(newNetwork);
             })
             .then(() => {
-                let connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
-                let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
+                const connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
+                const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                const channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
 
-                channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
+                const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
                 return this.adminService.connect(channelAdminCardRef, channelAdminCard, true);
             })
             .then(() => {
@@ -131,7 +129,7 @@ export class SampleBusinessNetworkService {
                     force: true
                 });
 
-                return this.adminService.start(newNetwork, {
+                return this.adminService.start(newNetwork.getName(), newNetwork.getVersion(), {
                     networkAdmins: [networkAdmin]
                 });
             })
@@ -149,7 +147,58 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    buildNetwork(businessNetworkName: string, businessNetworkDescription, packageJson, businessNetworkDefinition) {
+    public upgradeBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        let currentBusinessNetworkName = this.fileService.getBusinessNetworkName();
+        let currentBusinessNetworkDescription = this.fileService.getBusinessNetworkDescription();
+
+        let packageJson = businessNetworkDefinition.getMetadata().getPackageJson();
+        packageJson.name = currentBusinessNetworkName;
+        packageJson.description = currentBusinessNetworkDescription;
+
+        let newNetwork = this.buildNetwork(currentBusinessNetworkName, currentBusinessNetworkDescription, packageJson, businessNetworkDefinition);
+
+        let cardName = this.identityCardService.getCurrentCardRef();
+        let card = this.identityCardService.getCurrentIdentityCard();
+
+        return this.adminService.connect(cardName, card, true)
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Installing Business Network',
+                    force: true
+                });
+                return this.adminService.install(newNetwork);
+            })
+            .then(() => {
+                let connectionProfile = card.getConnectionProfile();
+                let qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+                const channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
+                const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
+                return this.adminService.connect(channelAdminCardRef, channelAdminCard, true);
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next({
+                    title: 'Upgrading Business Network',
+                    force: true
+                });
+
+                return this.adminService.upgrade(newNetwork.getName(), newNetwork.getVersion());
+            })
+            .then(() => {
+                return this.clientService.refresh();
+            })
+            .then(() => {
+                return this.adminService.reset(newNetwork.getName());
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                throw error;
+            });
+    }
+
+    buildNetwork(businessNetworkName: string, businessNetworkDescription: string, packageJson: object, businessNetworkDefinition: BusinessNetworkDefinition) {
         let newNetwork = this.createNewBusinessDefinition(businessNetworkName, businessNetworkDescription, packageJson, businessNetworkDefinition.getMetadata().getREADME());
 
         let modelFiles = this.clientService.filterModelFiles(businessNetworkDefinition.getModelManager().getModelFiles());

@@ -15,67 +15,23 @@
 'use strict';
 
 const { Certificate, CertificateUtil, Connection } = require('composer-common');
-const Engine = require('composer-runtime').Engine;
+const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const uuid = require('uuid');
 const { WebContainer, WebContext, WebDataService } = require('composer-runtime-web');
+const ChaincodeStore = require('./chaincodestore');
 const WebSecurityContext = require('./websecuritycontext');
 
-// A mapping of chaincode IDs to their instance objects.
-const chaincodes = {};
-
 /**
- * Base class representing a connection to a business network.
+ * Represents a Web profile connection to a business network.
  * @protected
- * @abstract
  */
 class WebConnection extends Connection {
-
-    /**
-     * Clear any registered business networks and chaincodes.
-     */
-    static reset () {
-        for (let id in chaincodes) {
-            delete chaincodes[id];
-        }
-    }
-
-    /**
-     * Delete the specified business network.
-     * @param {string} businessNetworkIdentifier The business network identifier.
-     */
-    static deleteBusinessNetwork (businessNetworkIdentifier) {
-        delete chaincodes[businessNetworkIdentifier];
-    }
-
-    /**
-     * Add a chaincode.
-     * @param {string} chaincodeID The chaincode ID.
-     * @param {Container} container The container.
-     * @param {Engine} engine The engine.
-     */
-    static addChaincode (chaincodeID, container, engine) {
-        chaincodes[chaincodeID] = {
-            id : chaincodeID,
-            container : container,
-            engine : engine
-        };
-    }
-
-    /**
-     * Get the specified chaincode.
-     * @param {string} chaincodeID The chaincode ID.
-     * @return {object} The chaincode.
-     */
-    static getChaincode (chaincodeID) {
-        return chaincodes[chaincodeID];
-    }
-
     /**
      * Create a new container.
      * @param {string} [uuid] The UUID to use.
      * @return {Container} The new container.
      */
-    static createContainer (uuid) {
+    static createContainer(uuid) {
         return new WebContainer(uuid);
     }
 
@@ -84,7 +40,7 @@ class WebConnection extends Connection {
      * @param {Container} container The container.
      * @return {Engine} The new engine.
      */
-    static createEngine (container) {
+    static createEngine(container) {
         return new Engine(container);
     }
 
@@ -94,16 +50,28 @@ class WebConnection extends Connection {
      * @param {string} connectionProfile The name of the connection profile associated with this connection
      * @param {string} businessNetworkIdentifier The identifier of the business network for this connection
      */
-    constructor (connectionManager, connectionProfile, businessNetworkIdentifier) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
-        this.dataService = new WebDataService(null, true);
+        this.dataService = WebDataService.newComposerDataService();
+        this.savedNetwork = null;
+    }
+
+    /**
+     * Get the chaincode store used to manage install, start and undeploy of chaincode.
+     * @return {ChaincodeStore} chaincode store.
+     */
+    async getChaincodeStore() {
+        const collection = await this.dataService.ensureCollection('chaincodes');
+        return new ChaincodeStore(collection);
     }
 
     /**
      * Terminate the connection to the business network.
+     * @async
      */
-    async disconnect () {
-
+    async disconnect() {
+        this.engine = null;
+        this.installedNetwork = null;
     }
 
     /**
@@ -112,82 +80,86 @@ class WebConnection extends Connection {
      * @param {string} enrollmentSecret The enrollment secret of the participant.
      * @return {Promise} A promise that is resolved with a {@link SecurityContext}
      * object representing the logged in participant, or rejected with a login error.
+     * @async
      */
-    async login (enrollmentID, enrollmentSecret) {
+    async login(enrollmentID, enrollmentSecret) {
+        const identity = await this.testIdentity(enrollmentID, enrollmentSecret);
         if (!this.businessNetworkIdentifier) {
-            const identity = await this.testIdentity(enrollmentID, enrollmentSecret);
             return new WebSecurityContext(this, identity);
         }
-        const identity = await this.testIdentity(enrollmentID, enrollmentSecret);
-        if (!WebConnection.getChaincode(this.businessNetworkIdentifier)) {
-            let container = WebConnection.createContainer(this.businessNetworkIdentifier);
-            let engine = WebConnection.createEngine(container);
-            WebConnection.addChaincode(this.businessNetworkIdentifier, container, engine);
-        }
+
+        const networkName = this.businessNetworkIdentifier;
         const result = new WebSecurityContext(this, identity);
-        result.setChaincodeID(this.businessNetworkIdentifier);
+        result.setNetworkName(networkName);
         return result;
     }
 
     /**
      * For the web connector, this is just a no-op, there is nothing to install
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {BusinessNetworkDefinition} networkDefinition The  Business network to install
      * @param {Object} installOptions connector specific install options
+     * @async
      */
-    async install (securityContext, businessNetworkIdentifier, installOptions) {
-
-    }
-
-    /**
-     * Deploy a business network. For the web connector this just translates to
-     * a start request as no install is required.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
-     * @param {string} deployTransaction The serialized deploy transaction.
-     * @param {Object} deployOptions connector specific deploy options
-     */
-    async deploy (securityContext, businessNetworkIdentifier, deployTransaction, deployOptions) {
-        await this.start(securityContext, businessNetworkIdentifier, deployTransaction, deployOptions);
+    async install(securityContext, networkDefinition, installOptions) {
+        const chaincodeStore = await this.getChaincodeStore();
+        await chaincodeStore.install(networkDefinition);
     }
 
     /**
      * Start a business network.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the Business network that will be started in this installed runtime
+     * @param {string} networkName The name of the business network to start.
+     * @param {String} networkVersion The version of the business network to start.
      * @param {string} startTransaction The serialized start transaction.
      * @param {Object} startOptions connector specific start options
+     * @async
      */
-    async start (securityContext, businessNetworkIdentifier, startTransaction, startOptions) {
-        let container = WebConnection.createContainer(businessNetworkIdentifier);
-        let identity = securityContext.getIdentity();
-        let containerName = container.getName();
-        let engine = WebConnection.createEngine(container);
-        WebConnection.addChaincode(containerName, container, engine);
-        let context = new WebContext(engine, identity, this);
-        try {
-            await engine.init(context, 'init', [startTransaction]);
-        } catch (error) {
-            if (error.message.includes('as the object already exists')) {
-                throw new Error('business network with name ' + businessNetworkIdentifier + ' already exists');
-            } else {
-                throw error;
-            }
-        }
+    async start(securityContext, networkName, networkVersion, startTransaction, startOptions) {
+        const chaincodeStore = await this.getChaincodeStore();
+        const networkDefinition = await chaincodeStore.start(networkName, networkVersion);
+
+        const container = WebConnection.createContainer(networkName);
+        const engine = WebConnection.createEngine(container);
+        const identity = securityContext.getIdentity();
+        const installedNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+
+        const context = new WebContext(engine, installedNetwork, identity, this);
+        await engine.init(context, 'start', [startTransaction]);
+    }
+
+    /**
+     * Upgrade a business network.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {string} networkName The name of the business network to start.
+     * @param {String} networkVersion The version of the business network to start.
+     * @param {Object} upgradeOptions connector specific start options
+     * @async
+     */
+    async upgrade(securityContext, networkName, networkVersion, upgradeOptions) {
+        const chaincodeStore = await this.getChaincodeStore();
+        const networkDefinition = await chaincodeStore.upgrade(networkName, networkVersion);
+
+        const container = WebConnection.createContainer(networkName);
+        const engine = WebConnection.createEngine(container);
+        const identity = securityContext.getIdentity();
+        const installedNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+
+        const context = new WebContext(engine, installedNetwork, identity, this);
+        await engine.init(context, 'upgrade');
     }
 
     /**
      * Undeploy a business network definition.
-     * @abstract
      * @param {SecurityContext} securityContext The participant's security context.
-     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been undeployed, or rejected with an error.
+     * @param {String} networkName Name of the business network to remove
+     * @async
      */
-    async undeploy (securityContext, businessNetworkIdentifier) {
-        WebConnection.deleteBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
-        const dataServiceBusinessNetwork = new WebDataService(businessNetworkIdentifier, true);
-        await dataServiceBusinessNetwork.destroy();
+    async undeploy(securityContext, networkName) {
+        await WebDataService.newNetworkDataService(networkName, true).destroy();
+        const chaincodeStore = await this.getChaincodeStore();
+        await chaincodeStore.removeNetwork(networkName);
+        this.savedNetwork = null;
     }
 
     /**
@@ -195,8 +167,9 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved once the connection to the
      * business network has been tested, or rejected with an error.
+     * @async
      */
-    async ping (securityContext) {
+    async ping(securityContext) {
         const buffer = await this.queryChainCode(securityContext, 'ping', []);
         return JSON.parse(buffer.toString());
     }
@@ -208,14 +181,37 @@ class WebConnection extends Connection {
      * @param {string[]} args The arguments to pass to the chaincode function.
      * @return {Promise} A promise that is resolved with the data returned by the
      * chaincode function once it has been invoked, or rejected with an error.
+     * @async
      */
-    async queryChainCode (securityContext, functionName, args) {
-        let identity = securityContext.getIdentity();
-        let chaincodeID = securityContext.getChaincodeID();
-        let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine, identity, this);
-        const data = await chaincode.engine.query(context, functionName, args);
+    async queryChainCode(securityContext, functionName, args) {
+        const identity = securityContext.getIdentity();
+        const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
+        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
+        const data = await networkInfo.engine.query(context, functionName, args);
         return Buffer.from(JSON.stringify(data));
+    }
+
+    /**
+     * Get saved details related to the current business network.
+     * @param {String} networkName business network name.
+     * @return {Object} network information in the form { name, engine, installedNetwork }.
+     * @async
+     */
+    async _getNetworkInfo(networkName) {
+        if (!this.savedNetwork || this.savedNetwork.name !== networkName) {
+            const container = WebConnection.createContainer(networkName);
+
+            const chaincodeStore = await this.getChaincodeStore();
+            const networkDefinition = await chaincodeStore.getStartedChaincode(networkName);
+
+            this.savedNetwork = {
+                name: networkName,
+                engine: WebConnection.createEngine(container),
+                installedNetwork: await InstalledBusinessNetwork.newInstance(networkDefinition)
+            };
+        }
+
+        return this.savedNetwork;
     }
 
     /**
@@ -223,31 +219,31 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
+     * @async
      */
-    async invokeChainCode (securityContext, functionName, args) {
-        let identity = securityContext.getIdentity();
-        let chaincodeID = securityContext.getChaincodeID();
-        let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine, identity, this);
-        await chaincode.engine.invoke(context, functionName, args);
+    async invokeChainCode(securityContext, functionName, args) {
+        const identity = securityContext.getIdentity();
+        const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
+        const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
+        await networkInfo.engine.invoke(context, functionName, args);
     }
 
     /**
      * Get the data collection that stores identities.
-     * @return {Promise} A promise that is resolved with the data collection
-     * that stores identities.
+     * @return {Object} the data collection.
+     * @async
      */
-    async getIdentities () {
+    async getIdentities() {
         return await this.dataService.ensureCollection('identities');
     }
 
     /**
      * Get the identity for the specified name.
      * @param {string} identityName The name for the identity.
-     * @return {Promise} A promise that is resolved with the identity, or
-     * rejected with an error.
+     * @return {Object} the identity.
+     * @async
      */
-    async getIdentity (identityName) {
+    async getIdentity(identityName) {
         const identities = await this.getIdentities();
         try {
             return await identities.get(identityName);
@@ -261,10 +257,10 @@ class WebConnection extends Connection {
 
     /**
      * Create the default admin identity.
-     * @return {Promise} A promise that is resolved with the admin identity when complete,
-     * or rejected with an error.
+     * @return {Object} the admin identity.
+     * @async
      */
-    async _createAdminIdentity () {
+    async _createAdminIdentity() {
         const { publicKey, privateKey, certificate } = CertificateUtil.generate({ commonName: 'admin' });
         const certificateObj = new Certificate(certificate);
         const identifier = certificateObj.getIdentifier();
@@ -296,7 +292,7 @@ class WebConnection extends Connection {
      * @return {Promise} A promise that is resolved if the user ID and secret
      * is valid, or rejected with an error.
      */
-    async testIdentity (identityName, identitySecret) {
+    async testIdentity(identityName, identitySecret) {
         const identity = await this.getIdentity(identityName);
         if (identity.imported) {
             return identity;
@@ -328,8 +324,9 @@ class WebConnection extends Connection {
      * identity. Defaults to 'institution_a'.
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
+     * @async
      */
-    async createIdentity (securityContext, identityName, options) {
+    async createIdentity(securityContext, identityName, options) {
         const currentIdentity = securityContext.getIdentity();
         if (!currentIdentity.options.issuer) {
             throw new Error(`The identity ${currentIdentity.name} does not have permission to create a new identity ${identityName}`);
@@ -375,7 +372,7 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @return {Promise} A promise that is resolved with a transaction id
      */
-    createTransactionId (securityContext) {
+    createTransactionId(securityContext) {
         return Promise.resolve(null);
     }
 }

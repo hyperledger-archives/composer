@@ -1,0 +1,8 @@
+{
+    "name": "test-archive-broken-dependency",
+    "version": "0.0.1",
+    "description": "A test business network with a package dependency that cannot be resolved",
+    "dependencies": {
+        "omg-this-does-not-exist": "1.0.0-banana"
+    }
+}

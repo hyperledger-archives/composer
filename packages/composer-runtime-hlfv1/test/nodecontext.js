@@ -14,8 +14,8 @@
 
 'use strict';
 
-const Context = require('composer-runtime').Context;
-const Engine = require('composer-runtime').Engine;
+const { BusinessNetworkDefinition } = require('composer-common');
+const { Context, Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const NodeContainer = require('../lib/nodecontainer');
 const NodeContext = require('../lib/nodecontext');
 const NodeDataService = require('../lib/nodedataservice');
@@ -58,7 +58,11 @@ XVMHPa0iyC497vdNURA=\
         mockNodeContainer = sinon.createStubInstance(NodeContainer);
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockNodeContainer);
-        context = new NodeContext(mockEngine, mockStub);
+        const businessNetwork = new BusinessNetworkDefinition('test-network@1.0.0');
+        return InstalledBusinessNetwork.newInstance(businessNetwork)
+            .then(installedBusinessNetwork => {
+                context = new NodeContext(mockEngine, mockStub, installedBusinessNetwork);
+            });
     });
 
     describe('#constructor', () => {

@@ -47,9 +47,6 @@ describe('NodeDataService', () => {
         it('should be a type of DataService', () => {
             dataService.should.be.an.instanceOf(DataService);
         });
-        it('should produce something useful as toString', ()=>{
-            dataService.toString().should.equal('DataService');
-        });
     });
 
     describe('#createCollection', () => {

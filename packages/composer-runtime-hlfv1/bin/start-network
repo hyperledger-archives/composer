@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+console.log('running start.js');
+// the actual cli app (just in case we can't use the hash/bang above)
+require('../start.js');

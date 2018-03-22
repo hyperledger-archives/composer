@@ -26,7 +26,7 @@ import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 import { EditorFile } from '../services/editor-file';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
 import { BehaviorSubject } from 'rxjs/Rx';
@@ -1295,8 +1295,10 @@ describe('EditorComponent', () => {
             mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             mockUpdateFiles = sinon.stub(component, 'updateFiles');
             mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            mockFileService.getBusinessNetwork.returns(new BusinessNetworkDefinition('test-network@1.0.0'));
 
-            mockAdminService.update.returns(Promise.resolve());
+            mockAdminService.install.returns(Promise.resolve());
+            mockAdminService.upgrade.returns(Promise.resolve());
             mockClientService.refresh.returns(Promise.resolve());
 
         });
@@ -1318,12 +1320,13 @@ describe('EditorComponent', () => {
         }));
 
         it('should\'t deploy if already deploying', () => {
-            mockAdminService.update.reset();
+            mockAdminService.upgrade.reset();
             component['deploying'] = true;
 
             component.deploy();
 
-            mockAdminService.update.should.not.have.been.called;
+            mockAdminService.install.should.not.have.been.called;
+            mockAdminService.upgrade.should.not.have.been.called;
         });
 
         it('should set current file to previous file', fakeAsync(() => {
@@ -1343,7 +1346,7 @@ describe('EditorComponent', () => {
         }));
 
         it('should handle error', fakeAsync(() => {
-            mockAdminService.update.returns(Promise.reject('some error'));
+            mockAdminService.upgrade.returns(Promise.reject('some error'));
             component.deploy();
 
             tick();
