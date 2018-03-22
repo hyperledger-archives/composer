@@ -264,13 +264,11 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-api">Hyperledger Composer API</h1>
+              <p><a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
+
+<h1 id="hyperledger-composer-api">Hyperledger Composer API</h1>
 
 <p>Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.</p>
-
-<h2 id="quick-links">Quick Links</h2>
-
-<p><a href="allData#common-api">Common API</a>  -  <a href="allData#client-api">Client API</a>  -  <a href="allData#admin-api">Admin API</a>  -  <a href="allData#runtime-api">Runtime API</a></p>
 
 <h2 id="overview">Overview</h2>
 
@@ -291,8 +289,8 @@ stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
 <h2 id="javascript-language-support">JavaScript language support</h2>
 
 <p>Applications that are using the client or admin APIs, that are not running inside a transaction function can be written to use ES6.
-As an example, it allows the use of the async/await syntax. </p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets. </span>
+As an example, it allows the use of the async/await syntax.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
   <span class="k">try</span><span class="p">{</span>
     <span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">);</span>
     <span class="kd">let</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
@@ -306,21 +304,21 @@ As an example, it allows the use of the async/await syntax. </p>
       <span class="c1">// error handling</span>
   <span class="p">}</span>
 </code></pre></div>
-<p>The promise chain syntax can be used, and must be used within Transaction Functions. </p>
+<p>The promise chain syntax can be used, and must be used within Transaction Functions.</p>
 
 <p><strong>All code within a transaction function must use ES5 syntax - along with Promise Chains</strong></p>
 
 <p>Using promises the example above would be:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets. </span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
 
   <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'newUserCard'</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span>  <span class="p">{</span> 
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span>  <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">newAsset</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newAsset</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span><span class="s1">'SampleAsset'</span><span class="p">,</span><span class="s1">'1148'</span><span class="p">);</span>
         <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newAsset</span><span class="p">);</span>
     <span class="p">})</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
        <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-    <span class="p">})</span> 
+    <span class="p">})</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">LOG</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span>
@@ -351,7 +349,7 @@ A name of an already imported business network card is needed. By default these 
 
 <p>A key part of the Client API is are the Regsitry classes. There are the <em>AssetRegsitry</em>, <em>ParticipantRegistry</em>, <em>IdentityRegistry</em>, <em>TransactionRegistries</em> and the <em>Historian</em>. Each of these have a common super type of <em>Registry</em>.</p>
 
-<p>The Registry supports accessing a registry to obtain resources. </p>
+<p>The Registry supports accessing a registry to obtain resources.</p>
 
 <ul>
 <li>Add one or more resources</li>
@@ -364,11 +362,11 @@ A name of an already imported business network card is needed. By default these 
 
 <p>The difference between resolve and get are that get will no resolve any relationships that are defined in the resource. A reference to the resource will be supplied. A resolve call will iterate over all the relationships.</p>
 
-<p>Registries are automatically created for each asset, participnat, and transaction. Additional registries can be created if required using the addRegistry call. </p>
+<p>Registries are automatically created for each asset, participnat, and transaction. Additional registries can be created if required using the addRegistry call.</p>
 
 <h2 id="common-api">Common API</h2>
 
-<p>The Common API contains the APIs used to obtain information about the Business Network you are conencted to and to create new assets, participants, transactions and events. It also provides APIs to find out information about these resources.  </p>
+<p>The Common API contains the APIs used to obtain information about the Business Network you are conencted to and to create new assets, participants, transactions and events. It also provides APIs to find out information about these resources.</p>
 
 <p>For example to create a new asset</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
@@ -386,7 +384,7 @@ A name of an already imported business network card is needed. By default these 
 - get the serializer to create resources from JavaScript objects
 - post HTTP REST calls</p>
 
-<p>The Common API calls are also available to interact with resources, together with the Registry APIs. For each </p>
+<p>The Common API calls are also available to interact with resources, together with the Registry APIs. For each</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
 <span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
@@ -400,7 +398,7 @@ A name of an already imported business network card is needed. By default these 
 
 <h3 id="transaction-functions">Transaction Functions</h3>
 
-<p>The transaction function is the part of Composer that can be considered to be the <em>smart contract</em> execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the <em>source of truth</em> of the assets is maintained. </p>
+<p>The transaction function is the part of Composer that can be considered to be the <em>smart contract</em> execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the <em>source of truth</em> of the assets is maintained.</p>
 
 <p>Definition of the transaction functions is within the .cto model file.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">namespace net.biz.digitalPropertyNetwork
