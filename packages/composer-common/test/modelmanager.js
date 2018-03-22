@@ -647,7 +647,7 @@ concept Bar {
         const numberSystemEnums = 1;
         const numberSystemParticipants = 2;
         const numberSystemEvents = 1;
-        const numberSystemTransactions = 18;
+        const numberSystemTransactions = 17;
         const numberSystemConcepts = 0;
 
         const numberModelBaseAssets = 5;

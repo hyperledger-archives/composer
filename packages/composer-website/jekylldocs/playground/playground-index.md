@@ -47,7 +47,7 @@ Once connected to a business network using a Business Network Card, there are a 
 
 ## The Define tab
 
-The Define tab is used to create, edit and update your business network.
+The Define tab is used to create, edit and upgrade your business network.
 
 ![editor-define-page](./images/editor-define.png)
 

@@ -15,6 +15,7 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const InvalidQueryException = require('./invalidqueryexception');
 const Sort = require('./sort');
 
 /**
@@ -88,8 +89,16 @@ class OrderBy {
      * @private
      */
     validate() {
+        let direction = null;
         for(let n=0; n < this.sortCriteria.length; n++) {
             this.sortCriteria[n].validate();
+            if(direction === null) {
+                // initialise the direction
+                direction = this.sortCriteria[n].direction;
+            } else if(direction !== this.sortCriteria[n].direction) {
+                // opposing directions - Couch won't like this
+                throw new InvalidQueryException( 'ORDER BY currently only supports a single direction for all fields.', this.getSelect().getQuery().getQueryFile(), this.getSelect().getAST().location );
+            }
         }
     }
 

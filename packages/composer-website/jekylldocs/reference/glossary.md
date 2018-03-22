@@ -38,7 +38,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Hyperledger**: Hyperledger is a Linux Foundation project to produce an open blockchain platform that is ready for business. It provides an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms.
 
-**{{site.data.conrefs.composer_full}} Admin API** is an administrative API to build administrative applications. This API can deploy and update business network definitions on the {{site.data.conrefs.composer_full}} fabric runtime.
+**{{site.data.conrefs.composer_full}} Admin API** is an administrative API to build administrative applications. This API can install, start and upgrade business network definitions on the {{site.data.conrefs.composer_full}} fabric runtime.
 
 **{{site.data.conrefs.composer_full}} Client API** The Client API is used by applications to connect to a business network and submit transactions. These applications could be command line, web applications, or end-user applications. The Client API permits CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets.
 

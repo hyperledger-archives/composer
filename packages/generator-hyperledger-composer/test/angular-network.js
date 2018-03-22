@@ -26,6 +26,7 @@ const version = require('../package.json').version;
 describe('hyperledger-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
 
     let tmpDir; // This is the directory which we will create our app into
+    let businessNetworkDefinition;
 
     before(function() {
         let idCard_PeerAdmin = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw' }, {'x-type' : 'embedded',name:'generatorProfile'});
@@ -42,8 +43,12 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             const banana = fs.readFileSync(path.resolve(__dirname+'/data/', 'digitalPropertyNetwork.bna'));
             return BusinessNetworkDefinition.fromArchive(banana);
         })
-        .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition, {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
+        .then((businessNetworkDefinition_) => {
+            businessNetworkDefinition = businessNetworkDefinition_;
+            return adminConnection.install(businessNetworkDefinition);
+        })
+        .then(() => {
+            return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
         })
         .then(() => {
             const idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'digitalproperty-network' }, { name: 'generatorProfile', 'x-type': 'embedded' });

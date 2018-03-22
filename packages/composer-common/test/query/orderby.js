@@ -80,7 +80,37 @@ describe('OrderBy', () => {
 
     describe('#validate', () => {
 
-       // TODO no validation method implemented yet
+        it('should reject multiple sort criteria with opposing directions', () => {
+            const qry = 'SELECT org.acme.Driver\n' +
+               '        WHERE (age < 50 AND firstName != \'Dan\')\n' +
+               '        ORDER BY [lastName ASC, firstName DESC]';
+
+            const parsedQry = parser.parse(qry, { startRule: 'SelectStatement' });
+
+            mockSelect.getQuery = () => {
+                return {
+                    getQueryFile: () => {
+                        return {
+                            getIdentifier: () => { return 'mock.qry'; }
+                        };
+                    }
+                };
+            };
+            mockSelect.getAST = () => {
+                return {
+                    location: {
+                        start: {line: 1, column: 15},
+                        end: {line: 2, column: 10}
+                    }
+                };
+            };
+            const o = new OrderBy(mockSelect, parsedQry.orderBy);
+            o.sortCriteria[0].validate = () => {};
+            o.sortCriteria[1].validate = () => {};
+            (() => {
+                o.validate();
+            }).should.throw(/ORDER BY currently only supports a single direction for all fields/);
+        });
 
     });
 

@@ -197,6 +197,56 @@ Feature: Queries steps
             ]
             """
 
+    Scenario: Using the REST API, I can list the Commodities by ascending quantity using a query
+        When I make a GET request to /api/queries/selectCommoditiesOrdered
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "EMA",
+                  "description": "Corn",
+                  "mainExchange": "EURONEXT",
+                  "quantity": 10,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "CC",
+                  "description": "Cocoa",
+                  "mainExchange": "ICE",
+                  "quantity": 80,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                }
+            ]
+            """
+
+    Scenario: Using the REST API, I can list the Commodities by descending quantity using a query
+        When I make a GET request to /api/queries/selectCommoditiesOrderedReverse
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "CC",
+                  "description": "Cocoa",
+                  "mainExchange": "ICE",
+                  "quantity": 80,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "EMA",
+                  "description": "Corn",
+                  "mainExchange": "EURONEXT",
+                  "quantity": 10,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                }
+            ]
+            """
+
     Scenario: Using the REST API, I can list the Commodities with high quantity
         When I make a GET request to /api/queries/selectCommoditiesWithHighQuantity
         Then The response code should be 200

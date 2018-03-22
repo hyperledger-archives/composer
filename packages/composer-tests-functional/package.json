@@ -14,13 +14,11 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test": "exit 0",
-    "start_verdaccio": "PM2_HOME=.pm2 pm2 start verdaccio -- -l 0.0.0.0:4873 -c verdaccio.cfg",
-    "stop_verdaccio": "PM2_HOME=.pm2 pm2 stop verdaccio || true",
     "systest:embedded": "mocha -t 0 systest",
     "systest:hlf": "mocha -t 0 systest",
     "systest:hlfv1": "mocha -t 0 systest",
     "systest:hlfv1_tls": "mocha -t 0 systest",
-    "systest:hlfv1-1": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
+    "systest:hlfv1-1": "mocha -t 0 systest/[a-a]*.js systest/setup.js",
     "systest:hlfv1-2": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
     "systest:hlfv1-1_tls": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
     "systest:hlfv1-2_tls": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
@@ -78,7 +76,6 @@
     "socket.io": "1.7.3",
     "transform-loader": "0.2.4",
     "uuid": "3.0.1",
-    "verdaccio": "2.6.4",
     "watchify": "3.7.0"
   },
   "license-check-config": {

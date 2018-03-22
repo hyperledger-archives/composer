@@ -87,10 +87,10 @@ describe('Multiple user REST API unit tests', () => {
         .then((result) => {
             businessNetworkDefinition = result;
             serializer = businessNetworkDefinition.getSerializer();
-            return adminConnection.install(businessNetworkDefinition.getName());
+            return adminConnection.install(businessNetworkDefinition);
         })
         .then(()=>{
-            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
+            return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });

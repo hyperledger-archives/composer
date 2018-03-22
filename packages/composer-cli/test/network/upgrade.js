@@ -28,15 +28,11 @@ chai.use(require('chai-as-promised'));
 
 let mockAdminConnection;
 
-describe('composer upgrade runtime CLI unit tests', function () {
-
-    let sandbox;
+describe('composer network ugprade CLI', function () {
+    const sandbox = sinon.sandbox.create();
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-
         mockAdminConnection.connect.resolves();
         mockAdminConnection.upgrade.resolves();
 
@@ -52,8 +48,11 @@ describe('composer upgrade runtime CLI unit tests', function () {
 
         it('should correctly execute when all parms correctly specified.', function () {
 
-            let argv = {card:'cardname'
-                       ,businessNetworkName: 'org-acme-biznet'};
+            let argv = {
+                card:'cardname',
+                networkName: 'org-acme-biznet',
+                networkVersion: '2.0.0'
+            };
 
 
             return InstallCmd.handler(argv)
@@ -61,8 +60,9 @@ describe('composer upgrade runtime CLI unit tests', function () {
                 argv.thePromise.should.be.a('promise');
                 sinon.assert.calledOnce(CmdUtil.createAdminConnection);
                 sinon.assert.calledOnce(mockAdminConnection.connect);
-                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                sinon.assert.calledWith(mockAdminConnection.connect, argv.card);
                 sinon.assert.calledOnce(mockAdminConnection.upgrade);
+                sinon.assert.calledWith(mockAdminConnection.upgrade, argv.networkName, argv.networkVersion);
             });
         });
         it('error path  upgrade method fails', ()=>{

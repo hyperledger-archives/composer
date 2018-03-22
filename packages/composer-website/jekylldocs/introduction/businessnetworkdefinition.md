@@ -21,4 +21,4 @@ The model files are typically created by business analysts, as they define the s
 
 The JavaScript files are typically created by developers who are implementing business requirements provided by business analysts.
 
-Once defined, a Business Network Definition can be packaged into an archive using the `composer` command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the `AdminConnection` class from the `composer-admin` module.
+Once defined, a Business Network Definition can be packaged into an archive using the `composer` command line interface. These archives can then be deployed or updated on a Fabric, using the `AdminConnection` class from the `composer-admin` module.

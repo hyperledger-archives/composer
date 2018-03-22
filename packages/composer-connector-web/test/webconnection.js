@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { Certificate, Connection, ConnectionManager } = require('composer-common');
+const { BusinessNetworkDefinition, Certificate, Connection, ConnectionManager } = require('composer-common');
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const Context = require('composer-runtime').Context;
 const DataCollection = require('composer-runtime').DataCollection;
@@ -32,8 +32,8 @@ const should = chai.should();
 const sinon = require('sinon');
 
 describe('WebConnection', () => {
+    const sandbox = sinon.sandbox.create();
 
-    let sandbox;
     let mockConnectionManager;
     let mockConnectionProfileManager;
     let mockSecurityContext;
@@ -41,8 +41,6 @@ describe('WebConnection', () => {
     let connection;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        WebConnection.reset();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionManager.getConnectionProfileManager.returns(mockConnectionProfileManager);
@@ -61,8 +59,11 @@ describe('WebConnection', () => {
         connection = new WebConnection(mockConnectionManager, 'devFabric1', 'org.acme.business');
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         sandbox.restore();
+        if (await connection.dataService.existsCollection('chaincodes')) {
+            await connection.dataService.deleteCollection('chaincodes');
+        }
     });
 
     describe('#createContainer', () => {
@@ -111,139 +112,101 @@ describe('WebConnection', () => {
     });
 
     describe('#login', () => {
-
         beforeEach(() => {
             sandbox.stub(connection, 'testIdentity').resolves();
         });
 
-        it('should return a new security context with a null chaincode ID if the business network was not specified', () => {
+        it('should return security context without network name if no business network specified', async () => {
+            const user = 'doge';
+            const secret = 'suchs3cret';
             connection = new WebConnection(mockConnectionManager, 'devFabric1');
-            sandbox.stub(connection, 'testIdentity').resolves(identity);
-            return connection.login('doge', 'suchs3cret')
-                .then((securityContext) => {
-                    securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    securityContext.getIdentity().should.deep.equal(identity);
-                    should.equal(securityContext.getChaincodeID(), null);
-                    sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
-                });
+            sandbox.stub(connection, 'testIdentity').withArgs(user, secret).resolves(identity);
+            const securityContext = await connection.login('doge', 'suchs3cret');
+            should.not.exist(securityContext.getNetworkName());
         });
 
-        it('should create a new runtime and return a new security context with a non-null chaincode ID if the business network does exist', () => {
-            should.equal(WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838'), undefined);
-            return connection.login('doge', 'suchs3cret')
-                .then((securityContext) => {
-                    securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    securityContext.getChaincodeID().should.equal('org.acme.business');
-                    WebConnection.getChaincode('org.acme.business').should.exist;
-                    sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
-                });
+        it('should return security context with correct identity', async () => {
+            const user = 'doge';
+            const secret = 'suchs3cret';
+            connection = new WebConnection(mockConnectionManager, 'devFabric1');
+            sandbox.stub(connection, 'testIdentity').withArgs(user, secret).resolves(identity);
+            const securityContext = await connection.login('doge', 'suchs3cret');
+            securityContext.getIdentity().should.deep.equal(identity);
         });
-
-        it('should use an existing runtime and return a new security context with a non-null chaincode ID if the business network does exist', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            WebConnection.addChaincode('org.acme.business', mockContainer, mockEngine);
-            let originalChaincode = WebConnection.getChaincode('org.acme.business');
-            return connection.login('doge', 'suchs3cret')
-                .then((securityContext) => {
-                    securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    securityContext.getChaincodeID().should.equal('org.acme.business');
-                    WebConnection.getChaincode('org.acme.business').should.equal(originalChaincode);
-                    sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
-                });
-        });
-
     });
 
     describe('#install', () => {
-        it('should perform a no-op and return a resolved promise', () => {
-            return connection.install(mockSecurityContext, 'org-acme-biznet')
-                .then(() => {
-                });
+        it('should install a business network', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition)
+                .should.not.be.rejected;
+        });
+
+        it('should error installing a business network twice', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.install(mockSecurityContext, networkDefinition)
+                .should.be.rejected;
         });
     });
-
-    describe('#deploy', () => {
-        it('should just call start', () => {
-            sinon.stub(connection, 'start').resolves();
-            return connection.deploy(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
-                .then(() => {
-                    sinon.assert.calledOnce(connection.start);
-                    sinon.assert.calledWith(connection.start, mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'});
-                });
-        });
-    });
-
 
     describe('#start', () => {
+        let mockEngine;
 
-        it('should call the init engine method, ping, and store the chaincode ID', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-            mockSecurityContext.getIdentity.returns(identity);
+        beforeEach(() => {
+            const mockContainer = sinon.createStubInstance(WebContainer);
             sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+        });
+
+        it('should error starting a business network that is not installed', () => {
+            return connection.start(mockSecurityContext, 'name', '1.0.0-fake')
+                .should.be.rejected;
+        });
+
+        it('should start a previously installed business network', async () => {
             mockEngine.init.resolves();
-            sinon.stub(connection, 'ping').resolves();
-            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
-                .then(() => {
-                    sinon.assert.calledOnce(mockEngine.init);
-                    sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
-                        context.should.be.an.instanceOf(Context);
-                        context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
-                        return true;
-                    }), 'init', ['{"start":"json"}']);
-                    WebConnection.getChaincode('133c00a3-8555-4aa5-9165-9de9a8f8a838').should.deep.equal({
-                        id : '133c00a3-8555-4aa5-9165-9de9a8f8a838',
-                        container : mockContainer,
-                        engine : mockEngine
-                    });
-                });
+
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+
+            sinon.assert.calledWith(mockEngine.init, sinon.match.instanceOf(Context), 'start', sinon.match.array);
         });
 
-        it('should handle network already exisiting', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-            mockSecurityContext.getIdentity.returns(identity);
-            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
-            mockEngine.init.rejects({message : 'cannot add testnetwork as the object already exists'});
-            sinon.stub(connection, 'ping').resolves();
-            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
-                .should.be.rejectedWith('business network with name testnetwork already exists');
+        it('should error starting a previously started business network', async () => {
+            mockEngine.init.resolves();
+
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+
+            return connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion())
+                .should.be.rejected;
         });
 
-        it('should handle error', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            mockContainer.getName.returns('133c00a3-8555-4aa5-9165-9de9a8f8a838');
-            mockSecurityContext.getIdentity.returns(identity);
-            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
-            mockEngine.init.rejects({message : 'some error'});
-            sinon.stub(connection, 'ping').resolves();
-            return connection.start(mockSecurityContext, 'testnetwork', '{"start":"json"}', {start : 'options'})
-                .should.be.rejectedWith({message : 'some error'});
-        });
+        it('should re-throw errors from engine.init', async () => {
+            const errorMessage = 'ALL YOUR ERROR ARE BELONG TO US';
+            mockEngine.init.rejects(new Error(errorMessage));
 
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition);
+
+            return connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion())
+                .should.be.rejectedWith(errorMessage);
+        });
     });
 
 
     describe('#undeploy', () => {
-        it('should remove the business network', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
-            mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            return connection.undeploy(mockSecurityContext, 'org.acme.Business')
-                .then(() => {
-                    should.equal(WebConnection.getChaincode('eeb8858-eced-4a32-b1cd-2491f1e3718f'), undefined);
-                });
+        it('should remove prevoiusly installed business network', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.undeploy(mockSecurityContext, networkDefinition.getName());
+            await connection.install(mockSecurityContext, networkDefinition)
+                .should.not.be.rejected;
         });
     });
 
@@ -265,49 +228,52 @@ describe('WebConnection', () => {
 
     describe('#queryChainCode', () => {
 
-        it('should call the engine query method', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
+        it('should call the engine query method', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+            const expected = { whoami: 'function result' };
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            mockSecurityContext.getIdentity.returns(identity);
-            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            mockEngine.query.resolves({test : 'data from engine'});
-            return connection.queryChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
-                .then((result) => {
-                    sinon.assert.calledOnce(mockEngine.query);
-                    sinon.assert.calledWith(mockEngine.query, sinon.match((context) => {
-                        context.should.be.an.instanceOf(Context);
-                        context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
-                        return true;
-                    }), 'testFunction', ['arg1', 'arg2']);
-                    result.should.be.an.instanceOf(Buffer);
-                    JSON.parse(result.toString()).should.deep.equal({test : 'data from engine'});
-                });
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.query.withArgs(sinon.match.instanceOf(Context), functionName, functionArgs).resolves(expected);
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            const actual = await connection.queryChainCode(mockSecurityContext, functionName, functionArgs);
+
+            JSON.parse(actual.toString()).should.deep.equal(expected);
         });
 
     });
 
     describe('#invokeChainCode', () => {
 
-        it('should call the engine invoke method', () => {
-            let mockContainer = sinon.createStubInstance(WebContainer);
-            let mockEngine = sinon.createStubInstance(Engine);
+        it('should call the engine invoke method', async () => {
+            const networkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+            const functionName = 'testFunction';
+            const functionArgs = ['a', 'b', 'c'];
+            const expected = { whoami: 'function result' };
+
+            const mockContainer = sinon.createStubInstance(WebContainer);
+            sandbox.stub(WebConnection, 'createContainer').returns(mockContainer);
+            const mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
-            WebConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
-            mockSecurityContext.getIdentity.returns(identity);
-            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
-            mockEngine.invoke.resolves({test : 'data from engine'});
-            return connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
-                .then((result) => {
-                    sinon.assert.calledOnce(mockEngine.invoke);
-                    sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
-                        context.should.be.an.instanceOf(Context);
-                        context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
-                        return true;
-                    }), 'testFunction', ['arg1', 'arg2']);
-                    should.equal(result, undefined);
-                });
+            sandbox.stub(WebConnection, 'createEngine').returns(mockEngine);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves(expected);
+            mockSecurityContext.getNetworkName.returns(networkDefinition.getName());
+
+            await connection.install(mockSecurityContext, networkDefinition);
+            await connection.start(mockSecurityContext, networkDefinition.getName(), networkDefinition.getVersion());
+            await connection.invokeChainCode(mockSecurityContext, functionName, functionArgs);
+
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match.instanceOf(Context), functionName, functionArgs);
         });
 
     });

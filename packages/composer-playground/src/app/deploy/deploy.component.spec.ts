@@ -235,6 +235,8 @@ describe('DeployComponent', () => {
             component['currentBusinessNetwork']['participants'].should.deep.equal([]);
             component['currentBusinessNetwork']['assets'].should.deep.equal([]);
             component['currentBusinessNetwork']['transactions'].should.deep.equal([]);
+            // system namespace plus model namespace = 2
+            businessNetworkDefinition.getModelManager().getNamespaces().length.should.equal(2);
             businessNetworkDefinition.getAclManager().getAclFile().getDefinitions().should.be.a('string');
         }));
     });
