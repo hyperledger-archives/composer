@@ -16,7 +16,7 @@ import { CodeRunner } from './code-runner';
 
 export class CliHelper {
     static importCard(filePath: string, cardName: string) {
-        return CodeRunner.runCode(`composer card import --file ${filePath} --name ${cardName}`);
+        return CodeRunner.runCode(`composer card import --file ${filePath} --card ${cardName}`);
     }
 
     static pingCard(cardName: string) {
