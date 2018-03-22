@@ -1,6 +1,6 @@
 {
   "name": "composer-documentation",
-  "version": "0.18.3",
+  "version": "0.19.0",
   "description": "Generates documentation packages for Hyperlegder Composer Business Networks",
   "bin": {
     "opus": "bin/opus"
@@ -35,26 +35,26 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "chalk": "2.3.0",
-    "comment-parser": "0.5.0",
-    "composer-admin": "0.18.3",
-    "composer-client": "0.18.3",
-    "composer-common": "0.18.3",
+    "chalk": "1.1.3",
+    "comment-parser": "0.4.0",
+    "composer-admin": "0.19.0",
+    "composer-client": "0.19.0",
+    "composer-common": "0.19.0",
     "debug-stream": "3.0.1",
-    "doctrine": "2.1.0",
+    "doctrine": "2.0.0",
     "js-yaml": "3.10.0",
-    "lodash": "4.17.5",
+    "lodash": "4.17.4",
     "lodash.clonedeep": "4.5.0",
     "map-stream": "0.1.0",
     "markdown-it": "8.4.0",
     "markdown-it-anchor": "4.0.0",
     "mkdirp": "0.5.1",
     "nunjucks": "3.0.1",
-    "ora": "1.4.0",
+    "ora": "1.2.0",
     "prettyoutput": "1.1.1",
-    "rimraf": "2.6.2",
+    "rimraf": "2.5.4",
     "vinyl-fs": "2.4.4",
-    "yargs": "8.0.2"
+    "yargs": "10.0.3"
   }
   ,
   "license-check-config": {

@@ -84,7 +84,7 @@ class InfoVisitor {
             return this.visitFunctionDeclaration(thing, parameters);
         } else if (thing instanceof QueryFile) {
             return this.visitQueryFile(thing, parameters);
-        }else if (thing instanceof Query) {
+        } else if (thing instanceof Query) {
             return this.visitQuery(thing, parameters);
         } else {
             throw new Error('Unrecognised type: ' + typeof thing );

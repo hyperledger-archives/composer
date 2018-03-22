@@ -15,9 +15,10 @@
     "test": "exit 0",
     "test-tagged": "cucumber-js --tags @busnet",
     "test-inner": "cucumber-js --tags 'not @cli-report'",
-    "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
-    "int-test": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner && npm run stop_verdaccio",
-    "int-test-nohsm": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve && npm run test-inner-nohsm && npm run stop_verdaccio"
+    "test-inner-nohsm": "cucumber-js --tags 'not @cli-hsm'",
+    "setup":"npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
+    "int-test": "npm run setup && npm run test-inner && npm run stop_verdaccio",
+    "int-test-nohsm": "npm run setup && npm run test-inner-nohsm && npm run stop_verdaccio"
   },
   "repository": {
     "type": "git",

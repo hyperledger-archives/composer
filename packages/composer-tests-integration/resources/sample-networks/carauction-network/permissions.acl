@@ -1,0 +1,37 @@
+/**
+ * Access Control List for the auction network.
+ */
+
+rule Member {
+    description: "Allow the member read access"
+    participant: "org.acme.vehicle.auction.Member"
+    operation: READ
+    resource: "org.acme.vehicle.auction.*"
+    action: ALLOW
+}
+
+rule VehicleOwner {
+    description: "Allow the owner of a vehicle total access"
+    participant(m): "org.acme.vehicle.auction.Member"
+    operation: ALL
+    resource(v): "org.acme.vehicle.auction.Vehicle"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule VehicleListingOwner {
+    description: "Allow the owner of a vehicle total access to their vehicle listing"
+    participant(m): "org.acme.vehicle.auction.Member"
+    operation: ALL
+    resource(v): "org.acme.vehicle.auction.VehicleListing"
+    condition: (v.vehicle.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule All {
+    description: "Allow the member read access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}

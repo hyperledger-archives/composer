@@ -267,9 +267,9 @@ transaction RevokeIdentity {
 
 /**
  * Transaction that will Start a business network
- * @param {String} businessNetworkArchive  string representating of the businessNetworkArchive
- * @param {String} [logLevel] Log level to use optionally
  * @param {Transaction[]} [bootstrapTransactions] optional transactions to use to bootstrap the network
+ * @param {String} [logLevel] Log level to use optionally
+ * 
  */
 transaction StartBusinessNetwork {
   o String logLevel optional
