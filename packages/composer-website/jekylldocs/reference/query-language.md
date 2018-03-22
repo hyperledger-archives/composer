@@ -43,11 +43,11 @@ In practical terms, this query returns all drivers who do not have the lastName 
 
 ```
 query Q20{
-    description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered by lastname, firstname"
+    description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered from A-Z by firstName"
     statement:
         SELECT org.acme.Driver
             WHERE ((age < _$ageParam OR firstName == 'Dan') AND (lastName != 'Selman'))
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 ```
 
