@@ -17,6 +17,8 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const { ConnectionProfileManager, IdCard, NetworkCardStoreManager } = require('composer-common');
+const commonPackageJson = require('composer-common/package.json');
+const composerVersion = commonPackageJson.version;
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
@@ -814,6 +816,19 @@ class TestUtil {
     }
 
     /**
+     * Inject the available dependencies.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition the bnd to be deployed
+     */
+    static injectDependencies(businessNetworkDefinition) {
+        let packageJSON = businessNetworkDefinition.getMetadata().getPackageJson();
+        packageJSON.dependencies = {
+            'composer-common' : `../composer-common/composer-common-${composerVersion}.tgz`,
+            'composer-runtime-hlfv1' : `../composer-runtime-hlfv1/composer-runtime-hlfv1-${composerVersion}.tgz`,
+            'composer-runtime' : `../composer-runtime/composer-runtime-${composerVersion}.tgz`
+        };
+    }
+
+    /**
      * Deploy the specified business network definition.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - the business network definition to deploy.
      * @param {string} cardName - the name of the card to create when deploying
@@ -864,10 +879,12 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('installing to Org1');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    console.log('Installing network to org1');
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
                     return adminConnection.disconnect();
                 })
                 .then(() => {
@@ -880,10 +897,12 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('installing to Org2');
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    console.log('Installing network to org2');
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
                     return adminConnection.disconnect();
                 })
                 .then(() => {
@@ -896,36 +915,39 @@ class TestUtil {
                     }
                 })
                 .then(() => {
-                    TestUtil.log('Starting the network');
-                    return adminConnection.start(businessNetworkDefinition, {
-                        bootstrapTransactions,
-                        endorsementPolicy: {
-                            identities: [
-                                {
-                                    role: {
-                                        name: 'member',
-                                        mspId: 'Org1MSP'
-                                    }
-                                },
-                                {
-                                    role: {
-                                        name: 'member',
-                                        mspId: 'Org2MSP'
-                                    }
-                                }
-                            ],
-                            policy: {
-                                '2-of': [
+                    console.log('Starting the network');
+                    return adminConnection.start(
+                        businessNetworkDefinition.getName(),
+                        businessNetworkDefinition.getVersion(),
+                        {
+                            bootstrapTransactions,
+                            endorsementPolicy: {
+                                identities: [
                                     {
-                                        'signed-by': 0
+                                        role: {
+                                            name: 'member',
+                                            mspId: 'Org1MSP'
+                                        }
                                     },
                                     {
-                                        'signed-by': 1
+                                        role: {
+                                            name: 'member',
+                                            mspId: 'Org2MSP'
+                                        }
                                     }
-                                ]
+                                ],
+                                policy: {
+                                    '2-of': [
+                                        {
+                                            'signed-by': 0
+                                        },
+                                        {
+                                            'signed-by': 1
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    });
+                        });
                 })
                 .then(() => {
                     if(otherChannel) {
@@ -989,11 +1011,14 @@ class TestUtil {
                     return adminConnection.connect(deployCardName);
                 })
                 .then(() => {
-                    return adminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+                    TestUtil.injectDependencies(businessNetworkDefinition);
+                    return adminConnection.install(businessNetworkDefinition);
                 })
                 .then(() => {
-                    TestUtil.log('deploying new ' + businessNetworkDefinition.getName());
-                    return adminConnection.start(businessNetworkDefinition, {bootstrapTransactions});
+                    delete businessNetworkDefinition.getMetadata().getPackageJson().dependencies;
+                    return adminConnection.start(businessNetworkDefinition.getName(),
+                        businessNetworkDefinition.getVersion(),
+                        {bootstrapTransactions});
                 })
                 .then(() => {
                     let adminidCard = new IdCard({

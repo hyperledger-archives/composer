@@ -76,11 +76,13 @@ asset ParticipantRegistry extends Registry { }
 asset TransactionRegistry extends Registry { }
 
 
-/** Asset representing the business networkId
- * @param {String} networkId of the business networkId
+/** Asset representing the business network
+ * @param {String} networkId of the business network
+ * @param {String} runtimeVersion of the business network
  */
 asset Network identified by networkId {
   o String networkId
+  o String runtimeVersion
 }
 
 participant NetworkAdmin identified by participantId {
@@ -171,22 +173,17 @@ transaction RevokeIdentity {
 
 // --------------------------------------------------------------------------
 transaction StartBusinessNetwork {
-  o String businessNetworkArchive
   o String logLevel optional
   o Transaction[] bootstrapTransactions optional
 }
 
 transaction ResetBusinessNetwork {
-  
-}
 
-transaction UpdateBusinessNetwork {
-  o String businessNetworkArchive
 }
 
 /**
  * Sets the log level of the Business Network runtime to that specified
- * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR 
+ * @param {String} newLogLevel one of VERBOSE DEBUG INFO WARNING ERROR
  */
 transaction SetLogLevel {
   o String newLogLevel

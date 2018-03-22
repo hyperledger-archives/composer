@@ -56,7 +56,7 @@ Feature: CLI cards steps
     Scenario: When using the CLI, I can see the details of the card that I just imported
         When I run the following expected pass CLI command
             """
-            composer card list -n PeerAdmin@hlfv1
+            composer card list -c PeerAdmin@hlfv1
             """
         Then The stdout information should include text matching /userName:            PeerAdmin/
         And The stdout information should include text matching /description:/
@@ -73,14 +73,14 @@ Feature: CLI cards steps
     Scenario: Using the CLI, I should get an error if I try to delete a card which doesn't exist
         When I run the following expected fail CLI command
             """
-            composer card delete -n nobody@penguin
+            composer card delete -c nobody@penguin
             """
         Then The stdout information should include text matching /Command failed/
 
     Scenario: Using the CLI, I can export a card that exists in my wallet
         When I run the following expected pass CLI command
             """
-            composer card export --name PeerAdmin@hlfv1 --file ./tmp/ExportedPeerAdmin.card
+            composer card export --card PeerAdmin@hlfv1 --file ./tmp/ExportedPeerAdmin.card
             """
         Then The stdout information should include text matching /Command succeeded/
         And I have the following files
@@ -89,7 +89,7 @@ Feature: CLI cards steps
     Scenario: Using the CLI, I can delete a named card that exists
         When I run the following expected pass CLI command
             """
-            composer card delete --name PeerAdmin@hlfv1
+            composer card delete --card PeerAdmin@hlfv1
             """
         Then The stdout information should include text matching /Command succeeded/
 

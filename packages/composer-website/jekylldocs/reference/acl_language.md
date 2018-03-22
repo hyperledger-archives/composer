@@ -46,10 +46,6 @@ Network access is required to use the UPDATE operation for networks.
 
 Network access is required to use the READ operation on registries and networks.
 
-**composer network undeploy**
-
-Network access is required to use the DELETE operation on registries and networks.
-
 **composer network update**
 
 Network access is required to use the UPDATE or CREATE operation on registries, or the UPDATE operation on networks.

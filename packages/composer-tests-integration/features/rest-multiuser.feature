@@ -202,7 +202,7 @@ Feature: Rest steps
     Scenario: Using the CLI, I can export the business network card from my wallet
         When I run the following expected pass CLI command
             """
-            composer card export -n charlie1@tutorial-network -f ./tmp/withcerts_charlie1@tutorial-network.card
+            composer card export -c charlie1@tutorial-network -f ./tmp/withcerts_charlie1@tutorial-network.card
             """
         Then The stdout information should include text matching /Command succeeded/
 

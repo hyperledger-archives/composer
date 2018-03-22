@@ -46,7 +46,7 @@ The {{site.data.conrefs.composer_full}} JavaScript SDK is a set of Node.js APIs 
 The APIs are split between two npm modules:
 
 1. `composer-client` used to submit transactions to a business network or to perform Create, Read, Update, Delete operations on assets and participants
-2. `composer-admin` used to manage business networks (deploy, undeploy)
+2. `composer-admin` used to manage business networks (install, start, upgrade)
 
 Details of all the APIs are available as JSDocs (see reference).
 

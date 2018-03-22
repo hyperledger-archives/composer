@@ -7,6 +7,9 @@
     "npm": ">=5"
   },
   "main": "start.js",
+  "bin": {
+    "start-network": "./bin/start-network"
+  },
   "scripts": {
     "pretest": "npm run licchk",
     "licchk": "license-check",

@@ -30,16 +30,16 @@ const LOG = Logger.getLog('NodeContext');
  * @protected
  */
 class NodeContext extends Context {
-
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
      * @param {any} stub the shim instance for this invocation
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork installed business network information
      */
-    constructor(engine, stub) {
+    constructor(engine, stub, installedBusinessNetwork) {
         const method = 'constructor';
-        LOG.entry(method, engine, stub);
-        super(engine);
+        LOG.entry(method, engine, stub, installedBusinessNetwork);
+        super(engine, installedBusinessNetwork);
         this.stub = stub;
         this.dataService = new NodeDataService(this.stub);
         this.identityService = new NodeIdentityService(this.stub);

@@ -37,7 +37,7 @@ class Import {
         let adminConnection;
         return Import.readCardFromFile(args.file).then(card => {
             cardToImport = card;
-            cardName = args.name || cmdUtil.getDefaultCardName(card);
+            cardName = args.card || cmdUtil.getDefaultCardName(card);
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.hasCard(cardName);
         }).then((existingCard) => {

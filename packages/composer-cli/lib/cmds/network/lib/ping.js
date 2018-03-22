@@ -44,7 +44,8 @@ class Ping {
         })
         .then((result) => {
             cmdUtil.log(chalk.blue.bold('The connection to the network was successfully tested: ')+businessNetworkDefinition.getName());
-            cmdUtil.log(chalk.blue('\tversion: ') + result.version);
+            cmdUtil.log(chalk.blue('\tBusiness network version: ') + businessNetworkDefinition.getVersion());
+            cmdUtil.log(chalk.blue('\tComposer runtime version: ') + result.version);
             cmdUtil.log(chalk.blue('\tparticipant: ') + (result.participant ? result.participant : '<no participant found>'));
             cmdUtil.log(chalk.blue('\tidentity: ') + (result.identity ? result.identity : '<no identity found>'));
         }).catch((error) => {

@@ -33,7 +33,7 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
 
-        composer card delete -n PeerAdmin@hlfv1
+        composer card delete -c PeerAdmin@hlfv1
 
 If these commands fail, then you have business network cards from a previous version and you will have to delete the file system card store.
 
@@ -68,22 +68,22 @@ If these commands fail, then you have business network cards from a previous ver
                   
                     const assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
                     await assetRegistry.update(trade.commodity);
-                }    
+                }
                 
-4. Follow step three in the [developer tutorial](./developer-tutorial.html).                      
+4. Follow step three in the [developer tutorial](./developer-tutorial.html).
               
 ## Step Three: Deploy the business networks
 1. Install and start business network A using the following commands
 
-        composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName tutorial-network
-        composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile tutorial-network@0.0.1.bna --file networkA.card
-        composer card import --file networkA.card --name networkA
+        composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
+        composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
+        composer card import --file networkA.card --card networkA
         
-2. Install and start business network B using the following commands      
+2. Install and start business network B using the following commands
    
-        composer runtime install --card PeerAdmin@hlfv1 --businessNetworkName other-tutorial-network
-        composer network start --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile other-tutorial-network@0.0.1.bna --file networkB.card
-        composer card import --file networkB.card --name networkB 
+        composer network install --card PeerAdmin@hlfv1 --archiveFile other-tutorial-network@0.0.1.bna
+        composer network start --networkName other-tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkB.card
+        composer card import --file networkB.card --card networkB
     
 3. To check that the business networks have been deployed successfully run the following commands to ping the business networks
     
@@ -111,7 +111,7 @@ If these commands fail, then you have business network cards from a previous ver
 ## Step Five: Bind the identity on network A to the participant on network B  
 1. Export the networkA card to get the credentials
 
-        composer card export -n networkA
+        composer card export -c networkA
 
 2. Unzip the card, you may need to rename networkA.card to networkA.zip.
 
@@ -125,7 +125,7 @@ If these commands fail, then you have business network cards from a previous ver
 
 5. Import the card
 
-        composer card import --file newNetworkB.card --name newNetworkB
+        composer card import --file newNetworkB.card --card newNetworkB
 
 6. Ping the network to activate the identity
 

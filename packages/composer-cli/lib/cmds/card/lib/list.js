@@ -30,8 +30,8 @@ class List {
     * @param {Object} args argument list from composer command
     */
     static async handler(args) {
-        if (args.name){
-            await this.showCardDetails(args.name);
+        if (args.card){
+            await this.showCardDetails(args.card);
         } else {
             const cardMap = await cmdUtil.createAdminConnection().getAllCards();
             if (args.quiet) {
@@ -91,7 +91,7 @@ class List {
             cmdUtil.log('\n');
         });
 
-        cmdUtil.log('Issue '+chalk.magenta('composer card list --name <Card Name>')+' to get details a specific card');
+        cmdUtil.log('Issue '+chalk.magenta('composer card list --card <Card Name>')+' to get details a specific card');
     }
 
     /**

@@ -71,7 +71,7 @@ describe('composer card import CLI', function() {
         const cardName = 'CONGA_CARD';
         const args = {
             file: cardFileName,
-            name: cardName
+            card: cardName
         };
         adminConnectionStub.importCard.resolves();
         adminConnectionStub.hasCard.resolves(false);
@@ -94,7 +94,7 @@ describe('composer card import CLI', function() {
     it('should reject card if already imported', function() {
         sandbox.stub(fs, 'readFileSync').withArgs(cardFileName).returns(testCardBuffer);
         const args = {
-            name: 'ALREADY_IMPORTED',
+            card: 'ALREADY_IMPORTED',
             file: cardFileName
         };
         adminConnectionStub.hasCard.withArgs('ALREADY_IMPORTED').resolves(true);

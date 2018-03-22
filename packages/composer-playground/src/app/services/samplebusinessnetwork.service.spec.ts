@@ -53,16 +53,11 @@ describe('SampleBusinessNetworkService', () => {
         identityCardMock = sinon.createStubInstance(IdentityCardService);
         adminMock = sinon.createStubInstance(AdminService);
         clientMock = sinon.createStubInstance(ClientService);
+        clientMock.filterModelFiles.returns([]);
         aclFileMock = sinon.createStubInstance(AclFile);
         alertMock = sinon.createStubInstance(AlertService);
-        businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+        businessNetworkMock = new BusinessNetworkDefinition('test-network@1.0.0');
         mockFileService = sinon.createStubInstance(FileService);
-
-        const modelManager = new ModelManager();
-        const factory = new Factory(modelManager);
-        const serializer = new Serializer(factory, modelManager);
-        businessNetworkMock.getFactory.returns(factory);
-        businessNetworkMock.getSerializer.returns(serializer);
 
         alertMock.busyStatus$ = {next: sinon.stub()};
 
@@ -176,12 +171,9 @@ describe('SampleBusinessNetworkService', () => {
         let channelCard;
         let metaData;
         let buildStub;
+        let getPackageJsonSpy;
 
         beforeEach(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            metaData = {getPackageJson: sinon.stub().returns({})};
-            businessNetworkMock.getMetadata.returns(metaData);
-            buildStub = sinon.stub(service, 'buildNetwork').returns({getName: sinon.stub().returns('myNetwork')});
-
             adminMock.connect.returns(Promise.resolve());
             adminMock.install.returns(Promise.resolve());
             adminMock.importCard.returns(Promise.resolve());
@@ -201,6 +193,8 @@ describe('SampleBusinessNetworkService', () => {
 
             channelCard = new IdCard({userName: 'channel'}, {'x-type': 'web', 'name': 'myProfile'});
             identityCardMock.getIdentityCard.withArgs('channelRef').returns(channelCard);
+
+            getPackageJsonSpy = sinon.spy(businessNetworkMock.getMetadata(), 'getPackageJson');
         }));
 
         it('should deploy the business network definition with default user', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
@@ -208,18 +202,17 @@ describe('SampleBusinessNetworkService', () => {
             let createdCard = new IdCard({
                 userName: 'admin',
                 enrollmentSecret: 'adminpw',
-                businessNetwork: 'myNetwork'
+                businessNetwork: 'my-network'
             }, {'name': 'myProfile', 'x-type': 'hlfv1'});
             createdCardMap.set('admin', createdCard);
             adminMock.start.returns(Promise.resolve(createdCardMap));
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', null, null, null);
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'my-network', 'myDescription', null, null, null);
 
             tick();
 
-            metaData.getPackageJson.should.have.been.called;
+            getPackageJsonSpy.should.have.been.called;
 
-            buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
 
             adminMock.connect.should.have.been.calledTwice;
@@ -228,7 +221,7 @@ describe('SampleBusinessNetworkService', () => {
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+            adminMock.start.should.have.been.calledWith('my-network', sinon.match.string, {
                 networkAdmins: [{
                     userName: 'admin',
                     enrollmentSecret : 'adminpw'
@@ -244,18 +237,17 @@ describe('SampleBusinessNetworkService', () => {
             let createdCard = new IdCard({
                 userName: 'myUserId',
                 enrollmentSecret: 'adminpw',
-                businessNetwork: 'myNetwork'
+                businessNetwork: 'my-network'
             }, {'name': 'myProfile', 'x-type': 'hlfv1'});
             createdCardMap.set('myUserId', createdCard);
             adminMock.start.returns(Promise.resolve(createdCardMap));
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null);
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'my-network', 'myDescription', 'myUserId', 'mySecret', null);
 
             tick();
 
-            metaData.getPackageJson.should.have.been.called;
+            getPackageJsonSpy.should.have.been.called;
 
-            buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
 
             adminMock.connect.should.have.been.calledTwice;
@@ -264,7 +256,7 @@ describe('SampleBusinessNetworkService', () => {
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+            adminMock.start.should.have.been.calledWith('my-network', sinon.match.string, {
                 networkAdmins: [{
                     userName: 'myUserId',
                     enrollmentSecret: 'mySecret'
@@ -280,7 +272,7 @@ describe('SampleBusinessNetworkService', () => {
             let createdCardMap = new Map<string, IdCard>();
             let createdCard = new IdCard({
                 userName: 'myUserId',
-                businessNetwork: 'myNetwork'
+                businessNetwork: 'my-network'
             }, {'name': 'myProfile', 'x-type': 'hlfv1'});
 
             createdCard.setCredentials({
@@ -291,16 +283,15 @@ describe('SampleBusinessNetworkService', () => {
             createdCardMap.set('myUserId', createdCard);
             adminMock.start.returns(Promise.resolve(createdCardMap));
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', null, {
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'my-network', 'myDescription', 'myUserId', null, {
                 certificate: 'myCert',
                 key: 'myKey'
             });
 
             tick();
 
-            metaData.getPackageJson.should.have.been.called;
+            getPackageJsonSpy.should.have.been.called;
 
-            buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
             identityCardMock.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'ChannelAdmin');
 
             adminMock.connect.should.have.been.calledTwice;
@@ -309,7 +300,7 @@ describe('SampleBusinessNetworkService', () => {
 
             adminMock.install.should.have.been.called;
             adminMock.start.should.have.been.called;
-            adminMock.start.should.have.been.calledWith(sinon.match.object, {
+            adminMock.start.should.have.been.calledWith('my-network', sinon.match.string, {
                 networkAdmins: [{
                     userName: 'myUserId',
                     certificate: 'myCert'
@@ -324,7 +315,7 @@ describe('SampleBusinessNetworkService', () => {
         it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             adminMock.install.returns(Promise.reject('some error'));
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', null, null, null)
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'my-network', 'myDescription', null, null, null)
                 .then(() => {
                     throw('should not get here');
                 })
@@ -335,15 +326,13 @@ describe('SampleBusinessNetworkService', () => {
 
             tick();
 
-            metaData.getPackageJson.should.have.been.called;
-
-            buildStub.should.have.been.calledWith('myNetwork', 'myDescription', sinon.match.object, sinon.match.any);
+            getPackageJsonSpy.should.have.been.called;
         })));
 
         it('should throw error if card exists', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             adminMock.hasCard.returns(Promise.resolve(true));
 
-            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'myNetwork', 'myDescription', 'myUserId', 'mySecret', null)
+            service.deployBusinessNetwork(businessNetworkMock, 'myCardName', 'my-network', 'myDescription', 'myUserId', 'mySecret', null)
                 .then((cardRef) => {
                     throw new Error('should not get here');
                 })
@@ -357,59 +346,111 @@ describe('SampleBusinessNetworkService', () => {
         })));
     });
 
+    describe('updateBusinessNetwork', () => {
+        let idCard;
+        let getPackageJsonSpy;
+
+        beforeEach(() => {
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
+            identityCardMock.getCurrentIdentityCard.returns(idCard);
+            identityCardMock.getCurrentCardRef.returns('myCardRef');
+            getPackageJsonSpy = sinon.spy(businessNetworkMock.getMetadata(), 'getPackageJson');
+
+            identityCardMock.getIdentityCardRefsWithProfileAndRole.returns(['channelRef']);
+
+            const channelCard = new IdCard({userName: 'channel'}, {'x-type': 'web', 'name': 'myProfile'});
+            identityCardMock.getIdentityCard.withArgs('channelRef').returns(channelCard);
+
+        });
+
+        it('should update the business network definition', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            adminMock.upgrade.returns(Promise.resolve());
+            adminMock.connect.returns(Promise.resolve());
+            clientMock.refresh.returns(Promise.resolve());
+            mockFileService.getBusinessNetworkName.returns('my-network');
+            mockFileService.getBusinessNetworkDescription.returns('myDescription');
+
+            service.upgradeBusinessNetwork(businessNetworkMock);
+
+            tick();
+
+            getPackageJsonSpy.should.have.been.called;
+
+            adminMock.connect.should.have.been.calledWith('myCardRef', idCard, true);
+            adminMock.upgrade.should.have.been.called;
+            clientMock.refresh.should.have.been.called;
+            adminMock.reset.should.have.been.calledWith(businessNetworkMock.getName());
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
+        })));
+
+        it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            mockFileService.getBusinessNetworkName.returns('my-network');
+            mockFileService.getBusinessNetworkDescription.returns('myDescription');
+
+            adminMock.connect.returns(Promise.resolve());
+            adminMock.upgrade.returns(Promise.reject('some error'));
+
+            service.upgradeBusinessNetwork(businessNetworkMock).then(() => {
+                throw('should not get here');
+            })
+                .catch((error) => {
+                    console.log(error);
+                    alertMock.busyStatus$.next.should.have.been.calledWith(null);
+                    error.should.equal('some error');
+                });
+
+            tick();
+
+            getPackageJsonSpy.should.have.been.called;
+
+            adminMock.connect.should.have.been.calledWith('myCardRef', idCard, true);
+            adminMock.upgrade.should.have.been.called;
+        })));
+    });
+
     describe('buildNetwork', () => {
+        let addModelFilesStub;
+        let addScriptStub;
+        let setAclFileStub;
+        let setQueryfileSpy;
+
+        beforeEach(() => {
+            sinon.stub(businessNetworkMock.getScriptManager(), 'getScripts').returns(['script']);
+
+            addModelFilesStub = sinon.stub(businessNetworkMock.getModelManager(), 'addModelFiles');
+            addScriptStub = sinon.stub(businessNetworkMock.getScriptManager(), 'addScript');
+            setAclFileStub = sinon.stub(businessNetworkMock.getAclManager(), 'setAclFile');
+            setQueryfileSpy = sinon.stub(businessNetworkMock.getQueryManager(), 'setQueryFile');
+        });
+
         it('should build the network', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let modalManagerMock = {addModelFiles: sinon.stub(), getModelFiles: sinon.stub().returns(['model'])};
-            let scriptManagerMock = {getScripts: sinon.stub().returns(['script']), addScript: sinon.stub()};
-            let aclManagerMock = {getAclFile: sinon.stub().returns('acl'), setAclFile: sinon.stub()};
-            let queryManagerMock = {getQueryFile: sinon.stub().returns('query'), setQueryFile: sinon.stub()};
-            let metaData = {getREADME: sinon.stub()};
-
-            businessNetworkMock.getModelManager.returns(modalManagerMock);
-            businessNetworkMock.getScriptManager.returns(scriptManagerMock);
-            businessNetworkMock.getAclManager.returns(aclManagerMock);
-            businessNetworkMock.getQueryManager.returns(queryManagerMock);
-            businessNetworkMock.getMetadata.returns(metaData);
-
+            sinon.stub(businessNetworkMock.getAclManager(), 'getAclFile').returns('acl');
+            sinon.stub(businessNetworkMock.getQueryManager(), 'getQueryFile').returns('query');
             let mockCreateBN = sinon.stub(service, 'createNewBusinessDefinition').returns(businessNetworkMock);
 
-            service['buildNetwork']('myNetwork', 'myDescription', {}, businessNetworkMock);
+            service['buildNetwork']('my-network', 'myDescription', {}, businessNetworkMock);
 
-            metaData.getREADME.should.have.been.called;
             mockCreateBN.should.have.been.called;
             clientMock.filterModelFiles.should.have.been.called;
 
-            modalManagerMock.addModelFiles.should.have.been.called;
-            scriptManagerMock.addScript.should.have.been.called;
-            aclManagerMock.setAclFile.should.have.been.called;
-            queryManagerMock.setQueryFile.should.have.been.called;
+            addModelFilesStub.should.have.been.called;
+            addScriptStub.should.have.been.called;
+            setAclFileStub.should.have.been.called;
+            setQueryfileSpy.should.have.been.called;
         }));
 
         it('should build the network without query and acl files', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let modalManagerMock = {addModelFiles: sinon.stub(), getModelFiles: sinon.stub().returns(['model'])};
-            let scriptManagerMock = {getScripts: sinon.stub().returns(['script']), addScript: sinon.stub()};
-            let aclManagerMock = {getAclFile: sinon.stub().returns(null), setAclFile: sinon.stub()};
-            let queryManagerMock = {getQueryFile: sinon.stub().returns(null), setQueryFile: sinon.stub()};
-            let metaData = {getREADME: sinon.stub()};
-
-            businessNetworkMock.getModelManager.returns(modalManagerMock);
-            businessNetworkMock.getScriptManager.returns(scriptManagerMock);
-            businessNetworkMock.getAclManager.returns(aclManagerMock);
-            businessNetworkMock.getQueryManager.returns(queryManagerMock);
-            businessNetworkMock.getMetadata.returns(metaData);
-
             let mockCreateBN = sinon.stub(service, 'createNewBusinessDefinition').returns(businessNetworkMock);
 
-            service['buildNetwork']('myNetwork', 'myDescription', {}, businessNetworkMock);
+            service['buildNetwork']('my-network', 'myDescription', {}, businessNetworkMock);
 
-            metaData.getREADME.should.have.been.called;
             mockCreateBN.should.have.been.called;
             clientMock.filterModelFiles.should.have.been.called;
 
-            modalManagerMock.addModelFiles.should.have.been.called;
-            scriptManagerMock.addScript.should.have.been.called;
-            aclManagerMock.setAclFile.should.not.have.been.called;
-            queryManagerMock.setQueryFile.should.not.have.been.called;
+            addModelFilesStub.should.have.been.called;
+            addScriptStub.should.have.been.called;
+            setAclFileStub.should.not.have.been.called;
+            setQueryfileSpy.should.not.have.been.called;
         }));
     });
 });
