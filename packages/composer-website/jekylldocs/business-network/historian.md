@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Historian
 category: concepts
 section: business-network
-index-order: 510
+index-order: 511
 sidebar: sidebars/accordion-toc0.md
 excerpt: The Hyperledger Composer Historian is a registry that is populated with records of transactions, the participant submitting the transaction, and the identity used.
 ---

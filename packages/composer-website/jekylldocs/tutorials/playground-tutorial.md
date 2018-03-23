@@ -54,15 +54,13 @@ To connect to our business network click **Connect now** under our business netw
 
 As you can see, we're in the **Define** tab right now, this tab is where you create and edit the files that make up a business network definition, before deploying them and testing them using the **Test** tab.
 
-As we selected an empty business network template, we need to define our business network files. The first step is to add a model file. Model files define the assets, participants, transactions, and events in our business network.
+As we selected an empty business network template, we need to modify the template files provided. The first step is to update the model file. Model files define the assets, participants, transactions, and events in our business network.
 
 For more information on our modeling language, check our [documentation](../reference/cto_language.html).
 
-1. Click the **Add a file** button.
+1. Click the **Model file** to view it.
 
-2. Click the **Model file** and click **Add**.
-
-3. Delete the lines of code in the model file and replace it with this:
+2. Delete the lines of code in the model file and replace it with this:
 
 
         /**

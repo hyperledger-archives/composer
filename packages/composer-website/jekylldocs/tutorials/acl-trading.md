@@ -19,10 +19,10 @@ This tutorial explores one such business network - the Commodity Trading network
 ![Overview of Commodity Trading Rules](../assets/img/tutorials/acl1/define_acl.png)
 
 
-Access control rules (the language that defines ACLs) fall into two main areas: 
+Access control rules (the language that defines ACLs) fall into two main areas:
 
-- authority to access system, network or administrative resources and operations in the System namespace (governing Network and System operations) ;  and 
-- authority to access resources or perform operations **within** a given business network itself (like Create, Read, Update assets),  via domain specific business network ACLs. 
+- authority to access system, network or administrative resources and operations in the System namespace (governing Network and System operations) ;  and
+- authority to access resources or perform operations **within** a given business network itself (like Create, Read, Update assets),  via domain specific business network ACLs.
 
 The tutorial uses the online Playground to try out some simple and conditional access rules. In doing so, you will interact with the sample network as various identities - ultimately,  it is the users of the blockchain that we want to apply access control to. We'll also see how a Participant role can be used to control access, where multiple identities can be mapped to a designated Participant role (such as a Regulator). Its important to note that in a real blockchain network, all operations, whether from a Node JS application, CLI or indeed REST operations are subject to and controlled by the ACLs that govern a business network. Accountability is seen at an identity level.
 
@@ -31,11 +31,11 @@ If you wish, you can also apply the rules in this tutorial against an existing {
 
 ## Prerequisites
 
-None - just an internet connection, which you have right now :-) 
+None - just an internet connection, which you have right now :-)
 
 ## Step One: Access the Online Playground and select your business network
 
-We'll use the sample business network (`trade-network`) sourced from the Composer sample networks repository. 
+We'll use the sample business network (`trade-network`) sourced from the Composer sample networks repository.
 
 1. Go to the [Online Playground](https://composer-playground.mybluemix.net/login) and if necessary clear local storage when prompted. Accept the Welcome logo, you are ready to start.
 
@@ -47,11 +47,11 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 
 5. Lastly, click on 'Connect Now' to connect to the deployed business network (the default id - its shown top right).
 
-6. The 'Trade Network' README file should be active and you can see the components of the business network listed in the left columnn - one of these is the ACLs file `permissions.acl` which controls the access to resources. Out of the box, the sample business networks have 'all access' turned on, which would of course, ultimately be different to that for a production style environment.
+6. The 'Trade Network' README file should be active and you can see the components of the business network listed in the left column - one of these is the ACLs file `permissions.acl` which controls the access to resources. Out of the box, the sample business networks have 'all access' turned on, which would of course, ultimately be different to that for a production style environment.
 
-### Create Trader Participants 
+### Create Trader Participants
 
-1. Click on the 'Test' tab near the top of the screen. This is where we create sample Trader participants. 
+1. Click on the 'Test' tab near the top of the screen. This is where we create sample Trader participants.
 
 2. Click on `Trader` on the left - Create New Participant (top right) as follows - the example below is 'TRADER1':
 
@@ -63,9 +63,9 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
           "firstName": "Jenny",
           "lastName": "Jones"
     }
-    
-    
-    
+
+
+
 3. Repeat step 2 and create 5 additional `Trader` participants ('TRADER2' through 'TRADER6') using the sample data above (change the names as appropriate). We have provided 'TRADER2', and 'TRADER3' as an example below.
 
 
@@ -77,7 +77,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
         "firstName": "Jack",
         "lastName": "Sock"
     }
-    
+
 3rd record:
 
     {
@@ -86,17 +86,17 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "firstName": "Rainer",
       "lastName": "Valens"
     }
-    
+
 4th record:
- 
+
     {
       "$class": "org.acme.trading.Trader",
       "tradeId": "TRADER4",
       "firstName": "Davor",
       "lastName": "Dolittle"
     }
-    
-  
+
+
 5th record:
 
     {
@@ -105,7 +105,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "firstName": "Steve",
       "lastName": "Alonso"
     }
-    
+
 6th record:
 
     {
@@ -121,10 +121,10 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 ### Create Commodity Assets
 
 1. Still in the 'Test' panel, create some Commodity records by selecting 'Commodity' on the left - the ownership (`owner` field) relates back to the 'Trader' participant for the purposes of this tutorial. Note that owner is a relationship field.
-   
-   
+
+
 1st record:
-   
+
     {
       "$class": "org.acme.trading.Commodity",
       "tradingSymbol": "EMA",
@@ -133,7 +133,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "quantity": 10,
       "owner": "resource:org.acme.trading.Trader#TRADER1"
     }
-    
+
 2nd record:
 
     {
@@ -144,9 +144,9 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "quantity": 80,
       "owner": "resource:org.acme.trading.Trader#TRADER2"
     }
-    
+
 3rd record:
-    
+
     {
       "$class": "org.acme.trading.Commodity",
       "tradingSymbol": "HO",
@@ -155,9 +155,9 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "quantity": 40,
       "owner": "resource:org.acme.trading.Trader#TRADER3"
     }
-    
+
 4th record:
-    
+
     {
       "$class": "org.acme.trading.Commodity",
       "tradingSymbol": "HG",
@@ -166,9 +166,9 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "quantity": 100,
       "owner": "resource:org.acme.trading.Trader#TRADER4"
     }
-    
+
 5th record:
-    
+
     {
       "$class": "org.acme.trading.Commodity",
       "tradingSymbol": "SM",
@@ -177,9 +177,9 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
       "quantity": 70,
       "owner": "resource:org.acme.trading.Trader#TRADER5"
     }
-    
+
 6th record:
-    
+
     {
       "$class": "org.acme.trading.Commodity",
       "tradingSymbol": "AG",
@@ -200,7 +200,7 @@ Next, let's create some trader identities - we need to issue identities for the 
 5. Click on 'Create New'  to continue.
 
 Repeat the 'Issue new ID' sequence (step 2 through 5 above) for identities `tid2`, `tid3`, `tid4`, `tid5` and `tid6` respectively, mapping these to their respective TRADER participants.
-  
+
  Now we're ready to start creating our access control rules.
 
 **Important**: if you are issuing new identities for a {{site.data.conrefs.composer_full}} based environment (as opposed to the online environment), be sure to add each issued identity to your wallet using the 'Add to Wallet' option.
@@ -265,7 +265,7 @@ Rule:
       action: ALLOW
     }
 
-Then click on the **UPDATE** button on the bottom left to update the business network. 
+Then click on the **UPDATE** button on the bottom left to update the business network.
 
 This rule will allow the `current` Trader Participant (mapped to the `current` identity whether in playground (here) or indeed in your application) to READ and UPDATE their own target Trader record.
 
@@ -273,7 +273,7 @@ This rule will allow the `current` Trader Participant (mapped to the `current` i
 
 #### Rule 1b - Trader Asset Ownership - allow update by owners only
 
-By default, a Trader cannot see or update any of the Commodities created earlier. 
+By default, a Trader cannot see or update any of the Commodities created earlier.
 
 We need a rule to enable a Trader access Commodities for which they are the designated 'owner'.
 
@@ -295,7 +295,7 @@ Rule:
 
 
 
-Then click on the **UPDATE** button on the bottom left to update the business network. 
+Then click on the **UPDATE** button on the bottom left to update the business network.
 
 This rule will allow the `current` Trader Participant all operations on target Commodity resources that it 'owns'.
 
@@ -305,7 +305,7 @@ Implicitly, this Trader TRADER1 has no ability to see or update other Trader's a
 
 #### Rule 2 - Restrictive rule: Only 'Trader' participants can submit `Trade` smart contract transactions
 
-By default, a Trader cannot submit a `Trade` transaction (defined in our model and for which we have smart contract logic written in our Script file) to update a Commodity he owns. 
+By default, a Trader cannot submit a `Trade` transaction (defined in our model and for which we have smart contract logic written in our Script file) to update a Commodity he owns.
 
 We need a rule to enable a Trader to submit `Trade` transactions for which they are the designated 'owner'. The `Trade` transaction enables the current owner to change the ownership of a Commodity to another Trader.
 
@@ -338,7 +338,7 @@ Rule:
     }
 
 
-Then click on the **UPDATE** button on the bottom left to update the business network. 
+Then click on the **UPDATE** button on the bottom left to update the business network.
 
 That's it. We know already that the participant can only work with their own Commodity(ies). This will allow only Trader participants to submit transactions of type `Trade` (we could have many different participant types in a business network).
 
@@ -361,7 +361,7 @@ b. Confirm that the transaction has now been submitted by going to 'All Transact
 #### Rule 3 - Enabling rule: Allow Traders to see their own historical records only
 
 
-By default, due to the System ACLs (a part of which is the registry for the Historian records), each Trader (eg. and related `tid1`, `tid2` etc identities) can see the history of all Transactions - an example is the `UpdateBusinessNetwork` performed by admin.
+By default, due to the System ACLs (a part of which is the registry for the Historian records), each Trader (eg. and related `tid1`, `tid2` etc identities) can see the history of all Transactions - an example is the `UpgradeBusinessNetwork` performed by admin.
 
 We will lock down access to the Historian such that Traders only see transactions they submitted in Historian.
 
@@ -384,11 +384,11 @@ Rule:
 
 This rule restricts the current Trader participant to seeing only transactions he/she invoked on the blockchain.
 
-Then click on the **UPDATE** button on the bottom left to update the business network. 
+Then click on the **UPDATE** button on the bottom left to update the business network.
 
-5. **TEST THE ACL**: 
+5. **TEST THE ACL**:
 
-a. Switch user to identity `tid3` (top right, 'ID Registry') - you will only see 'Identity Activation' type entries but nothing about the history of transactions that were submitted relating to TRADER1 and TRADER2. This is what we would expect. 
+a. Switch user to identity `tid3` (top right, 'ID Registry') - you will only see 'Identity Activation' type entries but nothing about the history of transactions that were submitted relating to TRADER1 and TRADER2. This is what we would expect.
 
 b. Next, switch to identity `tid1` - you will see the history of transactions (including the 'TRADE' transaction submitted earlier) relating to `tid1` only - in particular the transfer of Commodity 'CC' ownership to TRADER2 (By contrast, identity `tid2` , the transferee, will not see the historial 'TRADE' transaction submitted by `tid1` - only the Commodity asset, that was transferred).
 
@@ -431,7 +431,7 @@ At this point, the Regulator can now see the history of system transactions in C
 
 6. Add the following rule:
 
-Rule: 
+Rule:
 
 
     rule R4a_RegulatorSeeThemselves {
@@ -446,17 +446,17 @@ Rule:
 
 This rule merely allows a Regulator participant to update their own profile record (should they wish to update it - you can test this out if you wish; we had done something similar earlier).
 
-Then click on the **UPDATE** button on the bottom left to update the business network with the new rule. 
+Then click on the **UPDATE** button on the bottom left to update the business network with the new rule.
 
 7. Next, switch identity (in the Id Registry) to  the Regulator identity `101` and click 'Use Now'
 
 8. Check you can indeed see the Historical records (which shows our previous transactions - then click on 'view record' for any system type transaction activity such as `AddAsset` or `AddParticipant` - as someone that is a Regulator, you should be able to see this activity.
 
-9. Next click 'view record' for a **TRADE** transaction- there's an issue - nothing happens. You (regulator) currently do not have authority (via ACLs) able to view the transaction record 
+9. Next click 'view record' for a **TRADE** transaction- there's an issue - nothing happens. You (regulator) currently do not have authority (via ACLs) able to view the transaction record
 
 10. Switch identity back to 'admin' as good practice for rule changes.
 
-11. Add the following Regulator authorisation rule (insert the rule in the `permissions.acl` file at the top ): 
+11. Add the following Regulator authorisation rule (insert the rule in the `permissions.acl` file at the top ):
 
 Rule:
 
@@ -470,7 +470,7 @@ Rule:
     }
 
 
-Then click on the **UPDATE** button on the bottom left to update the business network. 
+Then click on the **UPDATE** button on the bottom left to update the business network.
 
 This rule enables a Regulator to access the Trade transaction resources, such that it can view the Trade transactions from Historian's 'view record').
 

@@ -3,7 +3,7 @@ layout: default
 title: Using Queries and Filters with Business Network Data
 category: tasks
 section: business-network
-index-order: 507
+index-order: 508
 sidebar: sidebars/accordion-toc0.md
 excerpt: Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
 ---
