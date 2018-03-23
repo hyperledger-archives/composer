@@ -45,7 +45,7 @@ When the business network has been packaged, it must be installed to the blockch
 
     The business network card used in the command must be a peer admin card in order to install the business network to the blockchain peers.
 
-## Step Three: Upgrading to the new business network
+## Step Four: Upgrading to the new business network
 
 Now that the business network has been installed to the peers, it must be started. The `composer network upgrade` command will instruct the peers to stop using the older version of the business network and begin using the version specified in the command.
 
