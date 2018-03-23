@@ -10,7 +10,7 @@ excerpt: Upgrading a deployed business network
 
 # Upgrading a deployed business network
 
-After a business network has been successfully deployed to a blockchain it may be necessary to upgrade the business network definition. To upgrade a business network definition, first make the updates you wish to deploy to your local copy of the business network component files (model, script, query, access control, and transaction processor files), then update the version of your local business network files. After updating the version install the new version of the `.bna` to your blockchain, and use the `composer network upgrade` to switch to using your new version.
+After a business network has been successfully deployed to a blockchain it may be necessary to upgrade the business network definition. To upgrade a business network definition, first make the updates you wish to deploy to your local copy of the business network component files (model, script, query, access control, and transaction processor files), then update the version of your local business network files. After updating the version install the new version of the `.bna` to your blockchain, and use the `composer network upgrade` command to switch to using your new version.
 
 ## Before you begin
 
