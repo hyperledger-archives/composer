@@ -141,7 +141,7 @@ After the command has run, a business network archive file called `tutorial-netw
 
 After creating the `.bna` file, the business network can be deployed to the instance of {{site.data.conrefs.hlf_full}}. Normally, information from the Fabric administrator is required to create a `PeerAdmin` identity, with privileges to install chaincode to the peer as well as start chaincode on the `composerchannel` channel. However, as part of the development environment installation, a `PeerAdmin` identity has been created already.
 
-After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.
+After the business network has been installed, the network can be started. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.
 
 #### Retrieving the correct credentials
 
@@ -149,7 +149,7 @@ A `PeerAdmin` business network card with the correct credentials is already crea
 
 #### Deploying the business network
 
-Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the {{site.data.conrefs.composer_full}} business network to be installed on the peer, then the business network is ready to be started, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
+Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the {{site.data.conrefs.composer_full}} business network to be installed on the peer, then the business network can be started, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
 
 1. To install the business network, from the `tutorial-network` directory, run the following command:
 
@@ -159,7 +159,7 @@ Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the 
 
 2. To start the business network, run the following command:
 
-        composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
+        composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
 
     The `composer network start` command requires a business network card, as well as the name of the admin identity for the business network, the name and version of the business network and the name of the file to be created ready to import as a business network card.
 
@@ -195,12 +195,26 @@ Deploying a business network to the {{site.data.conrefs.hlf_full}} requires the 
 
 The generated API is connected to the deployed blockchain and business network.
 
-<!--After generating a REST API,
-
 ## Step Six: Generating an application
 
+{{site.data.conrefs.composer_full}} can also generate an Angular 4 application running against the REST API.
 
-**This section doesn't work yet so be chill k?**
+1.  To create your Angular 4 application, navigate to `tutorial-network` directory and run the following command:
 
-`yo hyperledger-composer`
--->
+        yo hyperledger-composer:angular
+
+2.  Select **Yes** when asked to connect to running business network.
+
+3.  Enter standard `package.json` questions (project name, description, author name, author email, license)
+
+4.  Enter `admin@tutorial-network` for the business network card.
+
+5.  Select **Connect to an existing REST API**
+
+6.  Enter `http://localhost` for the REST server address.
+
+7.  Enter `3000` for server port.
+
+8.  Select **Namespaces are not used**
+
+The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run `npm start`. This will fire up an Angular 4 application running against your REST API at `http://localhost:4200`.

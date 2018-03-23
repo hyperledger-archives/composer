@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter, DoCheck } from '@angular/core';
 
 import { FileService } from '../../services/file.service';
 import { EditorFile } from '../../services/editor-file';
@@ -34,12 +34,15 @@ import 'codemirror/addon/scroll/simplescrollbars';
         './editor-file.component.scss'.toString()
     ]
 })
-export class EditorFileComponent {
+export class EditorFileComponent implements DoCheck {
+
+    @Output() packageJsonVersionChange = new EventEmitter<string>();
 
     private changingCurrentFile: boolean = false;
     private code: string = null;
     private readme = null;
     private previousCode: string = null;
+    private previousPackageVersion: string = null;
 
     private codeConfig = {
         lineNumbers: true,
@@ -75,8 +78,8 @@ export class EditorFileComponent {
 
     private currentError: string = null;
 
-    private _editorFile;
-    private editorContent;
+    private _editorFile: EditorFile;
+    private editorContent: string;
     private editorType;
 
     @Input()
@@ -98,54 +101,72 @@ export class EditorFileComponent {
     constructor(private fileService: FileService) {
     }
 
+    ngDoCheck() {
+        let versionChange;
+
+        if (this._editorFile && this._editorFile.isPackage()) {
+            const version = JSON.parse(this._editorFile.getContent()).version;
+            if (this.previousPackageVersion !== version) {
+                this.previousPackageVersion = version;
+                versionChange = true;
+            }
+        } else {
+            versionChange = false;
+        }
+
+        if (versionChange) {
+            this.loadFile();
+        }
+    }
+
     loadFile() {
         this.changingCurrentFile = true;
         this.currentError = null;
         if (this._editorFile.isModel()) {
-            let modelFile = this.fileService.getFile(this._editorFile.id, 'model');
+            let modelFile = this.fileService.getFile(this._editorFile.getId(), 'model');
             if (modelFile) {
                 this.editorContent = modelFile.getContent();
                 this.editorType = 'code';
-                this.currentError = this.fileService.validateFile(this._editorFile.id, 'model');
+                this.currentError = this.fileService.validateFile(this._editorFile.getId(), 'model');
             } else {
                 this.editorContent = null;
             }
         } else if (this._editorFile.isScript()) {
-            let script = this.fileService.getFile(this._editorFile.id, 'script');
+            let script = this.fileService.getFile(this._editorFile.getId(), 'script');
             if (script) {
                 this.editorContent = script.getContent();
                 this.editorType = 'code';
-                this.currentError = this.fileService.validateFile(this._editorFile.id, 'script');
+                this.currentError = this.fileService.validateFile(this._editorFile.getId(), 'script');
             } else {
                 this.editorContent = null;
             }
         } else if (this._editorFile.isAcl()) {
-            let aclFile = this.fileService.getFile(this._editorFile.id, 'acl');
+            let aclFile = this.fileService.getFile(this._editorFile.getId(), 'acl');
             if (aclFile) {
                 this.editorContent = aclFile.getContent();
                 this.editorType = 'code';
-                this.currentError = this.fileService.validateFile(this._editorFile.id, 'acl');
+                this.currentError = this.fileService.validateFile(this._editorFile.getId(), 'acl');
             } else {
                 this.editorContent = null;
             }
         } else if (this._editorFile.isPackage()) {
-            let packageJson = this.fileService.getFile(this._editorFile.id, 'package');
-            this.editorContent = JSON.stringify(packageJson.getContent(), null, 2);
+            let packageJson = this.fileService.getFile(this._editorFile.getId(), 'package');
+            this.editorContent = packageJson.getContent();
             this.editorType = 'code';
-            this.currentError = this.fileService.validateFile(this._editorFile.id, 'package');
+            this.currentError = this.fileService.validateFile(this._editorFile.getId(), 'package');
         } else if (this._editorFile.isReadMe()) {
-            let readme = this.fileService.getFile(this._editorFile.id, 'readme');
+            let readme = this.fileService.getFile(this._editorFile.getId(), 'readme');
             if (readme) {
                 this.editorContent = readme.getContent();
                 this.previewContent = marked(readme.getContent());
                 this.editorType = 'readme';
             }
         } else if (this._editorFile.isQuery()) {
-            let queryFile = this.fileService.getFile(this._editorFile.id, 'query');
+            let queryFile = this.fileService.getFile(this._editorFile.getId(), 'query');
             if (queryFile) {
                 this.editorContent = queryFile.getContent();
                 this.editorType = 'code';
-                this.currentError = this.fileService.validateFile(this._editorFile.id, 'query');
+                this.currentError = this.fileService.validateFile(this._editorFile.getId(), 'query');
             } else {
                 this.editorContent = null;
             }
@@ -181,14 +202,21 @@ export class EditorFileComponent {
                 type = 'query';
             } else if (this._editorFile.isPackage()) {
                 type = 'package';
+                let version;
+                try {
+                    version = JSON.parse(this.editorContent).version;
+                } catch (syntaxError) {
+                    version = '';
+                }
+                this.packageJsonVersionChange.emit(version);
             } else if (this._editorFile.isReadMe()) {
                 type = 'readme';
                 this.previewContent = marked(this.editorContent);
             }
 
-            let updatedFile = this.fileService.updateFile(this._editorFile.id, this.editorContent, type);
+            let updatedFile = this.fileService.updateFile(this._editorFile.getId(), this.editorContent, type);
 
-            this.fileService.updateBusinessNetwork(this._editorFile.id, updatedFile);
+            this.fileService.updateBusinessNetwork(this._editorFile.getId(), updatedFile);
 
             this.fileService.businessNetworkChanged$.next(true);
         } catch (e) {

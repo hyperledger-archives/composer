@@ -36,6 +36,10 @@ export class Constants {
     static readonly fabricConfigDir = path.join(Constants.fabricBaseDir, 'hlfv1');
     static readonly peerAdminCardName = 'TestPeerAdmin.card';
 
+    static readonly addFileActionLabel = 'Add a file...';
+    static readonly exportActionLabel = 'Export';
+    static readonly deployButtonLabel = 'Deploy changes';
+
     static readonly sampleNetworks = ['basic-sample-network', 'import-network'];
 
     static readonly basicSampleNetwork = {

@@ -361,7 +361,7 @@ You can now use this business network card by specifying the name `PeerAdmin@fab
 
 We are going to deploy the blockchain business network `tutorial-network` that is created by following the [Developer Tutorial](./developer-tutorial.html). If you haven't created a business network archive (.bna) file by following the developer tutorial, follow steps 1, 2, and 3 of the developer tutorial.
 
-## Step Seven: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes
+## Step Seven: Installing the {{site.data.conrefs.composer_full}} business network onto the {{site.data.conrefs.hlf_full}} peer nodes
 
 {{site.data.conrefs.composer_full}} includes a component called the {{site.data.conrefs.composer_full}} runtime that provides all of the functionality to host and support a business network archive, for example data validation, error handling, transaction processor function execution, and access control. In {{site.data.conrefs.hlf_full}} terms, the {{site.data.conrefs.composer_full}} runtime is a standard chaincode.
 

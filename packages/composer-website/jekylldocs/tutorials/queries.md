@@ -146,14 +146,17 @@ The queries used by the Transaction Processor logic are defined in a file which 
 
 ## Step Three: Regenerate your business network archive
 
-After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlf_full}} instance.
+After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlf_full}} instance. Upgrading a deployed network requires that the new version being deployed have a new version number.
 
+1. In the `tutorial-network` directory, open the `package.json` file.
 
-1. Using the command line, navigate to the `tutorial-network` directory.
+2. Update the **version** property from `0.0.1` to `0.0.2`.
 
-2. Run the following command:
+3. Using the command line, navigate to the `tutorial-network` directory.
 
-        composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.1.bna
+4. Run the following command:
+
+        composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.2.bna
 
 
 
@@ -161,15 +164,20 @@ After changing the files in a business network, the business network must be rep
 
 We need to deploy the modified network to become the latest edition on the blockchain! We are using the newly created archive business network archive file to update the existing deployed business network; this is the same business network name, that we used during the Developer Tutorial.
 
-1. Switch to the terminal, change directory to the folder containing the `tutorial-network.bna`.
+1. Switch to the terminal, change directory to the folder containing the `tutorial-network@0.0.2.bna`.
 
-2. Run the following command to update the business network:
+2. Run the following command to install the updated business network:
 
-        composer network update -a tutorial-network@0.0.1.bna -c admin@tutorial-network
+        composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.2.bna
 
-3. Run the following command to test that the network is deployed:
+3. Run the following command to upgrade the network to the new version:
 
-        composer network ping -c admin@tutorial-network
+        composer network upgrade -c PeerAdmin@hlfv1 -n tutorial-network -V 0.0.2
+
+4. Check the current version of the business network before continuing by using the following command:
+
+        composer network ping -c admin@tutorial-network | grep Business
+
 
 ## Step Five: Regenerate the REST APIs for the updated Business Network
 

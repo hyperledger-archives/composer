@@ -14,10 +14,10 @@
 import { ModelManager, ModelFile, Script, AclFile, QueryFile } from 'composer-common';
 
 export class EditorFile {
-    private id;
-    private displayID;
-    private content;
-    private type;
+    private id: string;
+    private displayID: string;
+    private content: string;
+    private type: string;
 
     constructor(id: string, displayID: string, content: string, type: string) {
         this.id = id;
@@ -26,65 +26,69 @@ export class EditorFile {
         this.type = type;
     }
 
-    isModel() {
+    isModel(): boolean {
         return this.type === 'model';
     }
 
-    isScript() {
+    isScript(): boolean {
         return this.type === 'script';
     }
 
-    isAcl() {
+    isAcl(): boolean {
         return this.type === 'acl';
     }
 
-    isQuery() {
+    isQuery(): boolean {
         return this.type === 'query';
     }
 
-    isReadMe() {
+    isReadMe(): boolean {
         return this.type === 'readme';
     }
 
-    isPackage() {
+    isPackage(): boolean {
         return this.type === 'package';
     }
 
-    getId() {
+    getId(): string {
         return this.id;
     }
 
-    getContent() {
+    getContent(): string {
         return this.content;
     }
 
-    getType() {
+    getType(): string {
         return this.type;
     }
 
-    getModelNamespace() {
+    getModelNamespace(): string {
         let modelManager = new ModelManager();
         let modelFile = new ModelFile(modelManager, this.content, null);
         return modelFile.getNamespace();
     }
 
-    getDisplayId() {
+    getDisplayId(): string {
         return this.displayID;
     }
 
-    setId(id) {
+    setId(id: string) {
         this.id = id;
     }
 
-    setDisplayID(id) {
+    setDisplayID(id: string) {
         this.displayID = id;
     }
 
-    setContent(content) {
-        this.content = content;
+    setContent(stringContent: string) {
+        this.content = stringContent;
     }
 
-    setType(type) {
+    setJsonContent(jsonContent: object) {
+        this.content = JSON.stringify(jsonContent, null, 2);
+    }
+
+    setType(type: string) {
         this.type = type;
     }
 

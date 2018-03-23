@@ -62,6 +62,11 @@ describe('EditorFile', () => {
             file.getContent().should.equal('newFileContent');
         });
 
+        it('should set the JSON content of a file', () => {
+            file.setJsonContent({content: 'newFileContent'});
+            file.getContent().should.equal('{\n  "content": "newFileContent"\n}');
+        });
+
         it('should set deisplay id', () => {
             file.setDisplayID('newDisplayId');
             file['displayID'].should.equal('newDisplayId');

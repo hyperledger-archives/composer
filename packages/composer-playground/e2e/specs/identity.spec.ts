@@ -110,11 +110,10 @@ describe('Identity', (() => {
                   filelist.forEach((file) => {
                       expect(file).to.be.oneOf(networkDetails.files);
                   });
-                  return Editor.retrieveNavigatorFileActionButtons()
+                  return Editor.retrieveUpdateBusinessNetworkButtons()
                   .then((buttonlist: any) => {
                       expect(buttonlist).to.be.an('array').lengthOf(2);
-                      expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                      expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                      expect(buttonlist[1]).to.deep.equal({text: Constants.deployButtonLabel, enabled: true});
                   });
               });
           })

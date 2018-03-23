@@ -62,10 +62,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     private noError: boolean = true;
 
     private editActive: boolean = false; // Are the input boxes visible?
+    private editVersionActive: boolean = false;
     private previewReadme: boolean = true; // Are we in preview mode for the README.md file?
 
-    private deployedPackageVersion; // This is the deployed BND's package version
-    private inputPackageVersion; // This is the input 'Version' before the BND is updated
+    private businessNetworkName = '';
+    private deployedPackageVersion = ''; // This is the deployed BND's package version
+    private inputPackageVersion = ''; // This is the input 'Version' before the BND is updated
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
@@ -104,10 +106,11 @@ export class EditorComponent implements OnInit, OnDestroy {
 
                 if (this.fileService.getEditorFiles().length === 0) {
                     this.files = this.fileService.loadFiles();
+                    this.fileService.incrementBusinessNetworkVersion();
                 }
 
-                this.updateFiles();
                 this.updatePackageInfo();
+                this.updateFiles();
             })
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
@@ -119,9 +122,16 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     updatePackageInfo() {
-        let metaData = this.fileService.getMetaData();
-        this.deployedPackageVersion = metaData.getVersion(); // Set Version
-        this.inputPackageVersion = metaData.getVersion();
+        if (this.fileService) {
+            this.businessNetworkName = this.clientService.getBusinessNetwork().getName();
+            this.deployedPackageVersion = this.clientService.getDeployedBusinessNetworkVersion();
+            this.inputPackageVersion = this.fileService.getBusinessNetworkVersion();
+
+            if (this.deployedPackageVersion === this.inputPackageVersion) {
+                this.fileService.incrementBusinessNetworkVersion();
+                this.inputPackageVersion = this.fileService.getBusinessNetworkVersion();
+            }
+        }
     }
 
     setCurrentFile(file) {
@@ -136,9 +146,6 @@ export class EditorComponent implements OnInit, OnDestroy {
         let always = (this.currentFile === null || file.isPackage() || file.isReadMe() || file.isAcl() || file.isQuery());
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if (always || conditional) {
-            if (this.currentFile && this.currentFile.isPackage()) {
-                this.updatePackageInfo();
-            }
             if (file.isScript() || file.isModel() || file.isQuery()) {
                 this.deletableFile = true;
             } else {
@@ -459,6 +466,10 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.setCurrentFile(this.fileService.getEditorPackageFile());
     }
 
+    toggleEditVersionActive() {
+        this.editVersionActive = !this.editVersionActive;
+    }
+
     /*
      * Swaps the toggle state. Used when editing Name and Version, will show input boxes.
      */
@@ -503,6 +514,22 @@ export class EditorComponent implements OnInit, OnDestroy {
             }
         } else {
             this.fileNameError = 'Error: Invalid filename, file must be alpha-numeric with no spaces';
+        }
+    }
+
+    editorFileVersionChange(event) {
+        this.inputPackageVersion = event;
+    }
+
+    updateVersion() {
+        this.toggleEditVersionActive();
+        try {
+            const updatedPackageFile = this.fileService.updateBusinessNetworkVersion(this.inputPackageVersion);
+
+            this.fileService.updateBusinessNetwork(updatedPackageFile.getId(), updatedPackageFile);
+            this.fileService.businessNetworkChanged$.next(true);
+        } catch (e) {
+            this.fileService.businessNetworkChanged$.next(false);
         }
     }
 

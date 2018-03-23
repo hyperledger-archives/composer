@@ -71,14 +71,15 @@
   }
 
   .side-bar {
-    .files, .registries, .profiles {
-      span {
-      text-transform: uppercase;
-      font-weight: 700;
-      font-size: 0.8rem;
-      letter-spacing: 0.5px;
-      margin-top: 1.5rem;
-    }
+    .files, .registries, .profiles, .deploy {
+      h2 {
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        margin-top: 1.5rem;
+        color: $secondary-text;
+      }
     }
     li {
       h3 {

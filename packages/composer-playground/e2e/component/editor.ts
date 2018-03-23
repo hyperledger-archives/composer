@@ -51,13 +51,13 @@ export class Editor {
   static makeFileActive(filename: string) {
     return OperationsHelper.retrieveMatchingElementsByCSS('.side-bar-nav', '.flex-container', 0)
     .then((elements) => {
-        for (var i = 0; i < elements.length; i++) {
+        for (let i = 0; i < elements.length; i++) {
             let elm = elements[i];
             browser.executeScript(scrollMe, elm);
             OperationsHelper.retrieveTextFromElement(elm)
             .then((text) => {
-                if(text.toString().split(/\r\n|\n/)[1] === filename) {
-                    return OperationsHelper.click(elm)
+                if (text.toString().split(/\r\n|\n/)[1] === filename) {
+                    return OperationsHelper.click(elm);
                 }
             });
         }
@@ -77,15 +77,15 @@ export class Editor {
                       return OperationsHelper.retrieveTextFromElement(elm); });
   }
 
-  // Retrieve Editor Side Navigation File Action buttons (Add/Deploy)
-  static retrieveNavigatorFileActionButtons() {
-    return OperationsHelper.retrieveMatchingElementsByCSS('.files', '[type="button"]', 0)
+  // Retrieve Editor Side Navigation Action buttons (Add/Export)
+  static retrieveNavigatorActions() {
+    return OperationsHelper.retrieveMatchingElementsByCSS('.actions', '[type="button"]', 0)
     .map((elm) => { return {text: elm.getText(), enabled: elm.isEnabled()}; });
   }
 
-  // Retrieve Editor Side Navigation Action Buttons
-  static retrieveBusinessArchiveActionButtons() {
-      return OperationsHelper.retrieveMatchingElementsByCSS('.actions', '[type="button"]', 0)
+  // Retrieve Editor Update Business Network Buttons
+  static retrieveUpdateBusinessNetworkButtons() {
+      return OperationsHelper.retrieveMatchingElementsByCSS('.deploy', '[type="button"]', 0)
       .map((elm) => { return {text: elm.getText(), enabled: elm.isEnabled()}; });
   }
 

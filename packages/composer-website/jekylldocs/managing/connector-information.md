@@ -60,7 +60,7 @@ The file contents can be anything that permitted in the `.npmrc` configuration f
 You can supply the name of the file as part of the AdminConnection api on the install method by specifying the `npmrcFile` property on the `installOptions` object. For example to pass the name of the npm configuration options file to be provided on install:
 
 ```javascript
-await AdminConnection.install(businessNetworkDefinition.getName(), {npmrcFile: '/tmp/npmrc'});
+await AdminConnection.install(businessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
 ```
 
 

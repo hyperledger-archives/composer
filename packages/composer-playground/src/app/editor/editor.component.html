@@ -1,9 +1,9 @@
 <section class="side-bar">
     <div class="files">
-        <span>Files</span>
+        <h2>Files</h2>
         <perfect-scrollbar class="side-bar-nav" scroll-to-element [elementId]="listItem">
-            <ul>
-                <li *ngIf="currentFile && aboutFileNames && aboutFileNames.length > 0" #editorFileList id="editorFileListAbout"
+            <ul *ngIf="currentFile">
+                <li *ngIf="aboutFileNames && aboutFileNames.length > 0" #editorFileList id="editorFileListAbout"
                     [class.active]="currentFile.isPackage() || currentFile.isReadMe()" (click)="setCurrentFile(files[0])">
                     <div class="flex-container">
                         <div class="flex">
@@ -18,7 +18,7 @@
                     </div>
                 </li>
                 <li #editorFileList id="editorFileList{{fileIndex}}" *ngFor="let file of (files | editorFilesFilter); let fileIndex = index"
-                    [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+                    [class.active]="file.getId() === currentFile.getId()" (click)="setCurrentFile(file)">
                     <div class="flex-container">
                         <div class="flex">
                             <h3 [class.error]="file.invalid" *ngIf="file.isModel()">Model File</h3>
@@ -36,18 +36,17 @@
                 </li>
             </ul>
         </perfect-scrollbar>
-        <div class="add-file">
-            <button id="editor_addfile" class="action" type="button" (click)="openAddFileModal()">+ Add a file...
-            </button>
-        </div>
-        <div>
-            <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!fileService.isDirty() || !noError">
-                Update
-            </button>
-        </div>
     </div>
     <div class="actions">
-        <div>
+        <div class="add-file">
+            <button id="editor_addfile" class="action" type="button" (click)="openAddFileModal()">
+                <svg class="standard-icon" aria-hidden="true">
+                    <use xlink:href="#icon-file_32"></use>
+                </svg>
+                Add a file...
+            </button>
+        </div>
+        <div class="download-action">
             <button id="editor_export" type="button" class="action" (click)="exportBNA()">
                 <svg class="standard-icon" aria-hidden="true">
                     <use xlink:href="#icon-download_32"></use>
@@ -56,7 +55,40 @@
             </button>
         </div>
     </div>
+
+    <div class="deploy">
+        <h2>Update Network</h2>
+
+        <div class="busnet-version">
+            <span class="semver-label">From:</span>
+            <span class="semver-value"><span class="semver">{{deployedPackageVersion}}</span></span>
+        </div>
+    
+        <div class="busnet-version" [class.error]="invalidAboutFileIDs && invalidAboutFileIDs.length > 0">
+            <span class="semver-label">To:</span>
+            <span *ngIf="!editVersionActive" class="semver-value">
+                <span class="semver">
+                    <svg *ngIf="invalidAboutFileIDs && invalidAboutFileIDs.length > 0" class="ibm-icon error-dot" aria-hidden="true">
+                        <use xlink:href="#icon-error_dot"></use>
+                    </svg>
+                    {{inputPackageVersion}}
+                </span>
+                <button *ngIf="!editVersionActive" id="editVersionButton" type="button" class="action" (click)="toggleEditVersionActive()">
+                    <svg class="ibm-icon vertical-top" aria-hidden="true">
+                        <use xlink:href="#icon-edit_24"></use>
+                    </svg>
+                </button>
+            </span>
+
+            <input *ngIf="editVersionActive" class="semver-value" type="text" [(ngModel)]="inputPackageVersion" (blur)="updateVersion()" />
+        </div>
+
+        <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!fileService.isDirty() || !noError">
+            Deploy changes
+        </button>
+    </div>
 </section>
+
 <section class="main-view">
     <div class="main-view-content">
         <div>
@@ -69,7 +101,7 @@
                         fileType(currentFile) }} File</h1>
                 </div>
                 <div *ngIf="currentFile" style="flex-shrink:1;align-self:center"
-                     class="business-network-version small">{{currentFile.displayID}}
+                     class="file-name small">{{currentFile.displayID}}
                 </div>
                 <div *ngIf="(currentFile && !preventNameEdit(currentFile))" class="edit_icon">
                     <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
@@ -137,7 +169,7 @@
         </div>
 
         <div class="flex">
-            <editor-file [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file>
+            <editor-file (packageJsonVersionChange)="editorFileVersionChange($event)" [editorFile]="currentFile" [previewReadmeActive]="previewReadme"></editor-file>
         </div>
     </div>
     <app-footer></app-footer>
