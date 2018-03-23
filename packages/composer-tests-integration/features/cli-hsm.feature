@@ -75,7 +75,7 @@ Feature: Cli steps
     Scenario: Using the CLI, I can see the card that I just imported is now showing HSM managed
         When I run the following expected pass CLI command
             """
-            composer card list --name bob2@trade-network
+            composer card list --card bob2@trade-network
             """
         Then The stdout information should include text matching /credentials:         Credentials set, HSM managed/
         And The stdout information should include text matching /Command succeeded/
@@ -83,7 +83,7 @@ Feature: Cli steps
     Scenario: Using the CLI, I can export an HSM managed card
         When I run the following expected pass CLI command
             """
-            composer card export --name bob2@trade-network -f ./tmp/bob2_exported@trade-network.card
+            composer card export --card bob2@trade-network -f ./tmp/bob2_exported@trade-network.card
             """
         Then The stdout information should include text matching /Command succeeded/
         And I have the following files
@@ -92,7 +92,7 @@ Feature: Cli steps
     Scenario: Using the CLI, I can delete an HSM managed card
         When I run the following expected pass CLI command
             """
-            composer card delete --name bob2@trade-network
+            composer card delete --card bob2@trade-network
             """
         Then The stdout information should include text matching /Command succeeded/
 
@@ -165,7 +165,7 @@ Feature: Cli steps
     Scenario: Using the CLI, I can see the card that I just imported is now showing HSM managed
         When I run the following expected pass CLI command
             """
-            composer card list --name fred@trade-network
+            composer card list --card fred@trade-network
             """
         Then The stdout information should include text matching /credentials:         Credentials set, HSM managed/
         And The stdout information should include text matching /Command succeeded/

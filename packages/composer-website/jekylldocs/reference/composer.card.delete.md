@@ -11,7 +11,7 @@ excerpt: Hyperledger Composer Card Delete
 Deletes a business network card.
 
 ```
-composer card delete --name admin@tutorial-network
+composer card delete --card admin@tutorial-network
 ```
 
 ## Syntax
@@ -20,5 +20,5 @@ composer card delete --name admin@tutorial-network
 Options:
   --help         Show help  [boolean]
   -v, --version  Show version number  [boolean]
-  --name, -n     The name of the card to delete  [string] [required]
+  --card, -c     The name of the card to delete  [string] [required]
 ```

@@ -277,7 +277,7 @@ You should get an Authorized error and that is because we have configured a Goog
     
 3. We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for `jdoe`.
 
-     composer card export -f jdoe_exp.card -n jdoe@trade-network ; rm jdoe.card
+     composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card
 
 4. Repeat the above steps for participant **Ken Coe** (`kcoe`) - creating a `trader2` participant and issuing the identity `kcoe` - the sequence of commands are:
 
@@ -289,7 +289,7 @@ You should get an Authorized error and that is because we have configured a Goog
 
     sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
     
-    composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+    composer card export -f kcoe_exp.card -c kcoe@trade-network ; rm kcoe.card
     
 These cards can now be imported, then used into the REST client (ie the browser) in the next section.
 

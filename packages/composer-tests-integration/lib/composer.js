@@ -697,7 +697,7 @@ class Composer {
         checkOutput(response);
         response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
         checkOutput(response);
-        response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
+        response = await this.runCLI(undefined, `composer card delete -c ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success
         // if it didn't exist then you get a failed message. however if there is a problem then the
         // import won't work so check the response to this.
@@ -738,7 +738,7 @@ class Composer {
         checkOutput(response);
         response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
         checkOutput(response);
-        response = await this.runCLI(undefined, `composer card delete -n ${adminId}`);
+        response = await this.runCLI(undefined, `composer card delete -c ${adminId}`);
         // can't check the response here, if it exists the card is deleted and you get a success
         // if it didn't exist then you get a failed message. however if there is a problem then the
         // import won't work so check the response to this.

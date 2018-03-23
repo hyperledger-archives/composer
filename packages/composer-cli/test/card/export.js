@@ -52,13 +52,13 @@ describe('composer card export CLI', function() {
         fs.writeFileSync.withArgs(cardFileName).returns();
         const args = {
             file: cardFileName,
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
 
         adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.exportCard);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.name));
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.card));
         });
     });
 
@@ -67,21 +67,21 @@ describe('composer card export CLI', function() {
         fs.writeFileSync.withArgs(fileName + '.card').returns();
         const args = {
             file: fileName,
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
 
         adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.exportCard);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.name));
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.card));
         });
     });
 
     it('should export to default file name if none specified', function() {
         const args = {
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
-        const expectedFileName = sinon.match(new RegExp(args.name + '\.card$'));
+        const expectedFileName = sinon.match(new RegExp(args.card + '\.card$'));
         fs.writeFileSync.withArgs(expectedFileName).returns();
 
         adminConnectionStub.exportCard.resolves(testCard);
@@ -94,7 +94,7 @@ describe('composer card export CLI', function() {
     it('should copy with the file system write failing', function() {
         const args = {
             file: cardFileName,
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
 
         adminConnectionStub.exportCard.resolves(testCard);
