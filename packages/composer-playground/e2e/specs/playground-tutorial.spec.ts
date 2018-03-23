@@ -30,6 +30,8 @@ let expect = chai.expect;
 
 describe('Playground Tutorial Define', (() => {
 
+    const deployButtonLabel = Constants.deployButtonLabel;
+
     let baseTiles: Array<string> = null;
     let npmTiles: Array<string> = null;
     let sampleOptions;
@@ -114,11 +116,10 @@ describe('Playground Tutorial Define', (() => {
                             filelist.forEach((file) => {
                                 expect(file).to.be.oneOf(expectedFiles);
                             });
-                            return Editor.retrieveNavigatorFileActionButtons()
+                            return Editor.retrieveUpdateBusinessNetworkButtons()
                                 .then((buttonlist: any) => {
                                     expect(buttonlist).to.be.an('array').lengthOf(2);
-                                    expect(buttonlist[0]).to.deep.equal({ text: '+ Add a file...', enabled: true });
-                                    expect(buttonlist[1]).to.deep.equal({ text: 'Update', enabled: false });
+                                    expect(buttonlist[1]).to.deep.equal({ text: deployButtonLabel, enabled: true });
                                 });
                         });
                 })
@@ -148,12 +149,11 @@ describe('Playground Tutorial Define', (() => {
                 .then((text) => {
                     let lines = text.toString().split(/\r\n|\n/);
                     expect(lines.map((e) => { return e.trim(); })).to.deep.equal(modelFileCode.split(/\r\n|\n/).map((e) => { return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
-                    return Editor.retrieveNavigatorFileActionButtons();
+                    return Editor.retrieveUpdateBusinessNetworkButtons();
                 })
                 .then((buttonlist: any) => {
                     expect(buttonlist).to.be.an('array').lengthOf(2);
-                    expect(buttonlist[0]).to.deep.equal({ text: '+ Add a file...', enabled: true });
-                    expect(buttonlist[1]).to.deep.equal({ text: 'Update', enabled: true });
+                    expect(buttonlist[1]).to.deep.equal({ text: deployButtonLabel, enabled: true });
                 })
                 .catch((err) => {
                     fail(err);
@@ -210,11 +210,10 @@ describe('Playground Tutorial Define', (() => {
                             expect(lines.map((e) => { return e.trim(); })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => { return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
                         });
 
-                    Editor.retrieveNavigatorFileActionButtons()
+                    Editor.retrieveUpdateBusinessNetworkButtons()
                         .then((buttonlist: any) => {
                             expect(buttonlist).to.be.an('array').lengthOf(2);
-                            expect(buttonlist[0]).to.deep.equal({ text: '+ Add a file...', enabled: true });
-                            expect(buttonlist[1]).to.deep.equal({ text: 'Update', enabled: true });
+                            expect(buttonlist[1]).to.deep.equal({ text: deployButtonLabel, enabled: true });
                         });
                 })
                 .catch((err) => {

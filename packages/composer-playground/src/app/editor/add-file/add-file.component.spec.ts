@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ModelManager, ScriptManager, Logger } from 'composer-common';
+import { ModelFile, AclFile, QueryFile, Script, Logger } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from '../../common/file-importer';
@@ -33,6 +33,7 @@ import { ClientService } from '../../services/client.service';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import { EditorFile } from '../../services/editor-file';
 
 const should = chai.should();
 
@@ -43,14 +44,30 @@ describe('AddFileComponent', () => {
     let addFileElement: DebugElement;
 
     let mockClientService;
+    let mockModelFile;
+    let mockScriptFile;
+    let mockAclFile;
+    let mockQueryFile;
+    let mockFileService;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+
         // webpack can't handle dymanically creating a logger
         Logger.setFunctionalLogger({
-            log: sinon.stub()
+            log: sandbox.stub()
         });
 
         mockClientService = sinon.createStubInstance(ClientService);
+        mockModelFile = sinon.createStubInstance(ModelFile);
+        mockScriptFile = sinon.createStubInstance(Script);
+        mockAclFile = sinon.createStubInstance(AclFile);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockFileService = sinon.createStubInstance(FileService);
+        mockFileService.createModelFile.returns(mockModelFile);
+        mockFileService.createScriptFile.returns(mockScriptFile);
+        mockFileService.createAclFile.returns(mockAclFile);
+        mockFileService.createQueryFile.returns(mockQueryFile);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -61,13 +78,13 @@ describe('AddFileComponent', () => {
             imports: [
                 FormsModule
             ],
-            providers: [AlertService, FileService,
+            providers: [
+                AlertService,
+                {provide: FileService, useValue: mockFileService},
                 {provide: ClientService, useValue: mockClientService},
                 NgbActiveModal
             ]
         });
-
-        sandbox = sinon.sandbox.create();
 
         fixture = TestBed.createComponent(AddFileComponent);
         component = fixture.componentInstance;
@@ -108,31 +125,16 @@ describe('AddFileComponent', () => {
         let mockFileRead;
         let content;
 
-        beforeEach(inject([FileService], (fileService: FileService) => {
+        beforeEach(() => {
             mockFileReadObj = {
                 readAsArrayBuffer: sandbox.stub(),
                 result: content,
-                onload: sinon.stub(),
-                onerror: sinon.stub()
+                onload: sandbox.stub(),
+                onerror: sandbox.stub()
             };
 
-            mockFileRead = sinon.stub((<any> window), 'FileReader');
+            mockFileRead = sandbox.stub((<any> window), 'FileReader');
             mockFileRead.returns(mockFileReadObj);
-
-            const myModelManager = new ModelManager();
-
-            fileService['currentBusinessNetwork'] = {
-                getModelManager: (() => {
-                    return myModelManager;
-                }),
-                getScriptManager: (() => {
-                    return new ScriptManager(myModelManager);
-                })
-            };
-        }));
-
-        afterEach(() => {
-            mockFileRead.restore();
         });
 
         it('should createModel if model file detected', fakeAsync(() => {
@@ -148,6 +150,7 @@ describe('AddFileComponent', () => {
             }`;
             let b = new Blob([content], {type: 'text/plain'});
             let file = new File([b], 'newfile.cto');
+            mockModelFile.getName.returns('models/newfile.cto');
 
             mockFileReadObj.result = content;
 
@@ -160,8 +163,9 @@ describe('AddFileComponent', () => {
             tick();
 
             component.fileType.should.equal('cto');
+            mockFileService.createModelFile.should.have.been.calledWith(content, 'models/newfile.cto');
             component.currentFileName.should.equal('models/newfile.cto');
-            component.currentFile.getDefinitions().should.equal(content);
+            component.currentFile.should.equal(mockModelFile);
         }));
 
         it('should createScript if script file detected', fakeAsync(() => {
@@ -170,6 +174,7 @@ describe('AddFileComponent', () => {
  */`;
             let b = new Blob([content], {type: 'text/plain'});
             let file = new File([b], 'newfile.js');
+            mockScriptFile.getIdentifier.returns('lib/newfile.js');
 
             mockFileReadObj.result = content;
 
@@ -182,8 +187,9 @@ describe('AddFileComponent', () => {
             tick();
 
             component.fileType.should.equal('js');
-            component.currentFile.getContents().should.equal(content);
+            mockFileService.createScriptFile.should.have.been.calledWith('lib/newfile.js', 'JS', content);
             component.currentFileName.should.equal('lib/newfile.js');
+            component.currentFile.should.equal(mockScriptFile);
         }));
 
         it('should call this.createRules if ACL file detected', fakeAsync(() => {
@@ -211,9 +217,9 @@ describe('AddFileComponent', () => {
             tick();
 
             component.fileType.should.equal('acl');
-            component.currentFile.getIdentifier().should.equal('permissions.acl');
-            component.currentFile.getDefinitions().should.equal(content);
+            mockFileService.createAclFile.should.have.been.calledWith('permissions.acl', content);
             component.currentFileName.should.equal('permissions.acl');
+            component.currentFile.should.equal(mockAclFile);
         }));
 
         it('should call this.createReadme if readme file detected', fakeAsync(() => {
@@ -249,8 +255,8 @@ This business network defines:
             tick();
 
             component.fileType.should.equal('md');
-            component.currentFile.should.equal(content);
             component.currentFileName.should.equal('README.md');
+            component.currentFile.should.equal(content);
         }));
 
         it('should call this.createQuery if query file detected', fakeAsync(() => {
@@ -271,9 +277,9 @@ This business network defines:
             tick();
 
             component.fileType.should.equal('qry');
-            component.currentFile.getIdentifier().should.equal('queries.qry');
-            component.currentFile.getDefinitions().should.equal(content);
+            mockFileService.createQueryFile.should.have.been.calledWith('queries.qry', content);
             component.currentFileName.should.equal('queries.qry');
+            component.currentFile.should.equal(mockQueryFile);
         }));
 
         it('should throw error if unknown file type', fakeAsync(inject([AlertService], (alertService: AlertService) => {
@@ -300,7 +306,7 @@ This business network defines:
                 }
             });
 
-            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
+            let errorStatusSpy = sandbox.spy(alertService.errorStatus$, 'next');
 
             let dragDropElement = addFileElement.query(By.css('.import'));
             dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
@@ -335,7 +341,7 @@ This business network defines:
                 }
             });
 
-            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
+            let errorStatusSpy = sandbox.spy(alertService.errorStatus$, 'next');
 
             let dragDropElement = addFileElement.query(By.css('.import'));
             dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
@@ -348,26 +354,11 @@ This business network defines:
     });
 
     describe('#changeCurrentFileType', () => {
-        let myScriptManager;
-        let myModelManager;
-
-        beforeEach(inject([FileService], (fileService: FileService) => {
-            myModelManager = new ModelManager();
-            myScriptManager = new ScriptManager(myModelManager);
-
-            fileService['currentBusinessNetwork'] = {
-                getModelManager: (() => {
-                    return myModelManager;
-                }),
-                getScriptManager: (() => {
-                    return myScriptManager;
-                })
-            };
-        }));
-
         it('should set current file to a script file, created by calling createScript with correct parameters', fakeAsync(() => {
             fixture.detectChanges();
             tick();
+
+            mockFileService.getScripts.returns([]);
 
             let scriptRadioElement = addFileElement.query(By.css('#file-type-js'));
             scriptRadioElement.nativeElement.checked = true;
@@ -376,9 +367,8 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getContents().should.equal(`/**
- * New script file
- */`);
+            component.fileType.should.equal('js');
+            component.currentFile.should.equal(mockScriptFile);
             component.currentFileName.should.equal('lib/script.js');
         }));
 
@@ -386,10 +376,14 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
-            let myScriptFile = fileService.createScriptFile('lib/script.js', 'JS', `/**
- * New script file
- */`);
-            myScriptManager.addScript(myScriptFile);
+//             let myScriptFile = fileService.createScriptFile('lib/script.js', 'JS', `/**
+//  * New script file
+//  */`);
+            let existingScriptFile = sinon.createStubInstance(Script);
+            existingScriptFile.getIdentifier.returns('lib/script.js');
+
+            // myScriptManager.addScript(myScriptFile);
+            mockFileService.getScripts.returns([existingScriptFile]);
 
             let scriptRadioElement = addFileElement.query(By.css('#file-type-js'));
             scriptRadioElement.nativeElement.checked = true;
@@ -398,9 +392,8 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getContents().should.equal(`/**
- * New script file
- */`);
+            component.fileType.should.equal('js');
+            component.currentFile.should.equal(mockScriptFile);
             component.currentFileName.should.equal('lib/script0.js');
         })));
 
@@ -408,6 +401,8 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
+            mockFileService.getModelFiles.returns([]);
+
             let modelRadioElement = addFileElement.query(By.css('#file-type-cto'));
             modelRadioElement.nativeElement.checked = true;
             modelRadioElement.nativeElement.dispatchEvent(new Event('change'));
@@ -415,12 +410,8 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getDefinitions().should.equal(`/**
- * New model file
- */
-
-namespace org.acme.model`);
-
+            component.fileType.should.equal('cto');
+            component.currentFile.should.equal(mockModelFile);
             component.currentFileName.should.equal('models/org.acme.model.cto');
         }));
 
@@ -428,13 +419,9 @@ namespace org.acme.model`);
             fixture.detectChanges();
             tick();
 
-            let modelFile = fileService.createModelFile(`/**
-             * New model file
-             */
-
-            namespace org.acme.model`, 'models/org.acme.model.cto');
-
-            myModelManager.addModelFile(modelFile, 'models/org.acme.model.cto');
+            let existingModelFile = sinon.createStubInstance(ModelFile);
+            existingModelFile.getNamespace.returns('org.acme.model');
+            mockFileService.getModelFiles.returns([existingModelFile]);
 
             let modelRadioElement = addFileElement.query(By.css('#file-type-cto'));
             modelRadioElement.nativeElement.checked = true;
@@ -443,11 +430,9 @@ namespace org.acme.model`);
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getDefinitions().should.equal(`/**
- * New model file
- */
-
-namespace org.acme.model0`);
+            mockFileService.createModelFile.should.have.been.calledWith(sinon.match(/namespace org.acme.model0/), 'models/org.acme.model0.cto');
+            component.fileType.should.equal('cto');
+            component.currentFile.should.equal(mockModelFile);
             component.currentFileName.should.equal('models/org.acme.model0.cto');
         })));
 
@@ -462,10 +447,8 @@ namespace org.acme.model0`);
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getDefinitions().should.equal(`/**
- * New query file
- */`);
-
+            component.fileType.should.equal('qry');
+            component.currentFile.should.equal(mockQueryFile);
             component.currentFileName.should.equal('queries.qry');
         }));
 
@@ -480,78 +463,22 @@ namespace org.acme.model0`);
             fixture.detectChanges();
             tick();
 
-            component.currentFile.getDefinitions().should.equal(`/**
- * New access control file
- */
- rule AllAccess {
-     description: "AllAccess - grant everything to everybody."
-     participant: "org.hyperledger.composer.system.Participant"
-     operation: ALL
-     resource: "org.hyperledger.composer.system.**"
-     action: ALLOW
- }`);
-
+            component.fileType.should.equal('acl');
+            component.currentFile.should.equal(mockAclFile);
             component.currentFileName.should.equal('permissions.acl');
         }));
     });
 
     describe('#removeFile', () => {
-        let mockFileReadObj;
-        let mockFileRead;
-        let content;
-
-        beforeEach(fakeAsync(inject([FileService], (fileService: FileService) => {
-            mockFileReadObj = {
-                readAsArrayBuffer: sandbox.stub(),
-                result: content,
-                onload: sinon.stub(),
-                onerror: sinon.stub()
-            };
-
-            mockFileRead = sinon.stub((<any> window), 'FileReader');
-            mockFileRead.returns(mockFileReadObj);
-
-            const myModelManager = new ModelManager();
-
-            fileService['currentBusinessNetwork'] = {
-                getModelManager: (() => {
-                    return myModelManager;
-                }),
-                getScriptManager: (() => {
-                    return new ScriptManager(myModelManager);
-                })
-            };
-
-            content = `/**
-             * Sample business network definition.
-             */
-                namespace org.acme.sample
-
-            participant SampleParticipant identified by participantId {
-                o String participantId
-                o String firstName
-                o String lastName
-            }`;
-            let b = new Blob([content], {type: 'text/plain'});
-            let file = new File([b], 'newfile.cto');
-
-            mockFileReadObj.result = content;
+        it('should reset back to default values', fakeAsync(() => {
+            component['expandInput'] = true;
+            component['currentFile'] = 'Readme';
+            component['currentFileName'] = 'README.md';
+            component['fileType'] = 'md';
 
             fixture.detectChanges();
-
-            let dragDropElement = addFileElement.query(By.css('.import'));
-            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
-            mockFileReadObj.onload();
-
             tick();
-            fixture.detectChanges();
-        })));
 
-        afterEach(() => {
-            mockFileRead.restore();
-        });
-
-        it('should reset back to default values', () => {
             let removeButton = addFileElement.query(By.css('.action'));
 
             removeButton.triggerEventHandler('click', null);
@@ -561,6 +488,6 @@ namespace org.acme.model0`);
             should.not.exist(component.currentFile);
             should.not.exist(component.currentFileName);
             component.fileType.should.equal('');
-        });
+        }));
     });
 });

@@ -334,15 +334,38 @@ describe('EditorComponent', () => {
 
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
-            let mockMetaData = {
-                getVersion: sinon.stub().returns('my version'),
-            };
-
-            mockFileService.getMetaData = sinon.stub().returns(mockMetaData);
+            mockFileService.getBusinessNetworkVersion.returns('my new version');
+            mockClientService.getDeployedBusinessNetworkVersion.returns('my version');
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('my name')
+            });
 
             component.updatePackageInfo();
             component['deployedPackageVersion'].should.equal('my version');
-            component['inputPackageVersion'].should.equal('my version');
+            component['inputPackageVersion'].should.equal('my new version');
+        });
+
+        it('should set the package info and automatically bump the new package version', () => {
+            mockFileService.getBusinessNetworkVersion.onCall(0).returns('my version');
+            mockFileService.getBusinessNetworkVersion.onCall(1).returns('my new version');
+            mockClientService.getDeployedBusinessNetworkVersion.returns('my version');
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('my name')
+            });
+
+            component.updatePackageInfo();
+            component['deployedPackageVersion'].should.equal('my version');
+            component['inputPackageVersion'].should.equal('my new version');
+            mockFileService.incrementBusinessNetworkVersion.should.have.been.called;
+        });
+
+        it('should do nothing if the file service is unavailable', () => {
+            component['fileService'] = null;
+
+            component.updatePackageInfo();
+
+            component['deployedPackageVersion'].should.equal('');
+            component['inputPackageVersion'].should.equal('');
         });
     });
 
@@ -365,18 +388,6 @@ describe('EditorComponent', () => {
             component['currentFile'].should.deep.equal(file);
 
             mockUpdatePackage.should.not.have.been.called;
-        });
-
-        it('should update package if current file is not package file', () => {
-            component['currentFile'] = new EditorFile('package', 'package', 'myContent', 'package');
-
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-
-            let file = new EditorFile('newID', 'newFile', 'myContent', 'model');
-            component.setCurrentFile(file);
-            component['currentFile'].should.deep.equal(file);
-
-            mockUpdatePackage.should.have.been.called;
         });
 
         it('should always set current file, if same file selected and is readme file', () => {
@@ -1359,6 +1370,16 @@ describe('EditorComponent', () => {
         }));
     });
 
+    describe('toggleEditVersionActive', () => {
+        it('should toggle version editing', () => {
+            component['editVersionActive'] = false;
+
+            component.toggleEditVersionActive();
+
+            component['editVersionActive'].should.equal(true);
+        });
+    });
+
     describe('toggleEditActive', () => {
 
         beforeEach(() => {
@@ -1584,6 +1605,45 @@ describe('EditorComponent', () => {
 
             component['files'][0].invalid.should.be.equal(true);
             component['files'][1].invalid.should.be.equal(true);
+        });
+    });
+
+    describe('editorFileVersionChange', () => {
+        it('should set the input package version', () => {
+            component.editorFileVersionChange('9.9.9-9');
+
+            component['inputPackageVersion'].should.equal('9.9.9-9');
+        });
+    });
+
+    describe('updateVersion', () => {
+        it('should update the business network with the new version', () => {
+            component['inputPackageVersion'] = '9.9.9-9';
+            let packageFile = new EditorFile('packageId', 'packageDisplayId', 'this is the package', 'package');
+            mockFileService.updateBusinessNetworkVersion.returns(packageFile);
+            mockFileService.businessNetworkChanged$ = {
+                next: sinon.stub()
+            };
+
+            component.updateVersion();
+
+            mockFileService.updateBusinessNetworkVersion.should.have.been.calledWith('9.9.9-9');
+            mockFileService.updateBusinessNetwork.should.have.been.calledWith('packageId', packageFile);
+            mockFileService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        });
+
+        it('should handle errors', () => {
+            component['inputPackageVersion'] = '9.9.9-9';
+            mockFileService.updateBusinessNetworkVersion.throws('Oh bother');
+            mockFileService.businessNetworkChanged$ = {
+                next: sinon.stub()
+            };
+
+            component.updateVersion();
+
+            mockFileService.updateBusinessNetworkVersion.should.have.been.calledWith('9.9.9-9');
+            mockFileService.updateBusinessNetwork.should.not.have.been.called;
+            mockFileService.businessNetworkChanged$.next.should.have.been.calledWith(false);
         });
     });
 

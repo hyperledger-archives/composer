@@ -9,19 +9,18 @@ app-editor {
     display: flex;
 
     .error_dot {
-        align-self: center;
+      align-self: center;
     }
 
     .files {
       & > * {
         padding: $space-medium $space-large;
       }
+
+      flex: 1;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      span {
-        color: $secondary-text;
-      }
 
       .side-bar-nav {
         padding: 0;
@@ -31,11 +30,97 @@ app-editor {
         .error {
             color: $first-warning;
         }
+
+        ul li div {
+          padding: 0;
+        }
       }
     }
 
     .actions {
-      padding: $space-medium $space-large;
+      background-color: $third-highlight;
+      border-top: 1px solid $fourth-highlight;
+      padding: $space-small $space-large $space-small $space-large;
+
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+
+      .add-file, .download-action {
+        flex: 1;
+      }
+    }
+
+    .deploy {
+      background-color: $third-highlight;
+      border-top: 1px solid $fourth-highlight;
+      padding: 0 $space-large $space-large $space-large;
+
+      h2 {
+        margin-bottom: $space-medium;
+      }
+
+      .busnet-version {
+        min-height: 2.2rem;
+        display: flex;
+        flex-direction: row;
+
+        .poc {
+          margin: 0;
+        }
+
+        .semver-label, .semver-value, .semver {
+          display: block;
+          line-height: 2rem;
+          font-size: 0.8rem;
+        }
+
+        .semver-label {
+          flex: 1;
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #8C9696;
+        }
+
+        .semver-value {
+          flex: 4;
+          display: flex;
+          flex-direction: row;
+          min-width: 0;
+
+          .semver {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-style: italic;
+
+            svg.error-dot {
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+
+        button {
+          margin-left: $space-smedium;
+          vertical-align: top;
+          line-height: 2rem;
+          font-size: 0.8rem;
+        }
+
+        input[type=text] {
+          margin: 0;
+          background-color: white;
+          font-size: 0.8rem;
+          line-height: unset;
+          height: 1.8rem;
+        }
+
+      }
+
+      .error {
+        color: $first-warning;
+      }
     }
   }
 
@@ -72,7 +157,7 @@ app-editor {
         visibility: visible;
       }
 
-      .business-network-version {
+      .file-name {
         margin-right: $space-smedium;
         margin-bottom: 0.3rem;
         color: $secondary-text;
