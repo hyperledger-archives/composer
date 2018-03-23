@@ -24,77 +24,41 @@ const Service = require('./service');
  */
 class LoggingService extends Service {
 
-    /**
-     * Write a critical message to the log.
+    /** Get the config (if possible) for the standard winston logger
      * @abstract
-     * @param {string} message The message to write to the log.
      */
-    logCritical(message) {
+    getLoggerCfg() {
         throw new Error('abstract function called');
     }
 
     /**
-     * Write a debug message to the log.
      * @abstract
-     * @param {string} message The message to write to the log.
      */
-    logDebug(message) {
+    setLoggerCfg() {
         throw new Error('abstract function called');
     }
 
     /**
-     * Write an error message to the log.
      * @abstract
-     * @param {string} message The message to write to the log.
      */
-    logError(message) {
+    initLogging(){
         throw new Error('abstract function called');
     }
 
     /**
-     * Write a informational message to the log.
      * @abstract
-     * @param {string} message The message to write to the log.
      */
-    logInfo(message) {
+    callback(){
         throw new Error('abstract function called');
     }
 
     /**
-     * Write a notice message to the log.
      * @abstract
-     * @param {string} message The message to write to the log.
+     *
      */
-    logNotice(message) {
+    mapCfg(){
         throw new Error('abstract function called');
     }
-
-    /**
-     * Write a warning message to the log.
-     * @abstract
-     * @param {string} message The message to write to the log.
-     */
-    logWarning(message) {
-        throw new Error('abstract function called');
-    }
-
-    /**
-     * Set the log level for the runtime.
-     * @abstract
-     * @param {string} newLogLevel The new log level to apply.
-     */
-    setLogLevel(newLogLevel) {
-        throw new Error('abstract function called');
-    }
-
-    /**
-     * Get the current log level for the runtime.
-     * @abstract
-     */
-    getLogLevel() {
-        throw new Error('abstract function called');
-    }
-
 }
 
 module.exports = LoggingService;

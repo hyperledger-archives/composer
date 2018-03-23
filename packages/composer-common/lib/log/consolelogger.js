@@ -22,22 +22,23 @@ const util = require('util');
  */
 class ConsoleLogger {
 
-    /**
-     * Called to format.
-     * @param {string} method The method.
-     * @param {string} msg The message.
-     * @param {*} [args] The arguments.
-     * @returns {string} The formatted message.
-     */
+/**
+ * Called to format.
+ * @param {string} method The method.
+ * @param {string} msg The message.
+ * @param {*} [args] The arguments.
+ * @returns {string} The formatted message.
+ * @private
+ */
     format(method, msg, args) {
         if (!args) {
             return util.format('%s %s', method, msg);
         }
         let formattedArguments = args.map((arg) => {
-            if (typeof(arg) === 'function') {
+            if (typeof (arg) === 'function') {
                 return '<function>';
             } else if (arg === Object(arg)) {
-                // It's an object, array, or function, so serialize it as JSON.
+            // It's an object, array, or function, so serialize it as JSON.
                 try {
                     return JSON.stringify(arg);
                 } catch (e) {
@@ -50,13 +51,14 @@ class ConsoleLogger {
         return util.format('%s %s %s', method, msg, formattedArguments);
     }
 
-    /**
-     * Called to log.
-     * @param {string} level The logging level.
-     * @param {string} method The method.
-     * @param {string} msg The message.
-     * @param {*} [args] The arguments.
-     */
+/**
+ * Called to log.
+ * @param {string} level The logging level.
+ * @param {string} method The method.
+ * @param {string} msg The message.
+ * @param {*} [args] The arguments.
+ * @private
+ */
     log(level, method, msg, args) {
         const formattedMessage = this.format(method, msg, args);
         switch (level) {
@@ -80,4 +82,6 @@ class ConsoleLogger {
 
 }
 
-module.exports = ConsoleLogger;
+module.exports.getLogger = function (config) {
+    return new ConsoleLogger();
+};
