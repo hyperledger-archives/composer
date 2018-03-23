@@ -27,8 +27,6 @@ export class Constants {
     static readonly webPlaygroundPort = 3001;
     static readonly fabricPlaygroundPort = 3002;
 
-    static readonly sampleNetworks = ['basic-sample-network', 'import-network'];
-
     static readonly downloadLocation = path.join(__dirname, 'downloads');
     static readonly sampleNetworkDir = path.join(__dirname, 'data/sample-networks');
     static readonly tempDir = path.join(__dirname, 'tmp');
@@ -41,4 +39,28 @@ export class Constants {
     static readonly addFileActionLabel = 'Add a file...';
     static readonly exportActionLabel = 'Export';
     static readonly deployButtonLabel = 'Deploy changes';
+
+    static readonly sampleNetworks = ['basic-sample-network', 'import-network'];
+
+    static readonly basicSampleNetwork = {
+        name: 'basic-sample-network',
+        files: ['About\nREADME.md, package.json', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'],
+        participants: [{type: 'SampleParticipant', example: path.join(__dirname, 'data/files/identity/participants/CONGA')}],
+        assets: [{type: 'SampleAsset'}],
+        registryHeaders: {
+            sampleParticipant: ['Participant registry for org.acme.sample.SampleParticipant']
+        }
+    };
+
+    static myIDsStatuses = {
+        inWallet: 'In my wallet',
+        selected: 'In Use',
+        participantNotFound: 'Bound participant not found'
+    };
+
+    static readonly allIDsStatuses = {
+        activated: 'ACTIVATED',
+        issued: 'ISSUED',
+        participantNotFound: 'BOUND PARTICIPANT NOT FOUND'
+    };
 }

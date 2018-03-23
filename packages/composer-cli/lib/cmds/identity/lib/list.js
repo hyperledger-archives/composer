@@ -36,14 +36,35 @@ class List {
         let businessNetworkDefinition;
         let cardName = argv.card;
 
+        let participants = new Map();
+
         const spinner = ora('List all identities in the business network ');
         spinner.start();
 
         businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
         return businessNetworkConnection.connect(cardName)
-
         .then((result) => {
             businessNetworkDefinition = result;
+            return businessNetworkConnection.getAllParticipantRegistries();
+        })
+        .then((participantRegistries) => {
+            return Promise.all(participantRegistries.map((registry) => {
+                return registry.getAll();
+            }));
+        })
+        .then((participantArrays) => {
+            return Promise.all(
+            participantArrays.reduce(
+                (accumulator, currentValue) => accumulator.concat(currentValue),
+                []
+            ));
+        })
+        .then((allParticipants) => {
+            return Promise.all(allParticipants.map((registryParticipant) => {
+                return participants.set(registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
+            }));
+        })
+        .then(() => {
             return businessNetworkConnection.getIdentityRegistry();
         })
         .then((identityRegistry) => {
@@ -53,7 +74,16 @@ class List {
             spinner.succeed();
             const serializer = businessNetworkDefinition.getSerializer();
             const json = identities.map((identity) => {
-                return serializer.toJSON(identity);
+                let jsonIdentity = serializer.toJSON(identity);
+                let fqi = jsonIdentity.participant.replace('resource:', '');
+
+                if (identity.participant.getType() !== 'NetworkAdmin' && jsonIdentity.state !== 'REVOKED') {
+                    if (!participants.get(fqi)) {
+                        jsonIdentity.state = 'BOUND PARTICIPANT NOT FOUND';
+                    }
+                }
+
+                return jsonIdentity;
             });
             cmdUtil.log(Pretty.render(json,{
                 keysColor: 'blue',
@@ -67,7 +97,6 @@ class List {
             throw error;
         });
     }
-
 }
 
 module.exports = List;

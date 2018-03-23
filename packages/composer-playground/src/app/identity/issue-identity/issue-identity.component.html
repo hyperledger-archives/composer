@@ -48,7 +48,7 @@
     <button type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
-    <button type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress || !isParticipant">
+    <button id="createNew" type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress || !isParticipant">
       <div *ngIf="!issueInProgress">
         <span>Create New</span>
       </div>

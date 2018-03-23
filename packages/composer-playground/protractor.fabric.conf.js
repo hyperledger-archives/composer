@@ -9,7 +9,8 @@ exports.config = {
     directConnect: true,
     baseUrl: 'http://127.0.0.1:3002',
     specs: ['./e2e/specs/round-trip.spec.ts',
-        './e2e/specs/playground-tutorial.spec.ts'],
+        './e2e/specs/playground-tutorial.spec.ts',
+        './e2e/specs/identity.spec.ts'],
     capabilities: {
         'browserName': 'chrome',
         'chromeOptions': {

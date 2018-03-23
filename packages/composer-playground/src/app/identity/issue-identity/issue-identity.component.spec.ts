@@ -16,7 +16,7 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as sinon from 'sinon';
 
@@ -44,6 +44,7 @@ class MockTypeaheadDirective {
 }
 
 describe('IssueIdentityComponent', () => {
+
     let component: IssueIdentityComponent;
     let fixture: ComponentFixture<IssueIdentityComponent>;
     let mockClientService;
@@ -106,47 +107,28 @@ describe('IssueIdentityComponent', () => {
     describe('#loadParticipants', () => {
 
         it('should create a sorted list of participantFQIs', fakeAsync(() => {
-
-            // Set up mocked/known items to test against
-            let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegistry);
             let mockParticipant1 = sinon.createStubInstance(Resource);
-            mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockParticipant1.getFullyQualifiedIdentifier.returns('org.animals.Penguin#Emperor');
+            mockParticipant1.getIdentifier.returns('Emperor');
+            mockParticipant1.getType.returns('org.animals.Penguin');
             let mockParticipant2 = sinon.createStubInstance(Resource);
-            mockParticipant2.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_2');
-            mockParticpantRegistry.getAll.returns([mockParticipant2, mockParticipant1]);
-            mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([mockParticpantRegistry]));
-            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockParticipant2.getFullyQualifiedIdentifier.returns('org.animals.Penguin#King');
+            mockParticipant2.getIdentifier.returns('King');
+            mockParticipant2.getType.returns('org.animals.Penguin');
+            let mockParticipant3 = sinon.createStubInstance(Resource);
+            mockParticipant3.getFullyQualifiedIdentifier.returns('org.animals.Penguin#Macaroni');
+            mockParticipant3.getIdentifier.returns('Macaroni');
+            mockParticipant3.getType.returns('org.animals.Penguin');
 
-            // Starts Empty
-            component['participantFQIs'].should.be.empty;
+            component['participants'].set('Emperor', mockParticipant1);
+            component['participants'].set('King', mockParticipant2);
+            component['participants'].set('Macaroni', mockParticipant2);
 
-            // Run method
             component['loadParticipants']();
 
-            tick();
-
-            // Check we load the participants
-            let expected = ['org.doge.Doge#DOGE_1', 'org.doge.Doge#DOGE_2'];
+            let expected = ['Emperor', 'King', 'Macaroni'];
+            console.log('PARTICIPANT FQIs', component['participantFQIs']);
             component['participantFQIs'].should.deep.equal(expected);
-
-        }));
-
-        it('should alert if there is an error', fakeAsync(() => {
-
-            // Force error
-            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.reject('some error'));
-            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
-
-            // Run method
-            component['loadParticipants']();
-
-            tick();
-
-            // Check we error
-            mockAlertService.errorStatus$.next.should.be.called;
-            mockAlertService.errorStatus$.next.should.be.calledWith('some error');
-
         }));
     });
 

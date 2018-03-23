@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { browser, element, by } from 'protractor';
+import { browser, element, by, promise, ElementFinder } from 'protractor';
 import { ExpectedConditions } from 'protractor';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Constants } from '../constants';
@@ -95,6 +95,45 @@ export class Test {
       });
   }
 
+  static deleteRegistryItem(identifier: string) {
+      let deleted: ElementFinder;
+      return OperationsHelper.retrieveMatchingElementsByCSS('.resource-list', '.resource-container', 0)
+        .then((items) => {
+            let promises = [];
+
+            for (let i = 0; i < items.length; i++) {
+                let id = items[0].element(by.css('.id'));
+                promises.push(OperationsHelper.retrieveTextFromElement(id));
+            }
+
+            return promise.all(promises).then((texts) => {
+                let id = -1;
+                texts.forEach((text, index) => {
+                    if (text === identifier) {
+                        id = index;
+                    }
+                });
+                if (id === -1) {
+                    throw new Error('Particpant not found: ' + identifier);
+                }
+                return items[id];
+            });
+        })
+        .then((el) => {
+            deleted = el;
+            return OperationsHelper.click(el.element(by.css('.delete-resource')));
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.delete'))));
+        })
+        .then(() => {
+            return OperationsHelper.click(element(by.css('.delete')).element(by.css('.delete')));
+        })
+        .then(() => {
+            return browser.wait(ExpectedConditions.invisibilityOf(deleted));
+        });
+  }
+
   // Get the current list of ids and data from opened registry section
   static retrieveRegistryItem() {
       let idsPromise = OperationsHelper.retrieveMatchingElementsByCSS('.resource-list', '.resource-container .id', 0)
@@ -111,7 +150,7 @@ export class Test {
 
       let promises = [idsPromise, dataPromise];
 
-      return Promise.all(promises)
+      return promise.all(promises)
       .then((values) => {
         let ids = values[0];
         let data = values[1];
