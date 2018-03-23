@@ -133,12 +133,55 @@ describe('ClientService', () => {
         }));
 
         it('should create business network if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('1.0.0')
+            };
             businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
             let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
             let result = service.getBusinessNetwork();
 
             businessNetworkConnectionMock.should.have.been.called;
             result.should.deep.equal(businessNetworkDefMock);
+        }));
+
+        it('should retrieve the deployed business network version if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('1.0.0')
+            };
+            businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
+            sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            let result = service.getBusinessNetwork();
+
+            metadataMock.getVersion.should.have.been.called;
+            result.should.deep.equal(businessNetworkDefMock);
+        }));
+    });
+
+    describe('getDeployedBusinessNetworkVersion', () => {
+        it('should get the deployed business network version', inject([ClientService], (service: ClientService) => {
+            service['deployedBusinessNetworkVersion'] = 'deployedVersion';
+
+            let result = service.getDeployedBusinessNetworkVersion();
+
+            result.should.equal('deployedVersion');
+        }));
+
+        it('should create business network if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('deployedVersion')
+            };
+            businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
+            sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            let result = service.getDeployedBusinessNetworkVersion();
+
+            metadataMock.getVersion.should.have.been.called;
+            result.should.equal('deployedVersion');
         }));
     });
 

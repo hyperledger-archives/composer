@@ -23,6 +23,7 @@ import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { Directive, Input, Component, DebugElement, Output, EventEmitter } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs/Rx';
 import { EditorFileComponent } from './editor-file.component';
 import { ClientService } from '../../services/client.service';
 
@@ -62,11 +63,13 @@ class MockDebounceDirective {
 
 @Component({
     template: `
-        <editor-file [editorFile]="editorFile" [previewReadmeActive]="previewReadmeActive"></editor-file>`
+        <editor-file (packageJsonVersionChange)="editorFileVersionChange($event)" [editorFile]="editorFile" [previewReadmeActive]="previewReadmeActive"></editor-file>`
 })
 class TestHostComponent {
     editorFile;
     previewReadmeActive = false;
+
+    editorFileVersionChange = sinon.stub();
 }
 
 describe('EditorFileComponent', () => {
@@ -74,7 +77,8 @@ describe('EditorFileComponent', () => {
     let component: TestHostComponent;
     let fixture: ComponentFixture<TestHostComponent>;
     let editorFileElement: DebugElement;
-    let mockClientService = sinon.createStubInstance(ClientService);
+    let mockClientService;
+    let mockFileService;
 
     beforeEach(() => {
         // webpack can't handle dymanically creating a logger
@@ -82,10 +86,14 @@ describe('EditorFileComponent', () => {
             log: sinon.stub()
         });
 
+        mockClientService = sinon.createStubInstance(ClientService);
+        mockFileService = sinon.createStubInstance(FileService);
+
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [TestHostComponent, EditorFileComponent, MockCodeMirrorDirective, MockPerfectScrollBarDirective, MockDebounceDirective],
-            providers: [FileService,
+            providers: [
+                {provide: FileService, useValue: mockFileService},
                 {provide: ClientService, useValue: mockClientService}]
         });
         fixture = TestBed.createComponent(TestHostComponent);
@@ -143,41 +151,64 @@ describe('EditorFileComponent', () => {
         });
     });
 
-    describe('loadFile', () => {
-        let myModelManager;
-        let myScriptManager;
-
-        beforeEach(inject([FileService], (fileService: FileService) => {
-            myModelManager = new ModelManager();
-            myScriptManager = new ScriptManager(myModelManager);
-
-            fileService['currentBusinessNetwork'] = {
-                getModelManager: (() => {
-                    return myModelManager;
-                }),
-                getScriptManager: (() => {
-                    return new ScriptManager(myModelManager);
-                })
-            };
-        }));
-
-        it('should load a model file', inject([FileService], (fileService: FileService) => {
+    describe('ngDoCheck', () => {
+        it('should reload package file if version changes', () => {
             fixture.detectChanges();
 
-            // contains an error on purpose
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('myBusinessNetworkName')
+            });
+
+            let jsonContent = {
+                name: 'my network',
+                version: '1.0.0'
+            };
+            let content = JSON.stringify(jsonContent, null, 2);
+
+            jsonContent = {
+                name: 'my network',
+                version: '1.0.1'
+            };
+            let editedContent = JSON.stringify(jsonContent, null, 2);
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            let mockLoadFile = sinon.stub(editorFileElement.componentInstance, 'loadFile');
+
+            fixture.detectChanges();
+
+            editorFileElement.componentInstance.previousPackageVersion.should.equal('1.0.0');
+            mockLoadFile.should.have.been.called;
+        });
+    });
+
+    describe('loadFile', () => {
+        it('should load a model file', () => {
+            fixture.detectChanges();
+
             let content = `/**
              * Sample business network definition.
              */
                 namespace org.acme.sample
 
             participant SampleParticipant identified by participantId {
-                String participantId
+                o String participantId
                 o String firstName
                 o String lastName
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
-            fileService['modelFiles'].set('myId', myEditorFile);
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
@@ -185,8 +216,8 @@ describe('EditorFileComponent', () => {
 
             editorFileElement.componentInstance.editorContent.should.equal(content);
             editorFileElement.componentInstance.editorType.should.equal('code');
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
+            should.not.exist(editorFileElement.componentInstance.currentError);
+        });
 
         it('should load a model file but not find it', () => {
             fixture.detectChanges();
@@ -209,22 +240,9 @@ describe('EditorFileComponent', () => {
             should.not.exist(editorFileElement.componentInstance.editorContent);
         });
 
-        it('should load a script file', inject([FileService], (fileService: FileService) => {
+        it('should load a script file', () => {
             fixture.detectChanges();
 
-            let modelFileContent = `/**
-             * Sample business network definition.
-             */
-            namespace org.acme.sample
-                       
-            transaction SampleTransaction {    
-              o String newValue
-            }`;
-
-            let modelFile = fileService.createModelFile(modelFileContent, 'myModel.cto');
-            myModelManager.addModelFile(modelFile, 'myModel.cto');
-
-            // contains an error on purpose
             let content = `/**
              * Sample transaction processor function.
              * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
@@ -232,11 +250,11 @@ describe('EditorFileComponent', () => {
              */
             function sampleTransaction(tx) {
               
-              console.;
+              console.log('hello');
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'script');
-            fileService['scriptFiles'].set('myId', myEditorFile);
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
@@ -244,8 +262,8 @@ describe('EditorFileComponent', () => {
 
             editorFileElement.componentInstance.editorContent.should.equal(content);
             editorFileElement.componentInstance.editorType.should.equal('code');
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
+            should.not.exist(editorFileElement.componentInstance.currentError);
+        });
 
         it('should load a script file but not find it', () => {
             fixture.detectChanges();
@@ -267,23 +285,22 @@ describe('EditorFileComponent', () => {
             should.not.exist(editorFileElement.componentInstance.editorContent);
         });
 
-        it('should load a acl file', inject([FileService], (fileService: FileService) => {
+        it('should load a acl file', () => {
             fixture.detectChanges();
 
-            // contains an error on purpose
             let content = `/**
              * New access control file
              */
-             rule AllAccess {
-                 ion: "AllAccess - grant everything to everybody."
-                 participant: "org.hyperledger.composer.system.Participant"
-                 operation: ALL
-                 resource: "org.hyperledger.composer.system.**"
-                 action: ALLOW
-             }`;
+            rule AllAccess {
+                description: "AllAccess - grant everything to everybody."
+                participant: "org.hyperledger.composer.system.Participant"
+                operation: ALL
+                resource: "org.hyperledger.composer.system.**"
+                action: ALLOW
+            }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'acl');
-            fileService['aclFile'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
@@ -291,23 +308,22 @@ describe('EditorFileComponent', () => {
 
             editorFileElement.componentInstance.editorContent.should.equal(content);
             editorFileElement.componentInstance.editorType.should.equal('code');
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
+            should.not.exist(editorFileElement.componentInstance.currentError);
+        });
 
         it('should load acl file but not find it', () => {
             fixture.detectChanges();
 
-            // contains an error on purpose
             let content = `/**
              * New access control file
              */
              rule AllAccess {
-                 ion: "AllAccess - grant everything to everybody."
-                 participant: "org.hyperledger.composer.system.Participant"
-                 operation: ALL
-                 resource: "org.hyperledger.composer.system.**"
-                 action: ALLOW
-             }`;
+                description: "AllAccess - grant everything to everybody."
+                participant: "org.hyperledger.composer.system.Participant"
+                operation: ALL
+                resource: "org.hyperledger.composer.system.**"
+                action: ALLOW
+            }`;
 
             component.editorFile = new EditorFile('myId', 'myDisplayId', content, 'acl');
 
@@ -316,7 +332,7 @@ describe('EditorFileComponent', () => {
             should.not.exist(editorFileElement.componentInstance.editorContent);
         });
 
-        it('should load a package file', inject([FileService], (fileService: FileService) => {
+        it('should load a package file', () => {
             fixture.detectChanges();
 
             mockClientService.getBusinessNetwork.returns({
@@ -326,24 +342,24 @@ describe('EditorFileComponent', () => {
             let content = `{\n  "name": "my network"\n}`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
-            fileService['packageJson'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
 
-            editorFileElement.componentInstance.editorContent.should.equal('"{\\n  \\"name\\": \\"my network\\"\\n}"');
+            editorFileElement.componentInstance.editorContent.should.equal('{\n  \"name\": \"my network\"\n}');
             editorFileElement.componentInstance.editorType.should.equal('code');
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
+            should.not.exist(editorFileElement.componentInstance.currentError);
+        });
 
-        it('should load a readme file', inject([FileService], (fileService: FileService) => {
+        it('should load a readme file', () => {
             fixture.detectChanges();
 
             let content = `readme`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'readme');
-            fileService['readMe'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
@@ -352,7 +368,7 @@ describe('EditorFileComponent', () => {
             editorFileElement.componentInstance.editorContent.should.equal(content);
             editorFileElement.componentInstance.previewContent.should.equal(`<p>readme</p>\n`);
             editorFileElement.componentInstance.editorType.should.equal('readme');
-        }));
+        });
 
         it('should load readme file but not find it', () => {
             fixture.detectChanges();
@@ -366,32 +382,17 @@ describe('EditorFileComponent', () => {
             should.not.exist(editorFileElement.componentInstance.editorContent);
         });
 
-        it('should load a query file', inject([FileService], (fileService: FileService) => {
+        it('should load a query file', () => {
             fixture.detectChanges();
 
-            let modelFileContent = `/**
-             * Sample business network definition.
-             */
-            namespace org.acme.sample
-                     
-            participant SampleParticipant identified by participantId {
-              o String participantId
-              o String firstName
-              o String lastName
-            }`;
-
-            let modelFile = fileService.createModelFile(modelFileContent, 'myModel.cto');
-            myModelManager.addModelFile(modelFile, 'myModel.cto');
-
-            // contains an error on purpose
             let content = `query selectParticipants {
-              tion: "Select all participants"
+              description: "Select all participants"
               statement:
                   SELECT org.acme.sample.SampleParticipant
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'query');
-            fileService['queryFile'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
@@ -399,8 +400,8 @@ describe('EditorFileComponent', () => {
 
             editorFileElement.componentInstance.editorContent.should.equal(content);
             editorFileElement.componentInstance.editorType.should.equal('code');
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
+            should.not.exist(editorFileElement.componentInstance.currentError);
+        });
 
         it('should load a query file but not find it', () => {
             fixture.detectChanges();
@@ -441,26 +442,14 @@ describe('EditorFileComponent', () => {
     });
 
     describe('onCodeChanged', () => {
+        let mockBehaviourSubject;
 
-        let myModelManager: ModelManager;
+        beforeEach(() => {
+            mockBehaviourSubject = sinon.createStubInstance(BehaviorSubject);
+            mockFileService.businessNetworkChanged$ = mockBehaviourSubject;
+        });
 
-        beforeEach(inject([FileService], (fileService: FileService) => {
-            myModelManager = new ModelManager();
-
-            fileService['currentBusinessNetwork'] = {
-                getModelManager: (() => {
-                    return myModelManager;
-                }),
-                getScriptManager: (() => {
-                    return new ScriptManager(myModelManager);
-                }),
-                getAclManager: (() => {
-                    return new AclManager(myModelManager);
-                })
-            };
-        }));
-
-        it('should update the code model file', inject([FileService], (fileService: FileService) => {
+        it('should update the code model file', () => {
             fixture.detectChanges();
 
             let content = `/**
@@ -487,19 +476,11 @@ describe('EditorFileComponent', () => {
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
-            fileService['modelFiles'].set('myId', myEditorFile);
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -507,23 +488,11 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
+        });
 
-        it('should update the code script file', inject([FileService], (fileService: FileService) => {
+        it('should update the code script file', () => {
             fixture.detectChanges();
-
-            let modelFileContent = `/**
-             * Sample business network definition.
-             */
-            namespace org.acme.sample
-                       
-            transaction SampleTransaction {    
-              o String newValue
-            }`;
-
-            let modelFile = fileService.createModelFile(modelFileContent, 'myModel.cto');
-            myModelManager.addModelFile(modelFile, 'myModel.cto');
 
             let content = `/**
              * Sample transaction processor function.
@@ -535,7 +504,7 @@ describe('EditorFileComponent', () => {
               console.log('hello');
             }`;
 
-            let editedContent = `\`/**
+            let editedContent = `/**
              * Sample transaction processor function.
              * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
              * @transaction
@@ -547,19 +516,11 @@ describe('EditorFileComponent', () => {
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'script');
-            fileService['scriptFiles'].set('myId', myEditorFile);
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -567,10 +528,10 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
+        });
 
-        it('should update code an acl file', inject([FileService], (fileService: FileService) => {
+        it('should update code an acl file', () => {
             fixture.detectChanges();
 
             let content = `/**
@@ -596,19 +557,11 @@ describe('EditorFileComponent', () => {
              }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'acl');
-            fileService['aclFile'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -616,25 +569,11 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
+        });
 
-        it('should update code an query file', inject([FileService], (fileService: FileService) => {
+        it('should update code an query file', () => {
             fixture.detectChanges();
-
-            let modelFileContent = `/**
-             * Sample business network definition.
-             */
-            namespace org.acme.sample
-                     
-            participant SampleParticipant identified by participantId {
-              o String participantId
-              o String firstName
-              o String lastName
-            }`;
-
-            let modelFile = fileService.createModelFile(modelFileContent, 'myModel.cto');
-            myModelManager.addModelFile(modelFile, 'myModel.cto');
 
             let content = `query selectParticipants {
               description: "Select all participants"
@@ -649,19 +588,11 @@ describe('EditorFileComponent', () => {
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'query');
-            fileService['queryFile'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -669,34 +600,22 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
+        });
 
-        it('should update code an package file', inject([FileService], (fileService: FileService) => {
+        it('should update code an package file', () => {
             fixture.detectChanges();
-
-            mockClientService.getBusinessNetwork.returns({
-                getName: sinon.stub().returns('myBusinessNetworkName')
-            });
 
             let content = `{\n  "name": "my network"\n}`;
 
             let editedContent = `{\n  "name": "my network",\n "version" : "0.3"\n}`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
-            fileService['packageJson'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -704,10 +623,56 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
+        });
 
-        it('should update code an readme file', inject([FileService], (fileService: FileService) => {
+        it('should send version event with the package version', () => {
+            fixture.detectChanges();
+
+            let content = `{\n  "name": "my network"\n}`;
+
+            let editedContent = `{\n  "name": "my network",\n "version" : "0.0.3"\n}`;
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
+
+            editorFileElement.componentInstance['editorContent'] = editedContent;
+
+            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
+
+            component.editorFileVersionChange.should.have.been.calledWith('0.0.3');
+        });
+
+        it('should send version event with an empty sting if the package json cannot be parsed', () => {
+            fixture.detectChanges();
+
+            let content = `{\n  "name": "my network"\n}`;
+
+            let editedContent = `{\n  "name": "my network"\n "version" : "0.0.3"\n}`;
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
+
+            editorFileElement.componentInstance['editorContent'] = editedContent;
+
+            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
+
+            component.editorFileVersionChange.should.have.been.calledWith('');
+        });
+
+        it('should update code an readme file', () => {
             fixture.detectChanges();
 
             let content = `readme`;
@@ -715,19 +680,11 @@ describe('EditorFileComponent', () => {
             let editedContent = 'my readme';
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'readme');
-            fileService['readMe'] = myEditorFile;
+            mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(true);
-                }
-            });
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -735,107 +692,12 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.have.been.called;
+            mockBehaviourSubject.next.should.have.been.calledWith(true);
 
             editorFileElement.componentInstance.previewContent.should.equal(`<p>my readme</p>\n`);
-        }));
+        });
 
-        it('should handle an error being thrown', inject([FileService], (fileService: FileService) => {
-            fixture.detectChanges();
-
-            let content = `/**
-             * Sample business network definition.
-             */
-                namespace org.acme.sample
-
-            participant SampleParticipant identified by participantId {
-                o String participantId
-                o String firstName
-                o String lastName
-            }`;
-
-            let editedContent = `/**
-             * Sample business network definition.
-             */
-                namespace org.acme.sample
-
-            participant SampleParticipant identified by participantId {
-                o String participantId
-                o String firstName
-                o String lastName
-                 String middleName
-            }`;
-
-            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
-            fileService['modelFiles'].set('myId', myEditorFile);
-
-            component.editorFile = myEditorFile;
-
-            fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            fileService.businessNetworkChanged$.subscribe((noError: boolean) => {
-                if (noError) {
-                    noError.should.equal(false);
-                }
-            });
-
-            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
-
-            editorFileElement.componentInstance['editorContent'] = editedContent;
-
-            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
-
-            businessNetworkChangedSpy.should.have.been.called;
-
-            should.exist(editorFileElement.componentInstance.currentError);
-        }));
-
-        it('should not update if content hasn\'t changed', inject([FileService], (fileService: FileService) => {
-            fixture.detectChanges();
-
-            let content = `/**
-             * Sample business network definition.
-             */
-                namespace org.acme.sample
-
-            participant SampleParticipant identified by participantId {
-                o String participantId
-                o String firstName
-                o String lastName
-            }`;
-
-            let editedContent = `/**
-             * Sample business network definition.
-             */
-                namespace org.acme.sample
-
-            participant SampleParticipant identified by participantId {
-                o String participantId
-                o String firstName
-                o String lastName
-            }`;
-
-            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
-            fileService['modelFiles'].set('myId', myEditorFile);
-
-            component.editorFile = myEditorFile;
-
-            fixture.detectChanges();
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
-
-            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
-
-            editorFileElement.componentInstance['editorContent'] = editedContent;
-
-            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
-
-            businessNetworkChangedSpy.should.not.have.been.called;
-        }));
-
-        it('should not update if loading', inject([FileService], (fileService: FileService) => {
+        it('should handle an error being thrown', () => {
             fixture.detectChanges();
 
             let content = `/**
@@ -862,15 +724,12 @@ describe('EditorFileComponent', () => {
             }`;
 
             let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
-            fileService['modelFiles'].set('myId', myEditorFile);
+            mockFileService.getFile.returns(myEditorFile);
+            mockFileService.updateFile.throws('Error');
 
             component.editorFile = myEditorFile;
 
             fixture.detectChanges();
-
-            editorFileElement.componentInstance.changingCurrentFile = true;
-
-            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
 
             let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
 
@@ -878,7 +737,141 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            businessNetworkChangedSpy.should.not.have.been.called;
-        }));
+            mockBehaviourSubject.next.should.have.been.calledWith(false);
+
+            should.exist(editorFileElement.componentInstance.currentError);
+        });
+
+        it('should not update if content hasn\'t changed', () => {
+            fixture.detectChanges();
+
+            let content = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+            }`;
+
+            let editedContent = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+            }`;
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
+
+            editorFileElement.componentInstance['editorContent'] = editedContent;
+
+            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
+
+            mockBehaviourSubject.next.should.not.have.been.called;
+        });
+
+        it('should not update if loading', () => {
+            fixture.detectChanges();
+
+            let content = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+            }`;
+
+            let editedContent = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+                o String middleName
+            }`;
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'model');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            editorFileElement.componentInstance.changingCurrentFile = true;
+
+            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
+
+            editorFileElement.componentInstance['editorContent'] = editedContent;
+
+            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
+
+            mockBehaviourSubject.next.should.not.have.been.called;
+        });
+
+        it('should set the error text if there is an error updating the business network', () => {
+            fixture.detectChanges();
+
+            let content = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+            }`;
+
+            let editedContent = `/**
+             * Sample business network definition.
+             */
+                namespace org.acme.sample
+
+            participant SampleParticipant identified by participantId {
+                o String participantId
+                o String firstName
+                o String lastName
+                o String middleName
+            }`;
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'conga');
+            let isModelStub = sinon.stub(myEditorFile, 'isModel');
+            isModelStub.onCall(0).returns(true);
+            isModelStub.onCall(1).returns(false);
+            mockFileService.getFile.returns(myEditorFile);
+            mockFileService.updateFile.throws('No file type');
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            let mockCodeMirrorElement = editorFileElement.query(By.css('#editor-file_CodeMirror'));
+
+            editorFileElement.componentInstance['editorContent'] = editedContent;
+
+            mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
+
+            mockBehaviourSubject.next.should.have.been.calledWith(false);
+            editorFileElement.componentInstance.currentError.should.equal('No file type');
+        });
     });
 });

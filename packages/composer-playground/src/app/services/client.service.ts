@@ -31,6 +31,7 @@ export class ClientService {
     private connectingPromise: Promise<any> = null;
 
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
+    private deployedBusinessNetworkVersion: string = null;
 
     constructor(private adminService: AdminService,
                 private identityCardService: IdentityCardService,
@@ -55,9 +56,17 @@ export class ClientService {
     getBusinessNetwork(): BusinessNetworkDefinition {
         if (!this.currentBusinessNetwork) {
             this.currentBusinessNetwork = this.getBusinessNetworkConnection().getBusinessNetwork();
+            this.deployedBusinessNetworkVersion = this.currentBusinessNetwork.getMetadata().getVersion();
         }
 
         return this.currentBusinessNetwork;
+    }
+
+    getDeployedBusinessNetworkVersion(): string {
+        if (!this.deployedBusinessNetworkVersion) {
+            this.deployedBusinessNetworkVersion = this.getBusinessNetwork().getMetadata().getVersion();
+        }
+        return this.deployedBusinessNetworkVersion;
     }
 
     ensureConnected(force: boolean = false): Promise<any> {
@@ -96,6 +105,7 @@ export class ClientService {
 
     refresh(): Promise<any> {
         this.currentBusinessNetwork = null;
+        this.deployedBusinessNetworkVersion = null;
         let cardRef = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 
