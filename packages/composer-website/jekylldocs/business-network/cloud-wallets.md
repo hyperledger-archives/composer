@@ -3,7 +3,7 @@ layout: default
 title: Customising card stores
 category: concepts
 section: business-network
-index-order: 511
+index-order: 512
 sidebar: sidebars/accordion-toc0.md
 excerpt: "{{site.data.conrefs.composer_full}} Performance"
 ---

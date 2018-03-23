@@ -11,13 +11,13 @@ excerpt: "[**Transaction processor functions can be used to call external REST s
 
 # Calling an HTTP or REST API from Transaction Processor Functions
 
-In some cases it is desirable to be able to call HTTP or REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. Calling the REST API allows the transaction processor function to off-board complex or expensive computation to a centrally or peer hosted service.
+In some cases it is desirable to be able to call HTTP or REST APIs from transaction processor functions. This allows you to move complex or expensive computation from the blockchain to a centrally or peer hosted service.
 
-Alternatively, a transaction processor function may wish to call third party HTTP or REST APIs that provides external data. For example, a third party API may provide data about the current price of a stock, or the current weather and temperature, which can be used to determine whether or not the conditions of a contract have been fufilled.
+Alternatively, a transaction processor function may wish to call third party HTTP or REST APIs that provides external data. For example, a third party API may provide data about the current price of a stock, or the current weather and temperature, which can be used to determine whether or not the conditions of a contract have been fulfilled.
 
-{{site.data.conrefs.composer_full}} provides built-in functionality that allows a transaction processor function developer to call an HTTP or REST API from within a transaction processor function.
+{{site.data.conrefs.composer_full}} allows a transaction processor function developer to call an HTTP or REST API from within a transaction processor function.
 
-> Please note that using this functionality can easily lead to errors that are caused by consensus failures, and should only be used with care. For more information, read the section "consensus considerations" below.
+> Please note that using this function can lead to errors that are caused by consensus failures, and should only be used with care. For more information, see [Consensus considerations](#consensus-considerations) below.
 
 ## Using the request module
 
@@ -29,7 +29,7 @@ The `request-promise` module is automatically available to all transaction proce
 
 The global `request` method and all of the convenience methods for the various HTTP methods (`request.get`, `request.post`, etc.) are available to transaction processor functions. These methods provide a full set of options for handling request bodies, response bodies, HTTP headers, authentication, cookies, proxies, and TLS/SSL.
 
-For detailed information on these methoids and the options available, please review the the documentation for the `request` and `request-promise` modules.
+For detailed information on these methods and the options available, please review the documentation for the `request` and `request-promise` modules.
 
 ## Examples
 
@@ -74,7 +74,7 @@ async function buyStocks(transaction) {
     // The option "json: true" automatically parses JSON from the HTTP response.
     const stock = await request.get({ uri: 'http://stocks.org/CONGA', json: true });
     const price = stock.price;
-    
+
     // Get the current participant, and update their stock and balance.
     const participant = getCurrentParticipant();
     const units = transaction.units;
@@ -109,7 +109,7 @@ async function buyStocks(transaction) {
     // and automatically parses JSON from the HTTP response.
     const stock = await request.post({ uri: 'http://stocks.org/CONGA', json });
     const price = stock.price;
-    
+
     // Get the current participant, and update their stock and balance.
     const participant = getCurrentParticipant();
     const units = transaction.units;
@@ -136,7 +136,7 @@ async function buyStocks(transaction) {
     // Look up the current price of the CONGA stock, and extract the price.
     // The option "json: true" automatically parses JSON from the HTTP response.
     const json = await request.get({ uri: 'http://stocks.org/CONGA', json: true });
-    
+
     // Parse the JavaScript object into the stock asset.
     const serializer = getSerializer();
     const stock = serializer.fromJSON(json);
