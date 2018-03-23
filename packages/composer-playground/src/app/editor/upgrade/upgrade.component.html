@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <h1>Upgrade Business Network</h1>
+    <button id="upgrade-file_exit" class="icon modal-exit" (click)="activeModal.dismiss()">
+        <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-close_new"></use>
+        </svg>
+    </button>
+</div>
+<section class="modal-body">
+    <p>Please select the business network cards with the correct permissions for installing and upgrading the business
+        network</p>
+    <div class="card-select">
+        <div *ngIf="peerCards.length > 0">
+            <div class="card-select-item">
+                <p>Installation Card*: </p>
+            </div>
+            <div id='peer_drop_down' class="card-select-item">
+                <div ngbDropdown class="d-inline-block">
+                    <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle><span
+                        title="{{selectedPeerCardName}}">{{selectedPeerCardName}}</span></button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <button class="dropdown-item action " *ngFor="let card of peerCards"
+                                (click)="onPeerCardSelect(card)">{{card.getUserName()}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="no-cards">
+            <div *ngIf="peerCards.length===0">Installation Card*:</div>
+            <div id="no_peer_cards">No cards available to use for network install</div>
+        </div>
+    </div>
+    <div class="card-select">
+        <div *ngIf="channelCards.length > 0">
+            <div class="card-select">
+                <div class="card-select-item">
+                    <p>Upgrade card*: </p>
+                </div>
+                <div class="card-select-item" id='channel_drop_down'>
+                    <div ngbDropdown class="d-inline-block">
+                        <button type="button" class="action" id="dropdownMenu2" ngbDropdownToggle><span
+                            title="{{selectedChannelCardName}}">{{selectedChannelCardName}}</span></button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <button class="dropdown-item action " *ngFor="let card of channelCards"
+                                    (click)="onChannelCardSelect(card)">{{card.getUserName()}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="no-cards">
+            <div>Upgrade card*:</div>
+            <div id="no_channel_cards" *ngIf="channelCards.length===0">No cards available to use for network upgrade</div>
+        </div>
+    </div>
+    <div>
+        <p>This chaincode upgrade can take minutes to achieve, please make sure you have you have included all the
+            changes you require at this time.</p>
+    </div>
+</section>
+<footer>
+    <button id="upgrade_cancel" type="button" class="secondary" (click)="activeModal.dismiss();">
+        <span>Cancel</span>
+    </button>
+    <button id="upgrade_confirm" type="button" class="primary" (click)="upgrade()"
+            [disabled]="!selectedPeerCardName || !selectedChannelCard">
+        <span>Upgrade</span>
+    </button>
+</footer>
