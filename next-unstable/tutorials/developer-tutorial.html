@@ -445,15 +445,24 @@ rule SystemACL {
 
 <p>The generated API is connected to the deployed blockchain and business network.</p>
 
-<!--After generating a REST API,
+<h2 id="step-six-generating-an-application">Step Six: Generating an application</h2>
 
-## Step Six: Generating an application
+<p>Hyperledger Composer can also generate an Angular 4 application running against the REST API.</p>
 
+<ol>
+<li><p>To create your Angular 4 application, navigate to <code>tutorial-network</code> directory and run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer:angular
+</code></pre></div></li>
+<li><p>Select <strong>Yes</strong> when asked to connect to running business network.</p></li>
+<li><p>Enter standard <code>package.json</code> questions (project name, description, author name, author email, license)</p></li>
+<li><p>Enter <code>admin@tutorial-network</code> for the business network card.</p></li>
+<li><p>Select <strong>Connect to an existing REST API</strong></p></li>
+<li><p>Enter <code>http://localhost</code> for the REST server address.</p></li>
+<li><p>Enter <code>3000</code> for server port.</p></li>
+<li><p>Select <strong>Namespaces are not used</strong></p></li>
+</ol>
 
-**This section doesn't work yet so be chill k?**
-
-`yo hyperledger-composer`
--->
+<p>The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run <code>npm start</code>. This will fire up an Angular 4 application running against your REST API at <code>http://localhost:4200</code>.</p>
 
             
           </section>
