@@ -119,7 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
+<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -135,6 +135,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/next-unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/next-unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next-unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/next-unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next-unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next-unstable/business-network/historian">Hyperledger Composer Historian</a></li>
@@ -266,14 +267,14 @@ ga('send', 'pageview');
             
               <h1 id="calling-an-http-or-rest-api-from-transaction-processor-functions">Calling an HTTP or REST API from Transaction Processor Functions</h1>
 
-<p>In some cases it is desirable to be able to call HTTP or REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. Calling the REST API allows the transaction processor function to off-board complex or expensive computation to a centrally or peer hosted service.</p>
+<p>In some cases it is desirable to be able to call HTTP or REST APIs from transaction processor functions. This allows you to move complex or expensive computation from the blockchain to a centrally or peer hosted service.</p>
 
-<p>Alternatively, a transaction processor function may wish to call third party HTTP or REST APIs that provides external data. For example, a third party API may provide data about the current price of a stock, or the current weather and temperature, which can be used to determine whether or not the conditions of a contract have been fufilled.</p>
+<p>Alternatively, a transaction processor function may wish to call third party HTTP or REST APIs that provides external data. For example, a third party API may provide data about the current price of a stock, or the current weather and temperature, which can be used to determine whether or not the conditions of a contract have been fulfilled.</p>
 
-<p>Hyperledger Composer provides built-in functionality that allows a transaction processor function developer to call an HTTP or REST API from within a transaction processor function.</p>
+<p>Hyperledger Composer allows a transaction processor function developer to call an HTTP or REST API from within a transaction processor function.</p>
 
 <blockquote>
-<p>Please note that using this functionality can easily lead to errors that are caused by consensus failures, and should only be used with care. For more information, read the section &quot;consensus considerations&quot; below.</p>
+<p>Please note that using this function can lead to errors that are caused by consensus failures, and should only be used with care. For more information, see <a href="#consensus-considerations">Consensus considerations</a> below.</p>
 </blockquote>
 
 <h2 id="using-the-request-module">Using the request module</h2>
@@ -286,7 +287,7 @@ ga('send', 'pageview');
 
 <p>The global <code>request</code> method and all of the convenience methods for the various HTTP methods (<code>request.get</code>, <code>request.post</code>, etc.) are available to transaction processor functions. These methods provide a full set of options for handling request bodies, response bodies, HTTP headers, authentication, cookies, proxies, and TLS/SSL.</p>
 
-<p>For detailed information on these methoids and the options available, please review the the documentation for the <code>request</code> and <code>request-promise</code> modules.</p>
+<p>For detailed information on these methods and the options available, please review the documentation for the <code>request</code> and <code>request-promise</code> modules.</p>
 
 <h2 id="examples">Examples</h2>
 

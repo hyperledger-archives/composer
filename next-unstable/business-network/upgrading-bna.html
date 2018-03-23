@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Developing Applications | Hyperledger Composer</title>
+    <title>Upgrading a deployed business network | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Developing Applications</p>
+          <p>Upgrading a deployed business network</p>
           </div>
 
           <nav class="context-nav">
@@ -265,34 +265,61 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="developing-applications">Developing Applications</h1>
+              <h1 id="upgrading-a-deployed-business-network">Upgrading a deployed business network</h1>
 
-<p>Hyperledger Composer supports creating web, mobile or native Node.js applications. It includes the <code>composer-rest-server</code> (itself based on LoopBack technology) to automatically generate a REST API for a business network, and the <code>hyperledger-composer</code> code generation plugin for the Yeoman framework to generate a skeleton Angular application.</p>
+<p>After a business network has been successfully deployed to a blockchain it may be necessary to upgrade the business network definition. To upgrade a business network definition, first make the updates you wish to deploy to your local copy of the business network component files (model, script, query, access control, and transaction processor files), then update the version of your local business network files. After updating the version install the new version of the <code>.bna</code> to your blockchain, and use the <code>composer network upgrade</code> command to switch to using your new version.</p>
 
-<p>In addition it includes a rich set of JavaScript APIs to build native Node.js applications.</p>
+<h2 id="before-you-begin">Before you begin</h2>
 
-<hr>
-
-<h3 id="writing-a-node-js-application">Writing a Node.js application</h3>
-
-<p><a href="./node.html"><strong>Developing Node.js applications to work with Hyperledger Composer</strong></a> allows you to  programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions.</p>
-
-<h3 id="writing-web-applications">Writing Web applications</h3>
-
-<p>Web applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the <code>composer-rest-server</code> to <a href="./web.html"><strong>dynamically generate a REST API from the deployed business network</strong></a>.</p>
-
-<h3 id="subscribing-to-events">Subscribing to events</h3>
-
-<p>Node.js applications can <a href="./subscribing-to-events.html"><strong>subscribe to events from a business network</strong></a> by using the <code>composer-client.BusinessNetworkConnection.on</code> API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file.</p>
-
-<hr>
-
-<h2 id="references">References</h2>
+<p>Before upgrading a deployed business network definition:</p>
 
 <ul>
-<li><a href="http://yeoman.io"><strong>Yeoman Code Generator</strong></a></li>
-<li><a href="https://angular.io"><strong>Angular Framework</strong></a></li>
+<li>Ensure your business network has successfully deployed.</li>
+<li>Make any required updates to your business network you wish to deploy.</li>
 </ul>
+
+<h2 id="step-one-updating-the-business-network-version">Step One: Updating the business network version</h2>
+
+<p>It is important that the <code>package.json</code> file is updated before installing a new version of your business network to your blockchain.</p>
+
+<ol>
+<li><p>Open the <code>package.json</code> file in your business network directory.</p></li>
+<li><p>Update the <strong>version</strong> property. The version property must be a <code>.</code> separated number, for example, <code>0.0.2</code> or <code>1.16.4</code>. Make sure to take note of the version number you are setting as it is required for the following steps.</p></li>
+</ol>
+
+<h2 id="step-two-package-your-business-network">Step Two: Package your business network</h2>
+
+<p>After updating the version number, the business network must be packaged into a business network archive (<code>.bna</code>). The <code>.bna</code> can then be installed on the blockchain and started. The <code>composer archive create</code> command can package either a directory or an npm module, for this example we&#39;ll use the directory command.</p>
+
+<ol>
+<li><p>From your business network directory run the <code>composer archive create</code> command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -t dir -n .
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-three-installing-the-new-business-network">Step Three: Installing the new business network</h2>
+
+<p>When the business network has been packaged, it must be installed to the blockchain. It is installed using the same process as when the original business network was installed.</p>
+
+<ol>
+<li><p>Install the business network to your blockchain using the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network install -a NETWORK-FILENAME.bna -c peeradmin@hlfv1
+</code></pre></div>
+<p>The business network card used in the command must be a peer admin card in order to install the business network to the blockchain peers.</p></li>
+</ol>
+
+<h2 id="step-four-upgrading-to-the-new-business-network">Step Four: Upgrading to the new business network</h2>
+
+<p>Now that the business network has been installed to the peers, it must be started. The <code>composer network upgrade</code> command will instruct the peers to stop using the older version of the business network and begin using the version specified in the command.</p>
+
+<ol>
+<li><p>Upgrade to the business network that was installed using the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -c peeradmin@hlfv1 -n NETWORK-NAME -V NETWORK-VERSION
+</code></pre></div>
+<p>The network name and network version must match the contents of the <code>package.json</code> in the installed business network.</p></li>
+</ol>
+
+<p>Your business network should now be successfully upgraded.</p>
 
             
           </section>

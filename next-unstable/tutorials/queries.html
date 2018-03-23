@@ -119,7 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
+<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -135,6 +135,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/next-unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/next-unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next-unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/next-unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next-unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next-unstable/business-network/historian">Hyperledger Composer Historian</a></li>
@@ -403,12 +404,14 @@ query selectCommoditiesWithHighQuantity {
 
 <h2 id="step-three-regenerate-your-business-network-archive">Step Three: Regenerate your business network archive</h2>
 
-<p>After changing the files in a business network, the business network must be repackaged as a business network archive (<code>.bna</code>) and redeployed to the Hyperledger Fabric instance.</p>
+<p>After changing the files in a business network, the business network must be repackaged as a business network archive (<code>.bna</code>) and redeployed to the Hyperledger Fabric instance. Upgrading a deployed network requires that the new version being deployed have a new version number.</p>
 
 <ol>
+<li><p>In the <code>tutorial-network</code> directory, open the <code>package.json</code> file.</p></li>
+<li><p>Update the <strong>version</strong> property from <code>0.0.1</code> to <code>0.0.2</code>.</p></li>
 <li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
 <li><p>Run the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.1.bna
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.2.bna
 </code></pre></div></li>
 </ol>
 
@@ -417,12 +420,15 @@ query selectCommoditiesWithHighQuantity {
 <p>We need to deploy the modified network to become the latest edition on the blockchain! We are using the newly created archive business network archive file to update the existing deployed business network; this is the same business network name, that we used during the Developer Tutorial.</p>
 
 <ol>
-<li><p>Switch to the terminal, change directory to the folder containing the <code>tutorial-network.bna</code>.</p></li>
-<li><p>Run the following command to update the business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network update -a tutorial-network@0.0.1.bna -c admin@tutorial-network
+<li><p>Switch to the terminal, change directory to the folder containing the <code>tutorial-network@0.0.2.bna</code>.</p></li>
+<li><p>Run the following command to install the updated business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.2.bna
 </code></pre></div></li>
-<li><p>Run the following command to test that the network is deployed:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@tutorial-network
+<li><p>Run the following command to upgrade the network to the new version:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network upgrade -c PeerAdmin@hlfv1 -n tutorial-network -V 0.0.2
+</code></pre></div></li>
+<li><p>Check the current version of the business network before continuing by using the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -c admin@tutorial-network | grep Business
 </code></pre></div></li>
 </ol>
 

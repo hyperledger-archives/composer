@@ -119,7 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
+<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -135,6 +135,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/next-unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/next-unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next-unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/next-unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next-unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next-unstable/business-network/historian">Hyperledger Composer Historian</a></li>
@@ -306,13 +307,12 @@ ga('send', 'pageview');
 
 <p>As you can see, we&#39;re in the <strong>Define</strong> tab right now, this tab is where you create and edit the files that make up a business network definition, before deploying them and testing them using the <strong>Test</strong> tab.</p>
 
-<p>As we selected an empty business network template, we need to define our business network files. The first step is to add a model file. Model files define the assets, participants, transactions, and events in our business network.</p>
+<p>As we selected an empty business network template, we need to modify the template files provided. The first step is to update the model file. Model files define the assets, participants, transactions, and events in our business network.</p>
 
 <p>For more information on our modeling language, check our <a href="../reference/cto_language.html">documentation</a>.</p>
 
 <ol>
-<li><p>Click the <strong>Add a file</strong> button.</p></li>
-<li><p>Click the <strong>Model file</strong> and click <strong>Add</strong>.</p></li>
+<li><p>Click the <strong>Model file</strong> to view it.</p></li>
 <li><p>Delete the lines of code in the model file and replace it with this:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network

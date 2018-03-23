@@ -119,7 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
+<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -135,6 +135,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/next-unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/next-unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next-unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/next-unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next-unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next-unstable/business-network/historian">Hyperledger Composer Historian</a></li>
@@ -272,11 +273,11 @@ ga('send', 'pageview');
 
 <p><img src="../assets/img/tutorials/acl1/define_acl.png" alt="Overview of Commodity Trading Rules"></p>
 
-<p>Access control rules (the language that defines ACLs) fall into two main areas: </p>
+<p>Access control rules (the language that defines ACLs) fall into two main areas:</p>
 
 <ul>
-<li>authority to access system, network or administrative resources and operations in the System namespace (governing Network and System operations) ;  and </li>
-<li>authority to access resources or perform operations <strong>within</strong> a given business network itself (like Create, Read, Update assets),  via domain specific business network ACLs. </li>
+<li>authority to access system, network or administrative resources and operations in the System namespace (governing Network and System operations) ;  and</li>
+<li>authority to access resources or perform operations <strong>within</strong> a given business network itself (like Create, Read, Update assets),  via domain specific business network ACLs.</li>
 </ul>
 
 <p>The tutorial uses the online Playground to try out some simple and conditional access rules. In doing so, you will interact with the sample network as various identities - ultimately,  it is the users of the blockchain that we want to apply access control to. We&#39;ll also see how a Participant role can be used to control access, where multiple identities can be mapped to a designated Participant role (such as a Regulator). Its important to note that in a real blockchain network, all operations, whether from a Node JS application, CLI or indeed REST operations are subject to and controlled by the ACLs that govern a business network. Accountability is seen at an identity level.</p>
@@ -285,11 +286,11 @@ ga('send', 'pageview');
 
 <h2 id="prerequisites">Prerequisites</h2>
 
-<p>None - just an internet connection, which you have right now :-) </p>
+<p>None - just an internet connection, which you have right now :-)</p>
 
 <h2 id="step-one-access-the-online-playground-and-select-your-business-network">Step One: Access the Online Playground and select your business network</h2>
 
-<p>We&#39;ll use the sample business network (<code>trade-network</code>) sourced from the Composer sample networks repository. </p>
+<p>We&#39;ll use the sample business network (<code>trade-network</code>) sourced from the Composer sample networks repository.</p>
 
 <ol>
 <li><p>Go to the <a href="https://composer-playground.mybluemix.net/login">Online Playground</a> and if necessary clear local storage when prompted. Accept the Welcome logo, you are ready to start.</p></li>
@@ -297,13 +298,13 @@ ga('send', 'pageview');
 <li><p>Scroll down and click on the <code>trade-network</code> sample - when you scroll back up,  it should populate name, description and network admin card fields for you.</p></li>
 <li><p>With the Deploy button active (confirm that the name is <code>trade-network</code>) - click on <strong>Deploy</strong> to deploy the business network.</p></li>
 <li><p>Lastly, click on &#39;Connect Now&#39; to connect to the deployed business network (the default id - its shown top right).</p></li>
-<li><p>The &#39;Trade Network&#39; README file should be active and you can see the components of the business network listed in the left columnn - one of these is the ACLs file <code>permissions.acl</code> which controls the access to resources. Out of the box, the sample business networks have &#39;all access&#39; turned on, which would of course, ultimately be different to that for a production style environment.</p></li>
+<li><p>The &#39;Trade Network&#39; README file should be active and you can see the components of the business network listed in the left column - one of these is the ACLs file <code>permissions.acl</code> which controls the access to resources. Out of the box, the sample business networks have &#39;all access&#39; turned on, which would of course, ultimately be different to that for a production style environment.</p></li>
 </ol>
 
 <h3 id="create-trader-participants">Create Trader Participants</h3>
 
 <ol>
-<li><p>Click on the &#39;Test&#39; tab near the top of the screen. This is where we create sample Trader participants. </p></li>
+<li><p>Click on the &#39;Test&#39; tab near the top of the screen. This is where we create sample Trader participants.</p></li>
 <li><p>Click on <code>Trader</code> on the left - Create New Participant (top right) as follows - the example below is &#39;TRADER1&#39;:</p></li>
 </ol>
 
@@ -506,7 +507,7 @@ ga('send', 'pageview');
   action: ALLOW
 }
 </code></pre></div>
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
 
 <p>This rule will allow the <code>current</code> Trader Participant (mapped to the <code>current</code> identity whether in playground (here) or indeed in your application) to READ and UPDATE their own target Trader record.</p>
 
@@ -516,7 +517,7 @@ ga('send', 'pageview');
 
 <h4 id="rule-1b-trader-asset-ownership-allow-update-by-owners-only">Rule 1b - Trader Asset Ownership - allow update by owners only</h4>
 
-<p>By default, a Trader cannot see or update any of the Commodities created earlier. </p>
+<p>By default, a Trader cannot see or update any of the Commodities created earlier.</p>
 
 <p>We need a rule to enable a Trader access Commodities for which they are the designated &#39;owner&#39;.</p>
 
@@ -537,7 +538,7 @@ ga('send', 'pageview');
   action: ALLOW
 }
 </code></pre></div>
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
 
 <p>This rule will allow the <code>current</code> Trader Participant all operations on target Commodity resources that it &#39;owns&#39;.</p>
 
@@ -549,7 +550,7 @@ ga('send', 'pageview');
 
 <h4 id="rule-2-restrictive-rule-only-trader-participants-can-submit-trade-smart-contract-transactions">Rule 2 - Restrictive rule: Only &#39;Trader&#39; participants can submit <code>Trade</code> smart contract transactions</h4>
 
-<p>By default, a Trader cannot submit a <code>Trade</code> transaction (defined in our model and for which we have smart contract logic written in our Script file) to update a Commodity he owns. </p>
+<p>By default, a Trader cannot submit a <code>Trade</code> transaction (defined in our model and for which we have smart contract logic written in our Script file) to update a Commodity he owns.</p>
 
 <p>We need a rule to enable a Trader to submit <code>Trade</code> transactions for which they are the designated &#39;owner&#39;. The <code>Trade</code> transaction enables the current owner to change the ownership of a Commodity to another Trader.</p>
 
@@ -581,7 +582,7 @@ ga('send', 'pageview');
     action: ALLOW
 }
 </code></pre></div>
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
 
 <p>That&#39;s it. We know already that the participant can only work with their own Commodity(ies). This will allow only Trader participants to submit transactions of type <code>Trade</code> (we could have many different participant types in a business network).</p>
 
@@ -602,7 +603,7 @@ ga('send', 'pageview');
 
 <h4 id="rule-3-enabling-rule-allow-traders-to-see-their-own-historical-records-only">Rule 3 - Enabling rule: Allow Traders to see their own historical records only</h4>
 
-<p>By default, due to the System ACLs (a part of which is the registry for the Historian records), each Trader (eg. and related <code>tid1</code>, <code>tid2</code> etc identities) can see the history of all Transactions - an example is the <code>UpdateBusinessNetwork</code> performed by admin.</p>
+<p>By default, due to the System ACLs (a part of which is the registry for the Historian records), each Trader (eg. and related <code>tid1</code>, <code>tid2</code> etc identities) can see the history of all Transactions - an example is the <code>UpgradeBusinessNetwork</code> performed by admin.</p>
 
 <p>We will lock down access to the Historian such that Traders only see transactions they submitted in Historian.</p>
 
@@ -625,13 +626,13 @@ ga('send', 'pageview');
 </code></pre></div>
 <p>This rule restricts the current Trader participant to seeing only transactions he/she invoked on the blockchain.</p>
 
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
 
 <ol>
-<li><strong>TEST THE ACL</strong>: </li>
+<li><strong>TEST THE ACL</strong>:</li>
 </ol>
 
-<p>a. Switch user to identity <code>tid3</code> (top right, &#39;ID Registry&#39;) - you will only see &#39;Identity Activation&#39; type entries but nothing about the history of transactions that were submitted relating to TRADER1 and TRADER2. This is what we would expect. </p>
+<p>a. Switch user to identity <code>tid3</code> (top right, &#39;ID Registry&#39;) - you will only see &#39;Identity Activation&#39; type entries but nothing about the history of transactions that were submitted relating to TRADER1 and TRADER2. This is what we would expect.</p>
 
 <p>b. Next, switch to identity <code>tid1</code> - you will see the history of transactions (including the &#39;TRADE&#39; transaction submitted earlier) relating to <code>tid1</code> only - in particular the transfer of Commodity &#39;CC&#39; ownership to TRADER2 (By contrast, identity <code>tid2</code> , the transferee, will not see the historial &#39;TRADE&#39; transaction submitted by <code>tid1</code> - only the Commodity asset, that was transferred).</p>
 
@@ -676,7 +677,7 @@ ga('send', 'pageview');
 <li>Add the following rule:</li>
 </ol>
 
-<p>Rule: </p>
+<p>Rule:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">rule R4a_RegulatorSeeThemselves {
   description: "Regulators can see and update their own record"
   participant: "org.acme.trading.Regulator"
@@ -687,14 +688,14 @@ ga('send', 'pageview');
 </code></pre></div>
 <p>This rule merely allows a Regulator participant to update their own profile record (should they wish to update it - you can test this out if you wish; we had done something similar earlier).</p>
 
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network with the new rule. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network with the new rule.</p>
 
 <ol>
 <li><p>Next, switch identity (in the Id Registry) to  the Regulator identity <code>101</code> and click &#39;Use Now&#39;</p></li>
 <li><p>Check you can indeed see the Historical records (which shows our previous transactions - then click on &#39;view record&#39; for any system type transaction activity such as <code>AddAsset</code> or <code>AddParticipant</code> - as someone that is a Regulator, you should be able to see this activity.</p></li>
-<li><p>Next click &#39;view record&#39; for a <strong>TRADE</strong> transaction- there&#39;s an issue - nothing happens. You (regulator) currently do not have authority (via ACLs) able to view the transaction record </p></li>
+<li><p>Next click &#39;view record&#39; for a <strong>TRADE</strong> transaction- there&#39;s an issue - nothing happens. You (regulator) currently do not have authority (via ACLs) able to view the transaction record</p></li>
 <li><p>Switch identity back to &#39;admin&#39; as good practice for rule changes.</p></li>
-<li><p>Add the following Regulator authorisation rule (insert the rule in the <code>permissions.acl</code> file at the top ): </p></li>
+<li><p>Add the following Regulator authorisation rule (insert the rule in the <code>permissions.acl</code> file at the top ):</p></li>
 </ol>
 
 <p>Rule:</p>
@@ -706,7 +707,7 @@ ga('send', 'pageview');
     action: ALLOW
 }
 </code></pre></div>
-<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network. </p>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
 
 <p>This rule enables a Regulator to access the Trade transaction resources, such that it can view the Trade transactions from Historian&#39;s &#39;view record&#39;).</p>
 

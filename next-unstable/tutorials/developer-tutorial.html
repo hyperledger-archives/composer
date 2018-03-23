@@ -119,7 +119,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
 <li><a href="/composer/next-unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Configuring Google OAUTH2.0 Authentication Strategy with a persistent Composer REST server instance</a></li>
+<li><a href="/composer/next-unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/next-unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -135,6 +135,7 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/next-unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/next-unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/next-unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/next-unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/next-unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/next-unstable/business-network/historian">Hyperledger Composer Historian</a></li>
@@ -398,7 +399,7 @@ rule SystemACL {
 
 <p>After creating the <code>.bna</code> file, the business network can be deployed to the instance of Hyperledger Fabric. Normally, information from the Fabric administrator is required to create a <code>PeerAdmin</code> identity, with privileges to install chaincode to the peer as well as start chaincode on the <code>composerchannel</code> channel. However, as part of the development environment installation, a <code>PeerAdmin</code> identity has been created already.</p>
 
-<p>After the runtime has been installed, a business network can be deployed to the peer. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.</p>
+<p>After the business network has been installed, the network can be started. For best practice, a new identity should be created to administer the business network after deployment. This identity is referred to as a network admin.</p>
 
 <h4 id="retrieving-the-correct-credentials">Retrieving the correct credentials</h4>
 
@@ -406,7 +407,7 @@ rule SystemACL {
 
 <h4 id="deploying-the-business-network">Deploying the business network</h4>
 
-<p>Deploying a business network to the Hyperledger Fabric requires the Hyperledger Composer business network to be installed on the peer, then the business network is ready to be started, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.</p>
+<p>Deploying a business network to the Hyperledger Fabric requires the Hyperledger Composer business network to be installed on the peer, then the business network can be started, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.</p>
 
 <ol>
 <li><p>To install the business network, from the <code>tutorial-network</code> directory, run the following command:</p>
@@ -414,7 +415,7 @@ rule SystemACL {
 </code></pre></div>
 <p>The <code>composer network install</code> command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the the file path of the <code>.bna</code> which defines the business network.</p></li>
 <li><p>To start the business network, run the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkA.card
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
 </code></pre></div>
 <p>The <code>composer network start</code> command requires a business network card, as well as the name of the admin identity for the business network, the name and version of the business network and the name of the file to be created ready to import as a business network card.</p></li>
 <li><p>To import the network administrator identity as a usable business network card, run the following command:</p>
