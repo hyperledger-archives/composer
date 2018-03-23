@@ -42,12 +42,15 @@ let participantComponentNames = [];
 let conceptServiceNames = [];
 let conceptComponentNames = [];
 let transactionList = [];
+let transactionComponentNames = [];
+let transactionServiceNames = [];
 let namespaceList;
 let enumerations;
 let introspector;
 let assetProperties;
 let participantProperties;
 let conceptProperties;
+let transactionProperties;
 let destinationPath;
 let skipInstall = false;
 let appName;
@@ -631,6 +634,84 @@ module.exports = yeoman.Base.extend({
                 conceptComponentNames.push(concept.name + 'Component');
             });
 
+            shell.mkdir('-p', destinationPath + '/src/transactions/');
+            namespaceList.forEach((namespace) => {
+            
+                let modelFile = modelManager.getModelFile(namespace);
+                let transactionDeclarations = modelFile.getTransactionDeclarations();
+            
+                transactionDeclarations
+                .filter((transactionDeclaration) =>{
+                    return !transactionDeclaration.isAbstract();
+                })
+                .filter((transactionDeclaration) => {
+                    if (transactionDeclaration.isSystemType()) {
+                        return transactionDeclaration.isSystemCoreType();
+                    }
+                    return true;
+                })
+                .forEach((transaction) => {
+            
+                    let tempList = [];
+                    transactionProperties = transaction.getProperties();
+            
+                    transactionProperties.forEach((property) => {
+                        if (property.constructor.name === 'Field') {
+                            if (property.isTypeEnum()) {
+                                // handle enumerations
+                                let enumValues = [];
+                                // compose array of enumeration values
+                                enumerations.forEach(enumeration => {
+                                    if (enumeration.name === property.getType()) {
+                                        enumValues = enumeration.properties;
+                                    }
+                                });
+                                // add meta information to the field list
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType(),
+                                    'enum': true,
+                                    'array': property.array === true,
+                                    enumValues,
+                                });
+                            } else if (property.isPrimitive() || !property.isPrimitive()) {
+            
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType()
+                                });
+                            } else {
+                                console.log('Unknown property type: ' + property);
+                            }
+                        } else if (property.constructor.name === 'RelationshipDeclaration') {
+                            tempList.push({
+                                'name': property.getName(),
+                                'type': property.getType()
+                            });
+                        } else {
+                            console.log('Unknown property constructor name: ' + property );
+                        }
+                    });
+            
+                    transactionList.push({
+                        'name': transaction.name,
+                        'namespace': transaction.getNamespace(),
+                        'properties': tempList,
+                        'identifier': transaction.getIdentifierFieldName()
+                    });
+                    shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
+            
+                });
+            });
+            
+            transactionList.forEach((transaction) => {
+                transactionServiceNames.push(transaction.name + 'Service');
+            });
+            
+            transactionList.forEach((transaction) => {
+                transactionComponentNames.push(transaction.name + 'Component');
+            });
+
             let model = this._generateTemplateModel();
             this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|Transaction)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
@@ -711,6 +792,43 @@ module.exports = yeoman.Base.extend({
                     }
                 );
             }
+            for (let x = 0; x < transactionList.length; x++) {
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction/transaction.component.ts'),
+                    this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.ts'), {
+                        currentTransaction: transactionList[x],
+                        namespace: transactionList[x].namespace,
+                        transactionIdentifier: transactionList[x].identifier
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction/transaction.service.ts'),
+                    this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.service.ts'), {
+                        transactionName: transactionList[x].name,
+                        namespace: transactionList[x].namespace,
+                        apiNamespace: this.apiNamespace
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction/transaction.component.spec.ts'),
+                    this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.spec.ts'), {
+                        transactionName: transactionList[x].name
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction/transaction.component.html'),
+                    this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.html'), {
+                        currentTransaction: transactionList[x]
+                    }
+                );
+            
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction/transaction.component.css'),
+                    this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
+                );
+            }
 
             let visitor = new TypescriptVisitor();
             let parameters = {
@@ -766,6 +884,9 @@ module.exports = yeoman.Base.extend({
             conceptList = [];
             conceptComponentNames = [];
             conceptServiceNames = [];
+            transactionList = [];
+            transactionComponentNames = [];
+            transactionServiceNames = [];
 
             resolve();
         });
@@ -809,6 +930,8 @@ module.exports = yeoman.Base.extend({
             participantServiceNames: participantServiceNames,
             participantComponentNames: participantComponentNames,
             transactionList: transactionList,
+            transactionComponentNames : transactionComponentNames,
+            transactionServiceNames : transactionServiceNames,
             networkIdentifier: networkIdentifier,
             connectionProfileName: connectionProfileName,
             enrollmentId: enrollmentId,
