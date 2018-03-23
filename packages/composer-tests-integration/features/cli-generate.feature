@@ -1,7 +1,7 @@
 @cli @cli-generate
 Feature: Cli generate steps
 
-    Scenario: Using the CLI, I can update the network to a newer version
+    Scenario: Using the CLI, I can issue the command to generate doc for my networks
         Given I have the following folders
             | ../resources/sample-networks/carauction-network |
         And I run the following expected pass CLI command
