@@ -23,10 +23,7 @@ const TypescriptVisitor = require('composer-common').TypescriptVisitor;
 const Util = require('./../util');
 const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
-<<<<<<< HEAD
-=======
 const optionOrPrompt = require('yeoman-option-or-prompt');
->>>>>>> Kai's CLI changes for angular gen
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
@@ -909,19 +906,11 @@ module.exports = yeoman.Base.extend({
     _generateTemplateModel: function () {
         return {
             composerversion: `^${version}`,
-<<<<<<< HEAD
-            appName: appName,
-            appDescription: appDescription,
-            authorName: authorName,
-            authorEmail: authorEmail,
-            license: license,
-=======
             appName: this.appName,
             appDescription: this.appDescription,
             authorName: this.authorName,
             authorEmail: this.authorEmail,
             license: this.license,
->>>>>>> Kai's CLI changes for angular gen
             businessNetworkIdentifier: businessNetworkIdentifier,
             assetList: assetList,
             assetServiceNames: assetServiceNames,
