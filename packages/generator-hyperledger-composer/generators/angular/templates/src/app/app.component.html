@@ -21,6 +21,14 @@
             <%}%>
           </ul>
       </li>
+      <li class="dropdown active">
+        <a class="dropdown-toggle" data-toggle="dropdown">Transactions</a>
+        <ul class="dropdown-menu scrollable-menu">
+          <% for(var x=0;x<transactionList.length;x++){ %>
+          <li><a [routerLink]="['/<%=transactionList[x].name%>']"><%=transactionList[x].name%></a></li>
+          <%}%>
+        </ul>
+    </li>
       </ul>
     </div>
   </nav>

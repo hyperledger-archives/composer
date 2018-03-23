@@ -14,6 +14,8 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
 <% for(var x=0;x<participantComponentNames.length;x++){ %>
   import { <%= participantComponentNames[x] %> } from './<%= participantList[x].name %>/<%= participantList[x].name %>.component';<% } %>
 
+<% for(var x=0;x<transactionComponentNames.length;x++){ %>
+  import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.component';<% } %>  
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +27,11 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
     
     <% for(var x=0;x<participantComponentNames.length;x++){ %><% if(x == participantComponentNames.length-1){ %>
       <%= participantComponentNames[x] %><%}else{%><%= participantComponentNames[x] %>,<% } %>
-      <% } %>
+      <% } %>,
+
+    <% for(var x=0;x<transactionComponentNames.length;x++){ %><% if(x == transactionComponentNames.length-1){ %>
+        <%= transactionComponentNames[x] %><%}else{%><%= transactionComponentNames[x] %>,<% } %>
+        <% } %>  
   ],
   imports: [
     BrowserModule,
