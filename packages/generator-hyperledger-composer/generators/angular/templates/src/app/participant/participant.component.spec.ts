@@ -7,28 +7,28 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Configuration } from '../configuration';
 import { DataService } from '../data.service';
-import { <%= transactionName %>Component } from './<%= transactionName %>.component';
-import {<%= transactionName %>Service} from './<%= transactionName %>.service';
-describe('<%= transactionName %>Component', () => {
-  let component: <%= transactionName %>Component;
-  let fixture: ComponentFixture<<%= transactionName %>Component>;
+import { <%= participantName %>Component } from './<%= participantName %>.component';
+import {<%= participantName %>Service} from './<%= participantName %>.service';
+describe('<%= participantName %>Component', () => {
+  let component: <%= participantName %>Component;
+  let fixture: ComponentFixture<<%= participantName %>Component>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ <%= transactionName %>Component ],
+      declarations: [ <%= participantName %>Component ],
 imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule
   ],
-providers: [<%= transactionName %>Service,DataService,Configuration]
+providers: [<%= participantName %>Service,DataService,Configuration]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(<%= transactionName %>Component);
+    fixture = TestBed.createComponent(<%= participantName %>Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
