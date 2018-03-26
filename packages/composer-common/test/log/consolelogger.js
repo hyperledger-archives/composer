@@ -82,8 +82,6 @@ describe('ConsoleLogger', () => {
         beforeEach(() => {
             sandbox = sinon.sandbox.create();
             logger = ConsoleLogger.getLogger();
-            sandbox.stub(logger,'format');
-
         });
 
         afterEach(() => {
@@ -94,12 +92,14 @@ describe('ConsoleLogger', () => {
             const spy = sandbox.spy(console, 'log');
             logger.log('debug', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
         });
 
         it('should log warn level', () => {
             const spy = sandbox.spy(console, 'warn');
             logger.log('warn', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
 
         });
 
@@ -107,6 +107,7 @@ describe('ConsoleLogger', () => {
             const spy = sandbox.spy(console, 'info');
             logger.log('info', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
 
         });
 
@@ -114,6 +115,7 @@ describe('ConsoleLogger', () => {
             const spy = sandbox.spy(console, 'log');
             logger.log('verbose', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
 
         });
 
@@ -121,6 +123,7 @@ describe('ConsoleLogger', () => {
             const spy = sandbox.spy(console, 'error');
             logger.log('error', 'func1', 'some msg', [ 'arg1', 'arg2' ]);
             sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'func1 some msg arg1, arg2');
 
         });
 

@@ -168,6 +168,22 @@ describe('NetworkManager', () => {
             return networkManager.setLogLevel(mockApi, {newLogLevel:'level'})
                         .then(() => {
                             sinon.assert.calledOnce(mockLoggingService.setLoggerCfg);
+                            sinon.assert.calledWith(mockLoggingService.setLoggerCfg,
+                                {
+                                    console: { maxLevel: 'none' },
+                                    debug: 'composer[error]:*',
+                                    fakelogger: 'config',
+                                    file: {
+                                        filename: sinon.match(/trace.*log/),
+                                        maxLevel: 'silly',
+                                        maxfiles: 100,
+                                        maxsize: 10000000
+                                    },
+                                    logger: './winstonInjector.js',
+                                    tree:  { root:  { children: [], include: true, logLevel: 0, name: 'composer' } }
+                                }
+
+                            );
                         });
         });
 

@@ -80,7 +80,7 @@ describe('EngineLogging', () => {
 
     describe('#getLogLevel', () => {
 
-        it('should work for the good path', () => {
+        it('should cope with invalid data, and assume the default', () => {
             mockAccessController.check.resolves();
 
             return engine.invoke(mockContext, 'getLogLevel', ['wrong', 'args', 'count', 'here'])
