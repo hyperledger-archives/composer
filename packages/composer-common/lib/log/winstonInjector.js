@@ -13,35 +13,30 @@
  */
 'use strict';
 
-const fs = require('fs-extra');
+const fs = require('fs');
+const path = require('path');
 const winston = require('winston');
 const sprintf = require('sprintf-js').sprintf;
+const mkdirp = require('mkdirp');
+
+const PRODUCT_LABEL='Hyperledger-Composer';
 
 /**
  * This the default core logger that is used for Hyperledger-Composer. This function
  * setups up the Winston logging for both file and console output.
  *
  * @param {Object} config JSON structure with specific configuration information
- * @param {Array} configElements JSON struction with the  DEBUG env variables for composer
  *
  * @returns {Object} object that is the logger to use
   */
-exports.getLogger = function (config,configElements){
+exports.getLogger = function (config){
 
-    let consoleLevel;
-    let fileLevel;
-
-    // if the length of the configured elements are 0 then put this into a default
-    // only mode.
-    if (configElements.debug.length === 0){
-        consoleLevel=config.console.alwaysLevel;
-        fileLevel=config.file.alwaysLevel;
-    } else {
-        fileLevel=config.file.enabledLevel;
-        consoleLevel=config.console.enabledLevel;
-    }
+    let consoleLevel = config.console.maxLevel;
+    let fileLevel = config.file.maxLevel;
+    let filename = config.file.filename;
 
     // setup the formatter functions
+    // TODO remove the sprintf fn for something faster
     let formatterFn = function(options) {
 
        // Return string will be passed to logger.
@@ -59,41 +54,69 @@ exports.getLogger = function (config,configElements){
         return new Date(Date.now()).toISOString();
     };
 
-    // process the file name and make sure the directory has been created
-    let resolvedFilename = config.file.filename.replace(/PID/g, process.pid);
 
-    // process the filename and get the timestampe replaced
-    let d = new Date();
-    let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1,d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
-    resolvedFilename = resolvedFilename.replace(/TIMESTAMP/g, timestamp);
-
-    let dir = './composer-logs';
-    fs.ensureDirSync(dir);
-
-    // create the Winston logger with the two transports.
-    let newWinstonLogger =  {
-        transports: [
-            new(winston.transports.Console)({
-                name: 'info-file',
-                timestamp: timestampFn,
-                formatter: formatterFn ,
-                level: consoleLevel
-            }),
-            new(winston.transports.File)({
-                name:'debug-file',
-                json:false,
-                filename: dir+ '/' + resolvedFilename,
-                timestamp: timestampFn,
-                formatter: formatterFn ,
-                level: fileLevel
-            })
-
-        ]
+    // create the transports
+    let transports =[];
+    let consoleOptions = {
+        name: 'info-file',
+        colorize: true,
+        label: PRODUCT_LABEL,
+        silent: (consoleLevel===null),
+        level: consoleLevel
     };
 
-    // add to the winnston system and return
-    winston.loggers.add('Hyperledger-Composer',newWinstonLogger);
-    return winston.loggers.get('Hyperledger-Composer');
+    transports.push(
+            new(winston.transports.Console)(consoleOptions)
+        );
+
+    if (filename){
+        let dir = path.parse(filename).dir;
+        if (!fs.existsSync(dir)){
+            // try to create it
+            mkdirp.sync(dir);
+        }
+
+        // take the additional configuration options
+        let fileConfig = {
+            name:'debug-file',
+            json:false,
+            filename: filename,
+            timestamp: timestampFn,
+            formatter: formatterFn,
+            level: fileLevel,
+            tailable: true,
+            silent: (fileLevel==='none')
+        };
+
+        if(config.file.maxFiles){
+            fileConfig.maxFiles = config.file.maxFiles;
+        }
+        if(config.file.maxsize){
+            fileConfig.maxFiles = config.file.maxsize;
+        }
+
+        transports.push(
+            new(winston.transports.File)(fileConfig));
+
+    }
+
+
+    if(winston.loggers.has(PRODUCT_LABEL)){
+        let logger = winston.loggers.get(PRODUCT_LABEL);
+        logger.clear();
+        transports.forEach( (tr) =>{
+            logger.add(tr,{},true);
+        });
+    } else {
+    // create the Winston logger with the two transports.
+        let newWinstonLogger =  {
+            transports: transports
+        };
+        // add to the Winston system and return
+        winston.loggers.add(PRODUCT_LABEL,newWinstonLogger);
+    }
+
+    return winston.loggers.get(PRODUCT_LABEL);
 
 
 };
