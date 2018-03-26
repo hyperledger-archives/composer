@@ -194,7 +194,13 @@ class JSONGenerator {
                             oneParam.optional=true;
                         } else if (p.type.type==='UnionType') {
                             oneParam.name=p.name;
-                            oneParam.type= p.type.elements.map((e)=>{return e.name;}).join('; ');
+                            oneParam.type= p.type.elements.map((e)=>{
+                                if (e.expression &amp;&amp; e.expression.name === 'Array'){
+                                    return e.applications[0].name+'[]';
+                                } else {
+                                    return e.name;
+                                }
+                            }).join('; ');
                             oneParam.optional=false;
                         } else {
                             oneParam.type=p.type.name;
