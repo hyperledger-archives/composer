@@ -23,11 +23,9 @@ import { EditorFile } from '../component/editor-file';
 import { Login } from '../component/login';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Test } from '../component/test';
-import { Upgrade } from '../component/upgrade';
 
 import * as  fs from 'fs';
 import * as chai from 'chai';
-
 let expect = chai.expect;
 
 describe('Playground Tutorial Define', (() => {
@@ -137,7 +135,7 @@ describe('Playground Tutorial Define', (() => {
                 .catch((err) => {
                     fail(err);
                 });
-        }));
+        }), Constants.vlongwait);
     }));
 
     describe('Defining a model file', (() => {
@@ -222,11 +220,7 @@ describe('Playground Tutorial Define', (() => {
                         })
                         .then((text) => {
                             let lines = text.toString().split(/\r\n|\n/);
-                            expect(lines.map((e) => {
-                                return e.trim();
-                            })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => {
-                                return e.trim();
-                            })); // Use trim to handle that codemirror autotabs so file is formatted differently
+                            expect(lines.map((e) => { return e.trim(); })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => { return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
                         });
 
                     Editor.retrieveUpdateBusinessNetworkButtons()
@@ -275,60 +269,21 @@ describe('Playground Tutorial Define', (() => {
                 });
         }));
 
-        it('should update the version', () => {
-            Editor.makePackageJsonActive()
-                .then(() => {
-                    return EditorFile.retrieveEditorCodeMirrorText();
-                })
-                .then((text: string) => {
-                    let parsedText = JSON.parse(text);
-                    parsedText.version = '0.6';
-                    const newText = JSON.stringify(parsedText);
-                    // Set the text for the updated package json in the code editor
-                    return EditorFile.setEditorCodeMirrorText(newText);
-                });
-        });
-
-        it('should be able to upgrade the network', () => {
-
-            let upgradePromise;
+        it('should be able to upgrade the network', (() => {
             // update new item
-            return Editor.clickDeployBND()
-                .then(() => {
-                    if (isFabricTest) {
-                        return Upgrade.waitToAppear()
-                            .then(() => {
-                                return Upgrade.clickUpgrade();
-                            })
-                            .then(() => {
-                                return BusyAlert.waitToAppear();
-                            })
-                            .then(() => {
-                                return BusyAlert.waitToDisappear();
-                            })
-                            .then(() => {
-                                return BusyAlert.waitToAppear();
-                            })
-                            .then(() => {
-                                return BusyAlert.waitToDisappear();
-                            });
-                    }
-                })
-                .then(() => {
-                    // -success message
-                    OperationsHelper.processExpectedSuccess();
-                    // -update disabled
-                    return Editor.retrieveNavigatorFileActionButtons();
-                })
+            Editor.clickDeployBND();
+            // -success message
+            OperationsHelper.processExpectedSuccess(Constants.vvlongwait);
+            // -update disabled
+            Editor.retrieveUpdateBusinessNetworkButtons()
                 .then((buttonlist: any) => {
                     expect(buttonlist).to.be.an('array').lengthOf(2);
-                    expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                    expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                    expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
                 })
                 .catch((err) => {
                     fail(err);
                 });
-        }, Constants.vvlongwait);
+        }), Constants.vvlongwait);
     }));
 
     describe('Testing the business network definition', (() => {

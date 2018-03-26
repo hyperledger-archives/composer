@@ -11,4 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './upgrade.component';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
+@Component({
+    selector: 'connect-confirm',
+    templateUrl: './connect-confirm.component.html',
+    styleUrls: ['./connect-confirm.component.scss'.toString()]
+})
+
+export class ConnectConfirmComponent {
+
+    @Input() network: string = null;
+
+    constructor(public activeModal: NgbActiveModal) {
+    }
+}

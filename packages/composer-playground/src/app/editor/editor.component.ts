@@ -17,7 +17,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
-import { UpgradeComponent } from './upgrade/upgrade.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -79,6 +78,8 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private listItem; // Used in html passage for auto scroll action
 
+    private canDeploy = false;
+
     constructor(private clientService: ClientService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
@@ -115,6 +116,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
                 this.updatePackageInfo();
                 this.updateFiles();
+                this.checkCanDeploy();
             })
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
@@ -123,6 +125,13 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.alive = false;
+    }
+
+    checkCanDeploy() {
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
+        let connectionProfile = currentCard.getConnectionProfile();
+
+        this.canDeploy = this.identityCardService.canDeploy(this.identityCardService.getQualifiedProfileName(connectionProfile));
     }
 
     updatePackageInfo() {
@@ -417,27 +426,18 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
         this.deploying = true;
 
-        // // Gets the definition for the currently deployed business network
+        // Gets the definition for the currently deployed business network
         const networkDefinition = this.fileService.getBusinessNetwork();
 
         let upgraded: boolean = true;
-        let currentCard = this.identityCardService.getCurrentIdentityCard();
-        let upgradePromise;
-        if (currentCard.getConnectionProfile()['x-type'] !== 'web') {
-            const upgradeModalRef = this.modalService.open(UpgradeComponent);
 
-            upgradePromise = upgradeModalRef.result
-                .then((result) => {
-                    return this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, result.peer, result.channel);
-                }, (reason) => {
-                    upgraded = false;
-                    if (reason && reason !== 1) {
-                        throw reason;
-                    }
-                });
-        } else {
-            upgradePromise = this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, currentCard, currentCard);
-        }
+        const currentCard = this.identityCardService.getCurrentIdentityCard();
+        const connectionProfile = currentCard.getConnectionProfile();
+        const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        const peerCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.peerAdminRole);
+        const channelCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.channelAdminRole);
+
+        let upgradePromise = this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, peerCardRef, channelCardRef);
 
         return upgradePromise
             .then(() => {

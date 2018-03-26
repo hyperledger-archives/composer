@@ -11,19 +11,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { browser, element, by } from 'protractor';
-import { ExpectedConditions } from 'protractor';
-import { OperationsHelper } from '../utils/operations-helper';
-import { Constants } from '../constants';
-
-export class Upgrade {
-    // Wait to appear
-    static waitToAppear() {
-        return browser.wait(ExpectedConditions.visibilityOf(element(by.css('upgrade-modal'))), Constants.shortWait);
-    }
-
-    static clickUpgrade() {
-        return OperationsHelper.click(element(by.id('upgrade_confirm')));
-    }
-}
+export * from './connect-confirm.component';

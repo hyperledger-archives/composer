@@ -343,6 +343,20 @@ describe('EditorComponent', () => {
         });
     });
 
+    describe('checkCanDeploy', () => {
+        it('should check that the current business network can be deployed', inject([IdentityCardService], (service: IdentityCardService) => {
+            sinon.stub(service, 'getCurrentIdentityCard').returns({
+                getConnectionProfile: sinon.stub()
+            });
+            sinon.stub(service, 'getQualifiedProfileName').returns('myProfile');
+            let canDeployStub = sinon.stub(service, 'canDeploy').returns(true);
+
+            component.checkCanDeploy();
+
+            canDeployStub.should.have.been.calledWith('myProfile');
+        }));
+    });
+
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
             mockFileService.getBusinessNetworkVersion.returns('my new version');
@@ -1340,7 +1354,7 @@ describe('EditorComponent', () => {
                 'x-type': 'web',
                 'name': 'myProfile'
             });
-            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -1369,6 +1383,7 @@ describe('EditorComponent', () => {
 
         it('should deploy the file', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
             mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
 
             fixture.detectChanges();
             tick();
@@ -1387,7 +1402,7 @@ describe('EditorComponent', () => {
 
             component['deploying'].should.equal(false);
 
-            upgradeSpy.should.have.been.calledWith(businessNetworkDef, peerCard, channelCard);
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, 'peerRef', 'channelRef');
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
 
@@ -1398,6 +1413,7 @@ describe('EditorComponent', () => {
         it('should\'t deploy if already deploying', fakeAsync(inject([IdentityCardService], (identityCardService: IdentityCardService) => {
             const identitySpy = sinon.spy(identityCardService, 'getCurrentIdentityCard');
             component['deploying'] = true;
+            component['canDeploy'] = true;
 
             mockFileService.isDirty.returns(true);
 
@@ -1413,6 +1429,7 @@ describe('EditorComponent', () => {
 
         it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
             sinon.stub(sampleBusinessNetworkService, 'upgradeBusinessNetwork').returns(Promise.reject('some error'));
+            component['canDeploy'] = true;
 
             mockFileService.isDirty.returns(true);
 
@@ -1429,92 +1446,6 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
             mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
             mockAlertService.errorStatus$.next.should.have.been.called;
-        })));
-
-        it('should handle error from modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject('some error')
-            });
-
-            mockFileService.isDirty.returns(true);
-
-            fixture.detectChanges();
-
-            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
-
-            deployButton.triggerEventHandler('click', null);
-
-            tick();
-
-            component['deploying'].should.equal(false);
-            mockUpdatePackage.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
-            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        })));
-
-        it('should handle cancel from modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.reject(1)
-            });
-
-            mockFileService.isDirty.returns(true);
-
-            fixture.detectChanges();
-
-            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
-
-            deployButton.triggerEventHandler('click', null);
-
-            tick();
-
-            component['deploying'].should.equal(false);
-            mockUpdatePackage.should.not.have.been.called;
-            mockUpdateFiles.should.not.have.been.called;
-            mockAlertService.busyStatus$.next.should.not.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        })));
-
-        it('should not open modal for web version', fakeAsync(inject([SampleBusinessNetworkService, IdentityCardService], (sampleBusinessNetworkService: SampleBusinessNetworkService, identityCardService: IdentityCardService) => {
-            mockModal.open.reset();
-
-            mockFileService.isDirty.returns(true);
-
-            fixture.detectChanges();
-
-            let webIdCard = new IdCard({userName: 'carrot'}, {'x-type': 'web', 'name': 'myProfile'});
-
-            identityCardService.addIdentityCard(webIdCard, 'web-card')
-                .then(() => {
-                    identityCardService.setCurrentIdentityCard('web-card');
-                });
-
-            tick();
-
-            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
-
-            component['currentFile'] = 'my file';
-
-            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
-
-            deployButton.triggerEventHandler('click', null);
-
-            component['deploying'].should.equal(true);
-
-            tick();
-
-            component['deploying'].should.equal(false);
-
-            mockModal.open.should.not.have.been.called;
-
-            upgradeSpy.should.have.been.calledWith(businessNetworkDef, webIdCard, webIdCard);
-            mockUpdatePackage.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
-
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
         })));
     });
 

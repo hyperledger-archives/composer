@@ -25,6 +25,10 @@ import { IdentityCardService } from './identity-card.service';
 @Injectable()
 export class SampleBusinessNetworkService {
 
+    private static readonly installNetworkStatusText = '<p>Installing the business network requires a business network card with the PeerAdmin role.</p>';
+    private static readonly startNetworkStatusText = '<p>Starting a business network requires a business network card with the ChannelAdmin role.</p>';
+    private static readonly upgradeNetworkStatusText = '<p>Upgrading a business network requires a business network card with the ChannelAdmin role.</p>';
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private alertService: AlertService,
@@ -77,6 +81,14 @@ export class SampleBusinessNetworkService {
         packageJson.description = networkDescription;
 
         let peerAdminCardRef: string = this.identityCardService.getCurrentCardRef();
+        let peerAdminCard = this.identityCardService.getIdentityCard(peerAdminCardRef);
+
+        const connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
+        const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        const channelAdminCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.channelAdminRole);
+        const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
+
+        const showExtendedStatus = (peerAdminCard.getConnectionProfile()['x-type'] !== 'web');
 
         let newNetwork = this.buildNetwork(networkName, networkDescription, packageJson, businessNetworkDefinition);
 
@@ -109,25 +121,37 @@ export class SampleBusinessNetworkService {
                 return this.adminService.connect(peerAdminCardRef, card, true);
             })
             .then(() => {
-                this.alertService.busyStatus$.next({
+                let status: any = {
                     title: 'Installing Business Network',
                     force: true
-                });
+                };
+                if (showExtendedStatus) {
+                    status.header = 'Your new business network is being deployed';
+                    status.title = 'Installing Business Network using ' + peerAdminCardRef;
+                    status.text = SampleBusinessNetworkService.installNetworkStatusText;
+                    status.card = peerAdminCard;
+                }
+                this.alertService.busyStatus$.next(status);
                 return this.adminService.install(newNetwork);
             })
             .then(() => {
-                const connectionProfile = this.identityCardService.getIdentityCard(peerAdminCardRef).getConnectionProfile();
-                const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-                const channelAdminCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(qpn, 'ChannelAdmin')[0];
-
-                const channelAdminCard = this.identityCardService.getIdentityCard(channelAdminCardRef);
                 return this.adminService.connect(channelAdminCardRef, channelAdminCard, true);
             })
             .then(() => {
-                this.alertService.busyStatus$.next({
+                let status: any = {
                     title: 'Starting Business Network',
                     force: true
-                });
+                };
+                if (showExtendedStatus) {
+                    status.header = 'Your new business network is being deployed';
+                    status.title = 'Starting Business Network using ' + channelAdminCardRef;
+                    status.text = SampleBusinessNetworkService.startNetworkStatusText;
+                    status.card = channelAdminCard;
+                    status. progress = [
+                        'Business Network installed using ' + peerAdminCardRef
+                    ];
+                }
+                this.alertService.busyStatus$.next(status);
 
                 return this.adminService.start(newNetwork.getName(), newNetwork.getVersion(), {
                     networkAdmins: [networkAdmin]
@@ -147,37 +171,52 @@ export class SampleBusinessNetworkService {
             });
     }
 
-    public upgradeBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, peerCard: IdCard, channelCard: IdCard): Promise<void> {
-        let currentCardRef = this.identityCardService.getCurrentCardRef();
+    public upgradeBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition, peerCardRef: string, channelCardRef: string): Promise<void> {
+        const currentCard = this.identityCardService.getCurrentIdentityCard();
+        const currentCardRef = this.identityCardService.getCurrentCardRef();
+        const peerCard = this.identityCardService.getIdentityCard(peerCardRef);
+        const channelCard = this.identityCardService.getIdentityCard(channelCardRef);
 
-        let peerQpn = this.identityCardService.getQualifiedProfileName(peerCard.getConnectionProfile());
-        let peerCardRef = this.identityCardService.getCardRefFromIdentity(peerCard.getUserName(), peerCard.getBusinessNetworkName(), peerQpn);
-
-        let channelQpn = this.identityCardService.getQualifiedProfileName(channelCard.getConnectionProfile());
-        let channelCardRef = this.identityCardService.getCardRefFromIdentity(channelCard.getUserName(), channelCard.getBusinessNetworkName(), channelQpn);
+        const showExtendedStatus = (currentCard.getConnectionProfile()['x-type'] !== 'web');
 
         return this.adminService.connect(peerCardRef, peerCard, true)
             .then(() => {
-                this.alertService.busyStatus$.next({
+                let status: any = {
                     title: 'Installing Business Network',
                     force: true
-                });
+                };
+                if (showExtendedStatus) {
+                    status.header = 'Your changes are being deployed';
+                    status.title = 'Installing Business Network using ' + peerCardRef;
+                    status.text = SampleBusinessNetworkService.installNetworkStatusText;
+                    status.card = peerCard;
+                }
+                this.alertService.busyStatus$.next(status);
                 return this.adminService.install(businessNetworkDefinition);
             })
             .then(() => {
                 return this.adminService.connect(channelCardRef, channelCard, true);
             })
             .then(() => {
-                this.alertService.busyStatus$.next({
+                let status: any = {
                     title: 'Upgrading Business Network',
                     force: true
-                });
+                };
+                if (showExtendedStatus) {
+                    status.header = 'Your changes are being deployed';
+                    status.title = 'Upgrading Business Network using ' + channelCardRef;
+                    status.text = SampleBusinessNetworkService.upgradeNetworkStatusText;
+                    status.card = channelCard;
+                    status. progress = [
+                        'Business Network installed using ' + peerCardRef
+                    ];
+                }
+                this.alertService.busyStatus$.next(status);
 
                 return this.adminService.upgrade(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion());
             })
             .then(() => {
                 // switch back to original card
-                let currentCard = this.identityCardService.getIdentityCard(currentCardRef);
                 return this.adminService.connect(currentCardRef, currentCard, true);
             })
             .then(() => {
