@@ -103,6 +103,21 @@ describe('JSONGenerator', function () {
                                     },
                                     {
                                         title: 'param',
+                                        description: 'multiple type parameter',
+                                        type:
+                                        {
+                                            name: 'multitype',
+                                            type: 'UnionType',
+                                            elements:[
+                                                {
+                                                    expression: { name: 'Array' },
+                                                    applications: [ {name:'String'}]
+                                                },
+                                                { name: 'Buffer' }]
+                                        }
+                                    },
+                                    {
+                                        title: 'param',
                                         description: 'This is a very. Very Long Description for a.',
                                         type:
                                         {
