@@ -22,6 +22,7 @@ const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('..');
 const SecurityContext = require('composer-common').SecurityContext;
+const Logger= require('composer-common').Logger;
 const uuid = require('uuid');
 
 const should = require('chai').should();
@@ -58,6 +59,7 @@ describe('ConnectorServer', () => {
     let mockSocket;
     let mockBusinessNetworkDefinition;
     let connectorServer;
+    let mockLogger;
     let sandbox;
 
     beforeEach(() => {
@@ -75,6 +77,14 @@ describe('ConnectorServer', () => {
         connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
         sandbox = sinon.sandbox.create();
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+
+        mockLogger = {
+            log: sinon.stub()
+        };
+
+
+        Logger.setFunctionalLogger(mockLogger);
+
     });
 
     afterEach(() => {

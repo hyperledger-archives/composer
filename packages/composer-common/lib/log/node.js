@@ -21,19 +21,19 @@
 class Node {
 
     /** @description creates a new node
-     * @TODO replace the include with a filter level
      *
      * @param {String} name name of the node i.e. package & class
+     * @param {int} logLevel loglevel for this node
      * @param {boolean} include should this included in the trace
      *
      * @private
      */
-    constructor(name,include){
+    constructor(name,logLevel,include){
         this.name=name;
         this.include =include;
+        this.logLevel=logLevel;
         this.children=[];
     }
-
 
     /**
      * @description adds a new node as a child of this at the start of the listTitles
@@ -56,6 +56,25 @@ class Node {
     }
 
     /**
+     * @description what is the loglevel of this node?
+     * @return {int} loglevel as set on constructor
+     *
+     * @private
+     */
+    getLogLevel(){
+        return this.logLevel;
+    }
+
+    /**
+     * @description what is the loglevel of this node?
+     * @param {int} loglevel as set on constructor
+     * @private
+     */
+    setLogLevel(loglevel){
+        this.logLevel = loglevel;
+    }
+
+    /**
      * @description is this node included in the set trace settings
      * @return {boolean} included true or false
      *
@@ -64,7 +83,6 @@ class Node {
     isIncluded(){
         return this.include;
     }
-
 
     /**
      * @description Set the node to be an inclusion
@@ -81,7 +99,7 @@ class Node {
     * @private
     */
     findChild(nameToFind){
-     // do an array search of the children and match the nameToFind
+        // do an array search of the children and match the nameToFind
         return this.children.find(function(element){
             return  element.getName()===this;
         },nameToFind);
