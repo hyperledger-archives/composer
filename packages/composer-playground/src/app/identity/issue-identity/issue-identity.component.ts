@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -32,11 +32,12 @@ import { ClientService } from '../../services/client.service';
 })
 export class IssueIdentityComponent implements OnInit {
 
+    @Input() participants: Map<string, Resource> = new Map<string, Resource>();
+
     private issueInProgress: boolean = false;
     private userID: string = null;
     private participantFQI: string = null;
     private participantFQIs: string[] = [];
-    private participants: Map<string, Resource> = new Map<string, Resource>();
     private issuer: boolean = false;
     private isParticipant: boolean = true;
     private noMatchingParticipant = 'Named Participant does not exist in Participant Registry.';
@@ -47,37 +48,14 @@ export class IssueIdentityComponent implements OnInit {
 
     }
 
-    ngOnInit(): Promise<any> {
+    ngOnInit(): void {
         return this.loadParticipants();
     }
 
     loadParticipants() {
-        return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries()
-            .then((participantRegistries) => {
-                return Promise.all(participantRegistries.map((registry) => {
-                    return registry.getAll();
-                }));
-            })
-            .then((participantArrays) => {
-                return Promise.all(
-                    participantArrays.reduce(
-                        (accumulator, currentValue) => accumulator.concat(currentValue),
-                        []
-                    ));
-            })
-            .then((allParticipants) => {
-                return Promise.all(allParticipants.map((registryParticipant) => {
-                    return this.participants.set(registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
-                }));
-            })
-            .then(() => {
-                this.participantFQIs = Array.from(this.participants.keys()).sort((a, b) => {
-                    return a.localeCompare(b);
-                });
-            })
-            .catch((error) => {
-                this.alertService.errorStatus$.next(error);
-            });
+        this.participantFQIs = Array.from(this.participants.keys()).sort((a, b) => {
+            return a.localeCompare(b);
+        });
     }
 
     search = (text$: Observable<string>) =>

@@ -23,12 +23,13 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IdentityComponent } from './identity.component';
+import { IssueIdentityComponent } from './issue-identity';
 import { AlertService } from '../basic-modals/alert.service';
 import { ClientService } from '../services/client.service';
 import { IdentityCardService } from '../services/identity-card.service';
 import { AdminService } from '../services/admin.service';
-import { BusinessNetworkConnection } from 'composer-client';
-import { IdCard } from 'composer-common';
+import { BusinessNetworkConnection, ParticipantRegistry } from 'composer-client';
+import { IdCard, Resource } from 'composer-common';
 import { LocalStorageService } from 'angular-2-local-storage';
 
 import * as fileSaver from 'file-saver';
@@ -36,6 +37,7 @@ import * as fileSaver from 'file-saver';
 import * as chai from 'chai';
 
 import * as sinon from 'sinon';
+import { WSAEINVALIDPROVIDER } from 'constants';
 
 let should = chai.should();
 
@@ -71,6 +73,7 @@ describe(`IdentityComponent`, () => {
     let currentCardRef;
     let currentIdCard;
     let cardOne;
+    let networkAdmin;
 
     beforeEach(() => {
         mockModal = sinon.createStubInstance(NgbModal);
@@ -88,17 +91,34 @@ describe(`IdentityComponent`, () => {
             getAll: sinon.stub().returns([{
                 name: 'bob', participant: {
                     $namespace: 'bob-namespace',
-                    $type: 'bob-type'
-                }
+                    $type: 'bob-type',
+                    getType: () => { return 'bob-type'; },
+                    getNamespace: () => { return 'bob-namespace'; },
+                    getIdentifier: () => { return 'pingu'; }
+                },
             }, {
                 name: 'fred', participant: {
                     $namespace: 'fred-namespace',
-                    $type: 'fred-type'
+                    $type: 'fred-type',
+                    getType: () => { return 'fred-type'; },
+                    getNamespace: () => { return 'fred-namespace'; },
+                    getIdentifier: () => { return 'pinga'; }
                 }
             }, {
                 name: 'jim', participant: {
                     $namespace: 'jim-namespace',
-                    $type: 'jim-type'
+                    $type: 'jim-type',
+                    getType: () => { return 'NetworkAdmin'; },
+                    getNamespace: () => { return 'jim-namespace'; },
+                    getIdentifier: () => { return 'pingo'; }
+                }
+            }, {
+                name: 'tony', participant: {
+                    $namespace: 'tony-namespace',
+                    $type: 'tony-type',
+                    getType: () => { return 'tony-type'; },
+                    getNamespace: () => { return 'tony-namespace'; },
+                    getIdentifier: () => { return 'pinga'; }
                 }
             }])
         });
@@ -138,11 +158,18 @@ describe(`IdentityComponent`, () => {
             type: 'hlfv1'
         });
 
+        networkAdmin = new IdCard({userName: 'jim', businessNetwork: 'penguin-network'}, {
+            name: 'mycp',
+            type: 'hlfv1'
+        });
+
         identityCardService.addIdentityCard(currentIdCard, null).then((cardRef) => {
             currentCardRef = cardRef;
             return identityCardService.setCurrentIdentityCard(cardRef);
         }).then(() => {
             return identityCardService.addIdentityCard(cardOne, 'cardOne');
+        }).then(() => {
+            return identityCardService.addIdentityCard(networkAdmin, 'networkAdmin');
         });
 
         tick();
@@ -155,39 +182,13 @@ describe(`IdentityComponent`, () => {
         });
 
         it('should load the identities', fakeAsync(() => {
+
+            let myLoadIdentitiesMock = sinon.stub(component, 'loadAllIdentities');
+            myLoadIdentitiesMock.returns(Promise.resolve());
+
             fixture.detectChanges();
 
             tick();
-
-            component['currentIdentity'].should.equal(currentCardRef);
-            component['identityCards'].size.should.equal(2);
-            component['identityCards'].get(currentCardRef).should.equal(currentIdCard);
-            component['identityCards'].get('cardOne').should.equal(cardOne);
-            component['cardRefs'].length.should.equal(2);
-            component['cardRefs'][0].should.equal(currentCardRef);
-            component['cardRefs'][1].should.equal('cardOne');
-
-            component['businessNetworkName'].should.equal('penguin-network');
-
-            component['allIdentities'].length.should.equal(3);
-
-            component['allIdentities'][0].should.deep.equal({
-                name: 'bob',
-                participant: {
-                    $namespace: 'bob-namespace',
-                    $type: 'bob-type'
-                },
-                ref: currentCardRef
-            });
-
-            component['allIdentities'][1].should.deep.equal({
-                name: 'fred',
-                participant: {
-                    $namespace: 'fred-namespace',
-                    $type: 'fred-type'
-                },
-                ref: 'cardOne'
-            });
         }));
 
         it('should give an alert if there is an error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
@@ -197,6 +198,58 @@ describe(`IdentityComponent`, () => {
             let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
 
             fixture.detectChanges();
+
+            tick();
+
+            alertSpy.should.have.been.called;
+        })));
+    });
+
+    describe('loadAllIdentities', () => {
+        it('should load all the identities and handle those bound to participants not found', fakeAsync(() => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.onFirstCall().returns(true);
+            myGetParticipantMock.onSecondCall().returns(false);
+            myGetParticipantMock.onThirdCall().returns(true);
+
+            component.loadAllIdentities();
+
+            tick();
+            component['businessNetworkName'].should.equal('penguin-network');
+            myLoadParticipantsMock.should.have.been.called;
+            component['allIdentities'].length.should.deep.equal(4);
+            component['allIdentities'][0]['ref'].should.deep.equal('bob@penguin-network');
+            component['allIdentities'][0].should.not.have.property('state');
+            component['allIdentities'][1]['ref'].should.deep.equal('cardOne');
+            component['allIdentities'][1]['state'].should.deep.equal('BOUND PARTICIPANT NOT FOUND');
+            component['allIdentities'][2]['ref'].should.deep.equal('networkAdmin');
+            component['allIdentities'][2].should.not.have.property('state');
+            component['allIdentities'][3]['name'].should.deep.equal('tony');
+            component['allIdentities'][3].should.not.have.property('state');
+
+            component['currentIdentity'].should.deep.equal(currentCardRef);
+            component['identityCards'].size.should.deep.equal(3);
+            component['identityCards'].get(currentCardRef).should.deep.equal(currentIdCard);
+            component['identityCards'].get('cardOne').should.deep.equal(cardOne);
+            component['myIDs'].length.should.deep.equal(3);
+            component['myIDs'][0]['ref'].should.deep.equal('bob@penguin-network');
+            component['myIDs'][0]['usable'].should.deep.equal(true);
+            component['myIDs'][1]['ref'].should.deep.equal('cardOne');
+            component['myIDs'][1]['usable'].should.deep.equal(false);
+            component['myIDs'][2]['ref'].should.deep.equal('networkAdmin');
+            component['myIDs'][2]['usable'].should.deep.equal(true);
+        }));
+
+        it('should give an alert if there is an error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+
+            mockBusinessNetworkConnection.getIdentityRegistry.rejects('some error');
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+
+            component.loadAllIdentities();
 
             tick();
 
@@ -220,6 +273,7 @@ describe(`IdentityComponent`, () => {
 
         it('should show the new id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
             });
 
@@ -258,6 +312,7 @@ describe(`IdentityComponent`, () => {
             let expectedFile = new Blob(['card data'], {type: 'application/octet-stream'});
             sinon.stub(cardOne, 'toArchive').resolves(expectedFile);
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
             });
 
@@ -281,6 +336,12 @@ describe(`IdentityComponent`, () => {
         }));
 
         it('should add id to wallet when using the web profile', fakeAsync(inject([IdentityCardService, AlertService], (identityCardService: IdentityCardService, alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
             let newCurrentIdCard = new IdCard({userName: 'penguinWeb', businessNetwork: 'igloo-network'}, {
                 'name': 'mycp',
                 'x-type': 'web'
@@ -294,6 +355,7 @@ describe(`IdentityComponent`, () => {
             tick();
 
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.resolve({userID: 'snowMan', userSecret: 'mySecret'})
             });
 
@@ -323,10 +385,17 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should handle error with issuing id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
             fixture.detectChanges();
             tick();
 
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.reject('some error')
             });
 
@@ -346,10 +415,17 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should handle esc being pressed', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
             fixture.detectChanges();
             tick();
 
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.reject(1)
             });
 
@@ -364,10 +440,17 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should handle error with reloading', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
             fixture.detectChanges();
             tick();
 
             mockModal.open.onFirstCall().returns({
+                componentInstance: {},
                 result: Promise.resolve({userID: 'fred', userSecret: 'mySecret'})
             });
 
@@ -397,6 +480,15 @@ describe(`IdentityComponent`, () => {
 
     describe('setCurrentIdentity', () => {
         it('should set the current identity', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -425,6 +517,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should do nothing if the new identity matches the current identity', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -443,7 +544,45 @@ describe(`IdentityComponent`, () => {
             loadAllIdentitiesSpy.should.not.have.been.called;
         })));
 
+        it('should do nothing if the new identity is not usable', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.onFirstCall().returns(true);
+            myGetParticipantMock.onSecondCall().returns(false);
+
+            fixture.detectChanges();
+            tick();
+
+            fixture.detectChanges();
+            tick();
+
+            let identityElements = fixture.debugElement.queryAll(By.css('.identity'));
+            let identityToChangeToElement = identityElements[1];
+
+            let alertSpy = sinon.spy(alertService.busyStatus$, 'next');
+            let loadAllIdentitiesSpy = sinon.spy(component, 'loadAllIdentities');
+
+            identityToChangeToElement.triggerEventHandler('dblclick', null);
+
+            fixture.detectChanges();
+            tick();
+
+            alertSpy.should.not.have.been.called;
+            loadAllIdentitiesSpy.should.not.have.been.called;
+        })));
+
         it('should handle errors and revert to previous on error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -471,6 +610,15 @@ describe(`IdentityComponent`, () => {
 
     describe('openRemoveModal', () => {
         it('should open the delete-confirm modal and handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -497,6 +645,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should open the delete-confirm modal and handle cancel', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -518,6 +675,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should open the delete-confirm modal and handle remove press', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -549,6 +715,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should handle error on trying to remove', fakeAsync(inject([AlertService, IdentityCardService], (alertService: AlertService, identityCardService: IdentityCardService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -580,10 +755,18 @@ describe(`IdentityComponent`, () => {
 
     describe('revokeIdentity', () => {
         it('should open the delete-confirm modal and revoke the id', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
             fixture.detectChanges();
             tick();
 
             fixture.detectChanges();
+            tick();
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -601,7 +784,7 @@ describe(`IdentityComponent`, () => {
                 }
             });
 
-            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
 
             let revokeButton = revokeElement.query(By.css('button'));
             revokeButton.triggerEventHandler('click', null);
@@ -613,6 +796,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should open the delete-confirm modal and revoke the id and handle not being in wallet', fakeAsync(inject([AlertService, IdentityCardService], (alertService: AlertService, identityCardService: IdentityCardService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -636,7 +828,9 @@ describe(`IdentityComponent`, () => {
                 }
             });
 
-            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[6];
+
+            // NEED TO MAKE A NEW PARTICIPANT (AFTER JIM) WHO WILL NOT BE ADDED TO THE WALLET
 
             let revokeButton = revokeElement.query(By.css('button'));
             revokeButton.triggerEventHandler('click', null);
@@ -648,6 +842,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should open the delete-confirm modal and handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -665,7 +868,7 @@ describe(`IdentityComponent`, () => {
                 }
             });
 
-            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
 
             let revokeButton = revokeElement.query(By.css('button'));
             revokeButton.triggerEventHandler('click', null);
@@ -677,6 +880,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should open the delete-confirm modal and handle cancel', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -689,7 +901,7 @@ describe(`IdentityComponent`, () => {
 
             let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
 
-            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
 
             let revokeButton = revokeElement.query(By.css('button'));
             revokeButton.triggerEventHandler('click', null);
@@ -701,6 +913,15 @@ describe(`IdentityComponent`, () => {
         })));
 
         it('should handle error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+            let myLoadParticipantsMock = sinon.stub(component, 'loadParticipants');
+            let myGetParticipantMock = sinon.stub(component, 'getParticipant');
+
+            myLoadParticipantsMock.returns(Promise.resolve());
+            myGetParticipantMock.returns(true);
+
+            fixture.detectChanges();
+            tick();
+
             fixture.detectChanges();
             tick();
 
@@ -720,7 +941,7 @@ describe(`IdentityComponent`, () => {
 
             mockClientService.revokeIdentity.returns(Promise.reject('some error'));
 
-            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[3];
+            let revokeElement = fixture.debugElement.queryAll(By.css('.identity'))[4];
 
             let revokeButton = revokeElement.query(By.css('button'));
             revokeButton.triggerEventHandler('click', null);
@@ -730,4 +951,71 @@ describe(`IdentityComponent`, () => {
             alertSpy.should.have.been.called;
         })));
     });
+
+    describe('#loadParticipants', () => {
+
+        it('should create a map of participants', fakeAsync(() => {
+
+            let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegistry);
+            let mockParticipant1 = sinon.createStubInstance(Resource);
+            mockParticipant1.getFullyQualifiedIdentifier.returns('org.animals.Penguin#Emperor');
+            let mockParticipant2 = sinon.createStubInstance(Resource);
+            mockParticipant2.getFullyQualifiedIdentifier.returns('org.animals.Penguin#King');
+            mockParticpantRegistry.getAll.returns([mockParticipant2, mockParticipant1]);
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([mockParticpantRegistry]));
+
+            component['loadParticipants']();
+
+            tick();
+
+            let expected = new Map();
+            expected.set('org.animals.Penguin#Emperor', new Resource());
+            expected.set('org.animals.Penguin#King', new Resource());
+            component['participants'].should.deep.equal(expected);
+        }));
+
+        it('should alert if there is an error', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.reject('some error'));
+
+            let alertSpy = sinon.spy(alertService.errorStatus$, 'next');
+            alertService.errorStatus$.subscribe((message) => {
+                if (message) {
+                    message.should.deep.equal('some error');
+                }
+            });
+
+            component['loadParticipants']();
+
+            tick();
+
+            alertSpy.should.have.been.called;
+        })));
+    });
+
+    describe('#getParticipant', () => {
+        it('should get the specified participant', () => {
+            let mockParticipant1 = sinon.createStubInstance(Resource);
+            mockParticipant1.getFullyQualifiedIdentifier.returns('org.animals.Penguin#Emperor');
+            mockParticipant1.getIdentifier.returns('Emperor');
+            mockParticipant1.getType.returns('org.animals.Penguin');
+            let mockParticipant2 = sinon.createStubInstance(Resource);
+            mockParticipant2.getFullyQualifiedIdentifier.returns('org.animals.Penguin#King');
+            mockParticipant2.getIdentifier.returns('King');
+            mockParticipant2.getType.returns('org.animals.Penguin');
+            let mockParticipant3 = sinon.createStubInstance(Resource);
+            mockParticipant3.getFullyQualifiedIdentifier.returns('org.animals.Penguin#Macaroni');
+            mockParticipant3.getIdentifier.returns('Macaroni');
+            mockParticipant3.getType.returns('org.animals.Penguin');
+
+            component['participants'].set('Emperor', mockParticipant1);
+            component['participants'].set('King', mockParticipant2);
+            component['participants'].set('Macaroni', mockParticipant2);
+
+            let participant = component['getParticipant']('King');
+
+            participant.getIdentifier().should.equal('King');
+            participant.getType().should.equal('org.animals.Penguin');
+        });
+});
 });

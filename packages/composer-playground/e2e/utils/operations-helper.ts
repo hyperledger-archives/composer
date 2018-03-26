@@ -53,6 +53,11 @@ export class OperationsHelper {
     return element(by.css(type)).all(by.css(subset));
   }
 
+  static retrieveMatchingElementsByCSSFromParentByID(parent: string, child: string, minCount) {
+    browser.wait(this.elementsPresent(element(by.id(parent)).all(by.css(child)), minCount), Constants.longWait);
+    return element(by.id(parent)).all(by.css(child));
+  }
+
   // Custom ExpectedCondition to be used to ensure that ArrayFinder count is non-zero
   static elementsPresent(elementArrayFinder, minCount) {
     let hasCount = (() => {

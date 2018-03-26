@@ -29,6 +29,14 @@ Feature: Cli-identities steps
     Scenario: Using the CLI, I can create new Participants
         When I run the following expected pass CLI command
             """
+            composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"ted","firstName":"ted","lastName":"teddington"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+
+    Scenario: Using the CLI, I can create new Participants
+        When I run the following expected pass CLI command
+            """
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"ange","firstName":"angela","lastName":"angleton"}'
             """
         Then The stdout information should include text matching /Command succeeded/
@@ -53,6 +61,22 @@ Feature: Cli-identities steps
             Then The stdout information should include text matching /firstName:     sally/
             Then The stdout information should include text matching /lastName:      sallyington/
             Then The stdout information should include text matching /Command succeeded/
+            Then The stdout information should include text matching /\$class:        org.acme.sample.SampleParticipant/
+            Then The stdout information should include text matching /participantId: fra/
+            Then The stdout information should include text matching /firstName:     frank/
+            Then The stdout information should include text matching /lastName:      frankington/
+            Then The stdout information should include text matching /Command succeeded/
+            Then The stdout information should include text matching /\$class:        org.acme.sample.SampleParticipant/
+            Then The stdout information should include text matching /participantId: ted/
+            Then The stdout information should include text matching /firstName:     ted/
+            Then The stdout information should include text matching /lastName:      teddington/
+            Then The stdout information should include text matching /Command succeeded/
+            Then The stdout information should include text matching /\$class:        org.acme.sample.SampleParticipant/
+            Then The stdout information should include text matching /participantId: ange/
+            Then The stdout information should include text matching /firstName:     angela/
+            Then The stdout information should include text matching /lastName:      angleton/
+            Then The stdout information should include text matching /Command succeeded/
+
 
     Scenario: Using the CLI, I can list all the current Identities
         When I run the following expected pass CLI command
@@ -269,3 +293,30 @@ Feature: Cli-identities steps
             """
         Then The stdout information should include text matching /The current identity, with the name '.+?' and the identifier '.+?', has been revoked/
         Then The stderr information should include text matching /List business network from card bob@basic-sample-network/
+
+    Scenario: Using the CLI, I can issue an Identity to the participant called Ted
+        When I run the following expected pass CLI command
+            """
+            composer identity issue --card admin@basic-sample-network -u ted -a org.acme.sample.SampleParticipant#ted -f ./tmp/ted_DONOTIMPORT@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/ted_DONOTIMPORT@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can delete Participants
+        When I run the following expected pass CLI command
+            """
+            composer transaction submit --card admin@basic-sample-network -d '{"$class": "org.hyperledger.composer.system.RemoveParticipant", "resourceIds": ["ted"], "resources": [], "targetRegistry": "resource:org.hyperledger.composer.system.ParticipantRegistry#org.acme.sample.SampleParticipant"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can list participants and see those that's participant has been removed
+        When I run the following expected pass CLI command
+            """
+            composer identity list --card admin@basic-sample-network
+            """
+        Then The stdout information should include text matching /\$class:      org.hyperledger.composer.system.Identity/
+        Then The stdout information should include text matching /name:        ted/
+        Then The stdout information should include text matching /issuer:/
+        Then The stdout information should include text matching /state:       BOUND PARTICIPANT NOT FOUND/
+        Then The stdout information should include text matching /Command succeeded/
