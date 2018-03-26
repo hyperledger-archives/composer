@@ -24,7 +24,7 @@ import { EditorComponent } from './editor.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, IdCard } from 'composer-common';
 import { EditorFile } from '../services/editor-file';
@@ -1356,11 +1356,6 @@ describe('EditorComponent', () => {
             });
             idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
 
-            mockModal.open = sinon.stub().returns({
-                componentInstance: {},
-                result: Promise.resolve({peer: peerCard, channel: channelCard})
-            });
-
             service.addIdentityCard(idCard, 'myCardRef')
                 .then(() => {
                     return service.setCurrentIdentityCard('myCardRef');
@@ -1381,7 +1376,7 @@ describe('EditorComponent', () => {
             mockUpdatePackage.reset();
         });
 
-        it('should deploy the file', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+        it('should deploy the file using current web profile card', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
             mockFileService.isDirty.returns(true);
             component['canDeploy'] = true;
 
@@ -1402,6 +1397,74 @@ describe('EditorComponent', () => {
 
             component['deploying'].should.equal(false);
 
+            mockModal.open.should.not.have.been.called;
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, 'myCardRef', 'myCardRef');
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
+        })));
+
+        it('should show an error if there is no PeerAdmin or ChannelAdmin card', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myOtherProfile'});
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
+            component['currentFile'] = 'my file';
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+
+            mockModal.open.should.not.have.been.called;
+            upgradeSpy.should.not.have.been.called;
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.successStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith(sinon.match(/You must import business network cards with the correct admin rights/));
+        })));
+
+        it('should deploy the file using selected fabric profile admin cards', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve({peerCardRef: 'peerRef', channelCardRef: 'channelRef'})
+            });
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
+            component['currentFile'] = 'my file';
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            component['deploying'].should.equal(true);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+
+            mockModal.open.should.have.been.called;
             upgradeSpy.should.have.been.calledWith(businessNetworkDef, 'peerRef', 'channelRef');
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
@@ -1425,6 +1488,86 @@ describe('EditorComponent', () => {
             deployButton.triggerEventHandler('click', null);
 
             identitySpy.should.not.have.been.called;
+        })));
+
+        it('should handle error from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        })));
+
+        it('should handle cancel from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        })));
+
+        it('should handle ESC from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(ModalDismissReasons.ESC)
+            });
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
         })));
 
         it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {

@@ -3,7 +3,7 @@
     <svg class="ibm-icon" aria-hidden="true">
       <use xlink:href="#icon-warn_32"></use>
     </svg>
-    <h1>Business Network {{network}} cannot be updated</h1>
+    <h1>Business network {{network}} cannot be updated</h1>
     <button class="icon modal-exit" (click)="activeModal.dismiss()">
       <svg class="ibm-icon" aria-hidden="true">
         <use xlink:href="#icon-close_new"></use>
@@ -12,9 +12,9 @@
   </div>
   <section class="modal-body">
     <section class="information">
-      <p>You can only connect to the <b>{{network}}</b> Business Network to view and test the version that has already been deployed.</p>
+      <p>You can only connect to <b>{{network}}</b> to view and test the deployed business network version.</p>
       <p>
-        You must import identity cards with the correct admin rights before you can deploy new versions of a Business Network.
+        You must import business network cards with the correct admin rights before you can deploy new versions of a business network.
         <a href="https://hyperledger.github.io/composer/business-network/bnd-deploy.html" target="_blank">Learn more</a>.
       </p>
     </section>
