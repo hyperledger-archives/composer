@@ -236,6 +236,14 @@ ga('send', 'pageview');
 <li><a href="/composer/next-unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/next-unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/next-unstable/systemns/systemns-index"><b>System Name Space Reference</b><img src="/composer/next-unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/next-unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/next-unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/next-unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/next-unstable/systemns/04_transactions">Transactions</a></li>
+</ul></li>
 </ul>
 
             
@@ -271,6 +279,42 @@ ga('send', 'pageview');
 
 <script>
   window.store = {
+    
+      "systemns-01-summary": {
+        "title": "Summary",
+        "author": "",
+        "category": "",
+        "content": "SummaryAsset DefinitionNamespaceNameDescriptionorg.hyperledger.composer.system.AssetAssetAn asset named Assetorg.hyperledger.composer.system.RegistryRegistryAn asset named Registryorg.hyperledger.composer.system.AssetRegistryAssetRegistryAn asset named AssetRegistryorg.hyperledger.composer.system.ParticipantRegistryParticipantRegistryAn asset named ParticipantRegistryorg.hyperledger.composer.system.TransactionRegistryTransactionRegistryAn asset named TransactionRegistryorg.hyperledger.composer.system.NetworkNetworkAn asset named Networkorg.hyperledger.composer.system.HistorianRecordHistorianRecordAn asset named HistorianRecordorg.hyperledger.composer.system.IdentityIdentityAn asset named IdentityTransaction DefinitionNamespaceNameDescriptionorg.hyperledger.composer.system.TransactionTransactionA transaction named Transactionorg.hyperledger.composer.system.RegistryTransactionRegistryTransactionA transaction named RegistryTransactionorg.hyperledger.composer.system.AssetTransactionAssetTransactionA transaction named AssetTransactionorg.hyperledger.composer.system.ParticipantTransactionParticipantTransactionA transaction named ParticipantTransactionorg.hyperledger.composer.system.AddAssetAddAssetA transaction named AddAssetorg.hyperledger.composer.system.UpdateAssetUpdateAssetA transaction named UpdateAssetorg.hyperledger.composer.system.RemoveAssetRemoveAssetA transaction named RemoveAssetorg.hyperledger.composer.system.AddParticipantAddParticipantA transaction named AddParticipantorg.hyperledger.composer.system.UpdateParticipantUpdateParticipantA transaction named UpdateParticipantorg.hyperledger.composer.system.RemoveParticipantRemoveParticipantA transaction named RemoveParticipantorg.hyperledger.composer.system.IssueIdentityIssueIdentityA transaction named IssueIdentityorg.hyperledger.composer.system.BindIdentityBindIdentityA transaction named BindIdentityorg.hyperledger.composer.system.ActivateCurrentIdentityActivateCurrentIdentityA transaction named ActivateCurrentIdentityorg.hyperledger.composer.system.RevokeIdentityRevokeIdentityA transaction named RevokeIdentityorg.hyperledger.composer.system.StartBusinessNetworkStartBusinessNetworkA transaction named StartBusinessNetworkorg.hyperledger.composer.system.ResetBusinessNetworkResetBusinessNetworkA transaction named ResetBusinessNetworkorg.hyperledger.composer.system.SetLogLevelSetLogLevelA transaction named SetLogLevelParticipant DefinitionNamespaceNameDescriptionorg.hyperledger.composer.system.ParticipantParticipantAn participant named Participantorg.hyperledger.composer.system.NetworkAdminNetworkAdminAn participant named NetworkAdmin",
+        "url": "/composer/next-unstable//systemns/01_summary"
+      }
+      ,
+    
+      "systemns-02-assets": {
+        "title": "Assets",
+        "author": "",
+        "category": "",
+        "content": "Asset ModelAssetThe fully qualified name is org.hyperledger.composer.system.Asset An asset named AssetAdditional InformationPropertiesNameTypeDescriptionReferencesRegistryThe fully qualified name is org.hyperledger.composer.system.Registry An asset named RegistryAdditional InformationPropertiesNameTypeDescriptionregistryIdstringidentitynamestringName of the regsitrytypestringtype of the regsitrysystembooleanIs this a system registry?ReferencesAssetRegistryThe fully qualified name is org.hyperledger.composer.system.AssetRegistry An asset named AssetRegistryAdditional InformationPropertiesNameTypeDescriptionReferencesParticipantRegistryThe fully qualified name is org.hyperledger.composer.system.ParticipantRegistry An asset named ParticipantRegistryAdditional InformationPropertiesNameTypeDescriptionReferencesTransactionRegistryThe fully qualified name is org.hyperledger.composer.system.TransactionRegistry An asset named TransactionRegistryAdditional InformationPropertiesNameTypeDescriptionReferencesNetworkThe fully qualified name is org.hyperledger.composer.system.Network An asset named NetworkAdditional InformationPropertiesNameTypeDescriptionnetworkIdstringof the business networkruntimeVersionstringReferencesHistorianRecordThe fully qualified name is org.hyperledger.composer.system.HistorianRecord An asset named HistorianRecordAdditional InformationPropertiesNameTypeDescriptiontransactionIdstringUsing the transaction id as the uuidtransactionTypestringtransactionInvokedstringRelationship to transactionparticipantInvokingstringParticipant who invoked this transactionidentityUsedstringThe identity that was used by the participanteventsEmittedarrayThe events that were emitted by this transactionIdtransactionTimestampstringUse the transaction&#39;s timestampReferencesComposer DocumentationIdentityThe fully qualified name is org.hyperledger.composer.system.Identity An asset named IdentityAdditional InformationPropertiesNameTypeDescriptionidentityIdstringUnique IdentifiersnamestringName given to this identityissuerstringThe issuercertificatestringThe certificatestateenumState the indenitiy is inparticipantstringAssociated participantReferences",
+        "url": "/composer/next-unstable//systemns/02_assets"
+      }
+      ,
+    
+      "systemns-03-participants": {
+        "title": "Participants",
+        "author": "",
+        "category": "",
+        "content": "Particpant ModelParticipantThe fully qualified name is org.hyperledger.composer.system.Participant NameTypeDescriptionNetworkAdminThe fully qualified name is org.hyperledger.composer.system.NetworkAdmin NameTypeDescriptionparticipantIdstringIdentifier fields of the participant",
+        "url": "/composer/next-unstable//systemns/03_participants"
+      }
+      ,
+    
+      "systemns-04-transactions": {
+        "title": "Transactions",
+        "author": "",
+        "category": "",
+        "content": "Transaction Functions DetailTransactionThe fully qualified name is org.hyperledger.composer.system.Transaction A transaction named Transaction NameTypeDescriptiontransactionIdstringIdentifier for this transactiontimestampstringTimestamp for this transactionRegistryTransactionThe fully qualified name is org.hyperledger.composer.system.RegistryTransaction A transaction named RegistryTransaction NameTypeDescriptiontargetRegistrystringRegistry that will be manipulatedAssetTransactionThe fully qualified name is org.hyperledger.composer.system.AssetTransaction A transaction named AssetTransaction NameTypeDescriptionresourcesarrayResources that will be manipulatedParticipantTransactionThe fully qualified name is org.hyperledger.composer.system.ParticipantTransaction A transaction named ParticipantTransaction NameTypeDescriptionresourcesarrayparticipants that will be manipulatedAddAssetThe fully qualified name is org.hyperledger.composer.system.AddAsset A transaction named AddAsset NameTypeDescriptionUpdateAssetThe fully qualified name is org.hyperledger.composer.system.UpdateAsset A transaction named UpdateAsset NameTypeDescriptionRemoveAssetThe fully qualified name is org.hyperledger.composer.system.RemoveAsset A transaction named RemoveAsset NameTypeDescriptionresourceIdsarrayIdentifiers of the assets to removeAddParticipantThe fully qualified name is org.hyperledger.composer.system.AddParticipant A transaction named AddParticipant NameTypeDescriptionUpdateParticipantThe fully qualified name is org.hyperledger.composer.system.UpdateParticipant A transaction named UpdateParticipant NameTypeDescriptionRemoveParticipantThe fully qualified name is org.hyperledger.composer.system.RemoveParticipant A transaction named RemoveParticipant NameTypeDescriptionresourceIdsarrayIdentifiers of the participants to removeIssueIdentityThe fully qualified name is org.hyperledger.composer.system.IssueIdentity A transaction named IssueIdentity NameTypeDescriptionparticipantstringto issue the identity toidentityNamestringname to use for this identityBindIdentityThe fully qualified name is org.hyperledger.composer.system.BindIdentity A transaction named BindIdentity NameTypeDescriptionparticipantstringto issue bind identity tocertificatestringto useActivateCurrentIdentityThe fully qualified name is org.hyperledger.composer.system.ActivateCurrentIdentity A transaction named ActivateCurrentIdentity NameTypeDescriptionRevokeIdentityThe fully qualified name is org.hyperledger.composer.system.RevokeIdentity A transaction named RevokeIdentity NameTypeDescriptionidentitystringto revokeStartBusinessNetworkThe fully qualified name is org.hyperledger.composer.system.StartBusinessNetwork A transaction named StartBusinessNetwork NameTypeDescriptionlogLevelstringLog level to use optionallybootstrapTransactionsarrayoptional transactions to use to bootstrap the networkResetBusinessNetworkThe fully qualified name is org.hyperledger.composer.system.ResetBusinessNetwork A transaction named ResetBusinessNetwork NameTypeDescriptionSetLogLevelThe fully qualified name is org.hyperledger.composer.system.SetLogLevel A transaction named SetLogLevel NameTypeDescriptionnewLogLevelstringa valid debug string",
+        "url": "/composer/next-unstable//systemns/04_transactions"
+      }
+      ,
     
       "404": {
         "title": "Page Not Found :(",
@@ -818,6 +862,15 @@ ga('send', 'pageview');
         "category": "",
         "content": "Namecomposer generator create - create code artifacts based on a business network definitionSynopsiscomposer generator create &lt;options&gt;Options:  --help             Show help  [boolean]  -v, --version      Show version number  [boolean]  --archiveFile, -a  Business network archive file name. Default is based on the Identifier of the BusinessNetwork  [string] [required]  --format, -f       Format of code to generate: Go (beta), PlantUML, Typescript (beta), JSONSchema.  [required]  --outputDir, -o    Output Location  [required]DescriptionThis will take the  Composer business network definition as input and create artifacts related to writing new applications.Options-a --archiveFileThe path to the business network archive file. This will be the source that is used to create the artifacts-f --formatThe format of the artifacts that will be created.go Generates class definitions in the go language for the assets and participantsTypescript Generates class definitions in the Typescript language for the assets and participantsJSONSchema Generates the equivalent to the model in JSONSchemaPlantUML Generates a description of the model suitable for use with PlantUML to generate diagrams--helpShows the help text-v --versionShows the version numberExample Usagecomposer generator create --archiveFile digitalPropertyNetwork.bna --format Go --outputDir ./dev/go-app",
         "url": "/composer/next-unstable//reference/composer.generator.create"
+      }
+      ,
+    
+      "reference-composer-generator-docs": {
+        "title": "Hyperledger Composer Generator CLI",
+        "author": "",
+        "category": "",
+        "content": "Namecomposer generator docs - create documentation for a Business NetworkSynopsiscomposer generator docs &lt;options&gt;Options:  --help             Show help  [boolean]  -v, --version      Show version number  [boolean]  --archive, -a  Business network archive file name. Default is based on the Identifier of the BusinessNetwork  [string] [required]  --config, -c   Path to the configuration file to use, default is one specificaly for BNA files  [default: \"\"]  --outdir, -o   Output Location  [default: \"./out\"]DescriptionThis will take the  Composer business network definition as input and create html based documentation for all aspects.Options-a --archiveFileThe path to the business network archive file. This will be the source that is used to create the artifacts-c --configThe configuration that controls how the documentation is produced. An existing template is in-built and this does not need to specified.Reserved for future expansion-o --outputThe output directory with the html. index.html is the starting point. --helpShows the help text-v --versionShows the version numberExample Usagecomposer generator docs --archiveFile digitalPropertyNetwork.bna ",
+        "url": "/composer/next-unstable//reference/composer.generator.docs"
       }
       ,
     
@@ -1457,6 +1510,15 @@ ga('send', 'pageview');
         "category": "start",
         "content": "#Community## Ask a question### Hyperledger Rocket.ChatYou will need a [Linux Foundation ID](https://identity.linuxfoundation.org/) , or alternatively you can log in with Facebook, GitHub, Google, or OpenStack.Let's chat### Stack OverflowAsk questions in Stack Overflow with the tag **#hyperledger-composer**.Ask now## Contribute to the Project### GitHubCheck out the code, feel free to get involved.GitHub### Community CallJoin our weekly open community calls.Learn how### FeedbackOh hey, you're on the Community page!  Hopefully that means you've given Hyperledger Composer a try: what did you think?You can help us out by completing this [1-question survey](https://goo.gl/forms/7YPMLP2LTN2hjIRk2) (score us from 0 to 10) - we really appreciate your feedback!",
         "url": "/composer/next-unstable//support/support-index"
+      }
+      ,
+    
+      "systemns-systemns-index": {
+        "title": "System Name Space Reference",
+        "author": "",
+        "category": "",
+        "content": "",
+        "url": "/composer/next-unstable//systemns/systemns-index"
       }
       ,
     
