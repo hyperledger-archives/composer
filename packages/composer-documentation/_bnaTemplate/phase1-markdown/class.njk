@@ -1,0 +1,71 @@
+---
+layout: default
+title: {{name}} ({{module | capitalize }} API)
+section: api
+sidebar: sidebars/accordion-toc0.md
+excerpt: The Client, Admin, and Runtime components of Hyperledger Composer .
+index-order: {{index}}
+---
+# {{name}}
+
+{{commentData.description}}
+
+### Details
+- **Extends** {{extends}}
+- **Module** {{module}}
+
+### See also
+{% for sa in seeAlso -%}
+- {{sa}}
+{% endfor %}
+
+## Method Summary
+| Returns | Name | Description |
+| :--------  | :---- | :----------- |
+{% for method in methods %}| `{{method.returnType}}` | [{{method.name}}](#{{method.name | lower }}{% for args in method.methodArgs %}-{{args}}{% endfor %}) | {{method.description[0]}}  |
+{% endfor %}
+
+## Method Details
+{% for method in methods %}
+{% if method.name == 'constructor'%}
+## new {{name}}() 
+{% else %}
+## {{method.name}}({% for args in method.methodArgs %}{{args}}{% if not loop.last %},{% endif %}{% endfor %}) 
+{% endif %}
+
+
+
+{% for l in method.description -%}
+{{l}}
+{% endfor %}
+
+{% if method.example %}
+### Example
+```javascript
+{{method.example}}
+```
+{% endif %}
+
+{% if method.return %}
+
+### Returns
+`{{method.return.type}}` - {% for l in method.return.description -%}
+{{l}}
+{% endfor %}
+
+{% endif %}
+
+
+### Parameters
+{% if method.parameters -%}
+| Name | Type | Optional | Description |
+| :-----------  | :----------- | :----------- | :----------- |
+{% for p in method.parameters -%}
+|**{{p.name}}**|`{{p.type}}`|{{p.optional}}|{{p.description}}|
+{% endfor %}
+{% else %}
+
+No parameters
+{% endif %}
+{% endfor %}  # method list
+---

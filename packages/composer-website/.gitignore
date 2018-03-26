@@ -51,5 +51,6 @@ out
 jekylldocs/install*.sh
 jsondata/**
 jekylldocs/api/**/*
+jekylldocs/systemns/**/*
 _jsondata/**
 allData.json
