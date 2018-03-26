@@ -83,6 +83,8 @@
                   <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="checkbox" class="form-control">
                 <%}else if(currentParticipant.properties[x].type == 'Double'){%>
                   <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="number" step='any' class="form-control">
+                <%}else if(currentParticipant.identifier.toString() == currentParticipant.properties[x].name.toString()){%>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" class="form-control" disabled="disabled">  
                 <%}else if(currentParticipant.properties[x].type == 'Integer' || currentParticipant.properties[x].type == 'Long'){%>
                   <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="number" class="form-control">
                 <%}else if(currentParticipant.properties[x].type == 'String' || currentParticipant.properties[x].type == 'DateTime'){%>%>
