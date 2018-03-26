@@ -141,6 +141,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     docker rm -f mongo || true
     docker run -d --name mongo -p 27017:27017 mongo
 
+    (docker rm -f composer-wallet-redis || true) && \
+       docker run -p 6379:6379 --name composer-wallet-redis -d redis  && \
+       docker exec composer-wallet-redis redis-cli -c flushall
+
+
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
         npm run int-test-nohsm 2>&1 | tee
@@ -150,6 +155,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
 
     # Stop all test programs.
     docker rm -f mongo || true
+    docker rm -f composer-wallet-redis || true
     npm run stop_ldap
 
     # Kill and remove any started Docker images.
