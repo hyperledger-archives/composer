@@ -50,7 +50,7 @@ index-order: {{index}}
 ## new {{name}}()
 {% else %}
 ## {{method.name}}
-_{{method.return.type}} {{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
+_{% if method.return.type %}{{method.return.type}} {% endif %}{{method.name}}( {% for args in method.parameters %}{% if args.optional%}[{% endif %}{{args.type }} {{args.name | lower }}{% if args.optional%}]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} )_
 {% endif %}
 
 {% for l in method.description -%}
