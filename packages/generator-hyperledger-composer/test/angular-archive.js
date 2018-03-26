@@ -39,10 +39,12 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             apiIP: 'http://localhost',
             apiPort: 3000,
             apiNamespace: 'never'
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
         });
+    });
+
+    it('Will Fail', function (error) {
+        assert.file(__dirname+'/data/digitalPropertyNetwork.bna');
+        assert.fail('Error found:', error);
     });
 
     it('creates typescript classes', function(){
