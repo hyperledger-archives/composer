@@ -20,6 +20,10 @@ module.exports = function () {
         return this.composer.setup();
     });
 
+    this.Given(/^I have setup a (.+?) card wallet environment/, function (type) {
+        return this.composer.setCardStore(type);
+    });
+
     this.Given(/^I have the following (.+?)$/, function (type, table) {
         return this.composer.checkExists(type, table);
     });
