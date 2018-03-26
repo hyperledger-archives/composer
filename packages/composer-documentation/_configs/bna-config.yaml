@@ -1,0 +1,53 @@
+--- 
+tasks:
+    #  Root task that defines common data for all tasks
+    taskid : root
+    processor : root
+    options :
+        outputdir : ${_args.outdir}
+        templateroot: ${default.bnaTemplate}
+        tempdir : ${default.temp}     
+    subtasks :
+    #  Use Hyperledger Composer taks to extract all information and setup the context
+    -   taskid : ParseNetwork
+        processor : composernetwork
+        options :
+            archive : "${_args.archive}"   
+            docsPrefix : "${_args.extDocsRoot}"  
+    #  Uses multiple templates specified in 'inputdir' & 'pattern' to work on the context and produce markdown output files
+    -   taskid : CreateMarkdown
+        processor : njk_multi
+        options :
+            inputdir : "phase1-markdown"
+            pattern : "**/*.njk"
+            outputextension : ".md"
+            outputdir : "${root.tempdir}"
+       
+    # From the markdown files that are created previously generate html
+    # This is a two step process, files needs to converted into html and then wrapped in
+    # the correct header/footer etc. Stream tasks allows the output from one task to go into the second
+    -   taskid : HTML
+        processor: stream
+        options :
+            inputdir : "${root.tempdir}"
+            pattern : "**/*.md"
+            outputdir : "${_args.outdir}"
+            streamid : html1          
+        subtasks :
+            # For each markdown file stream into it this will convert into html and pass on the details via the stream"          
+            -   taskid : markdownhtml
+                processor : markdownit
+            # Single template to be used to process files via stream along with the context
+            -   taskid : htmlrender
+                processor : njk_single
+                options :
+                    inputdir : "phase2-html"
+                    template : html.default.njk
+                    extension: ".html"
+    # Finally need to copy the fixed assets to the output directory "
+    -   taskid : FinalStep
+        processor : copy
+        options :
+            srcdir : "${root.templateroot}/assets.default/**/*" 
+            destdir : "${_args.outdir}/assets"  
+         

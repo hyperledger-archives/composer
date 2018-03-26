@@ -1,0 +1,77 @@
+/**
+ * Defines a data model for a blind vehicle auction
+ */
+namespace org.acme.vehicle.auction
+
+/**
+ * @param {String} firstpart Start
+ * @param {String} secondpart and the end
+ */
+concept VIN {
+  o String firstpart
+  o String secondpart
+}
+
+/**
+ */
+@docsuri('alink','uri')
+asset Vehicle identified by vin {
+  o String vin
+  --> Member[] owner
+}
+
+/**
+ */
+enum ListingState {
+  o FOR_SALE
+  o RESERVE_NOT_MET
+  o SOLD
+}
+
+/**
+ */
+@random('here')
+asset VehicleListing identified by listingId {
+  o String listingId
+  o Double reservePrice
+  @field('decorator')
+  o String description default="fred"
+  o ListingState state
+  o Offer[] offers optional
+  --> Vehicle vehicle
+}
+
+/**
+ */
+abstract participant User identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+/**
+ * @param {Double} balance the users balance
+ * @author Frank Blogs
+ */
+participant Member extends User {
+  o Double balance
+}
+
+/**
+ */
+participant Auctioneer extends User {
+}
+
+/**
+ */
+transaction Offer {
+  o Double bidPrice
+  --> VehicleListing listing
+  --> Member member
+}
+
+/**
+ */
+transaction CloseBidding {
+  --> VehicleListing listing
+}

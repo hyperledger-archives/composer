@@ -62,7 +62,8 @@ let packages = [
     'composer-cli',
     'composer-connector-server',
     'composer-playground-api',
-    'composer-playground'
+    'composer-playground',
+    'composer-documentation'
 ];
 
 // Packages to be installed in integration test(s)

@@ -1,0 +1,8 @@
+coverage
+node_modules
+out
+lib/processors/parsers/**
+test/data
+_configs
+_bnaTemplate
+_template
