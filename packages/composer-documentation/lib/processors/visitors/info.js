@@ -128,7 +128,7 @@ class InfoVisitor {
 
     /**
      * Visitor design pattern
-     * @param {AclManager} aclManager - the object being visited
+     * @param {AclManager} aclRule - the object being visited
      * @param {Object} parameters - the parameter
      * @return {Object} the result of visiting or null
      * @private
@@ -155,7 +155,7 @@ class InfoVisitor {
 
     /**
      * Visitor design pattern
-     * @param {Script} script - the object being visited
+     * @param {Script} queryFile - the object being visited
      * @param {Object} parameters - the parameter
      * @return {Object} the result of visiting or null
      * @private
@@ -175,7 +175,7 @@ class InfoVisitor {
 
     /**
      * Visitor design pattern
-     * @param {Script} script - the object being visited
+     * @param {Script} query - the object being visited
      * @param {Object} parameters - the parameter
      * @return {Object} the result of visiting or null
      * @private
@@ -288,6 +288,14 @@ class InfoVisitor {
 
     }
 
+
+    /**
+     * Visitor design pattern
+     * @param {FunctionDeclaration} fnDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
     visitFunctionDeclaration(fnDeclaration,parameters){
         debug('entering visitFunctionDeclaration', fnDeclaration.getName());
 

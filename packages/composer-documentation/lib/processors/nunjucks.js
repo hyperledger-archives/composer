@@ -53,9 +53,9 @@ let singleTemplate = async function(context,meta){
 
     let produce = (file,cb) =>{
         context.body = file.contents.toString();
-        context.callindex++;
-        // context.basename = file.basename;
-        context.basename = file.basename.substring(0,file.basename.indexOf('.'));
+        let orderSeparator = file.basename.indexOf('_');
+        context.callindex = parseInt(file.basename.substring(0,orderSeparator));
+        context.basename = file.basename.substring(orderSeparator+1,file.basename.indexOf('.'));
         let renderedMarkdown = env.render(meta.template, context);
         file.contents = Buffer.from(renderedMarkdown);
         file.extname=meta.extension;

@@ -19,6 +19,11 @@ const doctrine = require('doctrine');
 const path = require('path');
 const fs = require('fs');
 
+/**
+ * Merges the additional tags located from the comment with those already parses
+ * @param {Object} resource class declaration currently being processed
+ * @param {Object[]} tags array of tags to be added to the resource (if parameters)
+ */
 function tagMerge(resource,tags){
 
     for (let t=0; t<tags.length; t++){
@@ -36,6 +41,9 @@ function tagMerge(resource,tags){
  * Takes care of the class declarations
  *
  * @param {Object} context add the details to this for the template
+ * @param {Object} options any additional options
+ * @param {Object} options.docPrefix the prefix for the location of any @docs() decorators
+ * @return {Object} the updated context
  */
 function classdeclarations(context,options){
 

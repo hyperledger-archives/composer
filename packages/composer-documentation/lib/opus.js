@@ -43,10 +43,11 @@ require('./processors/hc_network')(_processors);
 
 
 /**
+ * This setups the internal context that holds all the state for the documentation processing
  *
- * @param {*} node
- * @param {*} context
- * @param {*} parent
+ * @param {Object} node The element that is currently being setup
+ * @param {Object} context The context structure
+ * @param {Object} parent Parent node
  */
 function setupContext(node, context, parent) {
 
@@ -108,7 +109,7 @@ async function processNode(node, context) {
 /**
  * Is an object?
  *
- * @param {Objectconsole.log();} a value to test
+ * @param {Object} a value to test
  * @return {boolean} True if object, false if not
  */
 function isObject(a) {
@@ -137,8 +138,8 @@ function resolve(path, obj) {
  *
  * Single pass only!
  *
- * @param {Object} obj
- * @param {Object} context
+ * @param {Object} obj  Object to process
+ * @param {Object} context  The internal context
  */
 function visit(obj, context) {
 

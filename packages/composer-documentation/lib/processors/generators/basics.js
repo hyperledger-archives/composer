@@ -15,7 +15,8 @@
 
 'use strict';
 /** Gets the basic information and adds to the context
- *
+ * @param {Object} context  The internal context
+ * @return {Object} the updated context
  */
 function basics(context) {
     let bnd = context._bnd;
