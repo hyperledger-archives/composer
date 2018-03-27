@@ -12,11 +12,12 @@
  * limitations under the License.
  */
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 import { AddFileComponent } from './add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 import { ReplaceComponent } from '../basic-modals/replace-confirm';
+import { UpgradeComponent } from './upgrade/upgrade.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -429,19 +430,33 @@ export class EditorComponent implements OnInit, OnDestroy {
         // Gets the definition for the currently deployed business network
         const networkDefinition = this.fileService.getBusinessNetwork();
 
-        let upgraded: boolean = true;
-
-        const currentCard = this.identityCardService.getCurrentIdentityCard();
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
         const connectionProfile = currentCard.getConnectionProfile();
         const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
-        const peerCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.peerAdminRole);
-        const channelCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.channelAdminRole);
 
-        let upgradePromise = this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, peerCardRef, channelCardRef);
+        let upgradePromise;
+        if (currentCard.getConnectionProfile()['x-type'] === 'web') {
+            let currentCardRef = this.identityCardService.getCurrentCardRef();
+            upgradePromise = this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, currentCardRef, currentCardRef);
+        } else if (!this.identityCardService.canDeploy(qpn)) {
+            this.alertService.errorStatus$.next('<p>You must import business network cards with the correct admin rights before you can deploy new versions of a business network.</p>');
+        } else {
+            const upgradeModalRef = this.modalService.open(UpgradeComponent);
 
-        return upgradePromise
-            .then(() => {
-                if (upgraded) {
+            upgradePromise = upgradeModalRef.result
+                .then((result) => {
+                    return this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, result.peerCardRef, result.channelCardRef);
+                }, (reason) => {
+                    throw reason;
+                });
+        }
+
+        if (!upgradePromise) {
+            this.deploying = false;
+            return Promise.resolve();
+        } else {
+            return upgradePromise
+                .then(() => {
                     this.updatePackageInfo();
                     this.updateFiles();
                     this.fileService.changesDeployed();
@@ -451,17 +466,19 @@ export class EditorComponent implements OnInit, OnDestroy {
                         text: 'Your most recent set of changes were successfully deployed via a chaincode upgrade',
                         icon: '#icon-deploy_24'
                     });
-                }
-                this.deploying = false;
-            })
-            .catch((error) => {
-                this.deploying = false;
-                // if failed on update should go back to what was there before
-                this.updatePackageInfo();
-                this.updateFiles();
-                this.alertService.busyStatus$.next(null);
-                this.alertService.errorStatus$.next(error);
-            });
+                    this.deploying = false;
+                })
+                .catch((error) => {
+                    this.deploying = false;
+                    if (error && error !== ModalDismissReasons.BACKDROP_CLICK && error !== ModalDismissReasons.ESC) {
+                        // if failed on update should go back to what was there before
+                        this.updatePackageInfo();
+                        this.updateFiles();
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.errorStatus$.next(error);
+                    }
+                });
+        }
     }
 
     /*

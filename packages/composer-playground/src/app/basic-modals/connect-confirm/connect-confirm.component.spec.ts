@@ -60,7 +60,7 @@ describe('ConnectConfirmComponent', () => {
 
         fixture.detectChanges();
 
-        networkElement.nativeElement.textContent.should.equal('Business Network myNetwork cannot be updated');
+        networkElement.nativeElement.textContent.should.equal('Business network myNetwork cannot be updated');
     });
 
     it('should dismiss the modal via cross', () => {
