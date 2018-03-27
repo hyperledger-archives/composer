@@ -169,7 +169,7 @@ abstract transaction AssetTransaction extends RegistryTransaction {
  * An abstract definition of a transaction that affects participants in a registry in some way
  * @param {Participant[]} resources participants that will be manipulated
  */
-@docs('ParticipantTransaction.md')
+@docs('participantTransaction.md')
 abstract transaction ParticipantTransaction extends RegistryTransaction {
   o Participant[] resources
 }
