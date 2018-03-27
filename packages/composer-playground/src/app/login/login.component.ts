@@ -18,10 +18,11 @@ import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
+import { ConnectConfirmComponent } from '../basic-modals/connect-confirm/connect-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { DrawerService, DrawerDismissReasons } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
 
@@ -142,11 +143,24 @@ export class LoginComponent implements OnInit {
         });
     }
 
-    changeIdentity(cardRef: string): Promise<boolean | void> {
+    changeIdentity(cardRef: string, connectionProfileRef: string): Promise<boolean | void> {
         let card = this.idCards.get(cardRef);
         let businessNetworkName = card.getBusinessNetworkName();
 
-        return this.identityCardService.setCurrentIdentityCard(cardRef)
+        let confirmConnectPromise: Promise<void>;
+        if (this.canDeploy(connectionProfileRef)) {
+            confirmConnectPromise = Promise.resolve();
+        } else {
+            // Show a warning if the business network cannot be updated
+            const confirmModalRef = this.modalService.open(ConnectConfirmComponent);
+            confirmModalRef.componentInstance.network = businessNetworkName;
+            confirmConnectPromise = confirmModalRef.result;
+        }
+
+        return confirmConnectPromise
+            .then((result) => {
+                return this.identityCardService.setCurrentIdentityCard(cardRef);
+            })
             .then(() => {
                 return this.clientService.ensureConnected(true);
             })
@@ -154,7 +168,9 @@ export class LoginComponent implements OnInit {
                 return this.router.navigate(['editor']);
             })
             .catch((error) => {
-                this.alertService.errorStatus$.next(error);
+                if (error && error !== ModalDismissReasons.BACKDROP_CLICK && error !== ModalDismissReasons.ESC) {
+                    this.alertService.errorStatus$.next(error);
+                }
             });
     }
 
@@ -185,7 +201,7 @@ export class LoginComponent implements OnInit {
                     title: 'Connecting to network',
                     force: true
                 });
-                return this.changeIdentity('playgroundSample@basic-sample-network');
+                return this.changeIdentity('playgroundSample@basic-sample-network', connectionProfileRef);
             });
     }
 
@@ -216,23 +232,11 @@ export class LoginComponent implements OnInit {
     }
 
     canDeploy(connectionProfileRef): boolean {
-        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
-
-        if (!peerCardRef) {
-            return false;
-        }
-
-        let channelCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'ChannelAdmin')[0];
-
-        if (!channelCardRef) {
-            return false;
-        }
-
-        return true;
+        return this.identityCardService.canDeploy(connectionProfileRef);
     }
 
     deployNetwork(connectionProfileRef): void {
-        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
+        let peerCardRef = this.identityCardService.getAdminCardRef(connectionProfileRef, IdentityCardService.peerAdminRole);
 
         this.identityCardService.setCurrentIdentityCard(peerCardRef);
 

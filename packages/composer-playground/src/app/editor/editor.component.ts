@@ -23,6 +23,7 @@ import { ClientService } from '../services/client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { FileService } from '../services/file.service';
 import { EditorFile } from '../services/editor-file';
+import { IdentityCardService } from '../services/identity-card.service';
 
 import {
     ModelFile,
@@ -36,6 +37,7 @@ import {
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 
 @Component({
     selector: 'app-editor',
@@ -76,11 +78,14 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private listItem; // Used in html passage for auto scroll action
 
-    constructor(private adminService: AdminService,
-                private clientService: ClientService,
+    private canDeploy = false;
+
+    constructor(private clientService: ClientService,
                 private modalService: NgbModal,
                 private alertService: AlertService,
-                private fileService: FileService) {
+                private fileService: FileService,
+                private identityCardService: IdentityCardService,
+                private sampleBusinessNetworkService: SampleBusinessNetworkService) {
     }
 
     ngOnInit(): Promise<any> {
@@ -111,6 +116,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
                 this.updatePackageInfo();
                 this.updateFiles();
+                this.checkCanDeploy();
             })
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
@@ -119,6 +125,13 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.alive = false;
+    }
+
+    checkCanDeploy() {
+        let currentCard = this.identityCardService.getCurrentIdentityCard();
+        let connectionProfile = currentCard.getConnectionProfile();
+
+        this.canDeploy = this.identityCardService.canDeploy(this.identityCardService.getQualifiedProfileName(connectionProfile));
     }
 
     updatePackageInfo() {
@@ -377,7 +390,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openAddFileModal() {
-
         const confirmModalRef = this.modalService.open(AddFileComponent);
         confirmModalRef.componentInstance.files = this.files;
 
@@ -409,40 +421,38 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     deploy(): Promise<any> {
+        if (this.deploying) {
+            return;
+        }
+        this.deploying = true;
+
         // Gets the definition for the currently deployed business network
         const networkDefinition = this.fileService.getBusinessNetwork();
-        this.alertService.busyStatus$.next({
-            title: 'Upgrading business network',
-            text: `Installing ${networkDefinition.getName()} version ${networkDefinition.getVersion()}`
-        });
-        return Promise.resolve()
+
+        let upgraded: boolean = true;
+
+        const currentCard = this.identityCardService.getCurrentIdentityCard();
+        const connectionProfile = currentCard.getConnectionProfile();
+        const qpn = this.identityCardService.getQualifiedProfileName(connectionProfile);
+        const peerCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.peerAdminRole);
+        const channelCardRef = this.identityCardService.getAdminCardRef(qpn, IdentityCardService.channelAdminRole);
+
+        let upgradePromise = this.sampleBusinessNetworkService.upgradeBusinessNetwork(networkDefinition, peerCardRef, channelCardRef);
+
+        return upgradePromise
             .then(() => {
-                if (this.deploying) {
-                    return;
-                }
-                this.deploying = true;
-                return this.adminService.install(networkDefinition).then(() => {
-                    this.alertService.busyStatus$.next({
-                        title: 'Upgrading business network',
-                        text: `Upgrading ${networkDefinition.getName()} to version ${networkDefinition.getVersion()}`
+                if (upgraded) {
+                    this.updatePackageInfo();
+                    this.updateFiles();
+                    this.fileService.changesDeployed();
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.successStatus$.next({
+                        title: 'Changes deployed',
+                        text: 'Your most recent set of changes were successfully deployed via a chaincode upgrade',
+                        icon: '#icon-deploy_24'
                     });
-                    return this.adminService.upgrade(networkDefinition.getName(), networkDefinition.getVersion());
-                });
-            })
-            .then(() => {
+                }
                 this.deploying = false;
-                return this.clientService.refresh();
-            })
-            .then(() => {
-                this.updatePackageInfo();
-                this.updateFiles();
-                this.fileService.changesDeployed();
-                this.alertService.busyStatus$.next(null);
-                this.alertService.successStatus$.next({
-                    title: 'Upgrade Successful',
-                    text: 'Business network upgraded successfully',
-                    icon: '#icon-deploy_24'
-                });
             })
             .catch((error) => {
                 this.deploying = false;

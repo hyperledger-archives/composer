@@ -28,24 +28,30 @@ if [ "${DOCS}" != "" ]; then
 
     if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
             npm run full:unstable
             npm run linkcheck:unstable
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
             npm run full:next-unstable
             npm run linkcheck:next-unstable
+        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
+            npm run full:v0.16-unstable
+            npm run linkcheck:v0.16-unstable
         else 
             _exit "Unknown build focus" 1 
         fi
 
     elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
 
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
             npm run full:next
             npm run linkcheck:next
+        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
+            npm run full:v0.16
+            npm run linkcheck:v0.16
         else 
             _exit "Unknown build focus" 1 
         fi
@@ -62,7 +68,7 @@ elif [ "${FVTEST}" != "" ]; then
     # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
 
 # Are we running playground e2e tests?
-elif [ "${INTEST}" = "e2e" ]; then
+elif [ "${INTEST}" == "e2e" ]; then
 
     # Run the playground e2e tests.
     cd "${DIR}/packages/composer-playground"

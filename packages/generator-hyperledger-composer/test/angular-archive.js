@@ -24,7 +24,7 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
 
     let tmpDir; // This is the directory which we will create our app into
     before(function() {
-        return helpers.run(path.join(__dirname, '../generators/angular'))
+        return helpers.run(path.resolve(__dirname, '../generators/angular'))
         .inTmpDir(function (dir) {
             tmpDir = dir;
         })
@@ -35,13 +35,13 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             appDescription: 'A digitalPropertyNetwork application',
             authorName: 'TestUser',
             authorEmail: 'TestUser@TestApp.com',
-            fileName: __dirname+'/data/digitalPropertyNetwork.bna',
+            fileName: (path.join(__dirname, '/data/digitalPropertyNetwork.bna')),
             apiIP: 'http://localhost',
             apiPort: 3000,
             apiNamespace: 'never'
         })
         .on('error', function (error) {
-            assert.fail('Error found:', error);
+            assert.fail(error);
         });
     });
 
