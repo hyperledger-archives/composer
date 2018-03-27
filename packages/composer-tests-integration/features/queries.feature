@@ -130,12 +130,45 @@ Feature: Queries steps
             }
             """
 
+    Scenario: Using the REST API, I can create yet another Commodity
+        When I make a POST request to /api/Commodity
+            """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "BUT",
+              "description": "Butter",
+              "mainExchange": "ICE",
+              "quantity": 50,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }
+            """
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            {
+              "$class": "org.acme.biznet.Commodity",
+              "tradingSymbol": "BUT",
+              "description": "Butter",
+              "mainExchange": "ICE",
+              "quantity": 50,
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+            }
+            """
+
     Scenario: Using the REST API, I can list the Commodities
         When I make a GET request to /api/Commodity
         Then The response code should be 200
         And The response body should be JSON matching
             """
             [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
                 {
                   "$class": "org.acme.biznet.Commodity",
                   "tradingSymbol": "CC",
@@ -180,6 +213,14 @@ Feature: Queries steps
             [
                 {
                   "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
                   "tradingSymbol": "CC",
                   "description": "Cocoa",
                   "mainExchange": "ICE",
@@ -213,6 +254,14 @@ Feature: Queries steps
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
                   "tradingSymbol": "CC",
                   "description": "Cocoa",
                   "mainExchange": "ICE",
@@ -234,6 +283,14 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
                   "owner": "resource:org.acme.biznet.Trader#TRADER2"
                 },
                 {
@@ -264,6 +321,31 @@ Feature: Queries steps
             ]
             """
 
+    Scenario: Using the REST API, I can list the Commodities with mid quantity for TRADER2
+        When I make a GET request to /api/queries/selectCommoditiesWithMidQuantity?owner=resource%3Aorg.acme.biznet.Trader%23TRADER2
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                }
+            ]
+            """
+
+    Scenario: Using the REST API, I can list the Commodities with mid quantity for TRADER1
+        When I make a GET request to /api/queries/selectCommoditiesWithMidQuantity?owner=resource%3Aorg.acme.biznet.Trader%23TRADER1
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            []
+            """
+
     Scenario: Using the REST API, I can remove the Commodities with high quantity
         When I make a POST request to /api/RemoveHighQuantityCommodities
             """
@@ -284,6 +366,14 @@ Feature: Queries steps
         And The response body should be JSON matching
             """
             [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                },
                 {
                   "$class": "org.acme.biznet.Commodity",
                   "tradingSymbol": "EMA",
