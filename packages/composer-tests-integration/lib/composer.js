@@ -582,6 +582,26 @@ class Composer {
         });
     }
 
+        /**
+     * Check the last message matches JSON
+     * @param {String} name filename to write the data to
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    writeResponseData(name) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else {
+                let pathname = path.resolve(name);
+                let buffer = Buffer.from(this.lastResp.response,'binary');
+                fs.writeFileSync(pathname,buffer);
+                resolve();
+            }
+        });
+    }
+
+
+
     /**
      * Save a matched pattern from the current console stdout as an alias in an internal map
      * @param {*} regex The regex to match on

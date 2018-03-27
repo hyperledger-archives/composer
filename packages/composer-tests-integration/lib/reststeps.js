@@ -101,6 +101,13 @@ module.exports = function () {
         return this.composer.request(method, urlPath);
     });
 
+    this.When(/^I make a POST request for an identity to (.+?)$/, function (urlPath, data) {
+        const options = {
+            encoding:null
+        };
+        return this.composer.request('POST', urlPath, data, options );
+    });
+
     this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, urlPath, data) {
         return this.composer.request(method, urlPath, data);
     });
@@ -124,6 +131,10 @@ module.exports = function () {
             options.formData[name] = value;
         });
         return this.composer.request(method, urlPath, null, options);
+    });
+
+    this.When(/^I write the response data to a file (.+?)$/,function(name){
+        return this.composer.writeResponseData(name);
     });
 
     this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (urlPath, filter) {
