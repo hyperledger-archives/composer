@@ -1,1 +1,1 @@
-Sitemap: http://localhost:4000/v0.16/sitemap.xml
+Sitemap: http://localhost:4000/composer/v0.16/sitemap.xml
