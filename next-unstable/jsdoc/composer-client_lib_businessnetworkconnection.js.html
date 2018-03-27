@@ -144,7 +144,7 @@ class BusinessNetworkConnection extends EventEmitter {
         LOG.entry(method, options);
         options = options || {};
 
-        this.cardStore = options.cardStore || NetworkCardStoreManager.getCardStore();
+        this.cardStore = options.cardStore || NetworkCardStoreManager.getCardStore(options.wallet);
         this.connectionProfileManager = new ConnectionProfileManager();
         this.connection = null;
         this.securityContext = null;
