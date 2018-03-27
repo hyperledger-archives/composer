@@ -15,18 +15,20 @@ import { NgModule }           from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { IdentityCardModule } from '../common/identity-card/identity-card.module';
 import { BusyComponent } from './busy/busy.component';
 import { DeleteComponent } from './delete-confirm/delete-confirm.component';
 import { ErrorComponent } from './error/error.component';
 import { ReplaceComponent } from './replace-confirm/replace-confirm.component';
 import { SuccessComponent } from './success/success.component';
+import { ConnectConfirmComponent } from './connect-confirm/connect-confirm.component';
 import { AlertService } from './alert.service';
 import { TestModule } from '../test/test.module';
 
 @NgModule({
-    imports: [CommonModule, NgbModule, TestModule],
-    entryComponents: [BusyComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent],
-    declarations: [BusyComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent],
+    imports: [CommonModule, NgbModule, IdentityCardModule, TestModule],
+    entryComponents: [BusyComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent, ConnectConfirmComponent],
+    declarations: [BusyComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent, ConnectConfirmComponent],
     providers: [AlertService],
     exports: [BusyComponent, DeleteComponent, ErrorComponent, ReplaceComponent, SuccessComponent]
 })
