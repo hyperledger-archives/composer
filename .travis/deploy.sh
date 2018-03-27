@@ -66,23 +66,23 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
     # Set the prerelease version.
     npm run pkgstamp
    
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
         PLAYGROUND_SUFFIX="-unstable"      
         WEB_CFG="{\"webonly\":true}"
         TAG="unstable"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
         PLAYGROUND_SUFFIX="-next-unstable"
         WEB_CFG="{\"webonly\":true}"      
         TAG="next-unstable"
     else 
         _exit "Unknown build focus" 1 
     fi
-elif  [[ "${BUILD_RELEASE}" = "stable" ]]; then
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+elif  [[ "${BUILD_RELEASE}" == "stable" ]]; then
+    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
         PLAYGROUND_SUFFIX=""      
         WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
         TAG="latest"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
         PLAYGROUND_SUFFIX="-next"
         WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}"
         TAG="next"
@@ -119,14 +119,16 @@ for i in ${DOCKER_IMAGES}; do
 
 done
 
-# Push to public Bluemix.
-pushd ${DIR}/packages/composer-playground
-rm -rf ${DIR}/packages/composer-playground/node_modules
-cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
-cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
-cf start "composer-playground${PLAYGROUND_SUFFIX}"
-popd
+# Push to public Bluemix for stable and unstable, latest and next release builds
+if [[ "${BUILD_FOCUS}" != "v0.16" ]]; then
+    pushd ${DIR}/packages/composer-playground
+    rm -rf ${DIR}/packages/composer-playground/node_modules
+    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
+    cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
+    cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
+    cf start "composer-playground${PLAYGROUND_SUFFIX}"
+    popd
+fi
 
 
 
