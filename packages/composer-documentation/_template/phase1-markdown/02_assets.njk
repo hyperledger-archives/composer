@@ -2,9 +2,7 @@
 
 {% for asset in types.asset %}
 ## {{asset.name}}
-The fully qualified name is **{{asset.fqn}}** 
-
-{{asset.description}}
+The fully qualified name is **{{asset.fqn}}**
 
 ### Additional Information
 
@@ -28,6 +26,3 @@ The fully qualified name is **{{asset.fqn}}**
 [{{asset.decorators.docsuri[0]}}]({{asset.decorators.docsuri[1]}})
 {% endif %}
 {% endfor %}
-
-
-
