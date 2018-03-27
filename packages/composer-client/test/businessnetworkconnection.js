@@ -114,6 +114,14 @@ describe('BusinessNetworkConnection', () => {
             should.equal(businessNetworkConnection.connection, null);
             businessNetworkConnection.cardStore.should.equal(mockCardStore);
         });
+
+        it('should create a new instance with a specified wallet', () => {
+            const wallet = {type:'composer-wallet-inmemory'};
+
+            businessNetworkConnection = new BusinessNetworkConnection({wallet : wallet});
+            should.equal(businessNetworkConnection.connection, null);
+            businessNetworkConnection.cardStore.should.be.an.instanceOf(BusinessNetworkCardStore);
+        });
     });
 
     describe('#connect', () => {
