@@ -539,10 +539,22 @@ class QueryCompiler {
                     let rightKey = rightKeys[i];
                     if( typeof(left[rightKey]) !== 'undefined' ){
                        // find a matching key between left and right, merge the right key value to the left key
-                        result[rightKey] = Object.assign(left[rightKey], right[rightKey]);
+                        const combined = {};
+                        const leftProperties = Object.getOwnPropertyDescriptors(left[rightKey]);
+                        for(let prop in leftProperties) {
+                            Object.defineProperty(combined, prop, leftProperties[prop]);
+                        }
+                        const rightProperties = Object.getOwnPropertyDescriptors(right[rightKey]);
+                        for(let prop in rightProperties) {
+                            Object.defineProperty(combined, prop, rightProperties[prop]);
+                        }
+                        result[rightKey] = combined;
                     }else{
                         // add the right item to the result
-                        result[rightKey] = right[rightKey];
+                        result[rightKey] = Object.create(
+                            Object.getPrototypeOf(right[rightKey]),
+                            Object.getOwnPropertyDescriptors(right[rightKey])
+                        );
                     }
                 }
             } else {  // like left= true, right = false

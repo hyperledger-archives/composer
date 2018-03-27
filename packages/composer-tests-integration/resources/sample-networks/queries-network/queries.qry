@@ -41,3 +41,11 @@ query selectCommoditiesOrderedReverse {
       SELECT org.acme.biznet.Commodity
       ORDER BY [quantity DESC]
 }
+
+query selectCommoditiesWithMidQuantity {
+  description: "Select commodities based on quantity and owner"
+  statement:
+      SELECT org.acme.biznet.Commodity
+          WHERE (quantity >= 30 AND quantity < 60 AND owner == _$owner)
+}
+

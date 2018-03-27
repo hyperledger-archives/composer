@@ -70,6 +70,7 @@ describe('QueryCompiler', () => {
             o Baa baa
             o String[] noises
             o Meow[] meows
+            o DateTime date
         }
 
         participant SampleParticipant identified by participantId {
@@ -194,6 +195,24 @@ describe('QueryCompiler', () => {
                 SELECT org.acme.sample.SampleAsset
                     WHERE (meows CONTAINS ((woof == "foo") OR (woof == "noo")))
         }
+        query Q20 {
+            description: "Select between date range parameters"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (
+                        (date >= _$startTime) AND
+                        (date < _$endTime) AND
+                        (value == _$value))
+        }
+        query Q21 {
+            description: "Select between date range"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (
+                        (date >= "2018-01-01") AND
+                        (date < "2018-02-01") AND
+                        (value == "foo"))
+        }
         `);
         queryFile1.validate();
         queries = {};
@@ -221,7 +240,7 @@ describe('QueryCompiler', () => {
             const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
             compiledQueryBundle.compiledQueries.should.be.an('array');
-            compiledQueryBundle.compiledQueries.should.have.lengthOf(19);
+            compiledQueryBundle.compiledQueries.should.have.lengthOf(21);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
             compiledQueryBundle.compiledQueries.should.all.have.property('hash');
             compiledQueryBundle.compiledQueries.should.all.have.property('generator');
@@ -234,7 +253,7 @@ describe('QueryCompiler', () => {
         it('should visit all of the things', () => {
             const compiled = queryCompiler.visit(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(19);
+            compiled.should.have.lengthOf(21);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -253,7 +272,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query manager', () => {
             const compiled = queryCompiler.visitQueryManager(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(19);
+            compiled.should.have.lengthOf(21);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -273,7 +292,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query file', () => {
             const compiled = queryCompiler.visitQueryFile(queryFile1, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(19);
+            compiled.should.have.lengthOf(21);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -315,6 +334,20 @@ describe('QueryCompiler', () => {
             compiled.hash.should.equal('951f2465d94148ffbe2e4c081fe6c8f73f95056ccdb8be3dcb8180ba6f3d9098');
             compiled.generator.should.be.a('function');
             compiled.generator({ animalNoise: 'ribbet' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","baa.moo.neigh.meow.woof":{"$eq":"ribbet"}}}');
+        });
+
+        it('should compile a query with date range parameters', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q20, {});
+            compiled.name.should.equal('Q20');
+            compiled.generator.should.be.a('function');
+            compiled.generator({ value: 'foo', startTime: '2018-01-01', endTime: '2018-02-01' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","date":{"$gte":"2018-01-01","$lt":"2018-02-01"},"value":{"$eq":"foo"}}}');
+        });
+
+        it('should compile a query with date range', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q21, {});
+            compiled.name.should.equal('Q21');
+            compiled.generator.should.be.a('function');
+            compiled.generator({}).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","date":{"$gte":"2018-01-01","$lt":"2018-02-01"},"value":{"$eq":"foo"}}}');
         });
 
     });
@@ -854,6 +887,63 @@ describe('QueryCompiler', () => {
                 }
             });
             result.should.deep.equal({someProp:{$lt: 'foo'}, anotherProp: {$eq: 'bar'}});
+        });
+
+        it('should compile an AND-AND expression with same property', () => {
+            const parameters = {
+                requiredParameters: [],
+                parametersToUse: {
+                    start: 5,
+                    end: 10,
+                    foo: 'bar'
+                }
+            };
+            const result = queryCompiler.visitArrayCombinationOperator({
+                type: 'BinaryExpression',
+                operator: 'AND',
+
+                left: {
+                    type: 'BinaryExpression',
+                    operator: 'AND',
+                    left: {
+                        type: 'BinaryExpression',
+                        operator: '>=',
+                        left: {
+                            type: 'Identifier',
+                            name: 'someProp'
+                        },
+                        right: {
+                            type: 'Identifier',
+                            name: '_$start'
+                        }
+                    },
+                    right: {
+                        type: 'BinaryExpression',
+                        operator: '<',
+                        left: {
+                            type: 'Identifier',
+                            name: 'someProp'
+                        },
+                        right: {
+                            type: 'Identifier',
+                            name: '_$end'
+                        }
+                    }
+                },
+                right: {
+                    type: 'BinaryExpression',
+                    operator: '==',
+                    left: {
+                        type: 'Identifier',
+                        name: 'anotherProp'
+                    },
+                    right: {
+                        type: 'Identifier',
+                        name: '_$foo'
+                    }
+                }
+            }, parameters);
+            result.should.deep.equal({someProp:{$gte: 5, $lt: 10}, anotherProp: {$eq: 'bar'}});
         });
 
         it('should compile an OR expression', () => {
