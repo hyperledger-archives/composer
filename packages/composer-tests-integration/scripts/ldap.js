@@ -40,6 +40,10 @@ const users = [{
     cn: 'charlie',
     name: 'Charlie "Chuck" Norris',
     credentials: 'bl0ckn0rr1sw0zh3re'
+}, {
+    cn: 'dawn',
+    name: 'Dawn Onme',
+    credentials: 'itsN0tADataba5e'
 }];
 
 const db = {};
