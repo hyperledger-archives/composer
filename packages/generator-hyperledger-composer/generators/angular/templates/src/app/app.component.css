@@ -110,6 +110,16 @@
     background-color: #F3ECFE;
 }
 
+.dropdown-menu > li > a:active {
+    background-color: #F3ECFE;
+}
+.dropdown-menu > li > a:focus {
+    background-color: #F3ECFE;
+}
+.dropdown-menu > li > a:visited {
+    background-color: #F3ECFE;
+}
+
 .dropdown:hover .dropdown-menu {
     visibility: visible;
 }
