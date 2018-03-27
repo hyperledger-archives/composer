@@ -709,7 +709,7 @@ module.exports = yeoman.Base.extend({
             });
 
             let model = this._generateTemplateModel();
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|Transaction)*'), this.destinationPath(), model);
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|participant|concept|transaction)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
