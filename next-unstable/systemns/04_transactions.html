@@ -277,12 +277,15 @@ ga('send', 'pageview');
 
 <h3 id="transaction">Transaction</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Transaction</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Transaction</strong></p>
 
-<blockquote>
-<p>A transaction named Transaction </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p>The base <em>transaction</em> is implicitly extended by all other transactions. <em>Transaction</em> is an <strong>abstract</strong> meaning that no instances of it can be created, however, it does contain the <em>transactionId</em> and <em>timestamp</em> properties, which are extended to all other transactions.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract transaction Transaction identified by transactionId {
+  o String transactionId
+  o DateTime timestamp
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -304,12 +307,15 @@ ga('send', 'pageview');
 
 <h3 id="registrytransaction">RegistryTransaction</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.RegistryTransaction</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.RegistryTransaction</strong></p>
 
-<blockquote>
-<p>A transaction named RegistryTransaction </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>RegistryTransaction</em> is a system transaction for a transaction which affects a registry. <em>RegistryTransaction</em> is an <strong>abstract</strong>, meaning instances of it cannot be used. <em>RegistryTransaction</em> has the <em>targetRegistry</em> property, which contains a relationship to a registry.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract transaction RegistryTransaction {
+  --&gt; Registry targetRegistry
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -326,12 +332,15 @@ ga('send', 'pageview');
 
 <h3 id="assettransaction">AssetTransaction</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.AssetTransaction</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.AssetTransaction</strong></p>
 
-<blockquote>
-<p>A transaction named AssetTransaction </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>AssetTransaction</em> is a system transaction for a transaction which affects an asset. <em>AssetTransaction</em> is an <strong>abstract</strong>, meaning instances of it cannot be used. <em>AssetTransaction</em> has the <em>resources</em> property.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract transaction AssetTransaction extends RegistryTransaction {
+   o Asset[] resources
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -348,12 +357,15 @@ ga('send', 'pageview');
 
 <h3 id="participanttransaction">ParticipantTransaction</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.ParticipantTransaction</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.ParticipantTransaction</strong></p>
 
-<blockquote>
-<p>A transaction named ParticipantTransaction </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>ParticipantTransaction</em> is a system transaction for a transaction which affects a participant. <em>ParticipantTransaction</em> is an <strong>abstract</strong>, meaning instances of it cannot be used. <em>ParticipantTransaction</em> has the <em>resources</em> property.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract transaction ParticipantTransaction extends RegistryTransaction {
+  o Participant[] resources
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -370,11 +382,9 @@ ga('send', 'pageview');
 
 <h3 id="addasset">AddAsset</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.AddAsset</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.AddAsset</strong></p>
 
-<blockquote>
-<p>A transaction named AddAsset </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -387,11 +397,9 @@ ga('send', 'pageview');
 
 <h3 id="updateasset">UpdateAsset</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.UpdateAsset</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.UpdateAsset</strong></p>
 
-<blockquote>
-<p>A transaction named UpdateAsset </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -404,11 +412,9 @@ ga('send', 'pageview');
 
 <h3 id="removeasset">RemoveAsset</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.RemoveAsset</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.RemoveAsset</strong></p>
 
-<blockquote>
-<p>A transaction named RemoveAsset </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -426,11 +432,9 @@ ga('send', 'pageview');
 
 <h3 id="addparticipant">AddParticipant</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.AddParticipant</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.AddParticipant</strong></p>
 
-<blockquote>
-<p>A transaction named AddParticipant </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -443,11 +447,9 @@ ga('send', 'pageview');
 
 <h3 id="updateparticipant">UpdateParticipant</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.UpdateParticipant</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.UpdateParticipant</strong></p>
 
-<blockquote>
-<p>A transaction named UpdateParticipant </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -460,11 +462,9 @@ ga('send', 'pageview');
 
 <h3 id="removeparticipant">RemoveParticipant</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.RemoveParticipant</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.RemoveParticipant</strong></p>
 
-<blockquote>
-<p>A transaction named RemoveParticipant </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
 <table><thead>
 <tr>
@@ -482,12 +482,16 @@ ga('send', 'pageview');
 
 <h3 id="issueidentity">IssueIdentity</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.IssueIdentity</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.IssueIdentity</strong></p>
 
-<blockquote>
-<p>A transaction named IssueIdentity </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>IssueIdentity</em> is a system transaction which issues an identity to a participant. </p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction IssueIdentity {
+    --&gt; Participant participant
+    o String identityName
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -509,12 +513,16 @@ ga('send', 'pageview');
 
 <h3 id="bindidentity">BindIdentity</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.BindIdentity</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.BindIdentity</strong></p>
 
-<blockquote>
-<p>A transaction named BindIdentity </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>BindIdentity</em> is a system transaction which binds an issued identity to a participant. <em>BindIdentity</em> contains a <em>participant</em> property, specifying a relationship to a participant. </p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction BindIdentity {
+    --&gt; Participant participant
+    o String certificate
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -536,12 +544,13 @@ ga('send', 'pageview');
 
 <h3 id="activatecurrentidentity">ActivateCurrentIdentity</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.ActivateCurrentIdentity</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.ActivateCurrentIdentity</strong></p>
 
-<blockquote>
-<p>A transaction named ActivateCurrentIdentity </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>ActivateCurrentIdentity</em>* is a system transaction which activates the identity currently being used.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction ActivateCurrentIdentity { }
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -553,12 +562,15 @@ ga('send', 'pageview');
 
 <h3 id="revokeidentity">RevokeIdentity</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.RevokeIdentity</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.RevokeIdentity</strong></p>
 
-<blockquote>
-<p>A transaction named RevokeIdentity </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>RevokeIdentity</em> is a system transaction which revokes a specified identity.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction RevokeIdentity {
+    --&gt; Identity identity
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -575,12 +587,16 @@ ga('send', 'pageview');
 
 <h3 id="startbusinessnetwork">StartBusinessNetwork</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.StartBusinessNetwork</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.StartBusinessNetwork</strong></p>
 
-<blockquote>
-<p>A transaction named StartBusinessNetwork </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>StartBusinessNetwork</em> is a system transaction that starts a business network. Both the <em>logLevel</em> and <em>bootstrapTransactions</em> properties are optional.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction StartBusinessNetwork {
+  o String logLevel optional
+  o Transaction[] bootstrapTransactions optional
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -602,12 +618,15 @@ ga('send', 'pageview');
 
 <h3 id="resetbusinessnetwork">ResetBusinessNetwork</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.ResetBusinessNetwork</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.ResetBusinessNetwork</strong></p>
 
-<blockquote>
-<p>A transaction named ResetBusinessNetwork </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>ResetBusinessNetwork</em> is a system transaction which deletes all data in a business network, while leaving the business network definition intact.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction ResetBusinessNetwork {
+
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -619,12 +638,15 @@ ga('send', 'pageview');
 
 <h3 id="setloglevel">SetLogLevel</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.SetLogLevel</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.SetLogLevel</strong></p>
 
-<blockquote>
-<p>A transaction named SetLogLevel </p>
-</blockquote>
+<h3 id="additional-information">Additional Information</h3>
 
+<p><em>SetLogLevel</em> is a system transaction which sets the logging level for the business network. The possible logging levels can be found in the <a href="../problems/diagnostics.html">problem diagnosis documentation</a>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction SetLogLevel {
+  o String newLogLevel
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>

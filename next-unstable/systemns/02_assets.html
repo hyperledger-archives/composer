@@ -277,12 +277,13 @@ ga('send', 'pageview');
 
 <h2 id="asset">Asset</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Asset</strong> </p>
-
-<p>An asset named Asset</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Asset</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p>The base <em>asset</em> is implicitly extended by all other assets. <em>Asset</em> is an <strong>abstract</strong> meaning that no instances of it can be created.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract asset Asset {  }
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -298,12 +299,18 @@ ga('send', 'pageview');
 
 <h2 id="registry">Registry</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Registry</strong> </p>
-
-<p>An asset named Registry</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Registry</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p>The base <em>registry</em> is implicitly extended by all other registries. <em>Registry</em> is an <strong>abstract</strong> meaning that no instances of it can be created. All registries must have a <em>registryId</em>, a <em>name</em>, a <em>type</em>, and a boolean <em>system</em> property defining whether it is a system registry.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract asset Registry identified by registryId {
+  o String registryId
+  o String name
+  o String type
+  o Boolean system
+}
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -321,12 +328,12 @@ ga('send', 'pageview');
 <tr>
 <td>name</td>
 <td>string</td>
-<td>Name of the regsitry</td>
+<td>Name of the registry</td>
 </tr>
 <tr>
 <td>type</td>
 <td>string</td>
-<td>type of the regsitry</td>
+<td>type of the registry</td>
 </tr>
 <tr>
 <td>system</td>
@@ -339,12 +346,13 @@ ga('send', 'pageview');
 
 <h2 id="assetregistry">AssetRegistry</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.AssetRegistry</strong> </p>
-
-<p>An asset named AssetRegistry</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.AssetRegistry</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>AssetRegistry</em> is not an <strong>abstract</strong> so instances of it can be created. <em>AssetRegistry</em> extends the Registry type. As an extension of Registry, it includes the properties of Registry.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset AssetRegistry extends Registry { }
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -360,12 +368,13 @@ ga('send', 'pageview');
 
 <h2 id="participantregistry">ParticipantRegistry</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.ParticipantRegistry</strong> </p>
-
-<p>An asset named ParticipantRegistry</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.ParticipantRegistry</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>ParticipantRegistry</em> is not an <strong>abstract</strong> so instances of it can be created. <em>ParticipantRegistry</em> extends the Registry type. As an extension of Registry, it includes the properties of Registry.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset ParticipantRegistry extends Registry { }
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -381,12 +390,13 @@ ga('send', 'pageview');
 
 <h2 id="transactionregistry">TransactionRegistry</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.TransactionRegistry</strong> </p>
-
-<p>An asset named TransactionRegistry</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.TransactionRegistry</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>TransactionRegistry</em> is not an <strong>abstract</strong> so instances of it can be created. <em>TransactionRegistry</em> extends the Registry type. As an extension of Registry, it includes the properties of Registry.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset TransactionRegistry extends Registry { }
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -402,12 +412,16 @@ ga('send', 'pageview');
 
 <h2 id="network">Network</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Network</strong> </p>
-
-<p>An asset named Network</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Network</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>Network</em> is a system asset, containing the <em>networkId</em> and <em>runtimeVersion</em> properties.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset Network identified by networkId {
+  o String networkId
+  o String runtimeVersion
+}
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -433,12 +447,21 @@ ga('send', 'pageview');
 
 <h2 id="historianrecord">HistorianRecord</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.HistorianRecord</strong> </p>
-
-<p>An asset named HistorianRecord</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.HistorianRecord</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>HistorianRecord</em> is a system asset which holds information from network transactions. <em>HistorianRecord</em> has the <em>transactionId</em>, <em>transactionType</em>, <em>transactionInvoked</em>, <em>participantInvoking</em>, <em>identityUsed</em>, <em>eventsEmitted</em>, and <em>transactionTimestamp</em> properties.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset HistorianRecord identified by transactionId {
+  o String        transactionId
+  o String        transactionType
+  --&gt; Transaction transactionInvoked
+  --&gt; Participant participantInvoking  optional
+  --&gt; Identity    identityUsed         optional
+  o Event[]       eventsEmitted        optional
+  o DateTime      transactionTimestamp
+}
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -491,12 +514,20 @@ ga('send', 'pageview');
 
 <h2 id="identity">Identity</h2>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Identity</strong> </p>
-
-<p>An asset named Identity</p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Identity</strong></p>
 
 <h3 id="additional-information">Additional Information</h3>
 
+<p><em>Identity</em> is a system asset which is related to a participant. </p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset Identity identified by identityId {
+    o String identityId
+    o String name
+    o String issuer
+    o String certificate
+    o IdentityState state
+    --&gt; Participant participant
+}
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 
 <table><thead>
@@ -529,7 +560,7 @@ ga('send', 'pageview');
 <tr>
 <td>state</td>
 <td>enum</td>
-<td>State the indenitiy is in</td>
+<td>State the identity is in</td>
 </tr>
 <tr>
 <td>participant</td>

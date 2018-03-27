@@ -273,12 +273,17 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="particpant-model">Particpant Model</h1>
+              <h1 id="participant-model">Participant Model</h1>
 
 <h3 id="participant">Participant</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.Participant</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Participant</strong></p>
 
+<h3 id="additional-information">Additional Information</h3>
+
+<p>The base <em>participant</em> is implicitly extended by all other participants. <em>Participant</em> is an <strong>abstract</strong> meaning that no instances of it can be created.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract participant Participant {   }
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
@@ -290,8 +295,15 @@ ga('send', 'pageview');
 
 <h3 id="networkadmin">NetworkAdmin</h3>
 
-<p>The fully qualified name is <strong>org.hyperledger.composer.system.NetworkAdmin</strong> </p>
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.NetworkAdmin</strong></p>
 
+<h3 id="additional-information">Additional Information</h3>
+
+<p><em>NetworkAdmin</em> is a system participant type used as an initial user in a network. <em>NetworkAdmin</em> extends <em>participant</em> and has the <em>participantId</em> property.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">participant NetworkAdmin identified by participantId {
+    o String participantId
+}
+</code></pre></div>
 <table><thead>
 <tr>
 <th>Name</th>
