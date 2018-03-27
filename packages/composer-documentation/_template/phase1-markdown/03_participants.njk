@@ -1,18 +1,17 @@
 
-# Particpant Model
+# Participant Model
 
 {% for pt in types.participant %}
 ### {{pt.name}}
-The fully qualified name is **{{pt.fqn}}** 
+The fully qualified name is **{{pt.fqn}}**
+
+### Additional Information
 
 {% if pt.decorators.docs %}
-    {{pt.description}}
-{% else %}
     {% for extra in pt.decorators.docs %}
-    {{ pt.decorators[extra] }}
+{{ pt.decorators[extra] }}
     {% endfor %}
 {% endif %}
-
 
 | Name | Type | Description |
 | --------  | ---- | ----------- |
