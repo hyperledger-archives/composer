@@ -1,0 +1,235 @@
+<div class="modal fade" id="addParticipantModal" tabindex="-1" role="dialog" aria-labelledby="addParticipantModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="addParticipantModalLabel">Create participant</h4>
+            <p class="modal-intro">Enter the required values below.</p>
+        </div>
+        <form [formGroup]="myForm">
+          <div class="modal-body">
+  
+  
+            <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
+  
+              <% if(currentParticipant.properties[x].enum === true){ %>
+                <label for="<%=currentParticipant.properties[x].name%>"><%=currentParticipant.properties[x].name%></label>
+                <div class="checkbox">
+                  <% for(var y=0;y<currentParticipant.properties[x].enumValues.length;y++){ %>
+                    <label>
+                      <input
+                        <% if(currentParticipant.properties[x].array === false){ %>
+                          formControlName="<%=currentParticipant.properties[x].name%>"
+                        <% } %>
+                        name="<%=currentParticipant.properties[x].name%>"
+                        value="<%=currentParticipant.properties[x].enumValues[y].name%>"
+                        type="<%=currentParticipant.properties[x].array ? 'checkbox' : 'radio'%>"
+                        <% if(currentParticipant.properties[x].array){ %>
+                          (change)="changeArrayValue('<%=currentParticipant.properties[x].name%>', '<%=currentParticipant.properties[x].enumValues[y].name%>')"
+                        <% } %>
+                      />
+                      <%=currentParticipant.properties[x].enumValues[y].name%>
+                    </label>
+                  <%}%>
+                </div>
+              <%}else{%>
+                <div class="form-group text-left">
+                  <label for="<%=currentParticipant.properties[x].name%>"><%=currentParticipant.properties[x].name%></label>
+                  <% if(currentParticipant.properties[x].type == 'Boolean'){ %>
+                    <input formControlName="<%=currentParticipant.properties[x].name%>" type="checkbox" class="form-control">
+                  <%}else if(currentParticipant.properties[x].type == 'Double'){%>
+                    <input formControlName="<%=currentParticipant.properties[x].name%>" type="number" step='any' class="form-control">
+                  <%}else if(currentParticipant.properties[x].type == 'Integer' || currentParticipant.properties[x].type == 'Long'){%>
+                    <input formControlName="<%=currentParticipant.properties[x].name%>" type="number" class="form-control">
+                  <%}else if(currentParticipant.properties[x].type == 'String' || currentParticipant.properties[x].type == 'DateTime'){%>%>
+                    <input formControlName="<%=currentParticipant.properties[x].name%>" type="text" class="form-control">
+                  <%}else{%>
+                      <textarea formControlName="<%=currentParticipant.properties[x].name%>" class="form-control" rows="3"></textarea>
+                  <%}%>
+                </div>
+              <%}%>
+            <%}%>
+  
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button (click)="addParticipant(myForm);" type="submit" class="btn btn-success" data-dismiss="modal">Confirm</button>
+  
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="modal fade" id="updateParticipantModal" tabindex="-1" role="dialog" aria-labelledby="updateParticipantModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="updateParticipantModalLabel">Update Participant</h4>
+        </div>
+        <form [formGroup]="myForm">
+          <div class="modal-body">
+  
+  
+            <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
+              <div class="form-group text-left">
+                <label for="<%=currentParticipant.properties[x].name%>"><%=currentParticipant.properties[x].name%></label>
+  
+                <% if(currentParticipant.properties[x].type == 'Boolean'){ %>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="checkbox" class="form-control">
+                <%}else if(currentParticipant.properties[x].type == 'Double'){%>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="number" step='any' class="form-control">
+                <%}else if(currentParticipant.identifier.toString() == currentParticipant.properties[x].name.toString()){%>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" class="form-control" disabled="disabled">  
+                <%}else if(currentParticipant.properties[x].type == 'Integer' || currentParticipant.properties[x].type == 'Long'){%>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" type="number" class="form-control">
+                <%}else if(currentParticipant.properties[x].type == 'String' || currentParticipant.properties[x].type == 'DateTime'){%>%>
+                  <input [ngModel]="<%=currentParticipant.properties[x].name%>"formControlName="<%=currentParticipant.properties[x].name%>" type="text" class="form-control">
+                <%}else{%>
+                  <% if(currentParticipant.properties[x].enum === true){ %>
+                    <div class="row">
+                      <div class="col-xs-12 checkbox">
+                      <% for(var y=0;y<currentParticipant.properties[x].enumValues.length;y++){ %>
+                        <label>
+                          <input
+                            <% if(currentParticipant.properties[x].array === false){ %>
+                              formControlName="<%=currentParticipant.properties[x].name%>"
+                              [ngModel]="<%=currentParticipant.properties[x].name%>"
+                            <% } %>
+                            name="<%=currentParticipant.properties[x].name%>"
+                            value="<%=currentParticipant.properties[x].enumValues[y].name%>"
+                            type="<%=currentParticipant.properties[x].array ? 'checkbox' : 'radio'%>"
+                            <% if(currentParticipant.properties[x].array){ %>
+                              (change)="changeArrayValue('<%=currentParticipant.properties[x].name%>', '<%=currentParticipant.properties[x].enumValues[y].name%>')"
+                              [checked]="hasArrayValue('<%=currentParticipant.properties[x].name%>', '<%=currentParticipant.properties[x].enumValues[y].name%>')"
+                            <% } %>
+                          />
+                          <%=currentParticipant.properties[x].enumValues[y].name%>
+                        </label>
+                      <%}%>
+                      </div>
+                    </div>
+                  <%}else{%>
+                    <textarea [ngModel]="<%=currentParticipant.properties[x].name%>" formControlName="<%=currentParticipant.properties[x].name%>" class="form-control" rows="3"></textarea>
+                  <%}%>
+                <%}%>
+  
+              </div>
+            <%}%>
+  
+  
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button (click)="updateParticipant(myForm)" type="submit" class="btn btn-success" data-dismiss="modal">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="modal fade" id="deleteParticipantModal" tabindex="-1" role="dialog" aria-labelledby="deleteParticipantModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="deleteParticipantModalLabel">Delete Participant</h4>
+        </div>
+        <form [formGroup]="myForm" (ngSubmit)="deleteParticipant()">
+          <div class="modal-body">
+            Are you sure you want to delete this participant?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button (click)="deleteParticipant()" type="submit" class="btn btn-danger" data-dismiss="modal">Yes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="container">
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          <strong>Error:</strong> {{errorMessage}}
+      </div>
+    
+    <div class="row">
+      <div class="col-md-9">
+          <h1 class="participant-title" id='participantName'><%= currentParticipant.name %></h1>
+      </div>
+      <div class="col-md-3">
+        <button (click)="resetForm()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addParticipantModal">
+            <span style="font-size: 14px;font-family: inherit;border-right:1px solid rgba(255,255,255,0.5);padding-right:0.6em;margin-right:0.5em;vertical-align:middle;">
+                <svg class="plus-svg" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                  <path fill-rule="evenodd" d="M5.5,4.5 L9.5,4.5 L10,4.5 L10,5.5 L9.5,5.5 L5.5,5.5 L5.5,9.5 L5.5,10 L4.5,10 L4.5,9.5 L4.5,5.5 L0.5,5.5 L0,5.5 L0,4.5 L0.5,4.5 L4.5,4.5 L4.5,0.5 L4.5,0 L5.5,0 L5.5,0.5 L5.5,4.5 Z"/>
+                </svg>
+            </span>
+          Create Participant
+        </button>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table table-responsive">
+          <thead class="thead">
+            <tr class="thead-cols">
+              <% for(var y=0;y<currentParticipant.properties.length;y++){ %>
+                  <th class="info"><%=currentParticipant.properties[y].name%></th>
+              <%}%>
+                <th class="info-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let participant of allParticipants">
+  
+              <% for(var z=0;z<currentParticipant.properties.length;z++){ %>
+                  <td class="participant-properties">{{participant.<%=currentParticipant.properties[z].name%>}}</td>
+              <%}%>
+              <td>
+                <button (click)="getForm(participant.<%=currentParticipant.identifier%>);" type="button" class="btn btn-update" data-toggle="modal" data-target="#updateParticipantModal">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    width="12.8px" height="12.8px" viewBox="0 0 30.7 30.7" style="enable-background:new 0 0 30.7 30.7;" xml:space="preserve">
+                 <g>
+                   <path d="M1.5,30.7c0.1,0,0.2,0,0.4,0l5.9-1.5c0.8-0.2,1.3-1,1.1-1.8c-0.2-0.8-1-1.3-1.8-1.1l-3.6,0.9l0.8-3.8
+                     c0.2-0.8-0.4-1.6-1.2-1.8c-0.8-0.2-1.6,0.4-1.8,1.2L0,28.9c-0.1,0.5,0.1,1,0.4,1.4C0.7,30.6,1.1,30.7,1.5,30.7z"/>
+                   <path d="M10.4,25.2c0.3,0.3,0.7,0.4,1.1,0.4c0.4,0,0.8-0.1,1.1-0.4L30.3,7.5c0.6-0.6,0.6-1.5,0-2.1l-4.9-4.9
+                     C25.1,0.2,24.7,0,24.3,0c-0.4,0-0.8,0.2-1.1,0.4L5.5,18.2c-0.3,0.3-0.4,0.7-0.4,1.1s0.2,0.8,0.4,1.1L10.4,25.2z M24.3,3.6l2.8,2.8
+                     L11.5,22l-2.8-2.8L24.3,3.6z"/>
+                 </g>
+                 </svg>
+                </button>
+  
+                <button (click)="setId(participant.<%=currentParticipant.identifier%>);" type="button" class="btn btn-delete" data-toggle="modal" data-target="#deleteParticipantModal">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    width="13.8px" height="16px" viewBox="0 0 65.9 76.2" style="enable-background:new 0 0 65.9 76.2;" xml:space="preserve">
+                 <path d="M42.8,60.2V22.6c0-1.7-1.3-3-3-3s-3,1.3-3,3v37.6c0,1.7,1.3,3,3,3S42.8,61.9,42.8,60.2z M29.1,60.2V22.6c0-1.7-1.3-3-3-3
+                   s-3,1.3-3,3v37.6c0,1.7,1.3,3,3,3S29.1,61.9,29.1,60.2z M56.2,19.6c-1.7,0-3,1.3-3,3V68c0,1.2-1,2.2-2.2,2.2H14.9
+                   c-1.2,0-2.2-1-2.2-2.2V22.6c0-1.7-1.3-3-3-3s-3,1.3-3,3V68c0,4.5,3.7,8.2,8.2,8.2H51c4.5,0,8.2-3.7,8.2-8.2V22.6
+                   C59.2,21,57.9,19.6,56.2,19.6z M62.9,10.3H49.3V3c0-1.7-1.3-3-3-3H19.6c-1.7,0-3,1.3-3,3v7.3H3c-1.7,0-3,1.3-3,3s1.3,3,3,3h59.9
+                   c1.7,0,3-1.3,3-3S64.5,10.3,62.9,10.3z M43.3,10.3H22.6V6h20.7L43.3,10.3L43.3,10.3z"/>
+                 </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

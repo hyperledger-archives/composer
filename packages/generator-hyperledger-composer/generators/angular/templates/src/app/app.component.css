@@ -33,6 +33,9 @@
     letter-spacing: 0.28px;
     color: #5D636A;
 }
+.network-name:hover{
+    letter-spacing: 2px;
+}
 
 .navbar-nav > li {
     margin-right: 12px;
@@ -106,6 +109,16 @@
     background-color: #F3ECFE;
 }
 
+.dropdown-menu > li > a:visited {
+    background-color: #F3ECFE;
+}
+
+.dropdown-menu > li > a:active {
+    background-color: #F3ECFE;
+}
+.dropdown-menu > li > a:focus {
+    background-color: #F3ECFE;
+}
 .dropdown-menu > li > a:visited {
     background-color: #F3ECFE;
 }
