@@ -23,9 +23,11 @@ import { EditorFile } from '../component/editor-file';
 import { Login } from '../component/login';
 import { OperationsHelper } from '../utils/operations-helper';
 import { Test } from '../component/test';
+import { Upgrade } from '../component/upgrade';
 
 import * as  fs from 'fs';
 import * as chai from 'chai';
+
 let expect = chai.expect;
 
 describe('Playground Tutorial Define', (() => {
@@ -136,7 +138,7 @@ describe('Playground Tutorial Define', (() => {
                     fail(err);
                 });
         }), Constants.vlongwait);
-    }));
+        }));
 
     describe('Defining a model file', (() => {
         it('should let the user update the model file', (() => {
@@ -220,7 +222,11 @@ describe('Playground Tutorial Define', (() => {
                         })
                         .then((text) => {
                             let lines = text.toString().split(/\r\n|\n/);
-                            expect(lines.map((e) => { return e.trim(); })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => { return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
+                            expect(lines.map((e) => {
+                                return e.trim();
+                            })).to.deep.equal(scriptFileCode.split(/\r\n|\n/).map((e) => {
+                                return e.trim();
+                            })); // Use trim to handle that codemirror autotabs so file is formatted differently
                         });
 
                     Editor.retrieveUpdateBusinessNetworkButtons()
@@ -269,13 +275,25 @@ describe('Playground Tutorial Define', (() => {
                 });
         }));
 
-        it('should be able to upgrade the network', (() => {
+        it('should be able to upgrade the network', () => {
+
+            let upgradePromise;
             // update new item
-            Editor.clickDeployBND();
-            // -success message
-            OperationsHelper.processExpectedSuccess(Constants.vvlongwait);
-            // -update disabled
-            Editor.retrieveUpdateBusinessNetworkButtons()
+            return Editor.clickDeployBND()
+                .then(() => {
+                    if (isFabricTest) {
+                        return Upgrade.waitToAppear()
+                            .then(() => {
+                                return Upgrade.clickUpgrade();
+                            });
+                    }
+                })
+                .then(() => {
+                    // -success message
+                    OperationsHelper.processExpectedSuccess(Constants.vvlongwait);
+                    // -update disabled
+                    return Editor.retrieveUpdateBusinessNetworkButtons();
+                })
                 .then((buttonlist: any) => {
                     expect(buttonlist).to.be.an('array').lengthOf(2);
                     expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
@@ -283,7 +301,7 @@ describe('Playground Tutorial Define', (() => {
                 .catch((err) => {
                     fail(err);
                 });
-        }), Constants.vvlongwait);
+        }, Constants.vvlongwait);
     }));
 
     describe('Testing the business network definition', (() => {
