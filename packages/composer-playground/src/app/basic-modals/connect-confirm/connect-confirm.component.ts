@@ -12,20 +12,18 @@
  * limitations under the License.
  */
 import { Component, Input } from '@angular/core';
-
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    selector: 'busy',
-    templateUrl: './busy.component.html',
-    styleUrls: ['./busy.component.scss'.toString()]
+    selector: 'connect-confirm',
+    templateUrl: './connect-confirm.component.html',
+    styleUrls: ['./connect-confirm.component.scss'.toString()]
 })
-export class BusyComponent {
-    @Input() busy;
-    @Input() card;
-    @Input() header;
+
+export class ConnectConfirmComponent {
+
+    @Input() network: string = null;
 
     constructor(public activeModal: NgbActiveModal) {
-
     }
 }

@@ -80,9 +80,9 @@ export class OperationsHelper {
   };
 
   // Wait for success message to appear and disappear
-  static processExpectedSuccess() {
-    browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), Constants.longWait);
-    browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), Constants.longWait);
+  static processExpectedSuccess(waitTime = Constants.longWait) {
+    browser.wait(ExpectedConditions.visibilityOf(element(by.id('success_notify'))), waitTime);
+    browser.wait(ExpectedConditions.invisibilityOf(element(by.id('success_notify'))), waitTime);
   };
 
   static importBusinessNetworkArchiveFromFile(fileName: string) {
