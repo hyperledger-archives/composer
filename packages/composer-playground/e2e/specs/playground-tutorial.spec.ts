@@ -15,7 +15,7 @@
 import { ExpectedConditions, browser, element, by } from 'protractor';
 
 import { AddFile } from '../component/add-file';
-import { BusyAlert } from '../component/alert';
+import { BusyAlert, SuccessAlert } from '../component/alert';
 import { Constants } from '../constants';
 import { Deploy } from '../component/deploy';
 import { Editor } from '../component/editor';
@@ -53,6 +53,15 @@ describe('Playground Tutorial Define', (() => {
     });
 
     describe('Creating a new business network', (() => {
+        it('should add the TestPeerAdmin card', () => {
+            if (isFabricTest) {
+                return Login.importBusinessNetworkCard(Constants.tempDir + '/' + Constants.peerAdminCardName)
+                    .then(() => {
+                        return SuccessAlert.waitToDisappear();
+                    });
+            }
+        });
+
         it('should allow a user to select the empty-business-network and call it tutorial network and deploy', () => {
 
             // Click to deploy on desired profile
@@ -126,7 +135,7 @@ describe('Playground Tutorial Define', (() => {
                 .catch((err) => {
                     fail(err);
                 });
-        }));
+        }), Constants.vlongwait);
     }));
 
     describe('Defining a model file', (() => {
@@ -148,7 +157,11 @@ describe('Playground Tutorial Define', (() => {
                 })
                 .then((text) => {
                     let lines = text.toString().split(/\r\n|\n/);
-                    expect(lines.map((e) => { return e.trim(); })).to.deep.equal(modelFileCode.split(/\r\n|\n/).map((e) => { return e.trim(); })); // Use trim to handle that codemirror autotabs so file is formatted differently
+                    expect(lines.map((e) => {
+                        return e.trim();
+                    })).to.deep.equal(modelFileCode.split(/\r\n|\n/).map((e) => {
+                        return e.trim();
+                    })); // Use trim to handle that codemirror autotabs so file is formatted differently
                     return Editor.retrieveUpdateBusinessNetworkButtons();
                 })
                 .then((buttonlist: any) => {
@@ -241,7 +254,6 @@ describe('Playground Tutorial Define', (() => {
         }));
     }));
 
-    /*
     describe('Upgrading the updated business network', (() => {
         it('should have the right number of files', (() => {
             let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/model.cto', 'Script File\nlib/script.js'];
@@ -261,18 +273,17 @@ describe('Playground Tutorial Define', (() => {
             // update new item
             Editor.clickDeployBND();
             // -success message
-            OperationsHelper.processExpectedSuccess();
+            OperationsHelper.processExpectedSuccess(Constants.vvlongwait);
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
                 .then((buttonlist: any) => {
                     expect(buttonlist).to.be.an('array').lengthOf(2);
-                    expect(buttonlist[0]).to.deep.equal({ text: '+ Add a file...', enabled: true });
-                    expect(buttonlist[1]).to.deep.equal({ text: 'Update', enabled: false });
+                    expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
                 })
                 .catch((err) => {
                     fail(err);
                 });
-        }));
+        }), Constants.vvlongwait);
     }));
 
     describe('Testing the business network definition', (() => {
@@ -424,7 +435,6 @@ describe('Playground Tutorial Define', (() => {
                 });
         }));
     }));
-    */
 
     describe('Logging out of the business network', (() => {
         it('should log the user out', (() => {
