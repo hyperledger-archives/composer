@@ -65,7 +65,8 @@ const packages = [
     'composer-cli',
     'composer-wallet-inmemory',
     'composer-wallet-filesystem',
-    'generator-hyperledger-composer'];
+    'generator-hyperledger-composer',
+    'composer-documentation'];
 
 // Packages to be installed in integration test(s)
 const testPackages = [

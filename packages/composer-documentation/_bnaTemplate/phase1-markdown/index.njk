@@ -1,0 +1,31 @@
+{{core.readme}}
+
+# Summary
+
+## Asset Definition 
+| Namespace | Name | Description |
+| --------  | ---- | ----------- |
+{% for asset in types.asset %}| {{asset.fqn}} | {{asset.name}} | {{asset.description}}  |
+{% endfor %}
+
+## Transaction Definition 
+| Namespace | Name | Description |
+| --------  | ---- | ----------- |
+{% for tx in types.transaction %}| {{tx.fqn}} | {{tx.name}} | {{tx.description}}  |
+{% endfor %}
+
+## Participant Definition 
+| Namespace | Name | Description |
+| --------  | ---- | ----------- |
+{% for pt in types.participant %}| {{pt.fqn}} | {{pt.name}} | {{pt.description}}  |
+{% endfor %}
+
+## ACL 
+{% for rule in acls %}- {{rule.description}}
+{% endfor %}
+
+## Queries 
+{% for query in queries %}- {{query.description}}
+{% endfor %}
+
+

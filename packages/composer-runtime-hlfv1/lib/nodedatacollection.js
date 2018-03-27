@@ -40,14 +40,6 @@ class NodeDataCollection extends DataCollection {
     }
 
     /**
-     * Serialize this object to a string.
-     * @return {string} this object as a string.
-     */
-    toString() {
-        return `[DataCollection: + ${this.collectionID}]`;
-    }
-
-    /**
      * Get all of the objects in this collection.
      * @return {Promise} A promise that will be resolved with an array of objects,
      * or rejected with an error.

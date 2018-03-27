@@ -37,14 +37,6 @@ class NodeHTTPService extends HTTPService {
         LOG.exit(method);
     }
 
-    /**
-     * Serialize this object to a string.
-     * @return {string} this object as a string.
-     */
-    toString() {
-        return 'Instance of HTTPService';
-    }
-
    /**
      * Post data
      * @return {Promise} A Promise that return the JSON text for the HTTP POST. It captures the status code, header and body of the HTTP POST. The body must also be returned as embedded JSON text.
