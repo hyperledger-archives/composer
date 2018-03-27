@@ -232,5 +232,68 @@ Feature: Rest steps
         When I make a GET request to /api/system/ping
         Then The response code should be 401
 
+    Scenario: Using the CLI, I can export a card that exists in my wallet
+        When I run the following expected pass CLI command
+            """
+            composer card export --card admin@tutorial-network --file ./tmp/admin.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+        And I have the following files
+            | ../tmp/admin.card |
+
+    Scenario: Using the REST API, I can log in using my credentials
+        When I make a POST request to /auth/ldap
+            """
+            {
+              "username": "root",
+              "password": "secret"
+            }
+            """
+        Then The response code should be 200
+
+    Scenario: Using the REST API, I can import a business network card into my wallet
+        When I make a POST request with form data to /api/wallet/import
+            | name | value                              |
+            | card | ./tmp/admin.card |
+        Then The response code should be 204
+
+
+    Scenario: Using the REST API, I can create a Trader
+        When I make a POST request to /api/Trader
+            """
+            {
+                "$class": "org.acme.biznet.Trader",
+                "tradeId": "dawn@email.com",
+                "firstName": "Dawn",
+                "lastName": "Onme"
+            }
+            """
+        Then The response code should be 200
+
+    Scenario: Using the REST API, I can issue an identity
+        When I make a POST request for an identity to /api/system/identities/issue
+        """
+        { "participant":"org.acme.biznet.Trader#dawn@email.com",
+        "userID":"dawnonme",
+        "options":{}}
+        """
+        And I write the response data to a file ./tmp/dawnonme@tutorial-network.card
+        Then The response code should be 200
+ 
+    Scenario: Using the CLI, I can import the business network card into my wallet
+        When I run the following expected pass CLI command
+            """
+            composer card import -f ./tmp/dawnonme@tutorial-network.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the REST API, I can log out
+        When I make a GET request to /auth/logout
+        Then The response code should be 200
+
+    Scenario: Using the REST API, I cannot ping the network after logging out
+        When I make a GET request to /api/system/ping
+        Then The response code should be 401
+
     Scenario: Finally, shutdown the REST server
         When I shutdown the REST server
