@@ -1,0 +1,194 @@
+<div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="addTransactionModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addTransactionModalLabel">Create Transaction</h4>
+          <p class="modal-intro">Enter the required values below.</p>
+      </div>
+      <form [formGroup]="myForm">
+        <div class="modal-body">
+
+
+          <% for(var x=0;x<currentTransaction.properties.length;x++){ %>
+
+            <% if(currentTransaction.properties[x].enum === true){ %>
+              <label for="<%=currentTransaction.properties[x].name%>"><%=currentTransaction.properties[x].name%></label>
+              <div class="checkbox">
+                <% for(var y=0;y<currentTransaction.properties[x].enumValues.length;y++){ %>
+                  <label>
+                    <input
+                      <% if(currentTransaction.properties[x].array === false){ %>
+                        formControlName="<%=currentTransaction.properties[x].name%>"
+                      <% } %>
+                      name="<%=currentTransaction.properties[x].name%>"
+                      value="<%=currentTransaction.properties[x].enumValues[y].name%>"
+                      type="<%=currentTransaction.properties[x].array ? 'checkbox' : 'radio'%>"
+                      <% if(currentTransaction.properties[x].array){ %>
+                        (change)="changeArrayValue('<%=currentTransaction.properties[x].name%>', '<%=currentTransaction.properties[x].enumValues[y].name%>')"
+                      <% } %>
+                    />
+                    <%=currentTransaction.properties[x].enumValues[y].name%>
+                  </label>
+                <%}%>
+              </div>
+            <%}else{%>
+              <div class="form-group text-left">
+                <label for="<%=currentTransaction.properties[x].name%>"><%=currentTransaction.properties[x].name%></label>
+                <% if(currentTransaction.properties[x].type == 'Boolean'){ %>
+                  <input formControlName="<%=currentTransaction.properties[x].name%>" type="checkbox" class="form-control">
+                <%}else if(currentTransaction.properties[x].type == 'Double'){%>
+                  <input formControlName="<%=currentTransaction.properties[x].name%>" type="number" step='any' class="form-control">
+                <%}else if(currentTransaction.properties[x].type == 'Integer' || currentTransaction.properties[x].type == 'Long'){%>
+                  <input formControlName="<%=currentTransaction.properties[x].name%>" type="number" class="form-control">
+                <%}else if(currentTransaction.properties[x].type == 'String' || currentTransaction.properties[x].type == 'DateTime'){%>%>
+                  <input formControlName="<%=currentTransaction.properties[x].name%>" type="text" class="form-control">
+                <%}else{%>
+                    <textarea formControlName="<%=currentTransaction.properties[x].name%>" class="form-control" rows="3"></textarea>
+                <%}%>
+              </div>
+            <%}%>
+          <%}%>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button (click)="addTransaction(myForm);" type="submit" class="btn btn-success" data-dismiss="modal">Confirm</button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="updateTransactionModal" tabindex="-1" role="dialog" aria-labelledby="updateTransactionModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateTransactionModalLabel">Update Transaction</h4>
+      </div>
+      <form [formGroup]="myForm">
+        <div class="modal-body">
+
+
+          <% for(var x=0;x<currentTransaction.properties.length;x++){ %>
+            <div class="form-group text-left">
+              <label for="<%=currentTransaction.properties[x].name%>"><%=currentTransaction.properties[x].name%></label>
+
+              <% if(currentTransaction.properties[x].type == 'Boolean'){ %>
+                <input [ngModel]="<%=currentTransaction.properties[x].name%>" formControlName="<%=currentTransaction.properties[x].name%>" type="checkbox" class="form-control">
+              <%}else if(currentTransaction.properties[x].type == 'Double'){%>
+                <input [ngModel]="<%=currentTransaction.properties[x].name%>" formControlName="<%=currentTransaction.properties[x].name%>" type="number" step='any' class="form-control">
+              <%}else if(currentTransaction.properties[x].type == 'Integer' || currentTransaction.properties[x].type == 'Long'){%>
+                <input [ngModel]="<%=currentTransaction.properties[x].name%>" formControlName="<%=currentTransaction.properties[x].name%>" type="number" class="form-control">
+              <%}else if(currentTransaction.properties[x].type == 'String' || currentTransaction.properties[x].type == 'DateTime'){%>%>
+                <input [ngModel]="<%=currentTransaction.properties[x].name%>"formControlName="<%=currentTransaction.properties[x].name%>" type="text" class="form-control">
+              <%}else{%>
+                <% if(currentTransaction.properties[x].enum === true){ %>
+                  <div class="row">
+                    <div class="col-xs-12 checkbox">
+                    <% for(var y=0;y<currentTransaction.properties[x].enumValues.length;y++){ %>
+                      <label>
+                        <input
+                          <% if(currentTransaction.properties[x].array === false){ %>
+                            formControlName="<%=currentTransaction.properties[x].name%>"
+                            [ngModel]="<%=currentTransaction.properties[x].name%>"
+                          <% } %>
+                          name="<%=currentTransaction.properties[x].name%>"
+                          value="<%=currentTransaction.properties[x].enumValues[y].name%>"
+                          type="<%=currentTransaction.properties[x].array ? 'checkbox' : 'radio'%>"
+                          <% if(currentTransaction.properties[x].array){ %>
+                            (change)="changeArrayValue('<%=currentTransaction.properties[x].name%>', '<%=currentTransaction.properties[x].enumValues[y].name%>')"
+                            [checked]="hasArrayValue('<%=currentTransaction.properties[x].name%>', '<%=currentTransaction.properties[x].enumValues[y].name%>')"
+                          <% } %>
+                        />
+                        <%=currentTransaction.properties[x].enumValues[y].name%>
+                      </label>
+                    <%}%>
+                    </div>
+                  </div>
+                <%}else{%>
+                  <textarea [ngModel]="<%=currentTransaction.properties[x].name%>" formControlName="<%=currentTransaction.properties[x].name%>" class="form-control" rows="3"></textarea>
+                <%}%>
+              <%}%>
+
+            </div>
+          <%}%>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button (click)="updateTransaction(myForm)" type="submit" class="btn btn-success" data-dismiss="modal">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="deleteTransactionModal" tabindex="-1" role="dialog" aria-labelledby="deleteTransactionModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteTransactionModalLabel">Delete Transaction</h4>
+      </div>
+      <form [formGroup]="myForm" (ngSubmit)="deleteTransaction()">
+        <div class="modal-body">
+          Are you sure you want to delete this Transaction?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button (click)="deleteTransaction()" type="submit" class="btn btn-danger" data-dismiss="modal">Yes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="container">
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        <strong>Error:</strong> {{errorMessage}}
+    </div>
+  
+  <div class="row">
+    <div class="col-md-9">
+        <h1 class="transaction-title" id='transactionName'><%= currentTransaction.name %></h1>
+    </div>
+    <div class="col-md-3">
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          When invoked, this transaction will have the following attributes:
+          <br>
+          <ul>
+            <% for(var y=0;y<currentTransaction.properties.length;y++){ %>
+              <li><span class="attribute"><b><%=currentTransaction.properties[y].name%></b></span></li>
+            <%}%>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 

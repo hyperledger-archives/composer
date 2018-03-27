@@ -78,11 +78,13 @@
           <% for(var x=0;x<currentAsset.properties.length;x++){ %>
             <div class="form-group text-left">
               <label for="<%=currentAsset.properties[x].name%>"><%=currentAsset.properties[x].name%></label>
-
+              
               <% if(currentAsset.properties[x].type == 'Boolean'){ %>
                 <input [ngModel]="<%=currentAsset.properties[x].name%>" formControlName="<%=currentAsset.properties[x].name%>" type="checkbox" class="form-control">
               <%}else if(currentAsset.properties[x].type == 'Double'){%>
                 <input [ngModel]="<%=currentAsset.properties[x].name%>" formControlName="<%=currentAsset.properties[x].name%>" type="number" step='any' class="form-control">
+              <%}else if(currentAsset.identifier.toString() == currentAsset.properties[x].name.toString()){%>
+                <input [ngModel]="<%=currentAsset.properties[x].name%>" formControlName="<%=currentAsset.properties[x].name%>" class="form-control" disabled="disabled">  
               <%}else if(currentAsset.properties[x].type == 'Integer' || currentAsset.properties[x].type == 'Long'){%>
                 <input [ngModel]="<%=currentAsset.properties[x].name%>" formControlName="<%=currentAsset.properties[x].name%>" type="number" class="form-control">
               <%}else if(currentAsset.properties[x].type == 'String' || currentAsset.properties[x].type == 'DateTime'){%>%>
