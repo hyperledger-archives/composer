@@ -130,7 +130,9 @@ class IdCard {
      * @return {Object} connection profile.
      */
     getConnectionProfile() {
-        return Object.assign({}, this.connectionProfile);
+        let newprofile = Object.assign({}, this.connectionProfile);
+        delete newprofile.wallet;
+        return newprofile;
     }
 
     /**

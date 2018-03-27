@@ -33,7 +33,7 @@ class Engine {
      */
     constructor(container) {
         this.container = container;
-        this.installLogger();
+
         const method = 'constructor';
         LOG.entry(method);
         LOG.exit(method);
@@ -51,28 +51,10 @@ class Engine {
      * Install the runtime logger into the common module.
      */
     installLogger() {
-        const loggingService = this.container.getLoggingService();
-        const loggingProxy = {
-            log: (level, method, msg, args) => {
-                args = args || [];
-                let formattedArguments = args.map((arg) => {
-                    return String(arg);
-                }).join(', ');
-                switch (level) {
-                case 'debug':
-                    return loggingService.logDebug(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'warn':
-                    return loggingService.logWarning(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'info':
-                    return loggingService.logInfo(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'verbose':
-                    return loggingService.logDebug(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                case 'error':
-                    return loggingService.logError(util.format('@JS : %s %s %s', method, msg, formattedArguments));
-                }
-            }
-        };
-        Logger.setFunctionalLogger(loggingProxy);
+        let loggingService = this.container.getLoggingService();
+        let loggerCfg = loggingService.getLoggerCfg();
+        Logger.setLoggerCfg(loggerCfg,true);
+
     }
 
     /**
@@ -134,7 +116,11 @@ class Engine {
         // Extract and validate the optional log level property.
         const logLevel = transactionData.logLevel;
         if (logLevel) {
-            this.getContainer().getLoggingService().setLogLevel(logLevel);
+            let cfg = await this.getContainer().getLoggingService().getLoggerCfg();
+
+            let newLevel = this.getContainer().getLoggingService().mapCfg(logLevel);
+            let c =  Logger.setLoggerCfg(Object.assign(cfg,{debug:newLevel}),true);
+            await this.getContainer().getLoggingService().setLoggerCfg(c);
         }
 
         await context.transactionStart(false);

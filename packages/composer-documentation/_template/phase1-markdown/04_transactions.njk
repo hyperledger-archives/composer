@@ -1,0 +1,26 @@
+# Transaction Functions Detail
+
+{% for tx in types.transaction %}
+### {{tx.name}}
+The fully qualified name is **{{tx.fqn}}** 
+
+> {{tx.description}} 
+
+{% if tx.decorators.docs %}
+    {{tx.description}}
+{% else %}
+    {% for extra in tx.decorators.docs %}
+    {{ tx.decorators[extra] }}
+    {% endfor %}
+{% endif %}
+
+| Name | Type | Description |
+| ---  | ---- | ----------- |
+{% for id,info in tx.properties %}| {{id}} | {{info.type}} | {{info.description}} |
+{% endfor %}
+
+{% endfor %}
+
+
+
+

@@ -24,14 +24,14 @@
                      [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && overFlowedResources[resource.getIdentifier()], 'tiny-gradient' : resource.getIdentifier() === expandedResource || !overFlowedResources[resource.getIdentifier()]}"
                      class="data">{{serialize(resource)}}</pre>
                 <div lass="resource-icon">
-                    <button type="button" class="icon" (click)="editResource(resource)">
+                    <button type="button" class="icon edit-resource" (click)="editResource(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-edit_32"></use>
                         </svg>
                     </button>
                 </div>
                 <div class="resource-icon">
-                    <button type="button" class="icon" (click)="openDeleteResourceModal(resource)">
+                    <button type="button" class="icon delete-resource" (click)="openDeleteResourceModal(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-bin_icon"></use>
                         </svg>

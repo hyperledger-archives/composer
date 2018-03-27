@@ -40,14 +40,6 @@ class NodeDataService extends DataService {
     }
 
     /**
-     * Serialize this object to a string.
-     * @return {string} this object as a string.
-     */
-    toString() {
-        return 'DataService';
-    }
-
-    /**
      * Create a collection with the specified ID.
      * @param {string} id The ID of the collection.
      * @param {force} [force] force creation, don't check for existence first.

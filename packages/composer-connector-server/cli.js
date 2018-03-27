@@ -30,13 +30,12 @@ const argv = require('yargs')
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const ConnectorServer = require('.');
-const ConsoleLogger = require('composer-common').ConsoleLogger;
 
 const io = require('socket.io')(argv.port);
+
+// setup the logger for CLIs, Console output only with 'composer[info]:*' setting
 const Logger = require('composer-common').Logger;
-
-Logger.setFunctionalLogger(new ConsoleLogger());
-
+Logger.setCLIDefaults();
 const LOG = Logger.getLog('ConnectorServer');
 
 const method = 'main';

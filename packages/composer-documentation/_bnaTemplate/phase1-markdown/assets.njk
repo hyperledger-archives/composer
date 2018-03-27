@@ -1,0 +1,19 @@
+# Asset Model
+
+{% for asset in types.asset %}
+#### {{asset.name}}
+**{{asset.fqn}}** - **{{asset.description}}**
+
+| Name | Type | Description |
+| --------  | ---- | ----------- |
+{% for id,info in asset.properties %}|{{id}}|{{info.type}}|{{info.description}}|
+{% endfor %}
+
+{% for extra in asset.decorators.docs %}
+{{ asset.decorators[extra] }}
+{% endfor %}
+
+{% endfor %}
+
+
+

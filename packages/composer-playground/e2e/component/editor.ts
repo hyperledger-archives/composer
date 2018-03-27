@@ -51,13 +51,13 @@ export class Editor {
   static makeFileActive(filename: string) {
     return OperationsHelper.retrieveMatchingElementsByCSS('.side-bar-nav', '.flex-container', 0)
     .then((elements) => {
-        for (var i = 0; i < elements.length; i++) {
+        for (let i = 0; i < elements.length; i++) {
             let elm = elements[i];
             browser.executeScript(scrollMe, elm);
             OperationsHelper.retrieveTextFromElement(elm)
             .then((text) => {
-                if(text.toString().split(/\r\n|\n/)[1] === filename) {
-                    return OperationsHelper.click(elm)
+                if (text.toString().split(/\r\n|\n/)[1] === filename) {
+                    return OperationsHelper.click(elm);
                 }
             });
         }

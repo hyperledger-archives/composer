@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+'use strict';
+
+
+const opus = require('../lib/opus');
+const yargs = require('yargs');
+
+// Standard Command yargs processing.
+let results = yargs
+    .option('a', {
+        alias: 'archive',
+        demandOption: true,
+        describe: 'Archive file to document',
+        type: 'string'
+    })
+    .option('o', {
+        alias: 'outdir',
+        demandOption: false,
+        default: './out',
+        describe: 'Output Directory',
+        type: 'string'
+    }).option('c', {
+        alias: 'config',
+        demandOption: false,
+        default: '',
+        describe: 'Path to the configuration file to use (advanced use only)',
+        type: 'string'
+    })
+    .help().argv;
+
+
+let result = opus(results);
+
+result.then(()=>{
+    console.log('All done');
+    // process.exit(0);
+}).catch(
+    (err)=>{
+        console.log('Fail');
+        console.log(err);
+        process.exit(1);
+    });
+

@@ -47,6 +47,14 @@ export class Deploy {
             return element(by.id('import-businessNetworkName')).sendKeys(name);
     }
 
+    static selectDeployFile(filePath: string) {
+        this.retrieveBaseTileOptions()
+        .then(() => {
+            let inputFileElement = element(by.id('file-importer_input'));
+            return dragDropFile(inputFileElement, filePath);
+        });
+    }
+
     // Deploy selected Tile option from Base tiles
     static selectDeployBasisOption(importOption: string) {
         // Wait for poplation of sample-network-list-item(s)

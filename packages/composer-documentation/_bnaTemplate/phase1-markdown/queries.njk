@@ -1,0 +1,14 @@
+# Predefined Queries
+
+{% for query in queries %}
+
+### {{query.name}}
+__{{query.description}}__
+
+Will issue this query
+```
+{{query.selector}}
+```
+
+{% endfor %}
+

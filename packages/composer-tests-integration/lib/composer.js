@@ -364,10 +364,16 @@ class Composer {
             let command = cmd;
             let stdout = '';
             let stderr = '';
+            let env = process.env;
+            if (this.jsonConfig){
+                env.NODE_CONFIG=this.jsonConfig;
+            }else {
+                delete env.NODE_CONFIG;
+            }
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command);
+                let childCliProcess = childProcess.exec(command,{env});
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
@@ -576,6 +582,26 @@ class Composer {
         });
     }
 
+        /**
+     * Check the last message matches JSON
+     * @param {String} name filename to write the data to
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    writeResponseData(name) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else {
+                let pathname = path.resolve(name);
+                let buffer = Buffer.from(this.lastResp.response,'binary');
+                fs.writeFileSync(pathname,buffer);
+                resolve();
+            }
+        });
+    }
+
+
+
     /**
      * Save a matched pattern from the current console stdout as an alias in an internal map
      * @param {*} regex The regex to match on
@@ -746,6 +772,22 @@ class Composer {
         checkOutput(response);
     }
 
+    /**
+     * Loads a json file based on the type
+     *
+     * @param {String} type type of the card store to set
+     */
+    setCardStore(type){
+        switch (type) {
+        case 'redis':{
+            this.jsonConfig = fs.readFileSync(path.resolve(__dirname,'..','resources','cardstore-redis.json'));
+            break;
+        }
+        default:
+            throw new Error(`Unkown card store type ${type}`);
+
+        }
+    }
 }
 
 module.exports = Composer;
