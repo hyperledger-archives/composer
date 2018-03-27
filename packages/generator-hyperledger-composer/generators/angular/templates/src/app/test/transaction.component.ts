@@ -257,3 +257,4 @@ export class <%= currentTransaction.name %>Component implements OnInit {
   }
 
 }
+

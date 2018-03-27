@@ -40,3 +40,4 @@ export class <%= transactionName %>Service {
     }
 
 }
+

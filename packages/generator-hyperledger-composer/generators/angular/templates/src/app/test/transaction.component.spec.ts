@@ -37,3 +37,4 @@ providers: [<%= transactionName %>Service,DataService,Configuration]
     expect(component).toBeTruthy();
   });
 });
+
