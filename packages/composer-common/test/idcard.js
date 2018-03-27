@@ -492,6 +492,11 @@ describe('IdCard', function() {
             connectionProfile.CONGA = 'CONGA';
             minimalCard.getConnectionProfile().should.not.equal(connectionProfile);
         });
+        it('should make not include the wallet option if present', function() {
+            minimalCard.wallet = { 'I should':'not be included'};
+            const connectionProfile = minimalCard.getConnectionProfile();
+            chai.expect(connectionProfile.wallet).to.be.undefined;
+        });
     });
 
 });
