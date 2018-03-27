@@ -306,7 +306,7 @@ module.exports = yeoman.Base.extend({
                     Util.log(this.appName);
                     this.appDescription = answers2.appDescription;
                     this.authorName = answers2.authorName;
-                    this.autherEmail = answers2.authorEmail;
+                    this.authorEmail = answers2.authorEmail;
                     this.license = answers2.license;
                     this.cardName = answers2.cardName;
                     businessNetworkConnection = new BusinessNetworkConnection(this.cardName);
@@ -315,7 +315,7 @@ module.exports = yeoman.Base.extend({
                     this.appName = answers2.appName;
                     this.appDescription = answers2.appDescription;
                     this.authorName = answers2.authorName;
-                    this.autherEmail = answers2.authorEmail;
+                    this.authorEmail = answers2.authorEmail;
                     this.license = answers2.license;
                     this.fileName = answers2.fileName;
                 }
@@ -345,7 +345,6 @@ module.exports = yeoman.Base.extend({
                         this.apiNamespace = answers3.apiNamespace;
                     }
                 } else {
-                    fileName = answers3.fileName;
                     this.apiIP = answers3.apiIP;
                     this.apiPort = answers3.apiPort;
                     this.apiNamespace = answers3.apiNamespace;
@@ -370,7 +369,7 @@ module.exports = yeoman.Base.extend({
                         reject(err);
                     });
             } else {
-                fs.readFile(fileName, (err, buffer) => {
+                fs.readFile(this.fileName, (err, buffer) => {
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;
