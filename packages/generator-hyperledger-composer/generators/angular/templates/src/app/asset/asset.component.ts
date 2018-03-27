@@ -154,7 +154,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
     <% }%>
     };
 
-    return this.service<%= currentAsset.name %>.updateAsset(form.get("<%=assetIdentifier%>").value,this.asset)
+    return this.service<%= currentAsset.name %>.updateAsset(form.get("<%=currentAsset.identifier%>").value,this.asset)
 		.toPromise()
 		.then(() => {
 			this.errorMessage = null;

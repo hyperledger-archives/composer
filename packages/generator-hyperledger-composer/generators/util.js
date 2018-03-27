@@ -228,6 +228,20 @@ class Util {
     }
 
     /**
+     * Validate the api
+     *
+     * @param {string} input api choice
+     * @return {*} return true or error message
+     */
+    static validateApi(input) {
+        if (input !== null && input !== undefined && input !== '') {
+            return true;
+        } else {
+            return 'Connection Profile cannot be null or empty.';
+        }
+    }
+
+    /**
      * Simple log method to output to the console
      * @param {string} msg the message to log
      */

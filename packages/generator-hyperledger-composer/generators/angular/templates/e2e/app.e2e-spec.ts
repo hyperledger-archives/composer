@@ -1,5 +1,7 @@
 import { AngularTestPage } from './app.po';
-import { browser, element, by } from 'protractor';
+import { ExpectedConditions, browser, element, by } from 'protractor';
+import {} from 'jasmine';
+
 
 describe('Starting tests for <%=appName%>', function() {
   let page: AngularTestPage;
@@ -16,20 +18,35 @@ describe('Starting tests for <%=appName%>', function() {
   });
 
   it('network-name should be <%=businessNetworkIdentifier%>',() => {
-    var networkName = element(by.css('.network-name')).getWebElement();
-    expect(networkName.getText()).toBe('<%=businessNetworkIdentifier%>.bna');
+    element(by.css('.network-name')).getWebElement()
+    .then((webElement) => {
+      return webElement.getText();
+    })
+    .then((txt) => {
+      expect(txt).toBe('<%=businessNetworkIdentifier%>.bna');
+    });
   });
 
   it('navbar-brand should be <%=appName%>',() => {
-    var navbarBrand = element(by.css('.navbar-brand')).getWebElement();
-    expect(navbarBrand.getText()).toBe('<%=appName%>');
+    element(by.css('.navbar-brand')).getWebElement()
+    .then((webElement) => {
+      return webElement.getText();
+    })
+    .then((txt) => {
+      expect(txt).toBe('<%=appName%>');
+    });
   });
 
   <% for(var x=0;x<assetList.length;x++){ %>
     it('<%=assetList[x].name%> component should be loadable',() => {
       page.navigateTo('/<%=assetList[x].name%>');
-      var assetName = browser.findElement(by.id('assetName'));
-      expect(assetName.getText()).toBe('<%=assetList[x].name%>');
+      browser.findElement(by.id('assetName'))
+      .then((assetName) => {
+        return assetName.getText();
+      })
+      .then((txt) => {
+        expect(txt).toBe('<%=assetList[x].name%>');
+      });
     });
 
     it('<%=assetList[x].name%> table should have <%=assetList[x].properties.length + 1%> columns',() => {
@@ -38,7 +55,39 @@ describe('Starting tests for <%=appName%>', function() {
         expect(arr.length).toEqual(<%=assetList[x].properties.length + 1%>); // Addition of 1 for 'Action' column
       });
     });
+  <%}%>
 
+  <% for(var x=0;x<participantList.length;x++){ %>
+    it('<%=participantList[x].name%> component should be loadable',() => {
+      page.navigateTo('/<%=participantList[x].name%>');
+      browser.findElement(by.id('participantName'))
+      .then((participantName) => {
+        return participantName.getText();
+      })
+      .then((txt) => {
+        expect(txt).toBe('<%=participantList[x].name%>');
+      });
+    });
+
+    it('<%=participantList[x].name%> table should have <%=participantList[x].properties.length + 1%> columns',() => {
+      page.navigateTo('/<%=participantList[x].name%>');
+      element.all(by.css('.thead-cols th')).then(function(arr) {
+        expect(arr.length).toEqual(<%=participantList[x].properties.length + 1%>); // Addition of 1 for 'Action' column
+      });
+    });
+  <%}%>
+
+  <% for(var x=0;x<transactionList.length;x++){ %>
+    it('<%=transactionList[x].name%> component should be loadable',() => {
+      page.navigateTo('/<%=transactionList[x].name%>');
+      browser.findElement(by.id('transactionName'))
+      .then((transactionName) => {
+        return transactionName.getText();
+      })
+      .then((txt) => {
+        expect(txt).toBe('<%=transactionList[x].name%>');
+      });
+    });
   <%}%>
 
 });
