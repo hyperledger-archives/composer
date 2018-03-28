@@ -207,8 +207,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/latest/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -221,8 +221,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/latest/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/latest/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/latest/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -304,7 +304,7 @@ ga('send', 'pageview');
 <p>In order to deploy the REST server as a Docker container with additional LoopBack connectors and Passport strategies, you must extend the <code>hyperledger/composer-rest-server</code> Docker image.</p>
 
 <p>Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server:next
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
 RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
     npm cache clean --force &amp;&amp; \
     ln -s node_modules .node_modules
@@ -330,7 +330,7 @@ RUN npm install --production loopback-connector-mongodb passport-github &amp;&am
 </code></pre></div>
 <p>Note that the MongoDB instance is attached to the Docker network named <code>composer_default</code>. This means that the MongoDB instance will be available on the Docker network named <code>composer_default</code> using the hostname <code>mongo</code>. We will use the hostname <code>mongo</code> to configure the REST server in a subsequent step. Depending on your Docker networking configuration, you may need to specify a different Docker network name. The MongoDB port <code>27017</code> is also exposed on the host network using port <code>27017</code>, so you can use other MongoDB client applications to interact with this MongoDB instance if desired.</p></li>
 <li><p>Extend the Docker image for the REST server by adding the LoopBack connector for MongoDB and the Passport strategy for GitHub authentication. Create a new, empty directory on your local file system, and create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server:next
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
 RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
     npm cache clean --force &amp;&amp; \
     ln -s node_modules .node_modules
