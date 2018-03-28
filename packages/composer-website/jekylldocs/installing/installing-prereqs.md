@@ -42,7 +42,7 @@ The following are prerequisites for installing the required development tools:
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
-curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+curl -O {{site.url}}{{site.baseurl}}/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 ```

@@ -26,7 +26,7 @@ Access control rules (the language that defines ACLs) fall into two main areas:
 
 The tutorial uses the online Playground to try out some simple and conditional access rules. In doing so, you will interact with the sample network as various identities - ultimately,  it is the users of the blockchain that we want to apply access control to. We'll also see how a Participant role can be used to control access, where multiple identities can be mapped to a designated Participant role (such as a Regulator). Its important to note that in a real blockchain network, all operations, whether from a Node JS application, CLI or indeed REST operations are subject to and controlled by the ACLs that govern a business network. Accountability is seen at an identity level.
 
-If you wish, you can also apply the rules in this tutorial against an existing {{site.data.conrefs.composer_full}} you've deployed. You just need to grab and deploy the sample Commodity Trading business network used in the [Developer Tutorial](https://hyperledger.github.io/composer/tutorials/developer-tutorial.html) - remembering to remove the global trading network ACL rule mentioned earlier - and you're ready to start working with that environment.
+If you wish, you can also apply the rules in this tutorial against an existing {{site.data.conrefs.composer_full}} you've deployed. You just need to grab and deploy the sample Commodity Trading business network used in the [Developer Tutorial](../tutorials/developer-tutorial.html) - remembering to remove the global trading network ACL rule mentioned earlier - and you're ready to start working with that environment.
 
 
 ## Prerequisites
