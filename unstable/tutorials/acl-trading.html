@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Access Control Tutorial - Commodity Trading | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/unstable/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/unstable/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Access Control Tutorial - Commodity Trading</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/unstable/introduction/introduction"><b>Introduction</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/unstable/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/installing/installing-index"><b>Installing</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/unstable/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
+<li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
+<li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/unstable/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/unstable/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/unstable/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/unstable/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/unstable/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/unstable/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/unstable/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/unstable/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/unstable/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/unstable/reference/query-language">Query Language</a></li>
+<li><a href="/composer/unstable/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/unstable/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/unstable/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/unstable/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/unstable/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/unstable/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/support/support-index"><b>Support</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/unstable/api/api-doc-index"><b>API Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/api/allData">API Class Index</a></li>
+<li><a href="/composer/unstable/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/unstable/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/unstable/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/unstable/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/unstable/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/unstable/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="access-control-in-hyperledger-composer-tutorial">Access Control in Hyperledger Composer  - Tutorial</h1>
+
+<p>Access control and authorization are a very important part of Hyperledger Composer and the security architecture of a business network shared by member organisations on the blockchain. Hyperledger Composer enables an administrator control what resources or data a participant, or indeed participant role - is authorized to see or do, in a business network. These participants will typically operate or transact from inside their respective member organisations and each will have their own access control requirements on the ledger, whilst at the same time allowing controlled access to shared data or data that may be common to all member organisations - or specific members interacting on the same business network.  </p>
+
+<p>This tutorial explores one such business network - the Commodity Trading network - seen elsewhere in our tutorials and <a href="https://github.com/hyperledger/composer-sample-networks/tree/master/packages/trade-network">sample networks</a> and shows examples of ACLs in action in this sample network.</p>
+
+<p><img src="../assets/img/tutorials/acl1/define_acl.png" alt="Overview of Commodity Trading Rules"></p>
+
+<p>Access control rules (the language that defines ACLs) fall into two main areas:</p>
+
+<ul>
+<li>authority to access system, network or administrative resources and operations in the System namespace (governing Network and System operations) ;  and</li>
+<li>authority to access resources or perform operations <strong>within</strong> a given business network itself (like Create, Read, Update assets),  via domain specific business network ACLs.</li>
+</ul>
+
+<p>The tutorial uses the online Playground to try out some simple and conditional access rules. In doing so, you will interact with the sample network as various identities - ultimately,  it is the users of the blockchain that we want to apply access control to. We&#39;ll also see how a Participant role can be used to control access, where multiple identities can be mapped to a designated Participant role (such as a Regulator). Its important to note that in a real blockchain network, all operations, whether from a Node JS application, CLI or indeed REST operations are subject to and controlled by the ACLs that govern a business network. Accountability is seen at an identity level.</p>
+
+<p>If you wish, you can also apply the rules in this tutorial against an existing Hyperledger Composer you&#39;ve deployed. You just need to grab and deploy the sample Commodity Trading business network used in the <a href="https://hyperledger.github.io/composer/tutorials/developer-tutorial.html">Developer Tutorial</a> - remembering to remove the global trading network ACL rule mentioned earlier - and you&#39;re ready to start working with that environment.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>None - just an internet connection, which you have right now :-)</p>
+
+<h2 id="step-one-access-the-online-playground-and-select-your-business-network">Step One: Access the Online Playground and select your business network</h2>
+
+<p>We&#39;ll use the sample business network (<code>trade-network</code>) sourced from the Composer sample networks repository.</p>
+
+<ol>
+<li><p>Go to the <a href="https://composer-playground.mybluemix.net/login">Online Playground</a> and if necessary clear local storage when prompted. Accept the Welcome logo, you are ready to start.</p></li>
+<li><p>Click on the <code>Deploy a new business network</code> modal / icon.</p></li>
+<li><p>Scroll down and click on the <code>trade-network</code> sample - when you scroll back up,  it should populate name, description and network admin card fields for you.</p></li>
+<li><p>With the Deploy button active (confirm that the name is <code>trade-network</code>) - click on <strong>Deploy</strong> to deploy the business network.</p></li>
+<li><p>Lastly, click on &#39;Connect Now&#39; to connect to the deployed business network (the default id - its shown top right).</p></li>
+<li><p>The &#39;Trade Network&#39; README file should be active and you can see the components of the business network listed in the left column - one of these is the ACLs file <code>permissions.acl</code> which controls the access to resources. Out of the box, the sample business networks have &#39;all access&#39; turned on, which would of course, ultimately be different to that for a production style environment.</p></li>
+</ol>
+
+<h3 id="create-trader-participants">Create Trader Participants</h3>
+
+<ol>
+<li><p>Click on the &#39;Test&#39; tab near the top of the screen. This is where we create sample Trader participants.</p></li>
+<li><p>Click on <code>Trader</code> on the left - Create New Participant (top right) as follows - the example below is &#39;TRADER1&#39;:</p></li>
+</ol>
+
+<p>1st record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+      "$class": "org.acme.trading.Trader",
+      "tradeId": "TRADER1",
+      "firstName": "Jenny",
+      "lastName": "Jones"
+}
+</code></pre></div>
+<ol>
+<li>Repeat step 2 and create 5 additional <code>Trader</code> participants (&#39;TRADER2&#39; through &#39;TRADER6&#39;) using the sample data above (change the names as appropriate). We have provided &#39;TRADER2&#39;, and &#39;TRADER3&#39; as an example below.</li>
+</ol>
+
+<p>2nd record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "$class": "org.acme.trading.Trader",
+    "tradeId": "TRADER2",
+    "firstName": "Jack",
+    "lastName": "Sock"
+}
+</code></pre></div>
+<p>3rd record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trader",
+  "tradeId": "TRADER3",
+  "firstName": "Rainer",
+  "lastName": "Valens"
+}
+</code></pre></div>
+<p>4th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trader",
+  "tradeId": "TRADER4",
+  "firstName": "Davor",
+  "lastName": "Dolittle"
+}
+</code></pre></div>
+<p>5th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trader",
+  "tradeId": "TRADER5",
+  "firstName": "Steve",
+  "lastName": "Alonso"
+}
+</code></pre></div>
+<p>6th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trader",
+  "tradeId": "TRADER6",
+  "firstName": "Lars",
+  "lastName": "Graf"
+}
+</code></pre></div>
+<p><img src="../assets/img/tutorials/acl1/traders.png" alt="Six Trader records added"></p>
+
+<h3 id="create-commodity-assets">Create Commodity Assets</h3>
+
+<ol>
+<li>Still in the &#39;Test&#39; panel, create some Commodity records by selecting &#39;Commodity&#39; on the left - the ownership (<code>owner</code> field) relates back to the &#39;Trader&#39; participant for the purposes of this tutorial. Note that owner is a relationship field.</li>
+</ol>
+
+<p>1st record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "EMA",
+  "description": "Corn",
+  "mainExchange": "EURONEXT",
+  "quantity": 10,
+  "owner": "resource:org.acme.trading.Trader#TRADER1"
+}
+</code></pre></div>
+<p>2nd record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "CC",
+  "description": "Cocoa",
+  "mainExchange": "ICE",
+  "quantity": 80,
+  "owner": "resource:org.acme.trading.Trader#TRADER2"
+}
+</code></pre></div>
+<p>3rd record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "HO",
+  "description": "Heating Oil",
+  "mainExchange": "NYMEX",
+  "quantity": 40,
+  "owner": "resource:org.acme.trading.Trader#TRADER3"
+}
+</code></pre></div>
+<p>4th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "HG",
+  "description": "Copper",
+  "mainExchange": "COMEX",
+  "quantity": 100,
+  "owner": "resource:org.acme.trading.Trader#TRADER4"
+}
+</code></pre></div>
+<p>5th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "SM",
+  "description": "Soybean Meal",
+  "mainExchange": "CBOT",
+  "quantity": 70,
+  "owner": "resource:org.acme.trading.Trader#TRADER5"
+}
+</code></pre></div>
+<p>6th record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Commodity",
+  "tradingSymbol": "AG",
+  "description": "Silver",
+  "mainExchange": "CBOT",
+  "quantity": 60,
+  "owner": "resource:org.acme.trading.Trader#TRADER6"
+}
+</code></pre></div>
+<h3 id="create-identities-to-test-acls">Create Identities to test ACLs</h3>
+
+<p>Next, let&#39;s create some trader identities - we need to issue identities for the Traders (TRADER1 - 6) so that we can test those identities&#39; access (each being mapped to their respective Trader participant record)</p>
+
+<ol>
+<li>Click on <code>admin</code> (top right) and select &#39;ID Registry&#39; from the drop-down</li>
+<li>Click &#39;Issue new ID&#39; top right and it will present an &#39;Issue New Identity&#39; dialog</li>
+<li>In the ID Name field - enter <code>tid1</code> as the identity we&#39;ll use for TRADER1</li>
+<li>In the Participant field - enter <code>TRADER1</code> to search for the Participant - and select the fully-qualified participant name</li>
+<li>Click on &#39;Create New&#39;  to continue.</li>
+</ol>
+
+<p>Repeat the &#39;Issue new ID&#39; sequence (step 2 through 5 above) for identities <code>tid2</code>, <code>tid3</code>, <code>tid4</code>, <code>tid5</code> and <code>tid6</code> respectively, mapping these to their respective TRADER participants.</p>
+
+<p>Now we&#39;re ready to start creating our access control rules.</p>
+
+<p><strong>Important</strong>: if you are issuing new identities for a Hyperledger Composer based environment (as opposed to the online environment), be sure to add each issued identity to your wallet using the &#39;Add to Wallet&#39; option.</p>
+
+<h3 id="add-commodity-trading-network-access-control-rules">Add Commodity Trading network access control rules</h3>
+
+<p>The standard &#39;Commodity Trade network&#39; sample network you deployed comes with standard System and Network ACL rules, that govern the participants of the business network to enable accessing registries like asset registries or ability to reviewing historical records in the ledger.</p>
+
+<p>But we want to add some Trading-specific access control rules - let&#39;s start by defining what we want to achieve first ! The golden rule with ACLs is that access to resources inside a business network are by default implicitly &#39;DENIED&#39; to Participants, unless explicitly ALLOWED.</p>
+
+<p>You will note from reviewing the current ACLs in <code>permissions.acl</code> that certain &#39;system&#39; or &#39;administrator&#39; type rules are defined in the ACLs file - this is to allow participants to be able to use Composer system operations such as being able to write to the Composer system Historian registry.</p>
+
+<p>Before we begin, we will need to remove one &#39;global&#39; rule in <code>permissions.acl</code> for our trading network which, because its ordinarily used as a sample network, must now be removed. This is the rule to REMOVE (up to - and including - the final curly bracket):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.trading.*"
+    action: ALLOW
+}
+</code></pre></div>
+<p>Having removed this from the <code>permissions.acl</code> file (leaving the &#39;system&#39; or &#39;administrator&#39; rules behind, click on the <strong>UPDATE</strong> button (bottom left) for the changes to take effect.</p>
+
+<p>In terms of our rule objectives - these are the policies we want to apply:</p>
+
+<h4 id="everyday-activities-rule-objectives">Everyday activities - rule objectives:</h4>
+
+<p>1a. Traders can see and update their own profile only (participant record)</p>
+
+<p>1b. Allow Traders access to all operations on their own assets (Commodities)</p>
+
+<ol>
+<li>Restrict Participants of type &#39;Trader&#39; such that only they can submit <code>Trade</code> transactions (as there may be several transactions defined in the model, over time, in an &#39;live&#39;/operational business network)</li>
+</ol>
+
+<h4 id="historical-records-rule-objectives">Historical records  - rule objectives:</h4>
+
+<ol>
+<li>Ensure Traders can only see the history of transactions they have created.</li>
+<li>Allow a Participant of type REG (Regulator) the authority to see the history of all historical transactions committed by Traders (as well as working with their own participant profile) - there are two rule subsets for this - 4a and 4b.</li>
+</ol>
+
+<p>It is important to note at this point that the namespace <code>org.acme.trading</code> (our Commodity Trading business network) has no business network ACLS defined (just has system ones) and therefore access to resources inside that business network are implicity &#39;denied&#39; by default.</p>
+
+<h4 id="rule-1a-trader-profile-restriction-rule">Rule 1a - Trader profile restriction rule</h4>
+
+<p>First up - rule to restrict Traders to only see and update their own record.</p>
+
+<ol>
+<li>Switch identity to <code>tid1</code> (click the current identity top right and choose ID Registry, select to &#39;use now&#39; for <code>tid1</code>) - and click on the &#39;Test&#39; tab</li>
+<li>Confirm that you do not see any Trader records.</li>
+<li>Switch identity to the &#39;admin&#39; user (top right, &#39;ID Registry&#39;), then go to the &#39;Define&#39;  tab and click on &#39;Access Control&#39; (<code>permissions.acl</code>) on the left.</li>
+<li>Paste the following rule into the top of your edit session, after the comment lines and ensure you have pasted above, the existing 3 &#39;System&#39; and &#39;Network&#39; system rules:</li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R1a_TraderSeeUpdateThemselvesOnly {
+  description: "Trader can see and update their own record only"
+  participant(t): "org.acme.trading.Trader"
+  operation: READ, UPDATE
+  resource(v): "org.acme.trading.Trader"
+  condition: (v.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+</code></pre></div>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
+
+<p>This rule will allow the <code>current</code> Trader Participant (mapped to the <code>current</code> identity whether in playground (here) or indeed in your application) to READ and UPDATE their own target Trader record.</p>
+
+<ol>
+<li><strong>TEST THE ACL</strong>: Switch user to identity <code>tid1</code> (top right, &#39;ID Registry&#39;) and click on the &#39;Test&#39; tab - check that TRADER1 record only, is visible to this identity.</li>
+</ol>
+
+<h4 id="rule-1b-trader-asset-ownership-allow-update-by-owners-only">Rule 1b - Trader Asset Ownership - allow update by owners only</h4>
+
+<p>By default, a Trader cannot see or update any of the Commodities created earlier.</p>
+
+<p>We need a rule to enable a Trader access Commodities for which they are the designated &#39;owner&#39;.</p>
+
+<ol>
+<li>Switch identity to <code>tid1</code> (click the current identity top right and choose ID Registry, select to &#39;use now&#39; for <code>tid1</code>) - and click on the &#39;Test&#39; tab</li>
+<li>Confirm that you do not see any Commodity records.</li>
+<li>Switch identity back to the &#39;admin&#39; user (top right, &#39;ID Registry&#39;), then go to the &#39;Define&#39;  tab and click on &#39;Access Control&#39; (<code>permissions.acl</code>) on the left.</li>
+<li>Paste the following rule in line 1 in your edit session, pasted above the existing rules:</li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R1b_TraderSeeTheirCommodities {
+  description: "Trader can see/work with their own Commodities"
+  participant(t): "org.acme.trading.Trader"
+  operation: ALL
+  resource(c): "org.acme.trading.Commodity"
+  condition: (c.owner.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+</code></pre></div>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
+
+<p>This rule will allow the <code>current</code> Trader Participant all operations on target Commodity resources that it &#39;owns&#39;.</p>
+
+<ol>
+<li><strong>TEST THE ACL</strong>: Switch user to identity <code>tid1</code> (top right, &#39;ID Registry&#39;) and click on the &#39;Test&#39; tab - confirm that there is one Commodity owned by TRADER1 participant and is visible/editable (icon) to this identity.</li>
+</ol>
+
+<p>Implicitly, this Trader TRADER1 has no ability to see or update other Trader&#39;s assets (Commodities) at this point - we don&#39;t need a rule for this, but there may in the real world be a business policy to allow specific senior Traders to &#39;see&#39; other Commodities, albeit they are not owners for same.</p>
+
+<h4 id="rule-2-restrictive-rule-only-trader-participants-can-submit-trade-smart-contract-transactions">Rule 2 - Restrictive rule: Only &#39;Trader&#39; participants can submit <code>Trade</code> smart contract transactions</h4>
+
+<p>By default, a Trader cannot submit a <code>Trade</code> transaction (defined in our model and for which we have smart contract logic written in our Script file) to update a Commodity he owns.</p>
+
+<p>We need a rule to enable a Trader to submit <code>Trade</code> transactions for which they are the designated &#39;owner&#39;. The <code>Trade</code> transaction enables the current owner to change the ownership of a Commodity to another Trader.</p>
+
+<ol>
+<li>Switch identity to <code>tid1</code> (click the current identity top right and choose ID Registry, select to &#39;use now&#39; for <code>tid1</code>) - and click on the &#39;Test&#39; tab</li>
+<li>Confirm that you cannot submit a <code>Trade</code> transaction (&#39;Submit Transaction&#39; - copy and paste the transaction below) to try change the ownership of a Commodity - you will get a message that you do not have <code>CREATE</code> ability to do submit the transaction.</li>
+</ol>
+
+<p>JSON to copy:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trade",
+  "commodity": "resource:org.acme.trading.Commodity#EMA",
+  "newOwner": "resource:org.acme.trading.Trader#TRADER2"
+}
+</code></pre></div>
+<p><img src="../assets/img/tutorials/acl1/trade_submit_auth.png" alt="Insufficient authority to submit Trade transactions"></p>
+
+<ol>
+<li>Switch identity back to the &#39;admin&#39; user (top right, &#39;ID Registry&#39;), then go to the &#39;Define&#39;  tab and click on &#39;Access Control&#39; (<code>permissions.acl</code>) on the left.</li>
+<li>Paste the following rule in line 1 in your edit session, pasted above the existing rules:</li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R2_EnableTradeTxn {
+    description: "Enable Traders to submit transactions"
+    participant: "org.acme.trading.Trader"
+    operation: ALL
+    resource: "org.acme.trading.Trade"
+    action: ALLOW
+}
+</code></pre></div>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
+
+<p>That&#39;s it. We know already that the participant can only work with their own Commodity(ies). This will allow only Trader participants to submit transactions of type <code>Trade</code> (we could have many different participant types in a business network).</p>
+
+<ol>
+<li><strong>TEST THE ACL</strong>: Switch user to identity <code>tid1</code> (top right, &#39;ID Registry&#39;) - the owner of Commodity with id <code>EMA</code></li>
+</ol>
+
+<p>a. Click on the &#39;Test&#39; tab. Submit a <code>Trade</code> Transaction copying and pasting this transaction, replacing current contents with the transaction provided below:</p>
+
+<p>JSON to copy:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Trade",
+  "commodity": "resource:org.acme.trading.Commodity#EMA",
+  "newOwner": "resource:org.acme.trading.Trader#TRADER2"
+}
+</code></pre></div>
+<p>b. Confirm that the transaction has now been submitted by going to &#39;All Transactions&#39; (on the left) and the first record in the Historian shows a <code>TRADE</code> transaction confirms the transfer. Participant TRADER1 no longer owns the commodity. By contrast, a switch to identity <code>tid2</code> will reveal it has two Commodity records as TRADER2 was the recipient owner.</p>
+
+<h4 id="rule-3-enabling-rule-allow-traders-to-see-their-own-historical-records-only">Rule 3 - Enabling rule: Allow Traders to see their own historical records only</h4>
+
+<p>By default, due to the System ACLs (a part of which is the registry for the Historian records), each Trader (eg. and related <code>tid1</code>, <code>tid2</code> etc identities) can see the history of all Transactions - an example is the <code>UpgradeBusinessNetwork</code> performed by admin.</p>
+
+<p>We will lock down access to the Historian such that Traders only see transactions they submitted in Historian.</p>
+
+<ol>
+<li>Switch identity to <code>tid3</code> (click the current identity top right and choose ID Registry, select to &#39;use now&#39; for <code>tid3</code>) - and click on the &#39;Test&#39; tab</li>
+<li>Confirm that you can see transactions relating to &#39;system&#39; activities, but also the other traders (TRADER1 and TRADER2).</li>
+<li>Switch identity back to the &#39;admin&#39; user (top right, &#39;ID Registry&#39;), then go to the &#39;Define&#39;  tab and click on &#39;Access Control&#39; (<code>permissions.acl</code>) on the left.</li>
+<li>Paste the following rule in line 1 in your edit session, pasted above the existing rules:</li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R3_TradersSeeOwnHistoryOnly {
+  description: "Traders should be able to see the history of their own transactions only"
+  participant(t): "org.acme.trading.Trader"
+  operation: READ
+  resource(v): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (v.participantInvoking.getIdentifier() != t.getIdentifier())
+  action: DENY
+}
+</code></pre></div>
+<p>This rule restricts the current Trader participant to seeing only transactions he/she invoked on the blockchain.</p>
+
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
+
+<ol>
+<li><strong>TEST THE ACL</strong>:</li>
+</ol>
+
+<p>a. Switch user to identity <code>tid3</code> (top right, &#39;ID Registry&#39;) - you will only see &#39;Identity Activation&#39; type entries but nothing about the history of transactions that were submitted relating to TRADER1 and TRADER2. This is what we would expect.</p>
+
+<p>b. Next, switch to identity <code>tid1</code> - you will see the history of transactions (including the &#39;TRADE&#39; transaction submitted earlier) relating to <code>tid1</code> only - in particular the transfer of Commodity &#39;CC&#39; ownership to TRADER2 (By contrast, identity <code>tid2</code> , the transferee, will not see the historial &#39;TRADE&#39; transaction submitted by <code>tid1</code> - only the Commodity asset, that was transferred).</p>
+
+<h4 id="rule-4a-4b-enabling-rule-allow-regulators-to-see-their-own-profile-and-all-historical-activity-including-trades">Rule 4a &amp; 4b - Enabling rule: Allow Regulators to see their own profile and all historical activity,  including Trades</h4>
+
+<p>It stands to reason that a regulator would want to review/audit historical transactions carried out in the business network. They won&#39;t necessarily need access to things like Participants or Assets per se (depending on the use case or policy), but rather, the activities relating to these.</p>
+
+<p>We don&#39;t yet have a &#39;Regulator&#39; in our &#39;Commodity Trading&#39; business network model, so we will add this as a separate participant type and then proceed to define rules that allow someone that has the regulator &#39;role&#39;, to access historical records. Remember that one or more identities can be mapped to a participant instance, and &#39;Regulator&#39; is a good example of that.</p>
+
+<ol>
+<li>Switch identity to <code>admin</code> if you haven&#39;t already done so  - and then click on &#39;Define&#39; (top)</li>
+<li>Click on the Model file and add a new Participant type (add it below the <code>Trader</code> participant) as follows:</li>
+</ol>
+
+<p>Model:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">participant Regulator identified by regId {
+    o String regId
+    o String firstName
+    o String lastName
+}
+</code></pre></div>
+<ol>
+<li><p>Ensure you click on the <strong>UPDATE</strong> button to update the network.</p></li>
+<li><p>Switch to the &#39;Test&#39; tab (still as &#39;admin&#39;)  and create a participant Regulator as follows:</p></li>
+</ol>
+
+<p>Create the record:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+  "$class": "org.acme.trading.Regulator",
+  "regId": "Reg101",
+  "firstName": "Jon",
+  "lastName": "Doe"
+}
+</code></pre></div>
+<ol>
+<li>Create an Identity in the ID registry  for an identity with ID <code>101</code> and map it to the Participant regulator &#39;Reg101&#39; created above.</li>
+</ol>
+
+<p>At this point, the Regulator can now see the history of system transactions in Composer&#39;s Historian, due to the system ACL rules defined earlier. But at this point, he cannot see his own participant profile.</p>
+
+<ol>
+<li>Add the following rule:</li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R4a_RegulatorSeeThemselves {
+  description: "Regulators can see and update their own record"
+  participant: "org.acme.trading.Regulator"
+  operation: READ, UPDATE
+  resource: "org.acme.trading.Regulator"
+  action: ALLOW
+}
+</code></pre></div>
+<p>This rule merely allows a Regulator participant to update their own profile record (should they wish to update it - you can test this out if you wish; we had done something similar earlier).</p>
+
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network with the new rule.</p>
+
+<ol>
+<li><p>Next, switch identity (in the Id Registry) to  the Regulator identity <code>101</code> and click &#39;Use Now&#39;</p></li>
+<li><p>Check you can indeed see the Historical records (which shows our previous transactions - then click on &#39;view record&#39; for any system type transaction activity such as <code>AddAsset</code> or <code>AddParticipant</code> - as someone that is a Regulator, you should be able to see this activity.</p></li>
+<li><p>Next click &#39;view record&#39; for a <strong>TRADE</strong> transaction- there&#39;s an issue - nothing happens. You (regulator) currently do not have authority (via ACLs) able to view the transaction record</p></li>
+<li><p>Switch identity back to &#39;admin&#39; as good practice for rule changes.</p></li>
+<li><p>Add the following Regulator authorisation rule (insert the rule in the <code>permissions.acl</code> file at the top ):</p></li>
+</ol>
+
+<p>Rule:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule R4b_RegTransView {
+    description: "Grant Regulator full access to Trade Transactions"
+    participant: "org.acme.trading.Regulator"
+    operation: ALL
+    resource: "org.acme.trading.Trade"
+    action: ALLOW
+}
+</code></pre></div>
+<p>Then click on the <strong>UPDATE</strong> button on the bottom left to update the business network.</p>
+
+<p>This rule enables a Regulator to access the Trade transaction resources, such that it can view the Trade transactions from Historian&#39;s &#39;view record&#39;).</p>
+
+<p>This rule also applies to any subsequent identity mapped to the regulator role and in the Regulator participant registry.</p>
+
+<ol>
+<li><strong>TEST the ACL</strong> - now go to a trade transaction again and check that you can indeed now view the record</li>
+</ol>
+
+<p>In this tutorial, you have experimented with creating ACL rules incrementally, only permitting the requisite access controls that should be accorded to participants of this example Commodity Trading business network.  We have seen how ACL rules provide authorisation and access control to resources as applied to participants (or indeed participant roles). ACLs govern the access control to resources and transactions, whether that&#39;s the ability to create, delete or update resources or execute transactions. We have also the power of the Access Control Language and rules, in defining the conditions or criteria as to: &#39;who&#39; has the ability to do &#39;what&#39; on the ledger.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/unstable/assets/js/nav.js"></script>
+<script src="/composer/unstable/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>

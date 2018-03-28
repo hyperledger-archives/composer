@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -307,15 +322,13 @@ administrative, operational, and development tasks.</p>
 
 <h2 id="business-network-management">Business Network management</h2>
 
-<p><code>composer network deploy</code></p>
+<p><code>composer network install</code></p>
 
-<p>Deploy a Business Network Definition: <a href="./composer.network.deploy.html">composer network deploy</a></p>
+<p>Install a business network archive to a Hyperledger Fabric peer: <a href="./composer.network.install.html">composer network install</a></p>
 
-<p><em>Please note: It is recommended that users use the <code>composer runtime install</code> and <code>composer network start</code> commands instead of this command.</em></p>
+<p><code>composer network start</code></p>
 
-<p><code>composer network undeploy</code></p>
-
-<p>Permanently disable a business network definition: <a href="./composer.network.undeploy.html">composer network undeploy</a></p>
+<p>Start a business network on a Hyperledger Fabric peer that already has the business network installed: <a href="./composer.network.start.html">composer network start</a></p>
 
 <p><code>composer network list</code></p>
 
@@ -329,21 +342,9 @@ administrative, operational, and development tasks.</p>
 
 <p>Test the connection to a deployed a Business Network: <a href="./composer.network.ping.html">composer network ping</a></p>
 
-<p><code>composer network update</code></p>
-
-<p>Update a deployed Business Network: <a href="./composer.network.update.html">composer network update</a></p>
-
 <p><code>composer network upgrade</code></p>
 
 <p>Upgrade the Hyperledger Composer runtime of a specific deployed business network: <a href="./composer.network.upgrade.html">composer network upgrade</a></p>
-
-<p><code>composer network start</code></p>
-
-<p>Deploy a business network archive to a Hyperledger Fabric peer that already has the Hyperledger Composer runtime installed: <a href="./composer.network.start.html">composer network start</a></p>
-
-<p><code>composer runtime install</code></p>
-
-<p>Install the Hyperledger Composer runtime to a Hyperledger Fabric peer: <a href="./composer.runtime.install.html">composer runtime install</a></p>
 
 <h2 id="participant-and-identity-management">Participant and Identity management</h2>
 
@@ -367,11 +368,27 @@ administrative, operational, and development tasks.</p>
 
 <p>Revoke an identity from a participant: <a href="./composer.identity.revoke.html">composer identity revoke</a></p>
 
+<h2 id="support-diagnostics">Support diagnostics</h2>
+
+<p><code>composer report</code></p>
+
+<p>Create a diagnostic report: <a href="./composer.report.html">composer report</a></p>
+
 <h2 id="transaction-execution">Transaction execution</h2>
 
 <p><code>composer transaction submit</code></p>
 
 <p>Submit a transaction for execution: <a href="./composer.transaction.submit.html">composer transaction submit</a></p>
+
+<h2 id="composer-generator">Composer Generator</h2>
+
+<p><code>composer generator create</code></p>
+
+<p>Create files useful for application development: <a href="./composer.generator.create.html">composer generator create</a></p>
+
+<p><code>composer generator docs</code></p>
+
+<p>Create documentation for a business network definition: <a href="./composer.generator.docs.html">composer generator docs</a></p>
 
             
           </section>

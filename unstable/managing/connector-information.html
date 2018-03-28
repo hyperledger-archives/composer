@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Connector Specific Information | Hyperledger Composer</title>
+    <title>Interacting with Hyperledger Fabric | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Connector Specific Information</p>
+          <p>Interacting with Hyperledger Fabric</p>
           </div>
 
           <nav class="context-nav">
@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -260,13 +275,104 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="connector-specific-information">Connector Specific Information</h1>
+              <h1 id="hyperledger-fabric">Hyperledger Fabric</h1>
 
-<p>Hyperledger Composer is designed to be platform-agnostic</p>
+<p>There are several cases where information specific to Hyperledger Fabric must be included in Hyperledger Composer commands, including <code>composer network install</code>, <code>composer network start</code> and <code>composer identity issue</code>. The <code>--option, -o</code> option and the <code>--optionsFile, -O</code> option allow connector specific information to be sent.</p>
 
-<h2 id="hyperledger-fabric">Hyperledger Fabric</h2>
+<p>Multiple options can be specified using the <code>--option, -o</code> by repeating the tag, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer somecmd -o thisOpt=value2 -o thatOpt=value2
+</code></pre></div>
+<p>Alternatively you can create a single file to contain multiple options, for example a file called <code>someCmdOpts.txt</code> could contain:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">thisOpt=value1
+thatOpt=value2
+</code></pre></div>
+<p>To reference an options file, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer somecmd --optionsFile=someCmdOpts.txt
+</code></pre></div>
+<p>Some API&#39;s will also include the option to pass a generic options object including <code>AdminConnection.start()</code> and <code>AdminConnection.install()</code></p>
 
-<p>There are several cases where information specific to Hyperledger Fabric must be included in Hyperledger Composer commands, including <code>composer network start</code>, and <code>composer identity issue</code>.</p>
+<h2 id="providing-npm-config-settings-for-install">Providing npm config settings for install</h2>
+
+<h3 id="cli">CLI</h3>
+
+<p>The <code>npmrcFile</code> option is available on the <code>composer network install</code> command.</p>
+
+<p>The <code>npmrcFile</code> option allows you to specify npm configuration information when Hyperledger Fabric builds the chaincode image for the Hyperledger Composer runtime.</p>
+
+<p>For example rather than using the default npm registry, you can specify an internal registry within your organization by including the <code>registry</code> option in an options file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">registry=http://mycompanynpmregistry.com:4873
+</code></pre></div>
+<p>Supply the fully qualified filename as part of an install command, for example if the file was called npmConfig
+in your /home/user1/config directory:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
+</code></pre></div>
+<p>The file contents can be anything that permitted in the <code>.npmrc</code> configuration files of npm.</p>
+
+<h3 id="admin-api">Admin API</h3>
+
+<p>You can supply the name of the file as part of the AdminConnection api on the install method by specifying the <code>npmrcFile</code> property on the <code>installOptions</code> object. For example to pass the name of the npm configuration options file to be provided on install:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">AdminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">,</span> <span class="p">{</span><span class="na">npmrcFile</span><span class="p">:</span> <span class="s1">'/tmp/npmrc'</span><span class="p">});</span>
+</code></pre></div>
+<h2 id="hyperledger-fabric-endorsement-policies">Hyperledger Fabric Endorsement Policies</h2>
+
+<p>You can provide Hyperledger Fabric endorsement policies to both network start and network upgrade requests. The examples that follow show <code>start</code> but the approach is identical to <code>upgrade</code> as well.</p>
+
+<h3 id="composer-network-start-upgrade-cli">composer network start/upgrade CLI</h3>
+
+<p>Hyperledger Fabric endorsement policies can be sent using the <code>-o</code> and <code>-O</code> options in several ways.</p>
+
+<ul>
+<li>Using the <code>-o</code> option, the endorsement policy can be sent either as a single-line JSON string or as a fully qualified file path:</li>
+</ul>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start ... -o endorsementPolicy='{"identities": [.... }'
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">composer network start ... -o endorsementPolicyFile=/path/to/file/endorsementPolicy.json
+</code></pre></div>
+<p>When a file path is specified, the endorsement policy file should follow this format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    {"identities":[...],
+        "policy": {...}}
+</code></pre></div>
+<ul>
+<li><p>Using the <code>-O</code> option, the endorsement policy must be sent as a file path as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start ... -O /path/to/file/options.json
+</code></pre></div>
+<p>In this case, the options file should follow this format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">        {"endorsementPolicy": {"Identities": [...].
+            "policy: {...}"
+          },
+          "someOtherOption": "A Value"
+        }
+</code></pre></div></li>
+</ul>
+
+<p>For more information on writing Hyperledger Fabric endorsement policies, see the <a href="https://fabric-sdk-node.github.io/global.html#ChaincodeInstantiateUpgradeRequest">Hyperledger Fabric Node.js SDK documentation</a> which provides examples of endorsement policies.</p>
+
+<h3 id="admin-api">Admin API</h3>
+
+<p>To send an endorsement policy via the Admin API, the endorsement policy file must be included as part of the <code>startOptions</code> or <code>deployOptions</code> objects when calling start or deploy respectively. To pass an endorsement policy file it must be specified in the object property <code>endorsementPolicyFile</code>. To supply the policy as a JSON object, the <code>endorsementPolicy</code> object property must be specified.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="s1">'tutorial-network'</span><span class="p">,</span> <span class="s1">'0.0.1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span> <span class="nx">networkAdmins</span><span class="p">,</span>  <span class="na">endorsementPolicyFile</span><span class="p">:</span> <span class="s1">'endorsement-policy.json'</span><span class="p">}</span> <span class="p">);</span>
+</code></pre></div>
+<h2 id="identity-issue">Identity Issue</h2>
+
+<p>When a new identity is issued, the <code>-o</code> option can be used to specify whether the issued identity has the authority to register new identities with a Hyperledger Fabric certificate authority server.</p>
+
+<h3 id="cli">CLI</h3>
+
+<p>To grant an identity the authority to register new identities with a certificate authority from the command line, the <code>issuer</code> option must be supplied after the <code>-o</code> option in the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
+</code></pre></div>
+<h2 id="api">API</h2>
+
+<p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
+For example to issue an identity that has issuer authority
+<code>javascript
+await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
+</code></p>
+
+<h2 id="next-steps">Next steps</h2>
+
+<ul>
+<li>Learn more about <a href="../reference/connectionprofile.html">connection profiles</a>.</li>
+</ul>
 
             
           </section>

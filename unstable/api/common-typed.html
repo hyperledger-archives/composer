@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -273,8 +288,6 @@ ga('send', 'pageview');
 <ul>
 <li><strong>Module</strong> common</li>
 </ul>
-
-<h3 id="see-also">See also</h3>
 
 <h2 id="method-summary">Method Summary</h2>
 
@@ -329,8 +342,6 @@ ga('send', 'pageview');
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The type of this object</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
@@ -344,8 +355,6 @@ ga('send', 'pageview');
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The fully-qualified type name of this object</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -361,19 +370,15 @@ ga('send', 'pageview');
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - The namespace of this object</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
 
 <h2 id="setpropertyvalue">setPropertyValue</h2>
 
-<p>_ setPropertyValue( string propname, string value )_</p>
+<p><em>setPropertyValue( string propname, string value )</em></p>
 
 <p>Sets a property on this Resource</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -401,11 +406,9 @@ ga('send', 'pageview');
 
 <h2 id="addarrayvalue">addArrayValue</h2>
 
-<p>_ addArrayValue( string propname, string value )_</p>
+<p><em>addArrayValue( string propname, string value )</em></p>
 
 <p>Adds a value to an array property on this Resource</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -440,8 +443,6 @@ ga('send', 'pageview');
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - True if this instance is an instance of the specified fully qualified type name, false otherwise.</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 

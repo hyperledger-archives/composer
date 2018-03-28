@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -317,56 +332,49 @@ transaction SampleTransaction {
 <p>The transaction processor function relating to the <code>SampleTransaction</code> transaction is what makes the change both to the asset and to the registry where the asset is stored.</p>
 
 <p>The transaction processor function defines the <code>SampleTransaction</code> type as the associated transaction, and defines it as the parameter <code>tx</code>. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the <code>newValue</code> property in the transaction definition), updates the asset in the registry, and then emits an event.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
 
-    // Save the old value of the asset.
-    var oldValue = tx.asset.value;
+    <span class="c1">// Save the old value of the asset.</span>
+    <span class="kd">let</span> <span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
 
-    // Update the asset with the new value.
-    tx.asset.value = tx.newValue;
+    <span class="c1">// Update the asset with the new value.</span>
+    <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
 
-    // Get the asset registry for the asset.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
+    <span class="c1">// Get the asset registry for the asset.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
 
-            // Update the asset in the asset registry.
-            return assetRegistry.update(tx.asset);
+    <span class="c1">// Update the asset in the asset registry.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
 
-        })
-        .then(function () {
-
-            // Emit an event for the modified asset.
-            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
-            event.asset = tx.asset;
-            event.oldValue = oldValue;
-            event.newValue = tx.newValue;
-            emit(event);
-
-        });
-
-}
+    <span class="c1">// Emit an event for the modified asset.</span>
+    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">oldValue</span><span class="p">;</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">newValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="error-handling-in-transaction-processor-functions">Error handling in transaction processor functions</h2>
 
 <p>Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Do something.
-    throw new Error('example error');
-    // Execution stops at this point; the transaction fails and rolls back.
-    // Any updates made by the transaction processor function are discarded.
-    // Transaction processor functions are atomic; all changes are committed,
-    // or no changes are committed.
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Do something.</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'example error'</span><span class="p">);</span>
+    <span class="c1">// Execution stops at this point; the transaction fails and rolls back.</span>
+    <span class="c1">// Any updates made by the transaction processor function are discarded.</span>
+    <span class="c1">// Transaction processor functions are atomic; all changes are committed,</span>
+    <span class="c1">// or no changes are committed.</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>Changes made by transactions are atomic, either the transaction is successful and all changes are applied, or the transaction fails and no changes are applied.</p>
 
@@ -393,20 +401,20 @@ transaction SampleTransaction {
 }
 </code></pre></div>
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // The relationships in the transaction are automatically resolved.
-    // This means that the asset can be accessed in the transaction instance.
-    var asset = tx.asset;
-    // The relationships are fully or recursively resolved, so you can also
-    // access nested relationships. This means that you can also access the
-    // owner of the asset.
-    var owner = tx.asset.owner;
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// The relationships in the transaction are automatically resolved.</span>
+    <span class="c1">// This means that the asset can be accessed in the transaction instance.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="c1">// The relationships are fully or recursively resolved, so you can also</span>
+    <span class="c1">// access nested relationships. This means that you can also access the</span>
+    <span class="c1">// owner of the asset.</span>
+    <span class="kd">let</span> <span class="nx">owner</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">owner</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>In this example, not only can the specific asset referenced by the relationship in the transaction be referenced using <code>tx.asset</code>, the specific participant referenced by the <code>owner</code> relationship can be referenced using <code>tx.asset.owner</code>. In this case, <code>tx.asset.owner</code> would resolve to reference a specific participant.</p>
 
@@ -423,32 +431,52 @@ transaction SampleTransaction {
 
 }
 </code></pre></div>
+<p>Node 8 syntax is now supported which means that you can now use <code>async/await</code> syntax instead which is far
+more concise than using promise chains. This is the recommended style.</p>
+
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Transaction processor functions can return promises; Composer will wait
-    // for the promise to be resolved before committing the transaction.
-    // Do something that returns a promise.
-    return Promise.resolve()
-        .then(function () {
-            // Do something else that returns a promise.
-            return Promise.resolve();
-        })
-        .then(function () {
-            // Do something else that returns a promise.
-            // This transaction is complete only when this
-            // promise is resolved.
-            return Promise.resolve();
-        });
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(...);</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(...);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>however if you so wish you can still use old style promise chains</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Sample transaction processor function.
+ * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Transaction processor functions can return promises; Composer will wait</span>
+    <span class="c1">// for the promise to be resolved before committing the transaction.</span>
+    <span class="c1">// Do something that returns a promise.</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// Do something else that returns a promise.</span>
+            <span class="c1">// This transaction is complete only when this</span>
+            <span class="c1">// promise is resolved.</span>
+            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+        <span class="p">});</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="using-apis-in-transaction-processor-functions">Using APIs in transaction processor functions</h2>
 
-<p>The Hyperledger Composer APIs can be called within transaction processor functions, in the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
+<p>The Hyperledger Composer and Hyperledger Fabric APIs can be called within transaction processor functions.</p>
+
+<h3 id="calling-the-hyperledger-composer-apis-in-transaction-processor-functions">Calling the Hyperledger Composer APIs in transaction processor functions</h3>
+
+<p>The Hyperledger Composer API can be called simply by calling API functions with the appropriate arguments in the transaction processor function.</p>
+
+<p>In the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
 
 <p>Model file:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
@@ -464,26 +492,60 @@ transaction SampleTransaction {
 }
 </code></pre></div>
 <p>Script file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
  * @transaction
- */
-function sampleTransaction(tx) {
-    // Update the value in the asset.
-    var asset = tx.asset;
-    asset.value = tx.newValue;
-    // Get the asset registry that stores the assets. Note that
-    // getAssetRegistry() returns a promise, so we have to return
-    // the promise so that Composer waits for it to be resolved.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
-            // Update the asset in the asset registry. Again, note
-            // that update() returns a promise, so so we have to return
-            // the promise so that Composer waits for it to be resolved.
-            return assetRegistry.update(asset);
-        })
-}
+ */</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Update the value in the asset.</span>
+    <span class="kd">let</span> <span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
+    <span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
+    <span class="c1">// Get the asset registry that stores the assets. Note that</span>
+    <span class="c1">// getAssetRegistry() returns a promise, so we have to await for it.</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
+
+    <span class="c1">// Update the asset in the asset registry. Again, note</span>
+    <span class="c1">// that update() returns a promise, so so we have to return</span>
+    <span class="c1">// the promise so that Composer waits for it to be resolved.</span>
+    <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">asset</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="calling-hyperledger-fabric-v1-1-apis-in-transaction-processor-functions">Calling Hyperledger Fabric v1.1 APIs in transaction processor functions</h3>
+
+<p>To call the Hyperledger Fabric API in a transaction processor function, the function <code>getNativeAPI</code> must be called, followed by a function from the Hyperledger Fabric API. Using the Hyperledger Fabric API gives you access to functionality which is not available in the Hyperledger Composer API.</p>
+
+<p><em>Please note: The <code>getState</code> and <code>putState</code> Hyperledger Fabric API functions will bypass the Hyperledger Composer access control rules.</em></p>
+
+<p>In the example below, the Hyperledger Fabric API function <code>getHistoryForKey</code> is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.</p>
+
+<p>For more information on the Hyperledger Fabric APIs you can call in a transaction processor function, see the <a href="https://fabric-shim.github.io/ChaincodeStub.html">Hyperledger Fabric API documentation</a>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">async</span> <span class="kd">function</span> <span class="nx">simpleNativeHistoryTransaction</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>    
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">assetId</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">nativeSupport</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">nativeSupport</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">nativeKey</span> <span class="o">=</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">createCompositeKey</span><span class="p">(</span><span class="s1">'Asset:systest.transactions.SimpleStringAsset'</span><span class="p">,</span> <span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getNativeAPI</span><span class="p">().</span><span class="nx">getHistoryForKey</span><span class="p">(</span><span class="nx">nativeKey</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">let</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">{</span><span class="na">done</span> <span class="p">:</span> <span class="kc">false</span><span class="p">};</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">iterator</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <h2 id="what-next">What next?</h2>
 

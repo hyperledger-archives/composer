@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -266,113 +281,304 @@ ga('send', 'pageview');
 
 <p>A Connection Profile is used by Hyperledger Composer to connect to a runtime.</p>
 
-<h2 id="creating-a-connection-profile">Creating a Connection Profile</h2>
+<h2 id="creating-a-connection-profile-for-hyperledger-fabric-v1-1">Creating a Connection Profile for Hyperledger Fabric v1.1</h2>
 
-<p>A connection profile for Hyperledger Fabric v1.0 uses the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    {
-        "name": "my-fabric",
-        "type": "hlfv1",
-        "orderers": [
-            {
-                "url" : "grpc://localhost:7050"
+<p>Hyperledger Fabric defines the format of the connection profile. The following is an example of a single organization fabric network</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "name": "hlfv1",
+    "x-type": "hlfv1",
+    "x-commitTimeout": 300,
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
             }
-        ],
-        "ca": {
-            "url": "http://localhost:7054",
-            "name": "ca.org1.example.com"
-        },
-        "peers": [
-            {
-                "requestURL": "grpc://localhost:7051",
-                "eventURL": "grpc://localhost:7053"
+        }
+    },
+    "channels": {
+        "composerchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.org1.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
             }
-        ],
-        "channel": "composerchannel",
-        "mspID": "Org1MSP",
-        "timeout": 300
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://orderer.example.com:7050"
+        }
+    },
+    "peers": {
+        "peer0.org1.example.com": {
+            "url": "grpc://peer0.org1.example.com:7051",
+            "eventUrl": "grpc://peer0.org1.example.com:7053"
+        }
+    },
+    "certificateAuthorities": {
+        "ca.org1.example.com": {
+            "url": "http://ca.org1.example.com:7054",
+            "caName": "ca.org1.example.com"
+        }
     }
+}
 </code></pre></div>
-<p>A more complete example of a connection profile with all possible properties defined is shown here (property values are examples and not necessarily valid values)</p>
-<div class="highlight"><pre><code class="language-" data-lang="">     {
-        "name": "my-fabric",
-        "type": "hlfv1",
-        "ca": {
-            "url": "https://localhost:7054",
-            "name": "ca.org1.example.com",
-            "trustedRoots" : ["-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----", "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----"],
-            "verify": true
-        },
-        "orderers": [
-            {
-               "url" : "grpcs://localhost:7050",
-               "cert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
-               "hostNameOverride": "ordererHostName"
-            }
-        ],
-        "peers": [
-            {
-                "requestURL": "grpcs://localhost:7051",
-                "eventURL": "grpcs://localhost:7053",
-                "cert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
-                "hostNameOverride": "peerHostName"
-            }
-        ],
-        "channel": "composerchannel",
-        "mspID": "Org1MSP",
-        "timeout": 300,
-        "globalCert": "-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----",
-        "maxSendSize": 20,
-        "maxRecvSize": 20
-    }
+<p>Official documentation for this structure can be found here:  <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a>.</p>
+
+<p>The Hyperledger Fabric v1.1 connection profile is significantly different to the connection profiles used by previous versions of Hyperledger Composer. The Hyperledger Fabric v1.1 connection profile defines all the servers that exist, not only in your organization but all organizations as well as all defined channels.</p>
+
+<p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
+
+<p>The following sections define the server details:
+- Orderers
+- Peers
+- Certificate Authorities</p>
+
+<p>Organizational details are defined in:</p>
+
+<ul>
+<li>Organizations</li>
+<li>Channels</li>
+<li>Client section</li>
+</ul>
+
+<h3 id="general-information">General information</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">"name": "hlfv1",
+"x-type": "hlfv1",
+"x-commitTimeout": 300,
+"version": "1.0.0",
 </code></pre></div>
 <ul>
 <li><code>name</code> is a name used to refer to the connection profile, and is required.</li>
-<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0 is must be <code>hlfv1</code>.</li>
-<li><code>ca</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined as a property of <code>ca</code> as shown in the first Hyperledger Fabric v1.0 example above.</li>
-<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
-<li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
-<li><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</li>
-<li><code>hostnameOverride</code> is used in a test environment only, when the server certificate&#39;s hostname does not match the actual host endpoint that the server process runs at, the application can work around the client TLS verify failure by setting this property to the value of the server certificate&#39;s hostname.</li>
-<li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
-<div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----
-</code></pre></div></li>
-<li><p><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p></li>
-<li><p><code>timeout</code> is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.</p></li>
-<li><p><code>globalCert</code> defines the TLS certificate which is used for all peers and orderers if no <code>cert</code> property is specified. If a <code>cert</code> property is specified, it overrides the <code>globalCert</code> property only for the peer or orderer it is specified for.</p></li>
-<li><p><code>maxSendSize</code> is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
-<li><p><code>maxRecvSize</code> is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to <code>-1</code> results in no size restriction.</p></li>
+<li><code>x-type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.1, <code>x-type</code> must be <code>hlfv1</code>.</li>
+<li><code>x-commitTimeout</code> defines the number of seconds to wait for a commit response to be received for a transaction.</li>
+<li><code>version</code> defines the version of a connection profile and currently only a version of <code>1.0.0</code> is supported.</li>
 </ul>
+
+<h3 id="orderers">Orderers</h3>
+
+<p>Here we define all the orderers that are part of the network. The name &quot;orderer.example.com&quot; is a label allowing us to reference this definition later.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
+    "orderer.example.com": {
+        "url": "grpc://orderer.example.com:7050"
+    }
+},
+</code></pre></div>
+<p>This section defines all the available orderers, the example here provides a basic configuration for a non-tls orderer. To configure an orderer to use TLS, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderers": {
+    "orderer.example.com": {
+        "url": "grpcs://orderer.example.com:7050",
+        "grpcOptions": {
+            "ssl-target-name-override": "orderer.example.com"
+        },
+        "tlsCACerts": {
+            "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        }
+    }
+},
+</code></pre></div>
+<p>In order to guarantee portability it is highly recommended to embed required certificate(s) into the connection profile using the <code>pem</code> option.</p>
+
+<p>Certificates can also be defined using a file path, but this is not recommended.</p>
+
+<h3 id="peers">Peers</h3>
+
+<p>Here we define all the peers in all organizations in the network. Each has a unique label so it can be referenced later. In the example the label is <code>peer0.org1.example.com</code>.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
+    }
+},
+</code></pre></div>
+<p>Peer definitions are similar to orderer definitions in structure, but you should define both the <code>url</code> and <code>eventUrl</code> of a peer. Older connection profile formats required that you only define the eventUrl for peers in your organization. Defining TLS for a peer is similar to orderers</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "grpcOptions": {
+            "ssl-target-name-override": "peer.org1.example.com"
+        },
+        "tlsCACerts": {
+            "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+        }
+    }
+},
+</code></pre></div>
+<p>To define multiple peers, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peers": {
+    "peer0.org1.example.com": {
+        "url": "grpc://peer0.org1.example.com:7051",
+        "eventUrl": "grpc://peer0.org1.example.com:7053"
+    },
+    "peer1.org1.example.com": {
+        "url": "grpc://peer1.org1.example.com:7051",
+        "eventUrl": "grpc://peer1.org1.example.com:7053"
+    },
+    "peer0.org2.example.com": {
+        "url": "grpc://peer0.org2.example.com:7051",
+        "eventUrl": "grpc://peer0.org2.example.com:7053"
+    },
+},
+</code></pre></div>
+<h3 id="certificate-authorities">Certificate Authorities</h3>
+
+<p>Here you define all the certificate authorities</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"certificateAuthorities": {
+    "ca.org1.example.com": {
+        "url": "http://ca.org1.example.com:7054",
+        "caName": "ca.org1.example.com"
+    }
+}
+</code></pre></div>
+<ul>
+<li><code>url</code> defines the url of a Hyperledger Fabric certificate authority to connect to. If your certificate authority requires a name, it must be defined in <code>caName</code>.</li>
+<li><code>trustedRoots</code> and <code>verify</code> options for the Certificate Authority are described here <a href="https://fabric-sdk-node.github.io/global.html#TLSOptions">https://fabric-sdk-node.github.io/global.html#TLSOptions</a></li>
+</ul>
+
+<h3 id="organizations">Organizations</h3>
+
+<p>Here you define the servers that are part of your organization as well as your MSPid and provide it with a name which can be referenced.
+In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a single certificate authority and label our organization <code>Org1</code>. Note the referencing of the peer and certificate authority.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0.org1.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.org1.example.com"
+            ]
+        }
+    },
+</code></pre></div>
+<ul>
+<li><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrolment id that you will use to interact with the business network.</li>
+</ul>
+
+<h3 id="channels">Channels</h3>
+
+<p>This defines the various Hyperledger Fabric peers and orderers that are participating on a specific channel as well as the role of the peers.
+<strong>IMPORTANT</strong> Hyperledger Composer can only work with 1 channel, so you need to ensure that only a single channel is defined in this section even though the document can support multiple channel definitions.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"channels": {
+    "composerchannel": {
+        "orderers": [
+            "orderer.example.com"
+        ],
+        "peers": {
+            "peer0.org1.example.com": {
+                "endorsingPeer": true,
+                "chaincodeQuery": true,
+                "ledgerQuery": true,
+                "eventSource": true
+            }
+        }
+    }
+},
+</code></pre></div>
+<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
+- <code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.
+- <code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.
+- <code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
+- <code>eventSource</code> means that this peer will generate events.</p>
+
+<h3 id="client">Client</h3>
+
+<p>This section will be unique for each organization and defines configuration information specific to your client application.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
+            },
+            "orderer": "300"
+        }
+    }
+},
+</code></pre></div>
+<p>In this section you define the <code>organization</code> you belong to, in the example this is <code>Org1</code> which references the Org1 organization in the profile. You also define timeouts in seconds for each of the possible interactions.</p>
+
+<h3 id="common-properties">Common properties</h3>
+
+<p>When defining a peer or orderer there are some common options you can use. These are:
+- <code>grpcOptions</code>
+- <code>tlsCACerts</code></p>
+
+<p>For example a peer definition might look like:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
+    "url": "grpcs://peer0.org1.example.com:7051",
+    "eventUrl": "grpcs://peer0.org1.example.com:7053"
+    "grpcOptions": {
+        "ssl-target-name-override": "peer.org1.example.com",
+        "grpc-max-send-message-length": 15
+    },
+    "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+    }
+}
+</code></pre></div>
+<p>A similar thing could be done for an orderer definition:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"orderer.example.com": {
+    "url": "grpcs://orderer.example.com:7050",
+    "grpcOptions": {
+        "ssl-target-name-override": "peer.org1.example.com",
+        "grpc-max-send-message-length": 15
+    },
+    "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
+    }
+}
+</code></pre></div>
+<p>There are other <code>grpcOptions</code> available, please refer to the <a href="https://fabric-sdk-node.github.io/tutorial-network-config.html">https://fabric-sdk-node.github.io/tutorial-network-config.html</a> for more information</p>
 
 <h3 id="hsm-support">HSM Support</h3>
 
-<p>Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup e.g.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    {
-        "name": "my-fabric-with-hsm",
-        "type": "hlfv1",
-        "orderers": [
-            {
-                "url": "grpc://localhost:7050"
-            }
-        ],
-        "ca": {
-            "url": "http://localhost:7054",
-            "name": "ca.org1.example.com"
-        },
-        "peers": [
-            {
-                "requestURL": "grpc://localhost:7051",
-                "eventURL": "grpc://localhost:7053"
+<p>Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup. This information needs to go into the client section, for example</p>
+<div class="highlight"><pre><code class="language-" data-lang="">"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
             },
-        ],
-        "channel": "composerchannel",
-        "mspID": "Org1MSP",
-        "timeout": "300",
-        "hsm": {
-            "library": "/usr/local/lib/myhsm.so",
-            "slot": 0,
-            "pin": 98765432
+            "orderer": "300"
         }
-    };
+    },
+    "x-hsm": {
+        "library": "/usr/local/lib/myhsm.so",
+        "slot": 0,
+        "pin": 98765432
+    }
+},
 </code></pre></div>
 <ul>
 <li><code>library</code> is the absolute path to the pkcs#11 library required for communication with your specific HSM</li>
@@ -386,7 +592,7 @@ ga('send', 'pageview');
     export PKCS_PIN=98765432
 </code></pre></div>
 <p>then you can reference these in the connection profile as follows</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        "hsm": {
+<div class="highlight"><pre><code class="language-" data-lang="">        "x-hsm": {
             "library": "{PKCS_LIBRARY}",
             "slot": "{PKCS_SLOT}",
             "pin": "{PKCS_PIN}"

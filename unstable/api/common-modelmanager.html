@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -282,8 +297,6 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <ul>
 <li><strong>Module</strong> common</li>
 </ul>
-
-<h3 id="see-also">See also</h3>
 
 <h2 id="method-summary">Method Summary</h2>
 
@@ -355,6 +368,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left">Get the TransactionDeclarations defined in this model manager</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#updateexternalmodels">updateExternalModels</a></td>
+<td style="text-align: left"><code>Promise</code></td>
+<td style="text-align: left">Downloads all ModelFiles that are external dependencies and adds or updates them in this ModelManager</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#updatemodelfile">updateModelFile</a></td>
 <td style="text-align: left"><code>Object</code></td>
 <td style="text-align: left">Updates a Composer file (as a string) on the ModelManager</td>
@@ -364,18 +382,21 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left"><code>void</code></td>
 <td style="text-align: left">Validates a Composer file (as a string) to the ModelManager</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="#validatemodelfiles">validateModelFiles</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Validates all models files in this model manager</td>
+</tr>
 </tbody></table>
 
 <h1 id="method-details">Method Details</h1>
 
 <h2 id="validatemodelfile">validateModelFile</h2>
 
-<p>_ validateModelFile( string modelfile, string filename )_</p>
+<p><em>validateModelFile( string modelfile, string filename )</em></p>
 
 <p>Validates a Composer file (as a string) to the ModelManager. Composer files have a single namespace.
 Note that if there are dependencies between multiple files the files must be added in dependency order, or the addModelFiles method can be used to add a set of files irrespective of dependencies.</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -403,7 +424,7 @@ Note that if there are dependencies between multiple files the files must be add
 
 <h2 id="addmodelfile">addModelFile</h2>
 
-<p><em>Object addModelFile( string modelfile, string filename )</em></p>
+<p><em>Object addModelFile( string modelfile, string filename, [boolean disablevalidation] )</em></p>
 
 <p>Adds a Composer file (as a string) to the ModelManager. Composer files have a single namespace. If a Composer file with the same namespace has already been added to the ModelManager then it will be replaced. Note that if there are dependencies between multiple files the files must be added in dependency order, or the addModelFiles method can be used to add a set of files irrespective of dependencies.</p>
 
@@ -411,8 +432,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - The newly added model file (internal).</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -435,11 +454,17 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional file name to associate with the model file</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
 </tbody></table>
 
 <h2 id="updatemodelfile">updateModelFile</h2>
 
-<p><em>Object updateModelFile( string modelfile, string filename )</em></p>
+<p><em>Object updateModelFile( string modelfile, string filename, [boolean disablevalidation] )</em></p>
 
 <p>Updates a Composer file (as a string) on the ModelManager. Composer files have a single namespace. If a Composer file with the same namespace has already been added to the ModelManager then it will be replaced.</p>
 
@@ -447,8 +472,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - The newly added model file (internal).</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -471,15 +494,19 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">an optional file name to associate with the model file</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
 </tbody></table>
 
 <h2 id="deletemodelfile">deleteModelFile</h2>
 
-<p>_ deleteModelFile( string namespace )_</p>
+<p><em>deleteModelFile( string namespace )</em></p>
 
 <p>Remove the Composer file for a given namespace</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -501,15 +528,13 @@ Note that if there are dependencies between multiple files the files must be add
 
 <h2 id="addmodelfiles">addModelFiles</h2>
 
-<p><em>Object[] addModelFiles(  modelfiles,  filenames )</em></p>
+<p><em>Object[] addModelFiles(  modelfiles, [ filenames], [boolean disablevalidation] )</em></p>
 
 <p>Add a set of Composer files to the model manager.</p>
 
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - The newly added model files (internal).</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -533,15 +558,63 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">An optional array of file names to associate with the model files</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>disableValidation</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">If true then the model files are not validated</td>
+</tr>
+</tbody></table>
+
+<h2 id="validatemodelfiles">validateModelFiles</h2>
+
+<p><em>validateModelFiles(  )</em></p>
+
+<p>Validates all models files in this model manager</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="updateexternalmodels">updateExternalModels</h2>
+
+<p><em>Promise updateExternalModels( [Object options], [ModelFileDownloader modelfiledownloader] )</em></p>
+
+<p>Downloads all ModelFiles that are external dependencies and adds or updates them in this ModelManager.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - a promise when the download and update operation is completed.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>options</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Options object passed to ModelFileLoaders</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>modelFileDownloader</strong></td>
+<td style="text-align: left">ModelFileDownloader</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">an optional ModelFileDownloader</td>
+</tr>
 </tbody></table>
 
 <h2 id="clearmodelfiles">clearModelFiles</h2>
 
-<p>_ clearModelFiles(  )_</p>
+<p><em>clearModelFiles(  )</em></p>
 
 <p>Remove all registered Composer files</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -557,8 +630,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string">string</a></strong> - namespaces - the namespaces that have been registered.</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
@@ -573,8 +644,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="common-classdeclaration">ClassDeclaration</a></strong> - the ClassDeclarations from system namespaces</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <p>No parameters</p>
@@ -588,8 +657,6 @@ Note that if there are dependencies between multiple files the files must be add
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-assetdeclaration">AssetDeclaration</a></strong> - the AssetDeclarations defined in the model manager</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -619,8 +686,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="common-transactiondeclaration">TransactionDeclaration</a></strong> - the TransactionDeclarations defined in the model manager</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -648,8 +713,6 @@ Note that if there are dependencies between multiple files the files must be add
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-eventdeclaration">EventDeclaration</a></strong> - the EventDeclaration defined in the model manager</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -679,8 +742,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="common-participantdeclaration">ParticipantDeclaration</a></strong> - the ParticipantDeclaration defined in the model manager</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -709,8 +770,6 @@ Note that if there are dependencies between multiple files the files must be add
 
 <p><strong><a href="common-enumdeclaration">EnumDeclaration</a></strong> - the EnumDeclaration defined in the model manager</p>
 
-<h3 id="see-also">See also</h3>
-
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -738,8 +797,6 @@ Note that if there are dependencies between multiple files the files must be add
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-conceptdeclaration">ConceptDeclaration</a></strong> - the ConceptDeclaration defined in the model manager</p>
-
-<h3 id="see-also">See also</h3>
 
 <h3 id="parameters">Parameters</h3>
 

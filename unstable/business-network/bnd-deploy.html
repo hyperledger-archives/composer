@@ -108,7 +108,6 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
-<li><a href="/composer/unstable/installing/using-playground-locally">Installing Playground only</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -118,7 +117,9 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/nodered-tutorial">Node-Red Tutorial</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -134,15 +135,17 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/business-network/publishing-events">Emitting Events</a></li>
 <li><a href="/composer/unstable/business-network/testing">Testing Business Networks</a></li>
 <li><a href="/composer/unstable/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/unstable/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
 <li><a href="/composer/unstable/business-network/query">Using Queries and Filters with Business Network Data</a></li>
 <li><a href="/composer/unstable/business-network/programmatic-access-control">Programmatic access control</a></li>
 <li><a href="/composer/unstable/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/unstable/business-network/cloud-wallets">Customising card stores</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/applications/applications-index"><b>Developing Applications</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
 <ul>
 <li><a href="/composer/unstable/applications/node">Writing a Node.js application</a></li>
-<li><a href="/composer/unstable/applications/web">Writing Web or mobile applications</a></li>
+<li><a href="/composer/unstable/applications/web">Writing Web applications</a></li>
 <li><a href="/composer/unstable/applications/subscribing-to-events">Subscribing to events</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -155,7 +158,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
 <li><a href="/composer/unstable/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
 <li><a href="/composer/unstable/integrating/node-red">Integrating with Node-RED</a></li>
-<li><a href="/composer/unstable/integrating/call-out">Calling external REST services</a></li>
+<li><a href="/composer/unstable/integrating/call-out">Calling external HTTP or REST services</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -168,6 +171,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
 <li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
 <li><p><a href="/composer/unstable/reference/reference-index"><b>Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
@@ -209,12 +213,10 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-factory">Factory (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-filesystemcardstore">FileSystemCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-idcard">IdCard (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-identifiable">Identifiable (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-introspector">Introspector (Common API)</a></li>
-<li><a href="/composer/unstable/api/common-memorycardstore">MemoryCardStore (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelfile">ModelFile (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/unstable/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
@@ -234,6 +236,16 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/api/runtime-query">Query (Runtime API)</a></li>
 <li><a href="/composer/unstable/api/runtime-serializer">Serializer (Runtime API)</a></li>
 </ul></li>
+<li><p><a href="/composer/unstable/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/unstable/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/unstable/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/unstable/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/unstable/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/unstable/systemns/05_events">Events</a></li>
+<li><a href="/composer/unstable/systemns/06_enums">Enums</a></li>
+</ul></li>
 </ul>
 
             
@@ -247,7 +259,10 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/latest">Latest (Unstable) Docs</a></li>
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
     </ul>
   </div>
 </div>
@@ -264,21 +279,22 @@ ga('send', 'pageview');
 
 <p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (.bna) file. The <code>composer archive create</code> command is used to create a business network archive file from a business network definition folder on disk.</p>
 
-<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.runtime.install.html"><code>composer runtime install</code></a> command followed by a <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command.</p>
+<p>Once the business network archive file has been created it can be deployed to a runtime using the <a href="../reference/composer.network.install.html"><code>composer network install</code></a> command followed by a <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer runtime install -n tutorial-network -c PeerAdmin@fabric-network
+<div class="highlight"><pre><code class="language-" data-lang="">composer network install --archiveFile tutorial-network@1.0.0.bna --card PeerAdmin@fabric-network
+composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@Fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
 </code></pre></div>
-<p>To update the business network definition for an already deployed business network use the <a href="../reference/composer.network.update.html"><code>composer network update</code></a> CLI command.</p>
+<p>To upgrade the business network definition for an already deployed business network use the <a href="../reference/composer.network.upgrade.html"><code>composer network upgrade</code></a> CLI command.</p>
 
-<h2 id="deploying-business-networks-to-hyperledger-fabric-v1-0">Deploying business networks to Hyperledger Fabric v1.0</h2>
+<h2 id="deploying-business-networks-to-hyperledger-fabric-v1-1">Deploying business networks to Hyperledger Fabric v1.1</h2>
 
-<p>In Hyperledger Fabric v1.0, peers enforce the concepts of administrators and members (or users). Administrators have permission to install Hyperledger Fabric chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.</p>
+<p>In Hyperledger Fabric v1.1, peers enforce the concepts of administrators and members. Administrators have permission to install Hyperledger Fabric chaincode for a new business network onto peers. Members do not have permission to install chaincode. In order to deploy a business network to a set of peers, you must provide an identity that has administrative rights to all of those peers.</p>
 
 <p>To make that identity and its certificates available, you must create a Peer Admin business network card using the certificate and private key associated with the peer admin identity.
-Hyperledger Composer provides a sample Hyperledger Fabric v1.0 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric v1.0 networks.</p>
+Hyperledger Composer provides a sample Hyperledger Fabric v1.1 network. The peer administrator for this network is called <code>PeerAdmin</code>, and the identity is automatically imported for you when you use the sample scripts for starting the network. Please note that the peer administrator may be given a different name for other Hyperledger Fabric networks.</p>
 
-<p><strong>Important</strong>: When deploying a business network to Hyperledger Fabric v1.0 a bootstrap registrar is defined in the Hyperledger Fabric Certificate Authority (CA) configuration. The Hyperledger Composer development environment contains a preconfigured instance of Hyperledger Fabric with a specific enrollment ID and enrollment secret for the bootstrap registrar.</p>
+<p><strong>Important</strong>: When deploying a business network to Hyperledger Fabric v1.1 a bootstrap registrar is defined in the Hyperledger Fabric Certificate Authority (CA) configuration. The Hyperledger Composer development environment contains a preconfigured instance of Hyperledger Fabric with a specific enrollment ID and enrollment secret for the bootstrap registrar.</p>
 
 <h2 id="business-network-administrators">Business network administrators</h2>
 
@@ -310,11 +326,11 @@ rule NetworkAdminSystem {
 <p>You can use additional options to the <a href="../reference/composer.network.start.html"><code>composer network start</code></a> command to specify the business network administrators that should be created during the deployment of the business network.</p>
 
 <p>If the business network administrator has an enrollment ID and enrollment secret, you can use the <code>-A</code> (business network administrator) and <code>-S</code> (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing <code>admin</code> enrollment ID:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start -c PeerAdmin@fabric-network -A admin -S
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 1.0.0 --c PeerAdmin@Fabric-network -A admin -S adminpw
 </code></pre></div>
 <h2 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h2>
 
-<p><strong>Please note</strong>: When using a local Playground instance to deploy a business network to Hyperledger Fabric v1.0, as part of the deployment process you must choose how to provide credentials for the initial business network participant. The initial participant will be a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto"><strong>NetworkAdmin</strong></a>.</p>
+<p><strong>Please note</strong>: When using a local Playground instance to deploy a business network to Hyperledger Fabric v1.1, as part of the deployment process you must choose how to provide credentials for the initial business network participant. The initial participant will be a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto"><strong>NetworkAdmin</strong></a>.</p>
 
 <p>When deploying a business network using playground, you will be prompted to enter the credentials for the initial participant. Credentials can be provided either as a certificate or as a pre-defined enrollment ID and enrollment secret. If you are using the instance of Hyperledger Fabric set up in the Hyperledger Composer development environment, the bootstrap registrar enrollment ID is <code>admin</code> and the bootstrap registrar enrollment secret is <code>adminpw</code>.  This initial participant uses the credentials set for the bootstrap registrar in the Hyperledger Fabric Certificate Authority (CA), and will be a <a href="https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto"><strong>NetworkAdmin</strong></a>.</p>
 
@@ -325,7 +341,7 @@ rule NetworkAdminSystem {
 <p>When deploying a business network to an instance of Hyperledger Fabric by using a locally installed Hyperledger Composer Playground, you may encounter the following error:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
 </code></pre></div>
-<p>Once this error has occurred, you must delete your local browser storage to restore normal function. <em>Please note</em>: Deleting local browser storage will delete your connection profile and identities in your wallet. For more information on this error, see the <a href="../problems/deployment-local-playground.html">specific error page</a></p>
+<p>Once this error has occurred, you must delete your local browser storage to restore normal function. <em>Please note</em>: Deleting local browser storage will delete your Web Browser Connection business network cards (but not your real fabric connection business network cards that are in the card store). For more information on this error, see the <a href="../problems/deployment-local-playground.html">specific error page</a></p>
 
 <h2 id="references">References</h2>
 
