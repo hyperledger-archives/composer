@@ -1,6 +1,6 @@
 ---
 layout: default
-title: System Name Space Reference
+title: System Namespace Reference
 section: sns
 sidebar: sidebars/accordion-toc0.md
 excerpt: System Namesapce
