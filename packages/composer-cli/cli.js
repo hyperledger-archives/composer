@@ -25,7 +25,7 @@ const version = 'v' +require('./package.json').version;
 let results = yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('composer archive create\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
+    .example('composer archive create\ncomposer identity issue\ncomposer network install\ncomposer participant add\ncomposer transaction submit')
     .demand(1)
     .wrap(null)
     .strict()
