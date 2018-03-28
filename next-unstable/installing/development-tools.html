@@ -346,7 +346,6 @@ tar -xvf fabric-dev-servers.tar.gz
 <p>A <code>zip</code> is also available if you prefer: just replace the <code>.tar.gz</code> file with <code>fabric-dev-servers.zip</code> and the <code>tar -xvf</code> command with a <code>unzip</code> command in the preceding snippet.</p></li>
 <li><p>Use the scripts you just downloaded and extracted to download a local Hyperledger Fabric runtime:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
-export FABRIC_VERSION=hlfv11
 ./downloadFabric.sh
 </code></pre></div></li>
 </ol>
@@ -364,7 +363,6 @@ Read on to learn some of the most common things you&#39;ll do with this environm
 
 <p>The first time you start up a new runtime, you&#39;ll need to run the start script, then generate a PeerAdmin card:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">    cd ~/fabric-tools
-    export FABRIC_VERSION=hlfv11
     ./startFabric.sh
     ./createPeerAdminCard.sh
 </code></pre></div>
