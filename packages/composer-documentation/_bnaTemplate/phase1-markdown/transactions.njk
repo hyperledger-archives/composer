@@ -2,7 +2,10 @@
 
 {% for fn in scripts.files %}
 
-*Identifier* {{fn.identifier}}
+*Identifier*
+
+{{fn.identifier}}
+
 *Functions*
 {% for f in fn.functions %}
 #### {{f.name}}
@@ -10,8 +13,6 @@
 ```javascript
 {{f.text}}
 ``` 
-
-![{{f.name}}]({{f.name}}.svg)
 
 {% endfor %}
 {% endfor %}

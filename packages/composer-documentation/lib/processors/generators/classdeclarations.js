@@ -62,7 +62,7 @@ function classdeclarations(context,options){
 
     }
 
-    ['asset','concept','transaction','enum','participant'].forEach((t)=>{
+    ['asset','concept','transaction','enum','participant','event'].forEach((t)=>{
         // need to added the parsed comments to the existing structure
         for (let i=0; i<context.types[t].length;i++){
             let resource = context.types[t][i];
