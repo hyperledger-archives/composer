@@ -124,7 +124,7 @@ if [[ "${BUILD_FOCUS}" != "v0.16" ]]; then
     pushd ${DIR}/packages/composer-playground
     rm -rf ${DIR}/packages/composer-playground/node_modules
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
+    cf push "composer-playground${PLAYGROUND_SUFFIX}" --docker-image hyperledger/composer-playground:${VERSION} -i 2 -m 128M --no-start
     cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
     cf start "composer-playground${PLAYGROUND_SUFFIX}"
     popd
