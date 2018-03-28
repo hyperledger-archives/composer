@@ -319,7 +319,7 @@ ga('send', 'pageview');
 <p>cd dockertmp</p></li>
 <li><p>In the temporary directory, create a docker file called <code>Dockerfile</code> in an editor and paste into the following sequence (including special backslash <code>\</code> characters below needed after the <code>RUN</code> and <code>npm</code> lines below  - ie the continuation character ):</p></li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">     FROM hyperledger/composer-rest-server:next
+<div class="highlight"><pre><code class="language-" data-lang="">     FROM hyperledger/composer-rest-server
 
      RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &amp;&amp; \
      npm cache clean --force &amp;&amp; \
@@ -342,7 +342,7 @@ ga('send', 'pageview');
 <p>You should see output similar to the following with the bottom 2 lines indicating it was &#39;Successfuly built&#39;:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/composer-rest-server .
 Sending build context to Docker daemon  4.203GB
-Step 1/2 : FROM hyperledger/composer-rest-server:next
+Step 1/2 : FROM hyperledger/composer-rest-server
  ---&gt; e682b4374837
 Step 2/2 : RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &amp;&amp;     npm cache clean  --force &amp;&amp;     ln -s node_modules .node_modules
  ---&gt; Running in 7a116240be21
