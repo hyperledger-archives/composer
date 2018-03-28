@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Using OAUTH2.0 with a Composer REST server | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/latest/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/latest/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/latest/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/latest/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/latest/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <a class="navbar-brand" href="/composer/latest/index.html"><b>Hyperledger</b> Composer</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="top-nav-docs">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <!-- <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li> -->
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                    <a href="../introduction/introduction.html">Docs</a>
+                    <a href="../support/support-index.html">Community</a>
+            </div>
+        </div>
+</nav>
+
+          </div>
+
+            <div class="search-form">
+              <form action="/composer/latest/search/search.html" method="get">
+                <!-- <label for="search-box">Search</label> -->
+
+                <input type="text" id="search-box"  class="search-box" name="query" placeholder="Search here...">
+                <input type="submit" class="submit-input hide" value="">
+
+                <div class="search-icon">
+                  <img src="/composer/latest/assets/img/Search_Icon_1.svg" class="trigger" type="submit">
+                </div>
+              </form>
+            </div>
+
+          <div class="docs-current-page-grid">
+          <p>Using OAUTH2.0 with a Composer REST server</p>
+          </div>
+
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><p><a href="/composer/latest/introduction/introduction"><b>Introduction</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/introduction/key-concepts">Key Concepts</a></li>
+<li><a href="/composer/latest/introduction/solution-architecture">Typical Solution Architecture</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/installing/installing-index"><b>Installing</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
+<li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/tutorials/playground-tutorial">Playground Tutorial</a></li>
+<li><a href="/composer/latest/tutorials/developer-tutorial">Developer Tutorial</a></li>
+<li><a href="/composer/latest/tutorials/queries">Queries Tutorial</a></li>
+<li><a href="/composer/latest/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
+<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/playground/playground-index"><b>Using Playground</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/playground/id-cards-playground">Business Network Cards</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/business-network/business-network-index"><b>Developing Business Networks</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/business-network/businessnetworkdefinition">Business Network Definitions</a></li>
+<li><a href="/composer/latest/business-network/bnd-create">Create a Business Network Definition</a></li>
+<li><a href="/composer/latest/business-network/bnd-deploy">Deploying Business Networks</a></li>
+<li><a href="/composer/latest/business-network/publishing-events">Emitting Events</a></li>
+<li><a href="/composer/latest/business-network/testing">Testing Business Networks</a></li>
+<li><a href="/composer/latest/business-network/bnd-publish">Publish Models or Business Network Definitions</a></li>
+<li><a href="/composer/latest/business-network/upgrading-bna">Upgrading a deployed business network</a></li>
+<li><a href="/composer/latest/business-network/query">Using Queries and Filters with Business Network Data</a></li>
+<li><a href="/composer/latest/business-network/programmatic-access-control">Programmatic access control</a></li>
+<li><a href="/composer/latest/business-network/historian">Hyperledger Composer Historian</a></li>
+<li><a href="/composer/latest/business-network/cloud-wallets">Customising card stores</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/applications/applications-index"><b>Developing Applications</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/applications/node">Writing a Node.js application</a></li>
+<li><a href="/composer/latest/applications/web">Writing Web applications</a></li>
+<li><a href="/composer/latest/applications/subscribing-to-events">Subscribing to events</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/integrating/integrating-index"><b>Integrating Existing Systems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/integrating/getting-started-rest-api">Generating a REST API</a></li>
+<li><a href="/composer/latest/integrating/publishing-events">Publishing events from the REST server</a></li>
+<li><a href="/composer/latest/integrating/enabling-rest-authentication">Enabling authentication for the REST server</a></li>
+<li><a href="/composer/latest/integrating/enabling-multiuser">Enabling multiple user mode for the REST server</a></li>
+<li><a href="/composer/latest/integrating/securing-the-rest-server">Securing the REST server using HTTPS and TLS</a></li>
+<li><a href="/composer/latest/integrating/deploying-the-rest-server">Deploying the REST server for a business network</a></li>
+<li><a href="/composer/latest/integrating/node-red">Integrating with Node-RED</a></li>
+<li><a href="/composer/latest/integrating/call-out">Calling external HTTP or REST services</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/managing/managingindex"><b>Managing a Deployed Business Network</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/managing/participantsandidentities">Participants and identities</a></li>
+<li><a href="/composer/latest/managing/participant-add">Adding participants</a></li>
+<li><a href="/composer/latest/managing/id-cards-playground">Creating, Exporting, and Importing Business Network Cards</a></li>
+<li><a href="/composer/latest/managing/identity-issue">Issuing a new identity to a participant</a></li>
+<li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
+<li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
+<li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
+<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
+<li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/latest/reference/reference-index"><b>Reference</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/reference/MeetTheModules">Hyperledger Composer npm Modules</a></li>
+<li><a href="/composer/latest/reference/cto_language">Modeling Language</a></li>
+<li><a href="/composer/latest/reference/acl_language">Access Control Language</a></li>
+<li><a href="/composer/latest/reference/query-language">Query Language</a></li>
+<li><a href="/composer/latest/reference/model-compatibility">Model Compatibility</a></li>
+<li><a href="/composer/latest/reference/connectionprofile">Connection Profiles</a></li>
+<li><a href="/composer/latest/reference/js_scripts">Transaction Processor Functions</a></li>
+<li><a href="/composer/latest/reference/commands">Hyperledger Composer CLI Commands</a></li>
+<li><a href="/composer/latest/reference/rest-server">Hyperledger Composer REST Server</a></li>
+<li><a href="/composer/latest/reference/glossary">Hyperledger Composer Glossary of Terms</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/support/support-index"><b>Support</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
+<li><p><a href="/composer/latest/api/api-doc-index"><b>API Reference</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/api/allData">API Class Index</a></li>
+<li><a href="/composer/latest/api/admin-adminconnection">AdminConnection (Admin API)</a></li>
+<li><a href="/composer/latest/api/client-assetregistry">AssetRegistry (Client API)</a></li>
+<li><a href="/composer/latest/api/client-businessnetworkconnection">BusinessNetworkConnection (Client API)</a></li>
+<li><a href="/composer/latest/api/client-historian">Historian (Client API)</a></li>
+<li><a href="/composer/latest/api/client-identityregistry">IdentityRegistry (Client API)</a></li>
+<li><a href="/composer/latest/api/client-participantregistry">ParticipantRegistry (Client API)</a></li>
+<li><a href="/composer/latest/api/client-query">Query (Client API)</a></li>
+<li><a href="/composer/latest/api/client-registry">Registry (Client API)</a></li>
+<li><a href="/composer/latest/api/client-transactionregistry">TransactionRegistry (Client API)</a></li>
+<li><a href="/composer/latest/api/common-assetdeclaration">AssetDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-businessnetworkcardstore">BusinessNetworkCardStore (Common API)</a></li>
+<li><a href="/composer/latest/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
+<li><a href="/composer/latest/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
+<li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-factory">Factory (Common API)</a></li>
+<li><a href="/composer/latest/api/common-functiondeclaration">FunctionDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-idcard">IdCard (Common API)</a></li>
+<li><a href="/composer/latest/api/common-identifiable">Identifiable (Common API)</a></li>
+<li><a href="/composer/latest/api/common-introspector">Introspector (Common API)</a></li>
+<li><a href="/composer/latest/api/common-modelfile">ModelFile (Common API)</a></li>
+<li><a href="/composer/latest/api/common-modelmanager">ModelManager (Common API)</a></li>
+<li><a href="/composer/latest/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-property">Property (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
+<li><a href="/composer/latest/api/common-resource">Resource (Common API)</a></li>
+<li><a href="/composer/latest/api/common-serializer">Serializer (Common API)</a></li>
+<li><a href="/composer/latest/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-typed">Typed (Common API)</a></li>
+<li><a href="/composer/latest/api/common-validatedconcept">ValidatedConcept (Common API)</a></li>
+<li><a href="/composer/latest/api/common-validatedresource">ValidatedResource (Common API)</a></li>
+<li><a href="/composer/latest/api/runtime-api">Api (Runtime API)</a></li>
+<li><a href="/composer/latest/api/runtime-assetregistry">AssetRegistry (Runtime API)</a></li>
+<li><a href="/composer/latest/api/runtime-factory">Factory (Runtime API)</a></li>
+<li><a href="/composer/latest/api/runtime-participantregistry">ParticipantRegistry (Runtime API)</a></li>
+<li><a href="/composer/latest/api/runtime-query">Query (Runtime API)</a></li>
+<li><a href="/composer/latest/api/runtime-serializer">Serializer (Runtime API)</a></li>
+</ul></li>
+<li><p><a href="/composer/latest/systemns/systemns-index"><b>System Namespace Reference</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
+
+<ul>
+<li><a href="/composer/latest/systemns/01_summary">Summary</a></li>
+<li><a href="/composer/latest/systemns/02_assets">Assets</a></li>
+<li><a href="/composer/latest/systemns/03_participants">Participants</a></li>
+<li><a href="/composer/latest/systemns/04_transactions">Transactions</a></li>
+<li><a href="/composer/latest/systemns/05_events">Events</a></li>
+<li><a href="/composer/latest/systemns/06_enums">Enums</a></li>
+</ul></li>
+</ul>
+
+            
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      
+      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
+           
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
+          </nav>
+        </div>
+        <div class="page-content-grid">
+          <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
+            
+              <h1 id="using-oauth2-0-with-a-rest-server">Using OAUTH2.0 with a  REST server</h1>
+
+<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial (an overview diagram is shown below - a more detailed diagram showing the authentication flow is shown further down). You will run the REST server in <a href="https://hyperledger.github.io/composer/next/integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+
+<p><img src="../assets/img/tutorials/auth/intro_diagram.png" alt="Google Authentication and REST Server Overview"></p>
+
+<p>Note: we have set up the standard &#39;Development Fabric&#39; network as instructed in Step 3 &#39;Setting up your IDE&#39; described <a href="https://hyperledger.github.io/composer/next/installing/development-tools.html">here</a></p>
+
+<p>There are many Passport strategies one can choose from. In a business organisational sense, enterprise strategies such as SAML, JSON Web Tokens (JWT) or LDAP are more appropriate obviously - eg an organisational Active Directory server. We use/enable Google+ APIs as the authentication provider for this tutorial, as its easy for anyone to setup a Google account (see Appendix on how to achieve this) and configure the service / do the tutorial without worrying about middleware prereqs to be installed.</p>
+
+<p>OAUTH2.0 is really an &#39;authorization protocol&#39; but can be used as a &#39;delegated authentication scheme&#39; - authentication normally means identifying a user by his or her own credentials, whereas the OAUTH2.0 authentication, as used here, is used as a &#39;delegate&#39; authentication scheme. There are a number of &#39;roles&#39; to expand on here by way of background. The Composer REST server&#39;s role is to provide access to business network resources, which are protected by the Google+ API OAuth2.0 scheme. The resource owner is the Google+ API user account we set up (described in the appendix) its role is to grant consent (or otherwise) to the client application. The Google+ authorization server requests consent of the resource owner and issues access tokens to REST clients (eg web client apps)  to enable them to access the protected resources.  Smaller API providers may use the same application and URL space in Google+ for both the authorization server and resource server. The idea is that, when a web application user (consuming REST APIs to access a business network) comes along,  he/she doesn&#39;t have to pre-register anything ;  the application user is granted consent by virtue of the configured client application (although that does depend on the OAUTH2.0 flow set up). In our tutorial, we are using a browser to consume the REST APIs and see how this authentication flow actually works.</p>
+
+<p><img src="../assets/img/tutorials/auth/auth_diagram.png" alt="Google+ Authentication and Authorization"></p>
+
+<p>An access key is granted following consent ; the token allows a client to access the APIs protected by OAuth2.0. In OAuth 2.0, these access tokens are called “bearer tokens”, and can be used alone, with no signature or cryptography, to access the information. Furthermore, the access token is stored in a cookie in the local storage of the user&#39;s web browser. When the user makes a subsequent request, the access token is retrieved from the cookie, and the access token is validated, instead of reauthenticating the user.</p>
+
+<p>The REST Server itself is configured to persist the business network cards (required to connect to the network) using the MongoDB store. Typically an organisation would run multiple instances of the REST server Docker image described below and configure a highly available instance of the persistent data store, for example a MongoDB replica set. Configuring the components for high availability allows an administrator to stop, restart, or remove REST server instances without the application users losing access to the deployed business network over REST.</p>
+
+<p>You should carry out this tutorial as a non-privileged user (sudo or elevated privileges are not required).</p>
+
+<h2 class='everybody'> Step 1: Set up the Persistent DB Credentials Data Store using MongoDB </h2>
+
+<p>As mentioned, we will store credentials in a persistent data store once the appropriate business network cards are imported to the REST Wallet.</p>
+
+<h4 id="start-the-mongodb-instance">Start the MongoDB Instance</h4>
+
+<ol>
+<li><p>Open a terminal window and enter the following command:</p>
+
+<p>docker run -d --name mongo --network composer_default -p 27017:27017 mongo</p></li>
+</ol>
+
+<p>It should output that a docker image has been downloaded and provide a SHA256 message. An instance of the MongoDB docker container has been started. It is important to use the <code>--network composer_default</code> here, to enable simple network connectivity with the REST server.</p>
+
+<p><h2 class='everybody'> Step 2: Build the REST Server Docker Image with OAUTH2.0 module </h2></p>
+
+<ol>
+<li><p>In your $HOME directory, create a temporary directory called <code>dockertmp</code> and cd into it:</p>
+
+<p>cd $HOME ; mkdir dockertmp</p>
+
+<p>cd dockertmp</p></li>
+<li><p>In the temporary directory, create a docker file called <code>Dockerfile</code> in an editor and paste into the following sequence (including special backslash <code>\</code> characters below needed after the <code>RUN</code> and <code>npm</code> lines below  - ie the continuation character ):</p></li>
+</ol>
+<div class="highlight"><pre><code class="language-" data-lang="">     FROM hyperledger/composer-rest-server:next
+
+     RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &amp;&amp; \
+     npm cache clean --force &amp;&amp; \
+     ln -s node_modules .node_modules
+</code></pre></div>
+<p>This Docker file will pull the Docker image located at /hyperledger/composer-rest-server and additionally install two more npm modules:</p>
+
+<p>• <strong>loopback-connector-mongodb</strong> – This module provides a MongoDB connector for the LoopBack framework and allows our REST server to use MongoDB as a data source. For more information: <a href="https://www.npmjs.com/package/loopback-connector-mongodb">https://www.npmjs.com/package/loopback-connector-mongodb</a></p>
+
+<p>• <strong>passport-google-oauth2</strong> – This module lets us authenticate using a Google+ account with our REST server. For more information: <a href="https://www.npmjs.com/package/passport-google-oauth-2">https://www.npmjs.com/package/passport-google-oauth-2</a></p>
+
+<ol>
+<li><p>From the same directory where the <code>Dockerfile</code> resides, build the custom Docker REST Server image:</p>
+
+<p>docker build -t myorg/composer-rest-server .</p></li>
+</ol>
+
+<p>The parameter given the –t flag is the name you want to give to this Docker image, this can be up to you to name - but for this guide the image will be called ‘myorg/composer-rest-server’.</p>
+
+<p>You should see output similar to the following with the bottom 2 lines indicating it was &#39;Successfuly built&#39;:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/composer-rest-server .
+Sending build context to Docker daemon  4.203GB
+Step 1/2 : FROM hyperledger/composer-rest-server:next
+ ---&gt; e682b4374837
+Step 2/2 : RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &amp;&amp;     npm cache clean  --force &amp;&amp;     ln -s node_modules .node_modules
+ ---&gt; Running in 7a116240be21
+npm WARN saveError ENOENT: no such file or directory, open '/home/composer/package.json'
+npm WARN enoent ENOENT: no such file or directory, open '/home/composer/package.json'
+npm WARN composer No description
+npm WARN composer No repository field.
+npm WARN composer No README data
+npm WARN composer No license field.
+
++ passport-google-oauth2@0.1.6
++ loopback-connector-mongodb@3.4.1
+added 114 packages in 7.574s
+npm WARN using --force I sure hope you know what you are doing.
+ ---&gt; a16cdea42dac
+Removing intermediate container 7a116240be21
+Successfully built a16cdea42dac
+Successfully tagged myorg/composer-rest-server:latest
+</code></pre></div>
+<p>INFO: Don’t worry about seeing the &#39;npm warn messages&#39; as shown on the console as per above. This can be ignored.</p>
+
+<ol>
+<li><p>Lastly, for this section, go back up one level in your directory structure:</p>
+
+<p>cd ..</p></li>
+</ol>
+
+<h2 class='everybody'> Step 3: Define Environment variables for REST Server instance configuration </h2>
+
+<ol>
+<li>Create a file called <code>envvars.txt</code> in your $HOME directory and paste in the following configuration settings - note that you will need to <strong>replace the client ID and clientSecret</strong> with your <strong>own</strong> Google API + client information below  (as shown in the Appendix)</li>
+</ol>
+<div class="highlight"><pre><code class="language-" data-lang="">    COMPOSER_CARD=restadmin@trade-network
+    COMPOSER_NAMESPACES=never
+    COMPOSER_AUTHENTICATION=true
+    COMPOSER_MULTIUSER=true
+    COMPOSER_PROVIDERS='{
+    "google": {
+        "provider": "google",
+        "module": "passport-google-oauth2",
+        "clientID": "312039026929-t6i81ijh35ti35jdinhcodl80e87htni.apps.googleusercontent.com",
+            "clientSecret": "Q4i_CqpqChCzbE-u3Wsd_tF0",
+            "authPath": "/auth/google",
+            "callbackURL": "/auth/google/callback",
+            "scope": "https://www.googleapis.com/auth/plus.login",
+            "successRedirect": "/",
+            "failureRedirect": "/"
+      }
+    }'
+    COMPOSER_DATASOURCES='{
+        "db": {
+            "name": "db",
+            "connector": "mongodb",
+            "host": "mongo"
+        }
+    }'
+
+</code></pre></div>
+<p>The environment variables defined here will indicate that we want a multi user server with authentication using Google OAuth2 along with MongoDB as the persistent data source.</p>
+
+<p>The first line indicates the name of the business network card we will start the network with - a specific REST Administrator against a defined business network. You will also see that in this configuration we also define the data source the REST server will use and the authentication provider we are using. These can be seen with the COMPOSER_DATASOURCES and COMPOSER_PROVIDERS variables respectively.</p>
+
+<h2 class='everybody'> Step 4: Load environment variables in current terminal and launch the persistent REST Server instance </h2>
+
+<ol>
+<li><p>From the same directory as the <code>envvars.txt</code> file you created containing the environment variables, run the following command:</p>
+
+<p>source envvars.txt</p></li>
+</ol>
+
+<p>INFO    No output from command? - this is expected. If you did have a syntax error in your <code>envvars.txt</code> file then this will be indicated by an error, after running this command.</p>
+
+<ol>
+<li><p>Let’s now confirm that environment variables are indeed set by checking a couple of them using “echo” command as shown below</p>
+
+<p>echo $COMPOSER_CARD</p>
+
+<p>echo $COMPOSER_PROVIDERS</p></li>
+</ol>
+
+<h2 class='everybody'> Step 5: Deploy the sample Commodities Trading Business network to query from REST client </h2>
+
+<ol>
+<li><p>If you&#39;ve not already done so - download the <code>trade-network.bna</code> for the Trade-network from <a href="https://composer-playground.mybluemix.net/">https://composer-playground.mybluemix.net/</a>. <strong>Ensure you note down the version number displayed above the About page.</strong></p></li>
+<li><p>In Playground, connect to the network as <code>admin</code> and export the trade-network.bna  and copy it to your <strong>home directory</strong>.</p></li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/download-bna.png" alt="Export BNA file"></p>
+
+<ol>
+<li><p>To deploy it, run the following sequence:</p>
+
+<p>composer network install --card PeerAdmin@hlfv1 --archiveFile trade-network.bna</p>
+
+<p>composer network start --card PeerAdmin@hlfv1 --networkName trade-network --networkVersion <strong>version</strong> --networkAdmin admin --networkAdminEnrollSecret adminpw --file networkadmin.card</p></li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/deploy-network.png" alt="Deploy Business Network"></p>
+
+<p>You should get confirmation that the Commodities Trading Business Network has been started and an &#39;admin&#39; networkadmin.card file has been created.</p>
+
+<ol>
+<li><p>Next, import the business network card, and connect with the card to download the certs to the wallet:</p>
+
+<p>composer card import -f networkadmin.card</p>
+
+<p>composer network ping -c admin@trade-network</p></li>
+</ol>
+
+<p>You should get confirmation that the connectivity was successfully tested. We&#39;re now ready to work with the deployed business network.</p>
+
+<h2 class='everybody'> Step 6:  Create the REST server Administrator for the Composer REST server instance  </h2>
+
+<ol>
+<li><p>Create a REST Adninistrator identity <code>restadmin</code> and an associated business network card (used to launch the REST server later).</p>
+
+<p>composer participant add -c admin@trade-network -d &#39;{&quot;$class&quot;:&quot;org.hyperledger.composer.system.NetworkAdmin&quot;, &quot;participantId&quot;:&quot;restadmin&quot;}&#39;</p>
+
+<p>composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a &quot;resource:org.hyperledger.composer.system.NetworkAdmin#restadmin&quot;</p></li>
+<li><p>Import and test the card:</p>
+
+<p>composer card import -f  restadmin.card</p>
+
+<p>composer network ping -c restadmin@trade-network</p></li>
+<li><p>Because we are hosting our REST server in another location with its own specific network IP information, we need to update the connection.json - so that the docker hostnames (from within the persistent REST server instance) can resolve each other&#39;s IP addresses.</p></li>
+</ol>
+
+<p>The one liner below will substitute the &#39;localhost&#39; addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our &#39;test&#39; authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/
+</code></pre></div>
+<h2 class='everybody'> Step 7:  Launch the persistent REST server instance   </h2>
+
+<ol>
+<li><p>Run the following docker command to launch a REST server instance (with the <code>restadmin</code> business network card)    </p>
+
+<p>docker run \
+-d \
+-e COMPOSER_CARD=${COMPOSER_CARD} \
+-e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+-e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+-e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
+-e COMPOSER_PROVIDERS=&quot;${COMPOSER_PROVIDERS}&quot; \
+-e COMPOSER_DATASOURCES=&quot;${COMPOSER_DATASOURCES}&quot; \
+-v ~/.composer:/home/composer/.composer \
+--name rest \
+--network composer_default \
+-p 3000:3000 \
+myorg/composer-rest-server</p></li>
+</ol>
+
+<p>This will output the ID of the Docker container eg . <code>690f2a5f10776c15c11d9def917fc64f2a98160855a1697d53bd46985caf7934</code> and confirm that the REST server has been indeed started.</p>
+
+<ol>
+<li><p>Check that all is ok with our ocontainer - you can see that it is running using the following commands:</p>
+
+<p>docker ps |grep rest</p>
+
+<p>docker logs rest</p></li>
+</ol>
+
+<h2 class='everybody'> Step 8:  Test the REST APIs are protected and require authorization   </h2>
+
+<ol>
+<li>Open a browser window and launch the REST API explorer by going to <a href="http://localhost:3000/explorer">http://localhost:3000/explorer</a> to view and use the available APIs.</li>
+</ol>
+
+<p>INFO    Admin identity <code>restadmin</code> is used as an initial default - The REST server uses <code>restadmin</code> identity until a specific identity e.g. <code>jdoe</code> is set as a default identity in the REST client wallet.</p>
+
+<ol>
+<li>Go to the “System: general business network methods” section</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/rest-server-launch.png" alt="REST Server"></p>
+
+<ol>
+<li>Go to the “/system/historian” API and click on “Try it out!” button as shown below:</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/authorization-error.png" alt="Authorization error"></p>
+
+<p>You should get an Authorized error and that is because we have configured a Google+ passport OAUTH2.0 authentication strategy to protect access to the REST server. Once authentication via the OAUTH2.0 authentication pa has been achieved, the REST APIs in the browser can interact with the Trade Commodity business network (ie. once a business card has been imported).</p>
+
+<h2 class='everybody'> Step 9: Create some Participants and Identities for testing OAUTH2.0 authentication  </h2>
+
+<ol>
+<li><p>You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is <strong>Jo Doe</strong>:</p>
+
+<p>composer participant add -c admin@trade-network -d &#39;{&quot;$class&quot;:&quot;org.acme.trading.Trader&quot;,&quot;tradeId&quot;:&quot;trader1&quot;, &quot;firstName&quot;:&quot;Jo&quot;,&quot;lastName&quot;:&quot;Doe&quot;}&#39;</p>
+
+<p>composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a &quot;resource:org.acme.trading.Trader#trader1&quot;</p>
+
+<p>composer card import -f jdoe.card</p></li>
+<li><p>Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:</p>
+
+<p>sed -e &#39;s/localhost:/orderer.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/ca.org1.example.com:/&#39;  &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network</p></li>
+<li><p>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</p>
+
+<p>composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card</p></li>
+<li><p>Repeat the above steps for participant <strong>Ken Coe</strong> (<code>kcoe</code>) - creating a <code>trader2</code> participant and issuing the identity <code>kcoe</code> - the sequence of commands are:</p>
+
+<p>composer participant add -c admin@trade-network -d &#39;{&quot;$class&quot;:&quot;org.acme.trading.Trader&quot;,&quot;tradeId&quot;:&quot;trader2&quot;, &quot;firstName&quot;:&quot;Ken&quot;,&quot;lastName&quot;:&quot;Coe&quot;}&#39;</p>
+
+<p>composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a &quot;resource:org.acme.trading.Trader#trader2&quot;</p>
+
+<p>composer card import -f kcoe.card</p>
+
+<p>sed -e &#39;s/localhost:/orderer.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/peer0.org1.example.com:/&#39; -e &#39;s/localhost:/ca.org1.example.com:/&#39;  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network</p>
+
+<p>composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card</p></li>
+</ol>
+
+<p>These cards can now be imported, then used into the REST client (ie the browser) in the next section.</p>
+
+<h2 class='everybody'> Step 10:   Authenticating from the REST API Explorer and testing using specific identities   </h2>
+
+<ol>
+<li>Go to <a href="http://localhost:3000/auth/google">http://localhost:3000/auth/google</a> - this will direct you to the Google Authentication consent screen.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/google_auth.png" alt="Google Authentication"></p>
+
+<ol>
+<li>Login using the following credentials: (example - as advised, you should set up your own per the instructions in the appendix section of this tutorial):</li>
+</ol>
+
+<p>Email: <a href="mailto:composeruser01@gmail.com">composeruser01@gmail.com</a>
+Password: composer00</p>
+
+<ol>
+<li>You will be authenticated by Google and be redirected back to the REST server (<a href="http://localhost:3000/explorer">http://localhost:3000/explorer</a>) which shows the access token message in the top left-hand corner - click on &#39;Show&#39; to view the token.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/rest-server-token.png" alt="REST Server with Access Token"></p>
+
+<p>While our REST server has authenticated to Google+ OAUTH2.0 service - defined by its project/client scope and using the client credentials set up in the Appendix for our OAUTH2.0 service - we have not actually done anything yet in terms of blockchain identity or using business network cards to interact with our Trade Commodity business network - we will do that next,  using the <code>jdoe</code> identity we created earlier.</p>
+
+<h2 class='everybody'> Step 11:  Check the Default Wallet and Import the card and set a default Identity  </h2>
+
+<ol>
+<li><p>Firstly, go to the REST endpoint under Wallets and do a GET operation (and &#39;Try it Out&#39;) to get the contents of the Wallet - check that the wallet does not contain any business network cards - it should show as empty <code>[ ]</code>:</p>
+
+<p>GET /wallets</p></li>
+<li><p>You need to add an identity to the REST client wallet and then set this identity as the default one to use for making API calls. Go to the POST system operation under /Wallets - its called the <code>/Wallets/Import</code> endpoint</p></li>
+<li><p>Choose to import the file <code>jdoe_exp.card</code>  - and provide the name of the card as jdoe@trade-network  and click &#39;Try it Out&#39;</p></li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/import-jdoe-wallet.png" alt="Import jdoe Wallet"></p>
+
+<ol>
+<li><p>Scroll down - you should you should get an HTTP Status code 204 (request was successful)</p></li>
+<li><p>Next, go back to</p>
+
+<p>GET /wallets</p></li>
+</ol>
+
+<p>You should see that <code>jdoe@trade-network</code> is imported into the wallet. Note also that the value of the <code>default property</code> is true, which means that this business network card will be used by default when interacting with the Commodity Trading business network (until such time as you change it to use another).</p>
+
+<p><img src="../assets/img/tutorials/auth/get-wallet.png" alt="Get Wallet Listing"></p>
+
+<h2 class='everybody'> Step 12:  Test interaction with the Business Network as the default ID jdoe </h2>
+
+<ol>
+<li>Go to System REST API  Methods section and expand the /GET System/Historian section</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/get-historian.png" alt="System Historian /GET"></p>
+
+<ol>
+<li>Click on &#39;Try It Out&#39; - you should now see results from the Historian Registry, as the blockchain identity &#39;jdoe&#39; and a set of transactions</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/get-historian-listing.png" alt="Get Auth Historian Listing"></p>
+
+<ol>
+<li>Go to the <code>Trader</code> methods and expand the /GET <code>Trader</code> endpoint then click &#39;Try it Out&#39;</li>
+</ol>
+
+<p>It should confirm that we are able to interact with the REST Server as <code>jdoe</code> in our authenticated session.</p>
+
+<p><img src="../assets/img/tutorials/auth/get-trader-resp.png" alt="Get Trader Listing"></p>
+
+<p>You should now be able to see all Trader participants currently created. If any ACLs have been set then restrictions on what he can see may apply (they haven&#39;t been applied for this current sample network, but examples of ACL rules can be seen in the <a href="./acl-trading.html">ACL tutorial</a> FYI). Suffice to say that REST APIs accessing a business network are subject to access control - like any other interaction with the business network (such as Playground, JS APIs, CLI etc).</p>
+
+<ol>
+<li> Next, return to the <code>POST /wallet/import</code> operation and import the card file <code>kcoe_exp.card</code> with the card name set to <code>kcoe@trade-network</code> and click on &#39;<code>Try it Out</code>to import it - it should return a successful (204) response.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/import-kcoe-wallet.png" alt="Import kcoe to Wallet"></p>
+
+<ol>
+<li>However, to use this card, we need to set it as the default card name in our Wallet - go to the <code>POST /wallet/name/setDefault/</code> method and choose <code>kcoe@trade-network</code> as the default card name and click on <code>Try it Out</code>. This is now the default card.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/set-default-kcoe.png" alt="Set new Default identity"></p>
+
+<ol>
+<li>Return to the <code>Trader</code> methods and expand the /GET <code>Trader</code> endpoint then click &#39;Try it Out&#39; . It should confirm that we are now using a different card name and still be able to interact with the REST Server as we are still authenticated.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/get-trader-resp.png" alt="Get Trader Listing"></p>
+
+<h2 class='everybody'>Conclusion </h2>
+
+<p>This concludes the tutorial section - you&#39;ve seen how to configure a client-based Google OAUTH2.0 authentication service that can be used to authorize client applications and provide consent to interact with a protected resource server (namely an REST Server instance) without the need to authenticate on every request. Furthermore, the REST Server is running in multi-user mode and so,  allows multiple blockchain identities to interact with the deployed Commodity Trading business network from the same REST client session, subject to token expiration times etc etc.</p>
+
+<p>The appendix below describes how the Google Authentication scheme in this tutorial was set up, in advance of this tutorial.</p>
+
+<h2 id="appendix-google-authentication-configuration-setup">Appendix - Google+  Authentication Configuration &amp; Setup</h2>
+
+<p>The appendix below describes how to create an OAUTH2.0 authentication service for authenticating client applications. These steps at a high-level overview consist of:</p>
+
+<ol>
+<li>Create Google API+ Project</li>
+<li>Create Credentials Service Account</li>
+<li>Create OAuth2.0 Consent</li>
+<li>Create OAuth2.0 Client ID credentials for the Credentials Service Account</li>
+</ol>
+
+<h2 class='everybody'>Step A1:  Create Google API+ Project </h2>
+
+<ol>
+<li><p>Login to your Google account - if you don&#39;t have one - create one at google.com and <strong>sign in to Google</strong></p></li>
+<li><p>Link for the page <a href="https://console.developers.google.com/apis/">https://console.developers.google.com/apis/</a></p></li>
+</ol>
+
+<p>You should see the following page on arrival. Search for ‘Google+’ in the search bar and select the <strong>Google+</strong> APIs icon when presented.</p>
+
+<p><img src="../assets/img/tutorials/auth/google/google_apis.png" alt="Google+ APIs"></p>
+
+<ol>
+<li><p>Once selected - click to Enable the Google+ APIs - it is important that you do this.</p></li>
+<li><p>As you don’t have a &#39;project&#39; yet, you will be prompted to create a project as it is needed to enable the APIs. Click ‘Create Project’</p></li>
+<li><p>You will be prompted to give it a name - call it &#39;GoogleAuth&#39; and <strong>take a note of the Project ID</strong> in our case it is shown as <code>proven-caster-195417</code> - this will be used later on.</p></li>
+<li><p>After creating the project, you will be redirected to the Google+ API page again. You should now see the project name selected and the option to ‘Enable’ the service. Click ‘Enable’.</p></li>
+</ol>
+
+<h2 class='everybody'>Step A2:  Create Credentials Service Account  </h2>
+
+<ol>
+<li><p>Once you have enabled the service you will be prompted to create Service Account Credentials so that you can use the service.  Click ‘Create Credentials’.</p></li>
+<li><p>You will be asked a series of questions to determine what kind of credentials you will need. Give the answers shown in the screenshot below. Choose &#39;Google+ API&#39;  for the API, Web Server (e.g. Node js, Tomcat) and Application data and &#39;No&#39; for the Engine question at the bottom.</p></li>
+<li><p>Click on <code>What credentials do I need</code>  and hit Continue</p></li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/google/setup_credentials.png" alt="Setup Credentials"></p>
+
+<ol>
+<li><p>Next, setup a Credentials service account - with the name &#39;GoogleAuthService&#39; - select &#39;Project&#39; in the dropdown and select a role of <code>Owner</code> and a type of JSON and</p></li>
+<li><p>Click on &#39;Get your Credentials&#39; - it should download (or prompt to download) the service credentials in JSON format - save these to a safe location.</p></li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/google/credentials_svc_acc.png" alt="Setup Credentials"></p>
+
+<p><img src="../assets/img/tutorials/auth/google/download-service-creds.png" alt="Download Credentials"></p>
+
+<ol>
+<li>Save a JSON file with the application credentials. After downloading the credentials, the site will take you back to the credentials homepage and you will see a new service account key.</li>
+</ol>
+
+<p><img src="../assets/img/tutorials/auth/google/credentials-service.png" alt="Credentials Service Keys"></p>
+
+<h2 class='everybody'>Step A3:  Create OAUTH2.0 Consent </h2>
+
+<ol>
+<li>Go to the ‘OAuth consent screen&#39; tab = you will need to give a &#39;product name&#39;  like &#39;Google Auth REST OAUTH2 service&#39; - a banner that is shown when consent to authorize a request is requested  (ie when we test it on the REST client in the main tutorial) and an email address, click ‘Save’.</li>
+</ol>
+
+<p>The OAuth consent screen is what the user (in the tutorial) will see when they are authenticating themselves against the Google Auth REST Service</p>
+
+<p><img src="../assets/img/tutorials/auth/google/product-name.png" alt="Consent Name for Authentication"></p>
+
+<h2 class='everybody'>Step A4:  Create OAuth2.0 Client ID credentials for the Credentials Service Account </h2>
+
+<ol>
+<li><p>Go back to the ‘Credentials’ tab and click the ‘Create Credentials’ dropdown and select ‘OAuth Client ID’.</p></li>
+<li><p>Choose &#39;Web Application&#39; and give it a simple name like &#39;Web Client 1&#39;</p></li>
+<li><p>Under the &#39;Authorised Javascript Origins&#39; section add a line with the following URI - this is the client application (the REST Server):</p>
+
+<p><a href="http://localhost:3000">http://localhost:3000</a></p></li>
+<li><p>We will need to add &#39;Authorized Redirect URIs&#39; at the bottom - this is where the authenticated session is redirected back to after getting consent from the Google+ OAUTH2.0 authentication service. The callback will match what we will configure in our Composer REST Server environment variables (specifically the variable <code>COMPOSER_PROVIDERS</code>, in the <code>envvars.txt</code> when performing this instruction in the main tutorial).</p></li>
+</ol>
+
+<p>Under &#39;Authorized Redirect URIs&#39; add the following URIs as authorised URIs. Note: it is best to copy/paste each URI below, then hit ENTER in the browser after each line entry- as the URI line editor can sometimes truncate your entry whilst typing .e.g. if you happen to pause when typing the URI.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">http://localhost:3000/auth/google
+http://localhost:3000/auth/google/callback
+</code></pre></div>
+<p>Then click on the &#39;Create&#39; button at the bottom.</p>
+
+<p><img src="../assets/img/tutorials/auth/google/create_client_id.png" alt="Create Client ID"></p>
+
+<p>You will be prompted to save the Client ID and Client Secret - copy these two and save these for later.</p>
+
+<p><img src="../assets/img/tutorials/auth/google/client-keys.png" alt="Client ID and Secret"></p>
+
+<p>You&#39;re all set - you can now return to the main tutorial to set up your REST Server Authentication using Google&#39;s OAUTH2.0 client authentication service.</p>
+
+<h3 id="a-word-on-google-authentication-oauth2-0-setup-and-scope-of-authentication">A word on Google Authentication OAUTH2.0 setup and scope of Authentication</h3>
+
+<p>When an application uses OAuth 2.0 for authorization, it acts on a user&#39;s behalf to request an OAuth 2.0 access token for access to a resource, which it identifies by one or more scope strings. Normally, of course - the user itself is asked to approve the access.</p>
+
+<p>When a user (eg. an admin) grants access to the app for a particular scope, in Google at least, a project-level consent &#39;branding&#39;is setup in the Google+ API Console to challenge for the initial consent. Thereafter, once consented,  Google considers that user (through the Google account he/she has set up) has granted access to a particular scope to any configured client IDs in a API+ project ; the grant indicates the trust in the whole application - for the scope as defined in the Google+ API configuration.</p>
+
+<p>The effect is that the application provider is not be prompted to approve access to any resource more than once for the same logical client application.</p>
+
+<p>Fortunately, the Google authorization infrastructure can use information about user approvals for a client ID within a given project set up in Google+ API console,  when evaluating whether to authorize others in the same project. It also requires you to set up the authorized URIs that can be granted consent (such as the application call back URL after successful authentication).</p>
+
+<p>The Google Authorization module will observe that the calling application and the web client ID are in the same project, and without user approval, return an ID token to the application, signed by Google. The ID token will contain several data fields, of which the following are particularly relevant:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">iss: always accounts.google.com
+
+aud: the client ID and secret of the web component of the project
+
+email: the email that identifies the user requesting the token
+</code></pre></div>
+<p>This ID token is designed to be transmitted over HTTPS. Before using it, the web component must do the following:</p>
+
+<p>Validate the cryptographic signature. Because the token takes the form of a JSON web token or JWT and there are libraries to validate JWTs available in most popular programming languages, this is straightforward and efficient.</p>
+
+<p>Ensure that the value of the <code>aud</code> field is identical to its own client ID.</p>
+
+<p>Once this is accomplished, the REST server can have a high degree of certainty that - the token was issued by Google.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
+<script src="/composer/latest/assets/js/nav.js"></script>
+<script src="/composer/latest/assets/js/search_bar.js"></script>
+
+    
+
+    
+
+
+  </div>
+</body>
+</html>
