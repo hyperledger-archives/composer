@@ -26,7 +26,7 @@ Options:
 
 ## Description
 
-This will take the  Composer business network definition as input and create html based documentation for all aspects.
+This will take the Composer business network definition as input and create html based documentation for all aspects.
 
 ## Options
 
@@ -36,7 +36,7 @@ The path to the business network archive file. This will be the source that is u
 The configuration that controls how the documentation is produced. An existing template is in-built and this does not need to specified.
 Reserved for future expansion
 * `-o` `--output`
-The output directory with the html. index.html is the starting point. 
+The output directory with the html. index.html is the starting point.
 * `--help`  
 Shows the help text
 * `-v` `--version`  
@@ -45,6 +45,6 @@ Shows the version number
 ## Example Usage
 
 ```bash
-composer generator docs --archiveFile digitalPropertyNetwork.bna 
+composer generator docs --archiveFile digitalPropertyNetwork.bna
 
 ```

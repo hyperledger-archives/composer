@@ -31,7 +31,6 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
         cd ~/fabric-tools
         ./stopFabric.sh
         ./teardownFabric.sh
-        export FABRIC_VERSION=hlfv11
         ./downloadFabric.sh
         ./startFabric.sh
 

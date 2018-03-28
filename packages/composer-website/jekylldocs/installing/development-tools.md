@@ -74,7 +74,6 @@ This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy you
 9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
 
         cd ~/fabric-tools
-        export FABRIC_VERSION=hlfv11
         ./downloadFabric.sh
 
 > Congratulations, you've now installed everything required for the typical Developer Environment.
@@ -88,7 +87,6 @@ You control your runtime using a set of scripts which you'll find in `~/fabric-t
 The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
 
         cd ~/fabric-tools
-        export FABRIC_VERSION=hlfv11
         ./startFabric.sh
         ./createPeerAdminCard.sh
 
