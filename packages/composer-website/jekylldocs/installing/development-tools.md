@@ -23,22 +23,21 @@ These instructions assume that you've not installed the tools and used them befo
 > To provide flexibility and enable the maximum number of dev, test and deployment scenarios, {{site.data.conrefs.composer_short}} is delivered as a set of components you can install with `npm` and control from the CLI.  These instructions will tell you how to install everything first, then how to control your development environment.
 
 # Installing components
-Please note the `@next` in the npm install commands. This is important to ensure you install the appropriate version to work with {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
 
 ### Step 1: Install the CLI tools
 There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
 
 1. Essential CLI tools:
 
-        npm install -g composer-cli@next
+        npm install -g composer-cli
 
 2. Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:
 
-        npm install -g composer-rest-server@next
+        npm install -g composer-rest-server
 
 3. Useful utility for generating application assets:
 
-        npm install -g generator-hyperledger-composer@next
+        npm install -g generator-hyperledger-composer
 
 4. Yeoman is a tool for generating applications, which utilises `generator-hyperledger-composer`:
 
@@ -49,7 +48,7 @@ If you've already tried {{site.data.conrefs.composer_short}} online, you'll have
 
 5. Browser app for simple editing and testing Business Networks:
 
-        npm install -g composer-playground@next
+        npm install -g composer-playground
 
 ### Step 3: Set up your IDE
 Whilst the browser app _can_ be used to work on your Business Network code, most users will prefer to work in an IDE.  Our favourite is `VSCode`, because a {{site.data.conrefs.composer_short}} extension is available.

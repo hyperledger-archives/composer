@@ -22,9 +22,9 @@ After deploying {{site.data.conrefs.composer_full}} you may wish to update to a 
 
 2. Install the latest version of the {{site.data.conrefs.composer_full}} components by using the following commands:
 
-        npm install -g composer-cli@next
-        npm install -g composer-rest-server@next
-        npm install -g generator-hyperledger-composer@next
+        npm install -g composer-cli
+        npm install -g composer-rest-server
+        npm install -g generator-hyperledger-composer
 
 
 ## What next?
