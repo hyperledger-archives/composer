@@ -3,7 +3,7 @@ layout: default
 title: System Namespace Reference
 section: sns
 sidebar: sidebars/accordion-toc0.md
-excerpt: System Namesapce
+excerpt: System Namespace
 index-order: 1500
 ---
 

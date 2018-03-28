@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "test-tagged": "cucumber-js --tags @busnet",
     "test-inner": "cucumber-js --tags 'not @cli-report'",
     "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
-    "setup":"npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
+    "setup": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
     "int-test": "npm run setup && npm run test-inner && npm run stop_verdaccio",
     "int-test-nohsm": "npm run setup && npm run test-inner-nohsm && npm run stop_verdaccio"
   },
@@ -34,8 +34,8 @@
   },
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
-    "composer-admin": "0.19.0",
-    "composer-common": "0.19.0",
+    "composer-admin": "0.19.1",
+    "composer-common": "0.19.1",
     "composer-wallet-redis": "0.0.11-20180318153457",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",

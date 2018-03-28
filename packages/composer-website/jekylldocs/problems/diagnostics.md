@@ -142,8 +142,8 @@ The standard way of enabling node.js applications for debug is to use the `DEBUG
 
 - `node app.js`  Logs at *error* to the ~/.composer/logs/log_date.txt
 - `DEBUG=composer[info]:* node app.js` Logs at *info* to the ~/.composer/logs/log_date.txt
-- `DEBUG=composer[debug]:* COMPOSR_LOGFILE=./log.txt node app.js` Logs everything at *debug* level to the cwd file called `log.txt`
-- `COMPOSE_LOG_CONSOLE=error node app.js` Log to file and errors to the console
+- `DEBUG=composer[debug]:* COMPOSER_LOGFILE=./log.txt node app.js` Logs everything at *debug* level to the cwd file called `log.txt`
+- `COMPOSER_LOG_CONSOLE=error node app.js` Log to file and errors to the console
 
 #### Chaincode Container
 
