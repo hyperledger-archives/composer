@@ -142,6 +142,11 @@ class HLFConnection extends Connection {
             delete this.exitListener;
         }
 
+        if (this.ccListenerHandle) {
+            clearTimeout(this.ccListenerHandle);
+            delete this.ccListenerHandle;
+        }
+
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
@@ -232,23 +237,29 @@ class HLFConnection extends Connection {
 
     /**
      * check the status of the Chaincode Listener and if it isn't registered then try to register one.
+     * @return {boolean} true if an event hub is connected, false otherwise.
      */
     _checkCCListener() {
         const method = '_checkCCListener';
         LOG.entry(method);
 
-        if (!this.ccEvent) {
-            // find a connected event hub and register with it.
-            for (const eh of this.eventHubs) {
-                if (eh.isconnected()) {
-                    this._registerForChaincodeEvents(eh);
-                    LOG.exit(method);
-                    return;
-                }
-            }
-            LOG.warn(method, `could not find any connected event hubs out of ${this.eventHubs.length} defined hubs to listen on for chaincode events`);
+        if (this.ccEvent) {
+            LOG.exit(method, true);
+            return true;
         }
-        LOG.exit(method);
+
+        // find a connected event hub and register with it.
+        for (const eh of this.eventHubs) {
+            if (eh.isconnected()) {
+                this._registerForChaincodeEvents(eh);
+                LOG.exit(method, true);
+                return true;
+            }
+        }
+
+        LOG.warn(method, `could not find any connected event hubs out of ${this.eventHubs.length} defined hubs to listen on for chaincode events`);
+        LOG.exit(method, false);
+        return false;
     }
 
     /**
@@ -360,6 +371,20 @@ class HLFConnection extends Connection {
 
                 // now we can connect to the eventhubs
                 this._connectToEventHubs();
+
+                // because the event hub connection is asynchronous, we need
+                // to wait a bit before setting up the chaincode event handlers.
+                const pollCCListener = () => {
+                    this.ccListenerHandle = setTimeout(() => {
+                        if (!this._checkCCListener()) {
+                            pollCCListener();
+                        } else {
+                            delete this.ccListenerHandle;
+                        }
+                    }, 100);
+                };
+                pollCCListener();
+
                 LOG.exit(method, result);
                 return result;
 

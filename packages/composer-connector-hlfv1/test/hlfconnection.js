@@ -49,7 +49,8 @@ chai.use(require('chai-as-promised'));
 
 describe('HLFConnection', () => {
 
-    let sandbox = sinon.sandbox.create();
+    let sandbox;
+    let clock;
 
     let mockConnectionManager, mockChannel, mockClient, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork;
     let mockPeer1, mockPeer2, mockPeer3, mockEventHub1, mockEventHub2, mockEventHub3, mockQueryHandler;
@@ -58,6 +59,8 @@ describe('HLFConnection', () => {
     let mockTransactionID, logWarnSpy;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+        clock = sinon.useFakeTimers();
         const LOG = Logger.getLog('HLFConnection');
         logWarnSpy = sandbox.spy(LOG, 'warn');
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
@@ -97,6 +100,7 @@ describe('HLFConnection', () => {
 
     afterEach(() => {
         sandbox.restore();
+        clock.restore();
         connectorPackageJSON.version = originalVersion;
     });
 
@@ -257,14 +261,14 @@ describe('HLFConnection', () => {
         it('should do nothing if cc event handler registered', () => {
             connection._registerForChaincodeEvents(mockEventHub1);
             const regSpy = sandbox.spy(connection._registerForChaincodeEvents);
-            connection._checkCCListener();
+            connection._checkCCListener().should.be.true;
             sinon.assert.notCalled(regSpy);
             sinon.assert.notCalled(logWarnSpy);
         });
 
         it('should register if not registered to first connected event hub', () => {
             sandbox.stub(connection, '_registerForChaincodeEvents');
-            connection._checkCCListener();
+            connection._checkCCListener().should.be.true;
             sinon.assert.calledOnce(connection._registerForChaincodeEvents);
             sinon.assert.calledWith(connection._registerForChaincodeEvents, mockEventHub2);
             sinon.assert.notCalled(logWarnSpy);
@@ -273,7 +277,7 @@ describe('HLFConnection', () => {
         it('should log a warning if no connected event hubs', () => {
             sandbox.stub(connection, '_registerForChaincodeEvents');
             mockEventHub2.isconnected.returns(false);
-            connection._checkCCListener();
+            connection._checkCCListener().should.be.false;
             sinon.assert.calledOnce(logWarnSpy);
         });
 
@@ -376,6 +380,19 @@ describe('HLFConnection', () => {
             mockPeer1.isInRole.withArgs(FABRIC_CONSTANTS.NetworkConfig.EVENT_SOURCE_ROLE).returns(true);
             mockChannel.newChannelEventHub.withArgs(mockPeer1).returns(mockEventHub1);
             mockEventHub1.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('handle');
+        });
+
+        it('should clear any pending chaincode listener handles', async () => {
+            const stub = sinon.stub();
+            // Verify that the fake timer works.
+            connection.ccListenerHandle = setTimeout(stub, 100);
+            clock.tick(100);
+            sinon.assert.calledOnce(stub);
+            // Set up the fake timer again.
+            connection.ccListenerHandle = setTimeout(stub, 100);
+            await connection.disconnect();
+            clock.tick(100);
+            sinon.assert.calledOnce(stub);
         });
 
         it('should unregister the exit listener', () => {
@@ -501,6 +518,7 @@ describe('HLFConnection', () => {
 
         beforeEach(() => {
             sandbox.stub(connection, '_connectToEventHubs').returns();
+            sandbox.stub(connection, '_checkCCListener').returns(false);
         });
 
         it('should reject if identity not specified', () => {
@@ -532,6 +550,24 @@ describe('HLFConnection', () => {
             mockClient.getUserContext.withArgs('admin').rejects('such error');
             return connection.login('admin', 'adminpw')
                 .should.be.rejectedWith(/such error/);
+        });
+
+        it('should poll and set up the chaincode listener', async () => {
+            mockClient.getUserContext.withArgs('admin').resolves(mockUser);
+            mockUser.isEnrolled.returns(true);
+            await connection.login('admin', 'adminpw');
+            // Should not have been called immediately.
+            sinon.assert.notCalled(connection._checkCCListener);
+            // Should have been called after 100ms, and requeued.
+            clock.tick(100);
+            sinon.assert.calledOnce(connection._checkCCListener);
+            // Should have been called after 200ms, and not requeued.
+            connection._checkCCListener.returns(true);
+            clock.tick(100);
+            sinon.assert.calledTwice(connection._checkCCListener);
+            // Should not be called again.
+            clock.tick(100);
+            sinon.assert.calledTwice(connection._checkCCListener);
         });
 
     });
