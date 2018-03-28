@@ -17,7 +17,6 @@
 
 
 const AssetDeclaration = require('composer-common').AssetDeclaration;
-const ClassDeclaration = require('composer-common').ClassDeclaration;
 const EnumDeclaration = require('composer-common').EnumDeclaration;
 const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const EnumValueDeclaration = require('composer-common').EnumValueDeclaration;
@@ -30,6 +29,7 @@ const RelationshipDeclaration = require('composer-common').RelationshipDeclarati
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const FunctionDeclaration = require('composer-common').FunctionDeclaration;
+const EventDeclaration = require('composer-common').EventDeclaration;
 const Query = require('composer-common').Query;
 const QueryFile = require('composer-common').QueryFile;
 const debug = require('debug')('concerto:infovisitor');
@@ -68,15 +68,15 @@ class InfoVisitor {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof ConceptDeclaration) {
             return this.visitConceptDeclaration(thing, parameters);
-        } else if (thing instanceof ClassDeclaration) {
-            return this.visitClassDeclaration(thing, parameters);
+        } else if (thing instanceof EventDeclaration) {
+            return this.visitEventDeclaration(thing, parameters);
+        } else if (thing instanceof EnumValueDeclaration) {
+            return this.visitEnumValueDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else if (thing instanceof RelationshipDeclaration) {
             return this.visitRelationshipDeclaration(thing, parameters);
-        } else if (thing instanceof EnumValueDeclaration) {
-            return this.visitEnumValueDeclaration(thing, parameters);
-        } else if (thing instanceof AclRule) {
+        }  else if (thing instanceof AclRule) {
             return this.visitAclRule(thing, parameters);
         }  else if (thing instanceof Script) {
             return this.visitScript(thing, parameters);
@@ -86,7 +86,8 @@ class InfoVisitor {
             return this.visitQueryFile(thing, parameters);
         } else if (thing instanceof Query) {
             return this.visitQuery(thing, parameters);
-        } else {
+        }
+        else {
             throw new Error('Unrecognised type: ' + typeof thing );
         }
     }
@@ -142,7 +143,7 @@ class InfoVisitor {
             verb: aclRule.getVerbs(),
             noun: aclRule.getNoun().getFullyQualifiedName(),
 
-            participant: aclRule.getParticipant().toString().replace(/ModelBinding/i,'').trim(),
+            participant: !aclRule.getParticipant() ? 'none' : aclRule.getParticipant().toString().replace(/ModelBinding/i,'').trim(),
             transaction: aclRule.getTransaction(),
             predicate: aclRule.getPredicate().getExpression(),
             action: aclRule.getAction()
@@ -288,6 +289,29 @@ class InfoVisitor {
 
     }
 
+    /**
+     * Visitor design pattern
+     * @param {EventDeclaration} eventDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitEventDeclaration(eventDeclaration, parameters) {
+        debug('entering visitEventDeclaration', eventDeclaration.getName());
+        // If this is the first declaration, then we are building a schema for this asset.
+        let jsonSchema = {};
+        if (parameters.first) {
+            jsonSchema.$schema = 'http://json-schema.org/draft-04/schema#';
+            jsonSchema.title = eventDeclaration.getName();
+            jsonSchema.description = `An event named ${eventDeclaration.getName()}`;
+            jsonSchema.type = 'event';
+            parameters.first = false;
+        }
+
+        // Apply all the common schema elements.
+        return this.visitClassDeclarationCommon(eventDeclaration, parameters, jsonSchema);
+
+    }
 
     /**
      * Visitor design pattern
@@ -387,21 +411,6 @@ class InfoVisitor {
      * Visitor design pattern
      * @param {ClassDeclaration} classDeclaration - the object being visited
      * @param {Object} parameters - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    visitClassDeclaration(classDeclaration, parameters) {
-        debug('entering visitClassDeclaration', classDeclaration.getName());
-
-        // Apply all the common schema elements.
-        return this.visitClassDeclarationCommon(classDeclaration, parameters, {});
-
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {ClassDeclaration} classDeclaration - the object being visited
-     * @param {Object} parameters - the parameter
      * @param {Object} jsonSchema - the base JSON Schema object to use
      * @return {Object} the result of visiting or null
      * @private
@@ -438,20 +447,6 @@ class InfoVisitor {
             }
 
         });
-
-        // Walk over all of the properties of this class and its super classes.
-        // classDeclaration.getProperties().forEach((property) => {
-
-        //     // Get the schema for the property.
-        //     jsonSchema.allproperties[property.getName()] = property.accept(this, parameters);
-
-        //     // If the property is required, add it to the list.
-        //     if (!property.isOptional()) {
-        //         jsonSchema.required.push(property.getName());
-        //     }
-
-        // });
-
 
         classDeclaration.getDecorators().forEach((decorator) =>{
             jsonSchema.decorators[decorator.getName()] = decorator.getArguments();
@@ -567,20 +562,19 @@ class InfoVisitor {
     visitEnumDeclaration(enumDeclaration, parameters) {
         debug('entering visitEnumDeclaration', enumDeclaration.getName());
 
-        // Create the schema.
-        let jsonSchema = {
-            type: 'enum',
-            enum: []
-        };
 
-        // Walk over all of the properties which should just be enum value declarations.
-        enumDeclaration.getProperties().forEach((property) => {
-            jsonSchema.enum.push(property.accept(this, parameters));
-        });
+        let jsonSchema = {};
+        if (parameters.first) {
+            jsonSchema.$schema = 'http://json-schema.org/draft-04/schema#';
+            jsonSchema.title = enumDeclaration.getName();
+            jsonSchema.description = `A enum named ${enumDeclaration.getName()}`;
+            jsonSchema.type = 'enum';
+            jsonSchema.enum = [];
+            parameters.first = false;
+        }
 
-        // Return the schema.
-        return jsonSchema;
-
+         // Apply all the common schema elements.
+        return this.visitClassDeclarationCommon(enumDeclaration, parameters, jsonSchema);
     }
 
     /**

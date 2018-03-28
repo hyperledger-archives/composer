@@ -1,0 +1,20 @@
+# Events Detail
+
+{% for evt in types.event %}
+### {{evt.name}}
+The fully qualified name is **{{evt.fqn}}**
+
+### Additional Information
+
+{% if evt.decorators.docs %}
+    {% for extra in evt.decorators.docs %}
+{{ evt.decorators[extra] }}
+    {% endfor %}
+{% endif %}
+
+| Name | Type | Description |
+| ---  | ---- | ----------- |
+{% for id,info in evt.properties %}| {{id}} | {{info.type}} | {{info.description}} |
+{% endfor %}
+
+{% endfor %}
