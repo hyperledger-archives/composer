@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Network Ping CLI | Hyperledger Composer</title>
+    <title>Events | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/next-unstable/favicon.ico">
@@ -90,7 +90,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Network Ping CLI</p>
+          <p>Events</p>
           </div>
 
           <nav class="context-nav">
@@ -275,29 +275,39 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="hyperledger-composer-network-ping">Hyperledger Composer Network Ping</h1>
+              <h1 id="events-detail">Events Detail</h1>
 
-<hr>
+<h3 id="event">Event</h3>
 
-<p>The <code>composer network ping</code> utility is used to verify the connection to a business network deployed to a Hyperledger Fabric.
-Note that ping also returns the participant information for the identity that was used to connect to the network, if
-an identity has been issued for the participant.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
-</code></pre></div>
-<h3 id="options">Options</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">Options:
-  --help         Show help  [boolean]
-  -v, --version  Show version number  [boolean]
-  --card, -c     The cardname to use to ping the network  [string]
-</code></pre></div>
-<h2 id="example-output">Example Output</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
-The connection to the network was successfully tested: tutorial-network
-    version: 0.15.0-20171108090428
-    participant: org.hyperledger.composer.system.NetworkAdmin#admin
+<p>The fully qualified name is <strong>org.hyperledger.composer.system.Event</strong></p>
 
-Command succeeded
+<h3 id="additional-information">Additional Information</h3>
+
+<p>The base <em>event</em> is implicitly extended by all other events. <em>Event</em> is an <strong>abstract</strong> meaning that no instances of it can be created, however, it does contain the <em>eventId</em> and <em>timestamp</em> properties, which are extended to all other events.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract event Event identified by eventId {
+  o String eventId
+  o DateTime timestamp
+}
 </code></pre></div>
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>eventId</td>
+<td>string</td>
+<td>Identifier for this event</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>string</td>
+<td>Timestamp for this event</td>
+</tr>
+</tbody></table>
+
             
           </section>
         </div>
