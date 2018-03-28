@@ -53,7 +53,7 @@ As mentioned, we will store credentials in a persistent data store once the appr
  2. In the temporary directory, create a docker file called `Dockerfile` in an editor and paste into the following sequence (including special backslash `\` characters below needed after the `RUN` and `npm` lines below  - ie the continuation character ):
 
 ```
-     FROM hyperledger/composer-rest-server:next
+     FROM hyperledger/composer-rest-server
 
      RUN npm install --production loopback-connector-mongodb passport-google-oauth2 && \
      npm cache clean --force && \
@@ -76,7 +76,7 @@ You should see output similar to the following with the bottom 2 lines indicatin
 
     docker build -t myorg/composer-rest-server .
     Sending build context to Docker daemon  4.203GB
-    Step 1/2 : FROM hyperledger/composer-rest-server:next
+    Step 1/2 : FROM hyperledger/composer-rest-server
      ---> e682b4374837
     Step 2/2 : RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &&     npm cache clean  --force &&     ln -s node_modules .node_modules
      ---> Running in 7a116240be21
