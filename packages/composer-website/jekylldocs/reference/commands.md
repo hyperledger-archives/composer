@@ -111,3 +111,13 @@ Create a diagnostic report: [composer report](./composer.report.html)
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.html)
+
+## {{site.data.conrefs.composer_short}} Generator
+
+`composer generator create`
+
+Create files useful for application development: [composer generator create](./composer.generator.create.html)
+
+`composer generator docs`
+
+Create documentation for a business network definition: [composer generator docs](./composer.generator.docs.html)
