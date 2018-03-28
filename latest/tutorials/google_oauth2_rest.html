@@ -258,10 +258,7 @@ ga('send', 'pageview');
   <div class="footer-right-break">
     <ul>
       <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      
-      <li><a href="https://hyperledger.github.io/composer/stable">Stable (Supported) Docs</a></li>
-           
+      <li><a href="http://stackoverflow.com/questions/tagged/hyperledger-composer">Stack Overflow</a></li>
     </ul>
   </div>
 </div>
@@ -276,11 +273,11 @@ ga('send', 'pageview');
             
               <h1 id="using-oauth2-0-with-a-rest-server">Using OAUTH2.0 with a  REST server</h1>
 
-<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial (an overview diagram is shown below - a more detailed diagram showing the authentication flow is shown further down). You will run the REST server in <a href="https://hyperledger.github.io/composer/next/integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial (an overview diagram is shown below - a more detailed diagram showing the authentication flow is shown further down). You will run the REST server in <a href="../integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
 
 <p><img src="../assets/img/tutorials/auth/intro_diagram.png" alt="Google Authentication and REST Server Overview"></p>
 
-<p>Note: we have set up the standard &#39;Development Fabric&#39; network as instructed in Step 3 &#39;Setting up your IDE&#39; described <a href="https://hyperledger.github.io/composer/next/installing/development-tools.html">here</a></p>
+<p>Note: we have set up the standard &#39;Development Fabric&#39; network as instructed in Step 3 &#39;Setting up your IDE&#39; described <a href="../installing/development-tools.html">here</a></p>
 
 <p>There are many Passport strategies one can choose from. In a business organisational sense, enterprise strategies such as SAML, JSON Web Tokens (JWT) or LDAP are more appropriate obviously - eg an organisational Active Directory server. We use/enable Google+ APIs as the authentication provider for this tutorial, as its easy for anyone to setup a Google account (see Appendix on how to achieve this) and configure the service / do the tutorial without worrying about middleware prereqs to be installed.</p>
 
