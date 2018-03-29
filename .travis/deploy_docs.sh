@@ -9,41 +9,22 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
 echo "-->-- Starting ${ME}"
 source ${DIR}/build.cfg
-echo "--I-- ${TRAVIS_TAG} ${TRAVIS_BRANCH}"
+echo "--TAG-- ${TRAVIS_TAG}"
+echo "--BRANCH-- ${TRAVIS_BRANCH}"
 
 function _exit(){
     printf "%s Exiting %s because %s exit code:%s\n" "--<--" "${ME}" "$1" "$2"   
     exit $2
 }
 
-## regexp to match the latest version
-LATEST_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
-NEXT_REGEXP=v0\.17\.\([0-9]{1,2}\|x\)
-
-## determine the build type here
+# determine the release type
 if [ -z "${TRAVIS_TAG}" ]; then
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="unstable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="unstable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="unstable"
 else
-    if [[ "${TRAVIS_BRANCH}" =~ ${NEXT_REGEXP} ]]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="stable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="stable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="stable"
 fi
 
-echo "--I-- Build focus is ${BUILD_FOCUS}"
+
 echo "--I-- Build release is ${BUILD_RELEASE}"
 
 if [ "${ABORT_BUILD}" = "true" ]; then
@@ -70,29 +51,13 @@ export TODIR="${DIR}/packages/composer-website/out/gh-pages"
 # Load the GitHub repository using the gh-pages branch.
 git clone -b gh-pages git@github.com:${TRAVIS_REPO_SLUG}.git ${TODIR}
 
-
+# Determine where to copy the docs to
 if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
-
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-        DOCS_DIR="unstable"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-        DOCS_DIR="next-unstable"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
-
+    DOCS_DIR="v0.16-unstable"
 elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
-
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-        DOCS_DIR="latest"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-        DOCS_DIR="next"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
-
+    DOCS_DIR="v0.16"
 else
-    _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
+    _exit "Unkown build release ${BUILD_RELEASE}" 1
 fi
 
 echo "--I-- Pushing docs to the ${TODIR}/${DOCS_DIR} sub-folder"

@@ -9,49 +9,26 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
 echo "-->-- Starting ${ME}"
 source ${DIR}/build.cfg
-echo "--I-- ${TRAVIS_TAG} ${TRAVIS_BRANCH}"
+echo "--TAG-- ${TRAVIS_TAG}"
+echo "--BRANCH-- ${TRAVIS_BRANCH}"
 
 function _exit(){
     printf "%s Exiting %s because %s exit code:%s\n" "--<--" "${ME}" "$1" "$2"   
     exit $2
 }
 
-## regexp to match the latest version
-LATEST_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
-NEXT_REGEXP=v0\.17\.\([0-9]{1,2}\|x\)
-
-## determine the build type here
+# determine the release type
 if [ -z "${TRAVIS_TAG}" ]; then
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="unstable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="unstable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="unstable"
 else
-    if [[ "${TRAVIS_BRANCH}" =~ ${NEXT_REGEXP} ]]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="stable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="stable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="stable"
 fi
 
-echo "--I-- Build focus is ${BUILD_FOCUS}"
 echo "--I-- Build release is ${BUILD_RELEASE}"
 
 if [ "${ABORT_BUILD}" = "true" ]; then
   _exit "exiting early from" ${ABORT_CODE}
 fi
-
-
-# ------
 
 # Check that this is the right node.js version.
 if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "8" ]; then
@@ -73,10 +50,9 @@ if [[ "${TRAVIS_REPO_SLUG}" != hyperledger* ]]; then
     _exit "Skipping deploy; wrong repository slug." 0
 fi
 
-# Check that if this is not a tagged build and not master or the stable v0.16.x
-# THIS CAN BE REMOVED I BELIEVE
+# Check that if this is stable v0.16.x
 if [ "${TRAVIS_TAG}" = "" ]; then
-  if [ "${TRAVIS_BRANCH}" != "master" -a "${TRAVIS_BRANCH}" != "v0.16.x" ]; then
+  if [ "${TRAVIS_BRANCH}" != "v0.16.x" ]; then
     echo Not executing as not building a tag
     exit 0
   fi  
@@ -120,18 +96,8 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
     # Set the prerelease version.
     npm run pkgstamp
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
-
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-        PLAYGROUND_SUFFIX="-unstable"      
-        WEB_CFG="{\"webonly\":true}"
-        TAG="unstable"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-        PLAYGROUND_SUFFIX="-next-unstable"
-        WEB_CFG="{\"webonly\":true}"      
-        TAG="next-unstable"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
+    WEB_CFG="{\"webonly\":true}"
+    TAG="unstable"
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag ${TAG}"
@@ -158,31 +124,13 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 
     done
 
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-playground
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
-    cf start "composer-playground${PLAYGROUND_SUFFIX}"
-    popd
-
 elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
 
     # Grab the current version.
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
     
-    # process travis environment variables
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-        PLAYGROUND_SUFFIX=""      
-        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
-        TAG="latest"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-        PLAYGROUND_SUFFIX="-next"
-        WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}"
-        TAG="next"
-    else 
-        _exit "Unknown build focus" 1 
-    fi
+    WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
+    TAG="v0.16"
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag ${TAG}"
@@ -209,16 +157,6 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
 
     done
 
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-playground
-    rm -rf ${DIR}/packages/composer-playground/node_modules
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
-    cf start "composer-playground${PLAYGROUND_SUFFIX}" 
-    popd
-
-
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "${GH_USER_NAME}"
     git config user.email "${GH_USER_EMAIL}"
@@ -236,7 +174,7 @@ elif [[ "${BUILD_RELEASE}" = "stable" ]]; then
     git push origin v0.16.x
 
 else
-   _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
+   _exit "Unkown build release or focus ${BUILD_RELEASE}" 1
 fi
 
 

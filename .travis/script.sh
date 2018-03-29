@@ -16,47 +16,24 @@ function _exit(){
     exit $2
 }
 
-## regexp to match the latest version
-LATEST_REGEXP=v0\.16\.\([0-9]{1,2}\|x\)
-NEXT_REGEXP=v0\.17\.\([0-9]{1,2}\|x\)
-
-## determine the build type here
+# determine the release type
 if [ -z "${TRAVIS_TAG}" ]; then
-    if [ "${TRAVIS_BRANCH}" = "master" ]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="unstable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="unstable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="unstable"
 else
-    if [[ "${TRAVIS_BRANCH}" =~ ${NEXT_REGEXP} ]]; then
-        BUILD_FOCUS="next"
-        BUILD_RELEASE="stable"
-    elif [[ "${TRAVIS_BRANCH}" =~ ${LATEST_REGEXP} ]]; then
-        BUILD_FOCUS="latest"
-        BUILD_RELEASE="stable"
-    else 
-        _exit "unable to determine build focus ${TRAVIS_BRANCH} ${TRAVIS_TAG}" 1
-    fi
+    BUILD_RELEASE="stable"
 fi
 
-echo "--I-- Build focus is ${BUILD_FOCUS}"
 echo "--I-- Build release is ${BUILD_RELEASE}"
 
 if [ "${ABORT_BUILD}" = "true" ]; then
   _exit "exiting early from" ${ABORT_CODE}
 fi
 
-
 # Start the X virtual frame buffer used by Karma.
 if [ -r "/etc/init.d/xvfb" ]; then
     export DISPLAY=:99.0
     sh -e /etc/init.d/xvfb start
 fi
-
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
@@ -71,31 +48,13 @@ if [ "${DOCS}" != "" ]; then
     npm run doc
 
     if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
-
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-            npm run full:unstable
-            npm run linkcheck:unstable
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-            npm run full:next-unstable
-            npm run linkcheck:next-unstable
-        else 
-            _exit "Unknown build focus" 1 
-        fi
-
+        npm run full:v0.16-unstable
+        npm run linkcheck:v0.16-unstable
     elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
-
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
-            npm run full:latest
-            npm run linkcheck:latest
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
-            npm run full:next
-            npm run linkcheck:next
-        else 
-            _exit "Unknown build focus" 1 
-        fi
-
+        npm run full:v0.16
+        npm run linkcheck:v0.16
     else
-       _exit "Unkown build release or focus ${BUILD_RELEASE} ${BUILD_FOCUS}" 1
+       _exit "Unkown build release ${BUILD_RELEASE}" 1
     fi
 
 # Are we running functional verification tests?
