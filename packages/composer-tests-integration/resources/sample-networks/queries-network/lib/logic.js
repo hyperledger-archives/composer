@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.biznet.Trade} trade - the trade to be processed
@@ -11,7 +25,7 @@ function tradeCommodity(trade) {
         .then(function (assetRegistry) {
 
             // emit a notification that a trade has occurred
-            var tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
+            let tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
             tradeNotification.commodity = trade.commodity;
             emit(tradeNotification);
 
@@ -32,13 +46,13 @@ function removeHighQuantityCommodities(remove) {
             return query('selectCommoditiesWithHighQuantity')
                     .then(function (results) {
 
-                        var promises = [];
+                        let promises = [];
 
-                        for (var n = 0; n < results.length; n++) {
-                            var trade = results[n];
+                        for (let n = 0; n < results.length; n++) {
+                            let trade = results[n];
 
                             // emit a notification that a trade was removed
-                            var removeNotification = getFactory().newEvent('org.acme.biznet', 'RemoveNotification');
+                            let removeNotification = getFactory().newEvent('org.acme.biznet', 'RemoveNotification');
                             removeNotification.commodity = trade;
                             emit(removeNotification);
 
