@@ -125,7 +125,40 @@ describe('hyperledger-composer:model for generating a template business network 
 
     it('should create a valid model file that contains mapped input', () => {
         let modelFilePath = tmpDir + '/' + passedBusNetName + '/models/' + passedNS +'.cto';
-        let definitions = '/**\n * Write your model definitions here\n */\n\nnamespace test.template.namespace\n\nparticipant User identified by email {\n  o String email\n}\n\nasset SampleAsset identified by assetId {\n  o String assetId\n  o String value\n}\n\ntransaction ChangeAssetValue {\n  o String newValue\n  --> Asset relatedAsset\n}\n';
+        let definitions = `/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Write your model definitions here
+ */
+
+namespace test.template.namespace
+
+participant User identified by email {
+  o String email
+}
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  o String value
+}
+
+transaction ChangeAssetValue {
+  o String newValue
+  --> Asset relatedAsset
+}
+`;
         assert(fs.existsSync(modelFilePath), 'No model file detected in test run');
 
         let manager = new common.ModelManager();
