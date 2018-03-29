@@ -44,9 +44,3 @@ To run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}}, w
         curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
 
 2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>. *Please note*: Private browsing is not supported when running the Playground locally.
-
----
-
-## What's next?
-
-* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-tutorial.html).
