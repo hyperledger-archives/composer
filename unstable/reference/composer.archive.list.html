@@ -154,6 +154,14 @@ ga('send', 'pageview');
 
           </div>
 
+          <select id="version" name="version" onchange="location = this.options[this.selectedIndex].value;">
+              <option>Select version</option>
+              <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
+              <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
+              <option value="/composer/next/introduction/introduction.html" title="The most ready version of the next generation of Composer, new features (possibly breaking) and many fixes">Next</option>
+              <option value="/composer/next-unstable/introduction/introduction.html" title="The closest to the development stream of Composer, expect breaking changes">Next-unstable</option>
+          </select>
+
             <div class="search-form">
               <form action="/composer/unstable/search/search.html" method="get">
                 <!-- <label for="search-box">Search</label> -->
@@ -433,6 +441,7 @@ Command succeeded
     onReady(function(){
         clipboard_init();
     });
+});
 })(document);
 </script>
 <script src="/composer/unstable/assets/js/nav.js"></script>
