@@ -19,15 +19,44 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Configuration } from '../configuration';
+import * as sinon from 'sinon';
 import { DataService } from '../data.service';
 import { <%= assetName %>Component } from './<%= assetName %>.component';
-import {<%= assetName %>Service} from './<%= assetName %>.service';
+import { <%= assetName %>Service } from './<%= assetName %>.service';
+
 describe('<%= assetName %>Component', () => {
   let component: <%= assetName %>Component;
   let fixture: ComponentFixture<<%= assetName %>Component>;
 
+  let mock<%= assetName %>Service;
+  let mockDataService
+
   beforeEach(async(() => {
+
+    mock<%= assetName %>Service = sinon.createStubInstance(<%= assetName %>Service);
+    mock<%= assetName %>Service.getAll.returns([]);
+    mockDataService = sinon.createStubInstance(DataService);
+
+    TestBed.configureTestingModule({
+      declarations: [ <%= assetName %>Component ],
+      imports: [
+        BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpModule
+      ],
+      providers: [
+        {provide: <%= assetName %>Service, useValue: mock<%= assetName %>Service },
+        {provide: DataService, useValue: mockDataService },
+      ]
+    });
+
+    fixture = TestBed.createComponent(<%= assetName %>Component);
+    component = fixture.componentInstance;
+
+  }));
+
+  /*beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ <%= assetName %>Component ],
 imports: [
@@ -36,7 +65,7 @@ imports: [
     ReactiveFormsModule,
     HttpModule
   ],
-providers: [<%= assetName %>Service,DataService,Configuration]
+providers: [<%= assetName %>Service,DataService,]
     })
     .compileComponents();
   }));
@@ -45,9 +74,10 @@ providers: [<%= assetName %>Service,DataService,Configuration]
     fixture = TestBed.createComponent(<%= assetName %>Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  });*/
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });
