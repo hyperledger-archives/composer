@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  verdaccio:
+    image: verdaccio/verdaccio
+    container_name: verdaccio
+    ports:
+      - "4873:4873"
+    volumes:
+        - "./conf:/verdaccio/conf"

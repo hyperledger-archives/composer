@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -17,36 +17,32 @@
 set -ev
 
 # Environment vaiable directs Playground (connector server) to an npmrc to supply to network install
-export NPMRC_FILE=/tmp/npmrc
+export NPMRC_FILE='/tmp/npmrc'
 
-# Switch to package root directory
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-# Delete any existing configuration
-rm -rf ./scripts/storage
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+packagesDir="$(cd "${scriptDir}/../.." && pwd)"
 
 # Create the npmrc for use by Playground
 if [ `uname` = "Darwin" ]; then
-    export GATEWAY=docker.for.mac.localhost
+    gateway=docker.for.mac.localhost
 else
-    export GATEWAY="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+    gateway="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
 fi
-echo "registry=http://${GATEWAY}:4873" > ${NPMRC_FILE}
+echo "registry=http://${gateway}:4873" > "${NPMRC_FILE}"
 
 # Start the npm proxy
-./node_modules/.bin/verdaccio --listen '0.0.0.0:4873' --config scripts/config.yaml &
-verdaccio_pid=$!
+docker-compose --file "${scriptDir}/docker-compose.yaml" up --detach
+
+# Verdaccio server requires a dummy user if publishing via npm
+echo '//localhost:4873/:_authToken="foo"' > "${HOME}/.npmrc"
 
 # Publish development versions of packages required at runtime
 for package in composer-common composer-runtime composer-runtime-hlfv1; do
-    npm publish --registry 'http://localhost:4873' "../${package}"
+    npm publish --registry 'http://localhost:4873' "${packagesDir}/${package}"
 done
 
 # Start the Playground API
 npm start
 
 # Stop the npm proxy
-kill ${verdaccio_pid}
-
-# Wipe out configuration
-rm -rf ./scripts/storage
+docker-compose --file "${scriptDir}/docker-compose.yaml" down
