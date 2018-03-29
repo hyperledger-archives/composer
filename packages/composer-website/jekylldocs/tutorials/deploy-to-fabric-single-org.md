@@ -26,6 +26,7 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
 
 1. Start a clean {{site.data.conrefs.hlf_full}} by running the following commands:
 
+        export FABRIC_VERSION=hlfv1
         cd ~/fabric-tools
         ./stopFabric.sh
         ./teardownFabric.sh

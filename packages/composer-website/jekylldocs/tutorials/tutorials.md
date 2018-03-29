@@ -12,15 +12,7 @@ excerpt: Tutorials
 
 ---
 
-We have two basic tutorial options, and one more advanced tutorial:
-
-## Playground Tutorial
-
-The Playground tutorial runs through using the Playground to track the ownership of commodities in a business network.
-
-This tutorial can be followed using the web Playground (no install necessary) or with your own Playground (acquired as part of the install instructions).
-
-[**Start Playground Tutorial**](../tutorials/playground-tutorial.html)
+We have a basic tutorial and an advanced tutorial:
 
 ## Developer Tutorial
 
