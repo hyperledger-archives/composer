@@ -33,12 +33,9 @@ echo "registry=http://${gateway}:4873" > "${NPMRC_FILE}"
 # Start the npm proxy
 docker-compose --file "${scriptDir}/docker-compose.yaml" up --detach
 
-# Verdaccio server requires a dummy user if publishing via npm
-echo '//localhost:4873/:_authToken="foo"' > "${HOME}/.npmrc"
-
 # Publish development versions of packages required at runtime
 for package in composer-common composer-runtime composer-runtime-hlfv1; do
-    npm publish --registry 'http://localhost:4873' "${packagesDir}/${package}"
+    npm publish --userconfig "${scriptDir}/publish-npmrc" --registry 'http://localhost:4873' "${packagesDir}/${package}"
 done
 
 # Start the Playground API
