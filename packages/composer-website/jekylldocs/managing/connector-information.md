@@ -110,20 +110,21 @@ await adminConnection.start('tutorial-network', '0.0.1', { networkAdmins: networ
 
 ## Identity Issue
 
-When a new identity is issued, the `-o` option can be used to specify whether the issued identity has the authority to register new identities with a {{site.data.conrefs.hlf_full}} certificate authority server.
+When a new identity is issued, you may want to specify whether the issued identity has the authority to register new identities with a {{site.data.conrefs.hlf_full}} certificate authority server. 
 
 ### CLI
 
-To grant an identity the authority to register new identities with a certificate authority from the command line, the `issuer` option must be supplied after the `-o` option in the following format:
+To grant an identity the authority to register new identities with a certificate authority from the command line, the `-x` option is available (which is a shortcut replacement for `-o issuer=true`).
 
 ```
-composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
+composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -x
 ```
 
 ## API
 
 To specify the issuer property you set it in an object and pass this object as part of the `issueOptions` on `issueIdentity`.
 For example to issue an identity that has issuer authority
+
 ```javascript
 await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
 ```

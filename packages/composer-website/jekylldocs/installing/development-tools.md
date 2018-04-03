@@ -93,7 +93,7 @@ You can start and stop your runtime using `~/fabric-tools/stopFabric.sh`, and st
 
 At the end of your development session, you run `~/fabric-tools/stopFabric.sh` and then `~/fabric-tools/teardownFabric.sh`.  Note that if you've run the teardown script, the next time you start the runtime, you'll need to create a new PeerAdmin card just like you did on first time startup.
 
-> The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you're looking for a runtime with more persistent state, you'll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.  For further details, see <INSERT LINK HERE>.
+> The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you're looking for a runtime with more persistent state, you'll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.
 
 ## Start the web app ("Playground")
 To start the web app, run:

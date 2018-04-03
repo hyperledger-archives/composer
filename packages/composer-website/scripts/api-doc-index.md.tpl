@@ -25,7 +25,7 @@ submitted for processing. These functions may update the state of resources
 stored on the Blockchain via server-side Hyperledger Composer APIs.
 
 ## JavaScript language support
-Applications that are using the client or admin APIs, that are not running inside a transaction function can be written to use ES6.
+Applications that are using the client, admin APIs, or running inside a transaction function can be written to use ES6.
 As an example, it allows the use of the async/await syntax.
 
 ```javascript
@@ -44,9 +44,7 @@ As an example, it allows the use of the async/await syntax.
   }
 ```
 
-The promise chain syntax can be used, and must be used within Transaction Functions.
-
-**All code within a transaction function must use ES5 syntax - along with Promise Chains**
+The promise chain syntax can also be used however it is highly recommended to use async/await.
 
 Using promises the example above would be:
 
@@ -133,16 +131,13 @@ The Common API calls are also available to interact with resources, together wit
 
 ```javascript
 // Get the driver participant registry.
-return getParticipantRegistry('org.acme.Driver')
-  .then(function (driverParticipantRegistry) {
+try {
+    let driverParticipantRegistry = await getParticipantRegistry('org.acme.Driver');
     // Call methods on the driver participant registry.
-  })
-  .catch(function (error) {
+} catch(error) {
     // Add optional error handling here.
-  });
+}
 ```
-
-**NOTE: All transaction functions should be written to ES5 and additional use Promise chains**
 
 ### Transaction Functions
 
@@ -175,6 +170,6 @@ The function argument `registryProperty` for sale will be a fully resolved copy 
 
 #### Restrictions
 
-- Transaction functions should not use random numbers
-- Additional transactions can not be submitted from the implemetnation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.
+- Transaction functions should not try to write non deterministic values to the world state. These include but are not limited to random numbers and date/time values
+- Additional transactions can not be submitted from the implementation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.
 - Always use `getCurrentParticipant()` to get the details of the invoking participant

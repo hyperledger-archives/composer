@@ -130,7 +130,7 @@ node --version
 
 ## Install Docker
 
-Follow the instructions here to install Docker for Max (stable):
+Follow the instructions here to install Docker for Mac (stable):
 https://docs.docker.com/docker-for-mac/install/
 
 After running the installed Docker application you should have the whale icon in your menu bar, with a green “Docker is running” status.
