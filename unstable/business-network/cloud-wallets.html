@@ -411,7 +411,7 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
 <div class="highlight"><pre><code class="language-" data-lang="">{
   "composer": {
     "wallet": {
-      "type": "@ampretia/composer-wallet-redis",
+      "type": "composer-wallet-redis",
       "desc": "Uses a local redis instance,
       "options": {
 
@@ -434,7 +434,7 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
 <p>Specifying the details of a custom wallet on the command line via environment variables may be achieved by setting an environment variable containing the same information as the configuration file.</p>
 
 <p>The following environment variable example uses the same format and data as the preceding configuration file.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">export NODE_CONFIG={"composer":{"wallet":{"type":"@ampretia/composer-wallet-redis","desc":"Uses  a local redis instance,"options":{}}}}
+<div class="highlight"><pre><code class="language-" data-lang="">export NODE_CONFIG={"composer":{"wallet":{"type":"composer-wallet-redis","desc":"Uses  a local redis instance,"options":{}}}}
 </code></pre></div>
 <p>Any application that is in this shell will use the cloud wallets.</p>
 

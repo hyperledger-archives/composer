@@ -409,14 +409,12 @@ ga('send', 'pageview');
 </code></pre></div>
 <h3 id="2-prepare-the-hyperledger-fabric-peers">2. Prepare the Hyperledger Fabric peers</h3>
 
-<p>In order to install the Business Network Archive onto the Hyperledger Fabric network you need to prepare the peers with the underlying Composer runtime.</p>
+<p>In order to install the Business Network Archive onto the Hyperledger Fabric network you need to install the business network onto the peers. It is recommended you start with a clean directory. Move your BNA into that directory and change your terminal directory to it.</p>
 
 <p>You will need to have the Business Network archive to do this, below you can see an example with <code>tutorial-network</code> along with the &#39;PeerAdmin&#39; card for your deployment.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
 </code></pre></div>
 <h3 id="3-start-your-business-network-on-your-hyperledger-fabric">3. Start your Business Network on your Hyperledger Fabric</h3>
-
-<p>It is recommended you start with a clean directory. Move your BNA into that directory and change your terminal directory to it.</p>
 
 <p>We will use the <code>composer network start</code> command to start the business network, we will need to use our <code>PeerAdmin</code> card to do this. We will also need to create a user on our network, we will use an &quot;Admin&quot; username and password to get started.</p>
 

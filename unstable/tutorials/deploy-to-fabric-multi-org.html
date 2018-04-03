@@ -820,16 +820,18 @@ cp -p $ORG2/keystore/*_sk /tmp/composer/org2
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2</code> will have been imported into the wallet.</p>
 
-<h2 class='alice'>Step Eleven: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org1</h2>
+<h2 class='alice'>Step Eleven: Installing the business network onto the Hyperledger Fabric peer nodes for Org1</h2>
 
 <p>Run the <code>composer network install</code> command to install the business network onto all of the Hyperledger Fabric peer nodes for <code>Org1</code> that you specified in the connection profile file you created in &#39;Step Three&#39;:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@byfn-network-org1 --archiveFile trade-network.bna
 </code></pre></div>
 <p>As you can see from the above, we are using a Hyperledger Composer business network called <code>trade-network</code> to test our multi-org environment. You will need a file <code>trade-network.bna</code> (business network archive, from our sample networks) to do the test. If you don&#39;t have this, just go to <a href="https://composer-playground.mybluemix.net/">https://composer-playground.mybluemix.net/</a> and deploy the <code>trade-network</code> sample in the online Playground, then &#39;connect&#39; to the business network as &#39;admin&#39;, change the version number to <code>0.1.14</code> in the lower left, and export it to the current directory as <code>trade-network.bna</code>. The business network has a <em>version</em> property specified in a <code>package.json</code> file. That version must be specified when the business network is started using the <code>composer start</code> command in Step Seventeen. If you are using the <code>trade-network</code> sample network, the version is <code>0.1.14</code>. (Note: If you are planning on using a different network, such as the Composer tutorial network <code>tutorial-network</code> as your business network,  you would need to specify that file in the <code>network install</code> command above and thereafter, as the business network archive in this tutorial, as well as the correct version number for this business network).</p>
 
-<h2 class='bob'>Step Twelve: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org2</h2>
+<p>A useful feature of the <code>network install</code> command is that it will output the name of the business network and the version number that has just been installed and you can note these down for use in &#39;Step Seventeen&#39; later.</p>
 
-<p>Run the <code>composer network install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes for <code>Org2</code> that you specified in the connection profile file you created in step four:</p>
+<h2 class='bob'>Step Twelve: Installing the business network onto the Hyperledger Fabric peer nodes for Org2</h2>
+
+<p>Run the <code>composer network install</code> command to install the business network onto all of the Hyperledger Fabric peer nodes for <code>Org2</code> that you specified in the connection profile file you created in step four:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@byfn-network-org2 --archiveFile trade-network.bna
 </code></pre></div>
 <h2 class='everybody'>Step Thirteen: Defining the endorsement policy for the business network</h2>

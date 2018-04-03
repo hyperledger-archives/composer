@@ -372,7 +372,7 @@ ga('send', 'pageview');
             
               <h1 id="deploying-a-hyperledger-composer-blockchain-business-network-to-hyperledger-fabric-for-a-single-organization">Deploying a Hyperledger Composer blockchain business network to Hyperledger Fabric for a single organization</h1>
 
-<p>In the <a href="../installing/development-tools.html">development environment</a>, a simple Hyperledger Fabric network is created for you (<code>fabric-dev-servers</code>), along with all of the Hyperledger Composer configuration that you need in order to deploy a blockchain business network.</p>
+<p>In the <a href="../installing/development-tools.html">development environment</a>, a simple development only Hyperledger Fabric single organization, single peer network is created for you (<code>fabric-dev-servers</code>), along with all of the Hyperledger Composer configuration that you need in order to deploy a blockchain business network.</p>
 
 <p>This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of Hyperledger Fabric for a single organization, including how to generate the necessary Hyperledger Composer configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of Hyperledger Fabric for multiple organizations.</p>
 
@@ -388,7 +388,7 @@ ga('send', 'pageview');
 
 <p>In order to follow this tutorial, you must start a Hyperledger Fabric network. You can use the simple Hyperledger Fabric network provided in the development environment, or you can use your own Hyperledger Fabric network that you have built by following the Hyperledger Fabric documentation.</p>
 
-<p>The tutorial will assume that you use the simple Hyperledger Fabric network provided in the development environment. If you use your own Hyperledger Fabric network, then you must map between the configuration detailed below and your own configuration.</p>
+<p>The tutorial will assume that you use the simple Hyperledger Fabric network provided in the development environment. If you use your own Hyperledger Fabric network, then you must map between the configuration detailed below and your own configuration and it should be a single organization network.</p>
 
 <ol>
 <li><p>Start a clean Hyperledger Fabric by running the following commands:</p>
@@ -692,7 +692,7 @@ ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
 <p>This is the path to the private key file for the user <code>Admin@org1.example.com</code> that we located in step four.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-r PeerAdmin -r ChannelAdmin
 </code></pre></div>
-<p>Here, we specify which roles the user has. This information is required so that Hyperledger Composer knows which users are able to perform which operations. The user <code>Admin@org1.example.com</code> is an administrator for the Hyperledger Fabric network, and has the roles <code>PeerAdmin</code> (ability to install chaincode) and <code>ChannelAdmin</code> (ability to instantiate chaincode).</p>
+<p>Here, we specify which roles the user has. This information is required so that Hyperledger Composer playground knows which users are able to perform which operations. The user <code>Admin@org1.example.com</code> is an administrator for the Hyperledger Fabric network, and has the roles <code>PeerAdmin</code> (ability to install chaincode) and <code>ChannelAdmin</code> (ability to instantiate chaincode).</p>
 
 <h2 id="step-six-importing-the-business-network-card-for-the-hyperledger-fabric-administrator">Step Six: Importing the business network card for the Hyperledger Fabric administrator</h2>
 
@@ -712,11 +712,9 @@ ZOAV0S1XeNGWllvlFDeczRKQn2uhRANCAARrvCsQUNRpMUkzFaC7+zV4mClo+beg
 
 <h2 id="step-seven-installing-the-hyperledger-composer-business-network-onto-the-hyperledger-fabric-peer-nodes">Step Seven: Installing the Hyperledger Composer business network onto the Hyperledger Fabric peer nodes</h2>
 
-<p>Hyperledger Composer includes a component called the Hyperledger Composer runtime that provides all of the functionality to host and support a business network archive, for example data validation, error handling, transaction processor function execution, and access control. In Hyperledger Fabric terms, the Hyperledger Composer runtime is a standard chaincode.</p>
+<p>In this step, you will install your blockchain business network onto all of your organizations Hyperledger Fabric peer nodes. In Hyperledger Fabric terms, this is a chaincode install operation.</p>
 
-<p>In this step, you will install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes. In Hyperledger Fabric terms, this is a chaincode install operation.</p>
-
-<p>Run the <code>composer network install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes that you specified in the connection profile file you created in step three:</p>
+<p>Run the <code>composer network install</code> command to install the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes that you specified in the connection profile file you created in step three:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install -c PeerAdmin@fabric-network -a tutorial-network@0.0.1.bna
 </code></pre></div>
 <p>Let&#39;s explore the options that we passed to the <code>composer network install</code> command.</p>

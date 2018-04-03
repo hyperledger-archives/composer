@@ -610,7 +610,7 @@ transaction SampleTransaction {
 
 <p>To call the Hyperledger Fabric API in a transaction processor function, the function <code>getNativeAPI</code> must be called, followed by a function from the Hyperledger Fabric API. Using the Hyperledger Fabric API gives you access to functionality which is not available in the Hyperledger Composer API.</p>
 
-<p><em>Please note: The <code>getState</code> and <code>putState</code> Hyperledger Fabric API functions will bypass the Hyperledger Composer access control rules.</em></p>
+<p><strong>IMPORTANT: Using the Hyperledger Fabric API such as <code>getState</code>, <code>putState</code>, <code>deleteState</code>, <code>getStateByPartialCompositeKey</code>, <code>getQueryResult</code> functions will bypass the Hyperledger Composer access control rules (ACLs).</strong></p>
 
 <p>In the example below, the Hyperledger Fabric API function <code>getHistoryForKey</code> is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.</p>
 
