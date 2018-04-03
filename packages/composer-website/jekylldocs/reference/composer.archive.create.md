@@ -29,7 +29,7 @@ composer archive create --sourceType dir --sourceName <dirpath> -a digitalproper
 ### Options
 
 ```
-composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network
+composer archive create --archiveFile digitalPropertyNetwork.bna --sourceType module --sourceName digitalproperty-network
 
 Options:
   --help             Show help  [boolean]
