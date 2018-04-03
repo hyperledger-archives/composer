@@ -89,6 +89,7 @@ The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection p
 The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
 
 The following sections define the server details:
+
 - Orderers
 - Peers
 - Certificate Authorities
@@ -255,6 +256,7 @@ This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that 
 ```
 
 A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
+
 - `endorsingPeer` means that peer is there to endorse transactions and must have chaincode instantiated.
 - `chaincodeQuery` means that peer is able to handle chaincode query requests and must have chaincode instantiated.
 - `ledgerQuery` means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
@@ -283,6 +285,7 @@ In this section you define the `organization` you belong to, in the example this
 
 ### Common properties
 When defining a peer or orderer there are some common options you can use. These are:
+
 - `grpcOptions`
 - `tlsCACerts`
 
@@ -294,7 +297,9 @@ For example a peer definition might look like:
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max-send-message-length": 15728640,
+        "grpc.max-receive-message-length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- <etc> "
@@ -302,14 +307,18 @@ For example a peer definition might look like:
 }
 ```
 
+The grpc message lengths are in bytes and the timeout is in milliseconds. the grpc options are not specific to the connection profile and are the same properties defined by grpc itself.
+
 A similar thing could be done for an orderer definition:
 
 ```
 "orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
     "grpcOptions": {
-        "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "ssl-target-name-override": "orderer.example.com",
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max-send-message-length": 15728640,
+        "grpc.max-receive-message-length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- <etc> "
@@ -350,14 +359,18 @@ Support for HSM (Hardware Security Module)is now possible so long as you have PK
 
 To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
 
-        export PKCS_LIBRARY=/usr/local/lib/myhsm.so
-        export PKCS_SLOT=0
-        export PKCS_PIN=98765432
+```
+export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+export PKCS_SLOT=0
+export PKCS_PIN=98765432
+```
 
 then you can reference these in the connection profile as follows
 
-            "x-hsm": {
-                "library": "{PKCS_LIBRARY}",
-                "slot": "{PKCS_SLOT}",
-                "pin": "{PKCS_PIN}"
-            }
+```
+"x-hsm": {
+    "library": "{PKCS_LIBRARY}",
+    "slot": "{PKCS_SLOT}",
+    "pin": "{PKCS_PIN}"
+}
+```

@@ -114,6 +114,7 @@ When another resource is created, for example, a participant, a property of that
 participant Farmer identified by farmerId {
     o String farmerId
     o ProductType primaryProduct
+}
 ```
 
 
@@ -133,6 +134,16 @@ abstract concept Address {
 
 concept UnitedStatesAddress extends Address {
   o String zipcode
+}
+```
+
+You can then use this concept, for example
+
+```
+participant Farmer identified by farmerId {
+    o String farmerId
+    o UnitedStatesAddress address
+    o ProductType primaryProduct
 }
 ```
 
