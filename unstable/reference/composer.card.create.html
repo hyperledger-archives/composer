@@ -390,6 +390,12 @@ Options:
   --help         Show help  [boolean]
   -v, --version  Show version number  [boolean]
 </code></pre></div>
+<h2 id="roles">Roles</h2>
+
+<p>Roles are only used by playground when interacting with Hyperledger Fabric to determine which card to use when performing the 2 step action of installing new business networks and then either starting or upgrading that business network. Whenever a business network is first deployed or new changes are deployed, the new business network is first installed onto the peer(s) and then a start or upgrade is requested.</p>
+
+<p>In order to perform an installation of a business network, a card with the <code>PeerAdmin</code> role is used. To perform a start or upgrade of the business network a card with the <code>ChannelAdmin</code> role is used. </p>
+
             
           </section>
         </div>

@@ -448,21 +448,19 @@ in your /home/user1/config directory:</p>
 </code></pre></div>
 <h2 id="identity-issue">Identity Issue</h2>
 
-<p>When a new identity is issued, the <code>-o</code> option can be used to specify whether the issued identity has the authority to register new identities with a Hyperledger Fabric certificate authority server.</p>
+<p>When a new identity is issued, you may want to specify whether the issued identity has the authority to register new identities with a Hyperledger Fabric certificate authority server. </p>
 
 <h3 id="cli">CLI</h3>
 
-<p>To grant an identity the authority to register new identities with a certificate authority from the command line, the <code>issuer</code> option must be supplied after the <code>-o</code> option in the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -p hlfv1 -n digitalproperty-network -i admin -s adminpw -u MyUser -o issuer=true -a net.biz.digitalPropertyNetwork.Person#P1
+<p>To grant an identity the authority to register new identities with a certificate authority from the command line, the <code>-x</code> option is available (which is a shortcut replacement for <code>-o issuer=true</code>).</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c admin@digitalproperty-network -u MyUser -a net.biz.digitalPropertyNetwork.Person#P1 -x
 </code></pre></div>
 <h2 id="api">API</h2>
 
 <p>To specify the issuer property you set it in an object and pass this object as part of the <code>issueOptions</code> on <code>issueIdentity</code>.
-For example to issue an identity that has issuer authority
-<code>javascript
-await businessNetworkConnection.issueIdentity(participantId, newUserId, {issuer: true});
-</code></p>
-
+For example to issue an identity that has issuer authority</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">await</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="nx">participantId</span><span class="p">,</span> <span class="nx">newUserId</span><span class="p">,</span> <span class="p">{</span><span class="na">issuer</span><span class="p">:</span> <span class="kc">true</span><span class="p">});</span>
+</code></pre></div>
 <h2 id="next-steps">Next steps</h2>
 
 <ul>

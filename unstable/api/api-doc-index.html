@@ -394,7 +394,7 @@ stored on the Blockchain via server-side Hyperledger Composer APIs.</li>
 
 <h2 id="javascript-language-support">JavaScript language support</h2>
 
-<p>Applications that are using the client or admin APIs, that are not running inside a transaction function can be written to use ES6.
+<p>Applications that are using the client, admin APIs, or running inside a transaction function can be written to use ES6.
 As an example, it allows the use of the async/await syntax.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
   <span class="k">try</span><span class="p">{</span>
@@ -410,9 +410,7 @@ As an example, it allows the use of the async/await syntax.</p>
       <span class="c1">// error handling</span>
   <span class="p">}</span>
 </code></pre></div>
-<p>The promise chain syntax can be used, and must be used within Transaction Functions.</p>
-
-<p><strong>All code within a transaction function must use ES5 syntax - along with Promise Chains</strong></p>
+<p>The promise chain syntax can also be used however it is highly recommended to use async/await.</p>
 
 <p>Using promises the example above would be:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="c1">// connect using the 'newUserCard', create an asset, add it to a registry and get all assets.</span>
@@ -492,16 +490,13 @@ A name of an already imported business network card is needed. By default these 
 
 <p>The Common API calls are also available to interact with resources, together with the Registry APIs. For each</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">try</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">driverParticipantRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">);</span>
     <span class="c1">// Call methods on the driver participant registry.</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
+<span class="p">}</span>
 </code></pre></div>
-<p><strong>NOTE: All transaction functions should be written to ES5 and additional use Promise chains</strong></p>
-
 <h3 id="transaction-functions">Transaction Functions</h3>
 
 <p>The transaction function is the part of Composer that can be considered to be the <em>smart contract</em> execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the <em>source of truth</em> of the assets is maintained.</p>
@@ -528,8 +523,8 @@ transaction RegisterPropertyForSale identified by transactionId{
 <h4 id="restrictions">Restrictions</h4>
 
 <ul>
-<li>Transaction functions should not use random numbers</li>
-<li>Additional transactions can not be submitted from the implemetnation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.</li>
+<li>Transaction functions should not try to write non deterministic values to the world state. These include but are not limited to random numbers and date/time values</li>
+<li>Additional transactions can not be submitted from the implementation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.</li>
 <li>Always use <code>getCurrentParticipant()</code> to get the details of the invoking participant</li>
 </ul>
 

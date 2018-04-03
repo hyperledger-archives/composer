@@ -468,6 +468,7 @@ enum ProductType {
 <div class="highlight"><pre><code class="language-" data-lang="">participant Farmer identified by farmerId {
     o String farmerId
     o ProductType primaryProduct
+}
 </code></pre></div>
 <h3 id="concepts">Concepts</h3>
 
@@ -483,6 +484,13 @@ enum ProductType {
 
 concept UnitedStatesAddress extends Address {
   o String zipcode
+}
+</code></pre></div>
+<p>You can then use this concept, for example</p>
+<div class="highlight"><pre><code class="language-" data-lang="">participant Farmer identified by farmerId {
+    o String farmerId
+    o UnitedStatesAddress address
+    o ProductType primaryProduct
 }
 </code></pre></div>
 <h3 id="primitive-types">Primitive types</h3>

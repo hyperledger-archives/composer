@@ -403,10 +403,10 @@ Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Register
 
 <h2 id="example-command">Example command</h2>
 
-<p>This command submits a transaction on the connection profile <code>defaultProfile</code> to the business network <code>digitalproperty-network</code> with the user identity <code>maeid1</code>, the user secret <code>Xurw3yU9zI0l</code>. The transaction submitted is <code>&#39;{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.RegisterPropertyForSale&quot;,&quot;transactionId&quot;:&quot;TRANSACTION_001&quot;,&quot;seller&quot;:&quot;mae@biznet.org&quot;,&quot;title&quot;:&quot;TITLE_001&quot;}&#39;</code>.</p>
+<p>This command submits a transaction to the business network <code>digitalproperty-network</code> using the business network card <code>maeid1@digitalproperty-network</code>. The transaction submitted is <code>&#39;{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.RegisterPropertyForSale&quot;,&quot;transactionId&quot;:&quot;TRANSACTION_001&quot;,&quot;seller&quot;:&quot;mae@biznet.org&quot;,&quot;title&quot;:&quot;TITLE_001&quot;}&#39;</code>.</p>
 
 <p>Here is the entire command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit -p defaultProfile -n digitalproperty-network -i maeid1 -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit -c maeid1@digitalproperty-network -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
 </code></pre></div>
             
           </section>

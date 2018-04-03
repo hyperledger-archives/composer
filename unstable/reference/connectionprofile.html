@@ -448,10 +448,13 @@ ga('send', 'pageview');
 
 <p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
 
-<p>The following sections define the server details:
-- Orderers
-- Peers
-- Certificate Authorities</p>
+<p>The following sections define the server details:</p>
+
+<ul>
+<li>Orderers</li>
+<li>Peers</li>
+<li>Certificate Authorities</li>
+</ul>
 
 <p>Organizational details are defined in:</p>
 
@@ -595,11 +598,14 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     }
 },
 </code></pre></div>
-<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
-- <code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.
-- <code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.
-- <code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
-- <code>eventSource</code> means that this peer will generate events.</p>
+<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.</p>
+
+<ul>
+<li><code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.</li>
+<li><code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.</li>
+<li><code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.</li>
+<li><code>eventSource</code> means that this peer will generate events.</li>
+</ul>
 
 <h3 id="client">Client</h3>
 
@@ -622,9 +628,12 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 
 <h3 id="common-properties">Common properties</h3>
 
-<p>When defining a peer or orderer there are some common options you can use. These are:
-- <code>grpcOptions</code>
-- <code>tlsCACerts</code></p>
+<p>When defining a peer or orderer there are some common options you can use. These are:</p>
+
+<ul>
+<li><code>grpcOptions</code></li>
+<li><code>tlsCACerts</code></li>
+</ul>
 
 <p>For example a peer definition might look like:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
@@ -632,19 +641,25 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max-send-message-length": 15728640,
+        "grpc.max-receive-message-length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
 </code></pre></div>
+<p>The grpc message lengths are in bytes and the timeout is in milliseconds. the grpc options are not specific to the connection profile and are the same properties defined by grpc itself.</p>
+
 <p>A similar thing could be done for an orderer definition:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
     "grpcOptions": {
-        "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "ssl-target-name-override": "orderer.example.com",
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max-send-message-length": 15728640,
+        "grpc.max-receive-message-length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
@@ -682,16 +697,16 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 </ul>
 
 <p>To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called <code>PKCS_LIBRARY</code>, <code>PKCS_SLOT</code> and <code>PKCS_PIN</code> to hold the hsm information, for example</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    export PKCS_LIBRARY=/usr/local/lib/myhsm.so
-    export PKCS_SLOT=0
-    export PKCS_PIN=98765432
+<div class="highlight"><pre><code class="language-" data-lang="">export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+export PKCS_SLOT=0
+export PKCS_PIN=98765432
 </code></pre></div>
 <p>then you can reference these in the connection profile as follows</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        "x-hsm": {
-            "library": "{PKCS_LIBRARY}",
-            "slot": "{PKCS_SLOT}",
-            "pin": "{PKCS_PIN}"
-        }
+<div class="highlight"><pre><code class="language-" data-lang="">"x-hsm": {
+    "library": "{PKCS_LIBRARY}",
+    "slot": "{PKCS_SLOT}",
+    "pin": "{PKCS_PIN}"
+}
 </code></pre></div>
             
           </section>
