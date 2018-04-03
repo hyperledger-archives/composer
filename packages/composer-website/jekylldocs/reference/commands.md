@@ -56,11 +56,11 @@ Lists all cards currently in your wallet: [composer card list](./composer.card.l
 
 `composer network install`
 
-Install a business network archive to a {{site.data.conrefs.hlf_full}} peer: [composer network install](./composer.network.install.html)
+Install a business network archive to an organization's {{site.data.conrefs.hlf_full}} peer(s): [composer network install](./composer.network.install.html)
 
 `composer network start`
 
-Start a business network on a {{site.data.conrefs.hlf_full}} peer that already has the business network installed: [composer network start](./composer.network.start.html)
+Start an already installed business network: [composer network start](./composer.network.start.html)
 
 `composer network list`
 

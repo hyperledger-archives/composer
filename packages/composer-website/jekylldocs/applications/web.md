@@ -62,8 +62,6 @@ composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0
 
 ### 3. Start your Business Network on your {{site.data.conrefs.hlf_full}}
 
-
-
 We will use the `composer network start` command to start the business network, we will need to use our `PeerAdmin` card to do this. We will also need to create a user on our network, we will use an "Admin" username and password to get started.
 
 Below is an example using a `tutorial-network` BNA.
