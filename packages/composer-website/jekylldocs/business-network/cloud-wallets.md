@@ -45,7 +45,7 @@ The following configuration file uses the Redis format as an example:
 {
   "composer": {
     "wallet": {
-      "type": "@ampretia/composer-wallet-redis",
+      "type": "composer-wallet-redis",
       "desc": "Uses a local redis instance,
       "options": {
 
@@ -67,7 +67,7 @@ Specifying the details of a custom wallet on the command line via environment va
 The following environment variable example uses the same format and data as the preceding configuration file.
 
 ```
-export NODE_CONFIG={"composer":{"wallet":{"type":"@ampretia/composer-wallet-redis","desc":"Uses  a local redis instance,"options":{}}}}
+export NODE_CONFIG={"composer":{"wallet":{"type":"composer-wallet-redis","desc":"Uses  a local redis instance,"options":{}}}}
 ```
 
 Any application that is in this shell will use the cloud wallets.

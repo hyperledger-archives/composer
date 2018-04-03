@@ -147,15 +147,19 @@ The first line indicates the name of the business network card we will start the
 
 1. From the same directory as the `envvars.txt` file you created containing the environment variables, run the following command:
 
+```
      source envvars.txt
+```
 
 INFO	No output from command? - this is expected. If you did have a syntax error in your `envvars.txt` file then this will be indicated by an error, after running this command.
 
 2. Let’s now confirm that environment variables are indeed set by checking a couple of them using “echo” command as shown below
 
+```
     echo $COMPOSER_CARD
 
     echo $COMPOSER_PROVIDERS
+```
 
 <h2 class='everybody'> Step 5: Deploy the sample Commodities Trading Business network to query from REST client </h2>
 
@@ -169,10 +173,11 @@ INFO	No output from command? - this is expected. If you did have a syntax error 
 
 3. To deploy it, run the following sequence:
 
+```
     composer network install --card PeerAdmin@hlfv1 --archiveFile trade-network.bna
 
     composer network start --card PeerAdmin@hlfv1 --networkName trade-network --networkVersion **version** --networkAdmin admin --networkAdminEnrollSecret adminpw --file networkadmin.card
-
+```
 
 ![Deploy Business Network](../assets/img/tutorials/auth/deploy-network.png)
 
@@ -181,9 +186,11 @@ You should get confirmation that the Commodities Trading Business Network has be
 
 4. Next, import the business network card, and connect with the card to download the certs to the wallet:
 
+```
     composer card import -f networkadmin.card
 
     composer network ping -c admin@trade-network
+```
 
 You should get confirmation that the connectivity was successfully tested. We're now ready to work with the deployed business network.
 
@@ -193,16 +200,19 @@ You should get confirmation that the connectivity was successfully tested. We're
 
 1. Create a REST Adninistrator identity `restadmin` and an associated business network card (used to launch the REST server later).
 
+```
     composer participant add -c admin@trade-network -d '{"$class":"org.hyperledger.composer.system.NetworkAdmin", "participantId":"restadmin"}'
 
-     composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a "resource:org.hyperledger.composer.system.NetworkAdmin#restadmin"
+    composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a "resource:org.hyperledger.composer.system.NetworkAdmin#restadmin"
+```
 
 2. Import and test the card:
 
+```
     composer card import -f  restadmin.card
 
     composer network ping -c restadmin@trade-network
-
+```
 
 3. Because we are hosting our REST server in another location with its own specific network IP information, we need to update the connection.json - so that the docker hostnames (from within the persistent REST server instance) can resolve each other's IP addresses.
 
@@ -215,6 +225,7 @@ The one liner below will substitute the 'localhost' addresses with docker hostna
 
 1. Run the following docker command to launch a REST server instance (with the `restadmin` business network card)    
 
+```
     docker run \
     -d \
     -e COMPOSER_CARD=${COMPOSER_CARD} \
@@ -228,7 +239,7 @@ The one liner below will substitute the 'localhost' addresses with docker hostna
     --network composer_default \
     -p 3000:3000 \
     myorg/composer-rest-server
-
+```
 
 
 
@@ -236,10 +247,11 @@ This will output the ID of the Docker container eg . `690f2a5f10776c15c11d9def91
 
 2. Check that all is ok with our ocontainer - you can see that it is running using the following commands:
 
+```
     docker ps |grep rest
 
     docker logs rest
-
+```
 
 <h2 class='everybody'> Step 8:  Test the REST APIs are protected and require authorization   </h2>
 
@@ -264,22 +276,29 @@ You should get an Authorized error and that is because we have configured a Goog
 
 1. You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is **Jo Doe**:
 
+```
     composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
 
     composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.acme.trading.Trader#trader1"
 
     composer card import -f jdoe.card
+```
 
 2. Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:
 
+```
     sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/jdoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network
+```
 
 3. We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for `jdoe`.
 
+```
      composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card
+```
 
 4. Repeat the above steps for participant **Ken Coe** (`kcoe`) - creating a `trader2` participant and issuing the identity `kcoe` - the sequence of commands are:
 
+```
     composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
 
     composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.acme.trading.Trader#trader2"
@@ -289,6 +308,7 @@ You should get an Authorized error and that is because we have configured a Goog
     sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
 
     composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+```
 
 These cards can now be imported, then used into the REST client (ie the browser) in the next section.
 
@@ -300,8 +320,8 @@ These cards can now be imported, then used into the REST client (ie the browser)
 
 2. Login using the following credentials: (example - as advised, you should set up your own per the instructions in the appendix section of this tutorial):
 
-Email: composeruser01@gmail.com
-Password: composer00
+- Email: composeruser01@gmail.com
+- Password: composer00
 
 3. You will be authenticated by Google and be redirected back to the REST server (http://localhost:3000/explorer) which shows the access token message in the top left-hand corner - click on 'Show' to view the token.
 
