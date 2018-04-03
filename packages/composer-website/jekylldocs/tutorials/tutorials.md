@@ -12,7 +12,7 @@ excerpt: Tutorials
 
 ---
 
-We have four basic tutorial options, and two more advanced tutorials:
+We have several basic and advanced tutorials:
 
 ## Playground Tutorial
 

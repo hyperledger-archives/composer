@@ -479,7 +479,7 @@ Run the `composer card import` command to import the business network card for `
 
 If the command works successfully, a business network card called `PeerAdmin@byfn-network-org2` will have been imported into the wallet.
 
-<h2 class='alice'>Step Eleven: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes for Org1</h2>
+<h2 class='alice'>Step Eleven: Installing the business network onto the {{site.data.conrefs.hlf_full}} peer nodes for Org1</h2>
 
 Run the `composer network install` command to install the business network onto all of the {{site.data.conrefs.hlf_full}} peer nodes for `Org1` that you specified in the connection profile file you created in 'Step Three':
 
@@ -487,9 +487,11 @@ Run the `composer network install` command to install the business network onto 
 
 As you can see from the above, we are using a {{site.data.conrefs.composer_full}} business network called `trade-network` to test our multi-org environment. You will need a file `trade-network.bna` (business network archive, from our sample networks) to do the test. If you don't have this, just go to https://composer-playground.mybluemix.net/ and deploy the `trade-network` sample in the online Playground, then 'connect' to the business network as 'admin', change the version number to `0.1.14` in the lower left, and export it to the current directory as `trade-network.bna`. The business network has a *version* property specified in a `package.json` file. That version must be specified when the business network is started using the `composer start` command in Step Seventeen. If you are using the `trade-network` sample network, the version is `0.1.14`. (Note: If you are planning on using a different network, such as the Composer tutorial network `tutorial-network` as your business network,  you would need to specify that file in the `network install` command above and thereafter, as the business network archive in this tutorial, as well as the correct version number for this business network).
 
-<h2 class='bob'>Step Twelve: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes for Org2</h2>
+A useful feature of the `network install` command is that it will output the name of the business network and the version number that has just been installed and you can note these down for use in 'Step Seventeen' later.
 
-Run the `composer network install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes for `Org2` that you specified in the connection profile file you created in step four:
+<h2 class='bob'>Step Twelve: Installing the business network onto the {{site.data.conrefs.hlf_full}} peer nodes for Org2</h2>
+
+Run the `composer network install` command to install the business network onto all of the {{site.data.conrefs.hlf_full}} peer nodes for `Org2` that you specified in the connection profile file you created in step four:
 
     composer network install --card PeerAdmin@byfn-network-org2 --archiveFile trade-network.bna
 
