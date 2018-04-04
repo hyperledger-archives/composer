@@ -718,7 +718,7 @@ class HLFConnection extends Connection {
                     ignoredErrors++;
                 } else {
                     const warning = `Response from attempted peer comms was an error: ${responseContent}`;
-                    LOG.warn(warning);
+                    LOG.warn(method, warning);
                     invalidResponseMsgs.push(warning);
                 }
             } else {
@@ -729,11 +729,11 @@ class HLFConnection extends Connection {
                     // there are internal ones which may do what is needed or we would have to decode the
                     // protobufs ourselves but it should really be the node sdk doing this.
                     const warning = `Proposal response from peer failed verification. ${responseContent.response}`;
-                    LOG.warn(warning);
+                    LOG.warn(method, warning);
                     invalidResponseMsgs.push(warning);
                 } else if (responseContent.response.status !== 200) {
                     const warning = `Unexpected response of ${responseContent.response.status}. Payload was: ${responseContent.response.payload}`;
-                    LOG.warn(warning);
+                    LOG.warn(method, warning);
                     invalidResponseMsgs.push(warning);
                 } else {
                     validResponses.push(responseContent);
@@ -753,7 +753,7 @@ class HLFConnection extends Connection {
         // issue a warning so that it get's logged, but we don't know which peer(s) it was
         if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
             const warning = 'Peers do not agree, Read Write sets differ';
-            LOG.warn(warning);
+            LOG.warn(method, warning);
             invalidResponseMsgs.push(warning);
         }
         LOG.exit(method, ignoredErrors);
