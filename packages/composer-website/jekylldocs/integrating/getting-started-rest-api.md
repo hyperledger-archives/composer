@@ -62,6 +62,7 @@ Options:
   -c, --card            The name of the business network card to use  [string]
   -n, --namespaces      Use namespaces if conflicting types exist  [string] [choices: "always", "required", "never"] [default: "always"]
   -p, --port            The port to serve the REST API on  [number]
+  -y, --apikey          The apikey to get access to the REST API [string][default:undefined]
   -a, --authentication  Enable authentication for the REST API using Passport  [boolean] [default: false]
   -m, --multiuser       Enable multiple user and identity management using wallets (implies -a)  [boolean] [default: false]
   -w, --websockets      Enable event publication over WebSockets  [boolean] [default: true]
@@ -78,11 +79,24 @@ Launch your browser and go to the URL given (http://0.0.0.0:3000/explorer).  You
 
 ![LoopBack-1](../assets/img/tutorials/developer/lb_explorer.png)
 
+
 ## Updating the REST server
 
 After updating a business network definition, the REST server can be updated to generate new APIs reflecting the updates to the business network definition.
 
 To update the REST server, first the REST server must be stopped using `ctrl-C`. Then the REST server can be restarted using `composer-rest-server`.
+
+
+## Generating a REST API with an APIKEY 
+
+An APIKEY can be used to provide a first layer of security to access the REST API in development environment.
+
+```
+composer-rest-server -y YOUR_API_KEY
+```
+
+This will accept only request with an Header `x-api-key` set with the value of `YOUR_API_KEY`.
+
 
 # Summary
 Using the Loopback framework on top of the {{site.data.conrefs.composer_full}} runtime has allowed us to generate a business domain specific REST API based on the deployed business network model!
