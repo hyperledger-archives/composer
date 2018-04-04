@@ -35,10 +35,10 @@ There is a [specific channel](https://chat.hyperledger.org/channel/composer-dev)
 
 Suggested reading list is:
 
-- [Introduction](https://hyperledger.github.io/composer/introduction/introduction.html)
+- [Introduction](https://hyperledger.github.io/composer/latest/introduction/introduction.html)
 - [Introduction Video](https://www.youtube.com/watch?v=fdFUsrsv5iw&t=23s)
-- [Quick Start](https://hyperledger.github.io/composer/installing/installing-index.html)
-- [Tutorials](https://hyperledger.github.io/composer/tutorials/tutorials.html)
+- [Quick Start](https://hyperledger.github.io/composer/latest/installing/installing-index.html)
+- [Tutorials](https://hyperledger.github.io/composer/latest/tutorials/tutorials.html)
 
 # Getting in touch
 
