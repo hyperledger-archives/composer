@@ -1427,7 +1427,7 @@ describe('HLFConnection', () => {
             mockChannel.verifyProposalResponse.withArgs(response2).returns(true);
             mockChannel.compareProposalResponseResults.returns(true);
             connection._validatePeerResponses(responses, true);
-            sinon.assert.calledWith(logWarnSpy, sinon.match(/Proposal response from peer failed verification/));
+            sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', sinon.match(/Proposal response from peer failed verification/));
         });
 
         it('should log if compareProposals returns false', () => {
@@ -1443,7 +1443,7 @@ describe('HLFConnection', () => {
             mockChannel.verifyProposalResponse.returns(true);
             mockChannel.compareProposalResponseResults.returns(false);
             connection._validatePeerResponses(responses, true);
-            sinon.assert.calledWith(logWarnSpy, 'Peers do not agree, Read Write sets differ');
+            sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', 'Peers do not agree, Read Write sets differ');
         });
 
         it('should not try to check proposal responses if not a response from a proposal', () => {
