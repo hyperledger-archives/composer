@@ -4,7 +4,7 @@ title: Listing all identities in a business network
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
-excerpt: "[**Identities issued or bound to a participant creates a mapping**](../managing/identity-list.html). In order to perform identity management operations in a deployed business network, you will need to list and review the set of identities in the identity registry."
+excerpt: "Identities issued or bound to a participant create a mapping. In order to perform identity management operations in a deployed business network, you will need to [list](../managing/identity-list.html) and review the set of identities in the identity registry."
 index-order: 806
 ---
 
