@@ -58,31 +58,35 @@ The sample business network definitions are stored on GitHub at `https://github.
 1. `yo hyperledger-composer`
 
 ```
-Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: (Use arrow keys)
-❯ CLI Application
-  Angular 2 Application
-  Skeleton Business Network
+? Please select the type of project: (Use arrow keys)
+❯ Angular
+  Business Network
+  Model
 ```
-And select `Skeleton Business Netork`
+And select `Business Netork`
 
 2. Answer all of the questions
 
 ```
-? Please select the type of Application: Skeleton Business Network
+Welcome to the Hyperledger Composer project generator
+? Please select the type of project: Business Network
 You can run this generator using: 'yo hyperledger-composer:businessnetwork'
-Welcome to the business network skeleton generator
-? Do you only want to generate a model? Yes
-? What is the business network's name? mynetwork
-? What is the business network's namespace? org.example
-? Describe the business network This is my test network
-? Who is the author? Dan Selman
-? Which license do you want to use? Apache-2
-   create index.js
+Welcome to the business network generator
+? Business network name: mynetwork
+? Description: This is my test network
+? Author name:  Mr Conga
+? Author email: conga@congazone.org
+? License: Apache-2
+? Namespace: org.conga
    create package.json
+   create permissions.acl
    create README.md
-   create models/org.example.cto
+   create models/org.conga.cto
    create .eslintrc.yml
+   create features/sample.feature
+   create features/support/index.js
+   create test/logic.js
+   create lib/logic.js
 ```
 
 This generates a skeleton business network with an `asset`, `participant` and `transaction` defined, as well as a `mocha` unit test.
