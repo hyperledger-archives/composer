@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -114,10 +114,38 @@ Feature: Cli network steps
         And The stdout information should include text matching /owner:    resource:org.hyperledger_composer.marbles.Player#bob/
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, I can count the number of marbles
+        When I run the following expected pass CLI command
+            """
+            composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.NewMarble |grep 'marbleId:'|wc -l
+            """
+        Then The stdout information should include text matching /1/
+
+    Scenario: Using the CLI, I can reset the network to remove all assets
+        When I run the following expected pass CLI command
+            """
+            composer network reset -c admin@marbles-network
+            """
+
+    Scenario: Using the CLI, I can count the number of marbles
+        When I run the following expected pass CLI command
+            """
+            composer network list --card admin@marbles-network -r org.hyperledger_composer.marbles.NewMarble |grep 'marbleId:'|wc -l
+            """
+        Then The stdout information should include text matching /0/
+
+    Scenario: Using the CLI, I can download the BNA file for the running network
+        When I run the following expected pass CLI command
+            """
+            composer network download -c admin@marbles-network -a ./tmp/downloaded-marbles.bna
+            """
+        Then I have the following files
+            | ../tmp/downloaded-marbles.bna |
+
     Scenario: Using the CLI, I can create get back the log level of the running network
         When I run the following expected pass CLI command
             """
-            composer network loglevel --card admin@marbles-network 
+            composer network loglevel --card admin@marbles-network
             """
         Then The stdout information should include text matching /composer\[error\]:*/
         And The stdout information should include text matching /Command succeeded/
@@ -128,4 +156,4 @@ Feature: Cli network steps
             composer network loglevel --card admin@marbles-network --newlevel 'composer[debug]:acls'
             """
         Then The stdout information should include text matching /composer\[debug\]:acls/
-        And The stdout information should include text matching /Command succeeded/        
+        And The stdout information should include text matching /Command succeeded/
