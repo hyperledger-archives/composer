@@ -177,17 +177,16 @@ A business network archive containing package dependencies can be installed to F
 `composer network install` command. The following provides steps by example on how to do this.
 
 - Ensure you have the latest fabric-dev-servers package and have set your fabric runtime to V1.1 `export FABRIC_VERSION=hlfv11`
-- Start the Fabric in development mode using `./startFabric.sh --dev`
+- Start the Fabric in development mode using `./startFabric.sh`
 - Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh` 
 - Install your pre-prepared business network archive
 ```
 node composer-cli/cli.js network install --card PeerAdmin@hlfv1 --archiveFile test-network@0.0.1.bna`
 ```
-- instantiate the chaincode, this will drive your running node process you started earlier.
+- instantiate the chaincode.
 ```
 node composer-cli/cli.js network start --card PeerAdmin@hlfv1 -networkAdmin admin -networkAdminEnrollSecret adminpw
 ```
-You should now see output in the window running the chaincode showing it executing.
 
 # Next step
 Move on to read [Pull Request Guidelines](./submitting-pull-request.md)
