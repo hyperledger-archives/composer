@@ -396,7 +396,7 @@ ga('send', 'pageview');
 
 <h3 id="connection-profiles">Connection Profiles</h3>
 
-<p>Hyperledger Composer uses <em>Connection Profiles</em> to define the system to connect to. A connection profile is a JSON document the is part of a business network card. These profiles are usually provded by the creator of the system they refer to and should be used to create business network cards in order to be able to connect to that system.</p>
+<p>Hyperledger Composer uses <em>Connection Profiles</em> to define the system to connect to. A connection profile is a JSON document the is part of a business network card. These profiles are usually provided by the creator of the system they refer to and should be used to create business network cards in order to be able to connect to that system.</p>
 
 <hr>
 
@@ -410,13 +410,19 @@ ga('send', 'pageview');
 
 <h3 id="participants">Participants</h3>
 
-<p>Participants are members of a business network. They may own assets and submit transactions. Participant types are modeled, and like assets, must have an identifier and can have any other properties as required.</p>
+<p>Participants are members of a business network. They may own assets and submit transactions. Participant types are modeled, and like assets, must have an identifier and can have any other properties as required. A participant can be mapped to one or multiple identities.</p>
 
 <hr>
 
-<h3 id="identities-and-business-network-cards">Identities and Business Network cards</h3>
+<h3 id="identities">Identities</h3>
 
-<p>Within a business network, participants can be associated with an identity. Business network cards are a combination of an identity, a connection profile, and metadata. Business network cards simplify the process of connecting to a business network, and extend the concept of an identity outside the business network to a &#39;wallet&#39; of identities, each associated with a specific business network and connection profile.</p>
+<p>An identity is a digital certificate and private key. Identities are used to transact on a business network and must be mapped to a participant in the business network. A single identity is stored in a business network card and if that identity has been mapped to a participant, it allows the user of that business network card to transact on a business network as that participant.</p>
+
+<hr>
+
+<h3 id="business-network-cards">Business Network cards</h3>
+
+<p>Business network cards are a combination of an identity, a connection profile, and metadata, the metadata optionally containing the name of the business network to connect to. Business network cards simplify the process of connecting to a business network, and extend the concept of an identity outside the business network to a &#39;wallet&#39; of identities, each associated with a specific business network and connection profile.</p>
 
 <hr>
 
