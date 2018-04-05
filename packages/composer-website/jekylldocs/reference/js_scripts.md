@@ -289,7 +289,7 @@ async function sampleTransaction(tx) {
 
 To call the {{site.data.conrefs.hlf_full}} API in a transaction processor function, the function `getNativeAPI` must be called, followed by a function from the {{site.data.conrefs.hlf_full}} API. Using the {{site.data.conrefs.hlf_full}} API gives you access to functionality which is not available in the {{site.data.conrefs.composer_full}} API.
 
-*Please note: The `getState` and `putState` {{site.data.conrefs.hlf_full}} API functions will bypass the {{site.data.conrefs.composer_full}} access control rules.*
+**IMPORTANT: Using the {{site.data.conrefs.hlf_full}} API such as `getState`, `putState`, `deleteState`, `getStateByPartialCompositeKey`, `getQueryResult` functions will bypass the {{site.data.conrefs.composer_full}} access control rules (ACLs).**
 
 In the example below, the {{site.data.conrefs.hlf_full}} API function `getHistoryForKey` is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.
 

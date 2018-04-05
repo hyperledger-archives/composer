@@ -10,7 +10,7 @@ excerpt: "This tutorial will walk you through the steps required to configure Co
 
 # Deploying a {{site.data.conrefs.composer_full}} blockchain business network to {{site.data.conrefs.hlf_full}} for a single organization
 
-In the [development environment](../installing/development-tools.html), a simple {{site.data.conrefs.hlf_full}} network is created for you (`fabric-dev-servers`), along with all of the {{site.data.conrefs.composer_full}} configuration that you need in order to deploy a blockchain business network.
+In the [development environment](../installing/development-tools.html), a simple development only {{site.data.conrefs.hlf_full}} single organization, single peer network is created for you (`fabric-dev-servers`), along with all of the {{site.data.conrefs.composer_full}} configuration that you need in order to deploy a blockchain business network.
 
 This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for a single organization, including how to generate the necessary {{site.data.conrefs.composer_full}} configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for multiple organizations.
 
@@ -24,7 +24,7 @@ During this tutorial, you may wish to refer to the [{{site.data.conrefs.hlf_full
 
 In order to follow this tutorial, you must start a {{site.data.conrefs.hlf_full}} network. You can use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment, or you can use your own {{site.data.conrefs.hlf_full}} network that you have built by following the {{site.data.conrefs.hlf_full}} documentation.
 
-The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment. If you use your own {{site.data.conrefs.hlf_full}} network, then you must map between the configuration detailed below and your own configuration.
+The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment. If you use your own {{site.data.conrefs.hlf_full}} network, then you must map between the configuration detailed below and your own configuration and it should be a single organization network.
 
 1. Start a clean {{site.data.conrefs.hlf_full}} by running the following commands:
 
@@ -340,7 +340,7 @@ This is the path to the private key file for the user `Admin@org1.example.com` t
 
     -r PeerAdmin -r ChannelAdmin
 
-Here, we specify which roles the user has. This information is required so that {{site.data.conrefs.composer_full}} knows which users are able to perform which operations. The user `Admin@org1.example.com` is an administrator for the {{site.data.conrefs.hlf_full}} network, and has the roles `PeerAdmin` (ability to install chaincode) and `ChannelAdmin` (ability to instantiate chaincode).
+Here, we specify which roles the user has. This information is required so that {{site.data.conrefs.composer_full}} playground knows which users are able to perform which operations. The user `Admin@org1.example.com` is an administrator for the {{site.data.conrefs.hlf_full}} network, and has the roles `PeerAdmin` (ability to install chaincode) and `ChannelAdmin` (ability to instantiate chaincode).
 
 ## Step Six: Importing the business network card for the {{site.data.conrefs.hlf_full}} administrator
 
@@ -362,11 +362,9 @@ We are going to deploy the blockchain business network `tutorial-network` that i
 
 ## Step Seven: Installing the {{site.data.conrefs.composer_full}} business network onto the {{site.data.conrefs.hlf_full}} peer nodes
 
-{{site.data.conrefs.composer_full}} includes a component called the {{site.data.conrefs.composer_full}} runtime that provides all of the functionality to host and support a business network archive, for example data validation, error handling, transaction processor function execution, and access control. In {{site.data.conrefs.hlf_full}} terms, the {{site.data.conrefs.composer_full}} runtime is a standard chaincode.
+In this step, you will install your blockchain business network onto all of your organizations {{site.data.conrefs.hlf_full}} peer nodes. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode install operation.
 
-In this step, you will install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode install operation.
-
-Run the `composer network install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
+Run the `composer network install` command to install the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
 
     composer network install -c PeerAdmin@fabric-network -a tutorial-network@0.0.1.bna
 

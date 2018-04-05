@@ -38,7 +38,9 @@ As mentioned, we will store credentials in a persistent data store once the appr
 
 1. Open a terminal window and enter the following command:
 
-    docker run -d --name mongo --network composer_default -p 27017:27017 mongo
+```
+docker run -d --name mongo --network composer_default -p 27017:27017 mongo
+```
 
  It should output that a docker image has been downloaded and provide a SHA256 message. An instance of the MongoDB docker container has been started. It is important to use the `--network composer_default` here, to enable simple network connectivity with the REST server.
 
@@ -46,18 +48,18 @@ As mentioned, we will store credentials in a persistent data store once the appr
 
  1. In your $HOME directory, create a temporary directory called `dockertmp` and cd into it:
 
-    cd $HOME ; mkdir dockertmp
-
-    cd dockertmp
+```
+cd $HOME ; mkdir dockertmp
+cd dockertmp
+```
 
  2. In the temporary directory, create a docker file called `Dockerfile` in an editor and paste into the following sequence (including special backslash `\` characters below needed after the `RUN` and `npm` lines below  - ie the continuation character ):
 
 ```
-     FROM hyperledger/composer-rest-server
-
-     RUN npm install --production loopback-connector-mongodb passport-google-oauth2 && \
-     npm cache clean --force && \
-     ln -s node_modules .node_modules
+FROM hyperledger/composer-rest-server
+RUN npm install --production loopback-connector-mongodb passport-google-oauth2 && \
+npm cache clean --force && \
+ln -s node_modules .node_modules
  ```
 
 This Docker file will pull the Docker image located at /hyperledger/composer-rest-server and additionally install two more npm modules:
@@ -68,94 +70,97 @@ This Docker file will pull the Docker image located at /hyperledger/composer-res
 
 3. From the same directory where the `Dockerfile` resides, build the custom Docker REST Server image:
 
-    docker build -t myorg/composer-rest-server .
+```
+docker build -t myorg/composer-rest-server .
+```
 
 The parameter given the –t flag is the name you want to give to this Docker image, this can be up to you to name - but for this guide the image will be called ‘myorg/composer-rest-server’.
 
 You should see output similar to the following with the bottom 2 lines indicating it was 'Successfuly built':
 
-    docker build -t myorg/composer-rest-server .
-    Sending build context to Docker daemon  4.203GB
-    Step 1/2 : FROM hyperledger/composer-rest-server
-     ---> e682b4374837
-    Step 2/2 : RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &&     npm cache clean  --force &&     ln -s node_modules .node_modules
-     ---> Running in 7a116240be21
-    npm WARN saveError ENOENT: no such file or directory, open '/home/composer/package.json'
-    npm WARN enoent ENOENT: no such file or directory, open '/home/composer/package.json'
-    npm WARN composer No description
-    npm WARN composer No repository field.
-    npm WARN composer No README data
-    npm WARN composer No license field.
+```
+docker build -t myorg/composer-rest-server .
+Sending build context to Docker daemon  4.203GB
+Step 1/2 : FROM hyperledger/composer-rest-server
+ ---> e682b4374837
+Step 2/2 : RUN npm install --production loopback-connector-mongodb passport-google-oauth2 &&     npm cache clean  --force &&     ln -s node_modules .node_modules
+ ---> Running in 7a116240be21
+npm WARN saveError ENOENT: no such file or directory, open '/home/composer/package.json'
+npm WARN enoent ENOENT: no such file or directory, open '/home/composer/package.json'
+npm WARN composer No description
+npm WARN composer No repository field.
+npm WARN composer No README data
+npm WARN composer No license field.
 
-    + passport-google-oauth2@0.1.6
-    + loopback-connector-mongodb@3.4.1
-    added 114 packages in 7.574s
-    npm WARN using --force I sure hope you know what you are doing.
-     ---> a16cdea42dac
-    Removing intermediate container 7a116240be21
-    Successfully built a16cdea42dac
-    Successfully tagged myorg/composer-rest-server:latest
-
++ passport-google-oauth2@0.1.6
++ loopback-connector-mongodb@3.4.1
+added 114 packages in 7.574s
+npm WARN using --force I sure hope you know what you are doing.
+ ---> a16cdea42dac
+Removing intermediate container 7a116240be21
+Successfully built a16cdea42dac
+Successfully tagged myorg/composer-rest-server:latest
+```
 
 INFO: Don’t worry about seeing the 'npm warn messages' as shown on the console as per above. This can be ignored.
 
 4. Lastly, for this section, go back up one level in your directory structure:
 
-    cd ..
-
-
+```
+cd ..
+```
 
 <h2 class='everybody'> Step 3: Define Environment variables for REST Server instance configuration </h2>
 
 1. Create a file called `envvars.txt` in your $HOME directory and paste in the following configuration settings - note that you will need to **replace the client ID and clientSecret** with your **own** Google API + client information below  (as shown in the Appendix)
 
 ```
-    COMPOSER_CARD=restadmin@trade-network
-    COMPOSER_NAMESPACES=never
-    COMPOSER_AUTHENTICATION=true
-    COMPOSER_MULTIUSER=true
-    COMPOSER_PROVIDERS='{
+COMPOSER_CARD=restadmin@trade-network
+COMPOSER_NAMESPACES=never
+COMPOSER_AUTHENTICATION=true
+COMPOSER_MULTIUSER=true
+COMPOSER_PROVIDERS='{
     "google": {
-	    "provider": "google",
-	    "module": "passport-google-oauth2",
-	    "clientID": "312039026929-t6i81ijh35ti35jdinhcodl80e87htni.apps.googleusercontent.com",
-		    "clientSecret": "Q4i_CqpqChCzbE-u3Wsd_tF0",
-		    "authPath": "/auth/google",
-		    "callbackURL": "/auth/google/callback",
-		    "scope": "https://www.googleapis.com/auth/plus.login",
-		    "successRedirect": "/",
-		    "failureRedirect": "/"
-      }
-    }'
-    COMPOSER_DATASOURCES='{
-        "db": {
-            "name": "db",
-            "connector": "mongodb",
-            "host": "mongo"
-        }
-    }'
-
+        "provider": "google",
+        "module": "passport-google-oauth2",
+        "clientID": "312039026929-t6i81ijh35ti35jdinhcodl80e87htni.apps.googleusercontent.com",
+        "clientSecret": "Q4i_CqpqChCzbE-u3Wsd_tF0",
+        "authPath": "/auth/google",
+        "callbackURL": "/auth/google/callback",
+        "scope": "https://www.googleapis.com/auth/plus.login",
+        "successRedirect": "/",
+        "failureRedirect": "/"
+    }
+}'
+COMPOSER_DATASOURCES='{
+    "db": {
+        "name": "db",
+        "connector": "mongodb",
+        "host": "mongo"
+    }
+}'
 ```
 
 The environment variables defined here will indicate that we want a multi user server with authentication using Google OAuth2 along with MongoDB as the persistent data source.
 
 The first line indicates the name of the business network card we will start the network with - a specific REST Administrator against a defined business network. You will also see that in this configuration we also define the data source the REST server will use and the authentication provider we are using. These can be seen with the COMPOSER_DATASOURCES and COMPOSER_PROVIDERS variables respectively.
 
-
-
 <h2 class='everybody'> Step 4: Load environment variables in current terminal and launch the persistent REST Server instance </h2>
 
 1. From the same directory as the `envvars.txt` file you created containing the environment variables, run the following command:
 
-     source envvars.txt
+```
+source envvars.txt
+```
 
 INFO	No output from command? - this is expected. If you did have a syntax error in your `envvars.txt` file then this will be indicated by an error, after running this command.
 
 2. Let’s now confirm that environment variables are indeed set by checking a couple of them using “echo” command as shown below
 
-    echo $COMPOSER_CARD
-
-    echo $COMPOSER_PROVIDERS
+```
+echo $COMPOSER_CARD
+echo $COMPOSER_PROVIDERS
+```
 
 <h2 class='everybody'> Step 5: Deploy the sample Commodities Trading Business network to query from REST client </h2>
 
@@ -167,12 +172,19 @@ INFO	No output from command? - this is expected. If you did have a syntax error 
 ![Export BNA file](../assets/img/tutorials/auth/download-bna.png)
 
 
-3. To deploy it, run the following sequence:
+3. To deploy the business network, first you need to install the business network onto the peers
 
-    composer network install --card PeerAdmin@hlfv1 --archiveFile trade-network.bna
+```
+composer network install --card PeerAdmin@hlfv1 --archiveFile trade-network.bna
+```
 
-    composer network start --card PeerAdmin@hlfv1 --networkName trade-network --networkVersion **version** --networkAdmin admin --networkAdminEnrollSecret adminpw --file networkadmin.card
+make a note of the version that is output after running the above command. This is the version of the business network which you will provide to the next command that you use to start the business network.
 
+run the following commands, replacing `<business_network_version>` with the version number output from the previous install command. 
+
+```
+composer network start --card PeerAdmin@hlfv1 --networkName trade-network --networkVersion <business_network_version> --networkAdmin admin --networkAdminEnrollSecret adminpw --file networkadmin.card
+```
 
 ![Deploy Business Network](../assets/img/tutorials/auth/deploy-network.png)
 
@@ -181,9 +193,10 @@ You should get confirmation that the Commodities Trading Business Network has be
 
 4. Next, import the business network card, and connect with the card to download the certs to the wallet:
 
-    composer card import -f networkadmin.card
-
-    composer network ping -c admin@trade-network
+```
+composer card import -f networkadmin.card
+composer network ping -c admin@trade-network
+```
 
 You should get confirmation that the connectivity was successfully tested. We're now ready to work with the deployed business network.
 
@@ -193,53 +206,54 @@ You should get confirmation that the connectivity was successfully tested. We're
 
 1. Create a REST Adninistrator identity `restadmin` and an associated business network card (used to launch the REST server later).
 
-    composer participant add -c admin@trade-network -d '{"$class":"org.hyperledger.composer.system.NetworkAdmin", "participantId":"restadmin"}'
-
-     composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a "resource:org.hyperledger.composer.system.NetworkAdmin#restadmin"
+```
+composer participant add -c admin@trade-network -d '{"$class":"org.hyperledger.composer.system.NetworkAdmin", "participantId":"restadmin"}'
+composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a "resource:org.hyperledger.composer.system.NetworkAdmin#restadmin"
+```
 
 2. Import and test the card:
 
-    composer card import -f  restadmin.card
-
-    composer network ping -c restadmin@trade-network
-
+```
+composer card import -f  restadmin.card
+composer network ping -c restadmin@trade-network
+```
 
 3. Because we are hosting our REST server in another location with its own specific network IP information, we need to update the connection.json - so that the docker hostnames (from within the persistent REST server instance) can resolve each other's IP addresses.
 
 The one liner below will substitute the 'localhost' addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our 'test' authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.
 
-    sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/restadmin@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/
+```
+sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/restadmin@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/
+```
 
 <h2 class='everybody'> Step 7:  Launch the persistent REST server instance   </h2>
 
-
 1. Run the following docker command to launch a REST server instance (with the `restadmin` business network card)    
 
-    docker run \
-    -d \
-    -e COMPOSER_CARD=${COMPOSER_CARD} \
-    -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
-    -e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
-    -e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
-    -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
-    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
-    -v ~/.composer:/home/composer/.composer \
-    --name rest \
-    --network composer_default \
-    -p 3000:3000 \
-    myorg/composer-rest-server
-
-
-
+```
+docker run \
+-d \
+-e COMPOSER_CARD=${COMPOSER_CARD} \
+-e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+-e COMPOSER_AUTHENTICATION=${COMPOSER_AUTHENTICATION} \
+-e COMPOSER_MULTIUSER=${COMPOSER_MULTIUSER} \
+-e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+-e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+-v ~/.composer:/home/composer/.composer \
+--name rest \
+--network composer_default \
+-p 3000:3000 \
+myorg/composer-rest-server
+```
 
 This will output the ID of the Docker container eg . `690f2a5f10776c15c11d9def917fc64f2a98160855a1697d53bd46985caf7934` and confirm that the REST server has been indeed started.
 
 2. Check that all is ok with our ocontainer - you can see that it is running using the following commands:
 
-    docker ps |grep rest
-
-    docker logs rest
-
+```
+docker ps |grep rest
+docker logs rest
+```
 
 <h2 class='everybody'> Step 8:  Test the REST APIs are protected and require authorization   </h2>
 
@@ -264,31 +278,35 @@ You should get an Authorized error and that is because we have configured a Goog
 
 1. You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is **Jo Doe**:
 
-    composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
-
-    composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.acme.trading.Trader#trader1"
-
-    composer card import -f jdoe.card
+```
+composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
+composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.acme.trading.Trader#trader1"
+composer card import -f jdoe.card
+```
 
 2. Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:
 
-    sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/jdoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network
+```
+sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/jdoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network
+```
 
 3. We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for `jdoe`.
 
-     composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card
+```
+composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card
+```
 
 4. Repeat the above steps for participant **Ken Coe** (`kcoe`) - creating a `trader2` participant and issuing the identity `kcoe` - the sequence of commands are:
 
-    composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
+```
+composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
+composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.acme.trading.Trader#trader2"
+composer card import -f kcoe.card
 
-    composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.acme.trading.Trader#trader2"
+sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
 
-    composer card import -f kcoe.card
-
-    sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
-
-    composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+```
 
 These cards can now be imported, then used into the REST client (ie the browser) in the next section.
 
@@ -300,8 +318,8 @@ These cards can now be imported, then used into the REST client (ie the browser)
 
 2. Login using the following credentials: (example - as advised, you should set up your own per the instructions in the appendix section of this tutorial):
 
-Email: composeruser01@gmail.com
-Password: composer00
+- Email: composeruser01@gmail.com
+- Password: composer00
 
 3. You will be authenticated by Google and be redirected back to the REST server (http://localhost:3000/explorer) which shows the access token message in the top left-hand corner - click on 'Show' to view the token.
 

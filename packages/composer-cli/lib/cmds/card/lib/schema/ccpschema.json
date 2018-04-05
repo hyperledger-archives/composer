@@ -87,8 +87,8 @@
             "type" : "object",
             "properties": {
                 "ssl-target-name-override" : { "type" : "string" },
-                "grpc.max-send-message-length" : { "type" : "number" },
-                "grpc.max-receive-message-length" : { "type" : "number" }
+                "grpc.max_send_message_length" : { "type" : "number" },
+                "grpc.max_receive_message_length" : { "type" : "number" }
             }
         },
         "tlsCACerts" : {

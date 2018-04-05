@@ -298,8 +298,8 @@ For example a peer definition might look like:
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
         "grpc.keepalive_time_ms": 600000,
-        "grpc.max-send-message-length": 15728640,
-        "grpc.max-receive-message-length": 15728640
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- <etc> "
@@ -317,8 +317,8 @@ A similar thing could be done for an orderer definition:
     "grpcOptions": {
         "ssl-target-name-override": "orderer.example.com",
         "grpc.keepalive_time_ms": 600000,
-        "grpc.max-send-message-length": 15728640,
-        "grpc.max-receive-message-length": 15728640
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- <etc> "
