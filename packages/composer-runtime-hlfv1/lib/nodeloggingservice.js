@@ -41,8 +41,13 @@ class NodeLoggingService extends LoggingService {
     async initLogging(stub) {
         this.stub = stub;
 
-        Logger.setCallBack(function(){
-            return stub.getTxID().substring(0, 8);
+        let logCFG = await this.getLoggerCfg();
+        Logger.setLoggerCfg(logCFG, true);
+
+        Logger.setCallBack(function(logLevel) {
+            const timestamp = new Date().toISOString();
+            const shortTxId = stub.getTxID().substring(0, 8);
+            return `${timestamp} [${shortTxId}] ${logLevel.toUpperCase().padEnd(8)} `;
         });
 
     }
@@ -64,26 +69,14 @@ class NodeLoggingService extends LoggingService {
     async getLoggerCfg(){
         let result = await this.stub.getState(LOGLEVEL_KEY);
         if (result.length === 0) {
-            let d = this.getDefaultCfg();
-            return d;
+            let defCfg = this.getDefaultCfg();
+            return defCfg;
         } else {
             let json = JSON.parse(result.toString());
             if( json.origin && json.origin==='default-logger-module'){
                 json = this.getDefaultCfg();
             }
             return json;
-        }
-    }
-
-    /**
-     * @returns {String} information to add
-     */
-    callback(){
-        if (this.stub) {
-            const shortTxId = this.stub.getTxID().substring(0, 8);
-            return `[${shortTxId}]`;
-        } else {
-            return('Warning - No stub');
         }
     }
 
@@ -134,7 +127,7 @@ class NodeLoggingService extends LoggingService {
             }
             if (e.match(composerRegex)){
                 debugString.push(e);
-            }else  if (e.match(fabricRegex)){
+            }else if (e.match(fabricRegex)){
                 return this.mapFabricDebug(e);
             }
         }
