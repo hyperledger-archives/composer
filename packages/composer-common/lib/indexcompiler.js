@@ -209,17 +209,21 @@ class IndexCompiler {
 
         let accumulator = {};
 
+        // The order in which the fields appear in the index is significant.
+        // Before changing this code, read https://stackoverflow.com/a/47578641/7079134
+        // especially bullet 3.
+
+        // Handle the order by clause first, if it exists.
+        const orderBy = select.getOrderBy();
+        if (orderBy) {
+            let additions = orderBy.accept(this);
+            processAdditions(additions, accumulator);
+        }
+
         // Handle the where clause, if it exists.
         const where = select.getWhere();
         if (where) {
             let additions = where.accept(this);
-            processAdditions(additions, accumulator);
-        }
-
-        // Handle the order by clause, if it exists.
-        const orderBy = select.getOrderBy();
-        if (orderBy) {
-            let additions = orderBy.accept(this);
             processAdditions(additions, accumulator);
         }
 

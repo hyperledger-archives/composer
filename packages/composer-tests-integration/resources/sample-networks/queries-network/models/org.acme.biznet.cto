@@ -22,6 +22,7 @@ asset Commodity identified by tradingSymbol {
     o String mainExchange
     o Double quantity
     --> Trader owner
+    o DateTime issueDate
 }
 participant Trader identified by tradeId {
     o String tradeId
