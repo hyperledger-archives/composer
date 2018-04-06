@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -197,7 +197,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
         Then The response code should be 200
@@ -209,7 +210,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
 
@@ -222,7 +224,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
         Then The response code should be 200
@@ -234,7 +237,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
 
@@ -247,7 +251,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
         Then The response code should be 200
@@ -259,7 +264,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
 
@@ -294,7 +300,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
 
@@ -309,7 +316,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }]
             """
 
@@ -324,7 +332,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }]
             """
 
@@ -339,7 +348,8 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }]
             """
 
@@ -354,14 +364,16 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }, {
               "$class": "org.acme.biznet.Commodity",
               "tradingSymbol": "GHI",
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }]
             """
 

@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -103,7 +103,8 @@ Feature: Queries steps
               "description": "Corn",
               "mainExchange": "EURONEXT",
               "quantity": 10,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01"
             }
             """
         Then The response code should be 200
@@ -115,7 +116,8 @@ Feature: Queries steps
               "description": "Corn",
               "mainExchange": "EURONEXT",
               "quantity": 10,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1",
+              "issueDate": "2018-03-01T00:00:00.000Z"
             }
             """
 
@@ -128,7 +130,8 @@ Feature: Queries steps
               "description": "Cocoa",
               "mainExchange": "ICE",
               "quantity": 80,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-01-01"
             }
             """
         Then The response code should be 200
@@ -140,7 +143,8 @@ Feature: Queries steps
               "description": "Cocoa",
               "mainExchange": "ICE",
               "quantity": 80,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-01-01T00:00:00.000Z"
             }
             """
 
@@ -153,7 +157,8 @@ Feature: Queries steps
               "description": "Butter",
               "mainExchange": "ICE",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-04-04"
             }
             """
         Then The response code should be 200
@@ -165,7 +170,8 @@ Feature: Queries steps
               "description": "Butter",
               "mainExchange": "ICE",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2",
+              "issueDate": "2018-04-04T00:00:00.000Z"
             }
             """
 
@@ -181,7 +187,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -189,7 +196,8 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -197,7 +205,8 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
                 }
             ]
             """
@@ -214,7 +223,8 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
                 }
             ]
             """
@@ -231,7 +241,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -239,7 +250,8 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -247,7 +259,8 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
                 }
             ]
             """
@@ -264,7 +277,8 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -272,7 +286,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -280,7 +295,8 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 }
             ]
             """
@@ -297,7 +313,8 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -305,7 +322,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -313,7 +331,80 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
+                }
+            ]
+            """
+
+    Scenario: Using the REST API, I can list the Commodities in date order using a query
+        When I make a GET request to /api/queries/selectCommoditiesByDate
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "CC",
+                  "description": "Cocoa",
+                  "mainExchange": "ICE",
+                  "quantity": 80,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "EMA",
+                  "description": "Corn",
+                  "mainExchange": "EURONEXT",
+                  "quantity": 10,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
+                }
+            ]
+            """
+
+    Scenario: Using the REST API, I can list the Commodities in reverse date order using a query
+        When I make a GET request to /api/queries/selectCommoditiesByDateReverse
+        Then The response code should be 200
+        And The response body should be JSON matching
+            """
+            [
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "BUT",
+                  "description": "Butter",
+                  "mainExchange": "ICE",
+                  "quantity": 50,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "EMA",
+                  "description": "Corn",
+                  "mainExchange": "EURONEXT",
+                  "quantity": 10,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
+                },
+                {
+                  "$class": "org.acme.biznet.Commodity",
+                  "tradingSymbol": "CC",
+                  "description": "Cocoa",
+                  "mainExchange": "ICE",
+                  "quantity": 80,
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 }
             ]
             """
@@ -330,7 +421,8 @@ Feature: Queries steps
                   "description": "Cocoa",
                   "mainExchange": "ICE",
                   "quantity": 80,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-01-01T00:00:00.000Z"
                 }
             ]
             """
@@ -347,7 +439,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 }
             ]
             """
@@ -386,7 +479,8 @@ Feature: Queries steps
                   "description": "Butter",
                   "mainExchange": "ICE",
                   "quantity": 50,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER2",
+                  "issueDate": "2018-04-04T00:00:00.000Z"
                 },
                 {
                   "$class": "org.acme.biznet.Commodity",
@@ -394,7 +488,8 @@ Feature: Queries steps
                   "description": "Corn",
                   "mainExchange": "EURONEXT",
                   "quantity": 10,
-                  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+                  "owner": "resource:org.acme.biznet.Trader#TRADER1",
+                  "issueDate": "2018-03-01T00:00:00.000Z"
                 }
             ]
             """

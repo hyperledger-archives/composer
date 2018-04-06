@@ -56,6 +56,22 @@ query selectCommoditiesOrderedReverse {
       ORDER BY [quantity DESC]
 }
 
+query selectCommoditiesByDate {
+  description: "Select commodities ordered by issue date"
+  statement:
+      SELECT org.acme.biznet.Commodity
+      WHERE (quantity > 0)
+      ORDER BY [issueDate ASC]
+}
+
+query selectCommoditiesByDateReverse {
+  description: "Select commodities ordered by issue date"
+  statement:
+      SELECT org.acme.biznet.Commodity
+      WHERE (quantity > 0)
+      ORDER BY [issueDate DESC]
+}
+
 query selectCommoditiesWithMidQuantity {
   description: "Select commodities based on quantity and owner"
   statement:
