@@ -26,6 +26,10 @@ const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
 const JSONWriter = require('./codegen/jsonwriter');
 
+const baseDefaultOptions = {
+    validate: true
+};
+
 /**
  * Serialize Resources instances to/from various formats for long-term storage
  * (e.g. on the blockchain).
@@ -34,6 +38,7 @@ const JSONWriter = require('./codegen/jsonwriter');
  * @memberof module:composer-common
  */
 class Serializer {
+
     /**
      * Create a Serializer.
      * <strong>Note: Only to be called by framework code. Applications should
@@ -52,6 +57,16 @@ class Serializer {
 
         this.factory = factory;
         this.modelManager = modelManager;
+        this.defaultOptions = Object.assign({}, baseDefaultOptions);
+    }
+
+    /**
+     * Set the default options for the serializer.
+     * @param {Object} newDefaultOptions The new default options for the serializer.
+     */
+    setDefaultOptions(newDefaultOptions) {
+        // Combine the specified default options with the base default
+        this.defaultOptions = Object.assign({}, baseDefaultOptions, newDefaultOptions);
     }
 
     /**
@@ -88,10 +103,7 @@ class Serializer {
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
 
         // validate the resource against the model
-        options = options || {};
-        if(options.validate === undefined) {
-            options.validate = true;
-        }
+        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
         if(options.validate) {
             const validator = new ResourceValidator(options);
             classDeclaration.accept(validator, parameters);
@@ -143,10 +155,7 @@ class Serializer {
         const classDeclaration = this.modelManager.getType(jsonObject.$class);
 
         // default the options.
-        options = options || {};
-        if(options.validate === undefined) {
-            options.validate = true;
-        }
+        options = options ? Object.assign({}, this.defaultOptions, options) : this.defaultOptions;
 
         // create a new instance, using the identifier field name as the ID.
         let resource;

@@ -91,10 +91,55 @@ describe('Transaction (HTTP specific) system tests', function() {
     // Can't send a request body for a GET or HEAD request.
     ['POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
 
-        it(`should handle a ${method} call that sends an asset in the request body`, async () => {
+        it(`should handle a ${method} call that sends an asset in the request body by using the serializer`, async () => {
             const factory = client.getBusinessNetwork().getFactory();
-            const tx = factory.newTransaction('systest.transactions.http', 'AssetIn');
+            const tx = factory.newTransaction('systest.transactions.http', 'AssetInWithSerializer');
             tx.method = method;
+            await client.submitTransaction(tx);
+        });
+
+    });
+
+    // Can't send a request body for a GET or HEAD request.
+    ['POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
+
+        it(`should handle a ${method} call that sends an asset in the request body without using the serializer`, async () => {
+            const factory = client.getBusinessNetwork().getFactory();
+            const tx = factory.newTransaction('systest.transactions.http', 'AssetInWithoutSerializer');
+            tx.method = method;
+            await client.submitTransaction(tx);
+        });
+
+    });
+
+    // Can't send a request body for a GET or HEAD request.
+    ['POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
+
+        it(`should handle a ${method} call that sends an asset with a relationship in the request body without using the serializer`, async () => {
+            const factory = client.getBusinessNetwork().getFactory();
+            const tx = factory.newTransaction('systest.transactions.http', 'AssetWithRelationshipInWithoutSerializer');
+            tx.method = method;
+            await client.submitTransaction(tx);
+        });
+
+    });
+
+    // Can't send a request body for a GET or HEAD request.
+    ['POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
+
+        it(`should handle a ${method} call that sends an asset with a resolved relationship in the request body without using the serializer`, async () => {
+            const factory = client.getBusinessNetwork().getFactory();
+            const participant = factory.newResource('systest.transactions.http', 'DummyParticipant', '1234');
+            participant.stringValue = 'hello world';
+            const participantRegistry = await client.getParticipantRegistry('systest.transactions.http.DummyParticipant');
+            await participantRegistry.add(participant);
+            const asset = factory.newResource('systest.transactions.http', 'DummyAsset', '1234');
+            asset.stringValue = 'hello world';
+            asset.integerValue = 12345678;
+            asset.participant = factory.newRelationship('systest.transactions.http', 'DummyParticipant', '1234');
+            const tx = factory.newTransaction('systest.transactions.http', 'AssetWithResolvedRelationshipInWithoutSerializer');
+            tx.method = method;
+            tx.asset = asset;
             await client.submitTransaction(tx);
         });
 

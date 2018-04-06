@@ -204,7 +204,7 @@ describe('Api', () => {
             return api.post('url', transaction, {options: true})
                 .should.eventually.have.property('foo')
                 .then(() => {
-                    sinon.assert.calledWith(spy, transaction, { options: true, validate: true });
+                    sinon.assert.calledWith(spy, transaction, { options: true });
                     sinon.assert.calledOnce(mockHTTPService.post);
                     sinon.assert.calledWith(mockHTTPService.post, 'url', {
                         $class: 'org.doge.DogeTransaction',
@@ -233,7 +233,7 @@ describe('Api', () => {
         it('should emit the event using the event service', () => {
             api.emit(event);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, event, { convertResourcesToRelationships: true, validate: true });
+            sinon.assert.calledWith(spy, event, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
             sinon.assert.calledOnce(mockEventService.emit);
             sinon.assert.calledWith(mockEventService.emit, {
                 $class: 'org.doge.DogeEvent',

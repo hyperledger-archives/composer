@@ -32,23 +32,20 @@ app.use(function(req, res, next) {
 });
 
 ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
+
     app[method.toLowerCase()]('/api/basic', (req, res) => {
         res.status(200).json({
             method: req.method
         });
     });
-});
 
-['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
     app[method.toLowerCase()]('/api/error', (req, res) => {
         res.status(500).json({
             method: req.method,
             error: 'such error'
         });
     });
-});
 
-['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
     app[method.toLowerCase()]('/api/assetin', (req, res) => {
         assert.deepStrictEqual(req.body, {
             $class: 'systest.transactions.http.DummyAsset',
@@ -60,9 +57,37 @@ app.use(function(req, res, next) {
             method: req.method
         });
     });
-});
 
-['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH'].forEach((method) => {
+    app[method.toLowerCase()]('/api/assetwithrelationshipin', (req, res) => {
+        assert.deepStrictEqual(req.body, {
+            $class: 'systest.transactions.http.DummyAsset',
+            assetId: '1234',
+            integerValue: 12345678,
+            stringValue: 'hello world',
+            participant: 'resource:systest.transactions.http.DummyParticipant#1234'
+        });
+        res.status(200).json({
+            method: req.method
+        });
+    });
+
+    app[method.toLowerCase()]('/api/assetwithresolvedrelationshipin', (req, res) => {
+        assert.deepStrictEqual(req.body, {
+            $class: 'systest.transactions.http.DummyAsset',
+            assetId: '1234',
+            integerValue: 12345678,
+            stringValue: 'hello world',
+            participant: {
+                $class: 'systest.transactions.http.DummyParticipant',
+                participantId: '1234',
+                stringValue: 'hello world'
+            }
+        });
+        res.status(200).json({
+            method: req.method
+        });
+    });
+
     app[method.toLowerCase()]('/api/assetout', (req, res) => {
         res.status(200).json({
             method: req.method,
@@ -74,6 +99,7 @@ app.use(function(req, res, next) {
             }
         });
     });
+
 });
 
 process.on('SIGINT', function () {

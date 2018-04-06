@@ -16,26 +16,25 @@
 
 const AclFile = require('./acl/aclfile');
 const AclManager = require('./aclmanager');
-const QueryFile = require('./query/queryfile');
-const QueryManager = require('./querymanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
-const Factory = require('./factory');
 const fs = require('fs');
 const fsPath = require('path');
 const Introspector = require('./introspect/introspector');
 const JSZip = require('jszip');
 const Logger = require('./log/logger');
-const ModelManager = require('./modelmanager');
 const minimatch = require('minimatch');
+const ModelManager = require('./modelmanager');
+const QueryFile = require('./query/queryfile');
+const QueryManager = require('./querymanager');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
-const Serializer = require('./serializer');
-const nodeUtil = require('util');
+const thenify = require('thenify');
+const util = require('util');
+
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
-
-const thenify = require('thenify');
 const mkdirp = thenify(require('mkdirp'));
+
 
     /** define a help function that will filter out files
      * that are inside a node_modules directory under the path
@@ -116,12 +115,12 @@ class BusinessNetworkDefinition {
         }
 
         this.modelManager = new ModelManager();
+        this.factory = this.modelManager.getFactory();
+        this.serializer = this.modelManager.getSerializer();
         this.aclManager = new AclManager(this.modelManager);
         this.queryManager = new QueryManager(this.modelManager);
         this.scriptManager = new ScriptManager(this.modelManager);
         this.introspector = new Introspector(this.modelManager);
-        this.factory = new Factory(this.modelManager);
-        this.serializer = new Serializer(this.factory, this.modelManager);
 
         this.metadata = new BusinessNetworkMetadata(packageJson,readme);
         LOG.exit(method);
@@ -718,7 +717,7 @@ class BusinessNetworkDefinition {
             mode: createFileMode
         };
 
-        const writeFile = nodeUtil.promisify(fs.writeFile);
+        const writeFile = util.promisify(fs.writeFile);
 
         const promises = [];
 
