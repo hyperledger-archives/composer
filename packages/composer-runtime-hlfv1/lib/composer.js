@@ -41,6 +41,7 @@ class Composer {
             const installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
             shim.start(new Composer(installedBusinessNetwork));
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.log(error);
         }
     }
@@ -85,15 +86,15 @@ class Composer {
      * @returns {promise} a promise that resolves with either a shim success status or shim error status
      */
     async Init(stub) {
-        const method = 'Init';
-        LOG.entry(method, stub);
-
         let t0 = process.hrtime();
-        let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
-        let engine = this._createEngine();
-        let nodeContext = this._createContext(engine, stub);
+        const method = 'Init';
         try {
             await this.container.initLogging(stub);
+            LOG.entry(method, stub);
+
+            let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
+            let engine = this._createEngine();
+            let nodeContext = this._createContext(engine, stub);
             await engine.init(nodeContext, fcn, params);
             LOG.exit(method);
             LOG.debug('@PERF Composer.' + method + ' total duration for txnID [', stub.getTxID(), '] ', process.hrtime(t0)[0], '.', process.hrtime(t0)[1]);
@@ -114,16 +115,15 @@ class Composer {
      * @returns {promise} a promise that resolves with either a shim success status or shim error status
      */
     async Invoke(stub) {
-        const method = 'Invoke';
-        LOG.entry(method, stub);
-
-        let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
         let t0 = process.hrtime();
-
-        let engine = this._createEngine();
-        let nodeContext = this._createContext(engine, stub);
+        const method = 'Invoke';
         try {
             await this.container.initLogging(stub);
+            LOG.entry(method, stub);
+            let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
+
+            let engine = this._createEngine();
+            let nodeContext = this._createContext(engine, stub);
             let payload = await engine.invoke(nodeContext, fcn, params);
             if (payload !== null && payload !== undefined) {
                 LOG.exit(method, payload);

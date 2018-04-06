@@ -119,10 +119,9 @@ describe('Composer', () => {
             mockStub.getFunctionAndParameters.returns({fcn:'someFn', params:[]});
             mockEngine.init.resolves();
 
-
             return composer.Init(mockStub)
                 .then(() => {
-                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(composer._createContext);
                     sinon.assert.notCalled(mockEngine.init);
                     sinon.assert.calledOnce(shim.error);
                     sinon.assert.calledWith(shim.error, error);
@@ -244,7 +243,7 @@ describe('Composer', () => {
 
             return composer.Invoke(mockStub)
                 .then(() => {
-                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(composer._createContext);
                     sinon.assert.notCalled(mockEngine.invoke);
                     sinon.assert.calledOnce(shim.error);
                     sinon.assert.calledWith(shim.error, error);

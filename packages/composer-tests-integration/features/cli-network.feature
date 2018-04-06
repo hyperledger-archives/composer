@@ -147,13 +147,13 @@ Feature: Cli network steps
             """
             composer network loglevel --card admin@marbles-network
             """
-        Then The stdout information should include text matching /composer\[error\]:*/
+        Then The stdout information should include text matching /composer\[debug\]:*/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can create set the log level of the running network
         When I run the following expected pass CLI command
             """
-            composer network loglevel --card admin@marbles-network --newlevel 'composer[debug]:acls'
+            composer network loglevel --card admin@marbles-network --newlevel 'composer[info]:acls'
             """
-        Then The stdout information should include text matching /composer\[debug\]:acls/
+        Then The stdout information should include text matching /composer\[info\]:acls/
         And The stdout information should include text matching /Command succeeded/

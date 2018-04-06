@@ -154,8 +154,9 @@ class Logger {
         let callbackData;
 
         // if callback has been registered get the data.
+        callbackData = '';
         if(_callback){
-            callbackData = _callback() || '';
+            callbackData = _callback(logLevel) || '';
         }
 
         if (typeof arguments[3] ==='undefined'){
