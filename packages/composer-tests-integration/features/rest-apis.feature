@@ -197,8 +197,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }
             """
         Then The response code should be 200
@@ -210,8 +209,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }
             """
 
@@ -224,8 +222,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }
             """
         Then The response code should be 200
@@ -237,8 +234,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }
             """
 
@@ -251,8 +247,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }
             """
         Then The response code should be 200
@@ -264,8 +259,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }
             """
 
@@ -300,8 +294,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }
             """
 
@@ -316,8 +309,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }]
             """
 
@@ -332,8 +324,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }]
             """
 
@@ -348,8 +339,7 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 72.297,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }]
             """
 
@@ -364,16 +354,14 @@ Feature: Rest steps
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 23,
-              "owner": "resource:org.acme.biznet.Trader#TRADER1",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER1"
             }, {
               "$class": "org.acme.biznet.Commodity",
               "tradingSymbol": "GHI",
               "description": "Test commodity",
               "mainExchange": "Euronext",
               "quantity": 50,
-              "owner": "resource:org.acme.biznet.Trader#TRADER2",
-              "issueDate": "2018-03-01T00:00:00.000Z"
+              "owner": "resource:org.acme.biznet.Trader#TRADER2"
             }]
             """
 
