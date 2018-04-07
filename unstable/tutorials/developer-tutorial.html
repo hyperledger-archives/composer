@@ -203,7 +203,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/unstable/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/unstable/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 <li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
@@ -463,8 +463,7 @@ transaction Trade {
 <h4 id="adding-access-control">Adding access control</h4>
 
 <ol>
-<li><p>Create a <code>permissions.acl</code> file in the <code>tutorial-network</code> directory.</p></li>
-<li><p>Add the following access control rules to <code>permissions.acl</code>:</p>
+<li><p>Replace the following access control rules in the file <code>permissions.acl</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * Access control rules for tutorial-network
  */
