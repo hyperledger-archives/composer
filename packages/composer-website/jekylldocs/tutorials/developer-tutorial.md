@@ -100,9 +100,7 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
 
 #### Adding access control
 
-1. Create a `permissions.acl` file in the `tutorial-network` directory.
-
-2. Add the following access control rules to `permissions.acl`:
+1. Replace the following access control rules in the file `permissions.acl`:
 
         /**
          * Access control rules for tutorial-network

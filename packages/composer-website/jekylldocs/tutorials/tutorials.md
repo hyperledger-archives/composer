@@ -60,8 +60,7 @@ In this tutorial, two organization administrators configure their instances of {
 
 [**Start the multi-organization {{site.data.conrefs.hlf_full}} deployment tutorial**](../tutorials/deploy-to-fabric-multi-org.html).
 
-## Invoking a {{site.data.conrefs.composer_full}} business network from another business network
-
+## Interacting with other business networks
 In this tutorial, we will demonstrate the steps that a business network developer needs to take in order to invoke a {{site.data.conrefs.composer_full}} business network from a different business network
 
 [**Start the invoking a {{site.data.conrefs.composer_full}} business network from another business network tutorial**](../tutorials/invoke-composer-network.html).
