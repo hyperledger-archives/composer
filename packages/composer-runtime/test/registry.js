@@ -212,8 +212,8 @@ describe('Registry', () => {
 
         it('should determine whether a specific resource exists in the registry', () => {
             return registry.exists('doge1')
+                .should.eventually.be.true
                 .then((exists) => {
-                    exists.should.equal.true;
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
                 });
@@ -221,15 +221,13 @@ describe('Registry', () => {
 
         it('should determine whether a specific resource does not exist in the registry', () => {
             return registry.exists('doge2')
-                .then((exists) => {
-                    exists.should.equal.false;
-                });
+                .should.eventually.be.false;
         });
 
         it('should not throw or leak information about resources that cannot be accessed', () => {
             mockAccessController.check.withArgs(mockResource, 'READ').rejects(new AccessException(mockResource, 'READ', mockParticipant));
             return registry.exists('doge1')
-                .should.eventually.equal(false)
+                .should.eventually.be.false
                 .then(() => {
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');

@@ -75,14 +75,14 @@ class Serializer {
      * peristent storage.
      * </p>
      * @param {Resource} resource - The instance to convert to JSON
-     * @param {Object} options - the optional serialization options.
-     * @param {boolean} options.validate - validate the structure of the Resource
+     * @param {Object} [options] - the optional serialization options.
+     * @param {boolean} [options.validate] - validate the structure of the Resource
      * with its model prior to serialization (default to true)
-     * @param {boolean} options.convertResourcesToRelationships - Convert resources that
+     * @param {boolean} [options.convertResourcesToRelationships] - Convert resources that
      * are specified for relationship fields into relationships, false by default.
-     * @param {boolean} options.permitResourcesForRelationships - Permit resources in the
+     * @param {boolean} [options.permitResourcesForRelationships] - Permit resources in the
      * place of relationships (serializing them as resources), false by default.
-     * @param {boolean} options.deduplicateResources - Generate $id for resources and
+     * @param {boolean} [options.deduplicateResources] - Generate $id for resources and
      * if a resources appears multiple times in the object graph only the first instance is
      * serialized in full, subsequent instances are replaced with a reference to the $id
      * @return {Object} - The Javascript Object that represents the resource

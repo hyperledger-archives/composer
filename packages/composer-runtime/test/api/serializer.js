@@ -51,18 +51,38 @@ describe('Serializer', () => {
 
     describe('#toJSON', () => {
 
-        it('should proxy to the serializer', () => {
-            mockSerializer.toJSON.withArgs(mockResource, { option1: true }).returns({ thing1: 'value 1' });
+        it('should proxy to the serializer without options', () => {
+            mockSerializer.toJSON.withArgs(mockResource, { validate: true, convertResourcesToRelationships: false, permitResourcesForRelationships: false, deduplicateResources: false }).returns({ thing1: 'value 1' });
+            serializer.toJSON(mockResource).should.deep.equal({ thing1: 'value 1' });
+        });
+
+        it('should proxy to the serializer with options', () => {
+            mockSerializer.toJSON.withArgs(mockResource, { validate: true, convertResourcesToRelationships: false, permitResourcesForRelationships: false, deduplicateResources: false, option1: true }).returns({ thing1: 'value 1' });
             serializer.toJSON(mockResource, { option1: true }).should.deep.equal({ thing1: 'value 1' });
+        });
+
+        it('should proxy to the serializer with options containing default overrides', () => {
+            mockSerializer.toJSON.withArgs(mockResource, { validate: true, convertResourcesToRelationships: true, permitResourcesForRelationships: false, deduplicateResources: false }).returns({ thing1: 'value 1' });
+            serializer.toJSON(mockResource, { convertResourcesToRelationships: true }).should.deep.equal({ thing1: 'value 1' });
         });
 
     });
 
     describe('#fromJSON', () => {
 
-        it('should proxy to the serializer', () => {
-            mockSerializer.fromJSON.withArgs({ thing1: 'value 1' }, { option1: true }).returns(mockResource);
+        it('should proxy to the serializer without options', () => {
+            mockSerializer.fromJSON.withArgs({ thing1: 'value 1' }, { acceptResourcesForRelationships: false, validate: true }).returns(mockResource);
+            serializer.fromJSON({ thing1: 'value 1' }).should.equal(mockResource);
+        });
+
+        it('should proxy to the serializer with options', () => {
+            mockSerializer.fromJSON.withArgs({ thing1: 'value 1' }, { acceptResourcesForRelationships: false, validate: true, option1: true }).returns(mockResource);
             serializer.fromJSON({ thing1: 'value 1' }, { option1: true }).should.equal(mockResource);
+        });
+
+        it('should proxy to the serializer with options containing default overrides', () => {
+            mockSerializer.fromJSON.withArgs({ thing1: 'value 1' }, { acceptResourcesForRelationships: true, validate: true }).returns(mockResource);
+            serializer.fromJSON({ thing1: 'value 1' }, { acceptResourcesForRelationships: true }).should.equal(mockResource);
         });
 
     });
