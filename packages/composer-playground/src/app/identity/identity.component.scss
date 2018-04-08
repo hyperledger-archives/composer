@@ -24,6 +24,14 @@ identity {
         display: flex;
         flex-direction: column;
 
+        .network-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: $space-medium;
+        }
+
         .selected-border {
             width: $border-width-large;
             margin-right: $space-medium;
