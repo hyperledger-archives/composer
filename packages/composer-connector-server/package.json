@@ -12,7 +12,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
-    "licchk": "license-check",
+    "licchk": "license-check-and-add",
     "postlicchk": "npm run doc",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
@@ -31,18 +31,40 @@
   ],
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
-  "license-check-config": {
-    "src": [
-      "**/*.js",
-      "!./cli.js",
-      "!./coverage/**/*",
-      "!./node_modules/**/*",
-      "!./out/**/*"
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "LICENSE.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      "composer-logs",
+      "coverage",
+      "node_modules",
+      ".nyc-output",
+      "out",
+      ".tern-project"
     ],
-    "path": "header.txt",
-    "blocking": true,
-    "logInfo": false,
-    "logError": true
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".yml"
+    ],
+    "insert_license": false,
+    "license_formats": {
+      "js": {
+        "prepend": "/*",
+        "append": " */",
+        "eachLine": {
+            "prepend": " * "
+        }
+      },
+      "npmrc|editorconfig": {
+        "eachLine": {
+            "prepend": "# "
+        }
+      },
+      "md": {
+        "file": "../../markdown-license.txt"
+      }
+    }
   },
   "dependencies": {
     "composer-common": "0.19.1",
@@ -57,7 +79,7 @@
     "composer-connector-embedded": "0.19.1",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
-    "license-check": "1.1.5",
+    "license-check-and-add": "2.3.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0",
     "proxyquire": "1.7.11",

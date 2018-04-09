@@ -193,3 +193,6 @@ The second subtask (htmlrender) again uses nunjucks but this is using a single t
 ```
 
 Final step is a copy to move the 'assets' i.e. css files into the correct location.
+
+## License <a name="license"></a>
+Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the [LICENSE](LICENSE) file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.
