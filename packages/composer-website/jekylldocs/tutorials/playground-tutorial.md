@@ -62,6 +62,7 @@ For more information on our modeling language, check our [documentation](../refe
 
 2. Delete the lines of code in the model file and replace it with this:
 
+      <code-block type="files" sub-type="contents"  identifier="model.cto" >
 
         /**
          * My commodity trading network
@@ -84,6 +85,8 @@ For more information on our modeling language, check our [documentation](../refe
             --> Trader newOwner
         }
 
+      </code-block>
+
       This domain model defines a single asset type `Commodity` and single participant type `Trader` and a single transaction type `Trade` that is used to modify the owner of a commodity.
 
 ## Step Five: Adding a transaction processor script file
@@ -98,6 +101,8 @@ For more information on writing transaction processor functions, check our [docu
 
 3. Delete the lines of code in the script file and replace it with the following code:
 
+      <code-block type="files" sub-type="contents" identifier="script.js">
+
         /**
          * Track the trade of a commodity from one trader to another
          * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
@@ -109,6 +114,7 @@ For more information on writing transaction processor functions, check our [docu
             await assetRegistry.update(trade.commodity);
         }
 
+      </code-block>
 
       This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
@@ -150,6 +156,8 @@ The first thing we should add to our business network is two participants.
 
 2. What you can see is the data structure of a _Trader_ participant. We want some easily recognizable data, so delete the code that's there and paste the following:
 
+      <code-block type="transactions" sub-type="participants" identifier="trader1" >
+
         {
           "$class": "org.acme.mynetwork.Trader",
           "tradeId": "TRADER1",
@@ -157,9 +165,13 @@ The first thing we should add to our business network is two participants.
           "lastName": "Jones"
         }
 
+      </code-block>
+
 3. Click **Create New** to create the participant.
 
 4. You should be able to see the new _Trader_ participant you've created. We need another _Trader_ to test our _Trade_ transaction though, so create another _Trader_, but this time, use the following data:
+
+      <code-block type="transactions" sub-type="participants" identifier="trader2">
 
         {
           "$class": "org.acme.mynetwork.Trader",
@@ -167,6 +179,8 @@ The first thing we should add to our business network is two participants.
           "firstName": "Amy",
           "lastName": "Williams"
         }
+
+      </code-block>
 
 Make sure that both participants exist in the _Trader_ view before moving on!
 
@@ -184,6 +198,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
 
 2. Delete the asset data and replace it with the following:
 
+      <code-block type="transactions" sub-type="assets" identifier="abc" >
 
         {
           "$class": "org.acme.mynetwork.Commodity",
@@ -194,6 +209,7 @@ Now that we have two _Trader_ participants, we need something for them to trade.
           "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
         }
 
+      </code-block>
 
 3. After creating this asset, you should be able to see it in the **Commodity** tab.
 
@@ -216,12 +232,15 @@ To test the _Trade_ transaction:
 
 3. Replace the transaction data with the following, or just change the details:
 
+      <code-block type="transactions" sub-type="transactions" identifier="trade" >
+
         {
           "$class": "org.acme.mynetwork.Trade",
           "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
           "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
         }
 
+      </code-block>
 
 4. Click **Submit**.
 

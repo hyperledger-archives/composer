@@ -17,9 +17,11 @@
 const clisteps = require('./lib/clisteps');
 const reststeps = require('./lib/reststeps');
 const hooks = require('./lib/hooks');
+const tutorialsteps = require('./lib/tutorialsteps');
 
 module.exports = function () {
     clisteps.call(this);
     reststeps.call(this);
     hooks.call(this);
+    tutorialsteps.call(this);
 };
