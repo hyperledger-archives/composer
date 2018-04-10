@@ -47,7 +47,7 @@ export class Constants {
     static readonly basicSampleNetwork = {
         name: 'basic-sample-network',
         files: ['About\nREADME.md, package.json', 'Model File\nmodels/sample.cto', 'Script File\nlib/sample.js', 'Access Control\npermissions.acl'],
-        participants: [{type: 'SampleParticipant', example: path.join(__dirname, 'data/files/identity/participants/CONGA')}],
+        participants: [{type: 'SampleParticipant', example: path.join(__dirname, 'data/files/identity/participants/CONGA.json')}],
         assets: [{type: 'SampleAsset'}],
         registryHeaders: {
             sampleParticipant: ['Participant registry for org.acme.sample.SampleParticipant']
