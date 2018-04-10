@@ -189,8 +189,8 @@ class ClassDeclaration extends Decorated {
         }
 
         if(this.idField) {
-            const field = this.getProperty(this.idField);
-            if(!field) {
+            const idField = this.getProperty(this.idField);
+            if(!idField) {
                 let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotproperty');
                 throw new IllegalModelException(formatter({
                     'class': this.name,
@@ -199,7 +199,7 @@ class ClassDeclaration extends Decorated {
             }
             else {
                 // check that identifiers are strings
-                if(field.getType() !== 'String') {
+                if(idField.getType() !== 'String') {
                     let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotstring');
                     throw new IllegalModelException( formatter({
                         'class': this.name,
@@ -207,13 +207,20 @@ class ClassDeclaration extends Decorated {
                     }),this.modelFile, this.ast.location);
                 }
 
-                if(field.isOptional()) {
+                if(idField.isOptional()) {
                     throw new IllegalModelException('Identifying fields cannot be optional.',this.modelFile, this.ast.location);
                 }
-                if(this.getSuperType()){
-                    if(field.getName() === this.getModelFile().getType(this.superType).getIdentifierFieldName()){
-                        throw new IllegalModelException('Identifier cannot extend from super type.');
+                if(this.getSuperType()) {
+                    // check this class doesn't declare the identifying field as a property.
+                    if(idField.getName() === this.getModelFile().getType(this.superType).getIdentifierFieldName()) {
+                        throw new IllegalModelException('Identifier from super class cannot be redeclared.', this.modelFile, this.ast.location);
                     }
+
+                    // TODO: This has been disabled pending major version bump and/or confirmation that this is illegal
+                    // As this class has an idField declared, check the superclass doesn't
+                    //if (this.getModelFile().getType(this.superType).getIdentifierFieldName()) {
+                    //    throw new IllegalModelException('Identifier defined in super class, identifiers cannot be overridden', this.modelFile, this.ast.location);
+                    //}
                 }
             }
         }
