@@ -85,7 +85,8 @@
     "license-check-and-add": "2.3.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0",
-    "sinon": "2.3.8"
+    "sinon": "2.3.8",
+    "composer-common": "0.19.1"
   },
   "nyc": {
     "exclude": [

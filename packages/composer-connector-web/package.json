@@ -86,7 +86,8 @@
     "mocha": "3.4.2",
     "sinon": "2.3.8",
     "transform-loader": "0.2.4",
-    "watchify": "3.7.0"
+    "watchify": "3.7.0",
+    "composer-common": "0.19.1"
   },
   "peerDependencies": {
     "composer-common": "0.19.3"
