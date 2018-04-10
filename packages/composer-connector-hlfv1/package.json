@@ -63,8 +63,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.2"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "fabric-ca-client": "1.1.0",
     "fabric-client": "1.1.0",
     "fs-extra": "1.0.0",

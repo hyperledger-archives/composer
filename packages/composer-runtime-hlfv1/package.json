@@ -87,8 +87,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "composer-runtime": "0.19.3",
     "fabric-shim": "1.1.0",
     "jsrsasign": "8.0.3",

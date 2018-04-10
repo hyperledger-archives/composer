@@ -66,8 +66,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "composer-connector-hlfv1": "0.19.3",
     "serializerr": "1.0.3",
     "socket.io": "1.7.3",

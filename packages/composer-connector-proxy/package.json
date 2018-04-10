@@ -75,8 +75,10 @@
     "sinon": "2.3.8",
     "watchify": "3.7.0"
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "socket.io-client": "1.7.3"
   },
   "nyc": {
