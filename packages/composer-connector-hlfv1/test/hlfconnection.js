@@ -2099,11 +2099,11 @@ describe('HLFConnection', () => {
                 chaincodes: [{
                     name: 'org-acme-biznet1',
                     version: '1.0.0',
-                    path: 'composer'
+                    path: '/tmp/businessnetwork12345'
                 }, {
                     name: 'org-acme-biznet2',
                     version: '1.2.0',
-                    path: 'composer'
+                    path: 'businessnetwork4idfj'
                 }]
             });
             return connection.list(mockSecurityContext)
@@ -2115,7 +2115,7 @@ describe('HLFConnection', () => {
                 chaincodes: [{
                     name: 'org-acme-biznet1',
                     version: '1.0.0',
-                    path: 'composer'
+                    path: '/tmp/businessnetworkdjggdkl-fgkdfglf'
                 }, {
                     name: 'org-acme-biznet2',
                     version: '1.2.0',
