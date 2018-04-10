@@ -101,20 +101,6 @@ describe('NodeLoggingService', () => {
 
     });
 
-    describe('#callback',  () => {
-
-        it('should return warning if no stub',  () => {
-            loggingService.stub = undefined;
-            loggingService.callback().should.equal('Warning - No stub');
-        });
-
-        it('should return the fake tx id', () => {
-            loggingService.callback().should.equal('[1548a95f]');
-        });
-
-    });
-
-
     describe('#getLoggerCfg',async  () => {
 
         it('should default if nothing in state', async () => {
@@ -139,17 +125,25 @@ describe('NodeLoggingService', () => {
 
     describe('#initLogging', async  () => {
 
-        it('should default if nothing in state', async () => {
-            mockStub.getState.returns(JSON.stringify({batman:'hero'}));
+        it('should set the logging state to the current logger config', async () => {
+            sandbox.stub(Logger, 'setLoggerCfg');
+            sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
             await loggingService.initLogging(mockStub);
-
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg, 'some config', true);
         });
 
-        it('should return what was in state',async () => {
-            mockStub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+        it('should register a callback to supplement the logging output', async () => {
+            sandbox.stub(Logger, 'setLoggerCfg');
+            sandbox.stub(Logger, 'setCallBack').callsArgWith(0, 'debug');
+            sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
             await loggingService.initLogging(mockStub);
-            (Logger.getCallBack())();
+            sinon.assert.calledOnce(Logger.setCallBack);
+            sinon.assert.calledWith(Logger.setCallBack, sinon.match.func);
+            sinon.assert.calledOnce(mockStub.getTxID);
         });
+
+
 
     });
 

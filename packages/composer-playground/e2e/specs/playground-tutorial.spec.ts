@@ -343,7 +343,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Creating participants', (() => {
         it('should create TRADER1', (() => {
-            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1', 'utf8').trim();
+            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1.json', 'utf8').trim();
 
             Test.selectRegistry('participants', 'Trader')
                 .then(() => {
@@ -370,8 +370,8 @@ describe('Playground Tutorial Define', (() => {
         }));
 
         it('should create TRADER2', (() => {
-            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1', 'utf8').trim();
-            let trader2 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER2', 'utf8').trim();
+            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1.json', 'utf8').trim();
+            let trader2 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER2.json', 'utf8').trim();
 
             Test.selectRegistry('participants', 'Trader')
                 .then(() => {
@@ -405,7 +405,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Creating an asset', (() => {
         it('should create ABC', (() => {
-            let abc = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/assets/ABC', 'utf8').trim();
+            let abc = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/assets/ABC.json', 'utf8').trim();
 
             Test.selectRegistry('assets', 'Commodity')
                 .then(() => {
@@ -434,7 +434,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Transferring the commodity between the participants', (() => {
         it('should transfer ABC from TRADER1 to TRADER2', (() => {
-            let transaction = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/transactions/ABCtoTRADER2', 'utf8').trim();
+            let transaction = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/transactions/ABCtoTRADER2.json', 'utf8').trim();
 
             Test.submitTransaction(transaction, 'Trade')
                 .then(() => {

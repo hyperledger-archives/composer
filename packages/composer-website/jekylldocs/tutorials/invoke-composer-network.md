@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Invoking a Composer business network from another business network using Hyperledger Fabric
+title: Interacting with other business networks
 category: tutorials
 section: tutorials
 index-order: 306
 sidebar: sidebars/accordion-toc0.md
 ---
 
-# Invoking a {{site.data.conrefs.composer_full}} business network from another business network
+# Interacting with other business networks
 {{site.data.conrefs.composer_full}} includes functionality that can be used by a business network to access an asset, participant, or transaction that is recorded in another business network.
 
 This tutorial will demonstrate the steps that a business network developer needs to take in order to invoke a {{site.data.conrefs.composer_full}} business network from a different business network. As part of the tutorial you will deploy the same business network twice. The business networks in this tutorial will be on the same channel, but they can be on different channels. The business network used in this example will be the tutorial network that is outlined in the [developer tutorial](./developer-tutorial.html). This tutorial will refer to the business networks as "A" and "B"
@@ -138,7 +138,7 @@ View the asset to see that the quantity is 250.
 
 ## Step Seven: Submit a transaction
 
-Submit a transaction to see the effect of querying an asset on a different business network
+Submit a transaction to see the effect of querying an asset on a different business network. Note that NetworkB is only queried and the quantity is not changed.  
 
         composer transaction submit --card networkA -d '{"$class": "org.acme.mynetwork.Trade", "commodity": "resource:org.acme.mynetwork.Commodity#Ag", "newOwner": "resource:org.acme.mynetwork.Trader#bobId"}'
 
@@ -146,4 +146,4 @@ Submit a transaction to see the effect of querying an asset on a different busin
 
 View the updated asset to check that the quantity was correctly updated to 500.
 
-        composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag
+        composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag        
