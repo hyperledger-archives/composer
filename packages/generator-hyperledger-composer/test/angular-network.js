@@ -132,6 +132,17 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
         assert.equal(myPackage.license, 'Apache-2.0', 'incorrect license in packaage file');
         assert.equal(myPackage.start, undefined, 'incorrect start in packaage file');
         assert.equal(myPackage.app, undefined, 'incorrect app in packaage file');
+        assert.deepStrictEqual(myPackage.engines, {
+            node: '>=8',
+            npm: '>=5'
+        }, 'incorrect engines in package file');
+        assert.deepStrictEqual(myPackage.bin, {
+            'digitalPropertyNetwork': 'app.js'
+        }, 'incorrect bin in package file');
+        assert.equal(myPackage.scripts.ng, 'ng', 'missing or invalid ng script');
+        assert.equal(myPackage.scripts.prepack, 'npm run build', 'missing or invalid prepack script');
+        assert.equal(myPackage.scripts.build, 'ng build', 'missing or invalid build script');
+        assert.equal(myPackage.scripts.start, 'concurrently "ng serve --proxy-config proxy.conf.js --host 0.0.0.0" "npm run api"', 'missing or invalid start script');
         assert.deepStrictEqual(myPackage.dependencies,        {
             '@angular/common': '^4.0.0',
             '@angular/compiler': '^4.0.0',
@@ -142,11 +153,13 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             '@angular/platform-browser-dynamic': '^4.0.0',
             '@angular/router': '^4.0.0',
             bootstrap: '^3.3.7',
-            'composer-client': `^${version}`,
+            cfenv: '^1.0.4',
             'composer-rest-server': `^${version}`,
             concurrently: '^3.1.0',
             config: '^1.21.0',
             'core-js': '^2.4.1',
+            express: '^4.16.3',
+            'http-proxy-middleware': '^0.18.0',
             jquery: '^3.2.1',
             rxjs: '^5.1.0',
             tether: '^1.4.0',
@@ -171,6 +184,73 @@ describe('hyperledger-composer:angular for digitalPropertyNetwork running agains
             tslint: '~4.5.0',
             typescript: '~2.2.0',
         }, 'incorrect development dependencies in package file');
+    });
+
+    it('should create a suitable gitignore file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/.gitignore';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('\n/dist'), -1, '/dist folder ignored');
+    });
+
+    it('should create a suitable npmignore file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/.npmignore';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('\n# /dist'), -1, '/dist folder not ignored');
+    });
+
+    it('should create a suitable dockerignore file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/.dockerignore';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('\n/dist'), -1, '/dist folder ignored');
+    });
+
+    it('should create a suitable cfignore file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/.cfignore';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('\n# /dist'), -1, '/dist folder not ignored');
+    });
+
+    it('should create a suitable Dockerfile file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/Dockerfile';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('FROM node:8-alpine', -1, 'missing FROM line - not valid Dockerfile?'));
+    });
+
+    it('should create a suitable manifest.yml file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/manifest.yml';
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        assert(fileContents.length > 0, 'no file contents');
+        assert.notEqual(fileContents.indexOf('command: node app.js', -1, 'missing command line - not valid manifest.yml?'));
+    });
+
+    it('should create a suitable proxy.conf.js file', () => {
+        const filePath = tmpDir + '/digitalPropertyNetwork/proxy.conf.js';
+        const proxyConfig = require(filePath);
+        assert(typeof proxyConfig[1].bypass === 'function', 'no bypass function');
+        delete proxyConfig[1].bypass;
+        assert.deepStrictEqual(proxyConfig, [
+            {
+                changeOrigin: true,
+                context: [
+                    '/auth',
+                    '/api'
+                ],
+                secure: true,
+                target: 'http://localhost:3000'
+            },
+            {
+                changeOrigin: true,
+                context: '/',
+                secure: true,
+                target: 'http://localhost:3000',
+                ws: true
+            }
+        ], 'proxy configuration is wrong');
     });
 
 });

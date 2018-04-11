@@ -17,7 +17,6 @@ import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import { Configuration } from './configuration';
 
 @Injectable()
 export class DataService<Type> {
@@ -25,8 +24,8 @@ export class DataService<Type> {
     private actionUrl: string;
     private headers: Headers;
 
-    constructor(private http: Http, private _configuration: Configuration) {
-        this.actionUrl = _configuration.ServerWithApiUrl;
+    constructor(private http: Http) {
+        this.actionUrl = '/api/';
         this.headers = new Headers();
         this.headers.append('Content-Type', 'application/json');
         this.headers.append('Accept', 'application/json');

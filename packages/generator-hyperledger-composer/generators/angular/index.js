@@ -24,6 +24,7 @@ const Util = require('./../util');
 const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
 const optionOrPrompt = require('yeoman-option-or-prompt');
+const { URL } = require('url');
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
@@ -292,7 +293,6 @@ module.exports = yeoman.Base.extend({
             .then((answers2) => {
                 if (this.liveNetwork) {
                     this.appName = answers2.appName;
-                    Util.log(this.appName);
                     this.appDescription = answers2.appDescription;
                     this.authorName = answers2.authorName;
                     this.authorEmail = answers2.authorEmail;
@@ -338,6 +338,7 @@ module.exports = yeoman.Base.extend({
                     this.apiPort = answers3.apiPort;
                     this.apiNamespace = answers3.apiNamespace;
                 }
+                this.apiURL = new URL(`${this.apiIP}:${this.apiPort}`).origin;
             });
     },
 
@@ -390,7 +391,6 @@ module.exports = yeoman.Base.extend({
             namespaceList = modelManager.getNamespaces();
             enumerations = modelManager.getEnumDeclarations();
 
-            shell.mkdir('-p', destinationPath + '/src/assets/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -467,7 +467,6 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name + 'Component');
             });
-            shell.mkdir('-p', destinationPath + '/src/participants/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -545,7 +544,6 @@ module.exports = yeoman.Base.extend({
                 participantComponentNames.push(participant.name + 'Component');
             });
 
-            shell.mkdir('-p', destinationPath + '/src/concepts/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -619,7 +617,6 @@ module.exports = yeoman.Base.extend({
                 conceptComponentNames.push(concept.name + 'Component');
             });
 
-            shell.mkdir('-p', destinationPath + '/src/transactions/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -702,6 +699,9 @@ module.exports = yeoman.Base.extend({
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
+            this.fs.move(this.destinationPath('_dot_dockerignore'), this.destinationPath('.dockerignore'));
+            this.fs.move(this.destinationPath('_dot_cfignore'), this.destinationPath('.cfignore'));
+            this.fs.move(this.destinationPath('_dot_npmignore'), this.destinationPath('.npmignore'));
 
             for (let x = 0; x < assetList.length; x++) {
                 this.fs.copyTpl(
@@ -917,6 +917,7 @@ module.exports = yeoman.Base.extend({
             apiIP: this.apiIP,
             apiPort: this.apiPort,
             apiNamespace: this.apiNamespace,
+            apiURL: this.apiURL,
             cardName: this.cardName
         };
     },

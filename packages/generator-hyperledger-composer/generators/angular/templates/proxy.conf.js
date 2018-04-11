@@ -12,13 +12,21 @@
  * limitations under the License.
  */
 
-import { Injectable } from '@angular/core';
-
-@Injectable()
-export class Configuration {
-    public ApiIP: string = "<%= apiIP %>";
-    public ApiPort: string = "<%= apiPort %>";
-    public Server: string = this.ApiIP+":"+this.ApiPort;
-    public ApiUrl: string = "/api/";
-    public ServerWithApiUrl = this.Server + this.ApiUrl;
-}
+module.exports = [{
+    context: ['/auth', '/api'],
+    target: process.env.REST_SERVER_URL || '<%= apiURL %>',
+    secure: true,
+    changeOrigin: true
+}, {
+    context: '/',
+    target: process.env.REST_SERVER_URL || '<%= apiURL %>',
+    secure: true,
+    changeOrigin: true,
+    ws: true,
+    bypass: function (req, res, proxyOptions) {
+        const accept = req.headers.accept || '';
+        if (accept.indexOf('html') !== -1) {
+            return '/index.html';
+        }
+    }
+}];
