@@ -14,5 +14,6 @@
 
 namespace com.testing
 
-asset someAsset {
+transaction t1 identified by i1 {
+    o String i1
 }

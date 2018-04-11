@@ -18,6 +18,7 @@ const TransactionDeclaration = require('../../lib/introspect/transactiondeclarat
 const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
+const IntrospectUtils = require('./introspectutils');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -87,6 +88,15 @@ describe('TransactionDeclaration', () => {
                 td.validate();
             }).should.throw(/Transaction should not specify an identifying field./);
         });
+
+        it('should throw if transaction specifies and identifying field', () => {
+            const introspectUtils = new IntrospectUtils();
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/transactiondeclaration.definesidentifier.cto', TransactionDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Transaction should not specify an identifying field./);
+        });
+
     });
 
 });
