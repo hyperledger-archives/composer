@@ -53,7 +53,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button (click)="addAsset(myForm);" type="submit" class="btn btn-success" data-dismiss="modal">Confirm</button>
+          <button (click)="addAsset(myForm);" type="submit" class="btn btn-success" value="Refresh Page" onClick="setTimeout(window.location.reload.bind(window.location), 2000);" data-dismiss="modal">Confirm</button>
 
         </div>
       </form>
@@ -125,7 +125,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button (click)="updateAsset(myForm)" type="submit" class="btn btn-success" data-dismiss="modal">Submit</button>
+          <button (click)="updateAsset(myForm)" type="submit" class="btn btn-success" value="Refresh Page" onClick="setTimeout(window.location.reload.bind(window.location), 2000);" data-dismiss="modal">Submit</button>
         </div>
       </form>
     </div>
@@ -147,7 +147,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-          <button (click)="deleteAsset()" type="submit" class="btn btn-danger" data-dismiss="modal">Yes</button>
+          <button (click)="deleteAsset()" type="submit" class="btn btn-danger" value="Refresh Page" onClick="setTimeout(window.location.reload.bind(window.location), 2000);" data-dismiss="modal">Yes</button>
         </div>
       </form>
     </div>
@@ -168,7 +168,7 @@
 	<div *ngIf="errorMessage" class="alert alert-danger" role="alert">
 		<strong>Error:</strong> {{errorMessage}}
 	</div>
-  
+
   <div class="row">
     <div class="col-md-9">
         <h1 class="asset-title" id='assetName'><%= currentAsset.name %></h1>
