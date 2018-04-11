@@ -71,6 +71,16 @@ class Resource extends Identifiable {
         return true;
     }
 
+    /**
+     * Serialize this resource into a JavaScript object suitable for serialization to JSON,
+     * using the default options for the serializer. If you need to set additional options
+     * for the serializer, use the {@link Serializer#toJSON} method instead.
+     * @return {Object} A JavaScript object suitable for serialization to JSON.
+     */
+    toJSON() {
+        return this.getModelManager().getSerializer().toJSON(this);
+    }
+
 }
 
 module.exports = Resource;

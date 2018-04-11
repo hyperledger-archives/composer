@@ -119,11 +119,11 @@ describe('BusinessNetworkDefinition', () => {
         });
 
         it('should be able to retrieve acl manager', () => {
-            businessNetworkDefinition.getAclManager.should.not.be.null;
+            businessNetworkDefinition.getAclManager().should.not.be.null;
         });
 
         it('should be able to retrieve query manager', () => {
-            businessNetworkDefinition.getQueryManager.should.not.be.null;
+            businessNetworkDefinition.getQueryManager().should.not.be.null;
         });
 
         it('should be able to retrieve identifier', () => {

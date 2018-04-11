@@ -145,6 +145,8 @@ class Context {
             this.loggingService = this.container.getLoggingService();
         }
 
+        this.getSerializer().setDefaultOptions({ permitResourcesForRelationships: true });
+
         LOG.exit(method);
     }
 

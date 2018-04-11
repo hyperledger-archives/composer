@@ -56,11 +56,11 @@ async function handleError(tx) {
 }
 
 /**
- * Handle an asset in transaction.
- * @param {systest.transactions.http.AssetIn} tx The transaction.
+ * Handle an asset in transaction by using the serializer.
+ * @param {systest.transactions.http.AssetInWithSerializer} tx The transaction.
  * @transaction
  */
-async function handleAssetIn(tx) {
+async function handleAssetInWithSerializer(tx) {
     const factory = getFactory();
     const asset = factory.newResource('systest.transactions.http', 'DummyAsset', '1234');
     asset.stringValue = 'hello world';
@@ -68,6 +68,49 @@ async function handleAssetIn(tx) {
     const serializer = getSerializer();
     const json = serializer.toJSON(asset);
     const data = await request({ uri: `${url}/assetin`, method: tx.method, json });
+    assert.equal(data.method, tx.method);
+}
+
+/**
+ * Handle an asset in transaction without using the serializer.
+ * @param {systest.transactions.http.AssetInWithoutSerializer} tx The transaction.
+ * @transaction
+ */
+async function handleAssetInWithoutSerializer(tx) {
+    const factory = getFactory();
+    const asset = factory.newResource('systest.transactions.http', 'DummyAsset', '1234');
+    asset.stringValue = 'hello world';
+    asset.integerValue = 12345678;
+    const data = await request({ uri: `${url}/assetin`, method: tx.method, json: asset });
+    assert.equal(data.method, tx.method);
+}
+
+/**
+ * Handle an asset with a relationship in transaction without using the serializer.
+ * @param {systest.transactions.http.AssetWithRelationshipInWithoutSerializer} tx The transaction.
+ * @transaction
+ */
+async function handleAssetWithRelationshipInWithoutSerializer(tx) {
+    const factory = getFactory();
+    const participant = factory.newResource('systest.transactions.http', 'DummyParticipant', '1234');
+    participant.stringValue = 'hello world';
+    const participantRegistry = await getParticipantRegistry('systest.transactions.http.DummyParticipant');
+    await participantRegistry.add(participant);
+    const asset = factory.newResource('systest.transactions.http', 'DummyAsset', '1234');
+    asset.stringValue = 'hello world';
+    asset.integerValue = 12345678;
+    asset.participant = factory.newRelationship('systest.transactions.http', 'DummyParticipant', '1234');
+    const data = await request({ uri: `${url}/assetwithrelationshipin`, method: tx.method, json: asset });
+    assert.equal(data.method, tx.method);
+}
+
+/**
+ * Handle an asset with a resolved relationship in transaction without using the serializer.
+ * @param {systest.transactions.http.AssetWithResolvedRelationshipInWithoutSerializer} tx The transaction.
+ * @transaction
+ */
+async function handleAssetWithResolvedRelationshipInWithoutSerializer(tx) {
+    const data = await request({ uri: `${url}/assetwithresolvedrelationshipin`, method: tx.method, json: tx.asset });
     assert.equal(data.method, tx.method);
 }
 

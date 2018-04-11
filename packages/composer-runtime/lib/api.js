@@ -272,7 +272,8 @@ class Api {
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
             event.timestamp = context.getTransaction().timestamp;
             let serializedEvent = serializer.toJSON(event, {
-                convertResourcesToRelationships: true
+                convertResourcesToRelationships: true,
+                permitResourcesForRelationships: false
             });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);

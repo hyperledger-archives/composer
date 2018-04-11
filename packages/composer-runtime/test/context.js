@@ -303,6 +303,14 @@ describe('Context', () => {
                 });
         });
 
+        it('should initialize the context with the runtime serializer defaults', () => {
+            let mockContainer = sinon.createStubInstance(Container);
+            return context.initialize({ container: mockContainer })
+                .then(() => {
+                    context.getSerializer().defaultOptions.should.deep.equal({ permitResourcesForRelationships: true, validate: true });
+                });
+        });
+
     });
 
     describe('#getServices', () => {

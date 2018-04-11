@@ -201,6 +201,7 @@ class Relationship extends Identifiable {
 class Resource extends Identifiable {
    + String toString() 
    + boolean isResource() 
+   + Object toJSON() 
 }
 class Typed {
    + string getType() 
@@ -237,9 +238,12 @@ class ModelManager {
    + ParticipantDeclaration[] getParticipantDeclarations(Boolean) 
    + EnumDeclaration[] getEnumDeclarations(Boolean) 
    + ConceptDeclaration[] getConceptDeclarations(Boolean) 
+   + Factory getFactory() 
+   + Serializer getSerializer() 
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
+   + void setDefaultOptions(Object) 
    + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean,boolean) 
 }

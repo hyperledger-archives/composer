@@ -153,6 +153,26 @@ describe('Serializer', () => {
             }).should.throw(/Generated invalid JSON/);
         });
 
+        it('should not validate if the default options specifies the validate flag set to false', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            let json = serializer.toJSON(resource);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1'
+            });
+        });
+
+        it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            (() => {
+                serializer.toJSON(resource, {
+                    validate: true
+                });
+            }).should.throw(/missing required field/);
+        });
+
     });
 
     describe('#fromJSON', () => {
@@ -248,6 +268,32 @@ describe('Serializer', () => {
             resource.assetId.should.equal('1');
             resource.owner.should.be.an.instanceOf(Relationship);
             should.equal(resource.value, undefined);
+        });
+
+        it('should not validate if the default options specifies the validate flag set to false', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Resource);
+            resource.assetId.should.equal('1');
+            resource.owner.should.be.an.instanceOf(Relationship);
+            should.equal(resource.value, undefined);
+        });
+
+        it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            (() => {
+                serializer.fromJSON(json, { validate: true });
+            }).should.throw(/missing required field/);
         });
 
     });

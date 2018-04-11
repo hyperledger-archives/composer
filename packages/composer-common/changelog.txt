@@ -11,6 +11,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.19.1 {f6814276d318be3b4ed0f6212bc77c6f} 2018-04-06
+- Enable simple JSON.stringify serialization of resources
+
 Version 0.18.2 {354087f4e85b14e02e7c8284cca2583f} 2018-03-20
 - Add CouchDB index compiler
 

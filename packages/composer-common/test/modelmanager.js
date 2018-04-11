@@ -15,17 +15,18 @@
 'use strict';
 
 const AssetDeclaration = require('../lib/introspect/assetdeclaration');
+const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
 const EnumDeclaration = require('../lib/introspect/enumdeclaration');
+const EventDeclaration = require('../lib/introspect/eventdeclaration');
+const Factory = require('../lib/factory');
+const fs = require('fs');
 const ModelFile = require('../lib/introspect/modelfile');
+const ModelFileDownloader = require('../lib/introspect/loaders/modelfiledownloader');
 const ModelManager = require('../lib/modelmanager');
 const ParticipantDeclaration = require('../lib/introspect/participantdeclaration');
-const EventDeclaration = require('../lib/introspect/eventdeclaration');
-const TypeNotFoundException = require('../lib/typenotfoundexception');
+const Serializer = require('../lib/serializer');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
-const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
-const ModelFileDownloader = require('../lib/introspect/loaders/modelfiledownloader');
-
-const fs = require('fs');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 
 const chai = require('chai');
 const should = chai.should();
@@ -943,6 +944,22 @@ concept Bar {
             const declaration = modelManager.getType('org.acme.base.AbstractAsset');
             declaration.getFullyQualifiedName().should.equal('org.acme.base.AbstractAsset');
         });
+    });
+
+    describe('#getFactory', () => {
+
+        it('should return a factory', () => {
+            modelManager.getFactory().should.be.an.instanceOf(Factory);
+        });
+
+    });
+
+    describe('#getSerializer', () => {
+
+        it('should return a serializer', () => {
+            modelManager.getSerializer().should.be.an.instanceOf(Serializer);
+        });
+
     });
 
 });
