@@ -453,20 +453,16 @@ ga('send', 'pageview');
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">buyStocks</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="c1">// Get the current participant, and serialize them into a JavaScript object.</span>
+    <span class="c1">// Get the current participant.</span>
     <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-    <span class="kd">const</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
-    <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializer</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
-    <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
 
     <span class="c1">// Look up the current price of the CONGA stock, and extract the price.</span>
-    <span class="c1">// The option "json" sends the serialized participant as the HTTP request body,</span>
+    <span class="c1">// The option "json" sends the participant as the HTTP request body,</span>
     <span class="c1">// and automatically parses JSON from the HTTP response.</span>
-    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="nx">json</span> <span class="p">});</span>
+    <span class="kd">const</span> <span class="nx">stock</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span> <span class="na">uri</span><span class="p">:</span> <span class="s1">'http://stocks.org/CONGA'</span><span class="p">,</span> <span class="na">json</span><span class="p">:</span> <span class="nx">participant</span> <span class="p">});</span>
     <span class="kd">const</span> <span class="nx">price</span> <span class="o">=</span> <span class="nx">stock</span><span class="p">.</span><span class="nx">price</span><span class="p">;</span>
 
     <span class="c1">// Get the current participant, and update their stock and balance.</span>
-    <span class="kd">const</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
     <span class="kd">const</span> <span class="nx">units</span> <span class="o">=</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">units</span><span class="p">;</span>
     <span class="nx">participant</span><span class="p">.</span><span class="nx">stockUnits</span> <span class="o">+=</span> <span class="nx">units</span><span class="p">;</span>
     <span class="nx">participant</span><span class="p">.</span><span class="nx">balance</span> <span class="o">-=</span> <span class="nx">price</span> <span class="o">*</span> <span class="nx">units</span><span class="p">;</span>

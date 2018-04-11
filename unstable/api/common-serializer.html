@@ -403,6 +403,11 @@ ga('send', 'pageview');
 <td style="text-align: left">Create a <a href="common-resource">Resource</a> from a JavaScript Object representation</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#setdefaultoptions">setDefaultOptions</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Set the default options for the serializer</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#tojson">toJSON</a></td>
 <td style="text-align: left"><code>Object</code></td>
 <td style="text-align: left"><p> Convert a <a href="common-resource">Resource</a> to a JavaScript object suitable for long-term peristent storage</td>
@@ -439,9 +444,33 @@ ga('send', 'pageview');
 </tr>
 </tbody></table>
 
+<h2 id="setdefaultoptions">setDefaultOptions</h2>
+
+<p><em>setDefaultOptions( Object newdefaultoptions )</em></p>
+
+<p>Set the default options for the serializer.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type</th>
+<th style="text-align: left">Mandatory</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><strong>newDefaultOptions</strong></td>
+<td style="text-align: left">Object</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">The new default options for the serializer.</td>
+</tr>
+</tbody></table>
+
 <h2 id="tojson">toJSON</h2>
 
-<p><em>Object toJSON( Resource resource, Object options )</em></p>
+<p><em>Object toJSON( Resource resource, [Object options] )</em></p>
 
 <p> Convert a [Resource](common-resource) to a JavaScript object suitable for long-term peristent storage. </p>
 

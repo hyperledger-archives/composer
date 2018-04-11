@@ -322,7 +322,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_serializer.js.html">composer-common/lib/serializer.js</a>,
-				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-36">line 36</a>
+				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-40">line 40</a>
 			</li>
 		</ul>
 	</dd>
@@ -681,7 +681,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_serializer.js.html">composer-common/lib/serializer.js</a>,
-				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-137">line 137</a>
+				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-149">line 149</a>
 			</li>
 		</ul>
 	</dd>
@@ -777,7 +777,7 @@
 
 <hr>
 <dt>
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON(resource, options)</h4>
+    <h4 class="name" id="setDefaultOptions"><span class="type-signature"></span>setDefaultOptions(newDefaultOptions)</h4>
     
     
 </dt>
@@ -785,7 +785,7 @@
 
     
     <div class="description">
-        <p><br>Convert a Resource to a JavaScript object suitable for long-term<br>peristent storage.<br></p>
+        <p>Set the default options for the serializer.</p>
     </div>
     
 
@@ -833,6 +833,198 @@
 
         <tr>
             
+                <td class="name"><code>newDefaultOptions</code></td>
+            
+
+            <td class="type">
+            
+                {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The new default options for the serializer.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_serializer.js.html">composer-common/lib/serializer.js</a>,
+				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-67">line 67</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<hr>
+<dt>
+    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON(resource [, options])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p><br>Convert a Resource to a JavaScript object suitable for long-term<br>peristent storage.<br></p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
                 <td class="name"><code>resource</code></td>
             
 
@@ -859,6 +1051,14 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -897,6 +1097,16 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -926,6 +1136,8 @@
 
         <th>Type</th>
 
+        
+        <th>Argument</th>
         
 
         
@@ -966,6 +1178,16 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1002,6 +1224,16 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1040,6 +1272,16 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1076,6 +1318,16 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1145,7 +1397,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-common_lib_serializer.js.html">composer-common/lib/serializer.js</a>,
-				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-77">line 77</a>
+				 <a href="composer-common_lib_serializer.js.html#sunlight-1-line-92">line 92</a>
 			</li>
 		</ul>
 	</dd>

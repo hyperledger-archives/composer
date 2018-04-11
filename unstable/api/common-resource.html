@@ -411,6 +411,11 @@ other domain classes that can be serialized for long-term persistent storage.</p
 <td style="text-align: left">Determine if this identifiable is a resource</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#tojson">toJSON</a></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">Serialize this resource into a JavaScript object suitable for serialization to JSON, using the default options for the serializer</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#tostring">toString</a></td>
 <td style="text-align: left"><code>String</code></td>
 <td style="text-align: left">Returns the string representation of this class</td>
@@ -520,6 +525,20 @@ other domain classes that can be serialized for long-term persistent storage.</p
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a></strong> - True if this identifiable is a resource, false if not.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="tojson">toJSON</h2>
+
+<p><em>Object toJSON(  )</em></p>
+
+<p>Serialize this resource into a JavaScript object suitable for serialization to JSON, using the default options for the serializer. If you need to set additional options for the serializer, use the <a href="common-serializer#tojson">Serializer#toJSON</a> method instead.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></strong> - A JavaScript object suitable for serialization to JSON.</p>
 
 <h3 id="parameters">Parameters</h3>
 

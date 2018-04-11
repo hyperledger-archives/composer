@@ -443,6 +443,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left">Get the EventDeclarations defined in this model manager</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#getfactory">getFactory</a></td>
+<td style="text-align: left"><code>Factory</code></td>
+<td style="text-align: left">Get a factory for creating new instances of types defined in this model manager</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#getnamespaces">getNamespaces</a></td>
 <td style="text-align: left"><code>string[]</code></td>
 <td style="text-align: left">Get the namespaces registered with the ModelManager</td>
@@ -451,6 +456,11 @@ and <a href="common-factory">Factory</a> (to create instances).</p>
 <td style="text-align: left"><a href="#getparticipantdeclarations">getParticipantDeclarations</a></td>
 <td style="text-align: left"><code>ParticipantDeclaration[]</code></td>
 <td style="text-align: left">Get the ParticipantDeclarations defined in this model manager</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="#getserializer">getSerializer</a></td>
+<td style="text-align: left"><code>Serializer</code></td>
+<td style="text-align: left">Get a serializer for serializing instances of types defined in this model manager</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#getsystemtypes">getSystemTypes</a></td>
@@ -910,6 +920,34 @@ Note that if there are dependencies between multiple files the files must be add
 <td style="text-align: left">Include the decalarations of system type in returned data</td>
 </tr>
 </tbody></table>
+
+<h2 id="getfactory">getFactory</h2>
+
+<p><em>Factory getFactory(  )</em></p>
+
+<p>Get a factory for creating new instances of types defined in this model manager.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="runtime-factory">Factory</a></strong> - A factory for creating new instances of types defined in this model manager.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="getserializer">getSerializer</h2>
+
+<p><em>Serializer getSerializer(  )</em></p>
+
+<p>Get a serializer for serializing instances of types defined in this model manager.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><strong><a href="runtime-serializer">Serializer</a></strong> - A serializer for serializing instances of types defined in this model manager.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
 
 <h2 id="inherited-methods">Inherited methods</h2>
 

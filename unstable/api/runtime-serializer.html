@@ -475,6 +475,12 @@ method instead.</p>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Permit resources in the place of relationships (serializing them as resources), false by default.</td>
 </tr>
+<tr>
+<td style="text-align: left"><strong>options.deduplicateResources</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Generate $id for resources and if a resources appears multiple times in the object graph only the first instance is serialized in full, subsequent instances are replaced with a reference to the $id</td>
+</tr>
 </tbody></table>
 
 <h3 id="example">Example</h3>
@@ -538,6 +544,12 @@ method instead.</p>
 <td style="text-align: left">boolean</td>
 <td style="text-align: left"><em>Yes</em></td>
 <td style="text-align: left">Handle JSON objects in the place of strings for relationships, false by default.</td>
+</tr>
+<tr>
+<td style="text-align: left"><strong>options.validate</strong></td>
+<td style="text-align: left">boolean</td>
+<td style="text-align: left"><em>Yes</em></td>
+<td style="text-align: left">Validate the structure of the resource with its model prior to serialization, true by default.</td>
 </tr>
 </tbody></table>
 

@@ -183,11 +183,15 @@ class Serializer {
          * are specified for relationship fields into relationships, false by default.
          * @param {boolean} [options.permitResourcesForRelationships] Permit resources in the
          * place of relationships (serializing them as resources), false by default.
+         * @param {boolean} [options.deduplicateResources] - Generate $id for resources and
+         * if a resources appears multiple times in the object graph only the first instance is
+         * serialized in full, subsequent instances are replaced with a reference to the $id
          * @return {Object} The JavaScript object that represents the resource
          * @throws {Error} If the specified resource is not an instance of
          * {@link Resource} or if it fails validation during serialization.
          */
-        this.toJSON = function toJSON(resource, options) {
+        this.toJSON = function toJSON(resource, options = {}) {
+            options = Object.assign({}, { validate: true, convertResourcesToRelationships: false, permitResourcesForRelationships: false, deduplicateResources: false }, options);
             return serializer.toJSON(resource, options);
         };
 
@@ -206,11 +210,14 @@ class Serializer {
          * @param {Object} [options] The optional serialization options.
          * @param {boolean} [options.acceptResourcesForRelationships] Handle JSON objects
          * in the place of strings for relationships, false by default.
+         * @param {boolean} [options.validate] Validate the structure of the resource
+         * with its model prior to serialization, true by default.
          * @return {Resource} The resource.
          * @throws {Error} If the specified resource is not an instance of
          * {@link Resource} or if it fails validation during serialization.
          */
-        this.fromJSON = function fromJSON(json, options) {
+        this.fromJSON = function fromJSON(json, options = {}) {
+            options = Object.assign({}, { acceptResourcesForRelationships: false, validate: true }, options);
             return serializer.fromJSON(json, options);
         };
 

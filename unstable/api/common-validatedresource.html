@@ -440,6 +440,12 @@ the type information associated with the instance.</p>
 <td style="text-align: left">Returns the string representation of this class</td>
 </tr>
 <tr>
+<td style="text-align: left">Resource</td>
+<td style="text-align: left"><a href="#tojson">toJSON</a></td>
+<td style="text-align: left"><code>Object</code></td>
+<td style="text-align: left">Serialize this resource into a JavaScript object suitable for serialization to JSON, using the default options for the serializer</td>
+</tr>
+<tr>
 <td style="text-align: left">Identifiable</td>
 <td style="text-align: left"><a href="#getidentifier">getIdentifier</a></td>
 <td style="text-align: left"><code>string</code></td>
@@ -608,6 +614,22 @@ the type information associated with the instance.</p>
 <h3 id="returns">Returns</h3>
 
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean">boolean</a> - True if this identifiable is a resource, false if not.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
+<h2 id="tojson">toJSON</h2>
+
+<p><em>Object toJSON(  )</em></p>
+
+<p><strong>Inherited from:</strong>  Resource</p>
+
+<p>Serialize this resource into a JavaScript object suitable for serialization to JSON, using the default options for the serializer. If you need to set additional options for the serializer, use the <a href="common-serializer#tojson">Serializer#toJSON</a> method instead.</p>
+
+<h3 id="returns">Returns</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a> - A JavaScript object suitable for serialization to JSON.</p>
 
 <h3 id="parameters">Parameters</h3>
 
