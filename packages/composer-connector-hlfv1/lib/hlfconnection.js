@@ -42,6 +42,8 @@ const installDependencies = {
     'composer-runtime-hlfv1' : composerVersion
 };
 
+const chaincodePathSection = 'businessnetwork';
+
 /**
  * Class representing a connection to a business network running on Hyperledger
  * Fabric, using the hfc module.
@@ -421,7 +423,7 @@ class HLFConnection extends Connection {
         scripts.start = 'start-network';
         bnaPackage.scripts = scripts;
 
-        const installDir = await this.temp.mkdir('businessnetwork');
+        const installDir = await this.temp.mkdir(chaincodePathSection);
 
         // Copy any tgz dependencies to the install directory and update the package.json
         for (let entry in bnaPackage.dependencies) {
@@ -1070,7 +1072,7 @@ class HLFConnection extends Connection {
             .then((queryResults) => {
                 LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
                 const result = queryResults.chaincodes.filter((chaincode) => {
-                    return chaincode.path === 'composer';
+                    return chaincode.path.includes(chaincodePathSection);
                 }).map((chaincode) => {
                     return chaincode.name;
                 });

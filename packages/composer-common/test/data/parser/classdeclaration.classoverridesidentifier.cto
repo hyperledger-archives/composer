@@ -11,3 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace com.testing
+
+abstract asset p1 identified by a1 {
+o String a1
+}
+asset p2 identified by a2 extends p1 {
+o String a2
+}

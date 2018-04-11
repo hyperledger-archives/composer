@@ -53,8 +53,6 @@ class EventDeclaration extends ClassDeclaration {
      * @private
      */
     validate() {
-        super.validate();
-
         if(!this.isSystemType() && this.getName() === 'Event') {
             throw new IllegalModelException('Event is a reserved type name.', this.modelFile, this.ast.location);
         }
@@ -71,6 +69,9 @@ class EventDeclaration extends ClassDeclaration {
         if (!this.isSystemType() && this.idField && systemTypeDeclared) {
             throw new IllegalModelException('Event should not specify an identifying field.', this.modelFile, this.ast.location);
         }
+
+        // do generic validation after specific validation
+        super.validate();
     }
 
      /**

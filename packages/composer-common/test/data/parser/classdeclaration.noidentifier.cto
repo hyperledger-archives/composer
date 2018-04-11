@@ -14,5 +14,5 @@
 
 namespace com.testing
 
-transaction Transaction {
+asset someAsset {
 }

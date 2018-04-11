@@ -27,7 +27,8 @@
     "linkcheck:latest": "./scripts/linkcheck.sh latest",
     "linkcheck:unstable": "./scripts/linkcheck.sh unstable",
     "linkcheck:next": "./scripts/linkcheck.sh next",
-    "linkcheck:next-unstable": "./scripts/linkcheck.sh next-unstable"
+    "linkcheck:next-unstable": "./scripts/linkcheck.sh next-unstable",
+    "licchk": "license-check-and-add"
   },
   "repository": {
     "type": "git",
@@ -47,11 +48,63 @@
     "composer-documentation": "0.19.1",
     "composer-runtime": "0.19.1",
     "jsdoc": "3.5.5",
+    "license-check-and-add": "2.3.1",
     "mkdirp": "0.5.1",
     "node-plantuml": "0.5.0",
     "sanitize-html": "1.14.1"
   },
   "dependencies": {
     "jekyll": "3.0.0-beta1"
+  },
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "LICENSE.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      "node_modules",
+      "jekylldocs/_plugins",
+      "jsdoc-template/static",
+      "jekylldocs/assets/js/autotrack.js",
+      "jekylldocs/assets/js/libs/prettify.js",
+      "jekylldocs/assets/js/lunr.js",
+      "jekylldocs/api",
+      "jekylldocs/jsdoc",
+      "jekylldocs/_site"
+    ],
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".md",
+      ".yml",
+      ".mp4",
+      ".txt",
+      ".conf",
+      ".css",
+      ".tpl",
+      ".uml",
+      ".log"
+    ],
+    "insert_license": false,
+    "license_formats": {
+      "js|scss": {
+        "prepend": "/*",
+        "append": " */",
+        "eachLine": {
+            "prepend": " * "
+        }
+      },
+      "npmrc|editorconfig": {
+        "eachLine": {
+            "prepend": "# "
+        }
+      },
+      "tmpl": {
+        "prepend": "{#",
+        "append": "#}"
+      },
+      "njk": {
+        "prepend": "{#",
+        "append": "-#}"
+      }
+    }
   }
 }
