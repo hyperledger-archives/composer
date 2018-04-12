@@ -128,7 +128,6 @@ will use the file system card store at the location `/home/username/.composer`, 
 To specify a custom wallet within the API, without the use of a globally exported value, it must be included as an option passed to the connection:
 
 ```javascript
-
         const connectionOptions = {
             wallet : {
                 type: 'composer-wallet-filesystem',
@@ -160,7 +159,11 @@ Previously to use the in MemoryCardStore, the code would have been written
 This has now changed and Card stores must now be specified differently:
 
 ```javascript
-        const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
-        const cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
-        let adminConnection = new AdminConnection({ cardStore });
+        const connectionOptions = {
+            wallet : {
+                type: 'composer-wallet-inmemory'
+            }
+        };
+        adminConnection = new AdminConnection(connectionOptions);
+        clientConnection = new BusinessNetworkConnection(connectionOptions);
 ```

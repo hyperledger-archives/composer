@@ -39,7 +39,7 @@ The `statement` property contains the defining rules of the query, and can have 
 
 This query returns all drivers from the default registry whose age is less than the supplied parameter _or_ whose firstName is "Dan", as long as their lastName is not "Selman".
 
-In practical terms, this query returns all drivers who do not have the lastName "Selman", as long as they are under a defined age, or have the firstName Dan, and orders the results by lastName ascending and firstName descending.
+In practical terms, this query returns all drivers who do not have the lastName "Selman", as long as they are under a defined age, or have the firstName Dan, and orders the results by lastName ascending and firstName ascending.
 
 ```
 query Q20{
