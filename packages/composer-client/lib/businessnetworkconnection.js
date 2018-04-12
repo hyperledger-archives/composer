@@ -71,13 +71,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * Gets the currently connected business network.
      * {@link module:composer-common.BusinessNetworkDefinition Business Network Definition}.
      * @example
-     * // Get the Business Network Definition
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         // Retrieved Business Network Definition
-     *         console.log(definition === connection.getBusinessNetwork());  // true
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * const definition = await connection.connect('admin@network-name');
+     * console.log(definition === connection.getBusinessNetwork());  // true
      * @returns {BusinessNetworkDefinition} the business network definition
      */
     getBusinessNetwork() {
@@ -88,15 +84,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets a list of all existing asset registries.
      * @example
-     * // Get all asset registries
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getAllAssetRegistries();
-     *     })
-     *     .then(function (assetRegistries) {
-     *         // Retrieved Asset Registries
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const assetRegistries = await connection.getAllAssetRegistries();
      * @param {boolean} [includeSystem] if true the returned list will include
      * the system transaction registries (optional, default to false)
      * @returns {Promise} - A promise that will be resolved with a list of
@@ -111,15 +101,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets an existing asset registry.
      * @example
-     * // Get an asset registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getAssetRegistry('org.acme.SampleAsset');
-     *     })
-     *     .then(function (assetRegistry) {
-     *         // Retrieved Asset Registry
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const sampleAssetRegistry = await connection.getAssetRegistry('org.example.SampleAsset');
      * @param {string} id - The unique identifier of the asset registry
      * @returns {Promise} - A promise that will be resolved with the existing
      * {@link AssetRegistry}, or rejected if it does not exist.
@@ -132,17 +116,12 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Determines whether an asset registry exists.
      * @example
-     * // Determine whether an asset registry exists
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.assetRegistryExists('org.acme.SampleAsset');
-     *     })
-     *     .then(function (exists) {
-     *         if (exists === true) {
-     *             // logic here...
-     *         }
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const exists = await connection.assetRegistryExists('org.example.SampleAsset');
+     * if (exists) {
+     *     // logic here...
+     * }
      * @param {string} id - The unique identifier of the asset registry
      * @returns {Promise} - A promise that will be resolved with a boolean
      * indicating whether the {@link AssetRegistry} exists.
@@ -155,12 +134,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Adds a new asset registry.
      * @example
-     * // Add a new asset registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.addAssetRegistry('registryId', 'registryName');
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * await connection.addAssetRegistry('registryId', 'registryName');
      * @param {string} id - The unique identifier of the asset registry
      * @param {string} name - The name of the asset registry
      * @returns {Promise} - A promise that will be resolved with the new
@@ -175,15 +151,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets a list of all existing participant registries.
      * @example
-     * // Get all participant registries
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getAllParticipantRegistries();
-     *     })
-     *     .then(function (participantRegistries) {
-     *         // Retrieved Participant Registries
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const participantRegistries = await connection.getAllParticipantRegistries();
      * @param {boolean} [includeSystem] if true the returned list will include
      * the system transaction registries (optional, default to false)
      * @returns {Promise} - A promise that will be resolved with a list of
@@ -198,15 +168,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets an existing participant registry.
      * @example
-     * // Get a participant registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getParticipantRegistry('org.acme.SampleParticipant');
-     *     })
-     *     .then(function (participantRegistry) {
-     *         // Retrieved Participant Registry
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const sampleParticipantRegistry = await connection.getParticipantRegistry('org.example.SampleParticipant');
      * @param {string} id - The unique identifier of the participant registry
      * @returns {Promise} - A promise that will be resolved with the existing
      * {@link ParticipantRegistry}, or rejected if it does not exist.
@@ -219,17 +183,12 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Determines whether a participant registry exists.
      * @example
-     * // Determine whether an asset registry exists
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.participantRegistryExists('org.acme.SampleParticipant');
-     *     })
-     *     .then(function (exists) {
-     *         if (exists === true) {
-     *             // logic here...
-     *         }
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const exists = await connection.participantRegistryExists('org.example.SampleParticipant');
+     * if (exists) {
+     *     // logic here...
+     * }
      * @param {string} id - The unique identifier of the participant registry
      * @returns {Promise} - A promise that will be resolved with a boolean
      * indicating whether the {@link ParticipantRegistry} exists.
@@ -242,12 +201,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Adds a new participant registry.
      * @example
-     * // Add a new participant registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.addParticipantRegistry('registryId', 'registryName');
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * await connection.addParticipantRegistry('registryId', 'registryName');
      * @param {string} id - The unique identifier of the participant registry
      * @param {string} name - The name of the participant registry
      * @returns {Promise} - A promise that will be resolved with the new
@@ -262,15 +218,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets an existing transaction registry.
      * @example
-     * // Get a transaction registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getTransactionRegistry('org.acme.SampleTransaction');
-     *     })
-     *     .then(function (transactionRegistry) {
-     *         // Retrieved Transaction Registry.
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const sampleTransactionRegistry = await connection.getTransactionRegistry('org.example.SampleTransaction');
      * @param {string} id - The unique identifier of the transaction registry
      * @returns {Promise} - A promise that will be resolved with the existing
      * {@link TransactionRegistry}, or rejected if it does not exist.
@@ -283,15 +233,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets a list of all existing transaction registries.
      * @example
-     * // Get all transaction registries
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getAllTransactionRegistries();
-     *     })
-     *     .then(function (transactionRegistries) {
-     *         // Retrieved Transaction Registries
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const transactionRegistries = await connection.getAllTransactionRegistries();
      * @param {boolean} [includeSystem] if true the returned list will include
      * the system transaction registries (optional, default to false)
      * @returns {Promise} - A promise that will be resolved with a list of
@@ -306,17 +250,12 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Determines whether a transaction registry exists.
      * @example
-     * // Determine whether a transaction registry exists
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.transactionRegistryExists('org.acme.SampleTransaction');
-     *     })
-     *     .then(function (exists) {
-     *         if (exists === true) {
-     *             // logic here...
-     *         }
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const exists = await connection.transactionRegistryExists('org.example.SampleTransaction');
+     * if (exists) {
+     *     // logic here...
+     * }
      * @param {string} id - The unique identifier of the transaction registry
      * @returns {Promise} - A promise that will be resolved with a boolean
      * indicating whether the {@link TransactionRegistry} exists.
@@ -330,15 +269,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets the historian.
      * @example
-     * // Get the historian
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getHistorian();
-     *     })
-     *     .then(function (historian) {
-     *         // Retrieved historian
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const historian = await connection.getHistorian();
      * @returns {Promise} - A promise that will be resolved with the
      * {@link Historian}.
      */
@@ -359,15 +292,9 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Gets the identity registry.
      * @example
-     * // Get the identity registry
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getIdentityRegistry();
-     *     })
-     *     .then(function (identityRegistry) {
-     *         // Retrieved identity registry
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const identityRegistry = await connection.getIdentityRegistry();
      * @returns {Promise} - A promise that will be resolved with the
      * {@link IdentityRegistry}.
      */
@@ -389,12 +316,8 @@ class BusinessNetworkConnection extends EventEmitter {
      * Connects to a business network using a business network card, and
      * authenticates to the Hyperledger Fabric.
      * @example
-     * // Connect and log in to HLF
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('admin@acme-network')
-     *     .then(function (definition) {
-     *         // Connected
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * const definition = await connection.connect('admin@network-name');
      * @param {String} cardName  businessNetworkCard Name (must have been
      * imported already)
      * @param {Object} [additionalConnectOptions] Additional configuration
@@ -495,21 +418,11 @@ class BusinessNetworkConnection extends EventEmitter {
      * This only gives back the default registry - it does not look in any
      * application defined registry.
      * @example
-     * // Locate the registry for a fully qualififed name
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.getRegistry('org.acme.SampleAsset');
-     *     })
-     *     .then(function (sampleAssetRegistry) {
-     *         return connection.getRegistry('org.acme.SampleParticipant');
-     *     })
-     *     .then(function (sampleParticipantRegistry) {
-     *         return connection.getRegistry('org.acme.SampleTransaction');
-     *     })
-     *     .then(function (sampleTransactionRegistry) {
-     *         // ...
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const sampleAssetRegistry = await connection.getRegistry('org.example.SampleAsset');
+     * const sampleParticipantRegistry = await connection.getRegistry('org.example.SampleParticipant');
+     * const sampleTransactionRegistry = await connection.getRegistry('org.example.SampleTransaction');
      * @param {String} fullyQualifiedName The fully qualified name of the
      * resource registry
      * @returns {Promise} A promise that will be resolved with the registry that
@@ -554,15 +467,11 @@ class BusinessNetworkConnection extends EventEmitter {
     /**
      * Disconnects from the Hyperledger Fabric.
      * @example
-     * // Disconnect from HLF
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.disconnect();
-     *     })
-     *     .then(function () {
-     *         // Disconnected.
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * // Connected.
+     * await connection.disconnect();
+     * // Disconnected.
      * @returns {Promise} A promise that will be resolved when the connection is
      * terminated.
      */
@@ -590,17 +499,11 @@ class BusinessNetworkConnection extends EventEmitter {
      * Submit a transaction for processing by the currently connected business
      * network.
      * @example
-     * // Submits a transaction
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         var factory = definition.getFactory();
-     *         var transaction = factory.newTransaction('org.acme', 'SampleTransaction');
-     *         return connection.submitTransaction(transaction);
-     *     })
-     *     .then(function () {
-     *         // Submitted a transaction.
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * const definition = await connection.connect('admin@network-name');
+     * const factory = definition.getFactory();
+     * const transaction = factory.newTransaction('org.example', 'SampleTransaction');
+     * await connection.submitTransaction(transaction);
      * @param {Resource} transaction - The transaction to submit. Use
      * {@link module:composer-common.Factory#newTransaction newTransaction} to
      * create this object.
@@ -636,16 +539,10 @@ class BusinessNetworkConnection extends EventEmitter {
      * Hyperledger Fabric must be configured with the CouchDB database for the
      * world state.
      * @example
-     * // Build and execute a query.
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function () {
-     *         var query = connection.buildQuery('SELECT org.acme.SampleAsset WHERE (value == _$inputValue)');
-     *         return connection.query(query, { inputValue: 'blue' })
-     *     })
-     *     .then(function (assets) {
-     *         // Retrieved Assets
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const query = connection.buildQuery('SELECT org.example.SampleAsset WHERE (value == _$inputValue)');
+     * const assets = await connection.query(query, { inputValue: 'blue' })
      * @param {string} query The query string, written in the Composer Query
      * Language.
      * @returns {Query} The built query, which can be passed in a call to query.
@@ -669,15 +566,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * Hyperledger Fabric must be configured with the CouchDB database for the
      * world state.
      * @example
-     * // Execute the query.
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function () {
-     *         return query('Q1', { inputValue: 'blue' })
-     *     })
-     *     .then(function (assets) {
-     *         // Retrieved Assets
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * const assets = await query('Q1', { inputValue: 'blue' })
      * @param {string|Query} query The name of the query, or a built query.
      * @param {Object} [parameters] The parameters for the query.
      * @returns {Promise} A promise that will be resolved with an array of
@@ -715,15 +606,9 @@ class BusinessNetworkConnection extends EventEmitter {
      * Test the connection to the runtime and verify that the version of the
      * runtime is compatible with this level of the client node.js module.
      * @example
-     * // Test the connection to the runtime
-     * var connection = new BusinessNetworkConnection();
-     * return connection.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     *     .then(function (definition) {
-     *         return connection.ping();
-     *     })
-     *     .then(function () {
-     *         // Connection tested.
-     *     });
+     * const connection = new BusinessNetworkConnection();
+     * await connection.connect('admin@network-name');
+     * await connection.ping();
      * @returns {Promise} A promise that will be fulfilled when the connection
      * has been tested. The promise will be rejected if the version is
      * incompatible.
