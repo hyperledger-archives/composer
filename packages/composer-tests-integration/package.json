@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -34,8 +34,8 @@
   },
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
-    "composer-admin": "0.19.1",
-    "composer-common": "0.19.1",
+    "composer-admin": "0.19.2",
+    "composer-common": "0.19.2",
     "composer-wallet-redis": "0.0.11-20180318153457",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
@@ -80,12 +80,12 @@
         "prepend": "/*",
         "append": " */",
         "eachLine": {
-            "prepend": " * "
+          "prepend": " * "
         }
       },
       "npmrc|editorconfig|feature": {
         "eachLine": {
-            "prepend": "# "
+          "prepend": "# "
         }
       },
       "md": {

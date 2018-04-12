@@ -1,6 +1,6 @@
 {
     "name": "composer-playground",
-    "version": "0.19.1",
+    "version": "0.19.2",
     "description": "A test harness/UI for the web runtime container for Hyperledger Composer",
     "engines": {
         "node": ">=8",
@@ -26,48 +26,48 @@
         "license": "LICENSE.txt",
         "exact_paths_method": "EXCLUDE",
         "exact_paths": [
-          ".pm2",
-          "composer-logs",
-          "coverage",
-          "dist",
-          "node_modules",
-          "docker",
-          "e2e/data/files/importBanned.wombat",
-          "e2e/data/files/importReadMe.md"
+            ".pm2",
+            "composer-logs",
+            "coverage",
+            "dist",
+            "node_modules",
+            "docker",
+            "e2e/data/files/importBanned.wombat",
+            "e2e/data/files/importReadMe.md"
         ],
         "output": "/Users/user/Desktop/playground-output.txt",
         "file_type_method": "EXCLUDE",
         "file_types": [
-          ".yml",
-          ".yaml",
-          ".txt",
-          ".bna",
-          ".tgz",
-          ".gz",
-          ".pem",
-          ".key",
-          ".crt",
-          ".card",
-          ".tx",
-          ".block"
+            ".yml",
+            ".yaml",
+            ".txt",
+            ".bna",
+            ".tgz",
+            ".gz",
+            ".pem",
+            ".key",
+            ".crt",
+            ".card",
+            ".tx",
+            ".block"
         ],
         "insert_license": false,
         "license_formats": {
-          "js|ts|scss|cto|acl|qry": {
-            "prepend": "/*",
-            "append": " */",
-            "eachLine": {
-                "prepend": " * "
+            "js|ts|scss|cto|acl|qry": {
+                "prepend": "/*",
+                "append": " */",
+                "eachLine": {
+                    "prepend": " * "
+                }
+            },
+            "gitkeep|cfignore|nvmrc|npmrc|editorconfig": {
+                "eachLine": {
+                    "prepend": "# "
+                }
+            },
+            "md": {
+                "file": "../../markdown-license.txt"
             }
-          },
-          "gitkeep|cfignore|nvmrc|npmrc|editorconfig": {
-            "eachLine": {
-                "prepend": "# "
-            }
-          },
-          "md": {
-            "file": "../../markdown-license.txt"
-          }
         }
     },
     "scripts": {
@@ -128,10 +128,10 @@
     },
     "dependencies": {
         "cheerio": "0.22.0",
-        "composer-common": "0.19.1",
-        "composer-playground-api": "0.19.1",
-        "composer-wallet-filesystem": "0.19.1",
-        "composer-wallet-inmemory": "0.19.1",
+        "composer-common": "0.19.2",
+        "composer-playground-api": "0.19.2",
+        "composer-wallet-filesystem": "0.19.2",
+        "composer-wallet-inmemory": "0.19.2",
         "express": "4.15.2",
         "is-docker": "1.1.0",
         "opener": "1.4.2",
@@ -181,12 +181,12 @@
         "clone": "2.1.1",
         "codelyzer": "2.0.1",
         "codemirror": "5.26.0",
-        "composer-admin": "0.19.1",
-        "composer-client": "0.19.1",
-        "composer-connector-proxy": "0.19.1",
-        "composer-connector-web": "0.19.1",
-        "composer-runtime": "0.19.1",
-        "composer-runtime-web": "0.19.1",
+        "composer-admin": "0.19.2",
+        "composer-client": "0.19.2",
+        "composer-connector-proxy": "0.19.2",
+        "composer-connector-web": "0.19.2",
+        "composer-runtime": "0.19.2",
+        "composer-runtime-web": "0.19.2",
         "copy-webpack-plugin": "4.0.1",
         "core-js": "2.4.1",
         "css-loader": "0.26.1",
