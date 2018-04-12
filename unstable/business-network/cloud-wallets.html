@@ -158,8 +158,6 @@ ga('send', 'pageview');
               <option>Select version</option>
               <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
               <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
-              <option value="/composer/next/introduction/introduction.html" title="The most ready version of the next generation of Composer, new features (possibly breaking) and many fixes">Next</option>
-              <option value="/composer/next-unstable/introduction/introduction.html" title="The closest to the development stream of Composer, expect breaking changes">Next-unstable</option>
           </select>
 
             <div class="search-form">
@@ -491,8 +489,7 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
 <p>will use the file system card store at the location <code>/home/username/.composer</code>, or pick up on the exported custom wallet specified within <code>NODE_CONFIG</code> if and only if executing within the same shell instance.</p>
 
 <p>To specify a custom wallet within the API, without the use of a globally exported value, it must be included as an option passed to the connection:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">
-        <span class="kd">const</span> <span class="nx">connectionOptions</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">        <span class="kd">const</span> <span class="nx">connectionOptions</span> <span class="o">=</span> <span class="p">{</span>
             <span class="na">wallet</span> <span class="p">:</span> <span class="p">{</span>
                 <span class="na">type</span><span class="p">:</span> <span class="s1">'composer-wallet-filesystem'</span><span class="p">,</span>
                 <span class="na">options</span> <span class="p">:</span> <span class="p">{</span>
@@ -517,9 +514,13 @@ Hyperledger Composer uses the standard configuration module <code>config</code>.
         <span class="nx">clientConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">({</span><span class="nx">cardStore</span><span class="p">});</span>
 </code></pre></div>
 <p>This has now changed and Card stores must now be specified differently:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">        <span class="kd">const</span> <span class="nx">NetworkCardStoreManager</span><span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-common'</span><span class="p">).</span><span class="nx">NetworkCardStoreManager</span><span class="p">;</span>
-        <span class="kd">const</span> <span class="nx">cardStore</span> <span class="o">=</span> <span class="nx">NetworkCardStoreManager</span><span class="p">.</span><span class="nx">getCardStore</span><span class="p">(</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'composer-wallet-inmemory'</span> <span class="p">}</span> <span class="p">);</span>
-        <span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">({</span> <span class="nx">cardStore</span> <span class="p">});</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">        <span class="kd">const</span> <span class="nx">connectionOptions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">wallet</span> <span class="p">:</span> <span class="p">{</span>
+                <span class="na">type</span><span class="p">:</span> <span class="s1">'composer-wallet-inmemory'</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">(</span><span class="nx">connectionOptions</span><span class="p">);</span>
+        <span class="nx">clientConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">(</span><span class="nx">connectionOptions</span><span class="p">);</span>
 </code></pre></div>
             
           </section>
