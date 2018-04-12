@@ -1,9 +1,48 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <!doctype html>
 <html lang="en">
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
   
   
   
 
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <head>
   <meta charset="utf-8">
   
@@ -15,7 +54,20 @@
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
   
-    <!-- Google Analytics -->
+    <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 ga('create', 'UA-91314349-2', 'auto');
@@ -47,14 +99,40 @@ ga('send', 'pageview');
 
   <div class="SiteWrapper">
     
-      <div class="content">
+      <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="page-sidebar-grid" id="off-canvas">
           <!-- <a class="toggle close" href="#">close</a> -->
           <div class="docs-pagenav-grid">
-            <!-- Navigation -->
+            <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Navigation -->
   <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
             <a class="navbar-brand" href="/composer/latest/index.html"><b>Hyperledger</b> Composer</a>
@@ -75,6 +153,12 @@ ga('send', 'pageview');
 </nav>
 
           </div>
+
+          <select id="version" name="version" onchange="location = this.options[this.selectedIndex].value;">
+              <option>Select version</option>
+              <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
+              <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
+          </select>
 
             <div class="search-form">
               <form action="/composer/latest/search/search.html" method="get">
@@ -117,7 +201,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/latest/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 <li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
@@ -207,8 +291,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/latest/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -221,8 +305,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/latest/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/latest/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/latest/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -250,7 +334,20 @@ ga('send', 'pageview');
 
             
                 <div class="docs-footer-grid">
-                <div class="footer-bg-break docs-footer-break">
+                <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="footer-bg-break docs-footer-break">
 <div class="footer-container-break">
     <div class="footer-left-break">
       <p>Released under the Apache License v2.0</p>
@@ -349,10 +446,13 @@ ga('send', 'pageview');
 
 <p>The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.</p>
 
-<p>The following sections define the server details:
-- Orderers
-- Peers
-- Certificate Authorities</p>
+<p>The following sections define the server details:</p>
+
+<ul>
+<li>Orderers</li>
+<li>Peers</li>
+<li>Certificate Authorities</li>
+</ul>
 
 <p>Organizational details are defined in:</p>
 
@@ -496,11 +596,14 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     }
 },
 </code></pre></div>
-<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
-- <code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.
-- <code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.
-- <code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
-- <code>eventSource</code> means that this peer will generate events.</p>
+<p>A peer has 4 possible roles. If a role is not specified then it is assumed to be true.</p>
+
+<ul>
+<li><code>endorsingPeer</code> means that peer is there to endorse transactions and must have chaincode instantiated.</li>
+<li><code>chaincodeQuery</code> means that peer is able to handle chaincode query requests and must have chaincode instantiated.</li>
+<li><code>ledgerQuery</code> means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.</li>
+<li><code>eventSource</code> means that this peer will generate events.</li>
+</ul>
 
 <h3 id="client">Client</h3>
 
@@ -523,9 +626,12 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 
 <h3 id="common-properties">Common properties</h3>
 
-<p>When defining a peer or orderer there are some common options you can use. These are:
-- <code>grpcOptions</code>
-- <code>tlsCACerts</code></p>
+<p>When defining a peer or orderer there are some common options you can use. These are:</p>
+
+<ul>
+<li><code>grpcOptions</code></li>
+<li><code>tlsCACerts</code></li>
+</ul>
 
 <p>For example a peer definition might look like:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"peer0.org1.example.com": {
@@ -533,19 +639,25 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
     }
 }
 </code></pre></div>
+<p>The grpc message lengths are in bytes and the timeout is in milliseconds. the grpc options are not specific to the connection profile and are the same properties defined by grpc itself.</p>
+
 <p>A similar thing could be done for an orderer definition:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">"orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
     "grpcOptions": {
-        "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "ssl-target-name-override": "orderer.example.com",
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
         "pem": "-----BEGIN CERTIFICATE----- &lt;etc&gt; "
@@ -583,16 +695,16 @@ In the example our MSPid is <code>Org1MSP</code> and we have a single peer and a
 </ul>
 
 <p>To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called <code>PKCS_LIBRARY</code>, <code>PKCS_SLOT</code> and <code>PKCS_PIN</code> to hold the hsm information, for example</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    export PKCS_LIBRARY=/usr/local/lib/myhsm.so
-    export PKCS_SLOT=0
-    export PKCS_PIN=98765432
+<div class="highlight"><pre><code class="language-" data-lang="">export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+export PKCS_SLOT=0
+export PKCS_PIN=98765432
 </code></pre></div>
 <p>then you can reference these in the connection profile as follows</p>
-<div class="highlight"><pre><code class="language-" data-lang="">        "x-hsm": {
-            "library": "{PKCS_LIBRARY}",
-            "slot": "{PKCS_SLOT}",
-            "pin": "{PKCS_PIN}"
-        }
+<div class="highlight"><pre><code class="language-" data-lang="">"x-hsm": {
+    "library": "{PKCS_LIBRARY}",
+    "slot": "{PKCS_SLOT}",
+    "pin": "{PKCS_PIN}"
+}
 </code></pre></div>
             
           </section>

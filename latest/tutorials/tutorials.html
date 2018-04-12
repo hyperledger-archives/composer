@@ -1,9 +1,48 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <!doctype html>
 <html lang="en">
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
   
   
   
 
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <head>
   <meta charset="utf-8">
   
@@ -15,7 +54,20 @@
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
   
-    <!-- Google Analytics -->
+    <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 ga('create', 'UA-91314349-2', 'auto');
@@ -47,14 +99,40 @@ ga('send', 'pageview');
 
   <div class="SiteWrapper">
     
-      <div class="content">
+      <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="page-sidebar-grid" id="off-canvas">
           <!-- <a class="toggle close" href="#">close</a> -->
           <div class="docs-pagenav-grid">
-            <!-- Navigation -->
+            <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Navigation -->
   <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
             <a class="navbar-brand" href="/composer/latest/index.html"><b>Hyperledger</b> Composer</a>
@@ -75,6 +153,12 @@ ga('send', 'pageview');
 </nav>
 
           </div>
+
+          <select id="version" name="version" onchange="location = this.options[this.selectedIndex].value;">
+              <option>Select version</option>
+              <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
+              <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
+          </select>
 
             <div class="search-form">
               <form action="/composer/latest/search/search.html" method="get">
@@ -117,7 +201,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/latest/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 <li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
@@ -207,8 +291,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/latest/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -221,8 +305,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/latest/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/latest/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/latest/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -250,7 +334,20 @@ ga('send', 'pageview');
 
             
                 <div class="docs-footer-grid">
-                <div class="footer-bg-break docs-footer-break">
+                <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="footer-bg-break docs-footer-break">
 <div class="footer-container-break">
     <div class="footer-left-break">
       <p>Released under the Apache License v2.0</p>
@@ -275,7 +372,7 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>We have four basic tutorial options, and two more advanced tutorials:</p>
+<p>We have several basic and advanced tutorials:</p>
 
 <h2 id="playground-tutorial">Playground Tutorial</h2>
 
@@ -324,7 +421,7 @@ In this tutorial, you will incrementally build ACL rules for a sample Commodity 
 
 <p><a href="../tutorials/deploy-to-fabric-multi-org.html"><strong>Start the multi-organization Hyperledger Fabric deployment tutorial</strong></a>.</p>
 
-<h2 id="invoking-a-hyperledger-composer-business-network-from-another-business-network">Invoking a Hyperledger Composer business network from another business network</h2>
+<h2 id="interacting-with-other-business-networks">Interacting with other business networks</h2>
 
 <p>In this tutorial, we will demonstrate the steps that a business network developer needs to take in order to invoke a Hyperledger Composer business network from a different business network</p>
 

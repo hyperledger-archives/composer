@@ -1,9 +1,48 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <!doctype html>
 <html lang="en">
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
   
   
   
 
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <head>
   <meta charset="utf-8">
   
@@ -15,7 +54,20 @@
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
   
-    <!-- Google Analytics -->
+    <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 ga('create', 'UA-91314349-2', 'auto');
@@ -47,14 +99,40 @@ ga('send', 'pageview');
 
   <div class="SiteWrapper">
     
-      <div class="content">
+      <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="content">
     <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="page-sidebar-grid" id="off-canvas">
           <!-- <a class="toggle close" href="#">close</a> -->
           <div class="docs-pagenav-grid">
-            <!-- Navigation -->
+            <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- Navigation -->
   <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
             <a class="navbar-brand" href="/composer/latest/index.html"><b>Hyperledger</b> Composer</a>
@@ -75,6 +153,12 @@ ga('send', 'pageview');
 </nav>
 
           </div>
+
+          <select id="version" name="version" onchange="location = this.options[this.selectedIndex].value;">
+              <option>Select version</option>
+              <option value="/composer/latest/introduction/introduction.html" title="The most stable version of Composer">Latest</option>
+              <option value="/composer/unstable/introduction/introduction.html" title="The version that will replace Latest">Latest-unstable</option>
+          </select>
 
             <div class="search-form">
               <form action="/composer/latest/search/search.html" method="get">
@@ -117,7 +201,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/queries">Queries Tutorial</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-single-org">Deploying to a single organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
-<li><a href="/composer/latest/tutorials/invoke-composer-network">Invoking a Composer business network from another business network using Hyperledger Fabric</a></li>
+<li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
 <li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
@@ -207,8 +291,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-businessnetworkdefinition">BusinessNetworkDefinition (Common API)</a></li>
 <li><a href="/composer/latest/api/common-businessnetworkmetadata">BusinessNetworkMetadata (Common API)</a></li>
 <li><a href="/composer/latest/api/common-classdeclaration">ClassDeclaration (Common API)</a></li>
-<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-conceptdeclaration">ConceptDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-concept">Concept (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumdeclaration">EnumDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-enumvaluedeclaration">EnumValueDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-eventdeclaration">EventDeclaration (Common API)</a></li>
@@ -221,8 +305,8 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/api/common-modelmanager">ModelManager (Common API)</a></li>
 <li><a href="/composer/latest/api/common-participantdeclaration">ParticipantDeclaration (Common API)</a></li>
 <li><a href="/composer/latest/api/common-property">Property (Common API)</a></li>
-<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-relationshipdeclaration">RelationshipDeclaration (Common API)</a></li>
+<li><a href="/composer/latest/api/common-relationship">Relationship (Common API)</a></li>
 <li><a href="/composer/latest/api/common-resource">Resource (Common API)</a></li>
 <li><a href="/composer/latest/api/common-serializer">Serializer (Common API)</a></li>
 <li><a href="/composer/latest/api/common-transactiondeclaration">TransactionDeclaration (Common API)</a></li>
@@ -250,7 +334,20 @@ ga('send', 'pageview');
 
             
                 <div class="docs-footer-grid">
-                <div class="footer-bg-break docs-footer-break">
+                <!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="footer-bg-break docs-footer-break">
 <div class="footer-container-break">
     <div class="footer-left-break">
       <p>Released under the Apache License v2.0</p>
@@ -275,13 +372,13 @@ ga('send', 'pageview');
 
 <p>This tutorial provides an insight into the process for configuring a blockchain network, spanning multiple organizations.</p>
 
-<p>It outlines the steps you need configure an Hyperledger Fabric based multi-organisation blockchain network. The two-organisation blockchain network is based on a sample network provided by Hyperledger Fabric. Furthermore, it describes the steps to generate the necessary security artifacts and secure the network in either organization.</p>
+<p>It outlines the steps you need configure a Hyperledger Fabric based multi-organisation blockchain network. The two-organisation blockchain network is based on a sample network provided by Hyperledger Fabric. Furthermore, it describes the steps to generate the necessary security artifacts and secure the network in either organization.</p>
 
 <p>Once the blockchain network is configured, we show how to deploy a business network (eg. a Commodity trading business network from our sample networks), which runs in its own chaincode container and which is instantiated on the ledger shared across both organizations. We then show interactions with the shared ledger as different participants / identities, as generated by an Identity provider in each organization.</p>
 
 <p>It is recommended that you first follow the accompanying singie organization tutorial first ; this tutorial demonstrates how to deploy a blockchain network to an instance of Hyperledger Fabric for a single organization, and will explain some of the concepts in more detail.</p>
 
-<p>The {site.data.conrefs.hlf_full}} blockchain network (for two organizations) in this tutorial is configured using docker containers,  with both organizations&#39; fabric networks, on the same machine - obviously, in the real world, they&#39;ll be in separate IP networks or domains, or secure Cloud environments.</p>
+<p>The Hyperledger Fabric blockchain network (for two organizations) in this tutorial is configured using docker containers,  with both organizations&#39; fabric networks, on the same machine - obviously, in the real world, they&#39;ll be in separate IP networks or domains, or secure Cloud environments.</p>
 
 <p>The tutorial has colour-coded steps for convenience, to indicate &#39;which organization&#39; should follow a particular step or sequence - or indeed, if steps are needed for both Orgs.</p>
 
@@ -721,16 +818,18 @@ cp -p $ORG2/keystore/*_sk /tmp/composer/org2
 </code></pre></div>
 <p>If the command works successfully, a business network card called <code>PeerAdmin@byfn-network-org2</code> will have been imported into the wallet.</p>
 
-<h2 class='alice'>Step Eleven: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org1</h2>
+<h2 class='alice'>Step Eleven: Installing the business network onto the Hyperledger Fabric peer nodes for Org1</h2>
 
 <p>Run the <code>composer network install</code> command to install the business network onto all of the Hyperledger Fabric peer nodes for <code>Org1</code> that you specified in the connection profile file you created in &#39;Step Three&#39;:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@byfn-network-org1 --archiveFile trade-network.bna
 </code></pre></div>
 <p>As you can see from the above, we are using a Hyperledger Composer business network called <code>trade-network</code> to test our multi-org environment. You will need a file <code>trade-network.bna</code> (business network archive, from our sample networks) to do the test. If you don&#39;t have this, just go to <a href="https://composer-playground.mybluemix.net/">https://composer-playground.mybluemix.net/</a> and deploy the <code>trade-network</code> sample in the online Playground, then &#39;connect&#39; to the business network as &#39;admin&#39;, change the version number to <code>0.1.14</code> in the lower left, and export it to the current directory as <code>trade-network.bna</code>. The business network has a <em>version</em> property specified in a <code>package.json</code> file. That version must be specified when the business network is started using the <code>composer start</code> command in Step Seventeen. If you are using the <code>trade-network</code> sample network, the version is <code>0.1.14</code>. (Note: If you are planning on using a different network, such as the Composer tutorial network <code>tutorial-network</code> as your business network,  you would need to specify that file in the <code>network install</code> command above and thereafter, as the business network archive in this tutorial, as well as the correct version number for this business network).</p>
 
-<h2 class='bob'>Step Twelve: Installing the Hyperledger Composer runtime onto the Hyperledger Fabric peer nodes for Org2</h2>
+<p>A useful feature of the <code>network install</code> command is that it will output the name of the business network and the version number that has just been installed and you can note these down for use in &#39;Step Seventeen&#39; later.</p>
 
-<p>Run the <code>composer network install</code> command to install the Hyperledger Composer runtime onto all of the Hyperledger Fabric peer nodes for <code>Org2</code> that you specified in the connection profile file you created in step four:</p>
+<h2 class='bob'>Step Twelve: Installing the business network onto the Hyperledger Fabric peer nodes for Org2</h2>
+
+<p>Run the <code>composer network install</code> command to install the business network onto all of the Hyperledger Fabric peer nodes for <code>Org2</code> that you specified in the connection profile file you created in step four:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@byfn-network-org2 --archiveFile trade-network.bna
 </code></pre></div>
 <h2 class='everybody'>Step Thirteen: Defining the endorsement policy for the business network</h2>

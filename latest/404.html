@@ -1,120 +1,26 @@
-<!doctype html>
-<html lang="en">
-  
-  
-  
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-<head>
-  <meta charset="utf-8">
-  
-    <title>Page Not Found :( | Hyperledger Composer</title>
-  
-  <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/composer/latest/favicon.ico">
-  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  
-    <!-- Google Analytics -->
-<script>
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
-ga('require', 'outboundLinkTracker');
-ga('require', 'eventTracker');
-ga('send', 'pageview');
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/composer/latest/assets/js/autotrack.js"></script>
-<!-- End Google Analytics -->
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+---
+layout: default
+title: 'Page Not Found :('
+category: 404
+---
 
-  
-
-  
-    <link href="/composer/latest/assets/css/404.min.css" rel="stylesheet">
-  
-</head>
-
-
-<body class="">
-
-  
-
-  <div class="SiteWrapper">
-    
-      <div class="content">
-    <article class="docs-container">
-        <!-- If there's a sidebar, divide into 2 columns -->
-        
-        <div class="col-md-12">
-          <section class="content-chunk">
-            
-              <div class="pageproblem-container">
+<div class="pageproblem-container">
   <div class="pageproblem-info">
-    <img src="/composer/latest/assets/img/404.svg"/>
+    <img src="{{ site.baseurl }}/assets/img/404.svg"/>
     <h1>Oh no!…there’s no blockchain here :(</h1>
     <p>If you fancy telling us about this <a href="https://github.com/hyperledger/composer">please raise an issue on our Github</a></p>
   </div>
 </div>
-
-            
-          </section>
-        </div>
-        
-      <div class="PageNavigation">
-    
-    
-  </div>
-    </article>
-</div>
-<script>
-(function (document) {
-    function clipboard_init() {
-        var charts = document.querySelectorAll("div.highlight"),
-            arr = [],
-            i, j, maxItem, pre, btn, el;
-
-        // Make sure we are dealing with an array
-        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
-
-        // Find the UML source element and get the text
-        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
-            el = arr[i];
-            pre = el.childNodes[0];
-
-            pre.id = "hl_code" + i.toString();
-            btn = document.createElement('copy-button');
-            btn.appendChild(document.createTextNode('Copy'));
-            btn.setAttribute("class", "copy-btn");
-            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
-            el.insertBefore(btn, pre);
-        }
-        new Clipboard('.copy-btn');
-    };
-
-    function onReady(fn) {
-        if (document.addEventListener) {
-            document.addEventListener('DOMContentLoaded', fn);
-        } else {
-            document.attachEvent('onreadystatechange', function() {
-                if (document.readyState === 'interactive')
-                    fn();
-            });
-        }
-    }
-
-    onReady(function(){
-        clipboard_init();
-    });
-})(document);
-</script>
-<script src="/composer/latest/assets/js/nav.js"></script>
-<script src="/composer/latest/assets/js/search_bar.js"></script>
-
-    
-
-    
-
-
-  </div>
-</body>
-</html>
