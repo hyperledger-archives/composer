@@ -56,3 +56,15 @@ The system namespace transactions are:
 - StartBusinessNetwork
 - ResetBusinessNetwork
 - SetLogLevel
+
+## Events
+
+The system namespace events are:
+
+- Event
+
+## Enumerations
+
+The system namespace enumerations are:
+
+- IdentityState
