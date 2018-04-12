@@ -35,7 +35,7 @@ const LOG = Logger.getLog('BusinessNetworkConnection');
 
 /**
  * Use this class to connect to and then interact with a deployed
- * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.
+ * {@link module:composer-common.BusinessNetworkDefinition Business Network Definition}.
  * Use the AdminConnection class in the composer-admin module to deploy
  * BusinessNetworksDefinitions.
  * @extends EventEmitter
@@ -68,8 +68,8 @@ class BusinessNetworkConnection extends EventEmitter {
     }
 
     /**
-     * Gets the currently connected
-     * {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.
+     * Gets the currently connected business network.
+     * {@link module:composer-common.BusinessNetworkDefinition Business Network Definition}.
      * @example
      * // Get the Business Network Definition
      * var connection = new BusinessNetworkConnection();
