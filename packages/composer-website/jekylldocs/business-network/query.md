@@ -51,7 +51,7 @@ query Q18 {
     statement:
         SELECT org.acme.Driver
             WHERE (_$ageParam < age)
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName DESC, firstName DESC]
                     LIMIT _$limitParam
                         SKIP _$skipParam
 }
