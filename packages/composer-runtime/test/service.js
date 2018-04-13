@@ -16,11 +16,6 @@
 
 const Service = require('../lib/service');
 
-const chai = require('chai');
-chai.should();
-chai.use(require('chai-as-promised'));
-const sinon = require('sinon');
-
 describe('Service', () => {
 
     let service;
@@ -31,95 +26,49 @@ describe('Service', () => {
 
     describe('#transactionStart', () => {
 
-        it('should defer to the callback function', () => {
-            const spy = sinon.spy(service, '_transactionStart');
-            return service.transactionStart(true)
-                .then(() => {
-                    sinon.assert.calledOnce(spy);
-                    sinon.assert.calledWith(spy, true, sinon.match.func);
-                });
+        it('should return a resolved promise', async () => {
+            // just by trying to await for the service to complete tests the expected
+            // behaviour.
+            await service.transactionStart(true);
         });
-
-        it('should handle errors from the callback function', () => {
-            sinon.stub(service, '_transactionStart').yields(new Error('ruhroh'));
-            return service.transactionStart(true)
-                .should.be.rejectedWith(/ruhroh/);
-        });
-
     });
 
     describe('#transactionPrepare', () => {
 
-        it('should defer to the callback function', () => {
-            const spy = sinon.spy(service, '_transactionPrepare');
-            return service.transactionPrepare()
-                .then(() => {
-                    sinon.assert.calledOnce(spy);
-                    sinon.assert.calledWith(spy, sinon.match.func);
-                });
-        });
-
-        it('should handle errors from the callback function', () => {
-            sinon.stub(service, '_transactionPrepare').yields(new Error('ruhroh'));
-            return service.transactionPrepare()
-                .should.be.rejectedWith(/ruhroh/);
+        it('should return a resolved promise', async () => {
+            // just by trying to await for the service to complete tests the expected
+            // behaviour.
+            await service.transactionPrepare();
         });
 
     });
 
     describe('#transactionRollback', () => {
 
-        it('should defer to the callback function', () => {
-            const spy = sinon.spy(service, '_transactionRollback');
-            return service.transactionRollback()
-                .then(() => {
-                    sinon.assert.calledOnce(spy);
-                    sinon.assert.calledWith(spy, sinon.match.func);
-                });
-        });
-
-        it('should handle errors from the callback function', () => {
-            sinon.stub(service, '_transactionRollback').yields(new Error('ruhroh'));
-            return service.transactionRollback()
-                .should.be.rejectedWith(/ruhroh/);
+        it('should return a resolved promise', async () => {
+            // just by trying to await for the service to complete tests the expected
+            // behaviour.
+            await service.transactionRollback();
         });
 
     });
 
     describe('#transactionCommit', () => {
 
-        it('should defer to the callback function', () => {
-            const spy = sinon.spy(service, '_transactionCommit');
-            return service.transactionCommit()
-                .then(() => {
-                    sinon.assert.calledOnce(spy);
-                    sinon.assert.calledWith(spy, sinon.match.func);
-                });
-        });
-
-        it('should handle errors from the callback function', () => {
-            sinon.stub(service, '_transactionCommit').yields(new Error('ruhroh'));
-            return service.transactionCommit()
-                .should.be.rejectedWith(/ruhroh/);
+        it('should return a resolved promise', async () => {
+            // just by trying to await for the service to complete tests the expected
+            // behaviour.
+            await service.transactionCommit();
         });
 
     });
 
     describe('#transactionEnd', () => {
 
-        it('should defer to the callback function', () => {
-            const spy = sinon.spy(service, '_transactionEnd');
-            return service.transactionEnd()
-                .then(() => {
-                    sinon.assert.calledOnce(spy);
-                    sinon.assert.calledWith(spy, sinon.match.func);
-                });
-        });
-
-        it('should handle errors from the callback function', () => {
-            sinon.stub(service, '_transactionEnd').yields(new Error('ruhroh'));
-            return service.transactionEnd()
-                .should.be.rejectedWith(/ruhroh/);
+        it('should return a resolved promise', async () => {
+            // just by trying to await for the service to complete tests the expected
+            // behaviour.
+            await service.transactionEnd();
         });
 
     });
