@@ -40,7 +40,7 @@ describe('AdminConnection', () => {
         name: testProfileName,
         'x-type': 'hlfv1'
     };
-
+    const startTxId = {idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'};
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
@@ -107,7 +107,7 @@ describe('AdminConnection', () => {
         faultyCard = new IdCard(faultyMetaData, minimalConnectionProfile);
         credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
         credentialsCard.setCredentials(validCredentials);
-
+        sandbox.stub(Util, 'createTransactionId').resolves(startTxId);
     });
 
     afterEach(() => {
@@ -236,6 +236,7 @@ describe('AdminConnection', () => {
     });
 
     describe('#start', () => {
+
         const networkName = 'network-name';
         const networkVersion = '1.0.0-test';
         const identityName = 'admin';
@@ -268,7 +269,7 @@ describe('AdminConnection', () => {
         const expectedStartTransaction = {
             $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
             timestamp : '1970-01-01T00:00:00.000Z',
-            transactionId : sinon.match.string
+            transactionId : startTxId.idStr
         };
         const expectedNetworkAdminBootstrapTransactions = {
             bootstrapTransactions : [
@@ -317,6 +318,7 @@ describe('AdminConnection', () => {
             mockSecurityContext.getUser.returns(identityName);
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
+
         });
 
         it('should error if neither networkAdmins or bootstrapTransactions specified', () => {
@@ -538,7 +540,7 @@ describe('AdminConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
@@ -548,7 +550,7 @@ describe('AdminConnection', () => {
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()

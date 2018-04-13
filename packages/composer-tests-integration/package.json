@@ -75,7 +75,9 @@
       ".bna",
       ".crt",
       ".tx",
-      ".block"
+      ".block",
+      ".log",
+      ".pid"
     ],
     "insert_license": false,
     "license_formats": {

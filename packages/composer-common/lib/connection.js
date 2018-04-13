@@ -18,7 +18,6 @@ const BusinessNetworkDefinition = require('./businessnetworkdefinition.js');
 const ConnectionManager = require('./connectionmanager');
 const EventEmitter = require('events');
 const Util = require('./util');
-const uuid = require('uuid');
 
 /**
  * Base class representing a connection to a business network.
@@ -166,18 +165,20 @@ class Connection extends EventEmitter {
             throw new Error('Incorrect Business Network Identifier');
         }
 
+        let options={};
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
         let id = transaction.getIdentifier();
         if (id === null || id === undefined) {
-            id = uuid.v4();
-            transaction.setIdentifier(id);
+            id = await Util.createTransactionId(securityContext);
+            transaction.setIdentifier(id.idStr);
+            options.transactionId = id.id;
         }
         let timestamp = transaction.timestamp;
         if (timestamp === null || timestamp === undefined) {
             timestamp = transaction.timestamp = new Date();
         }
         let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)],options);
     }
 
     /**
@@ -198,12 +199,13 @@ class Connection extends EventEmitter {
         let businessNetworkJSON = JSON.parse(buffer.toString());
         let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
         let currentDeployedNetwork = await BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-
+        let options = {};
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
         let id = transaction.getIdentifier();
         if (id === null || id === undefined) {
-            id = uuid.v4();
-            transaction.setIdentifier(id);
+            id = await Util.createTransactionId(securityContext);
+            transaction.setIdentifier(id.idStr);
+            options.transactionId = id.id;
         }
         let timestamp = transaction.timestamp;
         if (timestamp === null || timestamp === undefined) {
@@ -211,7 +213,7 @@ class Connection extends EventEmitter {
         }
         transaction.newLogLevel = loglevel;
         let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)],options);
     }
 
     /**
