@@ -373,7 +373,7 @@ ga('send', 'pageview');
 <h1 id="businessnetworkconnection">BusinessNetworkConnection</h1>
 
 <p>Use this class to connect to and then interact with a deployed
-{@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.
+<a href="common-businessnetworkdefinition">Business Network Definition</a>.
 Use the AdminConnection class in the composer-admin module to deploy
 BusinessNetworksDefinitions.</p>
 
@@ -456,7 +456,7 @@ BusinessNetworksDefinitions.</p>
 <tr>
 <td style="text-align: left"><a href="#getbusinessnetwork">getBusinessNetwork</a></td>
 <td style="text-align: left"><code>BusinessNetworkDefinition</code></td>
-<td style="text-align: left">Gets the currently connected {@link module:composer-common</td>
+<td style="text-align: left">Gets the currently connected business network</td>
 </tr>
 <tr>
 <td style="text-align: left"><a href="#gethistorian">getHistorian</a></td>
@@ -566,7 +566,7 @@ BusinessNetworksDefinitions.</p>
 
 <p><em>BusinessNetworkDefinition getBusinessNetwork(  )</em></p>
 
-<p>Gets the currently connected {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition}.</p>
+<p>Gets the currently connected business network. <a href="common-businessnetworkdefinition">Business Network Definition</a>.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
@@ -599,7 +599,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing {@link AssetRegistry asset registries}.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing <a href="client-assetregistry">asset registries</a>.</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -763,7 +763,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing {@link ParticipantRegistry participant registries}.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing <a href="client-participantregistry">participant registries</a>.</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -965,7 +965,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing {@link TransactionRegistry transaction registries}.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a list of existing <a href="client-transactionregistry">transaction registries</a>.</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1094,7 +1094,7 @@ BusinessNetworksDefinitions.</p>
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a {@link module:composer-common.BusinessNetworkDefinition BusinessNetworkDefinition} that indicates the connection is completed.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with a <a href="common-businessnetworkdefinition">BusinessNetworkDefinition</a> that indicates the connection is completed.</p>
 
 <h3 id="parameters">Parameters</h3>
 
@@ -1225,7 +1225,7 @@ BusinessNetworksDefinitions.</p>
 <td style="text-align: left"><strong>transaction</strong></td>
 <td style="text-align: left">Resource</td>
 <td style="text-align: left"><em>Yes</em></td>
-<td style="text-align: left">The transaction to submit. Use {@link module:composer-common.Factory#newTransaction newTransaction} to create this object.</td>
+<td style="text-align: left">The transaction to submit. Use <a href="common-factory#newtransaction">newTransaction</a> to create this object.</td>
 </tr>
 </tbody></table>
 
@@ -1291,7 +1291,7 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 </code></pre></div>
 <h3 id="returns">Returns</h3>
 
-<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of {@link module:composer-common.Resource Resource} representing the resources returned by the query.</p>
+<p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of <a href="common-resource">Resource</a> representing the resources returned by the query.</p>
 
 <h3 id="parameters">Parameters</h3>
 
