@@ -17,16 +17,15 @@
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const Connection = require('../lib/connection');
 const ConnectionManager = require('../lib/connectionmanager');
-const SecurityContext = require('../lib/securitycontext');
-const Util = require('../lib/util');
-const Serializer = require('../lib/serializer');
-const chai = require('chai');
 const Factory = require('../lib/factory');
 const Resource = require('../lib/model/resource');
+const SecurityContext = require('../lib/securitycontext');
+const Serializer = require('../lib/serializer');
+const Util = require('../lib/util');
 
+const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
-
 const sinon = require('sinon');
 
 describe('Connection', () => {
@@ -96,135 +95,48 @@ describe('Connection', () => {
 
     describe('#disconnect', () => {
 
-        it('should call _disconnect and handle no error', () => {
-            sinon.stub(connection, '_disconnect').yields(null);
-            return connection.disconnect()
-                .then(() => {
-                    sinon.assert.calledWith(connection._disconnect);
-                });
-        });
-
-        it('should call _disconnect and handle an error', () => {
-            sinon.stub(connection, '_disconnect').yields(new Error('error'));
-            return connection.disconnect()
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._disconnect);
-                });
-        });
-
-    });
-
-    describe('#_disconnect', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._disconnect();
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.disconnect()
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#login', () => {
 
-        it('should call _login and handle no error', () => {
-            sinon.stub(connection, '_login').yields(null, mockSecurityContext);
-            return connection.login('id', 'secret')
-                .should.eventually.be.equal(mockSecurityContext)
-                .then(() => {
-                    sinon.assert.calledWith(connection._login, 'id', 'secret');
-                });
-        });
-
-        it('should call _login and handle an error', () => {
-            sinon.stub(connection, '_login').yields(new Error('error'));
-            return connection.login('id', 'secret')
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._login, 'id', 'secret');
-                });
-        });
-
-    });
-
-    describe('#_login', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._login('id', 'secret');
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.login('id', 'secret')
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#install', () => {
 
-        it('should call _install and handle no error', () => {
-            sinon.stub(connection, '_install').yields(null);
-            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
-                });
-        });
-
-        it('should call _install and handle an error', () => {
-            sinon.stub(connection, '_install').yields(new Error('error'));
-            return connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._install, mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
-                });
-        });
-
-    });
-
-    describe('#_install', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' });
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.install(mockSecurityContext, mockBusinessNetworkDefinition, { install: 'options' })
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#start', () => {
 
-        it('should call _start and handle no error', () => {
-            sinon.stub(connection, '_start').yields(null);
-            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
-                });
-        });
-
-        it('should call _start and handle an error', () => {
-            sinon.stub(connection, '_start').yields(new Error('error'));
-            return connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._start, mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
-                });
-        });
-
-    });
-
-    describe('#_start', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' });
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.start(mockSecurityContext, 'org-acme-biznet', '1.0.0', { $class: 'org.hyerledger.composer.system.StartBusinessNetwork' }, { start: 'options' })
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#reset', () => {
 
-        it('should throw an error when no name given', ()=>{
-            return connection.reset(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        it('should throw an error when no name given', async ()=>{
+            await connection.reset(mockSecurityContext)
+                .should.be.rejectedWith(/not specified/);
         });
-        it('should handle wrong network name data', () => {
+
+        it('should handle wrong network name data', async () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -247,11 +159,12 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection.reset(mockSecurityContext,'wrong-network')
-                    .should.eventually.be.rejectedWith(/Incorrect Business Network Identifier/);
+            await connection.reset(mockSecurityContext,'wrong-network')
+                .should.be.rejectedWith(/Incorrect Business Network Identifier/);
 
         });
-        it('should handle valid data', () => {
+
+        it('should handle valid data', async () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -274,15 +187,12 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection.reset(mockSecurityContext,'acme-network')
-                    .then(()=>{
-                        sinon.assert.called(Util.invokeChainCode);
-                        sinon.assert.called(Util.queryChainCode);
-                    });
-
+            await connection.reset(mockSecurityContext,'acme-network');
+            sinon.assert.called(Util.invokeChainCode);
+            sinon.assert.called(Util.queryChainCode);
         });
 
-        it('should handle valid data', () => {
+        it('should handle valid data', async () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -305,256 +215,101 @@ describe('Connection', () => {
             mockTransaction.getIdentifier.returns(null);
             mockTransaction.timestamp=new Date();
 
-            return connection.reset(mockSecurityContext,'acme-network')
-                    .then(()=>{
-                        sinon.assert.called(Util.invokeChainCode);
-                        sinon.assert.called(Util.queryChainCode);
-                    });
-
+            await connection.reset(mockSecurityContext,'acme-network');
+            sinon.assert.called(Util.invokeChainCode);
+            sinon.assert.called(Util.queryChainCode);
         });
 
     });
 
     describe('#upgrade', () => {
 
-        it('should call _upgrade and handle no error', () => {
-            sinon.stub(connection, '_upgrade').yields(null);
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
-                .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
-                });
-        });
-
-        it('should call _upgrade and handle an error', () => {
-            sinon.stub(connection, '_upgrade').yields(new Error('error'));
-            return connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._upgrade, mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'});
-                });
-        });
-
-    });
-
-    describe('#_upgrade', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._upgrade(mockSecurityContext, 'digitalproperty-network', {dummy: 'dummy'});
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.upgrade(mockSecurityContext, 'digitalproperty-network', '1.0.1', {dummy: 'dummy'})
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('undeploy', () => {
-        it('should throw as abstract', () => {
-            return connection.undeploy(mockSecurityContext, 'name').should.be.rejectedWith(/abstract function called/i);
+
+        it('should throw as abstract', async () => {
+            await connection.undeploy(mockSecurityContext, 'name')
+                .should.be.rejectedWith(/abstract function called/);
         });
+
     });
 
     describe('#ping', () => {
 
-        it('should call _ping and handle no error', () => {
-            sinon.stub(connection, '_ping').yields(null, { ping: 'result' });
-            return connection.ping(mockSecurityContext)
-                .should.eventually.be.deep.equal({ ping: 'result' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._ping, mockSecurityContext);
-                });
-        });
-
-        it('should call _ping and handle an error', () => {
-            sinon.stub(connection, '_ping').yields(new Error('error'));
-            return connection.ping(mockSecurityContext)
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._ping, mockSecurityContext);
-                });
-        });
-
-    });
-
-    describe('#_ping', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._ping(mockSecurityContext);
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.ping(mockSecurityContext)
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#queryChainCode', () => {
 
-        it('should call _queryChainCode and handle no error', () => {
-            sinon.stub(connection, '_queryChainCode').yields(null, { queryChainCode: 'result' });
-            return connection.queryChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
-                .should.eventually.be.deep.equal({ queryChainCode: 'result' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._queryChainCode, mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-                });
-        });
-
-        it('should call _queryChainCode and handle an error', () => {
-            sinon.stub(connection, '_queryChainCode').yields(new Error('error'));
-            return connection.queryChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._queryChainCode, mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-                });
-        });
-
-    });
-
-    describe('#_queryChainCode', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._queryChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.queryChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#invokeChainCode', () => {
 
-        it('should call _invokeChainCode and handle no error', () => {
-            sinon.stub(connection, '_invokeChainCode').yields(null);
-            return connection.invokeChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
-                .then(() => {
-                    sinon.assert.calledWith(connection._invokeChainCode, mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-                });
-        });
-
-        it('should call _invokeChainCode and handle an error', () => {
-            sinon.stub(connection, '_invokeChainCode').yields(new Error('error'));
-            return connection.invokeChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._invokeChainCode, mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-                });
-        });
-
-    });
-
-    describe('#_invokeChainCode', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._invokeChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ]);
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.invokeChainCode(mockSecurityContext, 'fcn', [ 'arg1', 'arg2', 'arg3' ])
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#registryCheckRequired', () => {
+
         it('should return false', () => {
             connection.registryCheckRequired().should.deep.equal(false);
         });
+
     });
 
     describe('#createIdentity', () => {
 
-        it('should call _createIdentity and handle no error', () => {
-            sinon.stub(connection, '_createIdentity').yields(null, { createIdentity: 'result' });
-            return connection.createIdentity(mockSecurityContext, 'user id', { createIdentity: 'options' })
-                .should.eventually.be.deep.equal({ createIdentity: 'result' })
-                .then(() => {
-                    sinon.assert.calledWith(connection._createIdentity, mockSecurityContext, 'user id', { createIdentity: 'options' });
-                });
-        });
-
-        it('should call _createIdentity and handle an error', () => {
-            sinon.stub(connection, '_createIdentity').yields(new Error('error'));
-            return connection.createIdentity(mockSecurityContext, 'user id', { createIdentity: 'options' })
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._createIdentity, mockSecurityContext, 'user id', { createIdentity: 'options' });
-                });
-        });
-
-    });
-
-    describe('#_createIdentity', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._createIdentity(mockSecurityContext, 'user id', { createIdentity: 'options' });
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.createIdentity(mockSecurityContext, 'user id', { createIdentity: 'options' })
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#list', () => {
 
-        it('should call _list and handle no error', () => {
-            sinon.stub(connection, '_list').yields(null, [ 'biznet1', 'biznet2', 'biznet3' ]);
-            return connection.list(mockSecurityContext)
-                .should.eventually.be.deep.equal([ 'biznet1', 'biznet2', 'biznet3' ])
-                .then(() => {
-                    sinon.assert.calledWith(connection._list, mockSecurityContext);
-                });
-        });
-
-        it('should call _list and handle an error', () => {
-            sinon.stub(connection, '_list').yields(new Error('error'));
-            return connection.list(mockSecurityContext)
-                .should.be.rejectedWith(/error/)
-                .then(() => {
-                    sinon.assert.calledWith(connection._list, mockSecurityContext);
-                });
-        });
-
-    });
-
-    describe('#_list', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._list(mockSecurityContext);
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.list(mockSecurityContext)
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#createTransactionId', () => {
 
-        it('should call _createTransactionId and handle no error', () => {
-            sinon.stub(connection, '_createTransactionId').yields(null,['5d5s6s78d7f6']);
-            return connection.createTransactionId(mockSecurityContext)
-                        .should.eventually.be.deep.equal(['5d5s6s78d7f6'])
-                        .then(() => {
-                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
-                        });
-        });
-
-        it('should call _createTransactionId and handle an error', () => {
-            sinon.stub(connection, '_createTransactionId').yields(new Error('error'));
-            return connection.createTransactionId(mockSecurityContext)
-                        .should.be.rejectedWith(/error/)
-                        .then(() => {
-                            sinon.assert.calledWith(connection._createTransactionId, mockSecurityContext);
-                        });
-        });
-
-    });
-
-    describe('#_createTransactionId', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                connection._createTransactionId(mockSecurityContext);
-            }).should.throw(/abstract function called/);
+        it('should throw as abstract', async () => {
+            await connection.createTransactionId(mockSecurityContext)
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
     describe('#setLogLevel', () => {
 
-        it('should throw an error when no loglevel given', ()=>{
-            return connection.setLogLevel(mockSecurityContext).should.eventually.be.rejectedWith(/not specified/);
+        it('should throw an error when no loglevel given', async () => {
+            await connection.setLogLevel(mockSecurityContext)
+                .should.be.rejectedWith(/not specified/);
         });
-        it('should handle setting to a new level', () => {
+
+        it('should handle setting to a new level', async () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -577,11 +332,10 @@ describe('Connection', () => {
             mockSerializer.toJSON.returns({key:'value'});
             mockTransaction.getIdentifier.returns('txid');
 
-            return connection.setLogLevel(mockSecurityContext,'debug');
-
-
+            await connection.setLogLevel(mockSecurityContext,'debug');
         });
-        it('should handle setting to a new level - alternate paths', () => {
+
+        it('should handle setting to a new level - alternate paths', async () => {
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -605,9 +359,9 @@ describe('Connection', () => {
             mockTransaction.getIdentifier.returns(null);
             mockTransaction.timestamp = new Date();
 
-            return connection.setLogLevel(mockSecurityContext,'debug');
-
-
+            await connection.setLogLevel(mockSecurityContext,'debug');
         });
+
     });
+
 });
