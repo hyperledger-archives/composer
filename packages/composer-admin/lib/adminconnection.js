@@ -756,6 +756,20 @@ class AdminConnection {
                 throw new Error('failed to request identity. ' + error.message);
             });
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        if (!this.connection) {
+            throw new Error('not connected; must call connect() first');
+        }
+        return this.connection.getNativeAPI();
+    }
+
 }
 
 module.exports = AdminConnection;

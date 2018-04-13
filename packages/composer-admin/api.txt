@@ -16,4 +16,5 @@ class AdminConnection {
    + Promise setLogLevel(any) 
    + Promise getLogLevel() 
    + Promise list() 
+   + void getNativeAPI() 
 }

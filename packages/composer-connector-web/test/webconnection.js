@@ -509,4 +509,14 @@ describe('WebConnection', () => {
 
     });
 
+    describe('#getNativeAPI', () => {
+
+        it('should throw as not supported', () => {
+            (() => {
+                connection.getNativeAPI();
+            }).should.throw(/native API not available when using the web connector/);
+        });
+
+    });
+
 });

@@ -653,6 +653,29 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#getNativeAPI', () => {
+
+        it('should throw an error if not connected', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
+            };
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            (() => {
+                adminConnection.getNativeAPI();
+            }).should.throw(/not connected; must call connect\(\) first/);
+        });
+
+        it('should return the native API from the connection', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
+            };
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            adminConnection.connection = mockConnection;
+            adminConnection.getNativeAPI().getChannel().should.deep.equal({ channel: true });
+        });
+
+    });
+
     describe('Business Network Cards', function () {
         let peerAdminCard;
         let userCard;

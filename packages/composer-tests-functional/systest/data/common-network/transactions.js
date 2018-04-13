@@ -15,6 +15,10 @@
 /*eslint no-var: 0*/
 'use strict';
 
+function onSimpleTransaction (transaction) {
+
+}
+
 function onSimpleTransactionWithPrimitiveTypes (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {

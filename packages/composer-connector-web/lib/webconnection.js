@@ -365,7 +365,6 @@ class WebConnection extends Connection {
         };
     }
 
-
     /**
      * Create a new transaction id
      * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
@@ -375,6 +374,16 @@ class WebConnection extends Connection {
     createTransactionId(securityContext) {
         return Promise.resolve(null);
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     */
+    getNativeAPI() {
+        throw new Error('native API not available when using the web connector');
+    }
+
 }
 
 module.exports = WebConnection;

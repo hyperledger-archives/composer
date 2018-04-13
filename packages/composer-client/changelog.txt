@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.19.2 {ef6884530844c8fad762ea4d97f07a03} 2018-04-13
+- Added getNativeAPI() function to client APIs
+
 Version 0.18.2 {bf66cd693a52a1f40f2db5cccd004381} 2018-03-13
 - Fix incorrectly documented api
 

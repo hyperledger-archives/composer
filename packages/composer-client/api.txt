@@ -31,6 +31,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise issueIdentity(string,object,boolean) 
    + Promise bindIdentity(string) 
    + Promise revokeIdentity() 
+   + void getNativeAPI() 
 }
 class Historian extends Registry {
    + Promise getHistorian(SecurityContext,ModelManager,Factory,Serializer) 
