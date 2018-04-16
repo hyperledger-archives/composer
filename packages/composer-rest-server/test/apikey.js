@@ -89,6 +89,7 @@ describe('Access with APIKEY unit tests', () => {
     });
 
     describe('GET /api/system/ping', () => {
+
         it('should return 401 Unauthorized if APIKEY is not specified', () => {
             const agent = chai.request.agent(app);
             return agent
@@ -114,6 +115,7 @@ describe('Access with APIKEY unit tests', () => {
     });
 
     describe('GET /api/BondAsset', () => {
+
         it('should return 401 Unauthorized if APIKEY is not specified', () => {
             const agent = chai.request.agent(app);
             return agent
