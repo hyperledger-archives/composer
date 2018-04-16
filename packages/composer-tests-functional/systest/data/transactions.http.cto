@@ -22,8 +22,21 @@ transaction Error {
     o String method
 }
 
-transaction AssetIn {
+transaction AssetInWithSerializer {
     o String method
+}
+
+transaction AssetInWithoutSerializer {
+    o String method
+}
+
+transaction AssetWithRelationshipInWithoutSerializer {
+    o String method
+}
+
+transaction AssetWithResolvedRelationshipInWithoutSerializer {
+    o String method
+    o DummyAsset asset
 }
 
 transaction AssetOut {
@@ -34,4 +47,10 @@ asset DummyAsset identified by assetId {
     o String assetId
     o String stringValue
     o Integer integerValue
+    --> DummyParticipant participant optional
+}
+
+participant DummyParticipant identified by participantId {
+    o String participantId
+    o String stringValue
 }

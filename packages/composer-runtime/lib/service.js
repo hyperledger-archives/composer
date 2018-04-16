@@ -37,30 +37,7 @@ class Service {
      * with an error.
      */
     transactionStart(readOnly) {
-        return new Promise((resolve, reject) => {
-            this._transactionStart(readOnly, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback transactionStartCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Called at the start of a transaction.
-     * @abstract
-     * @param {boolean} readOnly Is the transaction read-only?
-     * @param {transactionStartCallback} callback The callback function to call when complete.
-     */
-    _transactionStart(readOnly, callback) {
-        callback();
+        return Promise.resolve();
     }
 
     /**
@@ -70,29 +47,7 @@ class Service {
      * with an error.
      */
     transactionPrepare() {
-        return new Promise((resolve, reject) => {
-            this._transactionPrepare((error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback transactionPrepareCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Called when a transaction is preparing to commit.
-     * @abstract
-     * @param {transactionPrepareCallback} callback The callback function to call when complete.
-     */
-    _transactionPrepare(callback) {
-        callback();
+        return Promise.resolve();
     }
 
     /**
@@ -101,30 +56,8 @@ class Service {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    transactionRollback() {
-        return new Promise((resolve, reject) => {
-            this._transactionRollback((error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback transactionRollbackCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Called when a transaction is rolling back
-     * @abstract
-     * @param {transactionRollbackCallback} callback The callback function to call when complete.
-     */
-    _transactionRollback(callback) {
-        callback();
+    async transactionRollback() {
+        return Promise.resolve();
     }
 
     /**
@@ -133,30 +66,8 @@ class Service {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    transactionCommit() {
-        return new Promise((resolve, reject) => {
-            this._transactionCommit((error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback transactionCommitCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Called when a transaction is committing.
-     * @abstract
-     * @param {transactionCommitCallback} callback The callback function to call when complete.
-     */
-    _transactionCommit(callback) {
-        callback();
+    async transactionCommit() {
+        return Promise.resolve();
     }
 
     /**
@@ -165,30 +76,8 @@ class Service {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    transactionEnd() {
-        return new Promise((resolve, reject) => {
-            this._transactionEnd((error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback transactionEndCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Called at the end of a transaction.
-     * @abstract
-     * @param {transactionEndCallback} callback The callback function to call when complete.
-     */
-    _transactionEnd(callback) {
-        callback();
+    async transactionEnd() {
+        return Promise.resolve();
     }
 
 }

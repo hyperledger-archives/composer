@@ -1,6 +1,6 @@
 {
   "name": "composer-report",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "Hyperledger Composer diagnostics",
   "bin": "bin/cmd.js",
   "main": "lib/report.js",
@@ -59,12 +59,12 @@
         "prepend": "/*",
         "append": " */",
         "eachLine": {
-            "prepend": " * "
+          "prepend": " * "
         }
       },
       "editorconfig": {
         "eachLine": {
-            "prepend": "# "
+          "prepend": "# "
         }
       },
       "md": {

@@ -14,18 +14,19 @@
 
 'use strict';
 
+const DefaultModelFileLoader = require('./introspect/loaders/defaultmodelfileloader');
+const Factory = require('./factory');
 const Globalize = require('./globalize');
-
 const IllegalModelException = require('./introspect/illegalmodelexception');
-const ModelUtil = require('./modelutil');
+const Logger = require('./log/logger');
 const ModelFile = require('./introspect/modelfile');
+const ModelFileDownloader = require('./introspect/loaders/modelfiledownloader');
+const ModelUtil = require('./modelutil');
+const Serializer = require('./serializer');
+const SYSTEM_MODELS = require('./systemmodel');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-const DefaultModelFileLoader = require('./introspect/loaders/defaultmodelfileloader');
-const ModelFileDownloader = require('./introspect/loaders/modelfiledownloader');
-
-const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODELS = require('./systemmodel');
+const LOG = Logger.getLog('ModelManager');
 
 /**
  * Manages the Composer model files.
@@ -61,6 +62,8 @@ class ModelManager {
         LOG.entry('constructor');
         this.modelFiles = {};
         this.addSystemModels();
+        this.factory = new Factory(this);
+        this.serializer = new Serializer(this.factory, this);
         LOG.exit('constructor');
     }
 
@@ -537,6 +540,22 @@ class ModelManager {
         return this.getModelFiles().reduce((prev, cur) => {
             return prev.concat(cur.getConceptDeclarations(includeSystemType));
         }, []);
+    }
+
+    /**
+     * Get a factory for creating new instances of types defined in this model manager.
+     * @return {Factory} A factory for creating new instances of types defined in this model manager.
+     */
+    getFactory() {
+        return this.factory;
+    }
+
+    /**
+     * Get a serializer for serializing instances of types defined in this model manager.
+     * @return {Serializer} A serializer for serializing instances of types defined in this model manager.
+     */
+    getSerializer() {
+        return this.serializer;
     }
 
 }

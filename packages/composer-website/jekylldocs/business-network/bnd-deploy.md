@@ -12,12 +12,12 @@ excerpt: How to deploy a business network
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (.bna) file. The `composer archive create` command is used to create a business network archive file from a business network definition folder on disk.
 
-Once the business network archive file has been created it can be deployed to a runtime using the [`composer network install`](../reference/composer.network.install.html) command followed by a [`composer network start`](../reference/composer.network.start.html) command.
+Once the business network archive file has been created it can be deployed to {{site.data.conrefs.hlf_full}} using the [`composer network install`](../reference/composer.network.install.html) command followed by a [`composer network start`](../reference/composer.network.start.html) command.
 
 For example:
 
     composer network install --archiveFile tutorial-network@1.0.0.bna --card PeerAdmin@fabric-network
-    composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@Fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
+    composer network start --networkName tutorial-network --networkVersion 1.0.0 --card PeerAdmin@fabric-network --networkAdmin admin --networkAdminEnrollSecret adminpw
 
 To upgrade the business network definition for an already deployed business network use the [`composer network upgrade`](../reference/composer.network.upgrade.html) CLI command.
 
@@ -64,7 +64,7 @@ You can use additional options to the [`composer network start`](../reference/co
 
 If the business network administrator has an enrollment ID and enrollment secret, you can use the `-A` (business network administrator) and `-S` (business network administrator uses enrollment secret) flags. For example, the following command will create a business network administrator for the existing `admin` enrollment ID:
 
-    composer network start --networkName tutorial-network --networkVersion 1.0.0 --c PeerAdmin@Fabric-network -A admin -S adminpw
+    composer network start --networkName tutorial-network --networkVersion 1.0.0 --c PeerAdmin@fabric-network -A admin -S adminpw
 
 ## Deploying business networks using Playground locally
 
@@ -73,16 +73,6 @@ If the business network administrator has an enrollment ID and enrollment secret
 When deploying a business network using playground, you will be prompted to enter the credentials for the initial participant. Credentials can be provided either as a certificate or as a pre-defined enrollment ID and enrollment secret. If you are using the instance of {{site.data.conrefs.hlf_full}} set up in the {{site.data.conrefs.composer_full}} development environment, the bootstrap registrar enrollment ID is `admin` and the bootstrap registrar enrollment secret is `adminpw`.  This initial participant uses the credentials set for the bootstrap registrar in the {{site.data.conrefs.hlf_full}} Certificate Authority (CA), and will be a [**NetworkAdmin**](https://github.com/hyperledger/composer/blob/master/packages/composer-common/lib/system/org.hyperledger.composer.system.cto).
 
 When deploying a business network using Playground locally, you must have at least one business network card with the `PeerAdmin` role and at least one business network card with the `ChannelAdmin` role. Each of these business network cards must contain the correct admin certificates.
-
-## Errors deploying a business network to a local fabric using the {{site.data.conrefs.composer_full}} Playground
-
-When deploying a business network to an instance of {{site.data.conrefs.hlf_full}} by using a locally installed {{site.data.conrefs.composer_full}} Playground, you may encounter the following error:
-
-```
-Error: error trying to list instantiated chaincodes. Error: chaincode error (status 500, message: Authorization for GETCHAINCODES on channel getchaincodes has been denied with error Failed verifying that proposal's creator satisfies local MSP principal during channelless check policy with policy [Admins]:[This identity is not an admin])
-```
-
-Once this error has occurred, you must delete your local browser storage to restore normal function. *Please note*: Deleting local browser storage will delete your Web Browser Connection business network cards (but not your real fabric connection business network cards that are in the card store). For more information on this error, see the [specific error page](../problems/deployment-local-playground.html)
 
 ## References
 

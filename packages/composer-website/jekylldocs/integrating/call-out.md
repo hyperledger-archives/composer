@@ -98,20 +98,16 @@ Make an HTTP POST request to an HTTP server that includes the current participan
  */
 async function buyStocks(transaction) {
 
-    // Get the current participant, and serialize them into a JavaScript object.
+    // Get the current participant.
     const participant = getCurrentParticipant();
-    const serializer = getSerializer();
-    const json = serializer.toJSON(participant);
-    const units = transaction.units;
 
     // Look up the current price of the CONGA stock, and extract the price.
-    // The option "json" sends the serialized participant as the HTTP request body,
+    // The option "json" sends the participant as the HTTP request body,
     // and automatically parses JSON from the HTTP response.
-    const stock = await request.post({ uri: 'http://stocks.org/CONGA', json });
+    const stock = await request.post({ uri: 'http://stocks.org/CONGA', json: participant });
     const price = stock.price;
 
     // Get the current participant, and update their stock and balance.
-    const participant = getCurrentParticipant();
     const units = transaction.units;
     participant.stockUnits += units;
     participant.balance -= price * units;
