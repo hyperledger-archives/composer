@@ -62,7 +62,7 @@ Options:
   -c, --card            The name of the business network card to use  [string]
   -n, --namespaces      Use namespaces if conflicting types exist  [string] [choices: "always", "required", "never"] [default: "always"]
   -p, --port            The port to serve the REST API on  [number]
-  -y, --apikey          The apikey to get access to the REST API [string][default:undefined]
+  -y, --apikey          The API key to get access to the REST API [string] [default:undefined]
   -a, --authentication  Enable authentication for the REST API using Passport  [boolean] [default: false]
   -m, --multiuser       Enable multiple user and identity management using wallets (implies -a)  [boolean] [default: false]
   -w, --websockets      Enable event publication over WebSockets  [boolean] [default: true]
@@ -89,7 +89,7 @@ To update the REST server, first the REST server must be stopped using `ctrl-C`.
 
 ## Generating a REST API with an APIKEY 
 
-An APIKEY can be used to provide a first layer of security to access the REST API in development environment.
+An API key can be used to provide a first layer of security to access the REST API in development environment.
 
 ```
 composer-rest-server -y YOUR_API_KEY

@@ -61,7 +61,7 @@ class Util {
             {
                 name: 'apikey',
                 type: 'string',
-                message: 'Enter the APIKEY to access the REST API:',
+                message: 'Enter the API key to access the REST API:',
                 default: undefined,
                 when: (answers) => {
                     return answers.apikey;

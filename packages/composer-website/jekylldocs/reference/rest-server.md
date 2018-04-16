@@ -112,7 +112,7 @@ The REST server can be configured using environment variables, instead of supply
         
 9. `COMPOSER_APIKEY`
         
-        You can use the `COMPOSER_APIKEY` environment variable to specify the APIKEY the server should accept for each request as a header parameter `x-api-key`.
+        You can use the `COMPOSER_APIKEY` environment variable to specify the API key the server should accept for each request as a header parameter `x-api-key`.
         
         For example:
         

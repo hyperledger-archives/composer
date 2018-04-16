@@ -96,7 +96,7 @@ module.exports = function (composer) {
         // This configuration is required if an ApiKey is specified.
         const apikey = !!composer.apikey;
 
-        if (apikey && composer.apikey !== undefined && composer.apikey !== '') {
+        if (apikey && composer.apikey !== '') {
 
             // Enable REST API only if the APIKEY will match.
             app.use((req, res, next) => {
