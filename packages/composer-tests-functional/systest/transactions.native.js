@@ -217,12 +217,19 @@ describe('Native API (from runtime API)', function () {
                 await otherNewClient.ping();
 
                 let factory = client.getBusinessNetwork().getFactory();
+
+                // test invocation of chaincode the doesn't throw an error
                 let transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeTransaction');
                 transaction.assetId = 'assetOnDifferentNetwork';
                 transaction.channel = 'composerchannel';
                 transaction.expectedValue = 'hello new world';
                 transaction.chainCodeName = 'systest-other-network';
+                await client.submitTransaction(transaction);
 
+                // test invocation of chaincode that does throw an error
+                transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeError');
+                transaction.channel = 'composerchannel';
+                transaction.chainCodeName = 'systest-other-network';
                 await client.submitTransaction(transaction);
             }
         });
@@ -261,13 +268,21 @@ describe('Native API (from runtime API)', function () {
                 await otherNewClient.ping();
 
                 let factory = client.getBusinessNetwork().getFactory();
+
+                // test invocation of chaincode that doesn't throw an error
                 let transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeTransaction');
                 transaction.assetId = 'assetOnDifferentNetwork';
                 transaction.channel = 'othercomposerchannel';
                 transaction.expectedValue = 'hello new world channel';
                 transaction.chainCodeName = 'systest-other-channel-network';
-
                 await client.submitTransaction(transaction);
+
+                // test invocation of chaincode that does throw an eror
+                transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeError');
+                transaction.channel = 'othercomposerchannel';
+                transaction.chainCodeName = 'systest-other-channel-network';
+                await client.submitTransaction(transaction);
+
             }
         });
     });

@@ -506,3 +506,39 @@ async function AdvancedInvokeChainCodeTransaction (transaction) {
 
     assertEqual('string value', asset.stringValue, expectedValue);
 }
+
+/**
+ * handle function with native api
+ * @param {systest.transactions.AdvancedInvokeChainCodeError} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+async function AdvancedInvokeChainCodeError (transaction) {
+    const channel = transaction.channel;
+    const chainCodeName = transaction.chainCodeName;
+
+    // 0 = ok, 1 = wrong error message, 2 = no error message
+    let resultOfTest = 2;
+    let error;
+    try {
+        await getNativeAPI().invokeChaincode(chainCodeName, ['getResourceInRegistry', 'Asset', 'systest.transactions.assets.SimpleStringAsset'], channel);
+    } catch(err) {
+        resultOfTest = 0;
+        if (err.message.match(/Invalid arguments .* to function .*, expecting/) === null) {
+            error = err;
+            resultOfTest = 1;
+        }
+    }
+
+    switch(resultOfTest) {
+    case 1:
+        throw new Error('unexpected error received: ' + error.message);
+    case 2:
+        throw new Error('expected an error to be thrown, but no error was thrown');
+    case 0:
+        break;
+    default:
+        throw new Error('ok, this should never have happened.');
+    }
+
+}
