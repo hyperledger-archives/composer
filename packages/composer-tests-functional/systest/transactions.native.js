@@ -228,7 +228,6 @@ describe('Native API', function () {
 
                 // test invocation of chaincode that does throw an error
                 transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeError');
-                transaction.assetId = 'assetOnDifferentNetwork';
                 transaction.channel = 'composerchannel';
                 transaction.chainCodeName = 'systest-other-network';
                 await client.submitTransaction(transaction);
@@ -280,7 +279,6 @@ describe('Native API', function () {
 
                 // test invocation of chaincode that does throw an eror
                 transaction = factory.newTransaction('systest.transactions', 'AdvancedInvokeChainCodeError');
-                transaction.assetId = 'assetOnDifferentNetwork';
                 transaction.channel = 'othercomposerchannel';
                 transaction.chainCodeName = 'systest-other-channel-network';
                 await client.submitTransaction(transaction);
