@@ -41,7 +41,7 @@ Let's get started!
 
 If you have previously installed the Composer development environment, you will need to first tear down the {{site.data.conrefs.hlf_full}} containers provided by the development environment:
 
-    cd ~/fabric-tools
+    cd ~/fabric-dev-servers
     ./stopFabric.sh
     ./teardownFabric.sh
 

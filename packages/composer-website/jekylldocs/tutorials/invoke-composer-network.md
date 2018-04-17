@@ -24,7 +24,7 @@ The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} 
 
 1. Start a clean {{site.data.conrefs.hlf_full}} by running the following commands:
 
-        cd ~/fabric-tools
+        cd ~/fabric-dev-servers
         ./stopFabric.sh
         ./teardownFabric.sh
         ./downloadFabric.sh
