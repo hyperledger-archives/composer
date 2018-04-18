@@ -59,6 +59,15 @@ class Util {
                 default: 'always'
             },
             {
+                name: 'apikey',
+                type: 'string',
+                message: 'Enter the API key to access the REST API:',
+                default: undefined,
+                when: (answers) => {
+                    return answers.apikey;
+                }
+            },
+            {
                 name: 'authentication',
                 type: 'confirm',
                 message: 'Specify if you want to enable authentication for the REST API using Passport:',

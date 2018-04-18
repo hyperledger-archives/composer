@@ -44,7 +44,7 @@ describe('Util', () => {
                     const names = questions.map((question) => {
                         return question.name;
                     });
-                    names.should.deep.equal(['card', 'namespaces', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
+                    names.should.deep.equal(['card', 'namespaces', 'apikey', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
                 });
         });
 
@@ -58,6 +58,19 @@ describe('Util', () => {
                     });
                     question.validate('').should.match(/Please enter/);
                     question.validate('admin@org-acme-biznet').should.be.true;
+                });
+        });
+
+        it('should return the apikey if specified', () => {
+            return Util.getConnectionSettings()
+                .then(() => {
+                    sinon.assert.calledOnce(inquirer.prompt);
+                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
+                    const question = questions.find((question) => {
+                        return question.name === 'apikey';
+                    });
+                    question.when({ apikey: false }).should.be.false;
+                    question.when({ apikey: true }).should.be.true;
                 });
         });
 

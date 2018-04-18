@@ -32,6 +32,7 @@ const yargs = require('yargs')
     .option('c', { alias: 'card', describe: 'The name of the business network card to use', type: 'string', default: process.env.COMPOSER_CARD || undefined })
     .option('n', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
     .option('p', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
+    .option('y', { alias: 'apikey', describe: 'The API key to get access to the REST API', type: 'string', default: process.env.COMPOSER_APIKEY || undefined })
     .option('a', { alias: 'authentication', describe: 'Enable authentication for the REST API using Passport', type: 'boolean', default: process.env.COMPOSER_AUTHENTICATION || false })
     .option('m', { alias: 'multiuser', describe: 'Enable multiple user and identity management using wallets (implies -a)', type: 'boolean', default: process.env.COMPOSER_MULTIUSER || false })
     .option('w', { alias: 'websockets', describe: 'Enable event publication over WebSockets', type: 'boolean', default: process.env.COMPOSER_WEBSOCKETS || true })
@@ -61,6 +62,7 @@ if (interactive) {
             const composer = {
                 card: answers.card,
                 namespaces: answers.namespaces,
+                apikey: answers.apikey,
                 authentication: answers.authentication,
                 multiuser: answers.multiuser,
                 websockets: answers.websockets,
@@ -74,6 +76,7 @@ if (interactive) {
                 '-c': 'card',
                 '-n': 'namespaces',
                 '-p': 'port',
+                '-y': 'apikey',
                 '-a': 'authentication',
                 '-m': 'multiuser',
                 '-w': 'websockets',
@@ -107,6 +110,7 @@ if (interactive) {
             card: yargs.c,
             namespaces: yargs.n,
             port: yargs.p,
+            apikey: yargs.y,
             authentication: yargs.a,
             multiuser: yargs.m,
             websockets: yargs.w,
