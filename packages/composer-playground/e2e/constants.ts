@@ -13,6 +13,7 @@
  */
 
 import path = require('path');
+import MDCodeExtractor = require('../../composer-tests-integration/lib/md-code-extractor');
 
 export class Constants {
 
@@ -42,6 +43,8 @@ export class Constants {
     static readonly exportActionLabel = 'Export';
     static readonly deployButtonLabel = 'Deploy changes';
 
+    static readonly defaultACL = path.join(__dirname, 'data/files/defaultACL.acl');
+
     static readonly sampleNetworks = ['basic-sample-network', 'import-network'];
 
     static readonly basicSampleNetwork = {
@@ -54,6 +57,14 @@ export class Constants {
         }
     };
 
+    static readonly emptyBusinessNetwork = {
+        name: 'empty-business-network',
+        files: ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/model.cto'],
+        participants: [],
+        assets: [],
+        registryHeaders: {}
+    };
+
     static myIDsStatuses = {
         inWallet: 'In my wallet',
         selected: 'In Use',
@@ -64,5 +75,9 @@ export class Constants {
         activated: 'ACTIVATED',
         issued: 'ISSUED',
         participantNotFound: 'BOUND PARTICIPANT NOT FOUND'
+    };
+
+    static readonly codeBlocks = {
+        playgroundTutorial: MDCodeExtractor.extract(path.join(__dirname, '../..', 'composer-website/jekylldocs/tutorials/playground-tutorial.md'))
     };
 }

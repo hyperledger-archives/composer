@@ -1,6 +1,0 @@
-{
-"$class": "org.acme.mynetwork.Trader",
-"tradeId": "TRADER2",
-"firstName": "Amy",
-"lastName": "Williams"
-}
