@@ -50,7 +50,7 @@ Supply the fully qualified filename as part of an install command, for example i
 in your /home/user1/config directory:
 
 ```
-composer network install -c PeerAdmin@hlfv1 -n digitalproperty-network -o npmrcFile=/home/user1/config/npmConfig
+composer network install --c PeerAdmin@hlfv1 --a tutorial-network@0.0.1.bna -o npmrcFile=/home/user1/config/npmConfig
 ```
 
 The file contents can be anything that permitted in the `.npmrc` configuration files of npm.
