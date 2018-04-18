@@ -28,7 +28,7 @@ let currentCp;
 let connectionProfileOrg1, connectionProfileOrg2, otherConnectionProfileOrg1, otherConnectionProfileOrg2;
 let docker;
 let forceDeploy = false;
-let testRetries = 4;
+let testRetries = 0;
 
 let io;
 
