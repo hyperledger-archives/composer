@@ -159,7 +159,7 @@ describe('TestComponent', () => {
             component.hasTransactions.should.be.true;
         }));
 
-        it('should load all the registries and hasTransactions should be false', fakeAsync(() => {
+        it('should load all the registries and hasTransactions should be false when there are no transactions', fakeAsync(() => {
             mockClientService.ensureConnected.returns(Promise.resolve());
 
             mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
@@ -167,6 +167,45 @@ describe('TestComponent', () => {
             mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
             mockIntrospector.getClassDeclarations.returns([new MockModelClass()]);
+
+            component.ngOnInit();
+
+            tick();
+
+            mockClientService.getBusinessNetworkConnection.should.have.been.called;
+            mockBusinessNetworkConnection.getAllAssetRegistries.should.have.been.called;
+
+            component['registries']['assets'].length.should.equal(2);
+            component['registries']['assets'][0].should.deep.equal({id: 'asset.bob', displayName: 'bob'});
+            component['registries']['assets'][1].should.deep.equal({id: 'asset.fred', displayName: 'fred'});
+
+            mockBusinessNetworkConnection.getAllParticipantRegistries.should.have.been.called;
+
+            component['registries']['participants'].length.should.equal(2);
+
+            component['registries']['participants'][0].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+            component['registries']['participants'][1].should.deep.equal({id: 'participant.fred', displayName: 'fred'});
+
+            mockBusinessNetworkConnection.getHistorian.should.have.been.called;
+
+            component['registries']['historian'].should.equal('historianRegistry');
+
+            component['chosenRegistry'].should.deep.equal({id: 'participant.bob', displayName: 'bob'});
+
+            mockClientService.getBusinessNetwork.should.have.been.called;
+            mockBusinessNetwork.getIntrospector.should.have.been.called;
+            mockIntrospector.getClassDeclarations.should.have.been.called;
+            component.hasTransactions.should.be.false;
+        }));
+
+        it('should load all the registries and hasTransactions should be false when there are only system transactions', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            mockBusinessNetworkConnection.getAllAssetRegistries.returns(Promise.resolve([{id: 'asset.fred'}, {id: 'asset.bob'}]));
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([{id: 'participant.fred'}, {id: 'participant.bob'}]));
+            mockBusinessNetworkConnection.getHistorian.returns(Promise.resolve('historianRegistry'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            mockTransaction.isSystemType.returns(true);
 
             component.ngOnInit();
 
