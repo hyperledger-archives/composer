@@ -412,6 +412,7 @@ Browse your REST API at http://localhost:3000/explorer
   -c, --card            The name of the business network card to use  [string]
   -n, --namespaces      Use namespaces if conflicting types exist  [string] [choices: "always", "required", "never"] [default: "always"]
   -p, --port            The port to serve the REST API on  [number]
+  -y, --apikey          The API key to get access to the REST API [string] [default:undefined]
   -a, --authentication  Enable authentication for the REST API using Passport  [boolean] [default: false]
   -m, --multiuser       Enable multiple user and identity management using wallets (implies -a)  [boolean] [default: false]
   -w, --websockets      Enable event publication over WebSockets  [boolean] [default: true]
@@ -432,6 +433,13 @@ Browse your REST API at http://localhost:3000/explorer
 <p>After updating a business network definition, the REST server can be updated to generate new APIs reflecting the updates to the business network definition.</p>
 
 <p>To update the REST server, first the REST server must be stopped using <code>ctrl-C</code>. Then the REST server can be restarted using <code>composer-rest-server</code>.</p>
+
+<h2 id="generating-a-rest-api-with-an-apikey">Generating a REST API with an APIKEY</h2>
+
+<p>An API key can be used to provide a first layer of security to access the REST API in development environment.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -y YOUR_API_KEY
+</code></pre></div>
+<p>This will accept only request with an Header <code>x-api-key</code> set with the value of <code>YOUR_API_KEY</code>.</p>
 
 <h1 id="summary">Summary</h1>
 

@@ -393,11 +393,14 @@ ga('send', 'pageview');
 
 <ol>
 <li><p>Create a skeleton business network using Yeoman. This command will require a business network name, description, author name, author email address, license selection and namespace.</p>
+
+<p><code-block type="commands" sub-type="yo" identifier="create-network" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer:businessnetwork
-</code></pre></div></li>
-<li><p>Enter <code>tutorial-network</code> for the network name, and desired information for description, author name, and author email.</p></li>
-<li><p>Select <code>Apache-2.0</code> as the license.</p></li>
-<li><p>Select <code>org.acme.mynetwork</code> as the namespace.</p></li>
+</code></pre></div>
+<p></code-block></p></li>
+<li><p>Enter <code-block type="arguments" sub-type="yo" identifier="network-name" > <code>tutorial-network</code> </code-block> for the network name, and desired information for description, author name, and author email.</p></li>
+<li><p>Select <code-block type="arguments" sub-type="yo" identifier="license" > <code>Apache-2.0</code> </code-block> as the license.</p></li>
+<li><p>Select <code-block type="arguments" sub-type="yo" identifier="namespace" > <code>org.acme.mynetwork</code> </code-block> as the namespace.</p></li>
 </ol>
 
 <h2 id="step-two-defining-a-business-network">Step Two: Defining a business network</h2>
@@ -409,8 +412,10 @@ ga('send', 'pageview');
 <p>The first document to update is the model (<code>.cto</code>) file. This file is written using the <a href="../reference/cto_language.html">Hyperledger Composer Modelling Language</a>. The model file contains the definitions of each class of asset, transaction, participant, and event. It implicitly extends the Hyperledger Composer System Model described in the modelling language documentation.</p>
 
 <ol>
-<li><p>Open the <code>org.acme.mynetwork.cto</code> model file.</p></li>
+<li><p>Open the <code-block type="files" sub-type="paths" identifier="model-file-name" > <code>org.acme.mynetwork.cto</code> </code-block> model file.</p></li>
 <li><p>Replace the contents with the following:</p>
+
+<p><code-block type="files" sub-type="contents" identifier="model-file-content" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
@@ -431,7 +436,8 @@ transaction Trade {
     --&gt; Commodity commodity
     --&gt; Trader newOwner
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>Save your changes to <code>org.acme.mynetwork.cto</code>.</p></li>
 </ol>
 
@@ -442,8 +448,10 @@ transaction Trade {
 <p>The <code>Trade</code> transaction is intended to simply accept the identifier of the <code>Commodity</code> asset which is being traded, and the identifier of the <code>Trader</code> participant to set as the new owner.</p>
 
 <ol>
-<li><p>Open the <code>logic.js</code> script file.</p></li>
+<li><p>Open the <code-block type="files" sub-type="paths" identifier="script-file-name" > <code>logic.js</code> </code-block> script file.</p></li>
 <li><p>Replace the contents with the following:</p>
+
+<p><code-block type="files" sub-type="contents" identifier="script-file-content" ></p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
@@ -454,14 +462,17 @@ transaction Trade {
     <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
     <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>Save your changes to <code>logic.js</code>.</p></li>
 </ol>
 
 <h4 id="adding-access-control">Adding access control</h4>
 
 <ol>
-<li><p>Replace the following access control rules in the file <code>permissions.acl</code>:</p>
+<li><p>Replace the following access control rules in the file <code-block type="files" sub-type="paths" identifier="acl-file-name" > <code>permissions.acl</code> </code-block>:</p>
+
+<p><code-block type="files" sub-type="contents" identifier="acl-file-content" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * Access control rules for tutorial-network
  */
@@ -480,7 +491,8 @@ rule SystemACL {
   resource: "org.hyperledger.composer.system.**"
   action: ALLOW
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>Save your changes to <code>permissions.acl</code>.</p></li>
 </ol>
 
@@ -489,10 +501,13 @@ rule SystemACL {
 <p>Now that the business network has been defined, it must be packaged into a deployable business network archive (<code>.bna</code>) file.</p>
 
 <ol>
-<li><p>Using the command line, navigate to the <code>tutorial-network</code> directory.</p></li>
+<li><p>Using the command line, navigate to the <code-block type="directories" sub-type="paths" identifier="created-network-folder" > <code>tutorial-network</code> </code-block> directory.</p></li>
 <li><p>From the <code>tutorial-network</code> directory, run the following command:</p>
+
+<p><code-block type="commands" sub-type="cli" identifier="archive-create" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer archive create -t dir -n .
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 </ol>
 
 <p>After the command has run, a business network archive file called <code>tutorial-network@0.0.1.bna</code> has been created in the <code>tutorial-network</code> directory.</p>
@@ -513,20 +528,35 @@ rule SystemACL {
 
 <ol>
 <li><p>To install the business network, from the <code>tutorial-network</code> directory, run the following command:</p>
+
+<p><code-block type="commands" sub-type="cli" identifier="network-install" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.1.bna
 </code></pre></div>
+<p></code-block></p>
+
 <p>The <code>composer network install</code> command requires a PeerAdmin business network card (in this case one has been created and imported in advance), and the the file path of the <code>.bna</code> which defines the business network.</p></li>
 <li><p>To start the business network, run the following command:</p>
+
+<p><code-block type="commands" sub-type="cli" identifier="network-start" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName tutorial-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
 </code></pre></div>
+<p></code-block></p>
+
 <p>The <code>composer network start</code> command requires a business network card, as well as the name of the admin identity for the business network, the name and version of the business network and the name of the file to be created ready to import as a business network card.</p></li>
 <li><p>To import the network administrator identity as a usable business network card, run the following command:</p>
+
+<p><code-block type="commands" sub-type="cli" identifier="card-import" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer card import --file networkadmin.card
 </code></pre></div>
+<p></code-block></p>
+
 <p>The <code>composer card import</code> command requires the filename specified in <code>composer network start</code> to create a card.</p></li>
 <li><p>To check that the business network has been deployed successfully, run the following command to ping the network:</p>
+
+<p><code-block type="commands" sub-type="cli" identifier="network-ping" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network ping --card admin@tutorial-network
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 </ol>
 
 <p>The <code>composer network ping</code> command requires a business network card to identify the network to ping.</p>
@@ -536,14 +566,17 @@ rule SystemACL {
 <p>Hyperledger Composer can generate a bespoke REST API based on a business network. For developing a web application, the REST API provides a useful layer of language-neutral abstraction.</p>
 
 <ol>
-<li><p>To create the REST API, navigate to the <code>tutorial-network</code> directory and run the following command:</p>
+<li><p>To create the REST API, navigate to the <code-block type="directories" sub-type="paths" identifier="navigate-for-rest" > <code>tutorial-network</code> </code-block> directory and run the following command:</p>
+
+<p><code-block type="commands" sub-type="rest-server" identifier="start-rest-server" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server
-</code></pre></div></li>
-<li><p>Enter <code>admin@tutorial-network</code> as the card name.</p></li>
-<li><p>Select <strong>never use namespaces</strong> when asked whether to use namespaces in the generated API.</p></li>
-<li><p>Select <strong>No</strong> when asked whether to secure the generated API.</p></li>
-<li><p>Select <strong>Yes</strong> when asked whether to enable event publication.</p></li>
-<li><p>Select <strong>No</strong> when asked whether to enable TLS security.</p></li>
+</code></pre></div>
+<p></code-block></p></li>
+<li><p>Enter <code-block type="arguments" sub-type="rest-server" identifier="admin-card" > <code>admin@tutorial-network</code> </code-block> as the card name.</p></li>
+<li><p>Select <strong><code-block type="arguments" sub-type="rest-server" identifier="use-namespaces" >never</code-block> use namespaces</strong> when asked whether to use namespaces in the generated API.</p></li>
+<li><p>Select <strong><code-block type="arguments" sub-type="rest-server" identifier="enable-authentication" >No</code-block></strong> when asked whether to secure the generated API.</p></li>
+<li><p>Select <strong><code-block type="arguments" sub-type="rest-server" identifier="publish-events" >Yes</code-block></strong> when asked whether to enable event publication.</p></li>
+<li><p>Select <strong><code-block type="arguments" sub-type="rest-server" identifier="enable-tls" >No</code-block></strong> when asked whether to enable TLS security.</p></li>
 </ol>
 
 <p>The generated API is connected to the deployed blockchain and business network.</p>
@@ -553,19 +586,22 @@ rule SystemACL {
 <p>Hyperledger Composer can also generate an Angular 4 application running against the REST API.</p>
 
 <ol>
-<li><p>To create your Angular 4 application, navigate to <code>tutorial-network</code> directory and run the following command:</p>
+<li><p>To create your Angular 4 application, navigate to <code-block type="arguments" sub-type="npm" identifier="navigate-for-angular" > <code>tutorial-network</code> </code-block> directory and run the following command:</p>
+
+<p><code-block type="commands" sub-type="yo" identifier="create-app" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer:angular
-</code></pre></div></li>
-<li><p>Select <strong>Yes</strong> when asked to connect to running business network.</p></li>
+</code></pre></div>
+<p></code-block></p></li>
+<li><p>Select <strong><code-block type="arguments" sub-type="yo" identifier="live-network" >Yes</code-block></strong> when asked to connect to running business network.</p></li>
 <li><p>Enter standard <code>package.json</code> questions (project name, description, author name, author email, license)</p></li>
-<li><p>Enter <code>admin@tutorial-network</code> for the business network card.</p></li>
+<li><p>Enter <code-block type="arguments" sub-type="yo" identifier="card-name" > <code>admin@tutorial-network</code> </code-block> for the business network card.</p></li>
 <li><p>Select <strong>Connect to an existing REST API</strong></p></li>
-<li><p>Enter <code>http://localhost</code> for the REST server address.</p></li>
-<li><p>Enter <code>3000</code> for server port.</p></li>
+<li><p>Enter <code-block type="arguments" sub-type="yo" identifier="api-url" > <code>http://localhost</code> </code-block> for the REST server address.</p></li>
+<li><p>Enter <code-block type="arguments" sub-type="yo" identifier="api-port" > <code>3000</code> </code-block> for server port.</p></li>
 <li><p>Select <strong>Namespaces are not used</strong></p></li>
 </ol>
 
-<p>The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run <code>npm start</code>. This will fire up an Angular 4 application running against your REST API at <code>http://localhost:4200</code>.</p>
+<p>The Angular generator will then create the scaffolding for the project and install all dependencies. To run the application, navigate to your angular project directory and run <code-block type="commands" sub-type="npm" identifier="start-app" > <code>npm start</code> </code-block>. This will fire up an Angular 4 application running against your REST API at <code-block type="arguments" sub-type="request" identifier="app-url" > <code>http://localhost:4200</code> </code-block>.</p>
 
             
           </section>
