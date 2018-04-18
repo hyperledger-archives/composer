@@ -39,5 +39,4 @@ Options:
   --card, -c                         The cardname to use to start the network  [string] [required]
   --file, -f                         File name of the card to be created  [string]
   ```
-Please refer to [Connector specific information](../managing/connector-information.html) for more information about connector specific options.
-
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.
