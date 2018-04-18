@@ -98,18 +98,18 @@ module.exports = function () {
     });
 
     this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, urlPath) {
-        return this.composer.request(method, urlPath);
+        return this.composer.request(method, `http://localhost:3000${urlPath}`);
     });
 
     this.When(/^I make a POST request for an identity to (.+?)$/, function (urlPath, data) {
         const options = {
             encoding:null
         };
-        return this.composer.request('POST', urlPath, data, options );
+        return this.composer.request('POST', `http://localhost:3000${urlPath}`, data, options );
     });
 
     this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, urlPath, data) {
-        return this.composer.request(method, urlPath, data);
+        return this.composer.request(method, `http://localhost:3000${urlPath}`, data);
     });
 
     this.When(/^I make a (POST|PUT) request with form data to (.+?)$/, function (method, urlPath, table) {
@@ -130,7 +130,7 @@ module.exports = function () {
             }
             options.formData[name] = value;
         });
-        return this.composer.request(method, urlPath, null, options);
+        return this.composer.request(method, `http://localhost:3000${urlPath}`, null, options);
     });
 
     this.When(/^I write the response data to a file (.+?)$/,function(name){
@@ -138,7 +138,7 @@ module.exports = function () {
     });
 
     this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (urlPath, filter) {
-        return this.composer.request('GET', urlPath + '?filter=' + encodeURIComponent(filter));
+        return this.composer.request('GET', `http://localhost:3000${urlPath}` + '?filter=' + encodeURIComponent(filter));
     });
 
     this.When('I shutdown the REST server', function() {

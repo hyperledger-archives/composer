@@ -13,7 +13,7 @@
  */
 
 /**
- * Access control rules for tutorial-network
+ * Access control rules for test-network
  */
 rule Default {
     description: "Allow all participants access to all resources"

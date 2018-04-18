@@ -19,7 +19,7 @@ Feature: Rest steps
         Given I have admin business cards available
 
     Scenario: Using the REST API, I cannot ping the network without logging in
-        Given I have an authenticated REST API server for tutorial-network
+        Given I have an authenticated REST API server for test-network
         And I have cleared the cookie jar
         When I make a GET request to /api/system/ping
         Then The response code should be 401
