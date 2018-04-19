@@ -1,0 +1,121 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+rule PersonMakeOrder {
+    description: "Allow Persons to create and view orders"
+    participant(p): "org.acme.vehicle_network.Person"
+    operation: CREATE
+    resource(o): "org.acme.vehicle_network.Order"
+    transaction(tx): "org.acme.vehicle_network.PlaceOrder"
+    condition: (o.orderer.getIdentifier() == p.getIdentifier())
+    action: ALLOW
+}
+
+rule PersonPlaceOrder {
+    description: "Allow Persons to place orders and view they've done this"
+    participant(p): "org.acme.vehicle_network.Person"
+    operation: CREATE, READ
+    resource(o): "org.acme.vehicle_network.PlaceOrder"
+    condition: (o.orderer.getIdentifier() == p.getIdentifier())
+    action: ALLOW
+}
+
+rule PersonReadOrder {
+    description: "Allow Persons to place orders and view they've done this"
+    participant(p): "org.acme.vehicle_network.Person"
+    operation: READ
+    resource(o): "org.acme.vehicle_network.Order"
+    condition: (o.orderer.getIdentifier() == p.getIdentifier())
+    action: ALLOW
+}
+
+rule ManufacturerUpdateOrder {
+    description: "Allow manufacturers to view and update their own orders"
+    participant(m): "org.acme.vehicle_network.Manufacturer"
+    operation: UPDATE
+    resource(o): "org.acme.vehicle_network.Order"
+    transaction(tx): "org.acme.vehicle_network.UpdateOrderStatus"
+    condition: (o.vehicleDetails.make.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule ManufacturerUpdateOrderStatus {
+    description: "Allow manufacturers to update order statuses and view they've done this"
+    participant(m): "org.acme.vehicle_network.Manufacturer"
+    operation: CREATE, READ
+    resource(o): "org.acme.vehicle_network.UpdateOrderStatus"
+    condition: (o.order.vehicleDetails.make.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule ManufacturerReadOrder {
+    description: "Allow manufacturers to view and update their own orders"
+    participant(m): "org.acme.vehicle_network.Manufacturer"
+    operation: READ
+    resource(o): "org.acme.vehicle_network.Order"
+    condition: (o.vehicleDetails.make.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule ManufacturerCreateVehicles {
+    description: "Allow manufacturers to create and view their vehicles"
+    participant(m): "org.acme.vehicle_network.Manufacturer"
+    operation: CREATE
+    resource(v): "org.acme.vehicle_network.Vehicle"
+    transaction(tx): "org.acme.vehicle_network.UpdateOrderStatus"
+    condition: (v.vehicleDetails.make.getIdentifier() == m.getIdentifier() && tx.orderStatus == "VIN_ASSIGNED")
+    action: ALLOW
+}
+
+rule ManufacturerReadVehicles {
+    description: "Allow manufacturers to create and view their vehicles"
+    participant(m): "org.acme.vehicle_network.Manufacturer"
+    operation: READ
+    resource(v): "org.acme.vehicle_network.Vehicle"
+    condition: (v.vehicleDetails.make.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule RegulatorAdminUser {
+    description: "Let the regulator do anything"
+    participant: "org.acme.vehicle_network.Regulator"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule ParticipantsSeeSelves {
+    description: "Let participants see themselves"
+    participant(p): "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource(r): "org.hyperledger.composer.system.Participant"
+    condition: (r.getIdentifier() == p.getIdentifier())
+    action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule System {
+    description: "Grant all full access to system resources"
+    participant: "org.**"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}

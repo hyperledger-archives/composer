@@ -13,7 +13,7 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test": "exit 0",
-    "test-tagged": "cucumber-js --tags @tutorial",
+    "test-tagged": "cucumber-js --tags @cli-generate",
     "test-inner": "cucumber-js --tags 'not @cli-report'",
     "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
     "setup": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
@@ -60,7 +60,8 @@
       "coverage",
       "node_modules",
       "ldap.port",
-      "out"
+      "out",
+      "resources/sample-networks"
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
