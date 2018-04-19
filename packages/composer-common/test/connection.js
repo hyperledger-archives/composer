@@ -93,6 +93,16 @@ describe('Connection', () => {
 
     });
 
+    describe('#getNativeAPI', () => {
+
+        it('should throw as abstract', () => {
+            (() => {
+                connection.getNativeAPI();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#disconnect', () => {
 
         it('should throw as abstract', async () => {

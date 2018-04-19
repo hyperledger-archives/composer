@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -76,6 +76,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
         echo Using docker file ${DOCKER_FILE}
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
 
         cd "${DIR}"
@@ -150,6 +151,7 @@ for FVTEST in $(echo ${FVTEST} | tr "," " "); do
     if [ "${DOCKER_FILE}" != "" ]; then
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
     fi
 
     # Delete any written configuration.

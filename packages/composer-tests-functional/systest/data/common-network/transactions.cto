@@ -41,6 +41,10 @@ asset SimpleRelationshipsAsset identified by assetId {
     --> SimpleStringAsset[] stringAssets
 }
 
+transaction SimpleTransaction {
+
+}
+
 transaction SimpleTransactionWithPrimitiveTypes {
 
     o String stringValue

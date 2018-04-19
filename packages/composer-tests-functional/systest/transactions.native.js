@@ -108,7 +108,7 @@ let checkError = (error) => {
     }
 };
 
-describe('Native API', function () {
+describe('Native API (from runtime API)', function () {
 
     this.retries(TestUtil.retries());
 
