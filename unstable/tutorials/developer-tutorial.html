@@ -400,7 +400,7 @@ ga('send', 'pageview');
 <p></code-block></p></li>
 <li><p>Enter <code-block type="arguments" sub-type="yo" identifier="network-name" > <code>tutorial-network</code> </code-block> for the network name, and desired information for description, author name, and author email.</p></li>
 <li><p>Select <code-block type="arguments" sub-type="yo" identifier="license" > <code>Apache-2.0</code> </code-block> as the license.</p></li>
-<li><p>Select <code-block type="arguments" sub-type="yo" identifier="namespace" > <code>org.acme.mynetwork</code> </code-block> as the namespace.</p></li>
+<li><p>Select <code-block type="arguments" sub-type="yo" identifier="namespace" > <code>org.example.mynetwork</code> </code-block> as the namespace.</p></li>
 </ol>
 
 <h2 id="step-two-defining-a-business-network">Step Two: Defining a business network</h2>
@@ -412,14 +412,14 @@ ga('send', 'pageview');
 <p>The first document to update is the model (<code>.cto</code>) file. This file is written using the <a href="../reference/cto_language.html">Hyperledger Composer Modelling Language</a>. The model file contains the definitions of each class of asset, transaction, participant, and event. It implicitly extends the Hyperledger Composer System Model described in the modelling language documentation.</p>
 
 <ol>
-<li><p>Open the <code-block type="files" sub-type="paths" identifier="model-file-name" > <code>org.acme.mynetwork.cto</code> </code-block> model file.</p></li>
+<li><p>Open the <code-block type="files" sub-type="paths" identifier="model-file-name" > <code>org.example.mynetwork.cto</code> </code-block> model file.</p></li>
 <li><p>Replace the contents with the following:</p>
 
 <p><code-block type="files" sub-type="contents" identifier="model-file-content" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
-namespace org.acme.mynetwork
+namespace org.example.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -438,7 +438,7 @@ transaction Trade {
 }
 </code></pre></div>
 <p></code-block></p></li>
-<li><p>Save your changes to <code>org.acme.mynetwork.cto</code>.</p></li>
+<li><p>Save your changes to <code>org.example.mynetwork.cto</code>.</p></li>
 </ol>
 
 <h4 id="adding-javascript-transaction-logic">Adding JavaScript transaction logic</h4>
@@ -454,12 +454,12 @@ transaction Trade {
 <p><code-block type="files" sub-type="contents" identifier="script-file-content" ></p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.example.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */</span>
 <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
-    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.mynetwork.Commodity'</span><span class="p">);</span>
     <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -480,7 +480,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork.*"
+    resource: "org.example.mynetwork.*"
     action: ALLOW
 }
 

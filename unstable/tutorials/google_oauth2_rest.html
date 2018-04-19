@@ -615,8 +615,8 @@ docker logs rest
 <ol>
 <li>You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is <strong>Jo Doe</strong>:</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
-composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.acme.trading.Trader#trader1"
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
+composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.example.trading.Trader#trader1"
 composer card import -f jdoe.card
 </code></pre></div>
 <ol>
@@ -632,8 +632,8 @@ composer card import -f jdoe.card
 <ol>
 <li>Repeat the above steps for participant <strong>Ken Coe</strong> (<code>kcoe</code>) - creating a <code>trader2</code> participant and issuing the identity <code>kcoe</code> - the sequence of commands are:</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
-composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.acme.trading.Trader#trader2"
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
+composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.example.trading.Trader#trader2"
 composer card import -f kcoe.card
 
 sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network

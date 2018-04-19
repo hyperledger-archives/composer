@@ -432,13 +432,13 @@ ga('send', 'pageview');
 
 <h3 id="granting-network-access-control">Granting network access control</h3>
 
-<p>Network access is granted using the system namespace. The system namespace is always <code>org.hyperledger.composer.system.Network</code> for network access, and <code>org.hyperledger.composer.system</code> for all access. The following access control rules gives the <strong>networkControl</strong> participant the authority to use all operations with network commands.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">rule networkControlPermission {
-  description:  "networkControl can access network commands"
-  participant: "org.acme.vehicle.auction.networkControl"
+<p>Network access is granted using the system namespace. The system namespace is always <code>org.hyperledger.composer.system.Network</code> for network access, and <code>org.hyperledger.composer.system</code> for all access. The following access control rules gives the <strong>NetworkControl</strong> participant the authority to use all operations with network commands.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">rule NetworkControlPermission {
+  description:  "NetworkControl can access network commands"
+  participant: "org.example.basic.NetworkControl"
   operation: ALL
   resource: "org.hyperledger.composer.system.Network"
-  action: ALLOW  
+  action: ALLOW
 }
 </code></pre></div>
 <p>The following access control rule will give all participants access to all operations and commands in the business network, including network access and business access.</p>

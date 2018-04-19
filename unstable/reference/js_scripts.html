@@ -387,7 +387,7 @@ ga('send', 'pageview');
 <p>The first line of comments above a transaction processor function contains a human readable description of what the transaction processor function does. The second line must include the <code>@param</code> tag to indicate the parameter definition. The <code>@param</code> tag is followed by the resource name of the transaction which triggers the transaction processor function, this takes the format of the namespace of the business network, followed by the transaction name. After the resource name, is the parameter name which will reference the resource, this parameter must be supplied to the JavaScript function as an argument. The third line must contain the <code>@transaction</code> tag, this tag identifies the code as a transaction processor function and is required.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 </code></pre></div>
@@ -399,7 +399,7 @@ ga('send', 'pageview');
 <p>A complete transaction processor function as detailed above would take the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 function transactionProcessor(parameter-name) {
@@ -427,7 +427,7 @@ transaction SampleTransaction {
 <p>The transaction processor function defines the <code>SampleTransaction</code> type as the associated transaction, and defines it as the parameter <code>tx</code>. It then saves the original value of the asset to be changed by the transaction, replaces it with the value passed in during the submission of the transaction (the <code>newValue</code> property in the transaction definition), updates the asset in the registry, and then emits an event.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -439,13 +439,13 @@ transaction SampleTransaction {
     <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
 
     <span class="c1">// Get the asset registry for the asset.</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
 
     <span class="c1">// Update the asset in the asset registry.</span>
     <span class="kr">await</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">);</span>
 
     <span class="c1">// Emit an event for the modified asset.</span>
-    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.acme.sample'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">().</span><span class="nx">newEvent</span><span class="p">(</span><span class="s1">'org.example.basic'</span><span class="p">,</span> <span class="s1">'SampleEvent'</span><span class="p">);</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">asset</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">asset</span><span class="p">;</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">oldValue</span> <span class="o">=</span> <span class="nx">oldValue</span><span class="p">;</span>
     <span class="nx">event</span><span class="p">.</span><span class="nx">newValue</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
@@ -457,7 +457,7 @@ transaction SampleTransaction {
 <p>Transaction processor functions will fail and roll back any changes already made an error is thrown. The whole transaction fails, not just the transaction processing, and anything changed by the transaction processor function before the error occurred will be rolled back.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -478,7 +478,7 @@ transaction SampleTransaction {
 <p>The following example includes nested relationships, the transaction has a relationship with an asset, which has a relationship with a participant, because all relationships are resolved, the <code>owner</code> property of the asset is resolved to the specific participant.</p>
 
 <p>Model file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
 
 participant SampleParticipant identified by participantId {
   o String participantId
@@ -496,7 +496,7 @@ transaction SampleTransaction {
 <p>Script file:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -518,7 +518,7 @@ transaction SampleTransaction {
 <p>In the example code below there are several promises, the transaction will not be completed until each promise has returned.</p>
 
 <p>Model file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
 
 transaction SampleTransaction {
 
@@ -530,7 +530,7 @@ more concise than using promise chains. This is the recommended style.</p>
 <p>Script file:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -541,7 +541,7 @@ more concise than using promise chains. This is the recommended style.</p>
 <p>however if you so wish you can still use old style promise chains</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -572,7 +572,7 @@ more concise than using promise chains. This is the recommended style.</p>
 <p>In the code example below, the <code>getAssetRegistry</code> call returns a promise which is resolved before the transaction is complete.</p>
 
 <p>Model file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
 
 asset SampleAsset identified by assetId {
   o String assetId
@@ -587,7 +587,7 @@ transaction SampleTransaction {
 <p>Script file:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */</span>
 <span class="k">async</span> <span class="kd">function</span> <span class="nx">sampleTransaction</span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span> <span class="p">{</span>
@@ -596,7 +596,7 @@ transaction SampleTransaction {
     <span class="nx">asset</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">newValue</span><span class="p">;</span>
     <span class="c1">// Get the asset registry that stores the assets. Note that</span>
     <span class="c1">// getAssetRegistry() returns a promise, so we have to await for it.</span>
-    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.sample.SampleAsset'</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.basic.SampleAsset'</span><span class="p">);</span>
 
     <span class="c1">// Update the asset in the asset registry. Again, note</span>
     <span class="c1">// that update() returns a promise, so so we have to return</span>

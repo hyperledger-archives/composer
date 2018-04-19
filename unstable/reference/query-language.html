@@ -408,7 +408,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">query Q20{
     description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered from A-Z by firstName"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE ((age &lt; _$ageParam OR firstName == 'Dan') AND (lastName != 'Selman'))
                 ORDER BY [lastName ASC, firstName ASC]
 }
@@ -419,7 +419,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">query Q17 {
     description: "Select all drivers aged older than PARAM"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (_$ageParam &lt; age)
 }
 </code></pre></div>
@@ -429,7 +429,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">query Q18 {
     description: "Select all drivers who has the following interests"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (badges CONTAINS ['punctual', 'steady-driving'])
 }
 </code></pre></div>

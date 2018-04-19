@@ -402,7 +402,7 @@ ga('send', 'pageview');
 
 <h2 id="adding-a-business-network-card-to-the-wallet">Adding a business network card to the wallet</h2>
 
-<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and that you have created a business network card for this Blockchain identity stored in the file <code>alice1@my-network.card</code>.</p>
+<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.example.mynetwork.Trader#alice@email.com</code>, and that you have created a business network card for this Blockchain identity stored in the file <code>alice1@my-network.card</code>.</p>
 
 <p>Follow these steps to add a business network card to the wallet:</p>
 
@@ -431,7 +431,7 @@ ga('send', 'pageview');
 <p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
   "version": "0.8.0",
-  "participant": "org.acme.mynetwork.Trader#alice@email.com"
+  "participant": "org.example.mynetwork.Trader#alice@email.com"
 }
 </code></pre></div>
 <h2 id="final-notes">Final notes</h2>

@@ -925,10 +925,10 @@ cp -p $ORG2/keystore/*_sk /tmp/composer/org2
 <p>Lets create a participant, issue an identity (mapped to that participant) and create an asset on the blockchain network as that identity.</p>
 
 <p>Run the <code>composer participant add</code> command below, copying it to the command line to execute:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c alice@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1-org1", "firstName":"Jo","lastName":"Doe"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c alice@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader1-org1", "firstName":"Jo","lastName":"Doe"}'
 </code></pre></div>
 <p>Next create the identity for <code>trader1-org1</code> with the <code>composer issue identity</code> command below:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c alice@trade-network -f jo.card -u jdoe -a "resource:org.acme.trading.Trader#trader1-org1"
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c alice@trade-network -f jo.card -u jdoe -a "resource:org.example.trading.Trader#trader1-org1"
 </code></pre></div>
 <p>Import the card and test it</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer card import -f jo.card
@@ -938,16 +938,16 @@ composer network ping -c jdoe@trade-network
 <p>Next we will create an asset - From the command line, submit a transaction to create a Commodity asset, as participant <code>jdoe</code> (or alternatively, if you already have Composer Playground installed, connect as <code>jdoe@trade-network</code> to <code>trade-network</code> to create the asset &#39;EMA&#39; - the JSON snippet is shown below ).</p>
 
 <p>To create the asset using the CLI - copy the <code>transaction submit</code> sequence below - it creates a Commodity asset for you:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card jdoe@trade-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.trading.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.trading.Commodity", "resources": [{"$class": "org.acme.trading.Commodity","tradingSymbol":"EMA", "description":"Corn commodity","mainExchange":"EURONEXT", "quantity":"10","owner":"resource:org.acme.trading.Trader#trader1-org1"}]}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card jdoe@trade-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.trading.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.trading.Commodity", "resources": [{"$class": "org.example.trading.Commodity","tradingSymbol":"EMA", "description":"Corn commodity","mainExchange":"EURONEXT", "quantity":"10","owner":"resource:org.example.trading.Trader#trader1-org1"}]}'
 </code></pre></div>
 <p>Or alternatively, to create in Playground - copy the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.trading.Commodity",
+  "$class": "org.example.trading.Commodity",
   "tradingSymbol": "EMA",
   "description": "Corn commodity",
   "mainExchange": "EURONEXT",
   "quantity": 10,
-  "owner": "resource:org.acme.trading.Trader#trader1-org1"
+  "owner": "resource:org.example.trading.Trader#trader1-org1"
 }
 </code></pre></div>
 <p>Finally, do a <code>composer network list</code> to confirm the generated artifacts in the business network:</p>
@@ -969,10 +969,10 @@ composer network ping -c jdoe@trade-network
 <p>Once again, create a participant, issue an identity (mapped to that participant) - as we already have an asset on the blockchain network, we will use a transaction to change the ownership (from Org1 trader to an Org2 trader):</p>
 
 <p>Run the <code>composer participant add</code> command below, copying it to the command line to execute:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c bob@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2-org2", "firstName":"Dave","lastName":"Lowe"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c bob@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader2-org2", "firstName":"Dave","lastName":"Lowe"}'
 </code></pre></div>
 <p>Next create the identity for <code>trader2-org2</code> with the <code>composer issue identity</code> command below:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c bob@trade-network -f dave.card -u dlowe -a "resource:org.acme.trading.Trader#trader2-org2"
+<div class="highlight"><pre><code class="language-" data-lang="">composer identity issue -c bob@trade-network -f dave.card -u dlowe -a "resource:org.example.trading.Trader#trader2-org2"
 </code></pre></div>
 <p>Import the card and test it</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer card import -f dave.card
@@ -980,7 +980,7 @@ composer network ping -c jdoe@trade-network
 composer network ping -c dlowe@trade-network
 </code></pre></div>
 <p>Lastly, submit a transaction to change ownership of the Commodity asset created earlier. We will submit the transaction as the asset owner Jon Doe and transfer it to trader &#39;Dave Lowe&#39;. We will then verify the ownership change has occurred as the Org 2 trader participant mapped to the <code>dlowe</code> identity: Perform the step below.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card jdoe@trade-network -d '{"$class":"org.acme.trading.Trade","commodity":"resource:org.acme.trading.Commodity#EMA","newOwner":"resource:org.acme.trading.Trader#trader2-org2"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card jdoe@trade-network -d '{"$class":"org.example.trading.Trade","commodity":"resource:org.example.trading.Commodity#EMA","newOwner":"resource:org.example.trading.Trader#trader2-org2"}'
 </code></pre></div>
 <p>Finally, do a <code>composer network list</code> as the Org 2 trader participant to confirm the change of ownership on the asset:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network list -c dlowe@trade-network

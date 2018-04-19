@@ -422,7 +422,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
-namespace org.acme.mynetwork
+namespace org.example.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -459,12 +459,12 @@ transaction Trade {
 <p><code-block type="files" sub-type="contents" identifier="script.js"></p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.example.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */</span>
 <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
-    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.mynetwork.Commodity'</span><span class="p">);</span>
     <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -511,7 +511,7 @@ transaction Trade {
 
 <p><code-block type="transactions" sub-type="participants" identifier="trader1" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.example.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
@@ -523,7 +523,7 @@ transaction Trade {
 
 <p><code-block type="transactions" sub-type="participants" identifier="trader2"></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.example.mynetwork.Trader",
   "tradeId": "TRADER2",
   "firstName": "Amy",
   "lastName": "Williams"
@@ -548,12 +548,12 @@ transaction Trade {
 
 <p><code-block type="transactions" sub-type="assets" identifier="abc" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Commodity",
+  "$class": "org.example.mynetwork.Commodity",
   "tradingSymbol": "ABC",
   "description": "Test commodity",
   "mainExchange": "Euronext",
   "quantity": 72.297,
-  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
 }
 </code></pre></div>
 <p></code-block></p></li>
@@ -579,14 +579,14 @@ transaction Trade {
 
 <p><code-block type="transactions" sub-type="transactions" identifier="trade" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trade",
-  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
-  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+  "$class": "org.example.mynetwork.Trade",
+  "commodity": "resource:org.example.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
 }
 </code></pre></div>
 <p></code-block></p></li>
 <li><p>Click <strong>Submit</strong>.</p></li>
-<li><p>Check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, by expanding the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
+<li><p>Check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, by expanding the data section for the asset. You should see that the owner is listed as <code>resource:org.example.mynetwork.Trader#TRADER2</code>.</p></li>
 <li><p>To view the full transaction history of our business network, click <strong>All Transactions</strong> on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the <em>Trader</em> participants and the <em>Commodity</em> asset, are recorded as transactions, even though they&#39;re not defined as transactions in our business network model. These transactions are known as &#39;System Transactions&#39; and are common to all business networks, and defined in the Hyperledger Composer Runtime.</p></li>
 </ol>
 

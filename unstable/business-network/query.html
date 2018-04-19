@@ -392,7 +392,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">query Q1{
   description: "Select all drivers older than 65."
   statement:
-      SELECT org.acme.Driver
+      SELECT org.example.Driver
           WHERE (age&gt;65)
 }
 </code></pre></div>
@@ -404,7 +404,7 @@ ga('send', 'pageview');
 <div class="highlight"><pre><code class="language-" data-lang="">query Q18 {
     description: "Select all drivers aged older than PARAM"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (_$ageParam &lt; age)
                 ORDER BY [lastName DESC, firstName DESC]
                     LIMIT _$limitParam
