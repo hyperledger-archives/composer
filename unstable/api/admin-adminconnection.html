@@ -441,6 +441,11 @@ Calling an api after disconnect and before connect will give an error.</p>
 <td style="text-align: left">Get the current logging level of a business network</td>
 </tr>
 <tr>
+<td style="text-align: left"><a href="#getnativeapi">getNativeAPI</a></td>
+<td style="text-align: left"><code>void</code></td>
+<td style="text-align: left">Get the native API for this connection</td>
+</tr>
+<tr>
 <td style="text-align: left"><a href="#hascard">hasCard</a></td>
 <td style="text-align: left"><code>Promise</code></td>
 <td style="text-align: left">Has a existing card</td>
@@ -1186,6 +1191,16 @@ Note this will remove ALL the contents of the network registries, but not any sy
     <span class="c1">// Add error handling here.</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="getnativeapi">getNativeAPI</h2>
+
+<p><em>getNativeAPI(  )</em></p>
+
+<p>Get the native API for this connection. The native API returned is specific to the underlying blockchain platform, and may throw an error if there is no native API available.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>No parameters</p>
+
 <h2 id="inherited-methods">Inherited methods</h2>
 
             
