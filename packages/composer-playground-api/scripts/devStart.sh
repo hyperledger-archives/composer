@@ -35,7 +35,7 @@ docker-compose --file "${scriptDir}/docker-compose.yaml" up --detach
 
 # Publish development versions of packages required at runtime
 for package in composer-common composer-runtime composer-runtime-hlfv1; do
-    npm publish --userconfig "${scriptDir}/publish-npmrc" --registry 'http://localhost:4873' "${packagesDir}/${package}"
+    npm publish --userconfig "${scriptDir}/publish.npmrc" "${packagesDir}/${package}"
 done
 
 # Start the Playground API
