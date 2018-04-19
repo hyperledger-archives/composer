@@ -17,7 +17,7 @@
 const AclFile = require('../../lib/acl/aclfile');
 const parser = require('../../lib/acl/parser');
 const ModelManager = require('../../lib/modelmanager');
-const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
+const IllegalAclException = require('../../lib/acl/illegalaclexception');
 const ParseException = require('../../lib/introspect/parseexception');
 const fs = require('fs');
 const path = require('path');
@@ -60,7 +60,7 @@ describe('AclFile', () => {
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
             const ast = {
-                rules: [ {id: {name: 'fake'}, noun: {qualifiedName: 'org.acme.*'}, verbs: 'UPDATE', participant: 'ANY', action: 'ALLOW'} ]
+                rules: [ {id: {name: 'fake'}, noun: {qualifiedName: 'org.acme.*'}, operation: {verbs: ['UPDATE']}, participant: 'ANY', action: 'ALLOW'} ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new AclFile( 'test', modelManager, 'fake definitions');
@@ -495,7 +495,7 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             (() => {
                 aclFile.validate();
-            }).should.throw(IllegalModelException, /The participant.*must be a participant/);
+            }).should.throw(IllegalAclException, /Expected \'Car\' to be a participant File \'test.acl\': line 3 column 31, to line 3 column 43./);
         });
 
         it('should fail to validate a rule when transaction is not a transaction', () => {
@@ -510,7 +510,7 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             (() => {
                 aclFile.validate();
-            }).should.throw(IllegalModelException, /The transaction.*must be a transaction/);
+            }).should.throw(IllegalAclException, /Expected \'Car\' to be a transaction File \'test.acl\': line 6 column 31, to line 6 column 43./);
         });
 
     });

@@ -32,7 +32,7 @@ class AclFile {
      * @param {ModelManager} modelManager - the ModelManager that manages this
      * ModelFile and that will be used to validate the rules in the AclFile
      * @param {string} definitions - The ACL rules as a string.
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      */
     constructor(id, modelManager, definitions) {
         this.modelManager = modelManager;
@@ -62,8 +62,6 @@ class AclFile {
             // TODO (DCS) check that the id of the AclRule does not already exist
             this.rules.push(aclRule);
         }
-
-        // console.log(JSON.stringify(this.ast));
     }
 
     /**
@@ -97,7 +95,7 @@ class AclFile {
     /**
      * Validates the ModelFile.
      *
-     * @throws {IllegalModelException} if the model is invalid
+     * @throws {IllegalAclException} if the model is invalid
      * @private
      */
     validate() {

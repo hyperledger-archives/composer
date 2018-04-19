@@ -17,20 +17,20 @@
 const IllegalAclException = require('./illegalaclexception');
 
 /**
- * Predicate captures a conditional Javascript expression:
- * anything that can legally appear within a if statement.
+ * Operation captures the array ofaction verbs that the ACL rule
+ * governs.
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class Predicate {
+class Operation {
 
     /**
-     * Create an Predicate from an Abstract Syntax Tree. The AST is the
+     * Create an Operation from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
-     * @param {AclRule} aclRule - the AclRule for this Predicate
+     * @param {AclRule} aclRule - the AclRule for this Operation
      * @param {Object} ast - the AST created by the parser
      * @throws {IllegalAclException}
      */
@@ -39,7 +39,7 @@ class Predicate {
             throw new IllegalAclException('Invalid AclRule or AST');
         }
 
-        this.expression = ast;
+        this.ast = ast;
         this.aclRule = aclRule;
         this.process();
     }
@@ -56,7 +56,7 @@ class Predicate {
     }
 
     /**
-     * Returns the AclRule that owns this ModelBinding.
+     * Returns the AclRule that owns this Operation.
      *
      * @return {AclRule} the owning AclRule
      */
@@ -67,10 +67,10 @@ class Predicate {
     /**
      * Returns the expression as a text string.
      *
-     * @return {string} the operator for the predicate
+     * @return {string} the verbs for the operation
      */
-    getExpression() {
-        return this.expression;
+    getVerbs() {
+        return this.verbs;
     }
 
     /**
@@ -80,17 +80,25 @@ class Predicate {
      * @private
      */
     process() {
+        this.verbs = this.ast.verbs;
     }
 
     /**
-     * Semantic validation of the structure of this ModelBinding.
+     * Semantic validation of the structure of this Operation.
      *
      * @throws {IllegalAclException}
      * @private
      */
     validate() {
+        const foundVerbs = {};
+        this.verbs.forEach((verb) => {
+            if (foundVerbs[verb]) {
+                throw new IllegalAclException(`The verb '${verb}' has been specified more than once in the ACL rule '${this.aclRule.getName()}'`, this.aclRule.getAclFile(), this.ast.location);
+            }
+            foundVerbs[verb] = true;
+        });
     }
 
 }
 
-module.exports = Predicate;
+module.exports = Operation;
