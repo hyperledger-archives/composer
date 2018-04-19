@@ -16,12 +16,12 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-const program = require('commander');
+const yargs = require('yargs');
 const PlantUMLGenerator = require('./fromjs/plantumlgenerator');
 const APISignatureGenerator = require('./fromjs/apisignaturegenerator');
 const JavaScriptParser = require('./javascriptparser');
 const JSONGenerator = require('./fromjs/jsongenerator');
-
+let program;
 /**
  * Processes a single Javascript file (.js extension)
  *
@@ -65,22 +65,19 @@ function processDirectory(path, fileProcessor) {
 }
 
 /**
- * Generates Plant UML files from Javascript source files
- *
- * node ./lib/codegen/umlgen.js
- * --outputDir <location to write UML files>
- * --inputDir <location to recursively read .js files>
+ * Parses Javascript source and generates output from class and method definitions
+ * @private
  */
-program
-    .version('0.0.1')
-    .description('Parses Javascript source and generates output from class and method definitions')
+program = yargs
     .usage('[options]')
-    .option('-o, --outputDir <outputDir>', 'Output directory')
-    .option('-i, --inputDir <inputDir>', 'Input source directory')
-    .option('-s, --single <singlefile>', 'Single file to process')
-    .option('-f, --format <format>', 'Format of code to generate. Defaults to PlantUML.', 'PlantUML')
-    .option('-p, --private', 'Include classes that have the @private JSDoc annotation')
-    .parse(process.argv);
+    .options({
+        'outputDir' : {alias : 'o',required:true,describe: 'Output directory'},
+        'inputDir' :  {alias : 'i',required:false,describe: 'Input source directory'},
+        'single' :  {alias : 's',required:false,describe: 'Single file to process'},
+        'format' :  {alias : 'f',required:true,describe: 'Format of code to generate. Defaults to PlantUML.',type:'string',default:'PlantUML'},
+        'private' :  {alias : 'p',required:false,describe: 'Include classes that have the @private JSDoc annotation'},
+    })
+    .argv;
 
 let fileProcessor;
 
@@ -99,13 +96,16 @@ case 'JSON':
 
 if (program.inputDir){
     // Loop through all the files in the input directory
+    // eslint-disable-next-line no-console
     console.log('Input dir ' + program.inputDir);
     processDirectory(program.inputDir,fileProcessor);
 }
 else if (program.single){
+    // eslint-disable-next-line no-console
     console.log('Single file '+program.single);
     processFile(path.resolve(program.single),fileProcessor);
 } else {
+    // eslint-disable-next-line no-console
     console.log('no file option given');
 }
 
