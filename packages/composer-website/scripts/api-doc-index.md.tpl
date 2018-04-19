@@ -32,7 +32,7 @@ As an example, it allows the use of the async/await syntax.
   // connect using the 'newUserCard', create an asset, add it to a registry and get all assets.
   try{
     await businessNetworkConnection.connect('newUserCard');
-    let newAsset = factory.newAsset('org.acme.sample','SampleAsset','1148');
+    let newAsset = factory.newAsset('org.example.basic','SampleAsset','1148');
     await assestRegistry.add(newAsset);
 
     result = await assetRegistry.getAll();
@@ -53,7 +53,7 @@ Using promises the example above would be:
 
   return businessNetworkConnection.connect('newUserCard')
     .then( function()  {
-        var newAsset = factory.newAsset('org.acme.sample','SampleAsset','1148');
+        var newAsset = factory.newAsset('org.example.basic','SampleAsset','1148');
         return assetRegistry.add(newAsset);
     })
     .then( function() {
@@ -132,7 +132,7 @@ The Common API calls are also available to interact with resources, together wit
 ```javascript
 // Get the driver participant registry.
 try {
-    let driverParticipantRegistry = await getParticipantRegistry('org.acme.Driver');
+    let driverParticipantRegistry = await getParticipantRegistry('org.example.Driver');
     // Call methods on the driver participant registry.
 } catch(error) {
     // Add optional error handling here.

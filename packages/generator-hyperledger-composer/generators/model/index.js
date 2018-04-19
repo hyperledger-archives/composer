@@ -71,7 +71,7 @@ module.exports = yeoman.Base.extend({
                 type: 'input',
                 name: 'ns',
                 message: 'Namespace:',
-                default: 'org.acme.biznet',
+                default: 'org.example.mynetwork',
                 store: true,
                 validate: Util.validateNamespace
             }

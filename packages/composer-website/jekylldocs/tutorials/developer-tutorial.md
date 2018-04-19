@@ -42,7 +42,7 @@ The easiest way to get started is to use the Yeoman generator to create a skelet
 
 3. Select <code-block type="arguments" sub-type="yo" identifier="license" > `Apache-2.0` </code-block> as the license.
 
-4. Select <code-block type="arguments" sub-type="yo" identifier="namespace" > `org.acme.mynetwork` </code-block> as the namespace.
+4. Select <code-block type="arguments" sub-type="yo" identifier="namespace" > `org.example.mynetwork` </code-block> as the namespace.
 
 ## Step Two: Defining a business network
 
@@ -52,7 +52,7 @@ A business network is made up of assets, participants, transactions, access cont
 
 The first document to update is the model (`.cto`) file. This file is written using the [{{site.data.conrefs.composer_full}} Modelling Language](../reference/cto_language.html). The model file contains the definitions of each class of asset, transaction, participant, and event. It implicitly extends the {{site.data.conrefs.composer_full}} System Model described in the modelling language documentation.
 
-1. Open the <code-block type="files" sub-type="paths" identifier="model-file-name" > `org.acme.mynetwork.cto` </code-block> model file.
+1. Open the <code-block type="files" sub-type="paths" identifier="model-file-name" > `org.example.mynetwork.cto` </code-block> model file.
 
 2. Replace the contents with the following:
 
@@ -61,7 +61,7 @@ The first document to update is the model (`.cto`) file. This file is written us
         /**
          * My commodity trading network
          */
-        namespace org.acme.mynetwork
+        namespace org.example.mynetwork
         asset Commodity identified by tradingSymbol {
             o String tradingSymbol
             o String description
@@ -80,8 +80,8 @@ The first document to update is the model (`.cto`) file. This file is written us
         }
 
     </code-block>
+3. Save your changes to `org.example.mynetwork.cto`.
 
-3. Save your changes to `org.acme.mynetwork.cto`.
 
 #### Adding JavaScript transaction logic
 
@@ -97,12 +97,12 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
 
         /**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+         * @param {org.example.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
         async function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
+            let assetRegistry = await getAssetRegistry('org.example.mynetwork.Commodity');
             await assetRegistry.update(trade.commodity);
         }
     
@@ -123,7 +123,7 @@ The `Trade` transaction is intended to simply accept the identifier of the `Comm
             description: "Allow all participants access to all resources"
             participant: "ANY"
             operation: ALL
-            resource: "org.acme.mynetwork.*"
+            resource: "org.example.mynetwork.*"
             action: ALLOW
         }
 

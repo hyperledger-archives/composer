@@ -44,7 +44,7 @@ If you see a `HTTP 401 Authorization Required` error message, you have not authe
 
 ## Adding a business network card to the wallet
 
-First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.acme.mynetwork.Trader#alice@email.com`, and that you have created a business network card for this Blockchain identity stored in the file `alice1@my-network.card`.
+First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.example.mynetwork.Trader#alice@email.com`, and that you have created a business network card for this Blockchain identity stored in the file `alice1@my-network.card`.
 
 Follow these steps to add a business network card to the wallet:
 
@@ -83,7 +83,7 @@ You can test that the Blockchain identity is being used by calling the `GET /sys
 
     {
       "version": "0.8.0",
-      "participant": "org.acme.mynetwork.Trader#alice@email.com"
+      "participant": "org.example.mynetwork.Trader#alice@email.com"
     }
 
 ## Final notes

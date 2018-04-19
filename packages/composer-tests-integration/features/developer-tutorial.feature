@@ -30,15 +30,15 @@ Feature: Developer tutorial
             | --appemail       | king@conga-email             |
             
         Then I have the following files
-            | ../tutorial-network/.eslintrc.yml                 |
-            | ../tutorial-network/README.md                     |
-            | ../tutorial-network/package.json                  |
-            | ../tutorial-network/permissions.acl               |
-            | ../tutorial-network/models/org.acme.mynetwork.cto |
-            | ../tutorial-network/lib/logic.js                  |
-            | ../tutorial-network/test/logic.js                 |
-            | ../tutorial-network/features/sample.feature       |
-            | ../tutorial-network/features/support/index.js     |
+            | ../tutorial-network/.eslintrc.yml                    |
+            | ../tutorial-network/README.md                        |
+            | ../tutorial-network/package.json                     |
+            | ../tutorial-network/permissions.acl                  |
+            | ../tutorial-network/models/org.example.mynetwork.cto |
+            | ../tutorial-network/lib/logic.js                     |
+            | ../tutorial-network/test/logic.js                    |
+            | ../tutorial-network/features/sample.feature          |
+            | ../tutorial-network/features/support/index.js        |
 
     Scenario: Step Two: Defining a business network
         Given I have used the tutorial to create a network called tutorial-network
