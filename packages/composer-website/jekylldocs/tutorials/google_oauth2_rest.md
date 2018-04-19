@@ -279,8 +279,8 @@ You should get an Authorized error and that is because we have configured a Goog
 1. You need to create a set participant and identities for testing you can interact with the business network. This is because the REST server can handle multiple REST clients in multi-user mode. We will be using the composer CLI commands to add participants and identities as follows - first name is **Jo Doe**:
 
 ```
-composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
-composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.acme.trading.Trader#trader1"
+composer participant add -c admin@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader1", "firstName":"Jo","lastName":"Doe"}'
+composer identity issue -c admin@trade-network -f jdoe.card -u jdoe -a "resource:org.example.trading.Trader#trader1"
 composer card import -f jdoe.card
 ```
 
@@ -299,8 +299,8 @@ composer card export -f jdoe_exp.card -c jdoe@trade-network ; rm jdoe.card
 4. Repeat the above steps for participant **Ken Coe** (`kcoe`) - creating a `trader2` participant and issuing the identity `kcoe` - the sequence of commands are:
 
 ```
-composer participant add -c admin@trade-network -d '{"$class":"org.acme.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
-composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.acme.trading.Trader#trader2"
+composer participant add -c admin@trade-network -d '{"$class":"org.example.trading.Trader","tradeId":"trader2", "firstName":"Ken","lastName":"Coe"}'
+composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.example.trading.Trader#trader2"
 composer card import -f kcoe.card
 
 sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
