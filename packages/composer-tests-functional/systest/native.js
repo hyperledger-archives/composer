@@ -31,7 +31,7 @@ const checkError = (error) => {
     }
 };
 
-describe.only('Native API (from client API)', function () {
+describe('Native API (from client API)', function () {
 
     this.retries(TestUtil.retries());
 
