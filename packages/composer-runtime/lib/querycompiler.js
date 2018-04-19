@@ -411,7 +411,7 @@ class QueryCompiler {
         // then define a getter to read the current parameter setting.
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof limitValue === 'function') {
             property.get = limitValue;
@@ -443,7 +443,7 @@ class QueryCompiler {
         // then define a getter to read the current parameter setting.
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof skipValue === 'function') {
             property.get = skipValue;
@@ -515,57 +515,38 @@ class QueryCompiler {
         let left = this.visit(ast.left, parameters);
         let right = this.visit(ast.right, parameters);
 
-        // Build the Mango selector for this operator.
-        let result = {};
-        // use the implicit format of $and format in mangodb query to support both couchdb and pounchdb
-        // as the explicit format of the $and is not fully supported in pouchdb.
-        let leftKeys = Object.keys(left);
-        let rightKeys = Object.keys(right);
-        let leftKeyValue = left[leftKeys[0]];
-        let nLeftKeys = leftKeys.length;
-        let nRightKeys = rightKeys.length;
-        if(operator === '$and' ){
-            if (nLeftKeys === 1 && leftKeys[0]=== '$or'){ // using explicit $and format when the left side first key is $or
-                result[operator] = [left, right];
-            } else if (nLeftKeys === 1 && leftKeys[0] === '$and'  ) { // add the right side to the left value array
-                leftKeyValue.push(right);
-                result[leftKeys[0]] = Object.assign(leftKeyValue);
-            } else if (nRightKeys === 1 && rightKeys[0] === '$or'){
-                result = Object.assign(left, right);
-            } else if( nLeftKeys >= 1 && nRightKeys >= 1 && leftKeys[0] !== '$or'){
-                // merge the same property values
-                result = Object.assign(left);
-                for( let i = 0; i < nRightKeys; i++ ){
-                    let rightKey = rightKeys[i];
-                    if( typeof(left[rightKey]) !== 'undefined' ){
-                       // find a matching key between left and right, merge the right key value to the left key
-                        const combined = {};
-                        const leftProperties = Object.getOwnPropertyDescriptors(left[rightKey]);
-                        for(let prop in leftProperties) {
-                            Object.defineProperty(combined, prop, leftProperties[prop]);
-                        }
-                        const rightProperties = Object.getOwnPropertyDescriptors(right[rightKey]);
-                        for(let prop in rightProperties) {
-                            Object.defineProperty(combined, prop, rightProperties[prop]);
-                        }
-                        result[rightKey] = combined;
-                    }else{
-                        // add the right item to the result
-                        result[rightKey] = Object.create(
-                            Object.getPrototypeOf(right[rightKey]),
-                            Object.getOwnPropertyDescriptors(right[rightKey])
-                        );
+        const eliminateAND = function (lhs, rhs) {
+            const combined = {};
+            if(typeof lhs === 'object' && typeof rhs === 'object') {
+                // put all the selectors in the lhs in the combined selector
+                const leftProperties = Object.getOwnPropertyDescriptors(lhs);
+                const rightProperties = Object.getOwnPropertyDescriptors(rhs);
+                for (const key in leftProperties) {
+                    Object.defineProperty(combined, key, leftProperties[key]);
+                }
+                // then merge the rhs in
+                for (const key in rightProperties) {
+                    if (combined.hasOwnProperty(key)) {
+                        // already exists - merge
+                        const merged = eliminateAND(combined[key], rhs[key]);
+                        delete combined[key];
+                        combined[key] = merged;
+                    } else {
+                        Object.defineProperty(combined, key, rightProperties[key]);
                     }
                 }
-            } else {  // like left= true, right = false
-                result[operator] = [
-                    left,
-                    right
-                ];
+            } else {
+                // can't merge non-object, just return the $and
+                combined.$and = [lhs, rhs];
             }
+            return combined;
+        };
+
+        // Build the Mango selector for this operator.
+        let result = {};
+        if(operator === '$and') {
+            result = eliminateAND(left, right);
         } else {
-            // when operator is $or or the $and with the same property name eg. a<x<b,
-            // use the explicit format with an array of the left and right elements as the value
             result[operator] = [
                 left,
                 right
@@ -641,7 +622,7 @@ class QueryCompiler {
         result[left] = {};
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof right === 'function') {
             property.get = right;
@@ -732,7 +713,7 @@ class QueryCompiler {
         result[left] = {};
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof right === 'function') {
             property.get = right;
