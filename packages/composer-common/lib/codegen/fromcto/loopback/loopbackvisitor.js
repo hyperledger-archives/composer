@@ -29,7 +29,7 @@ const debug = require('debug')('composer:loopbackvisitor');
 const util = require('util');
 
 /**
- * Convert a fully qualified type name, for example org.acme.MyAsset,
+ * Convert a fully qualified type name, for example org.example.mynetwork.MyAsset,
  * into a name that is safe for use as a LoopBack model name.
  * @private
  * @param {String} fqn The fully qualified type name.
