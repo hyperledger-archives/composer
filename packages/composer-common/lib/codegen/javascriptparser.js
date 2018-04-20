@@ -15,7 +15,6 @@
 'use strict';
 
 const doctrine = require('doctrine');
-// const esprima = require('esprima');  see comment in getExample fn
 const acorn = require('acorn');
 
 /**
@@ -547,16 +546,6 @@ class JavaScriptParser {
         if (tags.length > 0) {
             result = tags[0].description;
         }
-
-        // Currently esprima seems to have a problem with the async await code.
-        // TODO: Investigate if this can be handled
-        // try {
-        //     // Pass as a function so that return statements are valid
-        //     let program = 'function testSyntax() {' + result + '}';
-        //     esprima.parse(program);
-        // } catch (e) {
-        //     throw Error('Malformed JSDoc Comment. Invalid @example tag: ' + comment);
-        // }
 
         return result;
     }

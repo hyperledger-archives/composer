@@ -74,7 +74,7 @@
     "serializerr": "1.0.3",
     "sinon": "2.3.8",
     "watchify": "3.7.0",
-    "composer-common": "0.19.1"
+    "composer-common": "0.19.2"
   },
   "peerDependencies": {
     "composer-common": "0.19.3"
