@@ -253,6 +253,15 @@ class ProxyConnection extends Connection {
         });
     }
 
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     */
+    getNativeAPI() {
+        throw new Error('native API not available when using the proxy connector');
+    }
+
 }
 
 module.exports = ProxyConnection;

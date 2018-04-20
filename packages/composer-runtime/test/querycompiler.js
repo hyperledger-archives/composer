@@ -213,6 +213,22 @@ describe('QueryCompiler', () => {
                         (date < "2018-02-01") AND
                         (value == "foo"))
         }
+        query Q22 {
+            description: "Select excluding 2 values"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (value != 'foo' AND value != 'bar')
+        }
+        query Q23 {
+            description: "Select between date range"
+            statement:
+                SELECT org.acme.sample.SampleAsset
+                    WHERE (
+                        date >= "2018-01-01" AND
+                        date < "2018-02-01" AND
+                        date != "2018-01-15" AND
+                        value == "foo")
+        }
         `);
         queryFile1.validate();
         queries = {};
@@ -240,7 +256,7 @@ describe('QueryCompiler', () => {
             const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
             compiledQueryBundle.compiledQueries.should.be.an('array');
-            compiledQueryBundle.compiledQueries.should.have.lengthOf(21);
+            compiledQueryBundle.compiledQueries.should.have.lengthOf(23);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
             compiledQueryBundle.compiledQueries.should.all.have.property('hash');
             compiledQueryBundle.compiledQueries.should.all.have.property('generator');
@@ -253,7 +269,7 @@ describe('QueryCompiler', () => {
         it('should visit all of the things', () => {
             const compiled = queryCompiler.visit(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(21);
+            compiled.should.have.lengthOf(23);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -272,7 +288,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query manager', () => {
             const compiled = queryCompiler.visitQueryManager(queryManager, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(21);
+            compiled.should.have.lengthOf(23);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -292,7 +308,7 @@ describe('QueryCompiler', () => {
         it('should compile all queries in the query file', () => {
             const compiled = queryCompiler.visitQueryFile(queryFile1, {});
             compiled.should.be.an('array');
-            compiled.should.have.lengthOf(21);
+            compiled.should.have.lengthOf(23);
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
@@ -348,6 +364,20 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q21');
             compiled.generator.should.be.a('function');
             compiled.generator({}).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","date":{"$gte":"2018-01-01","$lt":"2018-02-01"},"value":{"$eq":"foo"}}}');
+        });
+
+        it('should compile a query excluding values', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q22, {});
+            compiled.name.should.equal('Q22');
+            compiled.generator.should.be.a('function');
+            compiled.generator({}).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","value":{"$ne":{"$and":["foo","bar"]}}}}');
+        });
+
+        it('should compile a query with date range', () => {
+            const compiled = queryCompiler.visitQuery(queries.Q23, {});
+            compiled.name.should.equal('Q23');
+            compiled.generator.should.be.a('function');
+            compiled.generator({}).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryId":"org.acme.sample.SampleAsset","date":{"$gte":"2018-01-01","$lt":"2018-02-01","$ne":"2018-01-15"},"value":{"$eq":"foo"}}}');
         });
 
     });
@@ -753,7 +783,7 @@ describe('QueryCompiler', () => {
                     }
                 }
             });
-            result.should.deep.equal({$and:[{$or:[true, false]}, {someProp:{$eq: 'bar'}}]});
+            result.should.deep.equal({$or:[true, false], someProp:{$eq: 'bar'}});
         });
 
         it('should compile an AND expression with a right OR expression', () => {
@@ -819,7 +849,7 @@ describe('QueryCompiler', () => {
                     }
                 }
             });
-            result.should.deep.equal({$and:[true, false, {someProp:{$eq: 'bar'}}]});
+            result.should.deep.equal({$and:[true, false], someProp:{$eq: 'bar'}});
         });
 
 
