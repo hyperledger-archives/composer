@@ -479,7 +479,7 @@
 #}
 
     <pre class="sunlight-highlight-javascript">// Build a query.
-var query = buildQuery(&#x27;SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)&#x27;);
+var query = buildQuery(&#x27;SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)&#x27;);
 // Execute the query.
 return query(query, { inputValue: &#x27;blue&#x27; })
   .then(function (assets) {
@@ -939,7 +939,7 @@ return query(query, { inputValue: &#x27;blue&#x27; })
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Call methods on the vehicle asset registry.
   })
@@ -1317,12 +1317,12 @@ var certificate = currentIdentity.certificate;</pre>
     <pre class="sunlight-highlight-javascript">// Get the current participant.
 var currentParticipant = getCurrentParticipant();
 // Check to see if the current participant is a driver.
-if (currentParticipant.getFullyQualifiedType() !== &#x27;org.acme.Driver&#x27;) {
+if (currentParticipant.getFullyQualifiedType() !== &#x27;org.example.Driver&#x27;) {
   // Throw an error as the current participant is not a driver.
   throw new Error(&#x27;Current participant is not a driver&#x27;);
 }
 // Check to see if the current participant is the first driver.
-if (currentParticipant.getFullyQualifiedIdentifier() !== &#x27;org.acme.Driver#DRIVER_1&#x27;) {
+if (currentParticipant.getFullyQualifiedIdentifier() !== &#x27;org.example.Driver#DRIVER_1&#x27;) {
   // Throw an error as the current participant is not a driver.
   throw new Error(&#x27;Current participant is not the first driver&#x27;);
 }</pre>
@@ -1961,7 +1961,7 @@ getNativeAPI().getChannelID();</pre>
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the driver participant registry.
-return getParticipantRegistry(&#x27;org.acme.Driver&#x27;)
+return getParticipantRegistry(&#x27;org.example.Driver&#x27;)
   .then(function (driverParticipantRegistry) {
     // Call methods on the driver participant registry.
   })

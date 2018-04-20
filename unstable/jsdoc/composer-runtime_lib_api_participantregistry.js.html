@@ -169,7 +169,7 @@ class ParticipantRegistry {
          * Get a list of all of the existing participants in this participant registry.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get all of the drivers in the driver participant registry.
          *     return participantRegistry.getAll();
@@ -200,7 +200,7 @@ class ParticipantRegistry {
          * of the participant.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the specific driver from the driver participant registry.
          *     return participantRegistry.get('VEHICLE_1');
@@ -229,7 +229,7 @@ class ParticipantRegistry {
          * Determines whether a specific participant exists in this participant registry.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Determine if the specific driver exists in the driver participant registry.
          *     return participantRegistry.exists('VEHICLE_1');
@@ -256,15 +256,15 @@ class ParticipantRegistry {
          * Add all of the specified participants to this participant registry.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the first driver.
-         *     var driver1 = factory.newResource('org.acme', 'Driver', 'VEHICLE_1');
+         *     var driver1 = factory.newResource('org.example', 'Driver', 'VEHICLE_1');
          *     driver1.location = 'Southampton';
          *     // Create the second driver.
-         *     var driver2 = factory.newResource('org.acme', 'Driver', 'VEHICLE_2');
+         *     var driver2 = factory.newResource('org.example', 'Driver', 'VEHICLE_2');
          *     driver2.location = 'GREEN';
          *     // Add the drivers to the driver participant registry.
          *     return participantRegistry.addAll([driver1, driver2]);
@@ -289,12 +289,12 @@ class ParticipantRegistry {
          * Add the specified participant to this participant registry.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the driver.
-         *     var driver = factory.newResource('org.acme', 'Driver', 'VEHICLE_1');
+         *     var driver = factory.newResource('org.example', 'Driver', 'VEHICLE_1');
          *     driver.location = 'Southampton';
          *     // Add the driver to the driver participant registry.
          *     return participantRegistry.add(driver);
@@ -321,7 +321,7 @@ class ParticipantRegistry {
          * var driver1;
          * var driver2;
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
@@ -354,7 +354,7 @@ class ParticipantRegistry {
          * // The existing driver that has come from elsewhere.
          * var driver;
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
@@ -385,7 +385,7 @@ class ParticipantRegistry {
          * // The existing drivers that have come from elsewhere.
          * var driver1;
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
@@ -417,7 +417,7 @@ class ParticipantRegistry {
          * // The existing driver that has come from elsewhere.
          * var driver;
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();

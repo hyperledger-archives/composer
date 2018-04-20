@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/unstable/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/unstable/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -448,23 +449,6 @@ method instead.</p>
 
 <p>Get a list of all of the existing assets in this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get all of the vehicles in the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicles</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the array of vehicle objects.</span>
-    <span class="nx">vehicles</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicle</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">.</span><span class="nx">vehicleId</span><span class="p">);</span>
-    <span class="p">});</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an array of <a href="common-resource">Resource</a> instances representing all of the assets stored in this asset registry. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -475,7 +459,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get all of the vehicles in the vehicle asset registry.</span>
     <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
@@ -496,21 +480,6 @@ method instead.</p>
 
 <p>Get the specified asset in this asset registry using the unique identifier of the asset.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the specific vehicle from the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicle</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the the vehicle object.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">.</span><span class="nx">vehicleId</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a <a href="common-resource">Resource</a> instance representing the specified asset in this asset registry. If the specified asset does not exist, or the current user does not have access to the specified asset, then the promise will be rejected with an error that describes the problem.</p>
@@ -535,7 +504,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the specific vehicle from the vehicle asset registry.</span>
     <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
@@ -554,21 +523,6 @@ method instead.</p>
 
 <p>Determines whether a specific asset exists in this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Determine if the specific vehicle exists in the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the the boolean result.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Vehicle exists'</span><span class="p">,</span> <span class="nx">exists</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a boolean which is true if the specified asset exists in this asset registry, and false if the specified participant does not exist.</p>
@@ -593,7 +547,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Determine if the specific vehicle exists in the vehicle asset registry.</span>
     <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
@@ -612,25 +566,6 @@ method instead.</p>
 
 <p>Add all of the specified assets to this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Create the first vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">vehicle1</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'BLUE'</span><span class="p">;</span>
-    <span class="c1">// Create the second vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
-    <span class="nx">vehicle2</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'GREEN'</span><span class="p">;</span>
-    <span class="c1">// Add the vehicles to the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">vehicle1</span><span class="p">,</span> <span class="nx">vehicle2</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been added to this asset registry. If the assets cannot be added to this asset registry, or if the assets already exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -655,15 +590,15 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the first vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">vehicle1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
     <span class="nx">vehicle1</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'BLUE'</span><span class="p">;</span>
     <span class="c1">// Create the second vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">vehicle2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
     <span class="nx">vehicle2</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'GREEN'</span><span class="p">;</span>
     <span class="c1">// Add the vehicles to the vehicle asset registry.</span>
     <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">vehicle1</span><span class="p">,</span> <span class="nx">vehicle2</span><span class="p">]);</span>
@@ -678,22 +613,6 @@ method instead.</p>
 
 <p>Add the specified asset to this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Create the vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">vehicle</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'BLUE'</span><span class="p">;</span>
-    <span class="c1">// Add the vehicle to the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset has been added to this asset registry. If the asset cannot be added to this asset registry, or if the asset already exists in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -718,12 +637,12 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the vehicle.</span>
-    <span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">vehicle</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Vehicle'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
     <span class="nx">vehicle</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'BLUE'</span><span class="p">;</span>
     <span class="c1">// Add the vehicle to the vehicle asset registry.</span>
     <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">);</span>
@@ -738,26 +657,6 @@ method instead.</p>
 
 <p>Update all of the specified assets in this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicles that have come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">vehicle1</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">vehicle2</span><span class="p">;</span>
-<span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Modify the properties of the first vehicle.</span>
-    <span class="nx">vehicle1</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'PURPLE'</span><span class="p">;</span>
-    <span class="c1">// Modify the properties of the second vehicle.</span>
-    <span class="nx">vehicle2</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'ORANGE'</span><span class="p">;</span>
-    <span class="c1">// Update the vehicles in the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">updateAll</span><span class="p">([</span><span class="nx">vehicle1</span><span class="p">,</span> <span class="nx">vehicle2</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been updated in this asset registry. If the assets cannot be updated in this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -785,7 +684,7 @@ method instead.</p>
 <span class="kd">var</span> <span class="nx">vehicle1</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">vehicle2</span><span class="p">;</span>
 <span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -806,23 +705,6 @@ method instead.</p>
 
 <p>Update the specified asset in this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicle that has come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">vehicle</span><span class="p">;</span>
-<span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Modify the properties of the vehicle.</span>
-    <span class="nx">vehicle</span><span class="p">.</span><span class="nx">colour</span> <span class="o">=</span> <span class="s1">'PURPLE'</span><span class="p">;</span>
-    <span class="c1">// Update the vehicle in the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset have been updated in this asset registry. If the asset cannot be updated in this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -849,7 +731,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicle that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">vehicle</span><span class="p">;</span>
 <span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -868,23 +750,6 @@ method instead.</p>
 
 <p>Remove all of the specified assets from this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicles that have come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">vehicle1</span><span class="p">;</span>
-<span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Remove the vehicles from the vehicle asset registry. Note that</span>
-    <span class="c1">// one vehicle is specified as a vehicle instance, and the other</span>
-    <span class="c1">// vehicle is specified by the ID of the vehicle.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">removeAll</span><span class="p">([</span><span class="nx">vehicle1</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the assets have been removed from this asset registry. If the assets cannot be removed from this asset registry, or if the assets do not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -911,7 +776,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicles that have come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">vehicle1</span><span class="p">;</span>
 <span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -930,21 +795,6 @@ method instead.</p>
 
 <p>Remove the specified asset from this asset registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicle that has come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">vehicle</span><span class="p">;</span>
-<span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new asset instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Remove the vehicle from the vehicle asset registry.</span>
-    <span class="k">return</span> <span class="nx">vehicleAssetRegistry</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">vehicle</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the asset has been removed from this asset registry. If the asset cannot be removed from this asset registry, or if the asset does not exist in the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -971,7 +821,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing vehicle that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">vehicle</span><span class="p">;</span>
 <span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new asset instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>

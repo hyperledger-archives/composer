@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/unstable/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/unstable/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -679,16 +680,6 @@ The default cardstore is a filesystem based one that stores files in <code>~/.co
 <p>Connects and logs in to the Hyperledger Fabric using a named connection profile.
 The connection profile must exist in the profile store.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Connect to Hyperledger Fabric</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-  <span class="c1">// Connected.</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="parameters">Parameters</h3>
 
 <table><thead>
@@ -723,18 +714,6 @@ The connection profile must exist in the profile store.</p>
 
 <p>Disconnects this connection.securityContext</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Disconnect from a Business Network</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-  <span class="c1">// Connected</span>
-  <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">()</span>
-  <span class="c1">// and now disconnected.</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved when the connection is terminated.</p>
@@ -762,18 +741,6 @@ The connection profile must exist in the profile store.</p>
 <p>Installs a business network as chaincode to Hyperledger Fabric in preparation for the business network to be started.
 The connection must be connected for this method to succeed.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Install the Hyperledger Composer runtime</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'adminCard@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
-   <span class="c1">// Business network installed</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been installed</p>
@@ -820,21 +787,6 @@ The connection must be connected for this method to succeed.</p>
 
 <p>Starts a business network within the runtime previously installed to the Hyperledger Fabric with the same name as the business network to be started. The connection must be connected for this method to succeed.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Start a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-    <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">networkName</span><span class="p">,</span> <span class="nx">networkVersion</span><span class="p">,</span>
-             <span class="p">{</span> <span class="na">networkAdmins</span><span class="p">:</span>
-                 <span class="p">[</span> <span class="p">{</span><span class="na">userName</span> <span class="p">:</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="na">enrollmentSecret</span><span class="p">:</span><span class="s1">'adminpw'</span><span class="p">}</span> <span class="p">]</span>
-             <span class="p">}</span>
-
-    <span class="c1">// Business network definition is started</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add optional error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been deployed - with a MAP of cards key is name</p>
@@ -891,18 +843,6 @@ The connection must be connected for this method to succeed.</p>
 <p>Resets an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition must have been previously deployed.
 Note this will remove ALL the contents of the network registries, but not any system registries</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Resets a Business Network Definition</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="kd">let</span> <span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromArchive</span><span class="p">(</span><span class="nx">myArchive</span><span class="p">);</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">reset</span><span class="p">(</span><span class="s1">'network-name'</span><span class="p">)</span>
-   <span class="c1">// Business network data removed</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the business network has been updated.</p>
@@ -943,18 +883,6 @@ Note this will remove ALL the contents of the network registries, but not any sy
 
 <p>Upgrades an existing business network to a later level.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Upgrade the Hyperledger Composer runtime</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'PeerAdmin@hlfv1'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">upgrade</span><span class="p">(</span><span class="s1">'digitalproperty-network'</span><span class="p">,</span> <span class="s1">'2.0.0'</span><span class="p">);</span>
-
-   <span class="c1">// Business network definition upgraded</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-   <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the composer runtime has been upgraded, or rejected otherwise.</p>
@@ -1035,17 +963,6 @@ Note this will remove ALL the contents of the network registries, but not any sy
 
 <p>Test the connection to the runtime and verify that the version of the runtime is compatible with this level of the node.js module.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Test the connection to the runtime</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">();</span>
-    <span class="c1">// Connection has been tested</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be fufilled when the connection has been tested. The promise will be rejected if the version is incompatible.</p>
@@ -1071,17 +988,6 @@ Note this will remove ALL the contents of the network registries, but not any sy
 
 <p>Set the logging level of a business network. The connection must be connected for this method to succeed.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Set the logging level of a business network.</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">)</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">setLogLevel</span><span class="p">(</span><span class="s1">'DEBUG'</span><span class="p">)</span>
-   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'log level set to DEBUG'</span><span class="p">);</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves if successful.</p>
@@ -1121,17 +1027,6 @@ Note this will remove ALL the contents of the network registries, but not any sy
 
 <p>Get the current logging level of a business network. The connection must be connected for this method to succeed.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current logging level of a business network.</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kd">let</span> <span class="nx">currentLogLevel</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">getLogLevel</span><span class="p">();</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'current log level is '</span> <span class="o">+</span> <span class="nx">currentLogLevel</span><span class="p">);</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that resolves with the current logging level if successful.</p>
@@ -1157,19 +1052,6 @@ Note this will remove ALL the contents of the network registries, but not any sy
 
 <p>List all of the deployed business networks. The connection must be connected for this method to succeed.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// List all of the deployed business networks.</span>
-<span class="kd">let</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">();</span>
-<span class="k">try</span> <span class="p">{</span>
-   <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'userCard@network'</span><span class="p">);</span>
-   <span class="kd">let</span> <span class="nx">businessNetworks</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">list</span><span class="p">();</span>
-   <span class="nx">businessNetworks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">businessNetwork</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Deployed business network'</span><span class="p">,</span> <span class="nx">businessNetwork</span><span class="p">);</span>
-   <span class="p">});</span>
-<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
-    <span class="c1">// Add error handling here.</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of business network identifiers, or rejected with an error.</p>

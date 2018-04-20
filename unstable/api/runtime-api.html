@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/unstable/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/unstable/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/unstable/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/unstable/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/tutorials/tutorials"><b>Tutorials</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/unstable/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/unstable/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/unstable/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/unstable/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -452,10 +453,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get the factory. The factory can be used to create new instances of assets, participants, and transactions for storing in registries. The factory can also be used for creating relationships to assets, particpants, and transactions.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the factory.</span>
-<span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="runtime-factory">Factory</a></strong> - The factory.</p>
@@ -480,10 +477,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get the serializer. The serializer can be used to create new instances of assets, participants, and transactions from a JavaScript object, or to create a JavaScript object suitable for long-lived persistence.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the serializer.</span>
-<span class="kd">var</span> <span class="nx">ser</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">();</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-serializer">Serializer</a></strong> - The serializer.</p>
@@ -502,16 +495,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get an existing asset registry using the unique identifier of the asset registry. An asset registry can be used to retrieve, update, or delete existing assets, or create new assets.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Call methods on the vehicle asset registry.</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an <a href="runtime-assetregistry">AssetRegistry</a> instance representing the asset registry if it exists. If the asset registry does not exist, or the current user does not have access to the asset registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -536,7 +519,7 @@ properties or internal methods which could be accessed or misused.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the vehicle asset registry.</span>
-<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.Vehicle'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.Vehicle'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">vehicleAssetRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Call methods on the vehicle asset registry.</span>
   <span class="p">})</span>
@@ -550,16 +533,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get an existing participant registry using the unique identifier of the participant registry. An participant registry can be used to retrieve, update, or delete existing participants, or create new participants.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Call methods on the driver participant registry.</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an <a href="runtime-participantregistry">ParticipantRegistry</a> instance representing the participant registry if it exists. If the participant registry does not exist, or the current user does not have access to the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -584,7 +557,7 @@ properties or internal methods which could be accessed or misused.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driverParticipantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Call methods on the driver participant registry.</span>
   <span class="p">})</span>
@@ -598,20 +571,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get the current participant. The current participant is determined by the identity that was used to submit the current transaction.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current participant.</span>
-<span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
-<span class="c1">// Check to see if the current participant is a driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver'</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// Throw an error as the current participant is not a driver.</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not a driver'</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="c1">// Check to see if the current participant is the first driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// Throw an error as the current participant is not a driver.</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not the first driver'</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-resource">Resource</a></strong> - The current participant, or null if the transaction was submitted using an identity that does not map to a participant.</p>
@@ -624,12 +583,12 @@ properties or internal methods which could be accessed or misused.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current participant.</span>
 <span class="kd">var</span> <span class="nx">currentParticipant</span> <span class="o">=</span> <span class="nx">getCurrentParticipant</span><span class="p">();</span>
 <span class="c1">// Check to see if the current participant is a driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver'</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedType</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.example.Driver'</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Throw an error as the current participant is not a driver.</span>
   <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not a driver'</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">// Check to see if the current participant is the first driver.</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.acme.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">currentParticipant</span><span class="p">.</span><span class="nx">getFullyQualifiedIdentifier</span><span class="p">()</span> <span class="o">!==</span> <span class="s1">'org.example.Driver#DRIVER_1'</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Throw an error as the current participant is not a driver.</span>
   <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Current participant is not the first driver'</span><span class="p">);</span>
 <span class="p">}</span>
@@ -640,12 +599,6 @@ properties or internal methods which could be accessed or misused.</p>
 
 <p>Get the current identity. The current identity is the identity that was used to submit the current transaction.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the current identity.</span>
-<span class="kd">var</span> <span class="nx">currentIdentity</span> <span class="o">=</span> <span class="nx">getCurrentIdentity</span><span class="p">();</span>
-<span class="c1">// Get the certificate from the current identity.</span>
-<span class="kd">var</span> <span class="nx">certificate</span> <span class="o">=</span> <span class="nx">currentIdentity</span><span class="p">.</span><span class="nx">certificate</span><span class="p">;</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="common-resource">Resource</a></strong> - The current identity, or null if the transaction was submitted using an identity that does not map to a participant.</p>
@@ -731,20 +684,6 @@ properties or internal methods which could be accessed or misused.</p>
 <p>Build a query ready for later execution. The specified query string must be written in the Composer query language.
 This functionality is Blockchain platform dependent. For example, when a Composer business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be configured with the CouchDB database for the world state.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Build a query.</span>
-<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
-<span class="c1">// Execute the query.</span>
-<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Process each asset.</span>
-    <span class="p">});</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="runtime-query">Query</a></strong> - The built query, which can be passed in a call to query.</p>
@@ -769,7 +708,7 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Build a query.</span>
-<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">buildQuery</span><span class="p">(</span><span class="s1">'SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)'</span><span class="p">);</span>
 <span class="c1">// Execute the query.</span>
 <span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
@@ -788,18 +727,6 @@ This functionality is Blockchain platform dependent. For example, when a Compose
 <p>Execute a query defined in a Composer query file, or execute a query built with buildQuery.
 This functionality is Blockchain platform dependent. For example, when a Composer business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be configured with the CouchDB database for the world state.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Execute the query.</span>
-<span class="k">return</span> <span class="nx">query</span><span class="p">(</span><span class="s1">'Q1'</span><span class="p">,</span> <span class="p">{</span> <span class="na">inputValue</span><span class="p">:</span> <span class="s1">'blue'</span> <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assets</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">assets</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">asset</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Process each asset.</span>
-    <span class="p">});</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise that will be resolved with an array of <a href="common-resource">Resource</a> representing the resources returned by the query.</p>

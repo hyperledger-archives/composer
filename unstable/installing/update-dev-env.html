@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Create a Business Network Definition | Hyperledger Composer</title>
+    <title>Updating the development environment | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -174,7 +174,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Create a Business Network Definition</p>
+          <p>Updating the development environment</p>
           </div>
 
           <nav class="context-nav">
@@ -369,95 +369,51 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="create-a-business-network-definition">Create a Business Network Definition</h1>
+              <h1 id="updating-the-development-environment">Updating the development environment</h1>
 
-<p>A business network definition has the following layout:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">models/ (optional)
-lib/
-permissions.acl (optional)
-package.json
-README.md (optional)
-</code></pre></div>
-<p>The easiest way to create a new business network definition is to either <code>git clone</code> an example, or to use the Hyperledger Composer Yeoman generator to create a skeleton business network.</p>
+<p>Follow these instructions if you have already installed the Hyperledger Composer development tools, and you wish to update your installation to the latest version of Hyperledger Composer.</p>
 
-<h2 id="readme-md">README.md</h2>
+<h2 id="before-you-begin">Before you begin</h2>
 
-<p>A description of the purpose of the business network using the Markdown mark-up language.</p>
+<p>These instructions assume that you&#39;ve installed the development tools and used them before. If you have not installed the development tools before, then follow the instructions in <a href="./development-tools.html"><strong>Installing the development environment</strong></a>.</p>
 
-<h2 id="package-json">Package.json</h2>
+<h1 id="updating-components">Updating components</h1>
 
-<p>A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and <code>-</code>), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
-<a href="http://semver.org">Semantic Versioning</a> principles should be used when incrementing the version number.</p>
+<h3 id="step-1-update-the-cli-tools">Step 1: Update the CLI tools</h3>
 
-<p>The identifier of the network is formed from its name, the <code>-</code> character and its version number. A valid identifier (and example) is therefore <code>mybusinessnetwork-1.0.3</code>.</p>
-
-<p>The metadata for a business network definition is read from <code>package.json</code>, meaning that business network definitions may also be valid <code>npm</code> packages.</p>
-
-<h2 id="models">Models</h2>
-
-<p>The set of domain models for a business network definition define the types that are valid within the network and outside the network when it is integrated with external systems (for example systems that submit transactions to the network).</p>
-
-<p>A domain model may either be packaged within the business network definition (typically stored under the <code>models</code> directory), or may be declared in <code>package.json</code> as an external dependency. You refer to models via an npm dependency if you wanted to share them across business network definitions.</p>
-
-<h2 id="scripts">Scripts</h2>
-
-<p>The scripts for a business network definition are typically stored under the <code>lib</code> directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.</p>
-
-<h2 id="permissions-acl">Permissions.acl</h2>
-
-<p>The permissions for the business network expressed are expressed in an optional <code>permissions.acl</code> file.</p>
-
-<h1 id="cloning-an-example-business-network-definition">Cloning an Example Business Network Definition</h1>
-
-<p>The sample business network definitions are stored on GitHub at <code>https://github.com/hyperledger/composer-sample-networks</code>. You can <code>git clone</code> this repository to pull down all the sample networks. Each sample network is stored under the <code>packages</code> directory.</p>
-
-<h1 id="generating-a-business-network-definition">Generating a Business Network Definition</h1>
-
-<h2 id="generation">Generation</h2>
+<p>Any running instances of the CLI tools should be stopped before continuing. If you have any running instances of the Composer REST server, ensure that those instances are stopped before continuing. You can look for the process <code>composer-rest-server</code> if you are not sure if there are any running instances.</p>
 
 <ol>
-<li><code>yo hyperledger-composer</code></li>
+<li><p>Uninstall the currently installed version of all the CLI tools:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-cli composer-rest-server generator-hyperledger-composer
+</code></pre></div></li>
+<li><p>Install the latest version of all of the CLI tools:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli composer-rest-server generator-hyperledger-composer
+</code></pre></div></li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">? Please select the type of project: (Use arrow keys)
-❯ Angular
-  Business Network
-  Model
-</code></pre></div>
-<p>And select <code>Business Netork</code></p>
+
+<h3 id="step-2-update-playground">Step 2: Update Playground</h3>
+
+<p>If you have installed the browser app &quot;Playground&quot; on your development machine, you will need to update this as well. If you have any running instances of the browser app, ensure that those instances are stopped before continuing. You can look for the process <code>composer-playground</code> if you are not sure if there are any running instances.</p>
 
 <ol>
-<li>Answer all of the questions</li>
+<li><p>Uninstall the currently installed version of the browser app:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-playground
+</code></pre></div></li>
+<li><p>Install the latest version of the browser app:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
+</code></pre></div></li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer project generator
-? Please select the type of project: Business Network
-You can run this generator using: 'yo hyperledger-composer:businessnetwork'
-Welcome to the business network generator
-? Business network name: mynetwork
-? Description: This is my test network
-? Author name:  Mr Conga
-? Author email: conga@congazone.org
-? License: Apache-2
-? Namespace: org.conga
-   create package.json
-   create permissions.acl
-   create README.md
-   create models/org.conga.cto
-   create .eslintrc.yml
-   create features/sample.feature
-   create features/support/index.js
-   create test/logic.js
-   create lib/logic.js
-</code></pre></div>
-<p>This generates a skeleton business network with an <code>asset</code>, <code>participant</code> and <code>transaction</code> defined, as well as a <code>mocha</code> unit test.</p>
 
-<p>Also included, is a &#39;best practice&#39; eslint config file which defines sample linting rules for JS code.</p>
+<blockquote>
+<p>Congratulations, you have updated your development environment with the latest version of the development tools. You can now continue developing your blockchain applications using the latest features and bug fixes!</p>
+</blockquote>
 
-<h2 id="references">References</h2>
+<h2 id="what-next">What Next?</h2>
 
 <ul>
-<li><a href="../reference/cto_language.html"><strong>Modeling Language</strong></a></li>
-<li><a href="../reference/acl_language.html"><strong>Access Control Language</strong></a></li>
-<li><a href="../reference/js_scripts.html"><strong>Transaction Processor Functions</strong></a></li>
+<li>Learn how to use the web app UI with the <a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
+<li>Learn how to use the CLI and VSCode tools with the <a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
 </ul>
 
             

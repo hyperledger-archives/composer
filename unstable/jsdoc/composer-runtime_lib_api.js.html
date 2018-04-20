@@ -247,7 +247,7 @@ class Api {
          * existing assets, or create new assets.
          * @example
          * // Get the vehicle asset registry.
-         * return getAssetRegistry('org.acme.Vehicle')
+         * return getAssetRegistry('org.example.Vehicle')
          *   .then(function (vehicleAssetRegistry) {
          *     // Call methods on the vehicle asset registry.
          *   })
@@ -281,7 +281,7 @@ class Api {
          * existing participants, or create new participants.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (driverParticipantRegistry) {
          *     // Call methods on the driver participant registry.
          *   })
@@ -316,12 +316,12 @@ class Api {
          * // Get the current participant.
          * var currentParticipant = getCurrentParticipant();
          * // Check to see if the current participant is a driver.
-         * if (currentParticipant.getFullyQualifiedType() !== 'org.acme.Driver') {
+         * if (currentParticipant.getFullyQualifiedType() !== 'org.example.Driver') {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not a driver');
          * }
          * // Check to see if the current participant is the first driver.
-         * if (currentParticipant.getFullyQualifiedIdentifier() !== 'org.acme.Driver#DRIVER_1') {
+         * if (currentParticipant.getFullyQualifiedIdentifier() !== 'org.example.Driver#DRIVER_1') {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not the first driver');
          * }
@@ -415,7 +415,7 @@ class Api {
          * configured with the CouchDB database for the world state.
          * @example
          * // Build a query.
-         * var query = buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
+         * var query = buildQuery('SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)');
          * // Execute the query.
          * return query(query, { inputValue: 'blue' })
          *   .then(function (assets) {

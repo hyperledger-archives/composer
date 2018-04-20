@@ -176,7 +176,7 @@ class Factory {
          * // Get the factory.
          * var factory = getFactory();
          * // Create a new vehicle.
-         * var vehicle = factory.newResource('org.acme', 'Vehicle', 'VEHICLE_1');
+         * var vehicle = factory.newResource('org.example', 'Vehicle', 'VEHICLE_1');
          * // Set the properties of the new vehicle.
          * vehicle.colour = 'BLUE';
          * vehicle.manufacturer = 'Toyota';
@@ -196,16 +196,16 @@ class Factory {
         /**
          * Create a new relationship with a given namespace, type, and identifier.
          * A relationship is a typed pointer to an instance. For example, a new
-         * relationship with namespace 'org.acme', type 'Vehicle' and identifier
+         * relationship with namespace 'org.example', type 'Vehicle' and identifier
          * 'VEHICLE_1' creates` a pointer that points at an existing instance of
-         * org.acme.Vehicle with the identifier 'VEHICLE_1'.
+         * org.example.Vehicle with the identifier 'VEHICLE_1'.
          * @example
          * // The existing driver of the vehicle.
          * var driver;
          * // Get the factory.
          * var factory = getFactory();
          * // Create a new relationship to the vehicle.
-         * var vehicle = factory.newRelationship('org.acme', 'Vehicle', 'VEHICLE_1');
+         * var vehicle = factory.newRelationship('org.example', 'Vehicle', 'VEHICLE_1');
          * // Set the relationship as the value of the vehicle property of the driver.
          * driver.vehicle = vehicle;
          * @public
@@ -230,7 +230,7 @@ class Factory {
          * // Get the factory.
          * var factory = getFactory();
          * // Create a new relationship to the vehicle.
-         * var record = factory.newConcept('org.acme', 'Record');
+         * var record = factory.newConcept('org.example', 'Record');
          * // Add the record to the persons array of records.
          * person.records.push(record);
          * @public
