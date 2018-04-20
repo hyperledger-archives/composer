@@ -24,31 +24,33 @@ These instructions assume that you've not installed the tools and used them befo
 
 # Installing components
 
+In the following sections, the `npm` commands to install the tools must specify the specific release that you wish to install (e.g. 0.16.6).  Please replace the `x` in the sample commands with your chosen release patch number.
+
 ### Step 1: Install the CLI tools
 There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
 
 1. Essential CLI tools:
 
-        npm install -g composer-cli
+        npm install -g composer-cli@0.16.x
 
 2. Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:
 
-        npm install -g composer-rest-server
+        npm install -g composer-rest-server@0.16.x
 
 3. Useful utility for generating application assets:
 
-        npm install -g generator-hyperledger-composer
+        npm install -g generator-hyperledger-composer@0.16.x
 
 4. Yeoman is a tool for generating applications, which utilises `generator-hyperledger-composer`:
 
-        npm install -g yo
+        npm install -g yo@0.16.x
 
 ### Step 2: Install Playground
 If you've already tried {{site.data.conrefs.composer_short}} online, you'll have seen the browser app "Playground".  You can run this locally on your development machine too, giving you a UI for viewing and demonstrating your business networks.
 
 5. Browser app for simple editing and testing Business Networks:
 
-        npm install -g composer-playground
+        npm install -g composer-playground@0.16.x
 
 ### Step 3: Set up your IDE
 Whilst the browser app _can_ be used to work on your Business Network code, most users will prefer to work in an IDE.  Our favourite is `VSCode`, because a {{site.data.conrefs.composer_short}} extension is available.
@@ -69,9 +71,13 @@ This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy you
 
       A `tar.gz` is also available if you prefer: just replace the `.zip` file with `fabric-dev-servers.tar.gz1` and the `unzip` command with a `tar xvzf` command in the above snippet.
 
+9. Set the environment variable to ensure that the correct version of Fabric is used throughout the tutorials
 
-9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
+        export FABRIC_VERSION=hlfv1
 
+10. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
+
+        export FABRIC_VERSION=hlfv1
         cd ~/fabric-tools
         ./downloadFabric.sh
 
@@ -81,7 +87,7 @@ Read on to learn some of the most common things you'll do with this environment 
 # Controlling your dev environment
 
 ## Starting and stopping {{site.data.conrefs.hlf_full}}
-You control your runtime using a set of scripts which you'll find in `~/fabric-tools` if you followed the suggested defaults.  
+You control your runtime using a set of scripts which you'll find in `~/fabric-tools` if you followed the suggested defaults.
 
 The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
 
@@ -108,10 +114,8 @@ You should see the `PeerAdmin@hlfv1` Card you created with the `createPeerAdminC
 
 ## What Next?
 
-- Learn how to use the web app UI with the [Playground Tutorial](../tutorials/playground-tutorial.html)
 - Learn how to use the CLI and VSCode tools with the [Developer Tutorial](../tutorials/developer-tutorial.html)
-
-
+ 
 
 <a name="appendix"></a>
 # Appendix: destroy a previous setup

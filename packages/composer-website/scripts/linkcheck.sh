@@ -4,14 +4,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 cd ${DIR}/jekylldocs
 
-if [ "$1" == "latest" ]; then
-    jekyll serve --config _config.yml,_latest.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "unstable" ]; then
-    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
-elif [ "$1" == "next" ]; then
-    jekyll serve --config _config.yml,_next.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
-elif [ "$1" == "next-unstable" ]; then
-    jekyll serve --config _config.yml,_next-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
+if [ "$1" == "v0.16" ]; then
+    jekyll serve --config _config.yml,_v0.16.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
+elif [ "$1" == "v0.16-unstable" ]; then
+    jekyll serve --config _config.yml,_v0.16-unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
 else
    echo "Script error"
    exit 1

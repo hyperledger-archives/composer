@@ -35,6 +35,7 @@ Let's get started!
 
 If you have installed the development environment, you will need to first stop the {{site.data.conrefs.hlf_full}} provided by the development environment:
 
+    export FABRIC_VERSION=hlfv1
     cd ~/fabric-tools
     ./stopFabric.sh
     ./teardownFabric.sh
