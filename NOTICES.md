@@ -57,7 +57,6 @@ The Program includes some or all of the following that IBM obtained under the MI
 - Thenify-all - Copyright (c) 2014 Jonathan Ong me@jongleberry.com
 - Thenify - Copyright (c) 2014-2016 Jonathan Ong me@jongleberry.com and contributors
 - node-fs-extra - Copyright (c) 2011-2017 JP Richardson
-- node-homedir - Copyright (c) 2014 Wil Moore III
 - npm-paths - Copyright (c) 2015-2016, Jon Schlinkert.
 - Prettyjson - Copyright (c) 2011 Rafael de Oleza <rafeca@gmail.com>
 - node-sanitize-filename - Copyright (C) 2004 Sam Hocevar \<sam@hocevar.net>

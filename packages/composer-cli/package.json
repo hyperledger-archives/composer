@@ -51,7 +51,6 @@
     "composer-report": "0.19.2",
     "composer-wallet-filesystem": "0.19.2",
     "composer-wallet-inmemory": "0.19.2",
-    "homedir": "0.6.0",
     "js-yaml": "3.10.0",
     "mkdirp": "0.5.1",
     "moment": "2.19.3",
