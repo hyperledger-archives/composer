@@ -101,18 +101,8 @@ $ npm install
 You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
 
-For example, in order to run Playground UI locally you can run:
-
-    $ npm start
-
-on composer-playground-api and composer-playground packages in turn followed by visiting:
-
-    localhost:3000 
-    
-from your browser.
-
-Alternatively, you can execute npm commands across all of the packages at once using
-Lerna:
+Alternatively, you can execute npm commands across all of the packages from the top level of the Composer
+repository, for example:
 
     $ npm test
 
