@@ -70,13 +70,6 @@ _{% if method.return.type %}{{method.return.type}} {% endif %}{{method.name}}( {
 {{l}}
 {% endfor %}
 
-{% if method.example %}
-### Example
-```javascript
-{{method.example}}
-```
-{% endif %}
-
 {% if method.return %}
 ### Returns
 **{@link {% if method.return.fqntype %}{{method.return.fqntype}}{% else %}{{method.return.type}}{% endif %}}** - {% for l in method.return.description -%}
@@ -140,13 +133,6 @@ _{{method.returnType}} {{method.name}}( {% for args in method.parameters %}{% if
 {% for l in method.description -%}
 {{l}}
 {% endfor %}
-
-{% if method.example %}
-### Example
-```javascript
-{{method.example}}
-```
-{% endif %}
 
 {% if method.return %}
 ### Returns

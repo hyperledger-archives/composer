@@ -12,18 +12,18 @@
  * limitations under the License.
  */
 
-'use strict';
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
 
-const clisteps = require('./lib/clisteps');
-const reststeps = require('./lib/reststeps');
-const hooks = require('./lib/hooks');
-const tutorialsteps = require('./lib/tutorialsteps');
-const generatorsteps = require('./lib/generatorsteps');
-
-module.exports = function () {
-    clisteps.call(this);
-    reststeps.call(this);
-    hooks.call(this);
-    tutorialsteps.call(this);
-    generatorsteps.call(this);
-};
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
