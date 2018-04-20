@@ -517,7 +517,7 @@ class QueryCompiler {
 
         const eliminateAND = function (lhs, rhs) {
             const combined = {};
-            if(typeof lhs === 'object' && typeof rhs === 'object') {
+            if(typeof lhs === 'object' && typeof rhs === 'object' && !(lhs.hasOwnProperty('$or') && rhs.hasOwnProperty('$or'))) {
                 // put all the selectors in the lhs in the combined selector
                 const leftProperties = Object.getOwnPropertyDescriptors(lhs);
                 const rightProperties = Object.getOwnPropertyDescriptors(rhs);
