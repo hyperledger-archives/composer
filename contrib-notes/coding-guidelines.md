@@ -124,6 +124,15 @@ Hyperledger Composer tests use an assertion library called [chai](http://chaijs.
 
 The Hyperledger Composer project uses a code coverage tool called [Istanbul](https://gotwarlost.github.io/istanbul/) to ensure that all the code is tested, including statements, branches, and functions. This helps to improve the quality of the Hyperledger Composer tests. The output of Istanbul can be used to see where any specific tests need to be added to ensure complete code coverage.
 
+### How to run a local development version of the Playground UI
+In order to run Playground UI locally you can:
+- Run `scripts/devStart.sh` in the _composer-playground-api_ package; followed by
+- Run `npm start` in the _composer-playground_ package
+- Visit `localhost:3000` from your browser
+
+The `devStart.sh` script above sets up a local (Verdaccio) npm registry and populates it with development versions of
+Composer packages required for deployment to Fabric to work in a local development environment.
+
 ### How to run local code inside a real fabric
 When fabric builds the image for the chaincode container, it does this by doing an npm install against the package.json
 of the business network archive. The install process adds required dependencies on Composer packages to the package.json,
@@ -176,8 +185,8 @@ modify the package.json and zip up again to create the BNA.
 A business network archive containing package dependencies can be installed to Fabric directly using the
 `composer network install` command. The following provides steps by example on how to do this.
 
-- Ensure you have the latest fabric-dev-servers package and have set your fabric runtime to V1.1 `export FABRIC_VERSION=hlfv11`
-- Start the Fabric in development mode using `./startFabric.sh`
+- Ensure you have the latest fabric-dev-servers package
+- Start the Fabric using `./startFabric.sh`
 - Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh` 
 - Install your pre-prepared business network archive
 ```
