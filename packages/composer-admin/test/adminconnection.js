@@ -22,7 +22,7 @@ const IdCard = require('composer-common').IdCard;
 const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
+
 
 const version = require('../package.json').version;
 
@@ -496,14 +496,14 @@ describe('AdminConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version : version
             })));
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
@@ -545,7 +545,7 @@ describe('AdminConnection', () => {
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
-                    sinon.assert.calledOnce(Util.securityCheck);
+                    sinon.assert.calledTwice(Util.securityCheck);
                 });
         });
 
@@ -556,7 +556,7 @@ describe('AdminConnection', () => {
             return adminConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 

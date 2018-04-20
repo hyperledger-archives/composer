@@ -20,7 +20,6 @@ const Factory = require('composer-common').Factory;
 const Logger = require('composer-common').Logger;
 const ModelManager = require('composer-common').ModelManager;
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
 const IdCard = require('composer-common').IdCard;
 const Serializer = require('composer-common').Serializer;
 
@@ -624,16 +623,13 @@ class AdminConnection {
         LOG.entry(method);
         const json = {
             $class : 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId : uuid.v4(),
             timestamp : new Date().toISOString()
         };
-        return Util.createTransactionId(this.securityContext)
-            .then((id)=>{
-                json.transactionId = id.idStr;
-                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)], { transactionId: id.id });
-            }).then(() => {
+        return Util.submitTransaction(this.securityContext,json)
+            .then(() => {
                 LOG.exit(method);
             });
+
     }
 
     /**

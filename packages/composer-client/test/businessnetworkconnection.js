@@ -45,7 +45,7 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 
-describe('BusinessNetworkConnection', () => {
+describe.only('BusinessNetworkConnection', () => {
 
     let sandbox;
     let clock;
@@ -813,10 +813,17 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
+            if (tx instanceof Resource){
+                console.log('resource');
+            } else {
+                console.log('not a resource');
+            }
             delete tx.$identifier;
-
-            // Stub the UUID generator.
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            if (tx instanceof Resource){
+                console.log('resource');
+            } else {
+                console.log('not a resource');
+            }
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
@@ -1044,7 +1051,10 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version : version
             })));
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()

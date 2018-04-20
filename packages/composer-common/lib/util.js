@@ -13,14 +13,15 @@
  */
 
 'use strict';
-
+const Resource = require('composer-common').Resource;
 const Globalize = require('./globalize');
 const os = require('os');
 const path = require('path');
 const SecurityContext = require('./securitycontext');
 const SecurityException = require('./securityexception');
 const uuid = require('uuid');
-
+const Logger = require('composer-common').Logger;
+const LOG = Logger.getLog('util');
 /**
  * Internal Utility Class
  * <p><a href="./diagrams-private/util.svg"><img src="./diagrams-private/util.svg" style="height:100%;"/></a></p>
@@ -94,6 +95,36 @@ class Util {
         });
 
         return securityContext.getConnection().invokeChainCode(securityContext, functionName, args, options);
+    }
+
+    /**
+     * Takes a json structure of a transaction, and processes this for transaction id
+     * Passes it on to the invokeChainCode fn
+     *
+     * @param {SecurityContext} securityContext - The user's security context
+     * @param {resource} json - the transaction
+     * @param {string} functionName - The name of the function to call default is submitTransaction.
+     */
+    static async submitTransaction(securityContext,  transaction, serializer, functionName = 'submitTransaction'){
+        Util.securityCheck(securityContext);
+        const method='submitTransaction';
+        LOG.entry(method);
+
+        let txId = await Util.createTransactionId(this.securityContext);
+        const u = require('util');        let json;
+        if (transaction instanceof Resource){
+            transaction.setIdentifier(txId.idStr);
+            json = serializer.toJSON(transaction);
+
+        } else {
+            transaction.transactionId = txId.idStr;
+            json=transaction;
+        }
+        console.log(json);
+
+        await Util.invokeChainCode(securityContext, functionName, [JSON.stringify(json)], { transactionId: txId.id });
+
+        LOG.exit(method);
     }
 
     /**
