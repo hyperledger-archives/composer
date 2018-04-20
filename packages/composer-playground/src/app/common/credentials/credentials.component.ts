@@ -27,7 +27,6 @@ export class CredentialsComponent implements AfterViewInit {
     @ViewChild('credentialsForm') credentialsForm;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.pem'];
 
     private userId: string = null;
     private userSecret: string = null;
@@ -120,24 +119,18 @@ export class CredentialsComponent implements AfterViewInit {
         this.expandInput = false;
     }
 
-    fileAccepted(file: File) {
+    fileAccepted(file: File, type: string) {
         this.fileType = file.name.substr(file.name.lastIndexOf('.') + 1);
         this.getDataBuffer(file)
             .then((data) => {
-                switch (this.fileType) {
-                    case 'pem':
-                        this.expandInput = true;
-                        this.certType = data.toString().substring(0, 27);
-                        if (this.certType === '-----BEGIN CERTIFICATE-----') {
-                            this.setPublicCert(data.toString());
-                        } else if (this.certType === '-----BEGIN PRIVATE KEY-----') {
-                            this.setPrivateCert(data.toString());
-                        } else {
-                            throw new Error('Certificate content in unexpected format.');
-                        }
-                        break;
-                    default:
-                        throw new Error('Unexpected file type: ' + this.fileType);
+                this.expandInput = true;
+                this.certType = data.toString().substring(0, 27);
+                if (this.certType === '-----BEGIN CERTIFICATE-----' && (type === 'public' || !type)) {
+                    this.setPublicCert(data.toString());
+                } else if (this.certType === '-----BEGIN PRIVATE KEY-----' && (type === 'private' || !type)) {
+                    this.setPrivateCert(data.toString());
+                } else {
+                    throw new Error('Certificate content in unexpected format.');
                 }
                 this.expandInput = false;
             })
