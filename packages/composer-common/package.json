@@ -62,7 +62,6 @@
     "esprima": "3.1.2",
     "fs-extra": "1.0.0",
     "fs-promise": "1.0.0",
-    "homedir": "0.6.0",
     "js-yaml": "3.10.0",
     "jsrsasign": "8.0.3",
     "jszip": "3.1.3",

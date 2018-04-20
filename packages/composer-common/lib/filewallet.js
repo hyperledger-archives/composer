@@ -15,12 +15,12 @@
 'use strict';
 
 const fs = require('fs');
-const homedir = require('homedir');
 const Logger = require('./log/logger');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const thenify = require('thenify');
 const thenifyAll = require('thenify-all');
+const composerUtil = require('./util');
 const Wallet = require('./wallet');
 
 const LOG = Logger.getLog('FileWallet');
@@ -39,7 +39,7 @@ class FileWallet extends Wallet {
      * @return {string} The current home directory.
      */
     static getHomeDirectory() {
-        return homedir();
+        return composerUtil.homeDirectory();
     }
 
     /**
@@ -58,12 +58,7 @@ class FileWallet extends Wallet {
         options = options || {};
         this.directory = options.directory;
         if (!this.directory) {
-            let h = FileWallet.getHomeDirectory();
-            if (h) {
-                this.directory = path.resolve(h, '.composer-credentials');
-            } else {
-                this.directory = path.resolve('/', '.composer-credentials');
-            }
+            this.directory = path.resolve(FileWallet.getHomeDirectory(), '.composer-credentials');
             LOG.debug(method, 'Generated directory', this.directory);
         }
 
