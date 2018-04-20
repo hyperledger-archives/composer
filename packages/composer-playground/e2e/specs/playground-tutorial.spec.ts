@@ -320,7 +320,7 @@ describe('Playground Tutorial Define', (() => {
                 })
                 .then((header) => {
                     expect(header).to.be.an('array').lengthOf(1);
-                    expect(header[0]).to.deep.equal('Participant registry for org.acme.mynetwork.Trader');
+                    expect(header[0]).to.deep.equal('Participant registry for org.example.mynetwork.Trader');
                 })
                 .then(() => {
                     return Test.retrieveParticipantTypes();
@@ -448,7 +448,7 @@ describe('Playground Tutorial Define', (() => {
                             let asset = assets[0];
 
                             let data = JSON.parse(asset['data'].toString());
-                            expect(data['owner']).to.deep.equal('resource:org.acme.mynetwork.Trader#TRADER2');
+                            expect(data['owner']).to.deep.equal('resource:org.example.mynetwork.Trader#TRADER2');
                         })
                         .catch((err) => {
                             fail(err);
