@@ -28,6 +28,8 @@ const { URL } = require('url');
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
+let businessNetworkName;
+let businessNetworkVersion;
 let businessNetworkIdentifier;
 let modelManager;
 let assetList = [];
@@ -384,6 +386,8 @@ module.exports = yeoman.Base.extend({
 
         let createdApp = new Promise((resolve, reject) => {
 
+            businessNetworkName = businessNetworkDefinition.getName();
+            businessNetworkVersion = businessNetworkDefinition.getVersion();
             businessNetworkIdentifier = businessNetworkDefinition.getIdentifier();
             introspector = businessNetworkDefinition.getIntrospector();
 
@@ -899,6 +903,8 @@ module.exports = yeoman.Base.extend({
             authorName: this.authorName,
             authorEmail: this.authorEmail,
             license: this.license,
+            businessNetworkName: businessNetworkName,
+            businessNetworkVersion: businessNetworkVersion,
             businessNetworkIdentifier: businessNetworkIdentifier,
             assetList: assetList,
             assetServiceNames: assetServiceNames,

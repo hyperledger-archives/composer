@@ -134,6 +134,16 @@ describe('hyperledger-composer:angular for CarAuction-Network running against a 
         });
     });
 
+    beforeEach(() => {
+        delete process.env.REST_SERVER_URL;
+        delete process.env.REST_SERVER_URLS;
+    });
+
+    afterEach(() => {
+        delete process.env.REST_SERVER_URL;
+        delete process.env.REST_SERVER_URLS;
+    });
+
     it('creates typescript classes', function(){
         assert.file(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts');
         assert.fileContent(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts',
@@ -329,6 +339,92 @@ import {Event} from './org.hyperledger.composer.system';
 
     it('should create a suitable proxy.conf.js file', () => {
         const filePath = tmpDir + '/CarAuction-Network/proxy.conf.js';
+        delete require.cache[require.resolve(filePath)];
+        const proxyConfig = require(filePath);
+        assert(typeof proxyConfig[1].bypass === 'function', 'no bypass function');
+        delete proxyConfig[1].bypass;
+        assert.deepStrictEqual(proxyConfig, [
+            {
+                changeOrigin: true,
+                context: [
+                    '/auth',
+                    '/api'
+                ],
+                secure: true,
+                target: 'https://dogescoolrestserver.dogecorp.com:3000'
+            },
+            {
+                changeOrigin: true,
+                context: '/',
+                secure: true,
+                target: 'https://dogescoolrestserver.dogecorp.com:3000',
+                ws: true
+            }
+        ], 'proxy configuration is wrong');
+    });
+
+    it('should create a suitable proxy.conf.js file that uses a REST server URL from the environment', () => {
+        process.env.REST_SERVER_URL = 'https://doges-other-rest-server.dogecorp.com:9999';
+        const filePath = tmpDir + '/CarAuction-Network/proxy.conf.js';
+        delete require.cache[require.resolve(filePath)];
+        const proxyConfig = require(filePath);
+        assert(typeof proxyConfig[1].bypass === 'function', 'no bypass function');
+        delete proxyConfig[1].bypass;
+        assert.deepStrictEqual(proxyConfig, [
+            {
+                changeOrigin: true,
+                context: [
+                    '/auth',
+                    '/api'
+                ],
+                secure: true,
+                target: 'https://doges-other-rest-server.dogecorp.com:9999'
+            },
+            {
+                changeOrigin: true,
+                context: '/',
+                secure: true,
+                target: 'https://doges-other-rest-server.dogecorp.com:9999',
+                ws: true
+            }
+        ], 'proxy configuration is wrong');
+    });
+
+    it('should create a suitable proxy.conf.js file that uses a REST server URL from the environment for this business network', () => {
+        process.env.REST_SERVER_URLS = JSON.stringify({
+            'carauction-network': 'https://doges-other-rest-server.dogecorp.com:9999'
+        });
+        const filePath = tmpDir + '/CarAuction-Network/proxy.conf.js';
+        delete require.cache[require.resolve(filePath)];
+        const proxyConfig = require(filePath);
+        assert(typeof proxyConfig[1].bypass === 'function', 'no bypass function');
+        delete proxyConfig[1].bypass;
+        assert.deepStrictEqual(proxyConfig, [
+            {
+                changeOrigin: true,
+                context: [
+                    '/auth',
+                    '/api'
+                ],
+                secure: true,
+                target: 'https://doges-other-rest-server.dogecorp.com:9999'
+            },
+            {
+                changeOrigin: true,
+                context: '/',
+                secure: true,
+                target: 'https://doges-other-rest-server.dogecorp.com:9999',
+                ws: true
+            }
+        ], 'proxy configuration is wrong');
+    });
+
+    it('should create a suitable proxy.conf.js file that ignores a REST server URL from the environment for another business network', () => {
+        process.env.REST_SERVER_URLS = JSON.stringify({
+            'someother-network': 'https://doges-other-rest-server.dogecorp.com:9999'
+        });
+        const filePath = tmpDir + '/CarAuction-Network/proxy.conf.js';
+        delete require.cache[require.resolve(filePath)];
         const proxyConfig = require(filePath);
         assert(typeof proxyConfig[1].bypass === 'function', 'no bypass function');
         delete proxyConfig[1].bypass;
