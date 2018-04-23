@@ -186,3 +186,9 @@ transaction AdvancedInvokeChainCodeTransaction {
     o String expectedValue
 }
 
+transaction AdvancedInvokeChainCodeError {
+    o String channel
+    o String chainCodeName
+}
+
+
