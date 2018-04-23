@@ -35,84 +35,80 @@ describe('Util', () => {
     });
 
     describe('#getConnectionSettings', () => {
+        /**
+         * Get all questions from the interactive start up
+         * @param {String} name question name
+         * @return {Promise<List>} a list of questions
+         */
+        async function getAllQuestions() {
+            await Util.getConnectionSettings();
+            return inquirer.prompt.args[0][0]; // First call, first argument.
+        }
 
-        it('should interactively ask for the connection settings', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const names = questions.map((question) => {
-                        return question.name;
-                    });
-                    names.should.deep.equal(['card', 'namespaces', 'apikey', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
-                });
+        /**
+         * Get a named question from the interactive start up
+         * @param {String} name question name
+         * @return {Promise} a question
+         */
+        async function getQuestion(name) {
+            const questions = await getAllQuestions();
+            return questions.find((question) => question.name === name);
+        }
+
+        it('should call inquirer.prompt()', async () => {
+            await Util.getConnectionSettings();
+            sinon.assert.calledOnce(inquirer.prompt);
         });
 
-        it('should validate the length of the business network card', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'card';
-                    });
-                    question.validate('').should.match(/Please enter/);
-                    question.validate('admin@org-acme-biznet').should.be.true;
-                });
+        it('should interactively ask for the connection settings', async () => {
+            const questions = await getAllQuestions();
+            const names = questions.map((question) => question.name);
+            names.should.include.members(['card', 'namespaces', 'apikey', 'authentication', 'multiuser', 'websockets', 'tls', 'tlscert', 'tlskey']);
         });
 
-        it('should return the apikey if specified', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'apikey';
-                    });
-                    question.when({ apikey: false }).should.be.false;
-                    question.when({ apikey: true }).should.be.true;
-                });
+        it('should validate the length of the business network card', async () => {
+            const question = await getQuestion('card');
+            question.validate('').should.match(/Please enter/);
+            question.validate('admin@org-acme-biznet').should.be.true;
         });
 
-        it('should only enable the multiuser question if TLS enabled', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'multiuser';
-                    });
-                    question.when({ authentication: false }).should.be.false;
-                    question.when({ authentication: true }).should.be.true;
-                });
+        it('should ask for an API key if API key enabled', async () => {
+            const question = await getQuestion('apikey');
+            question.when({ useApikey: true }).should.be.true;
         });
 
-        it('should only enable the TLS certificate question if TLS enabled', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'tlscert';
-                    });
-                    question.when({ tls: false }).should.be.false;
-                    question.when({ tls: true }).should.be.true;
-                });
+        it('should not ask for an API key if API key not enabled', async () => {
+            const question = await getQuestion('apikey');
+            question.when({ useApikey: false }).should.be.false;
         });
 
-        it('should only enable the TLS key question if TLS enabled', () => {
-            return Util.getConnectionSettings()
-                .then(() => {
-                    sinon.assert.calledOnce(inquirer.prompt);
-                    const questions = inquirer.prompt.args[0][0]; // First call, first argument.
-                    const question = questions.find((question) => {
-                        return question.name === 'tlskey';
-                    });
-                    question.when({ tls: false }).should.be.false;
-                    question.when({ tls: true }).should.be.true;
-                });
+        it('should fail validation for empty API key', async () => {
+            const question = await getQuestion('apikey');
+            question.validate('').should.match(/Please enter/);
         });
 
+        it('should pass validation for non-empty API key', async () => {
+            const question = await getQuestion('apikey');
+            question.validate('xyz').should.be.true;
+        });
+
+        it('should only enable the multiuser question if TLS enabled', async () => {
+            const question = await getQuestion('multiuser');
+            question.when({ authentication: false }).should.be.false;
+            question.when({ authentication: true }).should.be.true;
+        });
+
+        it('should only enable the TLS certificate question if TLS enabled', async () => {
+            const question = await getQuestion('tlscert');
+            question.when({ tls: false }).should.be.false;
+            question.when({ tls: true }).should.be.true;
+        });
+
+        it('should only enable the TLS key question if TLS enabled', async () => {
+            const question = await getQuestion('tlskey');
+            question.when({ tls: false }).should.be.false;
+            question.when({ tls: true }).should.be.true;
+        });
     });
 
     describe('#generateKey', () => {
