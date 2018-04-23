@@ -22,9 +22,10 @@ exports.config = {
     framework: 'jasmine',
     directConnect: true,
     baseUrl: 'http://127.0.0.1:3001',
-    specs: ['./e2e/specs/welcome.spec.ts',
+    specs: [/*'./e2e/specs/welcome.spec.ts',
         './e2e/specs/playground-tutorial.spec.ts',
-        './e2e/specs/identity.spec.ts'
+        './e2e/specs/identity.spec.ts',*/
+        './e2e/specs/login.spec.ts'
     ],
     capabilities: {
         'browserName': 'chrome',
