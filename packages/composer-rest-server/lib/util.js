@@ -59,13 +59,17 @@ class Util {
                 default: 'always'
             },
             {
+                name: 'useApikey',
+                type: 'confirm',
+                message: 'Specify if you want to use an API key to secure the REST API:',
+                default: false
+            },
+            {
                 name: 'apikey',
-                type: 'string',
-                message: 'Enter the API key to access the REST API:',
-                default: undefined,
-                when: (answers) => {
-                    return answers.apikey;
-                }
+                type: 'input',
+                message: 'Enter the API key required to access the REST API:',
+                validate: (value) => value ? true : 'Please enter a value for the API key',
+                when: (answers) => answers.useApikey
             },
             {
                 name: 'authentication',
@@ -96,7 +100,7 @@ class Util {
             },
             {
                 name: 'tlscert',
-                type: 'string',
+                type: 'input',
                 message: 'Enter the path to the file containing the TLS certificate:',
                 default: defaultTlsCertificate,
                 when: (answers) => {
@@ -105,7 +109,7 @@ class Util {
             },
             {
                 name: 'tlskey',
-                type: 'string',
+                type: 'input',
                 message: 'Enter the path to the file containing the TLS private key:',
                 default: defaultTlsKey,
                 when: (answers) => {
