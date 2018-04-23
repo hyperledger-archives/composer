@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/latest/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/latest/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -459,6 +460,13 @@ ga('send', 'pageview');
 
 <p>For example:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_KEY=/tmp/key.pem
+</code></pre></div></li>
+<li><p><code>COMPOSER_APIKEY</code></p>
+<div class="highlight"><pre><code class="language-" data-lang="">You can use the `COMPOSER_APIKEY` environment variable to specify the API key the server should accept for each request as a header parameter `x-api-key`.
+
+For example:
+
+COMPOSER_APIKEY=REPLACE_WITH_YOUR_API_KEY
 </code></pre></div></li>
 </ol>
 

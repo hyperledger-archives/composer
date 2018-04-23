@@ -161,31 +161,7 @@ class DataCollection {
      * @return {Promise} A promise that will be resolved with an array of objects,
      * or rejected with an error.
      */
-    getAll() {
-        return new Promise((resolve, reject) => {
-            this._getAll((error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(result);
-            });
-        });
-    }
-
-    /**
-     * @callback getAllCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {Object[]} objects The objects in the collection.
-     */
-
-    /**
-     * Get all of the objects in this collection.
-     * @abstract
-     * @private
-     * @param {getAllCallback} callback The callback function to call when complete.
-     */
-    _getAll(callback) {
+    async getAll() {
         throw new Error('abstract function called');
     }
 
@@ -196,32 +172,7 @@ class DataCollection {
      * @return {Promise} A promise that will be resolved with an object, or rejected
      * with an error.
      */
-    get(id) {
-        return new Promise((resolve, reject) => {
-            this._get(id, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(result);
-            });
-        });
-    }
-
-    /**
-     * @callback getCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {Object} object The object in the collection.
-     */
-
-    /**
-     * Get the specified object in this collection.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the object.
-     * @param {getCallback} callback The callback function to call when complete.
-     */
-    _get(id, callback) {
+    async get(id) {
         throw new Error('abstract function called');
     }
 
@@ -233,32 +184,7 @@ class DataCollection {
      * be true if the specified object exists in this collection, or rejected with
      * an error.
      */
-    exists(id) {
-        return new Promise((resolve, reject) => {
-            this._exists(id, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(result);
-            });
-        });
-    }
-
-    /**
-     * @callback existsCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {boolean} exists Whether or not the object exists in the collection.
-     */
-
-    /**
-     * Check to see if the specified object exists in this collection.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the object.
-     * @param {existsCallback} callback The callback function to call when complete.
-     */
-    _exists(id, callback) {
+    async exists(id) {
         throw new Error('abstract function called');
     }
 
@@ -271,34 +197,7 @@ class DataCollection {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    add(id, object, force) {
-        force = !!force;
-        return new Promise((resolve, reject) => {
-            this._add(id, object, force, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback addCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Add an object to the collection.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the object.
-     * @param {Object} object The object.
-     * @param {boolean} force don't check for existence, force it
-     * @param {addCallback} callback The callback function to call when complete.
-     */
-    _add(id, object, force, callback) {
+    async add(id, object, force) {
         throw new Error('abstract function called');
     }
 
@@ -310,32 +209,7 @@ class DataCollection {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    update(id, object) {
-        return new Promise((resolve, reject) => {
-            this._update(id, object, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback updateCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Update an object in the collection.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the object.
-     * @param {Object} object The object.
-     * @param {updateCallback} callback The callback function to call when complete.
-     */
-    _update(id, object, callback) {
+    async update(id, object) {
         throw new Error('abstract function called');
     }
 
@@ -346,31 +220,7 @@ class DataCollection {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    remove(id) {
-        return new Promise((resolve, reject) => {
-            this._remove(id, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback removeCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Remove an object from the collection.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the object.
-     * @param {removeCallback} callback The callback function to call when complete.
-     */
-    _remove(id, callback) {
+    async remove(id) {
         throw new Error('abstract function called');
     }
 
@@ -424,7 +274,7 @@ module.exports = DataCollection;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Thu Apr 12th 2018
+		on Mon Apr 23rd 2018
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

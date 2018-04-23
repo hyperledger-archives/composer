@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/latest/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/latest/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -417,10 +418,12 @@ ga('send', 'pageview');
 <ol>
 <li><p>Click the <strong>Model file</strong> to view it.</p></li>
 <li><p>Delete the lines of code in the model file and replace it with this:</p>
+
+<p><code-block type="files" sub-type="contents"  identifier="model.cto" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * My commodity trading network
  */
-namespace org.acme.mynetwork
+namespace org.example.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -438,6 +441,8 @@ transaction Trade {
     --&gt; Trader newOwner
 }
 </code></pre></div>
+<p></code-block></p>
+
 <p>This domain model defines a single asset type <code>Commodity</code> and single participant type <code>Trader</code> and a single transaction type <code>Trade</code> that is used to modify the owner of a commodity.</p></li>
 </ol>
 
@@ -451,17 +456,21 @@ transaction Trade {
 <li><p>Click the <strong>Add a file</strong> button.</p></li>
 <li><p>Click the <strong>Script file</strong> and click <strong>Add</strong>.</p></li>
 <li><p>Delete the lines of code in the script file and replace it with the following code:</p>
+
+<p><code-block type="files" sub-type="contents" identifier="script.js"></p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="sd">/**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.example.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */</span>
 <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
-    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
+    <span class="nx">let</span> <span class="nx">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.mynetwork.Commodity'</span><span class="p">);</span>
     <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
+<p></code-block></p>
+
 <p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p></li>
 </ol>
 
@@ -500,22 +509,28 @@ transaction Trade {
 <ol>
 <li><p>Ensure that you have the <strong>Trader</strong> tab selected on the left, and click <strong>Create New Participant</strong> in the upper right.</p></li>
 <li><p>What you can see is the data structure of a <em>Trader</em> participant. We want some easily recognizable data, so delete the code that&#39;s there and paste the following:</p>
+
+<p><code-block type="transactions" sub-type="participants" identifier="trader1" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.example.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>Click <strong>Create New</strong> to create the participant.</p></li>
 <li><p>You should be able to see the new <em>Trader</em> participant you&#39;ve created. We need another <em>Trader</em> to test our <em>Trade</em> transaction though, so create another <em>Trader</em>, but this time, use the following data:</p>
+
+<p><code-block type="transactions" sub-type="participants" identifier="trader2"></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trader",
+  "$class": "org.example.mynetwork.Trader",
   "tradeId": "TRADER2",
   "firstName": "Amy",
   "lastName": "Williams"
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 </ol>
 
 <p>Make sure that both participants exist in the <em>Trader</em> view before moving on!</p>
@@ -531,15 +546,18 @@ transaction Trade {
 <ol>
 <li><p>Click the <strong>Commodity</strong> tab under <strong>Assets</strong> and click <strong>Create New Asset</strong>.</p></li>
 <li><p>Delete the asset data and replace it with the following:</p>
+
+<p><code-block type="transactions" sub-type="assets" identifier="abc" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Commodity",
+  "$class": "org.example.mynetwork.Commodity",
   "tradingSymbol": "ABC",
   "description": "Test commodity",
   "mainExchange": "Euronext",
   "quantity": 72.297,
-  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>After creating this asset, you should be able to see it in the <strong>Commodity</strong> tab.</p></li>
 </ol>
 
@@ -559,14 +577,17 @@ transaction Trade {
 <li><p>Click the <strong>Submit Transaction</strong> button on the left.</p></li>
 <li><p>Ensure that the transaction type is <em>Trade</em>.</p></li>
 <li><p>Replace the transaction data with the following, or just change the details:</p>
+
+<p><code-block type="transactions" sub-type="transactions" identifier="trade" ></p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.mynetwork.Trade",
-  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
-  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+  "$class": "org.example.mynetwork.Trade",
+  "commodity": "resource:org.example.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
 }
-</code></pre></div></li>
+</code></pre></div>
+<p></code-block></p></li>
 <li><p>Click <strong>Submit</strong>.</p></li>
-<li><p>Check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, by expanding the data section for the asset. You should see that the owner is listed as <code>resource:org.acme.mynetwork.Trader#TRADER2</code>.</p></li>
+<li><p>Check that our asset has changed ownership from <code>TRADER1</code> to <code>TRADER2</code>, by expanding the data section for the asset. You should see that the owner is listed as <code>resource:org.example.mynetwork.Trader#TRADER2</code>.</p></li>
 <li><p>To view the full transaction history of our business network, click <strong>All Transactions</strong> on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the <em>Trader</em> participants and the <em>Commodity</em> asset, are recorded as transactions, even though they&#39;re not defined as transactions in our business network model. These transactions are known as &#39;System Transactions&#39; and are common to all business networks, and defined in the Hyperledger Composer Runtime.</p></li>
 </ol>
 

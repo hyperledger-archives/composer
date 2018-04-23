@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/latest/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/latest/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -418,19 +419,19 @@ ga('send', 'pageview');
 <p>Replace the contents of the <code>logic.js</code> script file to update the transaction processor function to be the following.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">        <span class="sd">/**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+         * @param {org.example.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */</span>
         <span class="k">async</span> <span class="k">function</span> <span class="nf">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">newOwner</span><span class="p">;</span>
 
-            <span class="k">const</span> <span class="no">otherNetworkData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">()</span><span class="o">.</span><span class="nx">invokeChaincode</span><span class="p">(</span><span class="s1">'other-tutorial-network'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'getResourceInRegistry'</span><span class="p">,</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">,</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">tradingSymbol</span><span class="p">],</span> <span class="s1">'composerchannel'</span><span class="p">);</span>                    
+            <span class="k">const</span> <span class="no">otherNetworkData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getNativeAPI</span><span class="p">()</span><span class="o">.</span><span class="nx">invokeChaincode</span><span class="p">(</span><span class="s1">'other-tutorial-network'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'getResourceInRegistry'</span><span class="p">,</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'org.example.mynetwork.Commodity'</span><span class="p">,</span> <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">tradingSymbol</span><span class="p">],</span> <span class="s1">'composerchannel'</span><span class="p">);</span>                    
             <span class="k">const</span> <span class="no">stringAsset</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">otherNetworkData</span><span class="o">.</span><span class="nx">payload</span><span class="o">.</span><span class="nx">toArrayBuffer</span><span class="p">())</span><span class="o">.</span><span class="nx">toString</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
             <span class="k">const</span> <span class="no">asset</span> <span class="o">=</span> <span class="nx">getSerializer</span><span class="p">()</span><span class="o">.</span><span class="nx">fromJSON</span><span class="p">(</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">stringAsset</span><span class="p">));</span>
 
             <span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="o">.</span><span class="nx">quantity</span> <span class="o">=</span> <span class="nx">asset</span><span class="o">.</span><span class="nx">quantity</span><span class="p">;</span>
 
-            <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">);</span>
+            <span class="k">const</span> <span class="no">assetRegistry</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.example.mynetwork.Commodity'</span><span class="p">);</span>
             <span class="k">await</span> <span class="nx">assetRegistry</span><span class="o">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="o">.</span><span class="nx">commodity</span><span class="p">);</span>
         <span class="p">}</span>
 </code></pre></div></li>
@@ -460,16 +461,16 @@ composer network ping --card networkB
 
 <ol>
 <li><p>Create a participant in business network A. Run the following command.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkA -d '{"$class": "org.acme.mynetwork.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkA -d '{"$class": "org.example.mynetwork.Trader", "tradeId": "bob@example.com", "firstName": "Bob", "lastName": "Jones"}'
 </code></pre></div></li>
 <li><p>Create an asset in business network  A</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.mynetwork.Commodity", "resources": [{"$class": "org.acme.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkA -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#bob@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 250}]}'
 </code></pre></div></li>
 <li><p>Create a participant in business network B. Run the following command.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkB -d '{"$class": "org.acme.mynetwork.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer participant add --card networkB -d '{"$class": "org.example.mynetwork.Trader", "tradeId": "fred@example.com", "firstName": "Fred", "lastName": "Bloggs"}'
 </code></pre></div></li>
 <li><p>Create an asset in business network B. Run the following command. Note the different quantity property.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.acme.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.acme.mynetwork.Commodity", "resources": [{"$class": "org.acme.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.acme.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
+<div class="highlight"><pre><code class="language-" data-lang="">composer transaction submit --card networkB -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.example.mynetwork.Commodity", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.example.mynetwork.Commodity", "resources": [{"$class": "org.example.mynetwork.Commodity","tradingSymbol": "Ag","owner": "resource:org.example.mynetwork.Trader#fred@example.com","description": "a lot of gold", "mainExchange": "exchange", "quantity" : 500}]}'
 </code></pre></div></li>
 </ol>
 
@@ -497,17 +498,17 @@ composer network ping --card networkB
 <h2 id="step-six-review-the-asset-data">Step Six: Review the asset data</h2>
 
 <p>View the asset to see that the quantity is 250.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag        
+<div class="highlight"><pre><code class="language-" data-lang="">    composer network list --card networkA -r org.example.mynetwork.Commodity -a Ag        
 </code></pre></div>
 <h2 id="step-seven-submit-a-transaction">Step Seven: Submit a transaction</h2>
 
 <p>Submit a transaction to see the effect of querying an asset on a different business network. Note that NetworkB is only queried and the quantity is not changed.  </p>
-<div class="highlight"><pre><code class="language-" data-lang="">    composer transaction submit --card networkA -d '{"$class": "org.acme.mynetwork.Trade", "commodity": "resource:org.acme.mynetwork.Commodity#Ag", "newOwner": "resource:org.acme.mynetwork.Trader#bobId"}'
+<div class="highlight"><pre><code class="language-" data-lang="">    composer transaction submit --card networkA -d '{"$class": "org.example.mynetwork.Trade", "commodity": "resource:org.example.mynetwork.Commodity#Ag", "newOwner": "resource:org.example.mynetwork.Trader#bobId"}'
 </code></pre></div>
 <h2 id="step-eight-check-the-updated-asset">Step Eight: Check the updated asset</h2>
 
 <p>View the updated asset to check that the quantity was correctly updated to 500.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    composer network list --card networkA -r org.acme.mynetwork.Commodity -a Ag        
+<div class="highlight"><pre><code class="language-" data-lang="">    composer network list --card networkA -r org.example.mynetwork.Commodity -a Ag
 </code></pre></div>
             
           </section>

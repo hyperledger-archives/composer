@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/latest/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/latest/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -378,12 +379,12 @@ ga('send', 'pageview');
 
 <ul>
 <li><em>Class</em> : the declaration of the structure of an asset, participant, transaction, concept or event</li>
-<li><em>Instance</em> : an instance of a class, for example if org.example.Vehicle is an asset (class), then org.example.Vehicle#ABC123 is an <strong>instance</strong> of an org.acme.Vehicle</li>
-<li><em>Property</em> : a member (or field) defined by a class, including a relationship. For example the class org.example.Vehicle may have a property called <code>model</code> of type <code>string</code>.</li>
+<li><em>Instance</em> : an instance of a class, for example if org.example.basic.SampleAsset is an asset (class), then org.example.basic.SampleAsset#ABC123 is an <strong>instance</strong> of an org.example.basic.SampleAsset</li>
+<li><em>Property</em> : a member (or field) defined by a class, including a relationship. For example the class org.example.basic.SampleAsset may have a property called <code>value</code> of type <code>string</code>.</li>
 </ul>
 
 <p>A class (the asset SampleAsset):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.example.basic
 
 asset SampleAsset identified by assetId {
   o String assetId
@@ -393,9 +394,9 @@ asset SampleAsset identified by assetId {
 </code></pre></div>
 <p>An instance of the class:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">{
-  "$class": "org.acme.sample.SampleAsset",
+  "$class": "org.example.basic.SampleAsset",
   "assetId": "assetId:6463",
-  "owner": "resource:org.acme.sample.SampleParticipant#participantId:8091",
+  "owner": "resource:org.example.basic.SampleParticipant#participantId:8091",
   "value": "secret plant frequently ruler"
 }
 </code></pre></div>

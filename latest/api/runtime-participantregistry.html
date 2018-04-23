@@ -192,6 +192,8 @@ ga('send', 'pageview');
 <ul>
 <li><a href="/composer/latest/installing/installing-prereqs">Installing pre-requisites</a></li>
 <li><a href="/composer/latest/installing/development-tools">Installing the development environment</a></li>
+<li><a href="/composer/latest/installing/update-dev-env">Updating the development environment</a></li>
+<li><a href="/composer/latest/installing/uninstall-dev-env">Uninstalling the development environment</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/tutorials/tutorials"><b>Tutorials</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -254,7 +256,6 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/managing/identity-bind">Binding an existing identity to a participant</a></li>
 <li><a href="/composer/latest/managing/identity-list">Listing all identities in a business network</a></li>
 <li><a href="/composer/latest/managing/identity-revoke">Revoking an identity from a participant</a></li>
-<li><a href="/composer/latest/managing/updating-composer">Updating the Hyperledger Composer Runtime</a></li>
 <li><a href="/composer/latest/managing/connector-information">Interacting with Hyperledger Fabric</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/problems/diagnostics"><b>Diagnosing Problems</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p></li>
@@ -447,23 +448,6 @@ method instead.</p>
 
 <p>Get a list of all of the existing participants in this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get all of the drivers in the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">drivers</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the array of driver objects.</span>
-    <span class="nx">drivers</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driver</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">driver</span><span class="p">.</span><span class="nx">driverId</span><span class="p">);</span>
-    <span class="p">});</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with an array of <a href="common-resource">Resource</a> instances representing all of the participants stored in this participant registry. If the participant registry does not exist, or the current user does not have access to the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -474,7 +458,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get all of the drivers in the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
@@ -495,21 +479,6 @@ method instead.</p>
 
 <p>Get the specified participant in this participant registry using the unique identifier of the participant.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the specific driver from the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">driver</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the the driver object.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">driver</span><span class="p">.</span><span class="nx">driverId</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a <a href="common-resource">Resource</a> instance representing the specified participant in this participant registry. If the specified participant does not exist, or the current user does not have access to the specified participant, then the promise will be rejected with an error that describes the problem.</p>
@@ -534,7 +503,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the specific driver from the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
@@ -553,21 +522,6 @@ method instead.</p>
 
 <p>Determines whether a specific participant exists in this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Determine if the specific driver exists in the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Process the the boolean result.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Driver exists'</span><span class="p">,</span> <span class="nx">exists</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved with a boolean which is true if the specified participant exists in this participant registry, and false if the specified participant does not exist.</p>
@@ -592,7 +546,7 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Determine if the specific driver exists in the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'VEHICLE_1'</span><span class="p">);</span>
@@ -611,25 +565,6 @@ method instead.</p>
 
 <p>Add all of the specified participants to this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Create the first driver.</span>
-    <span class="kd">var</span> <span class="nx">driver1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
-    <span class="c1">// Create the second driver.</span>
-    <span class="kd">var</span> <span class="nx">driver2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
-    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'GREEN'</span><span class="p">;</span>
-    <span class="c1">// Add the drivers to the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="nx">driver2</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the participants have been added to this participant registry. If the participants cannot be added to this participant registry, or if the participants already exist in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -654,15 +589,15 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the first driver.</span>
-    <span class="kd">var</span> <span class="nx">driver1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">driver1</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
     <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
     <span class="c1">// Create the second driver.</span>
-    <span class="kd">var</span> <span class="nx">driver2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">driver2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">);</span>
     <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'GREEN'</span><span class="p">;</span>
     <span class="c1">// Add the drivers to the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="nx">driver2</span><span class="p">]);</span>
@@ -677,22 +612,6 @@ method instead.</p>
 
 <p>Add the specified participant to this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Create the driver.</span>
-    <span class="kd">var</span> <span class="nx">driver</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
-    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
-    <span class="c1">// Add the driver to the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the participant has been added to this participant registry. If the participant cannot be added to this participant registry, or if the participant already exists in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -717,12 +636,12 @@ method instead.</p>
 
 <h3 id="example">Example</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
     <span class="c1">// Create the driver.</span>
-    <span class="kd">var</span> <span class="nx">driver</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.acme'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">driver</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'org.example'</span><span class="p">,</span> <span class="s1">'Driver'</span><span class="p">,</span> <span class="s1">'VEHICLE_1'</span><span class="p">);</span>
     <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Southampton'</span><span class="p">;</span>
     <span class="c1">// Add the driver to the driver participant registry.</span>
     <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
@@ -737,26 +656,6 @@ method instead.</p>
 
 <p>Update all of the specified participants in this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing drivers that have come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">driver2</span><span class="p">;</span>
-<span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Modify the properties of the first driver.</span>
-    <span class="nx">driver1</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Hursley'</span><span class="p">;</span>
-    <span class="c1">// Modify the properties of the second driver.</span>
-    <span class="nx">driver2</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'London'</span><span class="p">;</span>
-    <span class="c1">// Update the drivers in the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">updateAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="nx">driver2</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the participants have been updated in this participant registry. If the participants cannot be updated in this participant registry, or if the participants do not exist in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -784,7 +683,7 @@ method instead.</p>
 <span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">driver2</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -805,23 +704,6 @@ method instead.</p>
 
 <p>Update the specified participant in this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
-<span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Modify the properties of the driver.</span>
-    <span class="nx">driver</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s1">'Hursley'</span><span class="p">;</span>
-    <span class="c1">// Update the driver in the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the participant have been updated in this participant registry. If the participant cannot be updated in this participant registry, or if the participant does not exist in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -848,7 +730,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -867,23 +749,6 @@ method instead.</p>
 
 <p>Remove all of the specified participants from this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing drivers that have come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
-<span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Remove the drivers from the driver participant registry. Note that</span>
-    <span class="c1">// one driver is specified as a driver instance, and the other</span>
-    <span class="c1">// driver is specified by the ID of the driver.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">removeAll</span><span class="p">([</span><span class="nx">driver1</span><span class="p">,</span> <span class="s1">'VEHICLE_2'</span><span class="p">]);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when all of the participants have been removed from this participant registry. If the participants cannot be removed from this participant registry, or if the participants do not exist in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -910,7 +775,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing drivers that have come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver1</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
@@ -929,21 +794,6 @@ method instead.</p>
 
 <p>Remove the specified participant from this participant registry.</p>
 
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
-<span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
-<span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Get the factory for creating new participant instances.</span>
-    <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>
-    <span class="c1">// Remove the driver from the driver participant registry.</span>
-    <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">driver</span><span class="p">);</span>
-  <span class="p">})</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Add optional error handling here.</span>
-  <span class="p">});</span>
-</code></pre></div>
 <h3 id="returns">Returns</h3>
 
 <p><strong><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></strong> - A promise. The promise is resolved when the participant has been removed from this participant registry. If the participant cannot be removed from this participant registry, or if the participant does not exist in the participant registry, then the promise will be rejected with an error that describes the problem.</p>
@@ -970,7 +820,7 @@ method instead.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// The existing driver that has come from elsewhere.</span>
 <span class="kd">var</span> <span class="nx">driver</span><span class="p">;</span>
 <span class="c1">// Get the driver participant registry.</span>
-<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.acme.Driver'</span><span class="p">)</span>
+<span class="k">return</span> <span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'org.example.Driver'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Get the factory for creating new participant instances.</span>
     <span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">getFactory</span><span class="p">();</span>

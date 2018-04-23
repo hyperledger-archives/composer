@@ -116,7 +116,7 @@
         BusinessNetworkConnection
         </h2>
         
-            <div class="class-description"><p>Use this class to connect to and then interact with a deployed<br><a href="module-composer-common.BusinessNetworkDefinition.html">BusinessNetworkDefinition</a>.<br>Use the AdminConnection class in the composer-admin module to deploy<br>BusinessNetworksDefinitions.</p></div>
+            <div class="class-description"><p>Use this class to connect to and then interact with a deployed<br><a href="module-composer-common.BusinessNetworkDefinition.html">Business Network Definition</a>.<br>Use the AdminConnection class in the composer-admin module to deploy<br>BusinessNetworksDefinitions.</p></div>
         
     
 </header>
@@ -654,7 +654,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-169">line 169</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-145">line 145</a>
 			</li>
 		</ul>
 	</dd>
@@ -748,12 +748,9 @@
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Add a new asset registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.addAssetRegistry(&#x27;registryId&#x27;, &#x27;registryName&#x27;);
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+await connection.addAssetRegistry(&#x27;registryId&#x27;, &#x27;registryName&#x27;);</pre>
 
 
     
@@ -957,7 +954,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-256">line 256</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-212">line 212</a>
 			</li>
 		</ul>
 	</dd>
@@ -1051,12 +1048,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Add a new participant registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.addParticipantRegistry(&#x27;registryId&#x27;, &#x27;registryName&#x27;);
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+await connection.addParticipantRegistry(&#x27;registryId&#x27;, &#x27;registryName&#x27;);</pre>
 
 
     
@@ -1223,7 +1217,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-150">line 150</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-129">line 129</a>
 			</li>
 		</ul>
 	</dd>
@@ -1317,17 +1311,12 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Determine whether an asset registry exists
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.assetRegistryExists(&#x27;org.acme.SampleAsset&#x27;);
-    })
-    .then(function (exists) {
-        if (exists === true) {
-            // logic here...
-        }
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const exists = await connection.assetRegistryExists(&#x27;org.example.SampleAsset&#x27;);
+if (exists) {
+    // logic here...
+}</pre>
 
 
     
@@ -1534,7 +1523,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-876">line 876</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-761">line 761</a>
 			</li>
 		</ul>
 	</dd>
@@ -1775,7 +1764,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-653">line 653</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-550">line 550</a>
 			</li>
 		</ul>
 	</dd>
@@ -1867,16 +1856,10 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Build and execute a query.
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function () {
-        var query = connection.buildQuery(&#x27;SELECT org.acme.SampleAsset WHERE (value == _$inputValue)&#x27;);
-        return connection.query(query, { inputValue: &#x27;blue&#x27; })
-    })
-    .then(function (assets) {
-        // Retrieved Assets
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const query = connection.buildQuery(&#x27;SELECT org.example.SampleAsset WHERE (value == _$inputValue)&#x27;);
+const assets = await connection.query(query, { inputValue: &#x27;blue&#x27; })</pre>
 
 
     
@@ -2100,7 +2083,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-407">line 407</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-330">line 330</a>
 			</li>
 		</ul>
 	</dd>
@@ -2192,12 +2175,8 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Connect and log in to HLF
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;admin@acme-network&#x27;)
-    .then(function (definition) {
-        // Connected
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+const definition = await connection.connect(&#x27;admin@network-name&#x27;);</pre>
 
 
     
@@ -2288,7 +2267,7 @@ return connection.connect(&#x27;admin@acme-network&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-569">line 569</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-478">line 478</a>
 			</li>
 		</ul>
 	</dd>
@@ -2380,15 +2359,11 @@ return connection.connect(&#x27;admin@acme-network&#x27;)
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Disconnect from HLF
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.disconnect();
-    })
-    .then(function () {
-        // Disconnected.
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+// Connected.
+await connection.disconnect();
+// Disconnected.</pre>
 
 
     
@@ -2567,7 +2542,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-105">line 105</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-95">line 95</a>
 			</li>
 		</ul>
 	</dd>
@@ -2661,15 +2636,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get all asset registries
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getAllAssetRegistries();
-    })
-    .then(function (assetRegistries) {
-        // Retrieved Asset Registries
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const assetRegistries = await connection.getAllAssetRegistries();</pre>
 
 
     
@@ -2848,7 +2817,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-192">line 192</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-162">line 162</a>
 			</li>
 		</ul>
 	</dd>
@@ -2942,15 +2911,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get all participant registries
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getAllParticipantRegistries();
-    })
-    .then(function (participantRegistries) {
-        // Retrieved Participant Registries
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const participantRegistries = await connection.getAllParticipantRegistries();</pre>
 
 
     
@@ -3129,7 +3092,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-300">line 300</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-244">line 244</a>
 			</li>
 		</ul>
 	</dd>
@@ -3223,15 +3186,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get all transaction registries
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getAllTransactionRegistries();
-    })
-    .then(function (transactionRegistries) {
-        // Retrieved Transaction Registries
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const transactionRegistries = await connection.getAllTransactionRegistries();</pre>
 
 
     
@@ -3398,7 +3355,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-127">line 127</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-111">line 111</a>
 			</li>
 		</ul>
 	</dd>
@@ -3492,15 +3449,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get an asset registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getAssetRegistry(&#x27;org.acme.SampleAsset&#x27;);
-    })
-    .then(function (assetRegistry) {
-        // Retrieved Asset Registry
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const sampleAssetRegistry = await connection.getAssetRegistry(&#x27;org.example.SampleAsset&#x27;);</pre>
 
 
     
@@ -3531,7 +3482,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 
     
     <div class="description">
-        <p>Gets the currently connected<br><a href="module-composer-common.BusinessNetworkDefinition.html">BusinessNetworkDefinition</a>.</p>
+        <p>Gets the currently connected business network.<br><a href="module-composer-common.BusinessNetworkDefinition.html">Business Network Definition</a>.</p>
     </div>
     
 
@@ -3591,7 +3542,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-83">line 83</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-79">line 79</a>
 			</li>
 		</ul>
 	</dd>
@@ -3683,13 +3634,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get the Business Network Definition
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        // Retrieved Business Network Definition
-        console.log(definition === connection.getBusinessNetwork());  // true
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+const definition = await connection.connect(&#x27;admin@network-name&#x27;);
+console.log(definition === connection.getBusinessNetwork());  // true</pre>
 
 
     
@@ -3780,7 +3727,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-345">line 345</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-278">line 278</a>
 			</li>
 		</ul>
 	</dd>
@@ -3874,15 +3821,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get the historian
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getHistorian();
-    })
-    .then(function (historian) {
-        // Retrieved historian
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const historian = await connection.getHistorian();</pre>
 
 
     
@@ -3973,7 +3914,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-374">line 374</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-301">line 301</a>
 			</li>
 		</ul>
 	</dd>
@@ -4067,16 +4008,174 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get the identity registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getIdentityRegistry();
-    })
-    .then(function (identityRegistry) {
-        // Retrieved identity registry
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const identityRegistry = await connection.getIdentityRegistry();</pre>
 
+
+    
+</dd>
+
+        
+            {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<hr>
+<dt>
+    <h4 class="name" id="getNativeAPI"><span class="type-signature"></span>getNativeAPI()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the native API for this connection. The native API returned is specific<br>to the underlying blockchain platform, and may throw an error if there is no<br>native API available.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-830">line 830</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<div class="param-desc">
+    <p>The native API for this connection.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        {#
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+#}
+
+<span class="param-type">*</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -4242,7 +4341,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-214">line 214</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-178">line 178</a>
 			</li>
 		</ul>
 	</dd>
@@ -4336,15 +4435,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get a participant registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getParticipantRegistry(&#x27;org.acme.SampleParticipant&#x27;);
-    })
-    .then(function (participantRegistry) {
-        // Retrieved Participant Registry
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const sampleParticipantRegistry = await connection.getParticipantRegistry(&#x27;org.example.SampleParticipant&#x27;);</pre>
 
 
     
@@ -4511,7 +4604,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-518">line 518</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-431">line 431</a>
 			</li>
 		</ul>
 	</dd>
@@ -4603,21 +4696,11 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Locate the registry for a fully qualififed name
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getRegistry(&#x27;org.acme.SampleAsset&#x27;);
-    })
-    .then(function (sampleAssetRegistry) {
-        return connection.getRegistry(&#x27;org.acme.SampleParticipant&#x27;);
-    })
-    .then(function (sampleParticipantRegistry) {
-        return connection.getRegistry(&#x27;org.acme.SampleTransaction&#x27;);
-    })
-    .then(function (sampleTransactionRegistry) {
-        // ...
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const sampleAssetRegistry = await connection.getRegistry(&#x27;org.example.SampleAsset&#x27;);
+const sampleParticipantRegistry = await connection.getRegistry(&#x27;org.example.SampleParticipant&#x27;);
+const sampleTransactionRegistry = await connection.getRegistry(&#x27;org.example.SampleTransaction&#x27;);</pre>
 
 
     
@@ -4784,7 +4867,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-278">line 278</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-228">line 228</a>
 			</li>
 		</ul>
 	</dd>
@@ -4878,15 +4961,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Get a transaction registry
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.getTransactionRegistry(&#x27;org.acme.SampleTransaction&#x27;);
-    })
-    .then(function (transactionRegistry) {
-        // Retrieved Transaction Registry.
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const sampleTransactionRegistry = await connection.getTransactionRegistry(&#x27;org.example.SampleTransaction&#x27;);</pre>
 
 
     
@@ -5249,7 +5326,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-807">line 807</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-692">line 692</a>
 			</li>
 		</ul>
 	</dd>
@@ -5489,7 +5566,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-237">line 237</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-196">line 196</a>
 			</li>
 		</ul>
 	</dd>
@@ -5583,17 +5660,12 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Determine whether an asset registry exists
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.participantRegistryExists(&#x27;org.acme.SampleParticipant&#x27;);
-    })
-    .then(function (exists) {
-        if (exists === true) {
-            // logic here...
-        }
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const exists = await connection.participantRegistryExists(&#x27;org.example.SampleParticipant&#x27;);
+if (exists) {
+    // logic here...
+}</pre>
 
 
     
@@ -5684,7 +5756,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-731">line 731</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-616">line 616</a>
 			</li>
 		</ul>
 	</dd>
@@ -5776,15 +5848,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Test the connection to the runtime
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.ping();
-    })
-    .then(function () {
-        // Connection tested.
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+await connection.ping();</pre>
 
 
     
@@ -6012,7 +6078,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-687">line 687</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-578">line 578</a>
 			</li>
 		</ul>
 	</dd>
@@ -6104,15 +6170,9 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Execute the query.
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function () {
-        return query(&#x27;Q1&#x27;, { inputValue: &#x27;blue&#x27; })
-    })
-    .then(function (assets) {
-        // Retrieved Assets
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const assets = await query(&#x27;Q1&#x27;, { inputValue: &#x27;blue&#x27; })</pre>
 
 
     
@@ -6282,7 +6342,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-913">line 913</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-798">line 798</a>
 			</li>
 		</ul>
 	</dd>
@@ -6522,7 +6582,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-610">line 610</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-513">line 513</a>
 			</li>
 		</ul>
 	</dd>
@@ -6614,17 +6674,11 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Submits a transaction
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        var factory = definition.getFactory();
-        var transaction = factory.newTransaction(&#x27;org.acme&#x27;, &#x27;SampleTransaction&#x27;);
-        return connection.submitTransaction(transaction);
-    })
-    .then(function () {
-        // Submitted a transaction.
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+const definition = await connection.connect(&#x27;admin@network-name&#x27;);
+const factory = definition.getFactory();
+const transaction = factory.newTransaction(&#x27;org.example&#x27;, &#x27;SampleTransaction&#x27;);
+await connection.submitTransaction(transaction);</pre>
 
 
     
@@ -6791,7 +6845,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-324">line 324</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-263">line 263</a>
 			</li>
 		</ul>
 	</dd>
@@ -6885,17 +6939,12 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
   limitations under the License.
 #}
 
-    <pre class="sunlight-highlight-javascript">// Determine whether a transaction registry exists
-var connection = new BusinessNetworkConnection();
-return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
-    .then(function (definition) {
-        return connection.transactionRegistryExists(&#x27;org.acme.SampleTransaction&#x27;);
-    })
-    .then(function (exists) {
-        if (exists === true) {
-            // logic here...
-        }
-    });</pre>
+    <pre class="sunlight-highlight-javascript">const connection = new BusinessNetworkConnection();
+await connection.connect(&#x27;admin@network-name&#x27;);
+const exists = await connection.transactionRegistryExists(&#x27;org.example.SampleTransaction&#x27;);
+if (exists) {
+    // logic here...
+}</pre>
 
 
     
@@ -6957,7 +7006,7 @@ return connection.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifi
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Thu Apr 12th 2018
+		on Mon Apr 23rd 2018
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

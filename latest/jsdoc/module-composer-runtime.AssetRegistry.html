@@ -511,12 +511,12 @@
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
     // Create the vehicle.
-    var vehicle = factory.newResource(&#x27;org.acme&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_1&#x27;);
+    var vehicle = factory.newResource(&#x27;org.example&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_1&#x27;);
     vehicle.colour = &#x27;BLUE&#x27;;
     // Add the vehicle to the vehicle asset registry.
     return vehicleAssetRegistry.add(vehicle);
@@ -783,15 +783,15 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
     // Create the first vehicle.
-    var vehicle1 = factory.newResource(&#x27;org.acme&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_1&#x27;);
+    var vehicle1 = factory.newResource(&#x27;org.example&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_1&#x27;);
     vehicle1.colour = &#x27;BLUE&#x27;;
     // Create the second vehicle.
-    var vehicle2 = factory.newResource(&#x27;org.acme&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_2&#x27;);
+    var vehicle2 = factory.newResource(&#x27;org.example&#x27;, &#x27;Vehicle&#x27;, &#x27;VEHICLE_2&#x27;);
     vehicle2.colour = &#x27;GREEN&#x27;;
     // Add the vehicles to the vehicle asset registry.
     return vehicleAssetRegistry.addAll([vehicle1, vehicle2]);
@@ -1058,7 +1058,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Determine if the specific vehicle exists in the vehicle asset registry.
     return assetRegistry.exists(&#x27;VEHICLE_1&#x27;);
@@ -1329,7 +1329,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the specific vehicle from the vehicle asset registry.
     return assetRegistry.get(&#x27;VEHICLE_1&#x27;);
@@ -1524,7 +1524,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 #}
 
     <pre class="sunlight-highlight-javascript">// Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get all of the vehicles in the vehicle asset registry.
     return assetRegistry.getAll();
@@ -1802,7 +1802,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
     <pre class="sunlight-highlight-javascript">// The existing vehicle that has come from elsewhere.
 var vehicle;
 // Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
@@ -2076,7 +2076,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
     <pre class="sunlight-highlight-javascript">// The existing vehicles that have come from elsewhere.
 var vehicle1;
 // Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
@@ -2349,7 +2349,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
     <pre class="sunlight-highlight-javascript">// The existing vehicle that has come from elsewhere.
 var vehicle;
 // Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
@@ -2623,7 +2623,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 var vehicle1;
 var vehicle2;
 // Get the vehicle asset registry.
-return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
+return getAssetRegistry(&#x27;org.example.Vehicle&#x27;)
   .then(function (vehicleAssetRegistry) {
     // Get the factory for creating new asset instances.
     var factory = getFactory();
@@ -2698,7 +2698,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Thu Apr 12th 2018
+		on Mon Apr 23rd 2018
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
