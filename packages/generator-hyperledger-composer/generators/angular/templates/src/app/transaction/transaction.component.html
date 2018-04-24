@@ -165,14 +165,20 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
+    <div class="row">
+      <div class="col-md-9">
+          <h1 class="participant-title" id='transactionName'><%= currentTransaction.name %></h1>
+      </div>
+      <div class="col-md-3">
+        <button (click)="resetForm()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTransactionModal">
+            <span style="font-size: 14px;font-family: inherit;border-right:1px solid rgba(255,255,255,0.5);padding-right:0.6em;margin-right:0.5em;vertical-align:middle;">
+                <svg class="plus-svg" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                  <path fill-rule="evenodd" d="M5.5,4.5 L9.5,4.5 L10,4.5 L10,5.5 L9.5,5.5 L5.5,5.5 L5.5,9.5 L5.5,10 L4.5,10 L4.5,9.5 L4.5,5.5 L0.5,5.5 L0,5.5 L0,4.5 L0.5,4.5 L4.5,4.5 L4.5,0.5 L4.5,0 L5.5,0 L5.5,0.5 L5.5,4.5 Z"/>
+                </svg>
+            </span>
+          Create Transaction
+        </button>
+      </div>
 
 
 <div class="container">
