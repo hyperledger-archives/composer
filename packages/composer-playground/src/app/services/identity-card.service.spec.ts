@@ -648,12 +648,16 @@ describe('IdentityCardService', () => {
         let mockIdCard1;
         let mockIdCard2;
         let mockIdCard3;
+        let mockIdCard4;
         let mockConnectionProfile;
+        let mockConnectionProfile2;
         let mockCardMap;
         let connectionProfileName;
+        let connectionProfileName2;
 
         beforeEach(() => {
             mockConnectionProfile = {name: 'myProfile'};
+            mockConnectionProfile2 = {name: 'myOtherProfile'};
 
             mockIdCard1 = sinon.createStubInstance(IdCard);
             mockIdCard1.getUserName.returns('card1');
@@ -670,12 +674,19 @@ describe('IdentityCardService', () => {
             mockIdCard3.getConnectionProfile.returns(mockConnectionProfile);
             mockIdCard3.getRoles.returns(['myRole']);
 
+            mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getUserName.returns('card4');
+            mockIdCard4.getConnectionProfile.returns(mockConnectionProfile2);
+            mockIdCard4.getRoles.returns(['myRole']);
+
             mockCardMap = new Map<string, IdCard>();
             mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
             mockCardMap.set('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard2);
             mockCardMap.set('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard3);
+            mockCardMap.set('uuid4xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard4);
 
             connectionProfileName = hash(mockConnectionProfile) + '-myProfile';
+            connectionProfileName2 = hash(mockConnectionProfile2) + '-myOtherProfile';
         });
 
         it('should get the current card ref if it has the required role', inject([IdentityCardService], (service: IdentityCardService) => {
@@ -694,6 +705,15 @@ describe('IdentityCardService', () => {
             let result = service.getAdminCardRef(connectionProfileName, 'myRole');
 
             result.should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+        }));
+
+        it('should get the first available card that has the required role when the passed qualified profile name does not match that of the current card', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            service['idCards'] = mockCardMap;
+
+            let result = service.getAdminCardRef(connectionProfileName2, 'myRole');
+
+            result.should.equal('uuid4xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
         }));
 
         it('should not get a card if there were none with the required role', inject([IdentityCardService], (service: IdentityCardService) => {
