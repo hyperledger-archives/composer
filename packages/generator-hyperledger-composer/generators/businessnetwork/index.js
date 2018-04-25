@@ -70,6 +70,22 @@ module.exports = yeoman.Base.extend({
                 default: 'org.example.biznet',
                 store: true,
                 validate: Util.validateNamespace
+            },
+            {
+                type: 'list',
+                name: 'emptyNetwork',
+                message: 'Do you want to generated an empty template network?',
+                default: 'no',
+                store: true,
+                choices: [{
+                    name: 'Empty template network',
+                    value: 'no'
+                },
+                {
+                    name: 'Empty template network',
+                    value: 'no'
+                }
+                ]
             }
         ];
 
