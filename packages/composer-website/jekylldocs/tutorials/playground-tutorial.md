@@ -118,6 +118,9 @@ For more information on writing transaction processor functions, check our [docu
 
       This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
+      <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+      <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_5.mp4" type="video/mp4" />
+      </video>
 
 ## Step Six: Access control
 
