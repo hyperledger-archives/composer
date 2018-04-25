@@ -45,7 +45,7 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 
-describe.only('BusinessNetworkConnection', () => {
+describe('BusinessNetworkConnection', () => {
 
     let sandbox;
     let clock;
@@ -1061,7 +1061,7 @@ describe.only('BusinessNetworkConnection', () => {
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
@@ -1099,21 +1099,28 @@ describe.only('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
             mockConnection.invokeChainCode.resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
-                    sinon.assert.calledOnce(Util.securityCheck);
+                    sinon.assert.calledTwice(Util.securityCheck);
                 });
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
