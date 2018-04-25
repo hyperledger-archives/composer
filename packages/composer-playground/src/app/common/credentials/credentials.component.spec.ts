@@ -310,32 +310,6 @@ describe('CredentialsComponent', () => {
             mockFileRead.restore();
         });
 
-        it('should not accept if not a PEM (.pem) file', fakeAsync(inject([AlertService], (alertService: AlertService) => {
-            content = '-----BEGIN CERTIFICATE-----';
-            let b = new Blob([content], {type: 'text/plain'});
-            let file = new File([b], 'certificate.bob');
-
-            mockFileReadObj.result = content;
-
-            fixture.detectChanges();
-
-            alertService.errorStatus$.subscribe((message) => {
-                if (message !== null) {
-                    message.toString().should.equal('Error: Unexpected file type: bob');
-                }
-            });
-
-            let errorStatusSpy = sinon.spy(alertService.errorStatus$, 'next');
-
-            let dragDropElement = credentialsElement.query(By.css('.create-route'));
-
-            dragDropElement.triggerEventHandler('fileDragDropFileAccepted', file);
-            mockFileReadObj.onload();
-            tick();
-
-            errorStatusSpy.should.have.been.called;
-        })));
-
         it('should detect if the file is a certificate', fakeAsync(() => {
             content = '-----BEGIN CERTIFICATE-----';
             let b = new Blob([content], {type: 'text/plain'});
@@ -351,6 +325,42 @@ describe('CredentialsComponent', () => {
             tick();
 
             credentialsElement.componentInstance.addedPublicCertificate.should.equal('-----BEGIN CERTIFICATE-----');
+        }));
+
+        it('should detect if the file is a certificate and allow when type set to public', fakeAsync(() => {
+            content = '-----BEGIN CERTIFICATE-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let fileImporterElement = credentialsElement.query(By.css('#publicKeyImporter'));
+            fileImporterElement.triggerEventHandler('fileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPublicCertificate.should.equal('-----BEGIN CERTIFICATE-----');
+        }));
+
+        it('should detect if the file is a certificate and disallow when type set but not to public', fakeAsync(() => {
+            credentialsElement.componentInstance.addedPublicCertificate = 'UNCHANGED';
+
+            content = '-----BEGIN CERTIFICATE-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let fileImporterElement = credentialsElement.query(By.css('#privateKeyImporter'));
+            fileImporterElement.triggerEventHandler('fileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPublicCertificate.should.equal('UNCHANGED');
         }));
 
         it('should detect if the file is a private key', fakeAsync(() => {
@@ -370,7 +380,43 @@ describe('CredentialsComponent', () => {
             credentialsElement.componentInstance.addedPrivateCertificate.should.equal('-----BEGIN PRIVATE KEY-----');
         }));
 
-        it('should detect if .pem file contents are not of the correct format', fakeAsync(inject([AlertService], (alertService: AlertService) => {
+        it('should detect if the file is a private key and allow when type set to private', fakeAsync(() => {
+            content = '-----BEGIN PRIVATE KEY-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let fileImporterElement = credentialsElement.query(By.css('#privateKeyImporter'));
+            fileImporterElement.triggerEventHandler('fileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPrivateCertificate.should.equal('-----BEGIN PRIVATE KEY-----');
+        }));
+
+        it('should detect if the file is a private key and disallow when type set but not to public', fakeAsync(() => {
+            credentialsElement.componentInstance.addedPrivateCertificate = 'UNCHANGED';
+
+            content = '-----BEGIN PRIVATE KEY-----';
+            let b = new Blob([content], {type: 'text/plain'});
+            let file = new File([b], 'certificate.pem');
+
+            mockFileReadObj.result = content;
+
+            fixture.detectChanges();
+
+            let fileImporterElement = credentialsElement.query(By.css('#publicKeyImporter'));
+            fileImporterElement.triggerEventHandler('fileAccepted', file);
+            mockFileReadObj.onload();
+            tick();
+
+            credentialsElement.componentInstance.addedPrivateCertificate.should.equal('UNCHANGED');
+        }));
+
+        it('should detect if file contents are not of the correct format', fakeAsync(inject([AlertService], (alertService: AlertService) => {
             content = 'bad cert format';
             let b = new Blob([content], {type: 'text/plain'});
             let file = new File([b], 'privateKey.pem');
