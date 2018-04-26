@@ -1,9 +1,22 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input, Component } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
+import { Directive, Input, Component, Pipe, PipeTransform } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -11,12 +24,11 @@ import { EditorComponent } from './editor.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
-import { ModelFile, Script, AclFile, QueryFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, Script, AclFile, QueryFile, IdCard } from 'composer-common';
 import { EditorFile } from '../services/editor-file';
 import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
-import { BehaviorSubject } from 'rxjs/Rx';
 import { FileService } from '../services/file.service';
 
 import * as sinon from 'sinon';
@@ -24,7 +36,14 @@ import * as chai from 'chai';
 
 import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
-import { DrawerService } from '../common/drawer/drawer.service';
+import { DrawerService } from '../common/drawer';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { IdentityCardService } from '../services/identity-card.service';
+import { LocalStorageService } from 'angular-2-local-storage';
+
+import {
+    HttpModule,
+} from '@angular/http';
 
 let should = chai.should();
 
@@ -55,6 +74,15 @@ class MockFooterComponent {
 
 }
 
+@Pipe({
+    name: 'editorFilesFilter'
+})
+class MockEditorFilesPipe implements PipeTransform {
+    transform() {
+        return;
+    }
+}
+
 describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
@@ -69,7 +97,7 @@ describe('EditorComponent', () => {
     let mockScriptFile;
     let mockRuleFile;
     let mockQueryFile;
-    let editorService;
+    let mockLocalStorage;
 
     beforeEach(() => {
         mockAdminService = sinon.createStubInstance(AdminService);
@@ -82,6 +110,7 @@ describe('EditorComponent', () => {
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
         mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockLocalStorage = sinon.createStubInstance(LocalStorageService);
 
         mockFileService.getQueryFile.returns(mockQueryFile);
 
@@ -90,19 +119,24 @@ describe('EditorComponent', () => {
         mockAlertService.errorStatus$ = {next: sinon.stub()};
 
         TestBed.configureTestingModule({
-            imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective, MockFooterComponent],
+            imports: [FormsModule, HttpModule],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective, MockFooterComponent, MockEditorFilesPipe],
             providers: [
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: FileService, useValue: mockFileService},
-                {provide: DrawerService, useValue: mockDrawer}]
+                {provide: DrawerService, useValue: mockDrawer},
+                {provide: LocalStorageService, useValue: mockLocalStorage},
+                SampleBusinessNetworkService,
+                IdentityCardService
+            ]
         });
 
         fixture = TestBed.createComponent(EditorComponent);
         component = fixture.componentInstance;
+
     });
 
     describe('ngOnInit', () => {
@@ -135,7 +169,7 @@ describe('EditorComponent', () => {
         it('should initialize the editor', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockSetFile = sinon.stub(component, 'setCurrentFile');
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockFileService.getEditorFiles.returns([]);
             mockFileService.getCurrentFile.returns(null);
@@ -147,14 +181,14 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             mockSetFile.should.not.have.been.called;
-            mockSetIntialFile.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
             mockFileService.loadFiles.should.have.been.called;
         }));
 
         it('should re-initialize the editor', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockSetFile = sinon.stub(component, 'setCurrentFile');
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockFileService.getEditorFiles.returns(['myFile']);
             mockFileService.getCurrentFile.returns('myFile');
@@ -166,9 +200,8 @@ describe('EditorComponent', () => {
             component['noError'].should.equal(true);
 
             mockUpdatePackage.should.have.been.called;
-            mockSetFile.should.have.been.called;
-            mockSetIntialFile.should.not.have.been.called;
-            mockFileService.getEditorFiles.should.have.been.calledTwice;
+            mockUpdateFiles.should.have.been.called;
+            mockFileService.getEditorFiles.should.have.been.calledOnce;
         }));
 
         it('should set noError to false when notified', fakeAsync(() => {
@@ -310,17 +343,54 @@ describe('EditorComponent', () => {
         });
     });
 
+    describe('checkCanDeploy', () => {
+        it('should check that the current business network can be deployed', inject([IdentityCardService], (service: IdentityCardService) => {
+            sinon.stub(service, 'getCurrentIdentityCard').returns({
+                getConnectionProfile: sinon.stub()
+            });
+            sinon.stub(service, 'getQualifiedProfileName').returns('myProfile');
+            let canDeployStub = sinon.stub(service, 'canDeploy').returns(true);
+
+            component.checkCanDeploy();
+
+            canDeployStub.should.have.been.calledWith('myProfile');
+        }));
+    });
+
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
-            let mockMetaData = {
-                getVersion: sinon.stub().returns('my version'),
-            };
-
-            mockFileService.getMetaData = sinon.stub().returns(mockMetaData);
+            mockFileService.getBusinessNetworkVersion.returns('my new version');
+            mockClientService.getDeployedBusinessNetworkVersion.returns('my version');
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('my name')
+            });
 
             component.updatePackageInfo();
             component['deployedPackageVersion'].should.equal('my version');
-            component['inputPackageVersion'].should.equal('my version');
+            component['inputPackageVersion'].should.equal('my new version');
+        });
+
+        it('should set the package info and automatically bump the new package version', () => {
+            mockFileService.getBusinessNetworkVersion.onCall(0).returns('my version');
+            mockFileService.getBusinessNetworkVersion.onCall(1).returns('my new version');
+            mockClientService.getDeployedBusinessNetworkVersion.returns('my version');
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('my name')
+            });
+
+            component.updatePackageInfo();
+            component['deployedPackageVersion'].should.equal('my version');
+            component['inputPackageVersion'].should.equal('my new version');
+            mockFileService.incrementBusinessNetworkVersion.should.have.been.called;
+        });
+
+        it('should do nothing if the file service is unavailable', () => {
+            component['fileService'] = null;
+
+            component.updatePackageInfo();
+
+            component['deployedPackageVersion'].should.equal('');
+            component['inputPackageVersion'].should.equal('');
         });
     });
 
@@ -333,9 +403,8 @@ describe('EditorComponent', () => {
             component['currentFile'].should.deep.equal(file);
         });
 
-        it('should set current file', () => {
+        it('should not update package if current file is not package file', () => {
             component['currentFile'] = new EditorFile('oldID', 'oldFile', 'myContent', 'model');
-            component['editingPackage'] = true;
 
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
 
@@ -343,22 +412,7 @@ describe('EditorComponent', () => {
             component.setCurrentFile(file);
             component['currentFile'].should.deep.equal(file);
 
-            mockUpdatePackage.should.have.been.called;
-            component['editingPackage'].should.equal(false);
-        });
-
-        it('should set current file with an error', () => {
-            component['currentFile'] = new EditorFile('oldID', 'oldFile', 'myContent', 'model');
-            component['editingPackage'] = true;
-
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-
-            let file = new EditorFile('newID', 'newFile', 'myContent', 'model');
-            component.setCurrentFile(file);
-            component['currentFile'].should.deep.equal(file);
-
-            mockUpdatePackage.should.have.been.called;
-            component['editingPackage'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
         });
 
         it('should always set current file, if same file selected and is readme file', () => {
@@ -422,17 +476,65 @@ describe('EditorComponent', () => {
     });
 
     describe('updateFiles', () => {
+        let readmeFile;
+        let packageFile;
+        let aclFile;
+        let modelFile;
+        let scriptFile;
+        let queryFile;
+        let mockSetCurrentFile;
+
+        beforeEach(() => {
+            readmeFile = new EditorFile('readme', 'myReadmeID', 'myReadmeContent', 'readme');
+            packageFile = new EditorFile('package', 'myPackageID', 'myPackageContent', 'package');
+            aclFile = new EditorFile('acl', 'myDisplayAcl', 'myContent', 'acl');
+            modelFile = new EditorFile('model', 'myDisplayIDModel', 'myContent', 'model');
+            scriptFile = new EditorFile('script', 'myDisplayIDScript', 'myContent', 'script');
+            queryFile = new EditorFile('query', 'myDisplayID', 'myContent', 'query');
+
+            mockFileService.getEditorFiles.returns([readmeFile, packageFile, modelFile, scriptFile, aclFile, queryFile]);
+
+            mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+        });
+
         it('should update the files, and not include system model files', () => {
-            mockFileService.getEditorFiles.returns(['myFile']);
             component.updateFiles();
-            component['files'].should.deep.equal(['myFile']);
+            component['files'].should.deep.equal([readmeFile, packageFile, modelFile, scriptFile, aclFile, queryFile]);
+        });
+
+        it('should set the current file to a specific file', () => {
+            component.updateFiles(aclFile);
+            mockSetCurrentFile.should.have.been.calledWith(aclFile);
+        });
+
+        it('should set the current file to the current file from the file service', () => {
+            mockFileService.getCurrentFile.returns(modelFile);
+            component.updateFiles();
+            mockSetCurrentFile.should.have.been.calledWith(modelFile);
+        });
+
+        it('should set the current file to the readme if there is one', () => {
+            component.updateFiles();
+            mockSetCurrentFile.should.have.been.calledWith(readmeFile);
+        });
+
+        it('should set the current file to the first non-package file if there is no readme', () => {
+            mockFileService.getEditorFiles.returns([packageFile, modelFile, scriptFile, aclFile, queryFile]);
+            component.updateFiles();
+            mockSetCurrentFile.should.have.been.calledWith(modelFile);
+        });
+
+        it('should not set the current file if there is nothing suitable', () => {
+            mockFileService.getEditorFiles.returns([packageFile]);
+            component.updateFiles();
+            mockSetCurrentFile.should.not.have.been.called;
         });
     });
 
     describe('addModelFile', () => {
         it('should add a model file', () => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             let mockModelFile0 = sinon.createStubInstance(ModelFile);
             mockModelFile0.getNamespace.returns('namespace0');
@@ -458,16 +560,14 @@ describe('EditorComponent', () => {
 
             component.addModelFile();
 
-            mockFileService.getEditorFiles.should.have.been.called;
-
-            mockSetCurrentFile.should.have.been.calledWith(file);
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
             component['noError'].should.equal(true);
         });
 
         it('should add a model file with contents', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             component['files'] = [{id: 'random'}, {id: 'namespace0'}];
 
@@ -481,16 +581,14 @@ describe('EditorComponent', () => {
 
             mockFileService.addFile.should.have.been.calledWith('namespace', 'myFile', 'myCode', 'model');
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
-
-            mockSetCurrentFile.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should add a model file with contents that doesn\'t validate', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(false);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             component['files'] = [{id: 'random'}, {id: 'namespace0'}];
 
@@ -506,12 +604,10 @@ describe('EditorComponent', () => {
 
             mockFileService.addFile.should.have.been.calledWith('namespace', 'myFile', 'myCode', 'model');
 
-            mockFileService.getEditorFiles.should.have.been.called;
-            mockEditorFilesValidateStub.should.have.been.called;
-
             mockFileService.updateBusinessNetworkFile.should.not.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
+            mockUpdateFiles.should.have.been.calledWith(file);
+            mockEditorFilesValidateStub.should.have.been.called;
             component['noError'].should.equal(false);
         });
     });
@@ -519,7 +615,7 @@ describe('EditorComponent', () => {
     describe('addScriptFile', () => {
         it('should create and add a script file', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockScriptFile.getIdentifier.returns('script');
             mockScriptFile.id = 'script';
@@ -531,16 +627,15 @@ describe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should create and add a script file with an incremented name', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             let mockScript0 = sinon.createStubInstance(Script);
             mockScript0.getIdentifier.returns('lib/script.js');
@@ -575,16 +670,15 @@ describe('EditorComponent', () => {
           * New script file
           */`, 'script');
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should add a script file with content', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             component['addScriptFileName'] = 'script';
             component['files'] = [{id: 'random'}, {id: 'script'}];
@@ -595,16 +689,15 @@ describe('EditorComponent', () => {
 
             component.addScriptFile(mockScriptFile);
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should add a script file with content with increment file name', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockScriptFile.getIdentifier.returns('bob');
             mockScriptFile.contents = `/**
@@ -627,16 +720,15 @@ describe('EditorComponent', () => {
           * New script file
           */`, 'script');
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should add a script file with content and not validate', () => {
             let mockEditorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(false);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             component['addScriptFileName'] = 'script';
             component['files'] = [{id: 'random'}, {id: 'script'}];
@@ -649,10 +741,9 @@ describe('EditorComponent', () => {
 
             component.addScriptFile(mockScriptFile);
 
-            mockFileService.getEditorFiles.should.have.been.called;
+            mockUpdateFiles.should.have.been.calledWith(file);
             mockEditorFilesValidateStub.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith(file);
             mockFileService.updateBusinessNetworkFile.should.not.have.been.called;
             component['noError'].should.equal(false);
         });
@@ -660,8 +751,7 @@ describe('EditorComponent', () => {
 
     describe('addReadme', () => {
         it('should not open confirm modal if no readme present', fakeAsync(() => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let files = [new EditorFile('myId', 'myDisplay', 'myContent', 'script')];
             component['files'] = files;
 
@@ -677,7 +767,7 @@ describe('EditorComponent', () => {
         }));
 
         it('should create readme if no existing readme present', fakeAsync(() => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             let files = [new EditorFile('myId', 'myDisplay', 'myContent', 'script')];
             component['files'] = files;
@@ -692,11 +782,11 @@ describe('EditorComponent', () => {
             tick();
 
             mockFileService.setBusinessNetworkReadme.should.have.been.calledWith(mockReadmeFile);
-            mockSetCurrentFile.should.have.been.calledWith(files[0]);
+            mockUpdateFiles.should.have.been.calledWith(mockReadmeFile);
         }));
 
         it('should open confirm modal if readme present and handle error', fakeAsync(() => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let files = [new EditorFile('myId', 'myDisplay', 'myContent', 'readme')];
             component['files'] = files;
 
@@ -716,11 +806,11 @@ describe('EditorComponent', () => {
             mockModal.open.should.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
             mockFileService.setBusinessNetworkReadme.should.not.have.been.called;
-            mockSetCurrentFile.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
         }));
 
         it('should handle confirm modal cancel', fakeAsync(() => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let files = [new EditorFile('myId', 'myDisplay', 'myContent', 'readme')];
             component['files'] = files;
 
@@ -740,11 +830,11 @@ describe('EditorComponent', () => {
             mockModal.open.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
             mockFileService.setBusinessNetworkReadme.should.not.have.been.called;
-            mockSetCurrentFile.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
         }));
 
         it('should create readme on modal confirm', fakeAsync(() => {
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let files = [new EditorFile('myId', 'myDisplay', 'myContent', 'readme')];
             component['files'] = files;
 
@@ -763,7 +853,7 @@ describe('EditorComponent', () => {
             mockModal.open.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
             mockFileService.setBusinessNetworkReadme.should.have.been.called;
-            mockSetCurrentFile.should.have.been.calledWith(files[0]);
+            mockUpdateFiles.should.have.been.calledWith(files[0]);
         }));
 
     });
@@ -920,8 +1010,7 @@ describe('EditorComponent', () => {
 
         it('should set the aclFile as that passed in', () => {
             let editorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-            mockFileService.getEditorFiles.returns(['myFile']);
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             let file = new EditorFile('myId', 'myDisplayID', 'myContent', 'acl');
 
@@ -932,14 +1021,13 @@ describe('EditorComponent', () => {
 
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', file);
             editorFilesValidateStub.should.have.been.called;
-            component['files'].should.deep.equal(['myFile']);
+            mockUpdateFiles.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should not update business network if not valid', () => {
             let editorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(false);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-            mockFileService.getEditorFiles.returns(['myFile']);
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let mockFindIndex = sinon.stub(component, 'findFileIndex');
             mockFindIndex.returns(7);
 
@@ -952,7 +1040,7 @@ describe('EditorComponent', () => {
 
             mockFileService.updateBusinessNetwork.should.not.have.been.called;
             editorFilesValidateStub.should.have.been.called;
-            component['files'].should.deep.equal(['myFile']);
+            mockUpdateFiles.should.have.been.calledWith(file);
             component['noError'].should.equal(false);
         });
     });
@@ -961,8 +1049,7 @@ describe('EditorComponent', () => {
 
         it('should set the queryFile as that passed in', () => {
             let editorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(true);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-            mockFileService.getEditorFiles.returns(['myFile']);
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             let file = new EditorFile('myId', 'myDisplayID', 'myContent', 'query');
 
@@ -973,14 +1060,13 @@ describe('EditorComponent', () => {
 
             mockFileService.updateBusinessNetwork.should.have.been.calledWith('myId', file);
             editorFilesValidateStub.should.have.been.called;
-            component['files'].should.deep.equal(['myFile']);
+            mockUpdateFiles.should.have.been.calledWith(file);
             component['noError'].should.equal(true);
         });
 
         it('should not update business network if not valid', () => {
             let editorFilesValidateStub = sinon.stub(component, 'editorFilesValidate').returns(false);
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-            mockFileService.getEditorFiles.returns(['myFile']);
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let mockFindIndex = sinon.stub(component, 'findFileIndex');
             mockFindIndex.returns(7);
 
@@ -993,143 +1079,9 @@ describe('EditorComponent', () => {
 
             mockFileService.updateBusinessNetwork.should.not.have.been.called;
             editorFilesValidateStub.should.have.been.called;
-            component['files'].should.deep.equal(['myFile']);
+            mockUpdateFiles.should.have.been.calledWith(file);
             component['noError'].should.equal(false);
         });
-    });
-
-    describe('openImportModal', () => {
-        it('should open the import modal', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-
-            mockFileService.loadFiles.returns([]);
-
-            let finishedImport = new BehaviorSubject<any>(true);
-
-            mockDrawer.open = sinon.stub().returns({
-                componentInstance: {
-                    finishedSampleImport: finishedImport
-                },
-                close: sinon.stub()
-            });
-
-            component.openImportModal();
-
-            finishedImport.next({deployed: true});
-
-            tick();
-
-            mockUpdatePackage.should.have.been.called;
-            mockFileService.loadFiles.should.have.been.called;
-        }));
-
-        it('should open the import modal and set file to readme', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-
-            let file = new EditorFile('myId', 'myDisplay', 'myContent', 'readme');
-
-            mockFileService.loadFiles.returns([file]);
-
-            let finishedImport = new BehaviorSubject<any>(true);
-
-            mockDrawer.open = sinon.stub().returns({
-                componentInstance: {
-                    finishedSampleImport: finishedImport
-                },
-                close: sinon.stub()
-            });
-
-            component.openImportModal();
-
-            finishedImport.next({deployed: true});
-
-            tick();
-
-            mockUpdatePackage.should.have.been.called;
-            mockFileService.loadFiles.should.have.been.called;
-            mockSetCurrentFile.should.have.been.calledWith(file);
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
-
-        it('should open the import modal and set file to first one if no readme', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-
-            let file = new EditorFile('myId', 'myDisplay', 'myContent', 'model');
-
-            mockFileService.loadFiles.returns([file, new EditorFile('myId', 'myDisplay', 'myContent', 'script')]);
-
-            let finishedImport = new BehaviorSubject<any>(true);
-
-            mockDrawer.open = sinon.stub().returns({
-                componentInstance: {
-                    finishedSampleImport: finishedImport
-                },
-                close: sinon.stub()
-            });
-
-            component.openImportModal();
-
-            finishedImport.next({deployed: true});
-
-            tick();
-
-            mockUpdatePackage.should.have.been.called;
-            mockFileService.loadFiles.should.have.been.called;
-            mockSetCurrentFile.should.have.been.calledWith(file);
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
-
-        it('should open the import modal and handle error', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-
-            let finishedImport = new BehaviorSubject<any>(true);
-
-            let drawerItem = {
-                componentInstance: {
-                    finishedSampleImport: finishedImport
-                },
-                close: sinon.stub()
-            };
-            mockDrawer.open = sinon.stub().returns(drawerItem);
-
-            component.openImportModal();
-
-            finishedImport.next({deployed: false, error: 'some error'});
-
-            tick();
-
-            mockUpdatePackage.should.not.have.been.called;
-            mockFileService.loadFiles.should.not.have.been.called;
-            drawerItem.close.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
-
-        it('should open the import modal and handle cancel', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-
-            let finishedImport = new BehaviorSubject<any>(true);
-
-            let drawerItem = {
-                componentInstance: {
-                    finishedSampleImport: finishedImport
-                },
-                close: sinon.stub()
-            };
-            mockDrawer.open = sinon.stub().returns(drawerItem);
-
-            component.openImportModal();
-
-            finishedImport.next({deployed: false});
-
-            tick();
-
-            mockUpdatePackage.should.not.have.been.called;
-            mockFileService.loadFiles.should.not.have.been.called;
-            drawerItem.close.should.have.been.called;
-            mockAlertService.errorStatus$.next.should.not.have.been.called;
-        }));
     });
 
     describe('exportBNA', () => {
@@ -1375,60 +1327,186 @@ describe('EditorComponent', () => {
         let mockUpdateFiles;
         let mockSetCurrentFile;
 
-        beforeEach(() => {
+        let peerCard: IdCard;
+        let channelCard: IdCard;
+        let idCard: IdCard;
+        let businessNetworkDef: BusinessNetworkDefinition;
+
+        beforeEach(fakeAsync(inject([IdentityCardService], (service: IdentityCardService) => {
             mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             mockUpdateFiles = sinon.stub(component, 'updateFiles');
             mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            businessNetworkDef = new BusinessNetworkDefinition('test-network@1.0.0');
+            mockFileService.getBusinessNetwork.returns(businessNetworkDef);
 
-            mockAdminService.update.returns(Promise.resolve());
+            mockAdminService.connect.returns(Promise.resolve());
+            mockAdminService.install.returns(Promise.resolve());
+            mockAdminService.importCard.returns(Promise.resolve());
+
+            mockAdminService.hasCard.returns(Promise.resolve(false));
+
             mockClientService.refresh.returns(Promise.resolve());
 
+            sinon.stub(component, 'ngOnInit').resolves();
+
+            peerCard = new IdCard({userName: 'peer', roles: ['PeerAdmin']}, {'x-type': 'web', 'name': 'myProfile'});
+            channelCard = new IdCard({userName: 'channel', roles: ['ChannelAdmin']}, {
+                'x-type': 'web',
+                'name': 'myProfile'
+            });
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
+
+            service.addIdentityCard(idCard, 'myCardRef')
+                .then(() => {
+                    return service.setCurrentIdentityCard('myCardRef');
+                })
+                .then(() => {
+                    return service.addIdentityCard(peerCard, 'peerRef');
+                })
+                .then(() => {
+                    return service.addIdentityCard(channelCard, 'channelRef');
+                });
+
+            tick();
+
+        })));
+
+        afterEach(() => {
+            mockUpdateFiles.reset();
+            mockUpdatePackage.reset();
         });
 
-        it('should deploy the file', fakeAsync(() => {
+        it('should deploy the file using current web profile card', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
             component['currentFile'] = 'my file';
 
-            component.deploy();
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            component['deploying'].should.equal(true);
 
             tick();
 
             component['deploying'].should.equal(false);
 
+            mockModal.open.should.not.have.been.called;
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, 'myCardRef', 'myCardRef');
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
 
             mockAlertService.busyStatus$.next.should.have.been.called;
             mockAlertService.successStatus$.next.should.have.been.called;
-        }));
+        })));
 
-        it('should\'t deploy if already deploying', () => {
-            mockAdminService.update.reset();
+        it('should show an error if there is no PeerAdmin or ChannelAdmin card', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myOtherProfile'});
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
+            component['currentFile'] = 'my file';
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+
+            mockModal.open.should.not.have.been.called;
+            upgradeSpy.should.not.have.been.called;
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.successStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith(sinon.match(/You must import business network cards with the correct admin rights/));
+        })));
+
+        it('should deploy the file using selected fabric profile admin cards', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            mockFileService.isDirty.returns(true);
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve({peerCardRef: 'peerRef', channelCardRef: 'channelRef'})
+            });
+
+            fixture.detectChanges();
+            tick();
+
+            const upgradeSpy = sinon.spy(sampleBusinessNetworkService, 'upgradeBusinessNetwork');
+
+            component['currentFile'] = 'my file';
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            component['deploying'].should.equal(true);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+
+            mockModal.open.should.have.been.called;
+            upgradeSpy.should.have.been.calledWith(businessNetworkDef, 'peerRef', 'channelRef');
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+
+            mockAlertService.busyStatus$.next.should.have.been.called;
+            mockAlertService.successStatus$.next.should.have.been.called;
+        })));
+
+        it('should\'t deploy if already deploying', fakeAsync(inject([IdentityCardService], (identityCardService: IdentityCardService) => {
+            const identitySpy = sinon.spy(identityCardService, 'getCurrentIdentityCard');
             component['deploying'] = true;
+            component['canDeploy'] = true;
 
-            component.deploy();
+            mockFileService.isDirty.returns(true);
 
-            mockAdminService.update.should.not.have.been.called;
-        });
-
-        it('should set current file to previous file', fakeAsync(() => {
-            component['previousFile'] = 'my file';
-
-            component.deploy();
-
+            fixture.detectChanges();
             tick();
 
-            component['deploying'].should.equal(false);
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
 
-            mockUpdatePackage.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
+            deployButton.triggerEventHandler('click', null);
 
-            mockAlertService.busyStatus$.next.should.have.been.called;
-            mockAlertService.successStatus$.next.should.have.been.called;
-        }));
+            identitySpy.should.not.have.been.called;
+        })));
 
-        it('should handle error', fakeAsync(() => {
-            mockAdminService.update.returns(Promise.reject('some error'));
-            component.deploy();
+        it('should handle error from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
 
             tick();
 
@@ -1437,7 +1515,91 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
             mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
-        }));
+        })));
+
+        it('should handle cancel from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        })));
+
+        it('should handle ESC from upgrade modal', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            component['canDeploy'] = true;
+            sinon.stub(idCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(peerCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            sinon.stub(channelCard, 'getConnectionProfile').returns({'x-type': 'hlfv1', 'name': 'myProfile'});
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(ModalDismissReasons.ESC)
+            });
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        })));
+
+        it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (sampleBusinessNetworkService: SampleBusinessNetworkService) => {
+            sinon.stub(sampleBusinessNetworkService, 'upgradeBusinessNetwork').returns(Promise.reject('some error'));
+            component['canDeploy'] = true;
+
+            mockFileService.isDirty.returns(true);
+
+            fixture.detectChanges();
+
+            let deployButton = fixture.debugElement.query(By.css('#editor_deploy'));
+
+            deployButton.triggerEventHandler('click', null);
+
+            tick();
+
+            component['deploying'].should.equal(false);
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.called;
+        })));
+    });
+
+    describe('toggleEditVersionActive', () => {
+        it('should toggle version editing', () => {
+            component['editVersionActive'] = false;
+
+            component.toggleEditVersionActive();
+
+            component['editVersionActive'].should.equal(true);
+        });
     });
 
     describe('toggleEditActive', () => {
@@ -1453,46 +1615,6 @@ describe('EditorComponent', () => {
             component.toggleEditActive();
 
             component['editActive'].should.equal(true);
-        });
-
-        it('should make edit package fields visible when true for README', () => {
-            component['editActive'] = false;
-            component['editingPackage'] = false;
-            component['deployedPackageVersion'] = '1.0.0';
-
-            mockFileService.getMetaData.returns({name: 'package'});
-
-            // Specify README file
-            let file = new EditorFile('readme', 'README.md', 'this is the readme', 'readme');
-            component.setCurrentFile(file);
-
-            fixture.detectChanges();
-
-            // Expect to see "description" visible within class="business-network-details"
-            // Expect to have "edit" option available within class="business-network-details"
-            let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-            element.innerHTML.should.contain('id="editFileButton"');
-
-            // Flip editActive boolean
-            component.toggleEditActive();
-            fixture.detectChanges();
-
-            // Should show the package json
-            element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
-            element.innerHTML.should.not.contain('id="editFileButton"');
-            element.textContent.should.contain('Editing package.json');
-        });
-    });
-
-    describe('hide edit', () => {
-        it('should set editActive false, and editingPackage true', () => {
-            component['editingPackage'] = false;
-            component['editActive'] = true;
-
-            component.hideEdit();
-
-            component['editingPackage'].should.equal(true);
-            component['editActive'].should.equal(false);
         });
     });
 
@@ -1530,6 +1652,14 @@ describe('EditorComponent', () => {
             result.should.equal('Query');
         });
 
+        it('should identify Package file via parameters', () => {
+            let testItem = new EditorFile('1', '1', 'this is the package', 'package');
+
+            let result = component['fileType'](testItem);
+
+            result.should.equal('Package');
+        });
+
         it('should identify unknown file via parameters as README', () => {
             let testItem = new EditorFile('1', '1', 'this is the octopus', 'octopus');
 
@@ -1547,6 +1677,18 @@ describe('EditorComponent', () => {
             mockFileService.getScriptFile.returns({getContents: sinon.stub().returns({})});
             mockFileService.getAclFile.returns({getDefinitions: sinon.stub().returns({})});
             mockFileService.getQueryFile.returns({getDefinitions: sinon.stub().returns({})});
+        });
+
+        it('should not validate readme files', () => {
+            let fileArray = [];
+            fileArray.push(new EditorFile('myId', 'myDisplayID', 'myContent', 'readme'));
+            component['files'] = fileArray;
+
+            let result = component['editorFilesValidate']();
+
+            mockFileService.validateFile.should.not.have.been.called;
+            mockFileService.updateBusinessNetwork.should.have.been.calledOnce;
+            result.should.equal(true);
         });
 
         it('should validate model files', () => {
@@ -1604,8 +1746,9 @@ describe('EditorComponent', () => {
 
             let result = component['editorFilesValidate']();
 
-            mockFileService.validateFile.should.have.been.calledWith('package', 'package');
+            mockFileService.validateFile.should.have.been.calledWith('myId', 'package');
             result.should.equal(true);
+            component['invalidAboutFileIDs'].should.deep.equal([]);
         });
 
         it('should fail to validate package files', () => {
@@ -1617,8 +1760,9 @@ describe('EditorComponent', () => {
 
             let result = component['editorFilesValidate']();
 
-            mockFileService.validateFile.should.have.been.calledWith('package', 'package');
+            mockFileService.validateFile.should.have.been.calledWith('myId', 'package');
             result.should.equal(false);
+            component['invalidAboutFileIDs'].should.deep.equal(['myId']);
         });
 
         it('should fail validation for invalid model files', () => {
@@ -1684,14 +1828,54 @@ describe('EditorComponent', () => {
             component['files'][0].invalid.should.be.equal(true);
             component['files'][1].invalid.should.be.equal(true);
         });
+    });
 
+    describe('editorFileVersionChange', () => {
+        it('should set the input package version', () => {
+            component.editorFileVersionChange('9.9.9-9');
+
+            component['inputPackageVersion'].should.equal('9.9.9-9');
+        });
+    });
+
+    describe('updateVersion', () => {
+        it('should update the business network with the new version', () => {
+            component['inputPackageVersion'] = '9.9.9-9';
+            let packageFile = new EditorFile('packageId', 'packageDisplayId', 'this is the package', 'package');
+            mockFileService.updateBusinessNetworkVersion.returns(packageFile);
+            mockFileService.businessNetworkChanged$ = {
+                next: sinon.stub()
+            };
+
+            component.updateVersion();
+
+            mockFileService.updateBusinessNetworkVersion.should.have.been.calledWith('9.9.9-9');
+            mockFileService.updateBusinessNetwork.should.have.been.calledWith('packageId', packageFile);
+            mockFileService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        });
+
+        it('should handle errors', () => {
+            component['inputPackageVersion'] = '9.9.9-9';
+            mockFileService.updateBusinessNetworkVersion.throws('Oh bother');
+            mockFileService.businessNetworkChanged$ = {
+                next: sinon.stub()
+            };
+
+            component.updateVersion();
+
+            mockFileService.updateBusinessNetworkVersion.should.have.been.calledWith('9.9.9-9');
+            mockFileService.updateBusinessNetwork.should.not.have.been.called;
+            mockFileService.businessNetworkChanged$.next.should.have.been.calledWith(false);
+        });
     });
 
     describe('openDeleteFileModal', () => {
 
+        let updateFilesMock;
         let validateMock;
 
         beforeEach(() => {
+            updateFilesMock = sinon.stub(component, 'updateFiles');
             validateMock = sinon.stub(component, 'editorFilesValidate').returns(true);
 
             mockModal.open = sinon.stub().returns({
@@ -1790,60 +1974,49 @@ describe('EditorComponent', () => {
 
         it('should delete the correct script file', fakeAsync(() => {
             component['currentFile'] = component['files'][2];
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
-
-            mockFileService.getEditorFiles.returns(['myFile']);
 
             component.openDeleteFileModal();
             tick();
 
+            // Check the file list gets updated
+            updateFilesMock.should.have.been.called;
+
             // Check services called
+            mockFileService.deleteFile.should.have.been.calledWith('script1', 'script');
             component['noError'].should.equal(true);
             mockAlertService.successStatus$.next.should.have.been.called;
-
-            // Check initial file set
-            mockSetIntialFile.should.have.been.called;
-
-            component['files'].should.deep.equal(['myFile']);
         }));
 
         it('should delete the correct model file', fakeAsync(() => {
 
             component['currentFile'] = component['files'][3];
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
-
-            mockFileService.getEditorFiles.returns(['myFile']);
 
             component.openDeleteFileModal();
             tick();
 
-            // Check initial file set
-            mockSetIntialFile.should.have.been.called;
+            // Check the file list gets updated
+            updateFilesMock.should.have.been.called;
 
             // Check services called
+            mockFileService.deleteFile.should.have.been.calledWith('model', 'model');
             component['noError'].should.equal(true);
             mockAlertService.successStatus$.next.should.have.been.called;
-
-            component['files'].should.deep.equal(['myFile']);
         }));
 
         it('should delete the query file', fakeAsync(() => {
 
             component['currentFile'] = component['files'][5];
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
-            mockFileService.getEditorFiles.returns(['myFile']);
 
             component.openDeleteFileModal();
             tick();
 
-            // Check initial file set
-            mockSetIntialFile.should.have.been.called;
+            // Check the file list gets updated
+            updateFilesMock.should.have.been.called;
 
             // Check services called
+            mockFileService.deleteFile.should.have.been.calledWith('query', 'query');
             component['noError'].should.equal(true);
             mockAlertService.successStatus$.next.should.have.been.called;
-
-            component['files'].should.deep.equal(['myFile']);
         }));
 
         it('should only enable deletion of model or script files', fakeAsync(() => {
@@ -1855,12 +2028,12 @@ describe('EditorComponent', () => {
             tick();
 
             // Check services called
+            mockFileService.deleteFile.should.not.have.been.called;
             validateMock.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.called;
 
             // check no files removed
             let currentFiles = component['files'];
-            // should have only deleted one
             currentFiles.length.should.equal(6);
         }));
 
@@ -1876,7 +2049,6 @@ describe('EditorComponent', () => {
 
         it('should disable the deploy button if remaining files are invalid', fakeAsync(() => {
             validateMock.returns(false);
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
 
             component['currentFile'] = component['files'][3];
 
@@ -1884,6 +2056,7 @@ describe('EditorComponent', () => {
             tick();
 
             // Check services called
+            validateMock.should.have.been.called;
             component['noError'].should.equal(false);
             mockAlertService.successStatus$.next.should.have.been.called;
         }));
@@ -2133,10 +2306,29 @@ describe('EditorComponent', () => {
     });
 
     describe('setReadmePreview', () => {
-
-        it('should set the read me', () => {
+        it('should set the current file to the read me and enable preview', () => {
+            mockFileService.getEditorReadMe.returns('README');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
             component.setReadmePreview(true);
+            mockSetCurrentFile.should.have.been.calledWith('README');
             component['previewReadme'].should.equal(true);
+        });
+
+        it('should set the current file to the read me and disable preview', () => {
+            mockFileService.getEditorReadMe.returns('README');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component.setReadmePreview(false);
+            mockSetCurrentFile.should.have.been.calledWith('README');
+            component['previewReadme'].should.equal(false);
+        });
+    });
+
+    describe('editPackageJson', () => {
+        it('should set the current file to the package json', () => {
+            mockFileService.getEditorPackageFile.returns('PACKAGE');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component.editPackageJson();
+            mockSetCurrentFile.should.have.been.calledWith('PACKAGE');
         });
     });
 });

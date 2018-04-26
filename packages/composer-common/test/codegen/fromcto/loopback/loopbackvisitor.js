@@ -1216,7 +1216,8 @@ describe('LoopbackVisitor', () => {
 
             loopbackVisit.visitField(mockField, param).should.deep.equal({
                 type: ['string'],
-                required: true
+                required: false,
+                default: []
             });
         });
     });

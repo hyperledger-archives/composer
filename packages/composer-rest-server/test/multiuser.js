@@ -15,7 +15,6 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
@@ -70,7 +69,7 @@ describe('Multiple user REST API unit tests', () => {
     };
 
     before(() => {
-        const cardStore = new MemoryCardStore();
+        const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
@@ -88,10 +87,10 @@ describe('Multiple user REST API unit tests', () => {
         .then((result) => {
             businessNetworkDefinition = result;
             serializer = businessNetworkDefinition.getSerializer();
-            return adminConnection.install(businessNetworkDefinition.getName());
+            return adminConnection.install(businessNetworkDefinition);
         })
         .then(()=>{
-            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
+            return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });

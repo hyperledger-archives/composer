@@ -14,40 +14,131 @@
 
 'use strict';
 
+const Composer = require('./composer');
+const fs = require('fs');
+const path = require('path');
+
 module.exports = function () {
 
-    this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
-        // These steps assume that the arg «name» is the business network name,
-        // and is packaged in the BNA file ./resources/sample-networks/«name».bna
+    /**
+     * Start the REST server.
+     * @param {string} name The name of the REST server.
+     * @param {*} [additionalArguments] Any additional command line arguments for the REST server.
+     */
+    async function startRestServer(name, additionalArguments = []) {
         if(this.composer.tasks.REST_SVR) {
-            // REST API server already running
-            return;
+            await this.composer.killBackground('REST_SVR');
         }
-        const bnaFile = `./resources/sample-networks/${name}.bna`;
+        await this.composer.deployBusinessNetworkFromDirectory(name);
         const adminId = `admin@${name}`;
-        const success = /Command succeeded/;
-        const checkOutput = (response) => {
-            if(!response.stdout.match(success)) {
-                throw new Error(response);
+        const command = [`composer-rest-server --card ${adminId} -n never -w true`].concat(additionalArguments).join(' ');
+        await this.composer.runBackground('REST_SVR', command, /Browse your REST API/);
+    }
+
+    this.Given(/^I have a REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        delete process.env.COMPOSER_PROVIDERS;
+        await startRestServer.apply(this, [name]);
+    });
+
+    this.Given(/^I have an authenticated REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        const port = fs.readFileSync(path.resolve(__dirname, '..', 'ldap.port'));
+        process.env.COMPOSER_PROVIDERS = JSON.stringify({
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/failure',
+                authScheme: 'ldap',
+                server: {
+                    url: `ldap://localhost:${port}`,
+                    bindDN: 'cn=root,dc=example,dc=org',
+                    bindCredentials: 'secret',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
             }
+        });
+        await startRestServer.apply(this, [name, ['-a']]);
+    });
+
+    this.Given(/^I have a multiple user REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
+        const port = fs.readFileSync(path.resolve(__dirname, '..', 'ldap.port'));
+        process.env.COMPOSER_PROVIDERS = JSON.stringify({
+            ldap: {
+                provider: 'ldap',
+                module: 'passport-ldapauth',
+                authPath: '/auth/ldap',
+                callbackURL: '/auth/ldap/callback',
+                successRedirect: '/',
+                failureRedirect: '/failure',
+                authScheme: 'ldap',
+                server: {
+                    url: `ldap://localhost:${port}`,
+                    bindDN: 'cn=root,dc=example,dc=org',
+                    bindCredentials: 'secret',
+                    searchBase: 'dc=example,dc=org',
+                    searchFilter: '(uid={{username}})'
+                }
+            }
+        });
+        process.env.COMPOSER_DATASOURCES = JSON.stringify({
+            db: {
+                name: 'db',
+                connector: 'mongodb',
+                host: 'localhost'
+            }
+        });
+        await startRestServer.apply(this, [name, ['-a', '-m']]);
+    });
+
+    this.Given('I have cleared the cookie jar', function () {
+        return Composer.clearCookieJar();
+    });
+
+    this.When(/^I make a (GET|HEAD|DELETE) request to ([^ ]+?)$/, function (method, urlPath) {
+        return this.composer.request(method, `http://localhost:3000${urlPath}`);
+    });
+
+    this.When(/^I make a POST request for an identity to (.+?)$/, function (urlPath, data) {
+        const options = {
+            encoding:null
         };
-        let response = await this.composer.runCLI(`composer runtime install --card TestPeerAdmin@org1 --businessNetworkName ${name}`);
-        checkOutput(response);
-        response = await this.composer.runCLI(`composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --archiveFile ${bnaFile} --file networkadmin.card`);
-        checkOutput(response);
-        response = await this.composer.runCLI(`composer card delete -n ${adminId}`);
-        checkOutput(response);
-        response = await this.composer.runCLI('composer card import --file networkadmin.card');
-        checkOutput(response);
-        await this.composer.runBackground('REST_SVR', `composer-rest-server --card ${adminId} -n never -w true`, /Browse your REST API/);
+        return this.composer.request('POST', `http://localhost:3000${urlPath}`, data, options );
     });
 
-    this.When(/^I make a (GET|HEAD|DELETE) request to (.+?)$/, function (method, path) {
-        return this.composer.request(method, path);
+    this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, urlPath, data) {
+        return this.composer.request(method, `http://localhost:3000${urlPath}`, data);
     });
 
-    this.When(/^I make a (POST|PUT) request to (.+?)$/, function (method, path, data) {
-        return this.composer.request(method, path, data);
+    this.When(/^I make a (POST|PUT) request with form data to (.+?)$/, function (method, urlPath, table) {
+        const options = {
+            formData: {}
+        };
+        table.hashes().forEach((hash) => {
+            let { name, value } = hash;
+            if (fs.existsSync(value)) {
+                const fileName = value;
+                const fileContents = fs.readFileSync(fileName);
+                value = {
+                    value: fileContents,
+                    options: {
+                        filename: path.basename(fileName)
+                    }
+                };
+            }
+            options.formData[name] = value;
+        });
+        return this.composer.request(method, `http://localhost:3000${urlPath}`, null, options);
+    });
+
+    this.When(/^I write the response data to a file (.+?)$/,function(name){
+        return this.composer.writeResponseData(name);
+    });
+
+    this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (urlPath, filter) {
+        return this.composer.request('GET', `http://localhost:3000${urlPath}` + '?filter=' + encodeURIComponent(filter));
     });
 
     this.When('I shutdown the REST server', function() {

@@ -3,7 +3,7 @@ layout: default
 title: Using Queries and Filters with Business Network Data
 category: tasks
 section: business-network
-index-order: 507
+index-order: 508
 sidebar: sidebars/accordion-toc0.md
 excerpt: Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
 ---
@@ -14,7 +14,7 @@ Queries are used to return data about the blockchain world-state; for example, y
 
 Queries are an optional component of a business network definition, written in a single query file (`queries.qry`).
 
-Note: When using the {{site.data.conrefs.hlf_full}} v1.0 runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
+Note: When using the {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence.
 
 Filters are similar to queries, but use the LoopBack filter syntax, and can only be sent using the {{site.data.conrefs.composer_full}} REST API. Currently, only the `WHERE` LoopBack filter is supported. The supported operators within `WHERE` are: **=**, **and**, **or**, **gt**, **gte**, **lt**, **lte**, **neq**. Filters are submitted using a `GET` call against an asset type, participant type, or transaction type; the filter is then supplied as a parameter. Filters return the results from the specified class, and will not return results from classes extending the specified class.
 
@@ -34,7 +34,7 @@ Queries should take the following format:
 query Q1{
   description: "Select all drivers older than 65."
   statement:
-      SELECT org.acme.Driver
+      SELECT org.example.Driver
           WHERE (age>65)
 }
 ```
@@ -49,9 +49,9 @@ The named query below is defined in terms of 3 parameters:
 query Q18 {
     description: "Select all drivers aged older than PARAM"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (_$ageParam < age)
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName DESC, firstName DESC]
                     LIMIT _$limitParam
                         SKIP _$skipParam
 }
@@ -65,7 +65,7 @@ For more information on the specifics of the {{site.data.conrefs.composer_full}}
 
 Queries can be invoked by calling the _buildQuery_ or _query_ APIs. The _buildQuery_ API requires the entire query string to be specified as part of the API input. The _query_ API requires you to specify the name of the query you wish to run.
 
-For more information on the query APIs, see the [API documentation](../api/api-doc-index.html).
+For more information on the query APIs, see the [API documentation](../api/client-businessnetworkconnection#buildquery).
 
 ### Access Control for Queries
 

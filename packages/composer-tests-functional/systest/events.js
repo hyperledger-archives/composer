@@ -14,31 +14,28 @@
 
 'use strict';
 
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
-
 const TestUtil = require('./testutil');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
+const should = chai.should();
 
 describe('Event system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
 
-
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying no value in model creation
         const modelFiles = [
             { fileName: 'models/events.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.cto'), 'utf8') }
@@ -56,18 +53,17 @@ describe('Event system tests', function() {
         });
 
         bnID = businessNetworkDefinition.getName();
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore=_cardStore;
-                return TestUtil.getClient(cardStore,'systest-events')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-events');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     let validateEvent = (event, index) => {
@@ -107,7 +103,7 @@ describe('Event system tests', function() {
         }
     });
 
-    it('should emit a valid SimpleEvent', () => {
+    it('should emit an event in a transaction that contains primitive properties', async () => {
         this.timeout(1000);
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
@@ -122,13 +118,11 @@ describe('Event system tests', function() {
                 resolve();
             });
         });
-        return client.submitTransaction(transaction)
-            .then(() => {
-                return promise;
-            });
+        await client.submitTransaction(transaction);
+        await promise;
     });
 
-    it('should emit a valid ComplexEvent', () => {
+    it('should emit an event in a transaction that contains complex properties', async () => {
         this.timeout(1000); // Delay to prevent transaction failing
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
@@ -143,13 +137,11 @@ describe('Event system tests', function() {
                 resolve();
             });
         });
-        return client.submitTransaction(transaction)
-            .then(() => {
-                return promise;
-            });
+        await client.submitTransaction(transaction);
+        await promise;
     });
 
-    it('should emit two valid SimpleEvents', () => {
+    it('should emit two events in a single transaction', async () => {
         this.timeout(1000); // Delay to prevent transaction failing
         let counts = [1, 2];
         let emitted = 0;
@@ -167,9 +159,71 @@ describe('Event system tests', function() {
                 }
             });
         });
-        return client.submitTransaction(transaction)
-            .then(() => {
-                return promise;
-            });
+        await client.submitTransaction(transaction);
+        await promise;
     });
+
+
+    if (TestUtil.isHyperledgerFabricV1()) {
+
+        // This test only works on a real fabric, because the embedded and web connectors are
+        // currently broken with regards to multiple connections to the same business network.
+        it('should subscribe for events without submitting a transaction', async () => {
+            this.timeout(1000); // Delay to prevent transaction failing
+            let emitted = 0;
+            let factory = client.getBusinessNetwork().getFactory();
+            let transaction = factory.newTransaction('systest.events', 'EmitSimpleEvent');
+
+            // Listen for the event using a second business network connection
+            const listenOnlyClient = new BusinessNetworkConnection({cardStore});
+            await listenOnlyClient.connect('admincard');
+            const promise = new Promise((resolve, reject) => {
+                listenOnlyClient.on('event', (ev) => {
+                    validateEvent(ev, emitted);
+                    emitted++;
+                    emitted.should.equal(1);
+                    resolve();
+                });
+            });
+            await client.submitTransaction(transaction);
+            await promise;
+        });
+
+        // This test can only work on a real fabric where a r/w set from 2 different organisations
+        // are returned and they disagree on the simulation results.
+        it('should not emit an event if a transaction is not committed', async () => {
+            this.timeout(1000);
+            let emitted = 0;
+            let factory = client.getBusinessNetwork().getFactory();
+            let transactionDet1 = factory.newTransaction('systest.events', 'EmitBasicEvent');
+
+            let transactionNonDet2 = factory.newTransaction('systest.events', 'EmitBasicEventNonDeterministic');
+            let transactionDet3 = factory.newTransaction('systest.events', 'EmitBasicEvent');
+
+            // Listen for the event
+            const promise = new Promise((resolve, reject) => {
+                client.on('event', (ev) => {
+                    if (ev.$type.match(/BasicEvent/)) {
+                        emitted++;
+                        ev.nonDeterministic.should.be.false;
+                        if (emitted === 2) {
+                            resolve();
+                        }
+                    }
+                });
+            });
+
+            await client.submitTransaction(transactionDet1);
+
+            try {
+                await client.submitTransaction(transactionNonDet2);
+                should.fail('Should have got an endorsement policy failure');
+            } catch(error) {
+                error.message.should.match(/ENDORSEMENT_POLICY_FAILURE/);
+            }
+
+            await client.submitTransaction(transactionDet3);
+            await promise;
+        });
+    }
 });

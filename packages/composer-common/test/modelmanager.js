@@ -15,19 +15,23 @@
 'use strict';
 
 const AssetDeclaration = require('../lib/introspect/assetdeclaration');
+const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
 const EnumDeclaration = require('../lib/introspect/enumdeclaration');
+const EventDeclaration = require('../lib/introspect/eventdeclaration');
+const Factory = require('../lib/factory');
+const fs = require('fs');
 const ModelFile = require('../lib/introspect/modelfile');
+const ModelFileDownloader = require('../lib/introspect/loaders/modelfiledownloader');
 const ModelManager = require('../lib/modelmanager');
 const ParticipantDeclaration = require('../lib/introspect/participantdeclaration');
-const EventDeclaration = require('../lib/introspect/eventdeclaration');
-const TypeNotFoundException = require('../lib/typenotfoundexception');
+const Serializer = require('../lib/serializer');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
-const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
-const fs = require('fs');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 
 const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 describe('ModelManager', () => {
@@ -147,7 +151,7 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(modelBase);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
         });
 
         it('should return error for duplicate namespaces from an object', () => {
@@ -156,7 +160,36 @@ describe('ModelManager', () => {
             mf1.getNamespace.returns('org.acme.base');
             (() => {
                 modelManager.addModelFile(mf1);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
+        });
+
+        it('should return error for duplicate namespaces from an model file with a filename', () => {
+            modelManager.addModelFile(modelBase);
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            mf1.getName.returns('duplFile');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base specified in file duplFile is already declared/);
+        });
+
+        it('should return error for duplicate namespaces from an model file where original filename was provided', () => {
+            modelManager.addModelFile(modelBase, 'origFile');
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base is already declared in file origFile/);
+        });
+
+        it('should return error for duplicate namespaces from an model file where original filename and new filename were provided', () => {
+            modelManager.addModelFile(modelBase, 'origFile');
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.acme.base');
+            mf1.getName.returns('duplFile');
+            (() => {
+                modelManager.addModelFile(mf1);
+            }).should.throw(/Namespace org.acme.base specified in file duplFile is already declared in file origFile/);
         });
 
     });
@@ -193,6 +226,10 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([composerModel, farm2fork]);
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             modelManager.getModelFile('org.acme').getNamespace().should.equal('org.acme');
+        });
+
+        it('should be able to add model files without validation', () => {
+            modelManager.addModelFiles([composerModel, new ModelFile(modelManager, 'namespace foo concept Foo{o Missing m}', 'invalid.cto')], ['1.cto', '2.cto'], true);
         });
 
         it('should add to existing model files from objects', () => {
@@ -260,7 +297,13 @@ describe('ModelManager', () => {
         it('should return an error for duplicate namespace from strings', () => {
             (() => {
                 modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.acme.base is already declared/);
+        });
+
+        it('should return an error for duplicate namespace from strings that have filenames', () => {
+            (() => {
+                modelManager.addModelFiles([composerModel, modelBase, farm2fork, modelBase], ['cm', 'mb', 'f2f', 'mb2']);
+            }).should.throw(/Namespace org.acme.base specified in file mb2 is already declared in file mb/);
         });
 
         it('should return an error for duplicate namespace from objects', () => {
@@ -271,8 +314,25 @@ describe('ModelManager', () => {
             modelManager.addModelFiles([mf1,mf2]);
             (() => {
                 modelManager.addModelFiles([mf1]);
-            }).should.throw(/namespace already exists/);
+            }).should.throw(/Namespace org.doge is already declared/);
         });
+
+        it('should return an error for duplicate namespace from objects, with filenames', () => {
+            let mf1 = sinon.createStubInstance(ModelFile);
+            mf1.getNamespace.returns('org.doge');
+            mf1.getName.returns('mf1');
+            let mf2 = sinon.createStubInstance(ModelFile);
+            mf2.getNamespace.returns('org.doge.base');
+            mf2.getName.returns('mf2');
+            let mf3 = sinon.createStubInstance(ModelFile);
+            mf3.getNamespace.returns('org.doge');
+            mf3.getName.returns('mf1-again');
+            modelManager.addModelFiles([mf1,mf2]);
+            (() => {
+                modelManager.addModelFiles([mf3]);
+            }).should.throw(/Namespace org.doge specified in file mf1-again is already declared in file mf1/);
+        });
+
 
         it('should return the error message for an invalid model file', () => {
             const mf1 = `namespace org.acme1
@@ -472,6 +532,90 @@ describe('ModelManager', () => {
 
     });
 
+    describe('#updateExternalModels', () => {
+
+        it('should update external models', () => {
+
+            const externalModelFile = new ModelFile(modelManager, `namespace org.external
+concept Foo{ o String baz }`, '@external.cto');
+            const mfd = sinon.createStubInstance(ModelFileDownloader);
+            mfd.downloadExternalDependencies.returns(Promise.resolve([externalModelFile]));
+
+            // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Foo foo
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+            // import all external models
+            const options = {};
+            return modelManager.updateExternalModels(options, mfd)
+            .then(() => {
+                // model should be loaded and tagged as external
+                modelManager.getModelFile('org.external').isExternal().should.be.true;
+
+                // root model should still be there, and tagged as internal
+                modelManager.getModelFile('org.acme').isExternal().should.be.false;
+
+                // second update, with the external model already loaded
+                return modelManager.updateExternalModels(options, mfd)
+                .then(() => {
+                    // model should be loaded and tagged as external
+                    modelManager.getModelFile('org.acme').isExternal().should.be.false;
+
+                    // root model should still be there, and tagged as internal
+                    modelManager.getModelFile('org.external').isExternal().should.be.true;
+                });
+            });
+        });
+
+        it('should rollback changes on error', () => {
+
+            const externalModelFile = new ModelFile(modelManager, `namespace org.external
+concept Foo{ o String baz }`, '@external.cto');
+            const mfd = sinon.createStubInstance(ModelFileDownloader);
+            mfd.downloadExternalDependencies.returns(Promise.resolve([externalModelFile]));
+
+                // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Missing foo // this type is not defined in the external model
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+                // import all external models
+            const options = {};
+            return modelManager.updateExternalModels(options, mfd)
+                .catch((err) => {
+                    // external model should not be loaded (changes should have been rolled back)
+                    (!modelManager.getModelFile('org.external')).should.be.true;
+
+                    // root model should still be there, and tagged as internal
+                    modelManager.getModelFile('org.acme').isExternal().should.be.false;
+                });
+        });
+
+        it('should fail using bad URL and default model file loader', () => {
+
+            // disable validation, we are using an external model
+            modelManager.addModelFile(`namespace org.acme
+import org.external.* from github://external.cto
+
+concept Bar {
+    o Foo foo
+}`, 'internal.cto', true);
+            modelManager.getModelFile('org.acme').should.not.be.null;
+
+            // import all external models
+            return modelManager.updateExternalModels().should.be.rejectedWith(Error, 'Failed to load model file');
+        });
+    });
+
     describe('#getNamespaces', () => {
 
         it('should list all of the namespaces', () => {
@@ -504,7 +648,7 @@ describe('ModelManager', () => {
         const numberSystemEnums = 1;
         const numberSystemParticipants = 2;
         const numberSystemEvents = 1;
-        const numberSystemTransactions = 18;
+        const numberSystemTransactions = 17;
         const numberSystemConcepts = 0;
 
         const numberModelBaseAssets = 5;
@@ -800,6 +944,22 @@ describe('ModelManager', () => {
             const declaration = modelManager.getType('org.acme.base.AbstractAsset');
             declaration.getFullyQualifiedName().should.equal('org.acme.base.AbstractAsset');
         });
+    });
+
+    describe('#getFactory', () => {
+
+        it('should return a factory', () => {
+            modelManager.getFactory().should.be.an.instanceOf(Factory);
+        });
+
+    });
+
+    describe('#getSerializer', () => {
+
+        it('should return a serializer', () => {
+            modelManager.getSerializer().should.be.an.instanceOf(Serializer);
+        });
+
     });
 
 });

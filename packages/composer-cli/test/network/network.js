@@ -16,7 +16,6 @@
 
 const cmd = require('../../lib/cmds/network.js');
 const startCommand = require('../../lib/cmds/network/startCommand.js');
-const deployCommand = require('../../lib/cmds/network/deployCommand.js');
 const yargs = require('yargs');
 require('chai').should();
 const chai = require('chai');
@@ -62,14 +61,6 @@ describe('composer network cmd launcher unit tests', function () {
 
         it('startCommand',()=>{
             startCommand.builder(yargs);
-            sinon.assert.calledOnce(yargs.options);
-            sinon.assert.calledOnce(yargs.requiresArg);
-            sinon.assert.calledOnce(yargs.conflicts);
-        });
-
-
-        it('deployCommand',()=>{
-            deployCommand.builder(yargs);
             sinon.assert.calledOnce(yargs.options);
             sinon.assert.calledOnce(yargs.requiresArg);
             sinon.assert.calledOnce(yargs.conflicts);

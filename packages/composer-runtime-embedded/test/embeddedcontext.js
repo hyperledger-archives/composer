@@ -15,6 +15,7 @@
 'use strict';
 
 const Serializer = require('composer-common').Serializer;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Context = require('composer-runtime').Context;
 const Engine = require('composer-runtime').Engine;
 const EmbeddedContainer = require('..').EmbeddedContainer;
@@ -31,16 +32,18 @@ const sinon = require('sinon');
 describe('EmbeddedContext', () => {
 
     const identity = {
-        identifier: 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
-        name: 'bob1',
-        issuer: 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
-        secret: 'suchsecret',
-        certificate: ''
+        identifier : 'ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a',
+        name : 'bob1',
+        issuer : 'ce295bc0df46512670144b84af55f3d9a3e71b569b1e38baba3f032dc3000665',
+        secret : 'suchsecret',
+        certificate : ''
     };
 
     let mockEmbeddedContainer;
     let mockSerializer;
     let mockEngine;
+    let mockEventSink;
+    let mockInstalledBusinessNetwork;
     let context;
 
     beforeEach(() => {
@@ -49,7 +52,9 @@ describe('EmbeddedContext', () => {
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockEmbeddedContainer);
         mockSerializer = sinon.createStubInstance(Serializer);
-        context = new EmbeddedContext(mockEngine, identity);
+        mockEventSink = {};
+        mockInstalledBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+        context = new EmbeddedContext(mockEngine, identity, mockEventSink, mockInstalledBusinessNetwork);
     });
 
     describe('#constructor', () => {
@@ -115,7 +120,14 @@ describe('EmbeddedContext', () => {
             context.scriptCompiler = mockEmbeddedScriptCompiler;
             context.getScriptCompiler().should.equal(mockEmbeddedScriptCompiler);
         });
+    });
 
+    describe('#getNativeAPI', () => {
+        it('should throw an unsupported error', () => {
+            (() => {
+                context.getNativeAPI();
+            }).should.throw(/Native API not available in embedded runtime/);
+        });
     });
 
 });

@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Injectable } from '@angular/core';
 
 import { AdminService } from './admin.service';
@@ -18,6 +31,7 @@ export class ClientService {
     private connectingPromise: Promise<any> = null;
 
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
+    private deployedBusinessNetworkVersion: string = null;
 
     constructor(private adminService: AdminService,
                 private identityCardService: IdentityCardService,
@@ -42,9 +56,17 @@ export class ClientService {
     getBusinessNetwork(): BusinessNetworkDefinition {
         if (!this.currentBusinessNetwork) {
             this.currentBusinessNetwork = this.getBusinessNetworkConnection().getBusinessNetwork();
+            this.deployedBusinessNetworkVersion = this.currentBusinessNetwork.getMetadata().getVersion();
         }
 
         return this.currentBusinessNetwork;
+    }
+
+    getDeployedBusinessNetworkVersion(): string {
+        if (!this.deployedBusinessNetworkVersion) {
+            this.deployedBusinessNetworkVersion = this.getBusinessNetwork().getMetadata().getVersion();
+        }
+        return this.deployedBusinessNetworkVersion;
     }
 
     ensureConnected(force: boolean = false): Promise<any> {
@@ -83,6 +105,7 @@ export class ClientService {
 
     refresh(): Promise<any> {
         this.currentBusinessNetwork = null;
+        this.deployedBusinessNetworkVersion = null;
         let cardRef = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 

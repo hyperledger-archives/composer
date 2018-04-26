@@ -43,7 +43,6 @@ describe('composer reset network CLI unit tests', function () {
         mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
 
         mockAdminConnection.connect.resolves();
-        mockAdminConnection.undeploy.resolves();
         mockIdCard = sinon.createStubInstance(IdCard);
         mockIdCard.getBusinessNetworkName.returns('penguin-network');
         mockAdminConnection.exportCard.resolves(mockIdCard);

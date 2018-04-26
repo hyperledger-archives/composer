@@ -5,8 +5,9 @@ class BusinessNetworkDefinition {
    + String getVersion() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
-   + Buffer toArchive(Object) 
-   + Promise fromDirectory(String,Object,Object,boolean,boolean) 
+   + Promise toArchive(Object) 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean,boolean,object,boolean) 
+   + Promise toDirectory(String) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
@@ -27,21 +28,16 @@ class BusinessNetworkCardStore {
    + Promise getAll() 
    + Promise delete(String) 
 }
-class FileSystemCardStore extends BusinessNetworkCardStore {
-   + void constructor(Object,undefined,String) 
-   + void get() 
-   + void put() 
-   + void has() 
-   + void getAll() 
-   + void delete() 
+class Certificate {
+   + void constructor(string) 
+   + string getCertificate() 
+   + string getPublicKey() 
+   + string getIdentifier() 
+   + string getIssuer() 
+   + string getName() 
 }
-class MemoryCardStore extends BusinessNetworkCardStore {
-   + void constructor() 
-   + void get() 
-   + void put() 
-   + void has() 
-   + void getAll() 
-   + void delete() 
+class CertificateUtil {
+   + void generate(Object,string,string,string,string) 
 }
 class Factory {
    + Resource newResource(String,String,String,Object,boolean,String,boolean,boolean) throws TypeNotFoundException
@@ -64,6 +60,9 @@ class IdCard {
    + Promise toArchive(Object,String) 
    + Promise fromDirectory(String,undefined) 
    + Promise toDirectory(String,undefined) 
+}
+class IndexCompiler {
+   + String compile(QueryManager) 
 }
 class AssetDeclaration extends ClassDeclaration {
    + void constructor(ModelFile,Object) throws IllegalModelException
@@ -134,6 +133,7 @@ class Introspector {
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
 class ModelFile {
+   + boolean isExternal() 
    + ModelManager getModelManager() 
    + string[] getImports() 
    + boolean isDefined(string) 
@@ -201,6 +201,7 @@ class Relationship extends Identifiable {
 class Resource extends Identifiable {
    + String toString() 
    + boolean isResource() 
+   + Object toJSON() 
 }
 class Typed {
    + string getType() 
@@ -222,10 +223,12 @@ class ValidatedResource extends Resource {
 }
 class ModelManager {
    + void validateModelFile(string,string) throws IllegalModelException
-   + Object addModelFile(string,string) throws IllegalModelException
-   + Object updateModelFile(string,string) throws IllegalModelException
+   + Object addModelFile(string,string,boolean) throws IllegalModelException
+   + Object updateModelFile(string,string,boolean) throws IllegalModelException
    + void deleteModelFile(string) 
-   + Object[] addModelFiles(string[],string[]) 
+   + Object[] addModelFiles(string[],undefined,boolean) 
+   + void validateModelFiles() 
+   + Promise updateExternalModels(Object,ModelFileDownloader) throws IllegalModelException
    + void clearModelFiles() 
    + string[] getNamespaces() 
    + ClassDeclaration[] getSystemTypes() 
@@ -235,19 +238,21 @@ class ModelManager {
    + ParticipantDeclaration[] getParticipantDeclarations(Boolean) 
    + EnumDeclaration[] getEnumDeclarations(Boolean) 
    + ConceptDeclaration[] getConceptDeclarations(Boolean) 
+   + Factory getFactory() 
+   + Serializer getSerializer() 
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 
+   + void setDefaultOptions(Object) 
    + Object toJSON(Resource,Object,boolean,boolean,boolean,boolean) throws Error
    + Resource fromJSON(Object,Object,boolean,boolean) 
 }
 class Wallet {
    + Wallet getWallet() 
    + void setWallet(Wallet) 
-   + Promise list() 
+   + Promise listNames() 
    + Promise contains(string) 
    + Promise get(string) 
-   + Promise add(string,string) 
-   + Promise update(string,string) 
+   + Promise put(string,string,Object) 
    + Promise remove(string) 
 }

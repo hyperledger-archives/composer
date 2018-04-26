@@ -34,9 +34,9 @@ class CmdUtil {
      */
     static log(){
         Array.from(arguments).forEach((s)=>{
+            // eslint-disable-next-line no-console
             console.log(s);
         });
-
     }
 
     /**
@@ -177,7 +177,7 @@ class CmdUtil {
 
         // Not enough certificate files or enrollment secrets!
         else {
-            console.log(JSON.stringify(argv, null, 4));
+            CmdUtil.log(JSON.stringify(argv, null, 4));
             throw new Error('You must specify certificate files or enrollment secrets for all network administrators');
         }
 
@@ -251,6 +251,19 @@ class CmdUtil {
             throw new Error('Archive file '+archiveFile+' does not exist.');
         }
         return archiveFileContents;
+    }
+
+    /**
+     * Generate a suitable card file name based on a proposed file name.
+     * This implementation simply appends '.card' if it is missing.
+     * @param {String} fileName Proposed card file name
+     * @return {String} A card file name
+     */
+    static sanitizeCardFileName(fileName) {
+        if (!/\.card$/i.test(fileName)) {
+            fileName = fileName + '.card';
+        }
+        return fileName;
     }
 }
 

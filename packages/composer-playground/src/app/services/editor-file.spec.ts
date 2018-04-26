@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -47,6 +60,11 @@ describe('EditorFile', () => {
         it('should set the content of a file', () => {
             file.setContent('newFileContent');
             file.getContent().should.equal('newFileContent');
+        });
+
+        it('should set the JSON content of a file', () => {
+            file.setJsonContent({content: 'newFileContent'});
+            file.getContent().should.equal('{\n  "content": "newFileContent"\n}');
         });
 
         it('should set deisplay id', () => {

@@ -55,8 +55,6 @@ class TransactionDeclaration extends ClassDeclaration {
      * @private
      */
     validate() {
-        super.validate();
-
         if(!this.isSystemType() && this.getName() === 'Transaction') {
             throw new IllegalModelException('Transaction is a reserved type name.', this.modelFile, this.ast.location);
         }
@@ -73,6 +71,9 @@ class TransactionDeclaration extends ClassDeclaration {
         if (!this.isSystemType() && this.idField && systemTypeDeclared) {
             throw new IllegalModelException('Transaction should not specify an identifying field.', this.modelFile, this.ast.location);
         }
+
+        // perform general validation after specific validation.
+        super.validate();
     }
 }
 

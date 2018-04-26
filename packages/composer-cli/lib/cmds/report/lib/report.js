@@ -23,7 +23,7 @@ const chalk = require('chalk');
  */
 class Report {
   /**
-    * Command implementation.
+    * Command process for report command
     * @param {Object} args argument list from composer command
     * @return {Promise} promise when command complete
     */
@@ -33,14 +33,28 @@ class Report {
 
     /**
      * Get the current environment data
+     * @return {Promise} Resolved when report completed
      */
     static createReport() {
-        cmdUtil.log(chalk.bold.blue('Creating Composer report'));
-        let tmpDirectory = report.setupReportDir();
-        cmdUtil.log(chalk.blue('Triggering node report...'));
-        report.createNodeReport(tmpDirectory);
-        let outputFile = report.archiveReport(tmpDirectory);
-        cmdUtil.log(chalk.bold.blue('Created archive file: '+outputFile));
+        try {
+            cmdUtil.log(chalk.bold.blue('Creating Composer report'));
+            const {reportId, reportDir} = report.beginReport();
+
+            cmdUtil.log(chalk.blue('Collecting diagnostic data...'));
+            report.collectBasicDiagnostics(reportId, reportDir);
+
+            const archiveName = report.completeReport(reportId, reportDir);
+            cmdUtil.log(chalk.bold.blue('\nCreated archive file: ') + archiveName);
+
+        } catch (err) {
+            if (err.name === 'DirectoryAccessError') {
+                return Promise.reject(err);
+            } else {
+                throw err;
+            }
+        }
+
+        return Promise.resolve();
     }
 }
 module.exports = Report;

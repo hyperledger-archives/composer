@@ -47,12 +47,14 @@ describe('Api', () => {
     let factory;
     let serializer;
     let mockParticipant;
+    let mockIdentity;
     let mockRegistryManager;
     let mockEventService;
     let mockHTTPService;
     let mockDataService;
     let mockAccessController;
     let mockCompiledQueryBundle;
+    let mockNativeAPI;
     let api;
 
     beforeEach(() => {
@@ -70,12 +72,19 @@ describe('Api', () => {
             o String assetId
             o String value
         }`);
+
+        mockNativeAPI = {
+            getTransactionID : sinon.stub().returns('1234')
+        };
+
         factory = new realFactory(modelManager);
         mockContext.getFactory.returns(factory);
         serializer = new realSerializer(factory, modelManager);
         mockContext.getSerializer.returns(serializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockContext.getParticipant.returns(mockParticipant);
+        mockIdentity = sinon.createStubInstance(Resource);
+        mockContext.getIdentity.returns(mockIdentity);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
         mockEventService = sinon.createStubInstance(EventService);
@@ -89,6 +98,7 @@ describe('Api', () => {
         mockContext.getAccessController.returns(mockAccessController);
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
         mockContext.getCompiledQueryBundle.returns(mockCompiledQueryBundle);
+        mockContext.getNativeAPI.returns(mockNativeAPI);
         api = new Api(mockContext);
     });
 
@@ -171,6 +181,14 @@ describe('Api', () => {
 
     });
 
+    describe('#getCurrentIdentity', () => {
+
+        it('should return the current identity', () => {
+            api.getCurrentIdentity().should.equal(mockIdentity);
+        });
+
+    });
+
     describe('#post', () => {
         let transaction;
         let spy;
@@ -186,7 +204,7 @@ describe('Api', () => {
             return api.post('url', transaction, {options: true})
                 .should.eventually.have.property('foo')
                 .then(() => {
-                    sinon.assert.calledWith(spy, transaction, { options: true, validate: true });
+                    sinon.assert.calledWith(spy, transaction, { options: true });
                     sinon.assert.calledOnce(mockHTTPService.post);
                     sinon.assert.calledWith(mockHTTPService.post, 'url', {
                         $class: 'org.doge.DogeTransaction',
@@ -215,7 +233,7 @@ describe('Api', () => {
         it('should emit the event using the event service', () => {
             api.emit(event);
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, event, { convertResourcesToRelationships: true, validate: true });
+            sinon.assert.calledWith(spy, event, { convertResourcesToRelationships: true, permitResourcesForRelationships: false });
             sinon.assert.calledOnce(mockEventService.emit);
             sinon.assert.calledWith(mockEventService.emit, {
                 $class: 'org.doge.DogeEvent',
@@ -320,6 +338,14 @@ describe('Api', () => {
                 });
         });
 
+    });
+
+    describe('#getNativeAPI', () => {
+        it('should get the native api', () => {
+            const nativeAPI = api.getNativeAPI();
+            const result = nativeAPI.getTransactionID();
+            result.should.equal('1234');
+        });
     });
 
 });

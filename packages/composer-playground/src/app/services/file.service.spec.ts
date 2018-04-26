@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -397,7 +410,7 @@ describe('FileService', () => {
             testArray[4].getType().should.equal('query');
         })));
 
-        it('should return readme + model + script + acl + query + pacakage files if they are only items stored in the file service', fakeAsync(inject([FileService], (fileService: FileService) => {
+        it('should return readme + pacakage + model + script + acl + query files if they are only items stored in the file service', fakeAsync(inject([FileService], (fileService: FileService) => {
             let file = new EditorFile('1', '1', 'this is the readme', 'readme');
             let file2 = new EditorFile('1', '1', 'this is the model', 'model');
             let file3 = new EditorFile('1', '1', 'this is the script', 'script');
@@ -418,34 +431,31 @@ describe('FileService', () => {
             fileService['queryFile'] = file5;
             fileService['packageJson'] = file6;
 
-            fileService['includePackageJson'] = true;
-            let includePackageJson = true;
-
-            let testArray = fileService.getEditorFiles(includePackageJson);
+            let testArray = fileService.getEditorFiles();
 
             testArray[0].getId().should.equal('1');
             testArray[0].getContent().should.equal('this is the readme');
             testArray[0].getType().should.equal('readme');
 
             testArray[1].getId().should.equal('1');
-            testArray[1].getContent().should.equal('this is the model');
-            testArray[1].getType().should.equal('model');
+            testArray[1].getContent().should.equal('this is the package');
+            testArray[1].getType().should.equal('package');
 
             testArray[2].getId().should.equal('1');
-            testArray[2].getContent().should.equal('this is the script');
-            testArray[2].getType().should.equal('script');
+            testArray[2].getContent().should.equal('this is the model');
+            testArray[2].getType().should.equal('model');
 
             testArray[3].getId().should.equal('1');
-            testArray[3].getContent().should.equal('this is the acl');
-            testArray[3].getType().should.equal('acl');
+            testArray[3].getContent().should.equal('this is the script');
+            testArray[3].getType().should.equal('script');
 
             testArray[4].getId().should.equal('1');
-            testArray[4].getContent().should.equal('this is the query');
-            testArray[4].getType().should.equal('query');
+            testArray[4].getContent().should.equal('this is the acl');
+            testArray[4].getType().should.equal('acl');
 
             testArray[5].getId().should.equal('1');
-            testArray[5].getContent().should.equal('this is the package');
-            testArray[5].getType().should.equal('package');
+            testArray[5].getContent().should.equal('this is the query');
+            testArray[5].getType().should.equal('query');
         })));
     });
 
@@ -673,6 +683,37 @@ describe('FileService', () => {
 
             fileService['dirty'].should.equal(false);
         })));
+    });
+
+    describe('incrementBusinessNetworkVersion', () => {
+        it('should increment prerelease version in the packageJson file', inject([FileService], (fileService: FileService) => {
+            let businessNetworkChangedSpy = sinon.spy(fileService.businessNetworkChanged$, 'next');
+
+            let file = new EditorFile('package', 'package', JSON.stringify({name: 'composer-ftw', version: '1.0.0'}), 'package');
+            fileService['packageJson'] = file;
+
+            fileService.incrementBusinessNetworkVersion();
+
+            fileService['packageJson'].getContent().should.equal('{\n  "name": "composer-ftw",\n  "version": "1.0.1-deploy.0"\n}');
+            fileService['dirty'].should.equal(false);
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+        }));
+    });
+
+    describe('updateBusinessNetworkVersion', () => {
+        it('should update version in the packageJson file', inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('package', 'package', JSON.stringify({name: 'composer-ftw', version: '1.0.0'}), 'package');
+
+            fileService['packageJson'] = file;
+
+            sinon.stub(fileService, 'validateFile').returns(null);
+
+            let updatedPackageFile = fileService.updateBusinessNetworkVersion('1.0.1-test.0');
+
+            updatedPackageFile.getContent().should.equal('{\n  "name": "composer-ftw",\n  "version": "1.0.1-test.0"\n}');
+            fileService['packageJson'].should.deep.equal(updatedPackageFile);
+            fileService['dirty'].should.equal(true);
+        }));
     });
 
     describe('updateFile', () => {
@@ -1064,7 +1105,7 @@ describe('FileService', () => {
             let testFile = fileService.getFile('1', 'package');
 
             testFile.getId().should.equal('1');
-            testFile.getContent().should.deep.equal({name: 'this is the NEW packageJson'});
+            testFile.getContent().should.deep.equal('{"name" : "this is the NEW packageJson"}');
             testFile.getType().should.equal('package');
 
             fileService['dirty'].should.equal(true);
@@ -1224,6 +1265,26 @@ describe('FileService', () => {
 
             fileService['dirty'].should.equal(false);
 
+        })));
+
+        it('should unset the current file if it was deleted', fakeAsync(inject([FileService], (fileService: FileService) => {
+            let file = new EditorFile('1', '1', 'this is the model', 'model');
+            let testModels = new Map<string, EditorFile>();
+
+            testModels.set('1', file);
+
+            fileService['currentFile'] = file;
+            fileService['modelFiles'] = testModels;
+
+            let id = '1';
+            let type = 'model';
+
+            fileService.deleteFile(id, type);
+
+            should.not.exist(fileService['currentFile']);
+            should.not.exist(testModels.get('1'));
+
+            fileService['dirty'].should.equal(true);
         })));
     });
 
@@ -1657,29 +1718,63 @@ describe('FileService', () => {
             should.not.exist(fileService.validateFile(id, type));
         })));
 
-        it('should validate package file', inject([FileService], (fileService: FileService) => {
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('myName')});
+        it('should successfully validate package file', inject([FileService], (fileService: FileService) => {
+            mockClientService.getDeployedBusinessNetworkVersion.returns('1.0.0');
+            fileService['currentBusinessNetwork'] = businessNetworkDefMock;
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('myName')
+            });
 
-            let editorFile = new EditorFile('myId', 'myDisplay', 'myContent', 'package');
-
-            editorFile.setContent({name: 'myName'});
-
-            fileService['packageJson'] = editorFile;
+            let packageFile = new EditorFile('package', 'package', 'myContent', 'package');
+            packageFile.setJsonContent({name: 'myName', version: '1.0.1'});
+            fileService['packageJson'] = packageFile;
 
             should.not.exist(fileService.validateFile('package', 'package'));
         }));
 
-        it('should not validate package file', inject([FileService], (fileService: FileService) => {
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('myOtherName')});
+        it('should validate package file and throw an error if the package name changes', inject([FileService], (fileService: FileService) => {
+            mockClientService.getDeployedBusinessNetworkVersion.returns('1.0.0');
+            fileService['currentBusinessNetwork'] = businessNetworkDefMock;
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('oldName')
+            });
 
-            let editorFile = new EditorFile('myId', 'myDisplay', 'myContent', 'package');
-
-            editorFile.setContent({name: 'myName'});
-
-            fileService['packageJson'] = editorFile;
+            let packageFile = new EditorFile('package', 'package', 'myContent', 'package');
+            packageFile.setJsonContent({name: 'myName', version: '1.0.1'});
+            fileService['packageJson'] = packageFile;
 
             let result = fileService.validateFile('package', 'package');
             result.toString().should.contain('Unsupported attempt to update Business Network Name.');
+        }));
+
+        it('should validate package file and throw an error if the version matches the deployed version', inject([FileService], (fileService: FileService) => {
+            mockClientService.getDeployedBusinessNetworkVersion.returns('1.0.0');
+            fileService['currentBusinessNetwork'] = businessNetworkDefMock;
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('myName')
+            });
+
+            let packageFile = new EditorFile('package', 'package', 'myContent', 'package');
+            packageFile.setJsonContent({name: 'myName', version: '1.0.0'});
+            fileService['packageJson'] = packageFile;
+
+            let result = fileService.validateFile('package', 'package');
+            result.toString().should.contain('The Business Network has already been deployed at the current version.');
+        }));
+
+        it('should validate package file and throw an error if the version older than the deployed version', inject([FileService], (fileService: FileService) => {
+            mockClientService.getDeployedBusinessNetworkVersion.returns('1.0.1');
+            fileService['currentBusinessNetwork'] = businessNetworkDefMock;
+            businessNetworkDefMock.getMetadata.returns({
+                getName: sinon.stub().returns('myName')
+            });
+
+            let packageFile = new EditorFile('package', 'package', 'myContent', 'package');
+            packageFile.setJsonContent({name: 'myName', version: '1.0.0'});
+            fileService['packageJson'] = packageFile;
+
+            let result = fileService.validateFile('package', 'package');
+            result.toString().should.contain('A more recent version of the Business Network has already been deployed.');
         }));
 
         it('should throw an error when no match with provided file type', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -1754,7 +1849,7 @@ describe('FileService', () => {
             addFileStub.thirdCall.should.have.been.calledWith('myId', 'myId', 'myDefs', 'acl');
             addFileStub.getCall(3).should.have.been.calledWith('myId', 'myId', 'myDefs', 'query');
             addFileStub.getCall(4).should.have.been.calledWith('readme', 'README.md', 'myReadMe', 'readme');
-            addFileStub.getCall(5).should.have.been.calledWith('package', 'package.json', 'myJson', 'package');
+            addFileStub.getCall(5).should.have.been.calledWith('package', 'package.json', '"myJson"', 'package');
 
             getFilesStub.should.have.been.called;
 
@@ -1990,6 +2085,16 @@ describe('FileService', () => {
             fileService.updateBusinessNetwork('oldId', editorFile);
 
             updateBusinessNetworkFileStub.should.have.been.calledWith('oldId', 'myContent', 'package');
+        }));
+
+        it('should throw an error when no match with provided file type', inject([FileService], (fileService: FileService) => {
+            let editorFile = new EditorFile('octopusId', 'octopusDisplayId', 'octopusContent', 'octopus');
+
+            (() => {
+                fileService.updateBusinessNetwork('oldId', editorFile);
+            }).should.throw(/Attempted update of unknown file of type: octopus/);
+
+            fileService['dirty'].should.equal(false);
         }));
     });
 
@@ -2243,7 +2348,7 @@ describe('FileService', () => {
     describe('replaceBusinessNetworkFile', () => {
         it('should handle error case by notifying and returning error message in string', inject([FileService], (service: FileService) => {
             service['currentBusinessNetwork'] = businessNetworkDefMock;
-            service['currentBusinessNetwork'].getModelManager.throws(new Error('Forced Error'));
+            (service['currentBusinessNetwork'].getModelManager as any).throws(new Error('Forced Error'));
             let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
 
             let response = service.replaceBusinessNetworkFile('oldId', 'newId', 'content', 'model');
@@ -2462,21 +2567,6 @@ describe('FileService', () => {
             businessNetworkDefMock.setReadme.should.have.been.calledWith('my readme');
         }));
 
-        it('should set business network version', inject([FileService], (service: FileService) => {
-            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-
-            businessNetworkDefMock.getMetadata.returns({
-                getName: sinon.stub().returns('my name'),
-                getPackageJson: sinon.stub().returns({version: '0.0'}),
-                setPackageJson: sinon.stub()
-            });
-
-            service.setBusinessNetworkVersion('new_version');
-
-            businessNetworkDefMock.setPackageJson.should.have.been.calledWith({version: 'new_version'});
-            businessNetworkChangedSpy.should.have.been.calledWith(true);
-        }));
-
         it('should set business network packageJson', inject([FileService], (service: FileService) => {
             businessNetworkDefMock.getMetadata.returns({
                 getName: sinon.stub().returns('my name')
@@ -2484,7 +2574,7 @@ describe('FileService', () => {
 
             let packageJson = {name: 'my name', version: 'my version', description: 'my description'};
 
-            service.setBusinessNetworkPackageJson(packageJson);
+            service.setBusinessNetworkPackageJson(JSON.stringify(packageJson, null, 2));
 
             businessNetworkDefMock.setPackageJson.should.have.been.calledWith(packageJson);
         }));
@@ -2564,6 +2654,20 @@ describe('FileService', () => {
             let result = service.getBusinessNetworkName();
 
             result.should.equal('my name');
+        }));
+    });
+
+    describe('getBusinessNetworkVersion', () => {
+        it('should get the name', inject([FileService], (service: FileService) => {
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            businessNetworkDefMock.getMetadata.returns({
+                getVersion: sinon.stub().returns('1.0.0')
+            });
+
+            let result = service.getBusinessNetworkVersion();
+
+            result.should.equal('1.0.0');
         }));
     });
 

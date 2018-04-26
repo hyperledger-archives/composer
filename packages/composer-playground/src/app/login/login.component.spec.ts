@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -359,10 +372,11 @@ describe(`LoginComponent`, () => {
 
         it('should change identity', fakeAsync(() => {
             component['idCards'] = mockIdCards;
+            sinon.stub(component, 'canDeploy').returns(true);
             mockIdentityCardService.setCurrentIdentityCard.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
 
-            component.changeIdentity('myCardRef');
+            component.changeIdentity('myCardRef', 'myConnectionProfileRef');
 
             tick();
 
@@ -374,9 +388,10 @@ describe(`LoginComponent`, () => {
 
         it('should handle error', fakeAsync(() => {
             component['idCards'] = mockIdCards;
+            sinon.stub(component, 'canDeploy').returns(true);
             mockIdentityCardService.setCurrentIdentityCard.returns(Promise.reject('some error'));
 
-            component.changeIdentity('myCardRef');
+            component.changeIdentity('myCardRef', 'myConnectionProfileRef');
 
             tick();
 
@@ -385,6 +400,51 @@ describe(`LoginComponent`, () => {
 
             routerStub.navigate.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+        }));
+
+        it('should open the connect-confirm modal', fakeAsync(() => {
+            component['idCards'] = mockIdCards;
+            sinon.stub(component, 'canDeploy').returns(false);
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve(0)
+            });
+
+            component.changeIdentity('myCardRef', 'myConnectionProfileRef');
+            tick();
+
+            mockModal.open.should.have.been.called;
+        }));
+
+        it('should open connect-confirm modal modal and handle error', fakeAsync(() => {
+            component['idCards'] = mockIdCards;
+            sinon.stub(component, 'canDeploy').returns(false);
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            component.changeIdentity('myCardRef', 'myConnectionProfileRef');
+            tick();
+
+            mockAlertService.errorStatus$.next.should.have.been.called;
+            mockIdentityCardService.setCurrentIdentityCard.should.not.have.been.called;
+        }));
+
+        it('should open connect-confirm modal and handle cancel', fakeAsync(() => {
+            component['idCards'] = mockIdCards;
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(null)
+            });
+
+            component.changeIdentity('myCardRef', 'myConnectionProfileRef');
+            tick();
+
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockIdentityCardService.setCurrentIdentityCard.should.not.have.been.called;
         }));
     });
 
@@ -610,35 +670,39 @@ describe(`LoginComponent`, () => {
     });
 
     describe('deployNetwork', () => {
-        it('should deploy a new business network showing credentials', () => {
+        it('should deploy a new business network showing credentials', fakeAsync(() => {
             component['indestructibleCards'] = [];
 
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
+            mockIdentityCardService.getAdminCardRef.returns('4321');
             component.deployNetwork('1234');
 
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234');
+            tick();
+
+            mockIdentityCardService.getAdminCardRef.should.have.been.calledWith('1234');
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
 
             component['showSubScreen'].should.equal(true);
             component['showDeployNetwork'].should.equal(true);
 
             component['showCredentials'].should.equal(true);
-        });
+        }));
 
-        it('should deploy a new business network not showing credentials', () => {
+        it('should deploy a new business network not showing credentials', fakeAsync(() => {
             component['indestructibleCards'] = ['4321'];
 
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['4321']);
+            mockIdentityCardService.getAdminCardRef.returns('4321');
             component.deployNetwork('1234');
 
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234');
+            tick();
+
+            mockIdentityCardService.getAdminCardRef.should.have.been.calledWith('1234');
             mockIdentityCardService.setCurrentIdentityCard.should.have.been.calledWith('4321');
 
             component['showSubScreen'].should.equal(true);
             component['showDeployNetwork'].should.equal(true);
 
             component['showCredentials'].should.equal(false);
-        });
+        }));
     });
 
     describe('finishedDeploying', () => {
@@ -745,40 +809,10 @@ describe(`LoginComponent`, () => {
     });
 
     describe('canDeploy', () => {
-        it('should show deploy button if got all correct cards', () => {
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns(['web-cardRef']);
+        it('should check if PeerAdmin and ChannelAdmin cards are available', () => {
+            component.canDeploy('1234');
 
-            let result = component.canDeploy('1234');
-
-            result.should.equal(true);
-
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
-        });
-
-        it('should not show deploy button if no PeerAdmin Role', () => {
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.returns([]);
-
-            let result = component.canDeploy('1234');
-
-            result.should.equal(false);
-
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledOnce;
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledWith('1234', 'PeerAdmin');
-        });
-
-        it('should not show deploy button if not got ChannelAdmin role', () => {
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.onFirstCall().returns(['web-cardRef']);
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.onSecondCall().returns([]);
-
-            let result = component.canDeploy('1234');
-
-            result.should.equal(false);
-
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.should.have.been.calledTwice;
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
-            mockIdentityCardService.getIdentityCardRefsWithProfileAndRole.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+            mockIdentityCardService.canDeploy.should.have.been.calledWith('1234');
         });
     });
 

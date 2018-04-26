@@ -14,32 +14,74 @@
 
 'use strict';
 
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Composer = require('../lib/composer');
-const MockStub = require('./mockstub');
 const NodeContainer = require('../lib/nodecontainer');
-const Engine = require('composer-runtime').Engine;
-const Context = require('composer-runtime').Context;
+const { Context, Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const shim = require('fabric-shim');
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 require('chai').should();
 const sinon = require('sinon');
 
 describe('Composer', () => {
+    const sandbox = sinon.sandbox.create();
 
-    let sandbox;
-    let composer, mockStub, mockEngine, mockContext;
+    let composer;
+    let mockStub;
+    let mockEngine;
+    let mockContext;
+    let testBusinessNetwork;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
-        composer = new Composer();
-        mockStub = sinon.createStubInstance(MockStub);
+        mockStub = sinon.createStubInstance(ChaincodeStub);
         mockEngine = sinon.createStubInstance(Engine);
         mockContext = sinon.createStubInstance(Context);
-
+        testBusinessNetwork = new BusinessNetworkDefinition('business-network@1.0.0-test');
+        return InstalledBusinessNetwork.newInstance(testBusinessNetwork)
+            .then(installedBusinessNetwork => {
+                composer = new Composer(installedBusinessNetwork);
+            });
     });
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('#start', () => {
+        beforeEach(() => {
+            sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').resolves(testBusinessNetwork);
+            sandbox.stub(shim, 'start').returns();
+        });
+
+        it('should call shim.start()', () => {
+            return Composer.start().then(() => {
+                sinon.assert.calledOnce(shim.start);
+            });
+        });
+
+        it('should pass a Composer instance with installed business network', () => {
+            return Composer.start().then(() => {
+                sinon.assert.calledWith(shim.start,
+                    sinon.match(composer => composer.installedBusinessNetwork.getDefinition() === testBusinessNetwork));
+            });
+        });
+    });
+
+    describe('#start error', () => {
+        beforeEach(() => {
+            sandbox.stub(BusinessNetworkDefinition, 'fromDirectory').throws(new Error('FromDirectory Error'));
+        });
+
+        it('should not call shim.start()', () => {
+            try {
+                return Composer.start().then(() => {
+                });
+            } catch (error) {
+                sinon.assert.not.calledOnce(shim.start);
+                sinon.match(error.message, 'FromDirectory Error');
+            }
+        });
     });
 
     describe('#constructor', () => {
@@ -77,10 +119,9 @@ describe('Composer', () => {
             mockStub.getFunctionAndParameters.returns({fcn:'someFn', params:[]});
             mockEngine.init.resolves();
 
-
             return composer.Init(mockStub)
                 .then(() => {
-                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(composer._createContext);
                     sinon.assert.notCalled(mockEngine.init);
                     sinon.assert.calledOnce(shim.error);
                     sinon.assert.calledWith(shim.error, error);
@@ -202,7 +243,7 @@ describe('Composer', () => {
 
             return composer.Invoke(mockStub)
                 .then(() => {
-                    sinon.assert.calledWith(composer._createContext, mockEngine, mockStub);
+                    sinon.assert.notCalled(composer._createContext);
                     sinon.assert.notCalled(mockEngine.invoke);
                     sinon.assert.calledOnce(shim.error);
                     sinon.assert.calledWith(shim.error, error);
@@ -236,8 +277,8 @@ describe('Composer', () => {
 
     describe('#_createContext', () => {
         it('should create a context', () => {
-            let engine = composer._createContext(mockEngine, mockStub);
-            engine.should.be.instanceOf(Context);
+            const context = composer._createContext(mockEngine, mockStub);
+            context.should.be.instanceOf(Context);
         });
     });
 

@@ -20,10 +20,10 @@ module.exports.command = 'delete [options]';
 module.exports.describe = 'Delete a business network card';
 module.exports.builder = (yargs) => {
     yargs.options({
-        name: { alias: 'n', required: true, describe: 'The name of the card to delete', type: 'string' }
+        card: { alias: 'c', required: true, describe: 'The name of the card to delete', type: 'string' }
     });
 
-    yargs.requiresArg(['n']);
+    yargs.requiresArg(['c']);
 
     return yargs;
 };

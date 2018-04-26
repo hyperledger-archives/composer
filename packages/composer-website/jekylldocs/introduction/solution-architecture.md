@@ -16,7 +16,7 @@ index-order: 102
 
 {{site.data.conrefs.composer_full}} is composed of the following high-level components:
 
-* Execution Runtimes (four are currently supported!)
+* Execution Runtimes
 * JavaScript SDK
 * Command Line Interface
 * REST Server
@@ -28,14 +28,14 @@ index-order: 102
 ## Execution Runtimes
 
 {{site.data.conrefs.composer_full}} has been designed to support different pluggable runtimes, and currently has three runtime implementations:
-.
-* {{site.data.conrefs.hlf_full}} version 1.0. State is stored on the distributed ledger.
+
+* {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}. State is stored on the distributed ledger.
 * Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.
 * Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.
 
 ### Connection Profiles
 
-Connection Profiles are used across {{site.data.conrefs.composer_full}} to specify how to connect to an execution runtime. There are different configuration options for each _type_ of execution runtime. For example, the connection profile for an {{site.data.conrefs.hlf_full}} version 1.0 runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.
+Connection Profiles are used across {{site.data.conrefs.composer_full}} to specify how to connect to an execution runtime. There are different configuration options for each _type_ of execution runtime. For example, the connection profile for a {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.
 
 Connection Profiles are part of Business Network cards.
 
@@ -46,7 +46,7 @@ The {{site.data.conrefs.composer_full}} JavaScript SDK is a set of Node.js APIs 
 The APIs are split between two npm modules:
 
 1. `composer-client` used to submit transactions to a business network or to perform Create, Read, Update, Delete operations on assets and participants
-2. `composer-admin` used to manage business networks (deploy, undeploy)
+2. `composer-admin` used to manage business networks (install, start, upgrade)
 
 Details of all the APIs are available as JSDocs (see reference).
 

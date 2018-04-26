@@ -17,7 +17,13 @@
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const ModelFile = require('../lib/introspect/modelfile');
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const JSZip = require('jszip');
+const moxios = require('moxios');
+const nodeUtil = require('util');
+
+const rimraf = nodeUtil.promisify(require('rimraf'));
 
 const chai = require('chai');
 const should = chai.should();
@@ -28,13 +34,29 @@ let sandbox;
 describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
-    beforeEach(() => {
+    let productModel = fs.readFileSync('./test/data/model/product.cto', 'utf8');
+    let baseModel = fs.readFileSync('./test/data/model/base.cto', 'utf8');
+    let addressModel = fs.readFileSync('./test/data/model/address.cto', 'utf8');
+    let organizationModel = fs.readFileSync('./test/data/model/organization.cto', 'utf8');
 
+    /**
+     * Assert that the persistent representation of two business networks is the same.
+     * @param {BusinessNetworkDefinition} actual The actual value.
+     * @param {BusinessNetworkDefinition} expected The expected value.
+     */
+    function assertBusinessNetworkEquals(actual, expected) {
+        const actualFiles = actual._getAllArchiveFiles();
+        const expectedFiles = expected._getAllArchiveFiles();
+        actualFiles.should.deep.equal(expectedFiles);
+    }
+
+    beforeEach(() => {
         businessNetworkDefinition = new BusinessNetworkDefinition('id@1.0.0', 'description');
+        moxios.install();
     });
 
     afterEach(() => {
-
+        moxios.uninstall();
     });
 
     describe('#identifier format checking', () => {
@@ -97,11 +119,11 @@ describe('BusinessNetworkDefinition', () => {
         });
 
         it('should be able to retrieve acl manager', () => {
-            businessNetworkDefinition.getAclManager.should.not.be.null;
+            businessNetworkDefinition.getAclManager().should.not.be.null;
         });
 
         it('should be able to retrieve query manager', () => {
-            businessNetworkDefinition.getQueryManager.should.not.be.null;
+            businessNetworkDefinition.getQueryManager().should.not.be.null;
         });
 
         it('should be able to retrieve identifier', () => {
@@ -139,6 +161,43 @@ describe('BusinessNetworkDefinition', () => {
         });
 
         afterEach( ()=>{sandbox.restore();});
+
+        it('should be able to create a business network using imports', () => {
+
+            // mock HTTP return values
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/product.cto', {
+                status: 200,
+                responseText: productModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/base.cto', {
+                status: 200,
+                responseText: baseModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/organization.cto', {
+                status: 200,
+                responseText: organizationModel
+            });
+
+            moxios.stubRequest('https://raw.githubusercontent.com/accordproject/models/master/address.cto', {
+                status: 200,
+                responseText: addressModel
+            });
+
+            // this will download model files from the Internet
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-import-network', {updateExternalModels: true})
+            .then(businessNetwork => {
+                return businessNetwork.toArchive();
+            }).then ( (archive) => {
+                return BusinessNetworkDefinition.fromArchive(archive);
+            })
+            .then ( (businessNetwork) => {
+                // should include the external CTO files (4) plus the model (1) plus the system model (1)
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(6);
+            });
+        });
+
 
         it('should be able to correctly create a business network from a plain directory', () => {
 
@@ -309,8 +368,36 @@ describe('BusinessNetworkDefinition', () => {
             });
         });
 
+        it('should write a valid archive directory', () => {
+            const bnaPath = fs.mkdtempSync(path.join(os.tmpdir(), 'composer-test-bna-'));
+            const rimrafOptions = { disableGlob: true };
 
-    } );
+            let sourceNetwork;
+            let savedNetwork;
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive')
+                .then(businessNetwork => {
+                    sourceNetwork = businessNetwork;
+                    return sourceNetwork.toDirectory(bnaPath);
+                }).then(() => {
+                    return BusinessNetworkDefinition.fromDirectory(bnaPath);
+                }).then(businessNetwork => {
+                    savedNetwork = businessNetwork;
+                    return rimraf(bnaPath, rimrafOptions);
+                }).then(() => {
+                    assertBusinessNetworkEquals(savedNetwork, sourceNetwork);
+                });
+        });
+
+        it('should not fail on load with bad dependencies if dependency processing disabled', () => {
+            const bnaDirectory = path.join(__dirname, 'data', 'zip', 'test-archive-broken-dependency');
+            return BusinessNetworkDefinition.fromDirectory(bnaDirectory, { processDependencies: false })
+                .should.be.fulfilled.then(result => {
+                    result.should.be.BusinessNetworkDefinition;
+                });
+        });
+
+    });
 
     describe('#usingArchives', () => {
 

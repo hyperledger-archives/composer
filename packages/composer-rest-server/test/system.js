@@ -15,19 +15,14 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const IdCard = require('composer-common').IdCard;
+const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
 require('loopback-component-passport');
 const server = require('../server/server');
 const version = require('../package.json').version;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-http'));
-
-
 
 describe('System REST API unit tests', () => {
 
@@ -108,7 +103,7 @@ describe('System REST API unit tests', () => {
     };
 
     before(() => {
-        const cardStore = new MemoryCardStore();
+        const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
         const adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
@@ -126,10 +121,10 @@ describe('System REST API unit tests', () => {
         .then((result) => {
             businessNetworkDefinition = result;
             serializer = businessNetworkDefinition.getSerializer();
-            return adminConnection.install(businessNetworkDefinition.getName());
+            return adminConnection.install(businessNetworkDefinition);
         })
         .then(()=>{
-            return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
+            return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
         })
         .then(() => {
             idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
@@ -210,7 +205,8 @@ describe('System REST API unit tests', () => {
                     res.should.be.json;
                     res.body.should.deep.equal({
                         version: version,
-                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin'
+                        participant: 'org.hyperledger.composer.system.NetworkAdmin#admin',
+                        identity: `org.hyperledger.composer.system.Identity#${identityIds[0]}`
                     });
                 });
         });
@@ -300,12 +296,9 @@ describe('System REST API unit tests', () => {
 
     describe('POST /identities/bind', () => {
 
+        const { certificate } = CertificateUtil.generate({ commonName: 'member1' });
+
         it('should bind an identity to a participant in the business network', () => {
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('MEMBER_1').toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
             return chai.request(app)
                 .post('/api/system/identities/bind')
                 .send({
@@ -320,11 +313,6 @@ describe('System REST API unit tests', () => {
         });
 
         it('should return a 500 if the specified participant does not exist', () => {
-            const certificate = [
-                '----- BEGIN CERTIFICATE -----',
-                Buffer.from('MEMBER_1').toString('base64'),
-                '----- END CERTIFICATE -----'
-            ].join('\n').concat('\n');
             return chai.request(app)
                 .post('/api/system/identities/bind')
                 .send({

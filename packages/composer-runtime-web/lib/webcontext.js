@@ -29,12 +29,13 @@ class WebContext extends Context {
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork Information on the installed business network.
      * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
      */
-    constructor(engine, identity, eventSink) {
-        super(engine);
-        this.dataService = new WebDataService(engine.getContainer().getName());
+    constructor(engine, installedBusinessNetwork, identity, eventSink) {
+        super(engine, installedBusinessNetwork);
+        this.dataService = WebDataService.newNetworkDataService(engine.getContainer().getName());
         this.identityService = new WebIdentityService(identity);
         this.eventSink = eventSink;
     }
@@ -75,6 +76,13 @@ class WebContext extends Context {
             this.httpService = new WebHTTPService();
         }
         return this.httpService;
+    }
+
+    /**
+     * Get the native api
+     */
+    getNativeAPI() {
+        throw new Error('Native API not available in web runtime');
     }
 
 }

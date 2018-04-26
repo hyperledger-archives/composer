@@ -150,6 +150,9 @@ class Typed {
                         const dateTime = new Date();
                         dateTime.setTime(Date.parse(defaultValue));
                         this.setPropertyValue(field.getName(), dateTime);
+                    } else {
+                        // following precident set in jsonpopulator.js - if we get this far the field should be an enum
+                        this.setPropertyValue(field.getName(), defaultValue);
                     }
                 }
             }

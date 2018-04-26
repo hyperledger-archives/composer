@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -218,63 +231,56 @@ describe('AdminService', () => {
         })));
     });
 
-    describe('deploy', () => {
-        it('should deploy a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
-            sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
-            businessNetworkDefMock.getName.returns('myNetwork');
-
-            service.deploy(businessNetworkDefMock);
-
-            tick();
-
-            adminConnectionMock.deploy.should.have.been.calledWith(businessNetworkDefMock);
-        })));
-    });
-
     describe('install', () => {
         it('should install a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
             sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            businessNetworkDefMock.getName.returns('myNetwork');
 
-            service.install('myNetwork');
+            service.install(businessNetworkDefMock);
 
             tick();
 
-            adminConnectionMock.install.should.have.been.calledWith('myNetwork');
+            adminConnectionMock.install.should.have.been.calledWith(businessNetworkDefMock);
         })));
     });
 
     describe('start', () => {
+        const networkName = 'network-name';
+        const networkVersion = '1.0.0-test';
+
         it('should start a business network without options', fakeAsync(inject([AdminService], (service: AdminService) => {
             sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
-            service.start(businessNetworkDefMock);
+            service.start(networkName, networkVersion);
 
             tick();
 
-            adminConnectionMock.start.should.have.been.calledWith(businessNetworkDefMock);
+            adminConnectionMock.start.should.have.been.calledWith(networkName, networkVersion);
         })));
 
         it('should start a business network with options', fakeAsync(inject([AdminService], (service: AdminService) => {
             sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
             const startOptions = {option: 1};
-            service.start(businessNetworkDefMock, startOptions);
+            service.start(networkName, networkVersion, startOptions);
 
             tick();
 
-            adminConnectionMock.start.should.have.been.calledWith(businessNetworkDefMock, startOptions);
+            adminConnectionMock.start.should.have.been.calledWith(networkName, networkVersion, startOptions);
         })));
     });
 
-    describe('update', () => {
-        it('should update a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+    describe('upgrade', () => {
+        it('should upgrade a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
             service['adminConnection'] = adminConnectionMock;
+            const networkName = 'network-name';
+            const networkVersion = '1.0.0-test';
 
-            service.update(businessNetworkDefMock);
+            service.upgrade(networkName, networkVersion);
 
             tick();
 
-            adminConnectionMock.update.should.have.been.calledWith(businessNetworkDefMock);
+            adminConnectionMock.upgrade.should.have.been.calledWith(networkName, networkVersion);
         })));
     });
 

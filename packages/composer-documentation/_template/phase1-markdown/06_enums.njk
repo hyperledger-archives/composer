@@ -1,0 +1,20 @@
+# Enumeration Detail
+
+{% for enum in types.enum %}
+### {{enum.name}}
+The fully qualified name is **{{enum.fqn}}**
+
+### Additional Information
+
+{% if enum.decorators.docs %}
+    {% for extra in enum.decorators.docs %}
+{{ enum.decorators[extra] }}
+    {% endfor %}
+{% endif %}
+
+| Name | 
+| ---  |  
+{% for id,info in enum.properties %}| {{id}} |
+{% endfor %}
+
+{% endfor %}

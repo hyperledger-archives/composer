@@ -32,9 +32,10 @@ class EmbeddedContext extends Context {
      * @param {Engine} engine The owning engine.
      * @param {Object} identity The current identity.
      * @param {EventEmitter} eventSink The event emitter
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork The installed business network
      */
-    constructor(engine, identity, eventSink) {
-        super(engine);
+    constructor(engine, identity, eventSink, installedBusinessNetwork) {
+        super(engine, installedBusinessNetwork);
         this.dataService = new EmbeddedDataService(engine.getContainer().getUUID());
         this.identityService = new EmbeddedIdentityService(identity);
         this.eventSink = eventSink;
@@ -88,6 +89,13 @@ class EmbeddedContext extends Context {
             this.scriptCompiler = new EmbeddedScriptCompiler();
         }
         return this.scriptCompiler;
+    }
+
+    /**
+     * Get the native api
+     */
+    getNativeAPI() {
+        throw new Error('Native API not available in embedded runtime');
     }
 }
 

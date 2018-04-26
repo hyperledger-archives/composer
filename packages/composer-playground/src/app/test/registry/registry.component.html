@@ -1,3 +1,16 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <div *ngIf="_registry" class="resource-header">
     <div class="resource-header-left">
         <h1 *ngIf="!isHistorian()">{{_registry.name}}</h1>
@@ -24,14 +37,14 @@
                      [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && overFlowedResources[resource.getIdentifier()], 'tiny-gradient' : resource.getIdentifier() === expandedResource || !overFlowedResources[resource.getIdentifier()]}"
                      class="data">{{serialize(resource)}}</pre>
                 <div lass="resource-icon">
-                    <button type="button" class="icon" (click)="editResource(resource)">
+                    <button type="button" class="icon edit-resource" (click)="editResource(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-edit_32"></use>
                         </svg>
                     </button>
                 </div>
                 <div class="resource-icon">
-                    <button type="button" class="icon" (click)="openDeleteResourceModal(resource)">
+                    <button type="button" class="icon delete-resource" (click)="openDeleteResourceModal(resource)">
                         <svg class="ibm-icon" aria-hidden="true">
                             <use xlink:href="#icon-bin_icon"></use>
                         </svg>

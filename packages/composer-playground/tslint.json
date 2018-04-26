@@ -30,8 +30,7 @@
         "no-output-rename": true,
         "pipe-naming": [
             true,
-            "camelCase",
-            "my"
+            "camelCase"
         ],
         "templates-use-public": false,
         "use-host-property-decorator": true,

@@ -1,9 +1,22 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <section class="main-view">
     <div class="main-view-content">
-        <div class="flex">
+        <div class="flex" id="myIDs">
             <div class="flex-container">
-                <h1 class="flex">My IDs for {{businessNetworkName}}</h1>
-                <button type="button" class="secondary" (click)="issueNewId()">
+                <h1 class="network-name" title="{{businessNetworkName}}">My IDs for {{businessNetworkName}}</h1>
+                <button id="issueID" type="button" class="secondary" (click)="issueNewId()">
                     <span>Issue New ID</span>
                 </button>
             </div>
@@ -13,27 +26,30 @@
                 <div class="id">ID Name</div>
                 <div class="status">Status</div>
             </div>
-            <div class="identity" *ngFor="let cardRef of cardRefs" (dblclick)="setCurrentIdentity(cardRef, true)">
+            <div class="identity" *ngFor="let ID of myIDs" (dblclick)="setCurrentIdentity(ID, true)">
                 <div class="selected-border"
-                     [ngClass]="{'selected-border--selected': cardRef === currentIdentity}"></div>
+                     [ngClass]="{'selected-border--selected': ID.ref === currentIdentity}"></div>
                 <div class="id">
-                    {{identityCards.get(cardRef).getUserName()}}
+                    {{identityCards.get(ID.ref).getUserName()}}
                 </div>
-                <div class="flex" *ngIf="cardRef===currentIdentity">
+                <div class="flex" *ngIf="ID.ref===currentIdentity">
                     In Use
                 </div>
-                <div class="flex" *ngIf="cardRef!==currentIdentity">
+                <div class="flex" *ngIf="ID.ref!==currentIdentity && ID.usable ">
                     <i>In my wallet</i>
                 </div>
-                <div class="actions" *ngIf="cardRef!==currentIdentity">
-                    <button class="clear" (click)="setCurrentIdentity(cardRef, true)">Use now</button>
-                    <button class="clear" (click)="openRemoveModal(cardRef); $event.stopPropagation()">Remove</button>
+                <div class="flex" *ngIf="ID.ref!==currentIdentity && !ID.usable">
+                    <i>Bound participant not found</i>
+                </div>
+                <div class="actions" *ngIf="ID.ref!==currentIdentity">
+                    <button class="clear" *ngIf="ID.usable" (click)="setCurrentIdentity(ID, true)">Use now</button>
+                    <button class="clear" (click)="openRemoveModal(ID.ref); $event.stopPropagation()">Remove</button>
                 </div>
             </div>
         </div>
-        <div class="flex">
+        <div class="flex" id="allIDs">
             <div class="flex-container">
-                <h1 class="flex">All IDs for {{ businessNetworkName }}</h1>
+                <h1 class="network-name" title="{{businessNetworkName}}">All IDs for {{ businessNetworkName }}</h1>
             </div>
 
             <div class="identity-title">

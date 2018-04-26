@@ -20,8 +20,8 @@ const ResourceId = require('./resourceid');
 
 /**
  * A Relationship is a typed pointer to an instance. I.e the relationship
- * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates
- * a pointer that points at an instance of org.acme.Vehicle with the id
+ * with namespace = 'org.example', type = 'Vehicle' and id = 'ABC' creates
+ * a pointer that points at an instance of org.example.Vehicle with the id
  * ABC.
  *
  * Applications should retrieve instances from {@link Factory}

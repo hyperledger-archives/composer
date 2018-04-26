@@ -21,9 +21,10 @@ const EnumDeclaration = require('../../lib/introspect/enumdeclaration');
 const ConceptDeclaration = require('../../lib/introspect/conceptdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
+const IntrospectUtils = require('./introspectutils');
+
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
-const fs = require('fs');
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -32,37 +33,13 @@ describe('ClassDeclaration', () => {
 
     let modelManager;
     let modelFile;
+    let introspectUtils;
 
     beforeEach(() => {
         modelManager = new ModelManager();
+        introspectUtils = new IntrospectUtils(modelManager);
         modelFile = new ModelFile(modelManager, 'namespace com.hyperledger.testing', 'org.acme.cto');
     });
-
-    /**
-     * Load an arbitrary number of model files.
-     * @param {String[]} modelFileNames array of model file names.
-     * @param {ModelManager} modelManager the model manager to which the created model files will be registered.
-     * @return {ModelFile[]} array of loaded model files, matching the supplied arguments.
-     */
-    const loadModelFiles = (modelFileNames, modelManager) => {
-        const modelFiles = [];
-        for (let modelFileName of modelFileNames) {
-            const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-            const modelFile = new ModelFile(modelManager, modelDefinitions);
-            modelFiles.push(modelFile);
-        }
-        return modelFiles;
-    };
-
-    const loadModelFile = (modelFileName) => {
-        return loadModelFiles([modelFileName], modelManager)[0];
-    };
-
-    const loadLastDeclaration = (modelFileName, type) => {
-        const modelFile = loadModelFile(modelFileName);
-        const declarations = modelFile.getDeclarations(type);
-        return declarations[declarations.length - 1];
-    };
 
     describe('#constructor', () => {
 
@@ -101,55 +78,64 @@ describe('ClassDeclaration', () => {
 
 
         it('should throw when asset name is duplicted in a modelfile', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeassetname.cto', AssetDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.dupeassetname.cto', AssetDeclaration);
             (() => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
 
         it('should throw when transaction name is duplicted in a modelfile', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupetransactionname.cto', TransactionDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.dupetransactionname.cto', TransactionDeclaration);
             (() => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
 
         it('should throw when participant name is duplicted in a modelfile', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeparticipantname.cto', ParticipantDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.dupeparticipantname.cto', ParticipantDeclaration);
             (() => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
-        it('should throw when an identifier extends from a super type', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.identifierextendsfromsupertype.cto', AssetDeclaration);
+
+        it('should throw when an super type identifier is redeclared', () => {
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.identifierextendsfromsupertype.cto', AssetDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Identifier cannot extend from super type/);
+            }).should.throw(/Identifier from super class cannot be redeclared./);
         });
 
+        // TODO: This has been disabled pending major version bump and/or confirmation that this is illegal
+        //it('should throw when a class attempts to override the identifier', () => {
+        //    let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.classoverridesidentifier.cto', AssetDeclaration);
+        //    (() => {
+        //        asset.validate();
+        //    }).should.throw(/Identifier defined in super class/);
+        //});
+
         it('should throw when concept name is duplicted in a modelfile', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
             (() => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
 
         it('should throw when enum name is duplicted in a modelfile', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeenumname.cto', EnumDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.dupeenumname.cto', EnumDeclaration);
             (() => {
                 asset.validate();
             }).should.throw(/Duplicate class/);
         });
 
         it('should throw when not abstract, not enum and not concept without an identifier', () => {
-            let asset = loadLastDeclaration('test/data/parser/classdeclaration.noidentifier.cto', TransactionDeclaration);
+            let asset = introspectUtils.loadLastDeclaration('test/data/parser/classdeclaration.noidentifier.cto', AssetDeclaration);
             asset.superType = null;
             try {
                 asset.validate();
             } catch (err) {
                 err.should.be.an.instanceOf(IllegalModelException);
                 should.exist(err.message);
-                err.message.should.match(/Class Transaction is not declared as abstract. It must define an identifying field./);
+                err.message.should.match(/Class someAsset is not declared as abstract. It must define an identifying field./);
             }
         });
     });
@@ -233,11 +219,9 @@ describe('ClassDeclaration', () => {
             'test/data/parser/classdeclaration.participantwithparents.parent.cto',
             'test/data/parser/classdeclaration.participantwithparents.child.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames);
             modelManager.addModelFiles(modelFiles);
         });
 
@@ -272,11 +256,9 @@ describe('ClassDeclaration', () => {
         const modelFileNames = [
             'test/data/parser/classdeclaration.good.nested.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
 
@@ -299,11 +281,9 @@ describe('ClassDeclaration', () => {
             'test/data/parser/classdeclaration.participantwithparents.parent.cto',
             'test/data/parser/classdeclaration.participantwithparents.child.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
 
@@ -328,13 +308,11 @@ describe('ClassDeclaration', () => {
     describe('#_resolveSuperType', () => {
 
         it('should return null if no super type', () => {
-            let modelManager = new ModelManager();
             let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
             should.equal(classDecl._resolveSuperType(), null);
         });
 
         it('should return the super class declaration for a system super class', () => {
-            let modelManager = new ModelManager();
             modelManager.addModelFile(`namespace org.acme
             asset TestAsset identified by assetId { o String assetId }`);
             let classDecl = modelManager.getType('org.acme.TestAsset');
@@ -343,7 +321,6 @@ describe('ClassDeclaration', () => {
         });
 
         it('should return the super class declaration for a super class in the same file', () => {
-            let modelManager = new ModelManager();
             modelManager.addModelFile(`namespace org.acme
             abstract asset BaseAsset { }
             asset TestAsset identified by assetId extends BaseAsset { o String assetId }`);
@@ -353,7 +330,6 @@ describe('ClassDeclaration', () => {
         });
 
         it('should return the super class declaration for a super class in another file', () => {
-            let modelManager = new ModelManager();
             modelManager.addModelFile(`namespace org.base
             abstract asset BaseAsset { }`);
             modelManager.addModelFile(`namespace org.acme
@@ -369,13 +345,11 @@ describe('ClassDeclaration', () => {
     describe('#getSuperTypeDeclaration', () => {
 
         it('should return null if no super type', () => {
-            let modelManager = new ModelManager();
             let classDecl = modelManager.getType('org.hyperledger.composer.system.Asset');
             should.equal(classDecl.getSuperTypeDeclaration(), null);
         });
 
         it('should resolve the super type if not already resolved', () => {
-            let modelManager = new ModelManager();
             modelManager.addModelFile(`namespace org.acme
             asset TestAsset identified by assetId { o String assetId }`);
             let classDecl = modelManager.getType('org.acme.TestAsset');
@@ -387,7 +361,6 @@ describe('ClassDeclaration', () => {
         });
 
         it('should not resolve the super type if not already resolved', () => {
-            let modelManager = new ModelManager();
             modelManager.addModelFile(`namespace org.acme
             asset TestAsset identified by assetId { o String assetId }`);
             let classDecl = modelManager.getType('org.acme.TestAsset');
@@ -403,7 +376,6 @@ describe('ClassDeclaration', () => {
         const modelFileNames = [
             'test/data/parser/validation.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
 
@@ -411,8 +383,7 @@ describe('ClassDeclaration', () => {
 
         it('validation of super types',()=>{
             (()=>{
-                modelManager = new ModelManager();
-                const modelFiles = loadModelFiles(modelFileNames, modelManager);
+                const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
                 modelManager.addModelFiles(modelFiles);
 
             }).should.throw(/cannot extend Asset/);
@@ -421,8 +392,7 @@ describe('ClassDeclaration', () => {
 
         it('validation of super types',()=>{
             (()=>{
-                modelManager = new ModelManager();
-                const modelFiles = loadModelFiles(modelFileNames, modelManager);
+                const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
                 modelManager.addModelFiles(modelFiles);
 
             }).should.throw(/cannot extend Asset/);
@@ -435,11 +405,9 @@ describe('ClassDeclaration', () => {
             'test/data/parser/classdeclaration.participantwithparents.parent.cto',
             'test/data/parser/classdeclaration.participantwithparents.child.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
 
@@ -465,11 +433,9 @@ describe('ClassDeclaration', () => {
             'test/data/parser/classdeclaration.participantwithparents.parent.cto',
             'test/data/parser/classdeclaration.participantwithparents.child.cto'
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
         it('should return false', () => {
@@ -483,11 +449,9 @@ describe('ClassDeclaration', () => {
         const modelFileNames = [
             'test/data/parser/classdeclaration.isrelationshiptarget.cto',
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
 
@@ -502,11 +466,9 @@ describe('ClassDeclaration', () => {
         const modelFileNames = [
             'test/data/parser/classdeclaration.isrelationshiptarget.cto',
         ];
-        let modelManager;
 
         beforeEach(() => {
-            modelManager = new ModelManager();
-            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            const modelFiles = introspectUtils.loadModelFiles(modelFileNames, modelManager);
             modelManager.addModelFiles(modelFiles);
         });
 

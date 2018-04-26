@@ -14,10 +14,10 @@ An existing identity can be issued to a participant using either the API or the 
 Once the existing identity has been bound, the identity can then be used by the participant
 to interact with the business network in the context of that participant.
 
-When using {[site.data.conrefs.hlf_full}}, you can bind existing certificates that have been created
-by using the {[site.data.conrefs.hlf_full}} certificate authority (CA) or by using other tooling such
+When using {{site.data.conrefs.hlf_full}}, you can bind existing certificates that have been created
+by using the {{site.data.conrefs.hlf_full}} certificate authority (CA) or by using other tooling such
 as `cryptogen`. The existing certificates must be valid for use for submitting transactions
-on the {[site.data.conrefs.hlf_full}} network.
+on the {{site.data.conrefs.hlf_full}} network.
 
 ## Before you start
 

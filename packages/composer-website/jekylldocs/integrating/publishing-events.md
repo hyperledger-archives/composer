@@ -46,5 +46,5 @@ You can then use `wscat` to connect to and subscribe to business events publishe
 
     $ wscat -c ws://localhost:3000
     connected (press CTRL+C to quit)
-    < {"$class":"org.acme.sample.SampleEvent","asset":"resource:org.acme.sample.SampleAsset#assetId:1","oldValue":"","newValue":"hello world","eventId":"a80d220b-09db-4812-b04b-d5d03b663671#0","timestamp":"2017-08-23T12:47:17.685Z"}
+    < {"$class":"org.example.basic.SampleEvent","asset":"resource:org.example.basic.SampleAsset#assetId:1","oldValue":"","newValue":"hello world","eventId":"a80d220b-09db-4812-b04b-d5d03b663671#0","timestamp":"2017-08-23T12:47:17.685Z"}
     >

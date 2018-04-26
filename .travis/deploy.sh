@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # Script for the deploy phase, to push NPM modules, docker images and
 # cloud playground images
@@ -45,6 +58,9 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
            --iv "$encrypted_17b59ce72ad7_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
+# This is the list of npm modules required by docker images
+export NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-report composer-playground composer-playground-api composer-rest-server loopback-connector-composer"
+
 # Change from HTTPS to SSH.
 ./.travis/fix_github_https_repo.sh
 
@@ -63,23 +79,23 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
     # Set the prerelease version.
     npm run pkgstamp
    
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
         PLAYGROUND_SUFFIX="-unstable"      
         WEB_CFG="{\"webonly\":true}"
         TAG="unstable"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
         PLAYGROUND_SUFFIX="-next-unstable"
         WEB_CFG="{\"webonly\":true}"      
         TAG="next-unstable"
     else 
         _exit "Unknown build focus" 1 
     fi
-elif  [[ "${BUILD_RELEASE}" = "stable" ]]; then
-    if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+elif  [[ "${BUILD_RELEASE}" == "stable" ]]; then
+    if [[ "${BUILD_FOCUS}" == "latest" ]]; then
         PLAYGROUND_SUFFIX=""      
         WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-4\"}"
         TAG="latest"
-    elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+    elif [[ "${BUILD_FOCUS}" == "next" ]]; then
         PLAYGROUND_SUFFIX="-next"
         WEB_CFG="{\"webonly\":true,\"analyticsID\":\"UA-91314349-3\"}"
         TAG="next"
@@ -95,9 +111,12 @@ export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 echo "Pushing with tag ${TAG}"
 lerna exec --ignore '@(composer-tests-integration|composer-tests-functional|composer-website)' -- npm publish --tag="${TAG}" 2>&1
 
-# quick check to see if the latest npm module has been published
-while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
-  sleep 10
+# Check that all required modules have been published to npm and are retrievable
+for j in ${NPM_MODULES}; do
+    # check the next in the list
+    while ! npm view ${j}@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+        sleep 10
+    done
 done
 
 # Build, tag, and publish Docker images.
@@ -113,14 +132,16 @@ for i in ${DOCKER_IMAGES}; do
 
 done
 
-# Push to public Bluemix.
-pushd ${DIR}/packages/composer-playground
-rm -rf ${DIR}/packages/composer-playground/node_modules
-cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-cf push "composer-playground${PLAYGROUND_SUFFIX}" -c "node cli.js" -i 2 -m 128M --no-start
-cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
-cf start "composer-playground${PLAYGROUND_SUFFIX}"
-popd
+# Push to public Bluemix for stable and unstable, latest and next release builds
+if [[ "${BUILD_FOCUS}" != "v0.16" ]]; then
+    pushd ${DIR}/packages/composer-playground
+    rm -rf ${DIR}/packages/composer-playground/node_modules
+    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
+    cf push "composer-playground${PLAYGROUND_SUFFIX}" --docker-image hyperledger/composer-playground:${VERSION} -i 2 -m 128M --no-start
+    cf set-env "composer-playground${PLAYGROUND_SUFFIX}" COMPOSER_CONFIG "${WEB_CFG}"
+    cf start "composer-playground${PLAYGROUND_SUFFIX}"
+    popd
+fi
 
 
 

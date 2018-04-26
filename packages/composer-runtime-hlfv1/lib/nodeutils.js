@@ -34,6 +34,7 @@ class NodeUtils {
         const method = 'getAllResults';
         LOG.entry(method, iterator);
 
+        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -57,6 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
                 return results;
             }
         }
@@ -67,12 +69,14 @@ class NodeUtils {
      *
      * @static
      * @param {any} iterator the chaincode iterator
+     * @param {any} stub the stub for this invocation
      * @returns {promise} a promise that is resolved with the results or rejected or error
      */
     static async deleteAllResults(iterator, stub) {
         const method = 'deleteAllResults';
         LOG.entry(method, iterator, stub);
 
+        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -93,6 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
                 return results;
             }
         }

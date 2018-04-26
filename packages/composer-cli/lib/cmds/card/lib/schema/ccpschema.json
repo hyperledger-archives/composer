@@ -1,0 +1,194 @@
+{
+    "$schema" : "http://json-schema.org/schema#",
+    "definitions" : {
+        "client" : {
+            "type" : "object",
+            "properties" : {
+                "organization" : { "type" : "string" }
+            },
+            "required" : [ "organization" ]
+        },
+        "certificateAuthorities" : {
+            "type" : "object",
+            "patternProperties": {
+                "^.*$" : { "$ref": "#/definitions/certificateAuthority" }
+            }
+        },
+        "certificateAuthority" : {
+            "type" : "object",
+            "properties": {
+                "url" : { "format" : "uri" },
+                "httpOptions" : { "$ref": "#/definitions/httpOptions" },
+                "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" },
+                "registrar" : { "$ref": "#/definitions/registrar" },
+                "caName" : { "type" : "string" }
+            },
+            "required": [ "url" ]
+        },
+        "registrar" : {
+            "properties": {
+                "enrollId" : { "type" : "string" },
+                "enrollSecret" : { "type" : "string" }
+            },
+            "required" : [ "enrollId", "enrollSecret" ]
+        },
+        "httpOptions" : {
+            "type" : "object",
+            "properties" : {
+                "verify" : { "type" : "boolean" }
+            }
+        },
+        "channels" : {
+            "type" : "object",
+            "patternProperties" : {
+                "^.*$" : { "$ref": "#/definitions/channel" }
+            },
+            "minimum" : 1
+        },
+        "channel" : {
+            "type" : "object",
+            "properties" : {
+                "orderers" : { "type" : "array" },
+                "peers" : { "$ref" : "#/definitions/channel-peer" },
+                "chaincodes" : { "type" : "array" }
+            },
+            "required" : [ "orderers", "peers" ]
+        },
+        "channel-peer" : {
+            "type" : "object",
+            "patternProperties": {
+                "^.*$" : {
+                    "endorsingPeer" : { "type" : "boolean" },
+                    "chaincodeQuery" : { "type" : "boolean" },
+                    "ledgerQuery" : { "type" : "boolean" },
+                    "eventSource" : { "type" : "boolean" }
+                },
+                "additionalProperties": false
+            },
+            "minimum" : 1
+        },
+        "orderers" : {
+            "type" : "object",
+            "patternProperties": {
+                "^.*$" : { "$ref": "#/definitions/orderer" }
+            },
+            "minimum": 1
+        },
+        "orderer" : {
+            "type" : "object",
+            "properties" : {
+                "url" : { "format" : "uri" },
+                "grpcOptions" : { "$ref": "#/definitions/grpcOptions" },
+                "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" }
+            },
+            "required": [ "url" ]
+        },
+        "grpcOptions" : {
+            "type" : "object",
+            "properties": {
+                "ssl-target-name-override" : { "type" : "string" },
+                "grpc.max_send_message_length" : { "type" : "number" },
+                "grpc.max_receive_message_length" : { "type" : "number" }
+            }
+        },
+        "tlsCACerts" : {
+            "type" : "object",
+            "properties": {
+                "pem" : { "type" : "string" },
+                "path" : { "type" : "string" },
+                "client" : { "$ref": "#/definitions/tlsCACertsClient" }
+            }
+        },
+        "tlsCACertsClient" : {
+            "type" : "object",
+            "properties" : {
+                "keyfile" : { "type" : "string"},
+                "certfile" : { "type" : "string"}
+            },
+            "additionalProperties": false
+        },
+        "organizations" : {
+            "type" : "object",
+            "patternProperties": {
+                "^.*$" : { "$ref": "#/definitions/organization" }
+            },
+            "minimum": 1
+        },
+        "organization" : {
+            "type" : "object",
+            "properties": {
+                "certificateAuthorities" : { "type" : "array" },
+                "mspid" : { "type" : "string" },
+                "peers" : { "type" : "array" },
+                "adminPrivateKey" : { "$ref": "#/definitions/adminPrivateKey" },
+                "signedCert" : { "$ref": "#/definitions/signedCert" }
+            },
+            "required": [ "mspid", "peers" ]
+        },
+        "adminPrivateKey" : {
+            "type" : "object",
+            "properties": {
+                "pem" : { "type" : "string" },
+                "path": {
+                    "type": "string"
+                }
+            },
+            "oneOf" : [{
+                "anyOf" : [{
+                    "required" : ["path"]
+                }, {
+                    "required" : ["pem"]
+                }
+                ]
+            }]
+        },
+        "signedCert" : {
+            "type" : "object",
+            "properties": {
+                    "pem" : { "type" : "string" },
+                    "path": {
+                        "type": "string"
+                    }
+            },
+            "oneOf" : [{
+                "anyOf" : [{
+                    "required" : ["path"]
+                }, {
+                    "required" : ["pem"]
+                }
+                ]
+            }]
+        },
+        "peers" : {
+            "type" : "object",
+            "patternProperties": {
+                "^.*$" : { "$ref": "#/definitions/peer" }
+            },
+            "minimum": 1
+        },
+        "peer" : {
+            "type" : "object",
+            "properties": {
+                "url" : { "format" : "uri" },
+                "eventUrl" : { "format" : "uri" },
+                "grpcOptions" : { "$ref": "#/definitions/grpcOptions" },
+                "tlsCACerts" : { "$ref": "#/definitions/tlsCACerts" }
+            },
+            "required": [ "url", "eventUrl"]
+        }
+    },
+    "type" : "object",
+    "properties" : {
+        "name" : { "type" : "string" },
+        "x-type" : { "enum" : [ "hlfv1" ] },
+        "x-commitTimeout": { "type" : "number" },
+        "version" : { "type" : "string", "pattern" : "^1.0.*$" },
+        "client" : { "$ref" : "#/definitions/client" },
+        "certificateAuthorities" : { "$ref": "#/definitions/certificateAuthorities" },
+        "channels" : { "$ref" : "#/definitions/channels" },
+        "orderers" : { "$ref" : "#/definitions/orderers" },
+        "organizations" : { "$ref" : "#/definitions/organizations" },
+        "peers" : { "$ref":  "#/definitions/peers" }
+    },
+    "required" : ["name", "x-type", "client", "certificateAuthorities", "channels", "orderers", "peers"]
+}

@@ -18,17 +18,14 @@ const NodeDataService = require('../lib/nodedataservice');
 const NodeDataCollection = require('../lib/nodedatacollection');
 const DataService = require('composer-runtime').DataService;
 const DataCollection = require('composer-runtime').DataCollection;
-const MockStub = require('./mockstub');
-const MockIterator = require('./mockiterator');
 const NodeUtils = require('../lib/nodeutils');
-
+const ChaincodeStub = require('fabric-shim/lib/stub');
+const StateQueryIterator = require('fabric-shim/lib/iterators').StateQueryIterator;
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
-
-
 
 describe('NodeDataService', () => {
 
@@ -37,8 +34,8 @@ describe('NodeDataService', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockStub = sinon.createStubInstance(MockStub);
-        mockIterator = sinon.createStubInstance(MockIterator);
+        mockStub = sinon.createStubInstance(ChaincodeStub);
+        mockIterator = sinon.createStubInstance(StateQueryIterator);
         dataService = new NodeDataService(mockStub);
     });
 

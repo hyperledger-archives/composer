@@ -14,14 +14,10 @@
 
 'use strict';
 
-const ConnectionManager = require('composer-common').ConnectionManager;
-const createHash = require('sha.js');
+const { Certificate, ConnectionManager } = require('composer-common');
 const EmbeddedConnection = require('./embeddedconnection');
 const EmbeddedDataService = require('composer-runtime-embedded').EmbeddedDataService;
 const uuid = require('uuid');
-
-// The issuer for all identities.
-const DEFAULT_ISSUER = createHash('sha256').update('org1').digest('hex');
 
 const IDENTITY_COLLECTION_ID = 'identities';
 
@@ -50,29 +46,28 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @param {string} id the id to associate with the identity
      * @param {string} certificate the certificate
      * @param {string} privateKey the private key
-     * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
-        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
-            .then((identities) => {
-                const bytes = certificate
-                    .replace(/-----BEGIN CERTIFICATE-----/, '')
-                    .replace(/-----END CERTIFICATE-----/, '')
-                    .replace(/[\r\n]+/g, '');
-                const certificateContents = Buffer.from(bytes, 'base64');
-                const identifier = createHash('sha256').update(certificateContents).digest('hex');
-                const secret = uuid.v4().substring(0, 8);
-                const identity = {
-                    identifier,
-                    name: id,
-                    issuer: DEFAULT_ISSUER,
-                    secret,
-                    certificate: certificate,
-                    privateKey: privateKey,
-                    imported: true
-                };
-                return identities.add(id, identity);
-            });
+    async importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
+        const identities = await this.dataService.ensureCollection(IDENTITY_COLLECTION_ID);
+        const certificateObj = new Certificate(certificate);
+        const identifier = certificateObj.getIdentifier();
+        const publicKey = certificateObj.getPublicKey();
+        const name = certificateObj.getName();
+        const issuer = certificateObj.getIssuer();
+        const secret = uuid.v4().substring(0, 8);
+        const identity = {
+            identifier,
+            name,
+            issuer,
+            secret,
+            certificate,
+            publicKey,
+            privateKey,
+            imported: true,
+            options: {}
+        };
+        await identities.add(id, identity);
+        await identities.add(identifier, identity);
     }
 
      /**
@@ -83,33 +78,14 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>, or
      * {@link null} if the named identity does not exist.
      */
-    exportIdentity(connectionProfileName, connectionOptions, id) {
-        let identities;
-        return this.dataService.ensureCollection(IDENTITY_COLLECTION_ID)
-            .then((identities_) => {
-                identities = identities_;
-                return identities.exists(id);
-            })
-            .then((exists) => {
-                if (exists) {
-                    return identities.get(id);
-                }
-            })
-            .then((identity) => {
-                if (!identity) {
-                    return null;
-                }
-
-                // Fake up a private key is none is present
-                const privateKey = identity.privateKey ||
-                    '-----BEGIN PRIVATE KEY-----\n' +
-                    Buffer.from(id).toString('base64') + '\n' +
-                    '-----END PRIVATE KEY-----\n';
-                return {
-                    certificate: identity.certificate,
-                    privateKey: privateKey
-                };
-            });
+    async exportIdentity(connectionProfileName, connectionOptions, id) {
+        const identities = await this.dataService.ensureCollection(IDENTITY_COLLECTION_ID);
+        const exists = await identities.exists(id);
+        if (!exists) {
+            return null;
+        }
+        const { certificate, privateKey } = await identities.get(id);
+        return { certificate, privateKey };
     }
 
     /**
@@ -120,15 +96,14 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @returns {Promise} a promise which resolves to true if identity existed and removed, false otherwise
      * or rejects with an error.
      */
-    removeIdentity(connectionProfile, connectionOptions, id) {
-
+    async removeIdentity(connectionProfile, connectionOptions, id) {
         // The embedded connector uses the identities collection as the ca registry as well which
         // effectively means that remove identity cannot have an implementation. For example it would
         // remove an entry that has been created by issueIdentity when you import a card with a secret
         // for the same identity and thus effectively removes the existence of the identity.
         // This problem was shown when running the multiuser rest tests.
         // So just do nothing for now.
-        return Promise.resolve(false);
+        return false;
     }
 
    /**
@@ -139,8 +114,8 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
-        return Promise.resolve(new EmbeddedConnection(this, connectionProfile, businessNetworkIdentifier));
+    async connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
+        return new EmbeddedConnection(this, connectionProfile, businessNetworkIdentifier);
     }
 
 }

@@ -20,7 +20,7 @@ module.exports.command = 'export [options]';
 module.exports.describe = 'Export a business network card';
 module.exports.builder = {
     file: {alias: 'f', required: false, describe: 'The card file name', type: 'string' },
-    name: {alias: 'n', required: true, describe: 'The name used to identify the card', type: 'string' }
+    card: {alias: 'c', required: true, describe: 'The name of the card to export', type: 'string' }
 };
 
 module.exports.handler = (argv) => {

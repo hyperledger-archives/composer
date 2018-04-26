@@ -4,7 +4,7 @@ title: Listing all identities in a business network
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
-excerpt: "[**A new identity can be issued to a participant using either the API or the command line**](../managing/identity-issue.html). Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant."
+excerpt: "Identities issued or bound to a participant create a mapping. In order to perform identity management operations in a deployed business network, you will need to [list](../managing/identity-list.html) and review the set of identities in the identity registry."
 index-order: 806
 ---
 

@@ -34,7 +34,8 @@ describe('composer network logLevel CLI unit tests', () => {
         mockAdminConnection = sinon.createStubInstance(AdminConnection);
         mockAdminConnection.connect.resolves();
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
-        mockAdminConnection.getLogLevel.resolves('INFO');
+        mockAdminConnection.getLogLevel.resolves({debug:'INFO'});
+        mockAdminConnection.setLogLevel.resolves();
         sandbox.stub(process, 'exit');
     });
 
@@ -72,5 +73,19 @@ describe('composer network logLevel CLI unit tests', () => {
             });
     });
 
+    it('should get the logLevel and produce the full-output', () => {
+        let argv = {
+            card:'cardname' ,
+            x: true
+        };
 
+        return LogLevel.handler(argv)
+            .then((res) => {
+                argv.thePromise.should.be.a('promise');
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, 'cardname');
+                sinon.assert.calledOnce(mockAdminConnection.getLogLevel);
+
+            });
+    });
 });

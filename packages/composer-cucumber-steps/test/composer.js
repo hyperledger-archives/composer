@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Composer = require('../lib/composer');
 const Cucumber = require('cucumber');
 const path = require('path');
 
@@ -47,7 +48,7 @@ function runCucumberTest (featureSource) {
         colorsEnabled : true,
         cwd : '/',
         log : (data) => {
-            // console.log(data);
+         //   console.log(data);  // uncomment this line to get detailed output for each test
         },
         supportCodeLibrary : supportCodeLibrary
     };
@@ -64,111 +65,167 @@ function runCucumberTest (featureSource) {
 
 describe('Cucumber', () => {
 
-    it('should rethrow any errors if errors are not expected', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                When I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.false;
+    describe('error handling', () => {
+
+        it('should rethrow any errors if errors are not expected', () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    When I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+            `;
+            return runCucumberTest(featureSource)
+                .should.eventually.be.false;
+        });
+
+        it('should handle any errors if errors are expected', async () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    When I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    Then I should get an error
+            `;
+
+            let result = await runCucumberTest(featureSource);
+            return result.should.be.true;
+
+        });
+
+        it('should throw if multiple errors are caught when errors are expected', () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    When I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    And I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    Then I should get an error
+            `;
+            return runCucumberTest(featureSource)
+                .should.eventually.be.false;
+        });
+
+        it('should throw if errors are expected but none are thrown', () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    Then I should get an error
+            `;
+            return runCucumberTest(featureSource)
+                .should.eventually.be.false;
+        });
+
+        it('should handle any errors that are expected and match the regular expression', () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    When I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    Then I should get an error matching /.*/
+            `;
+            return runCucumberTest(featureSource)
+                .should.eventually.be.true;
+        });
+
+        it('should throw if errors are expected but they do not match the regular expression', () => {
+            const featureSource = `
+            Feature: test
+                Background:
+                    Given I have deployed the business network archive basic-sample-network.bna
+                Scenario: test
+                    Given I have added the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    When I add the following asset of type org.acme.sample.SampleAsset
+                        | assetId | owner           | value |
+                        | 1       | alice@email.com | 10    |
+                    Then I should get an error matching /blah blah blah/
+            `;
+            return runCucumberTest(featureSource)
+                .should.eventually.be.false;
+        });
+
     });
 
-    it('should handle any errors if errors are expected', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                When I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                Then I should get an error
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.true;
-    });
+    describe('#convertValueToType', () => {
 
-    it('should throw if multiple errors are caught when errors are expected', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                When I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                And I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                Then I should get an error
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.false;
-    });
+        it('should handle boolean values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('false', 'Boolean').should.be.false;
+            composer.convertValueToType('true', 'Boolean').should.be.true;
+            (() => {
+                composer.convertValueToType('blah', 'Boolean');
+            }).should.throw(/Invalid value "blah" for type "Boolean"/);
+        });
 
-    it('should throw if errors are expected but none are thrown', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                Then I should get an error
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.false;
-    });
+        it('should handle date values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('2018-04-20T15:06:37.919Z', 'DateTime').toISOString().should.equal('2018-04-20T15:06:37.919Z');
+            (() => {
+                composer.convertValueToType('blah', 'DateTime');
+            }).should.throw(/Invalid value "blah" for type "DateTime"/);
+        });
 
-    it('should handle any errors that are expected and match the regular expression', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                When I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                Then I should get an error matching /.*/
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.true;
-    });
+        it('should handle double values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('3.142', 'Double').should.equal(3.142);
+            (() => {
+                composer.convertValueToType('blah', 'Double');
+            }).should.throw(/Invalid value "blah" for type "Double"/);
+        });
 
-    it('should throw if errors are expected but they do not match the regular expression', () => {
-        const featureSource = `
-        Feature: test
-            Background:
-                Given I have deployed the business network archive basic-sample-network.bna
-            Scenario: test
-                Given I have added the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                When I add the following asset of type org.acme.sample.SampleAsset
-                    | assetId | owner           | value |
-                    | 1       | alice@email.com | 10    |
-                Then I should get an error matching /blah blah blah/
-        `;
-        return runCucumberTest(featureSource)
-            .should.eventually.be.false;
+        it('should handle integer values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('1234', 'Integer').should.equal(1234);
+            (() => {
+                composer.convertValueToType('blah', 'Integer');
+            }).should.throw(/Invalid value "blah" for type "Integer"/);
+        });
+
+        it('should handle long values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('12345678', 'Long').should.equal(12345678);
+            (() => {
+                composer.convertValueToType('blah', 'Long');
+            }).should.throw(/Invalid value "blah" for type "Long"/);
+        });
+
+        it('should handle string values', () => {
+            const composer = new Composer();
+            composer.convertValueToType('12345678', 'String').should.equal('12345678');
+        });
+
     });
 
 });

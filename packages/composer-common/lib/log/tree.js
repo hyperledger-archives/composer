@@ -23,9 +23,11 @@ const Node = require('./node.js');
 class Tree {
 
   /** Create the tree and setup the root node
+   * @param {boolean} rootInclude inclusion setting for the root
+   * @param {int}  rootLogLevel  log level for the root
    */
-    constructor(){
-        this.root = new Node('composer',false);
+    constructor(rootInclude,rootLogLevel){
+        this.root = new Node('composer',rootLogLevel,rootInclude);
     }
 
     /** Mark the root to be included - defaults to false
@@ -35,14 +37,23 @@ class Tree {
     }
 
     /**
+     * Sets the log level of the root node
+     * @param {int} level loglevel of the root node
+     */
+    setRootLevel(level){
+        this.root.setLogLevel(level);
+    }
+
+    /**
      * Add a new node to the tree
      *
      * @param {String} name name of the node to add
+     * @param {int} logLevel loglevel for this node
      * @param {boolean} include should this be included or not
      * @return {Node} the new node created
     */
-    addNode(name, include){
-        return this._insertChildNode(name,include,this.root);
+    addNode(name, logLevel, include){
+        return this._insertChildNode(name,logLevel,include,this.root);
     }
 
     /**
@@ -51,6 +62,15 @@ class Tree {
      * @return {boolean} inclusion policy - true or false
      */
     getInclusion(name){
+        return this._findNode(name,this.root).isIncluded();
+    }
+
+    /**
+     * Find inclusion property for a given node
+     * @param {String} name name of the node to search the tree for
+     * @return {Node} node
+     */
+    getNode(name){
         return this._findNode(name,this.root);
     }
 
@@ -68,7 +88,7 @@ class Tree {
 
         let foundNode =  parent.findChild(newNodeName);
         if ( typeof foundNode === 'undefined' ){
-            return parent.isIncluded();
+            return parent;
         } else {
             return this._findNode(details.join('/'),foundNode);
         }
@@ -78,13 +98,14 @@ class Tree {
     /**
      * Insert a new node based on this parent
      * @param {String} name name of the node to add
+     * @param {int} logLevel loglevel for this node
      * @param {boolean} include should this be included or not
      * @param {Node} parent node to use as the parent for the children
      * @return {Node} newly inserted node
      *
      * @private
      */
-    _insertChildNode(name, include, parent){
+    _insertChildNode(name, logLevel, include, parent){
 
       // split the name up based on the marker /
         let details = name.split(/\//);
@@ -95,19 +116,19 @@ class Tree {
         if (typeof child === 'undefined' ){
 
             if (details.length === 0) {
-                let newNode = new Node(newNodeName,include);
+                let newNode = new Node(newNodeName,logLevel,include);
                 parent.addChildNodeAtStart(newNode);
                 // at the leaf node return the new node created
                 return newNode;
             } else {
-                let newNode = new Node(newNodeName,parent.isIncluded());
+                let newNode = new Node(newNodeName,parent.getLogLevel(),parent.isIncluded());
                 parent.addChildNodeAtStart(newNode);
                 // request another new node to be created.
-                return this._insertChildNode(details.join('/'),include,newNode);
+                return this._insertChildNode(details.join('/'),logLevel,include,newNode);
             }
         } else {
           // we have found a node already that matches the name.
-            return this._insertChildNode(details.join('/'),include,child);
+            return this._insertChildNode(details.join('/'),logLevel,include,child);
         }
 
     }

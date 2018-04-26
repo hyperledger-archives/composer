@@ -1,22 +1,37 @@
-import { browser, element, by } from 'protractor';
-import { ExpectedConditions } from 'protractor';
-import { OperationsHelper } from '../utils/operations-helper';
-import { Editor } from '../component/editor';
-import { Import } from '../component/import';
-import { Login } from '../component/login';
-import { Replace } from '../component/replace';
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { browser, by } from 'protractor';
 import { AddFile } from '../component/add-file';
+import { Editor } from '../component/editor';
 import { EditorFile } from '../component/editor-file';
 import { ErrorAlert } from '../component/error-alert';
-import { dragDropFile, waitForFileToExist, retrieveZipContentList } from '../utils/fileUtils';
+import { Import } from '../component/import';
+import { OperationsHelper } from '../utils/operations-helper';
+import { Replace } from '../component/replace';
+import { waitForFileToExist, retrieveZipContentList } from '../utils/fileUtils';
+import { Constants } from '../constants';
 
-import * as chai from 'chai';
 import * as  fs from 'fs';
 import * as JSZip from 'jszip';
-
+import * as chai from 'chai';
 let expect = chai.expect;
 
 describe('Editor Define', (() => {
+
+  const addFileActionLabel = Constants.addFileActionLabel;
+  const exportActionLabel = Constants.exportActionLabel;
+  const deployButtonLabel = Constants.deployButtonLabel;
 
   let baseTiles: Array<string> = null;
   let npmTiles: Array<string> = null;
@@ -46,19 +61,18 @@ describe('Editor Define', (() => {
                 expect(file).to.be.oneOf(expectedFiles);
             });
         });
-        // Check Actions (AddFile/Deploy) Present and clickable
-        Editor.retrieveNavigatorFileActionButtons()
-        .then((buttonlist: any) => {
-            expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
-        });
-        // Check Actions (Import/Export)
-        Editor.retrieveBusinessArchiveActionButtons()
+        // Check Actions (AddFile/Export) Present and clickable
+        Editor.retrieveNavigatorActions()
         .then((actionlist: any) => {
             expect(actionlist).to.be.an('array').lengthOf(2);
-            expect(actionlist[0]).to.deep.equal({text: 'Import/Replace', enabled: true});
-            expect(actionlist[1]).to.deep.equal({text: 'Export', enabled: true});
+            expect(actionlist[0]).to.deep.equal({text: addFileActionLabel, enabled: true});
+            expect(actionlist[1]).to.deep.equal({text: exportActionLabel, enabled: true});
+        });
+        // Check Buttons (Deploy Changes)
+        Editor.retrieveUpdateBusinessNetworkButtons()
+        .then((buttonlist: any) => {
+            expect(buttonlist).to.be.an('array').lengthOf(2);
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
   }));
@@ -120,11 +134,10 @@ describe('Editor Define', (() => {
         });
 
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
 
     }));
@@ -147,11 +160,10 @@ describe('Editor Define', (() => {
         });
 
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
 
     }));
@@ -175,11 +187,10 @@ describe('Editor Define', (() => {
             expect(filelist).to.deep.equal(['About\nREADME.md']);
         });
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -205,11 +216,10 @@ describe('Editor Define', (() => {
             });
         });
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -334,11 +344,10 @@ describe('Editor Define', (() => {
 
         AddFile.waitToDisappear();
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -347,11 +356,10 @@ describe('Editor Define', (() => {
 
         AddFile.waitToDisappear();
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -367,11 +375,10 @@ describe('Editor Define', (() => {
             expect(list).to.not.include('Script File\nlib/script.js');
         });
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -387,11 +394,10 @@ describe('Editor Define', (() => {
             expect(list).to.not.include('Model File\nlmodels/org.acme.model.cto');
         });
         // -update not enabled
-        Editor.retrieveNavigatorFileActionButtons()
+        Editor.retrieveUpdateBusinessNetworkButtons()
         .then((buttonlist: any) => {
             expect(buttonlist).to.be.an('array').lengthOf(2);
-            expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-            expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+            expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
         });
     }));
 
@@ -416,12 +422,11 @@ describe('Editor Define', (() => {
                 });
                 expect(filenames).to.include('Script File\nlib/script.js');
             });
-            // // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            // -update enabled
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
 
             // -active file
@@ -454,11 +459,10 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // -active file
             Editor.retrieveNavigatorActiveFiles()
@@ -497,22 +501,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -545,22 +547,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -596,22 +596,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -650,22 +648,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -702,22 +698,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -750,22 +744,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));
@@ -800,22 +792,20 @@ describe('Editor Define', (() => {
                 });
             });
             // -update enabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: true});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: true});
             });
             // update new item
             Editor.clickDeployBND();
             // -success message
             OperationsHelper.processExpectedSuccess();
             // -update disabled
-            Editor.retrieveNavigatorFileActionButtons()
+            Editor.retrieveUpdateBusinessNetworkButtons()
             .then((buttonlist: any) => {
                 expect(buttonlist).to.be.an('array').lengthOf(2);
-                expect(buttonlist[0]).to.deep.equal({text: '+ Add a file...', enabled: true});
-                expect(buttonlist[1]).to.deep.equal({text: 'Update', enabled: false});
+                expect(buttonlist[1]).to.deep.equal({text: deployButtonLabel, enabled: false});
             });
         });
     }));

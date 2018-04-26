@@ -6,12 +6,10 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: APIs
 index-order: 1200
 ---
+[Common API](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API](allData#admin-api)  -  [Runtime API](allData#runtime-api)
 
 # Hyperledger Composer API
 Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.
-
-## Quick Links
-[Common API](allData#common-api)  -  [Client API](allData#client-api)  -  [Admin API](allData#admin-api)  -  [Runtime API](allData#runtime-api)
 
 ## Overview
 All the classes are listed in the [Class Index](./allData.html)
@@ -27,14 +25,14 @@ submitted for processing. These functions may update the state of resources
 stored on the Blockchain via server-side Hyperledger Composer APIs.
 
 ## JavaScript language support
-Applications that are using the client or admin APIs, that are not running inside a transaction function can be written to use ES6.
-As an example, it allows the use of the async/await syntax. 
+Applications that are using the client, admin APIs, or running inside a transaction function can be written to use ES6.
+As an example, it allows the use of the async/await syntax.
 
 ```javascript
-  // connect using the 'newUserCard', create an asset, add it to a registry and get all assets. 
+  // connect using the 'newUserCard', create an asset, add it to a registry and get all assets.
   try{
     await businessNetworkConnection.connect('newUserCard');
-    let newAsset = factory.newAsset('org.acme.sample','SampleAsset','1148');
+    let newAsset = factory.newAsset('org.example.basic','SampleAsset','1148');
     await assestRegistry.add(newAsset);
 
     result = await assetRegistry.getAll();
@@ -46,23 +44,21 @@ As an example, it allows the use of the async/await syntax.
   }
 ```
 
-The promise chain syntax can be used, and must be used within Transaction Functions. 
-
-**All code within a transaction function must use ES5 syntax - along with Promise Chains**
+The promise chain syntax can also be used however it is highly recommended to use async/await.
 
 Using promises the example above would be:
 
 ```javascript
-  // connect using the 'newUserCard', create an asset, add it to a registry and get all assets. 
+  // connect using the 'newUserCard', create an asset, add it to a registry and get all assets.
 
   return businessNetworkConnection.connect('newUserCard')
-    .then( function()  { 
-        var newAsset = factory.newAsset('org.acme.sample','SampleAsset','1148');
+    .then( function()  {
+        var newAsset = factory.newAsset('org.example.basic','SampleAsset','1148');
         return assetRegistry.add(newAsset);
     })
     .then( function() {
        return assetRegistry.getAll();
-    }) 
+    })
     .then( function(result) {
         LOG.info(result);
         return businessNetworkConnection.disconnect();
@@ -96,7 +92,7 @@ let businessNetworkDefintion = await bizNetConnection.connect('cardNameToUse');
 ### Registries
 A key part of the Client API is are the Regsitry classes. There are the *AssetRegsitry*, *ParticipantRegistry*, *IdentityRegistry*, *TransactionRegistries* and the *Historian*. Each of these have a common super type of *Registry*.
 
-The Registry supports accessing a registry to obtain resources. 
+The Registry supports accessing a registry to obtain resources.
 
 - Add one or more resources
 - Update one or more resources
@@ -107,10 +103,10 @@ The Registry supports accessing a registry to obtain resources.
 
 The difference between resolve and get are that get will no resolve any relationships that are defined in the resource. A reference to the resource will be supplied. A resolve call will iterate over all the relationships.
 
-Registries are automatically created for each asset, participnat, and transaction. Additional registries can be created if required using the addRegistry call. 
+Registries are automatically created for each asset, participnat, and transaction. Additional registries can be created if required using the addRegistry call.
 
 ## Common API
-The Common API contains the APIs used to obtain information about the Business Network you are conencted to and to create new assets, participants, transactions and events. It also provides APIs to find out information about these resources.  
+The Common API contains the APIs used to obtain information about the Business Network you are conencted to and to create new assets, participants, transactions and events. It also provides APIs to find out information about these resources.
 
 For example to create a new asset
 
@@ -131,24 +127,21 @@ The Runtime API is the available API to all transaction functions. It allows acc
 - get the serializer to create resources from JavaScript objects
 - post HTTP REST calls
 
-The Common API calls are also available to interact with resources, together with the Registry APIs. For each 
+The Common API calls are also available to interact with resources, together with the Registry APIs. For each
 
 ```javascript
 // Get the driver participant registry.
-return getParticipantRegistry('org.acme.Driver')
-  .then(function (driverParticipantRegistry) {
+try {
+    let driverParticipantRegistry = await getParticipantRegistry('org.example.Driver');
     // Call methods on the driver participant registry.
-  })
-  .catch(function (error) {
+} catch(error) {
     // Add optional error handling here.
-  });
+}
 ```
-
-**NOTE: All transaction functions should be written to ES5 and additional use Promise chains**
 
 ### Transaction Functions
 
-The transaction function is the part of Composer that can be considered to be the _smart contract_ execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the *source of truth* of the assets is maintained. 
+The transaction function is the part of Composer that can be considered to be the _smart contract_ execution. It will invoked from a client application application (or via a REST API). It will work on the state of assets, participant etc as held within the underling blockchain worldstate. The operations performed by the transaction function, will then be subject to the endorsment and order protocols as established by the the same underlying blockchain. As such the *source of truth* of the assets is maintained.
 
 Definition of the transaction functions is within the .cto model file.
 
@@ -177,6 +170,6 @@ The function argument `registryProperty` for sale will be a fully resolved copy 
 
 #### Restrictions
 
-- Transaction functions should not use random numbers
-- Additional transactions can not be submitted from the implemetnation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.
+- Transaction functions should not try to write non deterministic values to the world state. These include but are not limited to random numbers and date/time values
+- Additional transactions can not be submitted from the implementation of a transaction function. Other functions can be called but will be considered as part the same transaction. This is irrespective of the annotations of the function called.
 - Always use `getCurrentParticipant()` to get the details of the invoking participant

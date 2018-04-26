@@ -15,6 +15,7 @@
 'use strict';
 
 const createCode = require('../../lib/cmds/generator/createCodeCommand.js');
+const createDocs = require('../../lib/cmds/generator/createDocsCommand.js');
 const cmd = require('../../lib/cmds/generator.js');
 const yargs = require('yargs');
 require('chai').should();
@@ -23,13 +24,19 @@ const sinon = require('sinon');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
-
+const mockery = require('mockery');
 
 describe('composer generator cmd launcher unit tests', function () {
 
     let sandbox;
 
     beforeEach(() => {
+
+        mockery.enable({
+            warnOnReplace: false,
+            warnOnUnregistered: false
+        });
+
         sandbox = sinon.sandbox.create();
         sandbox.stub(yargs, 'usage').returns(yargs);
         sandbox.stub(yargs, 'conflicts').returns(yargs);
@@ -40,6 +47,7 @@ describe('composer generator cmd launcher unit tests', function () {
     });
 
     afterEach(() => {
+        mockery.deregisterAll();
         sandbox.restore();
     });
 
@@ -49,6 +57,7 @@ describe('composer generator cmd launcher unit tests', function () {
             cmd.command.should.include('generator');
             cmd.desc.should.include('generator');
         });
+
         it('should call yargs correctly', () => {
             sandbox.stub(yargs, 'commandDir');
             cmd.builder(yargs);
@@ -67,6 +76,26 @@ describe('composer generator cmd launcher unit tests', function () {
             sinon.assert.calledOnce(yargs.usage);
         });
 
+
+    });
+
+    describe('createDocs yargs builder function', () => {
+
+        it('should drive the yargs builder fn correctly',()=>{
+            createDocs.builder(yargs);
+            sinon.assert.calledOnce(yargs.options);
+            sinon.assert.calledOnce(yargs.usage);
+        });
+
+        it('should drive the yargs builder fn correctly',()=>{
+
+            const mockDocsGen = sinon.stub();
+            mockery.registerMock('composer-documentation',mockDocsGen);
+
+            let args = [];
+            createDocs.handler(args);
+
+        });
 
     });
 

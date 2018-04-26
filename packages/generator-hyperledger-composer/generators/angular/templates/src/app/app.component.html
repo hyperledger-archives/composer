@@ -1,21 +1,49 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#"><%=businessNetworkIdentifier%></a>
-    </div>
-    <ul class="nav navbar-nav navbar-right">
-      <li class=""><a [routerLink]="['/']">Home</a></li>
-      <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Assets
-          <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <% for(var x=0;x<assetList.length;x++){ %>
-          <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <p class="network-name"><%=businessNetworkIdentifier%>.bna</p>
+        <p class="navbar-brand"><%=appName%></p>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown">Assets</a>
+            <ul class="dropdown-menu scrollable-menu">
+              <% for(var x=0;x<assetList.length;x++){ %>
+              <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
+              <%}%>
+            </ul>
+        </li>
+        <li class="dropdown active">
+          <a class="dropdown-toggle" data-toggle="dropdown">Participants</a>
+          <ul class="dropdown-menu scrollable-menu">
+            <% for(var x=0;x<participantList.length;x++){ %>
+            <li><a [routerLink]="['/<%=participantList[x].name%>']"><%=participantList[x].name%></a></li>
+            <%}%>
+          </ul>
+      </li>
+      <li class="dropdown active">
+        <a class="dropdown-toggle" data-toggle="dropdown">Transactions</a>
+        <ul class="dropdown-menu scrollable-menu">
+          <% for(var x=0;x<transactionList.length;x++){ %>
+          <li><a [routerLink]="['/<%=transactionList[x].name%>']"><%=transactionList[x].name%></a></li>
           <%}%>
         </ul>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<router-outlet></router-outlet>
+    </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <router-outlet></router-outlet>

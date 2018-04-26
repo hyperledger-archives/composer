@@ -16,14 +16,10 @@
 
 const AdminConnection = require('..').AdminConnection;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
-const Factory = require('composer-common').Factory;
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const IdCard = require('composer-common').IdCard;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
-const ModelManager = require('composer-common').ModelManager;
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
 const uuid = require('uuid');
@@ -37,20 +33,24 @@ chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('AdminConnection', () => {
-    const testProfileName = 'TEST_PROFILE';
+    const sandbox = sinon.sandbox.create();
+
+    const testProfileName = 'profile';
+    const config = {
+        name: testProfileName,
+        'x-type': 'hlfv1'
+    };
+
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
     let adminConnection;
-    let sandbox;
     let clock;
     let cardStore;
     let mockAdminIdCard;
-
-    const config =
-        {
-            'x-type' : 'hlfv1'
-        };
+    let secretCard;
+    let credentialsCard;
+    let faultyCard;
 
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
@@ -62,24 +62,21 @@ describe('AdminConnection', () => {
         mockConnection.getIdentifier.returns('BNI@CP');
         mockConnection.disconnect.resolves();
         mockConnection.login.resolves(mockSecurityContext);
-        mockConnection.deploy.resolves();
         mockConnection.install.resolves();
         mockConnection.start.resolves();
         mockConnection.ping.resolves();
         mockConnection.queryChainCode.resolves();
         mockConnection.invokeChainCode.resolves();
-        mockConnection.undeploy.resolves();
-        mockConnection.update.resolves();
         mockConnection.upgrade.resolves();
         mockConnection.reset.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
-        cardStore = new MemoryCardStore();
-        const adminConnectionOptions = {
-            cardStore : cardStore
-        };
+
+        cardStore = NetworkCardStoreManager.getCardStore( { type : 'composer-wallet-inmemory' });
+        const adminConnectionOptions = { cardStore };
         adminConnection = new AdminConnection(adminConnectionOptions);
+
         adminConnection.securityContext = mockSecurityContext;
         mockAdminIdCard = sinon.createStubInstance(IdCard);
         mockAdminIdCard.getConnectionProfile.returns({name : 'profile', 'x-type' : 'test'});
@@ -88,8 +85,29 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManagerByType').resolves(mockConnectionManager);
         delete process.env.COMPOSER_CONFIG;
-        sandbox = sinon.sandbox.create();
         clock = sinon.useFakeTimers();
+        let faultyMetaData = { userName: 'fred',
+
+            description:'test'};
+
+        let minimalMetadata = { userName: 'fred',
+            businessNetwork:'network',
+            description:'test'};
+        let secretMetadata = { userName: 'fred',
+            businessNetwork:'network',
+            description:'test',
+            enrollmentSecret : 'password' };
+        let minimalConnectionProfile = config;
+        let validCredentials = {
+            certificate: 'cert',
+            privateKey: 'key'
+        };
+
+        secretCard = new IdCard(secretMetadata, minimalConnectionProfile);
+        faultyCard = new IdCard(faultyMetaData, minimalConnectionProfile);
+        credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
+        credentialsCard.setCredentials(validCredentials);
+
     });
 
     afterEach(() => {
@@ -110,44 +128,37 @@ describe('AdminConnection', () => {
             adminConnection.cardStore.should.equal(cardStore);
         });
 
-        it('should use FileSystemCardStore as default card store', function () {
-            const adminConnection = new AdminConnection();
-            adminConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
-        });
     });
 
     describe('#connect', () => {
-        let cardStub;
+
 
         beforeEach(() => {
-            sinon.spy(cardStore, 'get');
-            cardStub = sinon.createStubInstance(IdCard);
-            cardStub.getConnectionProfile.returns({});
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
 
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+            sinon.spy(cardStore, 'get');
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
+
         });
 
         it('should connect and login when card has secret', () => {
-            return adminConnection.connect('testCardname').then(() => {
+            return adminConnection.connect('secretCardname').then(() => {
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
-                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, {}, 'network');
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, config, 'network',sinon.match({cardName : 'secretCardname'}));
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'fred', 'password');
             });
         });
 
         it('should connect and login when card has certificates', () => {
-            cardStub.getCredentials.returns({certificate : 'cert', privateKey : 'key'});
-            cardStub.getEnrollmentCredentials.returns(null);
 
             return adminConnection.connect('testCardname').then(() => {
                 sinon.assert.calledOnce(adminConnection.connectionProfileManager.connectWithData);
-                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, {}, 'network');
+                sinon.assert.calledWith(adminConnection.connectionProfileManager.connectWithData, config, 'network',sinon.match({cardName : 'testCardname'}));
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'fred', 'na');
             });
@@ -161,28 +172,24 @@ describe('AdminConnection', () => {
         });
 
         it('should not ping if card does not contain business network name', () => {
-            cardStub.getBusinessNetworkName.returns('');
-
-            return adminConnection.connect('testCardname').then(() => {
+            return adminConnection.connect('faultyCardname').then(() => {
                 sinon.assert.notCalled(mockConnection.ping);
             });
         });
     });
 
     describe('#disconnect', () => {
-        let cardStub;
+
 
         beforeEach(() => {
             sinon.spy(cardStore, 'get');
-            cardStub = sinon.createStubInstance(IdCard);
-            cardStub.getConnectionProfile.returns({});
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
 
-            sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
         });
 
         it('should set connection and security context to null if connection is set', () => {
@@ -229,104 +236,182 @@ describe('AdminConnection', () => {
     });
 
     describe('#start', () => {
-        it('should be able to start a business network definition with no network admins', () => {
+        const networkName = 'network-name';
+        const networkVersion = '1.0.0-test';
+        const identityName = 'admin';
+        const networkAdmins = [
+            { userName: 'admin', enrollmentSecret: 'adminpw' },
+            { userName: 'adminc', certificate: 'certcertcert'}
+        ];
+        const bootstrapTransactions = [
+            {
+                $class : 'org.hyperledger.composer.system.AddParticipant',
+                resources : [
+                    {
+                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
+                        participantId : 'dave'
+                    }
+                ],
+                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                timestamp : '1970-01-01T00:00:00.000Z',
+                transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
+            },
+            {
+                $class : 'org.hyperledger.composer.system.BindIdentity',
+                certificate : 'daves cert',
+                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
+                timestamp : '1970-01-01T00:00:00.000Z',
+                transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
+            }
+        ];
+
+        const expectedStartTransaction = {
+            $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
+            timestamp : '1970-01-01T00:00:00.000Z',
+            transactionId : sinon.match.string
+        };
+        const expectedNetworkAdminBootstrapTransactions = {
+            bootstrapTransactions : [
+                {
+                    $class : 'org.hyperledger.composer.system.AddParticipant',
+                    resources : [
+                        {
+                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId : 'admin'
+                        }
+                    ],
+                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.AddParticipant',
+                    resources : [
+                        {
+                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId : 'adminc'
+                        }
+                    ],
+                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.IssueIdentity',
+                    identityName : 'admin',
+                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.BindIdentity',
+                    certificate : 'certcertcert',
+                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#adminc',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                }
+            ]
+        };
+
+        beforeEach(() => {
+            mockSecurityContext.getUser.returns(identityName);
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.start(businessNetworkDefinition, {
+        });
 
-            })
+        it('should error if neither networkAdmins or bootstrapTransactions specified', () => {
+            return adminConnection.start(networkName, networkVersion, { })
+                .should.be.rejectedWith('No network administrators or bootstrap transactions are specified');
+        });
+
+        it('should error if both networkAdmins and bootstrapTransactions specified', () => {
+            return adminConnection.start(networkName, networkVersion, {
+                networkAdmins: networkAdmins,
+                bootstrapTransactions: bootstrapTransactions
+            }).should.be.rejectedWith('You cannot specify both network administrators and bootstrap transactions');
+        });
+
+        it('should error if no userName specified for network admin', () => {
+            return adminConnection.start(networkName, networkVersion, {
+                networkAdmins : [ { enrollmentSecret  : 'adminpw' } ]
+            }).should.be.rejectedWith('A user name must be specified for all network administrators');
+        });
+
+        it('should error if no secret or certificate specified for network admin', () => {
+            return adminConnection.start(networkName, networkVersion, {
+                networkAdmins : [ { userName : 'admin' } ]
+            }).should.be.rejectedWith('Either a secret or a certificate must be specified for all network administrators');
+        });
+
+
+        it('should create valid start transaction', () => {
+            return adminConnection.start(networkName, networkVersion, { networkAdmins: networkAdmins })
                 .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-
-                    });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
-
-                    });
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { });
+                    const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
+                    sinon.assert.match(actualStartTransactions, expectedStartTransaction);
                 });
         });
 
-        it('should be able to start a business network definition', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.start(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin',
-                    enrollmentSecret  : 'adminpw'
-                }]
-            })
+        it('should create bootstrap transactions for network admins', () => {
+            return adminConnection.start(networkName, networkVersion, { networkAdmins: networkAdmins })
                 .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-                        networkAdmins : [{
-                            userName : 'admin',
-                            enrollmentSecret  : 'adminpw'
-                        }]
-                    });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
-                        networkAdmins : [{
-                            userName : 'admin',
-                            enrollmentSecret  : 'adminpw'
-                        }]
-                    });
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { });
+                    const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
+                    sinon.assert.match(actualStartTransactions, expectedNetworkAdminBootstrapTransactions);
                 });
         });
 
-        it('should be able to start a business network definition with several networkAdmins required', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.start(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin',
-                    enrollmentSecret  : 'adminpw'
-                }, {userName : 'admin', certificate : 'cert'}]
-            })
-                .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-                        networkAdmins : [{
-                            userName : 'admin',
-                            enrollmentSecret  : 'adminpw'
-                        }, {userName : 'admin', certificate : 'cert'}]
-                    });
-                    sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
-                        networkAdmins : [{
-                            userName : 'admin',
-                            enrollmentSecret  : 'adminpw'
-                        }, {userName : 'admin', certificate : 'cert'}]
-                    });
-                });
-        });
-
-        it('should be able to start a business network definition with start options', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.start(businessNetworkDefinition, {
+        it('should pass start options not modelled in the start transaction on to connector', () => {
+            return adminConnection.start(networkName, networkVersion, {
                 opt : 1,
-                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
+                networkAdmins: networkAdmins
             })
                 .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-                        opt : 1,
-                        networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
-                    });
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'name', '{"start":"json"}', {
-                        opt : 1,
-                        networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
-                    });
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { opt: 1 });
+                });
+        });
+
+        it('should create bootstrap transactions for network admins with empty bootstrap transactions start option', () => {
+            return adminConnection.start(networkName, networkVersion, {
+                bootstrapTransactions: [ ],
+                networkAdmins: networkAdmins
+            })
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.start);
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { });
+                    const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
+                    sinon.assert.match(actualStartTransactions, expectedNetworkAdminBootstrapTransactions);
+                });
+        });
+
+        it('should include in start transactions modelled properties from start options', () => {
+            const logLevel = 'DEBUG';
+            return adminConnection.start(networkName, networkVersion, {
+                logLevel: logLevel,
+                networkAdmins: networkAdmins
+            })
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.start);
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { });
+                    const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
+                    sinon.assert.match(actualStartTransactions, { logLevel: logLevel });
+                });
+        });
+
+        it('should use supplied bootstrap transactions when no network admins specified', () => {
+            const startOptions = {
+                bootstrapTransactions: bootstrapTransactions
+            };
+            return adminConnection.start(networkName, networkVersion, startOptions)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.start);
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, networkName, networkVersion, sinon.match.string, { });
+                    const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
+                    sinon.assert.match(actualStartTransactions, startOptions);
                 });
         });
 
@@ -337,11 +422,21 @@ describe('AdminConnection', () => {
         it('should be able to upgrade a composer runtime', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.upgrade()
+            return adminConnection.upgrade('name', '1.0.1', {'foo':'bar'})
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.upgrade);
-                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext);
+                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'name', '1.0.1', {'foo':'bar'});
                 });
+        });
+    });
+
+    describe('#undeploy', () => {
+        it('should call undeploy on the connection', async () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            const networkName = 'conga';
+            await adminConnection.undeploy(networkName);
+            sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, networkName);
         });
     });
 
@@ -354,71 +449,6 @@ describe('AdminConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.reset);
                     sinon.assert.calledWith(mockConnection.reset, mockSecurityContext);
-                });
-        });
-    });
-
-    describe('#deploy', () => {
-
-        it('should be able to deploy a business network definition', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.deploy(businessNetworkDefinition, {card : mockAdminIdCard})
-                .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {card : mockAdminIdCard});
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {card : mockAdminIdCard});
-                });
-        });
-
-        it('should be able to deploy a business network definition with deploy options', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            sinon.stub(adminConnection, '_buildStartTransaction').resolves({start : 'json'});
-            return adminConnection.deploy(businessNetworkDefinition, {opt : 1, card : mockAdminIdCard})
-                .then(() => {
-                    sinon.assert.calledOnce(adminConnection._buildStartTransaction);
-                    sinon.assert.calledWith(adminConnection._buildStartTransaction, businessNetworkDefinition, {
-                        opt : 1,
-                        card : mockAdminIdCard
-                    });
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'name', '{"start":"json"}', {
-                        opt : 1,
-                        card : mockAdminIdCard
-                    });
-                });
-        });
-
-    });
-
-    describe('#undeploy', () => {
-
-        it('should be able to undeploy a business network', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.undeploy('testnetwork')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.undeploy);
-                    sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, 'testnetwork');
-                });
-        });
-    });
-
-    describe('#update', () => {
-
-        it('should be able to update a business network', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
-            return adminConnection.update(businessNetworkDefinition)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.update);
-                    sinon.assert.calledWith(mockConnection.update, mockSecurityContext, businessNetworkDefinition);
                 });
         });
     });
@@ -571,15 +601,12 @@ describe('AdminConnection', () => {
         beforeEach(() => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let cardStub = sinon.createStubInstance(IdCard);
-            let cp = config;
-            cp.name = testProfileName;
-            cardStub.getConnectionProfile.returns(cp);
-            cardStub.getUserName.returns('fred');
-            cardStub.getBusinessNetworkName.returns('network');
-            cardStub.getCredentials.returns({});
-            cardStub.getEnrollmentCredentials.returns({secret : 'password'});
-            cardStore.put('testCardname', cardStub);
+            return cardStore.put('secretCardname', secretCard).then(()=>{
+                sinon.stub(adminConnection.connectionProfileManager, 'connectWithData').resolves(mockConnection);
+                return cardStore.put('testCardname', credentialsCard);
+            }).then(()=>{
+                return cardStore.put('faultyCardname', faultyCard);
+            });
         });
 
         it('should be able to request an identity', () => {
@@ -608,7 +635,7 @@ describe('AdminConnection', () => {
                 enrollId : 'fred'
             });
 
-            return adminConnection.requestIdentity('testCardname')
+            return adminConnection.requestIdentity('secretCardname')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.requestIdentity);
                     sinon.assert.calledWith(mockConnectionManager.requestIdentity, testProfileName, config, 'fred', 'password');
@@ -626,380 +653,25 @@ describe('AdminConnection', () => {
 
     });
 
+    describe('#getNativeAPI', () => {
 
-    describe('#_generateBootstrapTransactions', () => {
-
-        const modelManager = new ModelManager();
-        const factory = new Factory(modelManager);
-        const identityName = 'admin';
-        const identityCertificate = 'such cert';
-
-        it('should generate the bootstrap transactions', () => {
-            const txs = adminConnection._generateBootstrapTransactions(factory, identityName, identityCertificate);
-            txs.should.have.lengthOf(2);
-            const tx0 = txs[0];
-            tx0.getFullyQualifiedType().should.equal('org.hyperledger.composer.system.AddParticipant');
-            tx0.resources.should.have.lengthOf(1);
-            tx0.resources[0].getFullyQualifiedType().should.equal('org.hyperledger.composer.system.NetworkAdmin');
-            tx0.resources[0].participantId.should.equal('admin');
-            const tx1 = txs[1];
-            tx1.getFullyQualifiedType().should.equal('org.hyperledger.composer.system.BindIdentity');
-            tx1.participant.toURI().should.equal('resource:org.hyperledger.composer.system.NetworkAdmin#admin');
-            tx1.certificate.should.equal(identityCertificate);
-        });
-
-    });
-
-    describe('#_buildStartTransaction', () => {
-
-        const businessNetworkDefinition = new BusinessNetworkDefinition('my-network@1.0.0');
-        const identityName = 'admin';
-
-        beforeEach(() => {
-            mockSecurityContext.getUser.returns(identityName);
-            sandbox.stub(uuid, 'v4').returns('47bc3a67-5599-4460-9745-6a291df4f879');
-        });
-
-        it('should build the start transaction if no bootstrap transactions specified', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin',
-                    enrollmentSecret  : 'adminpw'
-                }, {userName : 'adminc', certificate : 'certcertcert'}]
-            })
-                .then((startTransactionJSON) => {
-                    startTransactionJSON.should.deep.equal({
-                        $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        bootstrapTransactions : [
-                            {
-                                $class : 'org.hyperledger.composer.system.AddParticipant',
-                                resources : [
-                                    {
-                                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        participantId : 'admin'
-                                    }
-                                ],
-                                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            },
-                            {
-                                $class : 'org.hyperledger.composer.system.AddParticipant',
-                                resources : [
-                                    {
-                                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        participantId : 'adminc'
-                                    }
-                                ],
-                                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            },
-                            {
-                                $class : 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName : 'admin',
-                                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            }
-                            ,
-                            {
-                                $class : 'org.hyperledger.composer.system.BindIdentity',
-                                certificate : 'certcertcert',
-                                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#adminc',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            }
-                        ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
-                        timestamp : '1970-01-01T00:00:00.000Z',
-                        transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                    });
-                });
-        });
-
-        it('should build the start transaction if empty bootstrap transactions specified', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                bootstrapTransactions : [],
-                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
-            })
-                .then((startTransactionJSON) => {
-                    startTransactionJSON.should.deep.equal({
-                        $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        bootstrapTransactions : [
-                            {
-                                $class : 'org.hyperledger.composer.system.AddParticipant',
-                                resources : [
-                                    {
-                                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        participantId : 'admin'
-                                    }
-                                ],
-                                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            },
-                            {
-                                $class : 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName : 'admin',
-                                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            }
-                        ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
-                        timestamp : '1970-01-01T00:00:00.000Z',
-                        transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                    });
-                });
-        });
-
-        it('should build the start transaction using additional modelled properties from the start options', () => {
-            const userMetadata = {
-                userName : 'user',
-                businessNetwork : 'penguin-network'
+        it('should throw an error if not connected', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
             };
-            const connection = config;
-            connection.card = 'user@penguin-network';
-            connection.name = 'connectionName';
-            let userCard = new IdCard(userMetadata, connection);
-            userCard.setCredentials({certificate : 'card cert', privateKey : 'String'});
-            const startOptions = {
-                logLevel : 'DEBUG',
-                card : userCard,
-                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            (() => {
+                adminConnection.getNativeAPI();
+            }).should.throw(/not connected; must call connect\(\) first/);
+        });
+
+        it('should return the native API from the connection', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
             };
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
-                .then((startTransactionJSON) => {
-                    startTransactionJSON.should.deep.equal({
-                        $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        bootstrapTransactions : [
-                            {
-                                $class : 'org.hyperledger.composer.system.AddParticipant',
-                                resources : [
-                                    {
-                                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        participantId : 'admin'
-                                    }
-                                ],
-                                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            },
-                            {
-                                $class : 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName : 'admin',
-                                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            }
-                        ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
-                        timestamp : '1970-01-01T00:00:00.000Z',
-                        transactionId : '47bc3a67-5599-4460-9745-6a291df4f879',
-                        logLevel : 'DEBUG'
-                    });
-                    should.equal(startOptions.logLevel, undefined);
-                });
-        });
-
-        it('should build the start transaction ignoring additional unmodelled properties from the start options', () => {
-            const startOptions = {
-                notAModelledProp : 'lulz',
-                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
-            };
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, startOptions)
-                .then((startTransactionJSON) => {
-                    startTransactionJSON.should.deep.equal({
-                        $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        bootstrapTransactions : [
-                            {
-                                $class : 'org.hyperledger.composer.system.AddParticipant',
-                                resources : [
-                                    {
-                                        $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        participantId : 'admin'
-                                    }
-                                ],
-                                targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            },
-                            {
-                                $class : 'org.hyperledger.composer.system.IssueIdentity',
-                                identityName : 'admin',
-                                participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
-                                timestamp : '1970-01-01T00:00:00.000Z',
-                                transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                            }
-                        ],
-                        businessNetworkArchive : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
-                        timestamp : '1970-01-01T00:00:00.000Z',
-                        transactionId : '47bc3a67-5599-4460-9745-6a291df4f879'
-                    });
-                    startOptions.notAModelledProp.should.equal('lulz');
-                });
-        });
-
-        it('should build the start transaction using bootstrap transactions from the start options', () => {
-            const bootstrapTransactions = [
-                {
-                    $class : 'org.hyperledger.composer.system.AddParticipant',
-                    resources : [
-                        {
-                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
-                            participantId : 'dave'
-                        }
-                    ],
-                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                },
-                {
-                    $class : 'org.hyperledger.composer.system.BindIdentity',
-                    certificate : 'daves cert',
-                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                }
-            ];
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {bootstrapTransactions})
-                .then((startTransactionJSON) => {
-                    startTransactionJSON.should.deep.equal({
-                        '$class' : 'org.hyperledger.composer.system.StartBusinessNetwork',
-                        'businessNetworkArchive' : 'UEsDBAoAAAAAAAAAjA55auUHJwAAACcAAAAMAAAAcGFja2FnZS5qc29ueyJuYW1lIjoibXktbmV0d29yayIsInZlcnNpb24iOiIxLjAuMCJ9UEsDBAoAAAAAAAAAjA4AAAAAAAAAAAAAAAAHAAAAbW9kZWxzL1BLAwQKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAGxpYi9QSwECFAAKAAAAAAAAAIwOeWrlBycAAAAnAAAADAAAAAAAAAAAAAAAAAAAAAAAcGFja2FnZS5qc29uUEsBAhQACgAAAAAAAACMDgAAAAAAAAAAAAAAAAcAAAAAAAAAAAAQAAAAUQAAAG1vZGVscy9QSwECFAAKAAAAAAAAAIwOAAAAAAAAAAAAAAAABAAAAAAAAAAAABAAAAB2AAAAbGliL1BLBQYAAAAAAwADAKEAAACYAAAAAAA=',
-                        'bootstrapTransactions' : [
-                            {
-                                '$class' : 'org.hyperledger.composer.system.AddParticipant',
-                                'resources' : [
-                                    {
-                                        '$class' : 'org.hyperledger.composer.system.NetworkAdmin',
-                                        'participantId' : 'dave'
-                                    }
-                                ],
-                                'targetRegistry' : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                                'transactionId' : '82b350a3-ecac-44e1-849a-24ff2cfa7db7',
-                                'timestamp' : '1970-01-01T00:00:00.000Z'
-                            },
-                            {
-                                '$class' : 'org.hyperledger.composer.system.BindIdentity',
-                                'participant' : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
-                                'certificate' : 'daves cert',
-                                'transactionId' : '82b350a3-ecac-44e1-849a-24ff2cfa7db7',
-                                'timestamp' : '1970-01-01T00:00:00.000Z'
-                            }
-                        ],
-                        'transactionId' : '47bc3a67-5599-4460-9745-6a291df4f879',
-                        'timestamp' : '1970-01-01T00:00:00.000Z'
-                    });
-                });
-        });
-
-        it('should throw error if no start options', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition).should.eventually.be.rejectedWith('No network administrators or bootstrap transactions are specified');
-        });
-
-        it('should handle no networkadmins', () => {
-            const bootstrapTransactions = [
-                {
-                    $class : 'org.hyperledger.composer.system.AddParticipant',
-                    resources : [
-                        {
-                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
-
-                            participantId : 'dave'
-                        }
-                    ],
-                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                },
-                {
-                    $class : 'org.hyperledger.composer.system.BindIdentity',
-                    certificate : 'daves cert',
-                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                }
-            ];
-
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                bootstrapTransactions
-            });
-        });
-
-        it('should throw error if network admins and bootstrap transactions specified', () => {
-            const bootstrapTransactions = [
-                {
-                    $class : 'org.hyperledger.composer.system.AddParticipant',
-                    resources : [
-                        {
-                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
-
-                            participantId : 'dave'
-                        }
-                    ],
-                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                },
-                {
-                    $class : 'org.hyperledger.composer.system.BindIdentity',
-                    certificate : 'daves cert',
-                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#dave',
-                    timestamp : '1970-01-01T00:00:00.000Z',
-                    transactionId : '82b350a3-ecac-44e1-849a-24ff2cfa7db7'
-                }
-            ];
-
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                bootstrapTransactions,
-                networkAdmins : [{userName : 'admin', enrollmentSecret  : 'adminpw'}]
-            }).should.eventually.be.rejectedWith('You cannot specify both network administrators and bootstrap transactions');
-        });
-
-        it('should throw error if no userName specified', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                networkAdmins : [{
-                    enrollmentSecret  : 'adminpw'
-                }]
-            }).should.eventually.be.rejectedWith('A user name must be specified for all network administrators');
-        });
-
-        it('should throw error if no secret or certificate specified', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin'
-                }]
-            }).should.eventually.be.rejectedWith('Either a secret or a certificate must be specified for all network administrators');
-        });
-
-        it('should serialize the same business network archive regardless of the current date', () => {
-            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                networkAdmins : [{
-                    userName : 'admin',
-                    enrollmentSecret  : 'adminpw'
-                }, {userName : 'adminc', certificate : 'certcertcert'}]
-            })
-                .then((startTransactionJSON) => {
-                    const originalBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
-                    let promise = Promise.resolve();
-                    for (let i = 0; i < 5; i++) {
-                        clock.tick(60000);
-                        promise = promise.then(() => {
-                            return adminConnection._buildStartTransaction(businessNetworkDefinition, {
-                                networkAdmins : [{
-                                    userName : 'admin',
-                                    enrollmentSecret  : 'adminpw'
-                                }, {userName : 'adminc', certificate : 'certcertcert'}]
-                            });
-                        }).then((startTransactionJSON) => {
-                            const thisBusinessNetworkArchive = startTransactionJSON.businessNetworkArchive;
-                            thisBusinessNetworkArchive.should.equal(originalBusinessNetworkArchive, `Failed to match serialized business network archive, iteration ${i + 1}/5`);
-                        });
-                    }
-                    return promise;
-                });
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            adminConnection.connection = mockConnection;
+            adminConnection.getNativeAPI().getChannel().should.deep.equal({ channel: true });
         });
 
     });
@@ -1052,7 +724,7 @@ describe('AdminConnection', () => {
                 return adminConnection.importCard(cardName, userCard)
                 .then((updated) => {
                     sinon.assert.calledOnce(mockConnectionManager.removeIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', expectedConnection, 'user');
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity, 'connectionName', sinon.match(expectedConnection), 'user');
                     updated.should.be.true;
                     return cardStore.get(cardName).should.eventually.deep.equal(userCard);
                 });
@@ -1078,6 +750,17 @@ describe('AdminConnection', () => {
                         certificate,
                         privateKey
                     );
+                });
+            });
+
+            it('should not add card to card store if importIdentity fails', function() {
+                const cardName = 'conga';
+                const certificate = 'CERTIFICATE_DATA';
+                const privateKey = 'PRIVATE_KEY_DATA';
+                userCard.setCredentials({certificate : certificate, privateKey : privateKey});
+                mockConnectionManager.importIdentity.rejects(new Error('importIdentity'));
+                return adminConnection.importCard(cardName, userCard).should.be.rejected.then(() => {
+                    return cardStore.has(cardName).should.become(false);
                 });
             });
         });

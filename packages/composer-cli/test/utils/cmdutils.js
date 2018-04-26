@@ -36,14 +36,17 @@ describe('composer transaction cmdutils unit tests', () => {
     const pem3 = '-----BEGIN CERTIFICATE-----\nsuch admin3\n-----END CERTIFICATE-----\n';
 
     let sandbox;
+    let fsStub;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        sandbox.stub(fs, 'readFileSync');
+        fsStub = sandbox.stub(fs, 'readFileSync');
         fs.readFileSync.withArgs('admin1.pem').returns(pem1);
         fs.readFileSync.withArgs('admin2.pem').returns(pem2);
         fs.readFileSync.withArgs('admin3.pem').returns(pem3);
     });
+
+
 
     afterEach(() => {
         sandbox.restore();
@@ -343,6 +346,7 @@ describe('composer transaction cmdutils unit tests', () => {
     describe('#createAdminConnection', () => {
 
         it('should create a new admin connection', () => {
+            fsStub.restore();
             CmdUtil.createAdminConnection().should.be.an.instanceOf(AdminConnection);
         });
 
@@ -351,6 +355,7 @@ describe('composer transaction cmdutils unit tests', () => {
     describe('#createBusinessNetworkConnection', () => {
 
         it('should create a new business network connection', () => {
+            fsStub.restore();
             CmdUtil.createBusinessNetworkConnection().should.be.an.instanceOf(BusinessNetworkConnection);
         });
 
@@ -395,6 +400,22 @@ describe('composer transaction cmdutils unit tests', () => {
                 fs.existsSync.withArgs(PATH).returns(false);
                 CmdUtil.getArchiveFileContents(PATH);
             }).should.throw(errString);
+        });
+    });
+
+    describe('#sanitizeCardFileName', () => {
+        it('should append .card if missing', () => {
+            CmdUtil.sanitizeCardFileName('card').should.equal('card.card');
+        });
+
+        it ('should not change file name with .card extension', () => {
+            const fileName = 'fileName.card';
+            CmdUtil.sanitizeCardFileName(fileName).should.equal(fileName);
+        });
+
+        it ('should use case-insensitive detection of .card extension', () => {
+            const fileName = 'fileName.CARD';
+            CmdUtil.sanitizeCardFileName(fileName).should.equal(fileName);
         });
     });
 

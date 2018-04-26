@@ -125,7 +125,7 @@ participant Person identified by personId {
 ```
 You can see how the owner and title information are being accessed in a very simple manner.
 
-## Submitting a transactions
+## Submitting a transaction
 The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:
 
 ```
@@ -162,4 +162,4 @@ What we need to do here is create a 'serializer'.  This is able to create a reso
 
 * [**JavaScript API Documentation**](../api/api-doc-index.html)
 * [**Promises tutorial**](https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics)
-* [** async/await tutorial**](https://codeburst.io/javascript-es-2017-learn-async-await-by-example-48acc58bad65)
+* [**async/await tutorial**](https://codeburst.io/javascript-es-2017-learn-async-await-by-example-48acc58bad65)

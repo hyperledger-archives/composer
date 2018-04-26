@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
@@ -9,19 +23,18 @@ app-editor {
     display: flex;
 
     .error_dot {
-        align-self: center;
+      align-self: center;
     }
 
     .files {
       & > * {
         padding: $space-medium $space-large;
       }
+
+      flex: 1;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      span {
-        color: $secondary-text;
-      }
 
       .side-bar-nav {
         padding: 0;
@@ -31,11 +44,97 @@ app-editor {
         .error {
             color: $first-warning;
         }
+
+        ul li div {
+          padding: 0;
+        }
       }
     }
 
     .actions {
-      padding: $space-medium $space-large;
+      background-color: $third-highlight;
+      border-top: 1px solid $fourth-highlight;
+      padding: $space-small $space-large $space-small $space-large;
+
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+
+      .add-file, .download-action {
+        flex: 1;
+      }
+    }
+
+    .deploy {
+      background-color: $third-highlight;
+      border-top: 1px solid $fourth-highlight;
+      padding: 0 $space-large $space-large $space-large;
+
+      h2 {
+        margin-bottom: $space-medium;
+      }
+
+      .busnet-version {
+        min-height: 2.2rem;
+        display: flex;
+        flex-direction: row;
+
+        .poc {
+          margin: 0;
+        }
+
+        .semver-label, .semver-value, .semver {
+          display: block;
+          line-height: 2rem;
+          font-size: 0.8rem;
+        }
+
+        .semver-label {
+          flex: 1;
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #8C9696;
+        }
+
+        .semver-value {
+          flex: 4;
+          display: flex;
+          flex-direction: row;
+          min-width: 0;
+
+          .semver {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-style: italic;
+
+            svg.error-dot {
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+
+        button {
+          margin-left: $space-smedium;
+          vertical-align: top;
+          line-height: 2rem;
+          font-size: 0.8rem;
+        }
+
+        input[type=text] {
+          margin: 0;
+          background-color: white;
+          font-size: 0.8rem;
+          line-height: unset;
+          height: 1.8rem;
+        }
+
+      }
+
+      .error {
+        color: $first-warning;
+      }
     }
   }
 
@@ -72,7 +171,7 @@ app-editor {
         visibility: visible;
       }
 
-      .business-network-version {
+      .file-name {
         margin-right: $space-smedium;
         margin-bottom: 0.3rem;
         color: $secondary-text;
@@ -167,16 +266,14 @@ app-editor {
         padding-top:4px;
     }
 
-    .readme_icon_edit {
+    .readme_icon_preview .readme_icon_edit .readme_icon_settings {
       flex-shrink: 1;
       padding-top:4px;
+      padding-right: 10px;
     }
 
     .readme_icon_preview {
-      flex-shrink: 1;
       margin-left: auto;
-      padding-top:4px;
-      padding-right: 10px;
     }
   }
 

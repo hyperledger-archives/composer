@@ -58,17 +58,17 @@ Now that the domain model has been updated, we can write the additional business
 
         /**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.biznet.Trade} trade - the trade to be processed
+         * @param {org.example.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
         async function tradeCommodity(trade) {
 
             // set the new owner of the commodity
             trade.commodity.owner = trade.newOwner;
-            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            let assetRegistry = await getAssetRegistry('org.example.mynetwork.Commodity');
 
             // emit a notification that a trade has occurred
-            let tradeNotification = getFactory().newEvent('org.acme.biznet', 'TradeNotification');
+            let tradeNotification = getFactory().newEvent('org.example.mynetwork', 'TradeNotification');
             tradeNotification.commodity = trade.commodity;
             emit(tradeNotification);
 
@@ -78,19 +78,19 @@ Now that the domain model has been updated, we can write the additional business
 
         /**
          * Remove all high volume commodities
-         * @param {org.acme.biznet.RemoveHighQuantityCommodities} remove - the remove to be processed
+         * @param {org.example.mynetwork.RemoveHighQuantityCommodities} remove - the remove to be processed
          * @transaction
          */
         async function removeHighQuantityCommodities(remove) {
 
-            let assetRegistry = await getAssetRegistry('org.acme.biznet.Commodity');
+            let assetRegistry = await getAssetRegistry('org.example.mynetwork.Commodity');
             let results = await query('selectCommoditiesWithHighQuantity');
 
             for (let n = 0; n < results.length; n++) {
                 let trade = results[n];
 
                 // emit a notification that a trade was removed
-                let removeNotification = getFactory().newEvent('org.acme.biznet','RemoveNotification');
+                let removeNotification = getFactory().newEvent('org.example.mynetwork','RemoveNotification');
                 removeNotification.commodity = trade;
                 emit(removeNotification);
                 await assetRegistry.remove(trade);
@@ -117,27 +117,27 @@ The queries used by the Transaction Processor logic are defined in a file which 
         query selectCommodities {
           description: "Select all commodities"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.example.mynetwork.Commodity
         }
 
         query selectCommoditiesByExchange {
           description: "Select all commodities based on their main exchange"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.example.mynetwork.Commodity
                   WHERE (mainExchange==_$exchange)
         }
 
         query selectCommoditiesByOwner {
           description: "Select all commodities based on their owner"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.example.mynetwork.Commodity
                   WHERE (owner == _$owner)
         }
 
         query selectCommoditiesWithHighQuantity {
           description: "Select commodities based on quantity"
           statement:
-              SELECT org.acme.biznet.Commodity
+              SELECT org.example.mynetwork.Commodity
                   WHERE (quantity > 60)
         }
 
@@ -146,14 +146,17 @@ The queries used by the Transaction Processor logic are defined in a file which 
 
 ## Step Three: Regenerate your business network archive
 
-After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlf_full}} instance.
+After changing the files in a business network, the business network must be repackaged as a business network archive (`.bna`) and redeployed to the {{site.data.conrefs.hlf_full}} instance. Upgrading a deployed network requires that the new version being deployed have a new version number.
 
+1. In the `tutorial-network` directory, open the `package.json` file.
 
-1. Using the command line, navigate to the `tutorial-network` directory.
+2. Update the **version** property from `0.0.1` to `0.0.2`.
 
-2. Run the following command:
+3. Using the command line, navigate to the `tutorial-network` directory.
 
-        composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.1.bna
+4. Run the following command:
+
+        composer archive create --sourceType dir --sourceName . -a tutorial-network@0.0.2.bna
 
 
 
@@ -161,15 +164,20 @@ After changing the files in a business network, the business network must be rep
 
 We need to deploy the modified network to become the latest edition on the blockchain! We are using the newly created archive business network archive file to update the existing deployed business network; this is the same business network name, that we used during the Developer Tutorial.
 
-1. Switch to the terminal, change directory to the folder containing the `tutorial-network.bna`.
+1. Switch to the terminal, change directory to the folder containing the `tutorial-network@0.0.2.bna`.
 
-2. Run the following command to update the business network:
+2. Run the following command to install the updated business network:
 
-        composer network update -a tutorial-network@0.0.1.bna -c admin@tutorial-network
+        composer network install --card PeerAdmin@hlfv1 --archiveFile tutorial-network@0.0.2.bna
 
-3. Run the following command to test that the network is deployed:
+3. Run the following command to upgrade the network to the new version:
 
-        composer network ping -c admin@tutorial-network
+        composer network upgrade -c PeerAdmin@hlfv1 -n tutorial-network -V 0.0.2
+
+4. Check the current version of the business network before continuing by using the following command:
+
+        composer network ping -c admin@tutorial-network | grep Business
+
 
 ## Step Five: Regenerate the REST APIs for the updated Business Network
 
@@ -204,7 +212,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 1. First, click on 'Trader' in the REST Explorer, then click on the 'POST' method on /Trader, then scroll down to the Parameter section - create the following Trader instances, in turn:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.example.mynetwork.Trader",
           "tradeId": "TRADER1",
           "firstName": "Jenny",
           "lastName": "Jones"
@@ -215,7 +223,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 3. Create another trader by copying the following JSON:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.example.mynetwork.Trader",
           "tradeId": "TRADER2",
           "firstName": "Jack",
           "lastName": "Sock"
@@ -224,7 +232,7 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 4. Create a third trader by coping the following JSON:
 
         {
-          "$class": "org.acme.biznet.Trader",
+          "$class": "org.example.mynetwork.Trader",
           "tradeId": "TRADER3",
           "firstName": "Rainer",
           "lastName": "Valens"
@@ -236,23 +244,23 @@ Before we proceed, we need to create some data, to demonstrate queries adequatel
 
 ```
 {
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.example.mynetwork.Commodity",
   "tradingSymbol": "EMA",
   "description": "Corn",
   "mainExchange": "EURONEXT",
   "quantity": 10,
-  "owner": "resource:org.acme.biznet.Trader#TRADER1"
+  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
 }
 ```
 
 ```
 {
-  "$class": "org.acme.biznet.Commodity",
+  "$class": "org.example.mynetwork.Commodity",
   "tradingSymbol": "CC",
   "description": "Cocoa",
   "mainExchange": "ICE",
   "quantity": 80,
-  "owner": "resource:org.acme.biznet.Trader#TRADER2"
+  "owner": "resource:org.example.mynetwork.Trader#TRADER2"
 }
 ```
 
@@ -347,4 +355,3 @@ Well done, you've now completed this tutorial and we hope you now have a much be
 
 - [Developer-Tutorial](developer-tutorial.html)
 - [Deploying a business network](../business-network/bnd-deploy.html)
-- [Network deploy command](../reference/composer.network.deploy.html)

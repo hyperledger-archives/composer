@@ -1,0 +1,20 @@
+# Transaction Functions Detail
+
+{% for fn in scripts.files %}
+
+*Identifier*
+
+{{fn.identifier}}
+
+*Functions*
+{% for f in fn.functions %}
+#### {{f.name}}
+
+```javascript
+{{f.text}}
+``` 
+
+{% endfor %}
+{% endfor %}
+
+

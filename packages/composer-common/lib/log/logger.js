@@ -13,30 +13,51 @@
  */
 
 'use strict';
-
+const composerUtil = require('../util');
+const path = require('path');
 const Tree = require('./tree.js');
 
-// Root node of the selection tree
-let _tree = null;
+// Note, sprintf is being used here solely to help format the filename of the log file.
+// It is inefficient to use it for general formatting as part of logging.
+const sprintf = require('sprintf-js').sprintf;
 
-// Core logger that is in use (user configurable)
-let _logger = null;
+// Current configuration
+let _config;
+
+// Core logger that is in use
+let _logger;
 
 // Set of instances of this logger class that acts as a proxy to the core logger
 let _clInstances = {};
 
-// Settins for log levels
-const LOG_LEVEL_ALL = 6;
-const LOG_LEVEL_DEBUG = 5;
-const LOG_LEVEL_VERBOSE = 4;
-const LOG_LEVEL_INFO = 3;
-const LOG_LEVEL_WARN = 2;
-const LOG_LEVEL_ERROR = 1;
-const LOG_LEVEL_NONE = 0;
+// the default control string - log from everthing but only at the error level
+let _envDebug = 'composer[error]:*';
+
+// callback to use to get additional information
+let _callback;
+
+// Settings for log levels
+// These are based on the NPM log levels
+// NPM log levels are
+//{
+//  error: 0,
+//  warn: 1,
+//  info: 2,
+//  verbose: 3,
+//  debug: 4,
+//  silly: 5
+//}
+const LOG_LEVEL_SILLY = 5;
+const LOG_LEVEL_DEBUG = 4;
+const LOG_LEVEL_VERBOSE = 3;
+const LOG_LEVEL_INFO = 2;
+const LOG_LEVEL_WARN = 1;
+const LOG_LEVEL_ERROR = 0;
+const LOG_LEVEL_NONE = -1;
 
 // Mapping between strings and log levels.
 const _logLevelAsString = {
-    all: LOG_LEVEL_ALL,
+    silly: LOG_LEVEL_SILLY,
     debug: LOG_LEVEL_DEBUG,
     verbose: LOG_LEVEL_VERBOSE,
     info: LOG_LEVEL_INFO,
@@ -45,8 +66,10 @@ const _logLevelAsString = {
     none: LOG_LEVEL_NONE
 };
 
-// Current log level
-let _logLevel = LOG_LEVEL_ALL;
+// If  composer[debug]:acls is provided, the debug level of trace will be used for specified string.
+const PROFILES = {
+    'acls' : ['composer[#]:AccessController']
+};
 
 /**
  * @description Class that provides the API to enable parts of the *Composer*
@@ -86,26 +109,16 @@ let _logLevel = LOG_LEVEL_ALL;
 class Logger {
 
     /**
-     * Set the new log level.
-     * @param {string} logLevel The new log level.
-     */
-    static setLogLevel(logLevel) {
-        const newLogLevel = _logLevelAsString[logLevel.toLowerCase()];
-        if (newLogLevel === undefined) {
-            throw new Error(`Unrecognized log level ${logLevel}`);
-        }
-        _logLevel = newLogLevel;
-    }
-
-    /**
      * Constructor *THIS SHOULD ONLY BE CALLED INTERNALLY*
-     * @param {String} name  Classname or other filename for this logger
-     * @private
+     * Sets up an array of 25 spaces to help with speedy padding
      *
+     * @param {String} name  Classname for this logger
+     * @private
      */
     constructor(name) {
         this.className = name;
-        this.str25 = Array(25).join(' ');
+        // 26 due to the way this actually works...
+        this.str25 = Array(26).join(' ');
     }
 
     /**
@@ -124,35 +137,31 @@ class Logger {
      * logging systems. This method does basic formatting before passing to the
      * log method of the selected logger implementation.
      *
-     * Internal method
+     * Required fn here is to form up the arguments into a suitable string, and
+     * process any errors to capture the stack trace.  The core logger is then CALLED
+     *
+     * The assumption is that this logger has a method called `log`. with this prototype
+     * `log(String logLevel, String codeunit, String message, Array[optional] data)`
+     *
      *
      * @private
-     * @param {String} logLevel log loglevel
+     * @param {String} logLevel log logLevel
      * @param {String} method method name
      * @param {String} msg to log
      * @param {others} arguments parameters are treated as data points to be logged
      */
     intlog(logLevel,method,msg){
-      // first we need to make sure that we have logger setup
-        this._intLogFirst.apply(this,arguments);
-    }
+        let callbackData;
 
-    /**
-     * @description Main internal logging method
-     * Required fn here is to form up the arguments into a suitable string, and
-     * process any errors to capture the stack trace.  The core logger is then CALLED
-     *
-     * The assumption is that this logger has a method called `log`. with this prototype
-     * `log(String loglevel, String codeunit, String message, Array[optional] data)`
-     *
-     * @param {String} loglevel log loglevel
-     * @param {String} method method name
-     * @param {String} msg to log
-     */
-    _intLogMain(loglevel,method,msg){
+        // if callback has been registered get the data.
+        callbackData = '';
+        if(_callback){
+            callbackData = _callback(logLevel) || '';
+        }
+
         if (typeof arguments[3] ==='undefined'){
             // this is the case where there are no additional arguments; data for example
-            _logger.log(loglevel,this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg);
+            _logger.log(logLevel,callbackData+':'+this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg);
         } else {
             // loop over the arguments - if any are Errors make sure that the stack trace is captured
             let args = [];
@@ -165,32 +174,13 @@ class Logger {
                 }
             }
 
-            _logger.log(loglevel,this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg, args);
+            // use the local version of padding rather than sprintf etc for speed
+            _logger.log(logLevel,callbackData+':'+this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg, args);
         }
 
     }
 
-    /**
-     * @description initial internal log function that sets up the logger to use.
-     * Then it calls the normal internal log method (and modifies the original
-     * function definition)
-     *
-     * @param {String} logLevel log loglevel
-     * @param {String} method method name
-     * @param {String} msg to log
-     */
-    _intLogFirst(logLevel,method,msg){
-
-       // call the setup logger to make sure that things are setup
-       // this is done now to be as late as possible
-        Logger._setupLog(this);
-
-         //reroute the ingLog method to the main implementation
-         // and call
-        this.intLog = this._intLogMain;
-        // this._intLogMain.apply(this,arguments);
-        this._intLogMain.apply(this,arguments);
-    }
+    // Individual log methods follow for specific cases
 
     /**
      * @description Log a message at the _debug_level
@@ -202,7 +192,7 @@ class Logger {
      * @private
      */
     debug(method, msg, data) {
-        if (_logLevel < LOG_LEVEL_DEBUG) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_DEBUG)) {
             return;
         }
         const length = arguments.length;
@@ -224,7 +214,7 @@ class Logger {
      * @private
      */
     warn(method, msg, data) {
-        if (_logLevel < LOG_LEVEL_WARN) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_WARN)) {
             return;
         }
         const length = arguments.length;
@@ -246,7 +236,7 @@ class Logger {
      * @private
      */
     info(method, msg, data) {
-        if (_logLevel < LOG_LEVEL_INFO) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_INFO)) {
             return;
         }
         const length = arguments.length;
@@ -261,14 +251,14 @@ class Logger {
     /**
      * @description Log a message at the _verbose_ level
      *
-     * @param {String} method calling method
+     * @param {String} method cupdateLoggerCfgalling method
      * @param {String} msg Text Message
      * @param {stuff} data Data to log at a verbose level
      *
      * @private
      */
     verbose(method,msg, data) {
-        if (_logLevel < LOG_LEVEL_VERBOSE) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_VERBOSE)) {
             return;
         }
         const length = arguments.length;
@@ -290,7 +280,7 @@ class Logger {
      * @private
      */
     error(method, msg,data) {
-        if (_logLevel < LOG_LEVEL_ERROR) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_ERROR)) {
             return;
         }
         const length = arguments.length;
@@ -311,7 +301,7 @@ class Logger {
      * @private
      */
     entry(method, data) {
-        if (_logLevel < LOG_LEVEL_DEBUG) {
+        if (!(this.include && this.logLevel >= LOG_LEVEL_DEBUG)) {
             return;
         }
         const length = arguments.length;
@@ -332,7 +322,7 @@ class Logger {
      * @private
      */
     exit(method, data) {
-        if (_logLevel < LOG_LEVEL_DEBUG) {
+        if(!(this.include && this.logLevel >= LOG_LEVEL_DEBUG)) {
             return;
         }
         const length = arguments.length;
@@ -344,31 +334,6 @@ class Logger {
         args.unshift('debug', method, '<');
         this.intlog.apply(this, args);
     }
-
-    /**
-     * Get the selection tree.
-     * @return {Tree} The selection tree.
-     */
-    static getSelectionTree() {
-        return _tree;
-    }
-
-    /**
-     * Set the selection tree.
-     * @param {Tree} tree The selection tree.
-     */
-    static setSelectionTree(tree) {
-        _tree = tree;
-    }
-
-    /**
-     * Get the functional logger.
-     * @return {Object} The functional logger.
-     */
-    static getFunctionalLogger() {
-        return _logger;
-    }
-
     /**
      * @description Method to call passing an instance of an object that has the
      * method definition
@@ -382,18 +347,43 @@ class Logger {
     static setFunctionalLogger(newlogger){
         _logger = newlogger;
     }
-
+    /**
+     * Get the selection tree. This is a tree based structure to help determine what should and should not be included in the log files.
+     *
+     * @return {Tree} The selection tree.
+     */
+    static getSelectionTree() {
+        return _config.tree;
+    }
 
     /**
-     * @description what is the debug environment variable set to
-     * Note that the _envDebug property of this object is for debugging the debugging log
-     * and emergency use ONLY
+     * Add a default set of JSON formated LoggerConfig - programatically.
+     * Overrides any user setting
      *
-     *  @return {String} String of the DEBUG env variable
-     *
+     * @param {Object} loggerCfg Object that has the config
+     * @param {boolean} [force] If true, force a refresh of the configuration, default is false
+     * @return {Object} the log configuration that is now inforce
      */
-    static getDebugEnv(){
-        return process.env.DEBUG || Logger._envDebug || '';
+    static setLoggerCfg(loggerCfg,force=false){
+        _config = Logger.processLoggerConfig(loggerCfg);
+        _logger = Logger._loadLogger(_config);
+
+        if(force){
+            Object.keys(_clInstances).forEach(function(key) {
+                Logger._setupLog(_clInstances[key]);
+            });
+        }
+        return _config;
+    }
+
+    /**
+     * return the log configuration that is in force, note that this method just returns the information
+     * it does create, modify or delete it
+     *
+     * @return {Object} config data
+     */
+    static getLoggerCfg(){
+        return _config;
     }
 
     /**
@@ -408,40 +398,97 @@ class Logger {
      * The 'config' property is required - but the contents of this property are passed
      * as is to the class defined in the logger property.
      *
+     * Order of precedence: (most significant to least significant)
+     *   - Internal API call to setLoggerConfig()
+     *   - User specified via the Config module
+     *   - defaults
+     *
+     * @param {Object} localConfig 'starter' configuration information
+     * @param {boolean} replace true if this should merge the start config and anything calculate over the top of the exist config
      * @return {Object} with the config information
      *
      */
-    static getLoggerConfig(){
+    static processLoggerConfig(localConfig,replace=false){
+
+
+        localConfig = localConfig || { 'origin': 'default-logger-module' };
+
+        // load the config from config module - this can completely change the behaviour
         try {
             // This weird code is needed to trick browserify.
             process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
             const mod = 'config';
             const req = require;
             const config = req(mod);
-            if (config.has('composer.debug')){
-                return config.get('composer.debug');
+
+            if (config.has('composer.log.logger') && !localConfig.logger){
+                localConfig.logger = config.get('composer.log.logger');
+            }
+            if (config.has('composer.log.file') && !localConfig.file){
+                localConfig.file = config.get('composer.log.file');
+            }
+            if (config.has('composer.log.debug') && !localConfig.debug){
+                localConfig.debug = config.get('composer.log.debug');
+            }
+            if (config.has('composer.log.console') && !localConfig.console){
+                localConfig.console = config.get('composer.log.console');
             }
         } catch (e) {
             // We don't care if we can't find the config module, it won't be
             // there when the code is running inside a browser/chaincode.
         }
 
-        return {
-            'logger': './winstonInjector.js',
-            'config': {
-                'console': {
-                    'enabledLevel': 'info',
-                    'alwaysLevel': 'none'
+        // For each part of the potential configuration apply a set of defaults
+        if (!localConfig.logger){
+            localConfig.logger = './winstonInjector.js' ;
+        }
 
-                },
-                'file': {
+        // if the file section is not there, create a default
+        if (!localConfig.file) {
+            // process filename
 
-                    'filename': 'trace_TIMESTAMP.log',
-                    'enabledLevel': 'debug',
-                    'alwaysLevel': 'error'
-                }
-            }};
+            // see if there is a env variable for fast override
+            let defaultFilename =  path.join(composerUtil.homeDirectory(), '.composer', 'logs', 'trace_DATESTAMP.log');
+            let resolvedFilename = process.env.COMPOSER_LOGFILE || defaultFilename;
+            let maxsize = process.env.COMPOSER_LOGFILE_SIZE || 10000000; //10Mb
+            let maxfiles = process.env.COMPOSER_LOGFILE_QTY || 100;
 
+            let d = new Date();
+            let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1,d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
+            let datestamp = sprintf('%d%02d%02d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1);
+            resolvedFilename = resolvedFilename.replace(/DATESTAMP/g, datestamp);
+            resolvedFilename = resolvedFilename.replace(/TIMESTAMP/g, timestamp);
+            resolvedFilename = resolvedFilename.replace(/PID/g, process.pid);
+
+            localConfig.file =   {
+                'filename': resolvedFilename,
+                'maxLevel': 'silly',
+                'maxsize' : maxsize,
+                'maxfiles': maxfiles
+            };
+
+        }
+
+        // if no debug ctrl variable
+        if (!localConfig.debug){
+            localConfig.debug = (process.env.DEBUG || _envDebug );
+        }
+
+        // if no console setting
+        if (!localConfig.console){
+            let consoleLevel = process.env.COMPOSER_LOG_CONSOLE || 'none';
+            localConfig.console={
+                'maxLevel': consoleLevel.toLowerCase()
+            };
+        }
+
+        // This is an important method for parsing the control string and getting the details of what should be logged
+        // This creates the tree that permits the efficient determination of what should be logger
+        localConfig.tree = Logger._parseLoggerConfig(localConfig);
+
+        // it can be useful at this point to output the config being returned.
+        // see the debug_debug() fn in this class for an example on how to do it
+        return localConfig;
     }
 
     /**
@@ -453,11 +500,15 @@ class Logger {
      * @private
      */
     static getLog(classname) {
-        if(typeof _clInstances[classname] === 'undefined') {
-            _clInstances[classname] = new Logger(classname);
-            _clInstances[classname].log = Logger._intLogFirst;
+
+        // see if there is a cached version of this logger for the classname, otherwise create and setup
+        let composerLogger = _clInstances[classname];
+        if(!composerLogger) {
+            composerLogger = new Logger(classname);
+            Logger._setupLog(composerLogger);
+            _clInstances[classname] = composerLogger;
         }
-        return _clInstances[classname];
+        return composerLogger;
     }
 
     /**
@@ -470,52 +521,80 @@ class Logger {
      */
     static _setupLog(composerLogger){
 
-        let configElements = [];
-
-        // Parse the logger configuration if it hasn't been done already.
-        if (_tree === null){
-            _tree = Logger._parseLoggerConfig(configElements);
+        // get the config from it's respective locations
+        if (!_config){
+            _config = Logger.processLoggerConfig();
         }
 
         // Load the logger if it hasn't been done already.
-        if(_logger === null) {
-            _logger = Logger._loadLogger(configElements);
+        if(!_logger) {
+            _logger = Logger._loadLogger(_config);
         }
 
         // now we need to check if the name that has come in and should be traced
-        composerLogger.include = _tree.getInclusion(composerLogger.className);
-
-        return ;
+        // this is prefiltering and log level setup
+        let node = Logger.getSelectionTree().getNode(composerLogger.className);
+        composerLogger.include = node.isIncluded();
+        composerLogger.logLevel = node.getLogLevel();
     }
 
     /**
-     * Parse the logger configuration.
-     * @param {string[]} configElements The configuration elements for the logger.
+     * Parse the logger configuration - sole purpose is to produce the selection tree that permits
+     * the easy determination of what should and shouldn't be logged.
+     *
+     * @param {object} localConfig The configuration elements for the logger.
      * @return {Tree} The configuration tree.
      * @private
      */
-    static _parseLoggerConfig(configElements) {
+    static _parseLoggerConfig(localConfig) {
         // need to do the filtering to see if this should be enabled or not
-        let string = Logger.getDebugEnv();
+        let string = localConfig.debug;
         let details = string.split(/[\s,]+/);
-        let tree = new Tree();
-        const regex = /(-?)composer:(.*)?/;
+        let tree = new Tree(false,4);
+
+        // regex to process the debug control string
+        const regex = /(-?)composer\[?(info|warn|debug|error|verbose)?\]?:([\w\/\*]*)/;
 
         // now we have an array of the elements that we might need to be enabled
-        //
         for (let i=0; i< details.length;i++){
             let e = details[i];
-            if (e === '*' || e ==='composer:*'){
+            if (e === '*'){
                 tree.setRootInclusion();
+                tree.setRootLevel(_logLevelAsString.info);
+                break;
             }
             // determine if the element is for composer or not
             let machResult = e.match(regex);
             if (machResult!==null){
-                // got a result that we need to trace therefore setup the child node correctly
-                tree.addNode(machResult[2] ,(machResult[1]==='') );
+                let include = (machResult[1]==='');
+                let logLevel = machResult[2];
+                if (!logLevel) {
+                    logLevel= 'info';
+                }
+                let className = machResult[3];
 
-                // make a note of the debug settings that permit the config elements
-                configElements.push(machResult[2]);
+                // got a result that we need to trace therefore setup the child node correctly
+                if (className === '*'){
+                    tree.setRootInclusion();
+                    tree.setRootLevel(_logLevelAsString[logLevel]);
+                    break;
+                }else {
+                    tree.addNode(className, _logLevelAsString[logLevel], include);
+                }
+
+                // we need to support the ability to use 'profiles'. for example
+                // composer:acls
+                // that would then expand to include  composer[debug]:acls,composer[debug]:someotherclass
+                // this has also added acls as a class node, so it is possible to specifically get a logger for acls reasons
+
+                let additionalElements = PROFILES[className];
+                if (additionalElements){
+                    additionalElements.forEach((e)=>{
+                        // if the string has a # in it replace with the user specified level
+                        details.push( e.replace(/#/g,logLevel));
+                    });
+                }
+
             }
         }
         return tree;
@@ -523,22 +602,23 @@ class Logger {
 
     /**
      * Load the logger module specified in the logger configuration, and get a logger.
-     * @param {string[]} configElements The configuration elements for the logger.
+     * @param {Object} localConfig The configuration elements for the logger.
      * @return {Logger} The logger.
      * @private
      */
-    static _loadLogger(configElements) {
-        let localConfig = Logger.getLoggerConfig();
+    static _loadLogger(localConfig) {
 
-        // use the config package to get configuration to see what we should be doing.
-        // and pass the rest of the data to the logger indicated along with the
-        // array of the data that might have been passed on the DEBUG variable.
-        let loggerToUse = localConfig.logger;
+        // attempts to load the specified logger module implementation. if not then put out an error
+        const loggerToUse = localConfig.logger;
         let myLogger;
         try {
-            myLogger = require(loggerToUse);
+            // const mod = 'config';
+            const req = require;
+            // const config = req(mod);
+            myLogger = req(loggerToUse);
         } catch (e) {
-            // Print the error to the console and just use the null logger instead.
+             // Print the error to the console and just use the null logger instead.
+             // eslint-disable-next-line no-console
             console.error(`Failed to load logger module ${loggerToUse}: ${e.message}`);
             myLogger = {
                 getLogger: () => {
@@ -549,19 +629,70 @@ class Logger {
             };
         }
 
-        // primary used to determine what has been enabled to allow the logger to
-        // go into a default mode.. NOT MEANT TO BE USED FOR FILTERING.
-        return myLogger.getLogger(localConfig.config,{ 'debug' : configElements } );
+        // get the instance of the logger to use - passing the localConfig for reference (eg filenames)
+        return myLogger.getLogger(localConfig);
+
+        // For reference, hard coding just to get the Winston logger is as follows
+        // return WinstonInjector.getLogger(localConfig);
     }
 
     /**
-     * @description clean up the logger; required if anything is dynamically changed
+     * This is a simple callback function, to permit additional data to be inserted into the logged output
+     *
+     * @param {Function} fn function to be called to get information
      */
-    static reset(){
-        _tree=null;
+    static setCallBack(fn){
+        _callback=fn;
+    }
+
+    /**
+     * Get the function set as a callback
+     * @return {Function} function set as the callback
+     */
+    static getCallBack(){
+        return _callback;
+    }
+
+    /**
+     * Resets the logger - for test and emergency use only
+     */
+    static __reset(){
+        _config=null;
         _logger=null;
-        _clInstances={};
-        _logLevel = LOG_LEVEL_ALL;
+        _envDebug = 'composer[error]:*';
+        _clInstances = {};
+
+    }
+
+    /**
+     * Sets up the config for the cli appls
+     */
+    static setCLIDefaults(){
+        let envVariable = process.env.DEBUG;
+        if (!envVariable){
+            envVariable = 'composer[info]:*';
+        }
+        Logger.setLoggerCfg({
+            'console': {
+                'maxLevel': 'silly'
+            },
+            'debug' : envVariable
+        },true);
+    }
+
+    /**
+     * Invokes all the levels of log, to be used when attempting to help with diagnostics
+     *
+     * @param {Logger} logger instance to call
+     */
+    static invokeAllLevels(logger){
+        logger.debug('TestAll','Debug level message');
+        logger.entry('TestAll','Entry level message');
+        logger.exit('TestAll','Exit level message');
+        logger.verbose('TestAll','Verbose level message');
+        logger.info('TestAll','Info level message');
+        logger.warn('TestAll','Warn level message');
+        logger.error('TestAll','Error level message');
     }
 
 }

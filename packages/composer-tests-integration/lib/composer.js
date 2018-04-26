@@ -15,14 +15,17 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const childProcess = require('child_process');
+const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
+const matchPattern = require('lodash-match-pattern');
 const net = require('net');
 const path = require('path');
+const request = require('request-promise-any');
 const sleep = require('sleep-promise');
-const fs = require('fs');
-const childProcess = require('child_process');
-const http = require('http');
-const matchPattern = require('lodash-match-pattern');
+const stripAnsi = require('strip-ansi');
 
 let generated = false;
 
@@ -35,6 +38,8 @@ function dynamicRequire(id) {
     return require(id);
 }
 
+let jar = request.jar();
+
 /**
  * A class that handles all of the interactions with a business network for
  * a currently executing Cucumber scenario and steps.
@@ -42,18 +47,27 @@ function dynamicRequire(id) {
 class Composer {
 
     /**
+     * Clear the cookie jar.
+     */
+    static clearCookieJar() {
+        jar = request.jar();
+    }
+
+    /**
      * Constructor.
      * @param {string} uri The URI of the currently executing Cucumber scenario.
      * @param {boolean} errorExpected Is an error expected in this Cucumber scenario?
      * @param {Object} tasks - current background tasks accessible to all scenarios
+     * @param {Object} busnets - current busnets deployed
      * @param {Object} aliasMap - current map of alias names to functional items
      */
-    constructor(uri, errorExpected, tasks, aliasMap) {
+    constructor(uri, errorExpected, tasks, busnets, aliasMap) {
         this.uri = uri;
         this.errorExpected = errorExpected;
         this.error = null;
         this.lastResp = null;
         this.tasks = tasks;
+        this.busnets = busnets;
         this.aliasMap = aliasMap;
     }
 
@@ -177,9 +191,11 @@ class Composer {
                             adminConnection.hasCard(cardName)
                             .then((exists) => {
                                 if(exists) {
+                                    // eslint-disable-next-line no-console
                                     console.log('skipping card import of existing card: ', cardName);
                                     return Promise.resolve();
                                 } else {
+                                    // eslint-disable-next-line no-console
                                     console.log('importing card: ', cardName);
                                     return adminConnection.importCard(cardName, idCard);
                                 }
@@ -220,24 +236,26 @@ class Composer {
 
     /**
      * Prepare CLI Command to run
+     * @param {Boolean} pass - Boolean pass/fail case expected
      * @param {DataTable} table -  Information listing the CLI command and parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    runCLI(table) {
+    runCLI(pass, table) {
         if (typeof table === 'string') {
-            return this._runCLI(table);
+            return this._runCLI(pass, table);
         } else {
-            return this._runCLI(this.convertTableToCommand(table));
+            return this._runCLI(pass, this.convertTableToCommand(table));
         }
     }
 
     /**
      * Run a CLI Command with a substituted alias
      * @param {*} alias -  The alias to substitue in the command
+     * @param {Boolean} pass - Boolean pass/fail case expected
      * @param {*} table -  Information listing the CLI command and parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    runCLIWithAlias(alias, table) {
+    runCLIWithAlias(alias, pass, table) {
         if (typeof table !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
@@ -245,7 +263,7 @@ class Composer {
                 return Promise.reject('Unable to use passed Alias: ' + alias + ' does not exist');
             } else {
                 let command = table.replace(alias, this.aliasMap.get(alias));
-                return this._runCLI(command);
+                return this._runCLI(pass, command);
             }
         }
     }
@@ -290,48 +308,29 @@ class Composer {
      * @param {String} method - HTTP method
      * @param {String} path - path
      * @param {*} data - request body
+     * @param {Object} [inputOptions] - options for request
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    request(method, path, data) {
-        const options = {
-            hostname: 'localhost',
-            port: 3000,
-            path: path,
-            method: method
-        };
-        if(data) {
+    async request(method, path, data, inputOptions = {}) {
+        const options = Object.assign({}, {
+            method,
+            uri: `${path}`,
+            resolveWithFullResponse: true,
+            simple: false,
+            followAllRedirects: true,
+            jar
+        });
+        if (data) {
+            options.body = data;
             options.headers = {
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(data)
             };
         }
-
-        let response = '';
-
-        return new Promise( (resolve, reject) => {
-            const req = http.request(options, (res) => {
-                res.setEncoding('utf8');
-                res.on('data', (chunk) => {
-                    response += chunk;
-                });
-                res.on('end', () => {
-                    this.lastResp = { code: res.statusCode, response: response };
-                    resolve(this.lastResp);
-                });
-            });
-
-            req.on('error', (e) => {
-                this.lastResp = { code: e.statusCode, response: response, error: e };
-                reject(this.lastResp);
-            });
-
-            if(data) {
-                // write data to request body
-                req.write(data);
-            }
-            req.end();
-        });
-
+        const finalOptions = Object.assign({}, options, inputOptions);
+        const response = await request(finalOptions);
+        this.lastResp = { code: response.statusCode, response: response.body || response.error };
+        return this.lastResp;
     }
 
     /**
@@ -354,41 +353,61 @@ class Composer {
 
     /**
      * Run a composer CLI command
-     * @param {DataTable} table -  DataTable listing the CLI command and parameters to be run
+     * @param {Boolean} pass - Boolean pass/fail case expected, undefined if unchecked case
+     * @param {DataTable} cmd -  CLI command with parameters to be run
      * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    _runCLI(table) {
-        if (typeof table !== 'string') {
+    _runCLI(pass, cmd) {
+        if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
-            let command = table;
+            let command = cmd;
             let stdout = '';
             let stderr = '';
+            let env = process.env;
+            if (this.jsonConfig){
+                env.NODE_CONFIG=this.jsonConfig;
+            } else {
+                delete env.NODE_CONFIG;
+            }
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command);
+                let childCliProcess = childProcess.exec(command,{env});
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
 
                 childCliProcess.stdout.on('data', (data) => {
+                    data = stripAnsi(data);
                     stdout += data;
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
+                    data = stripAnsi(data);
                     stderr += data;
                 });
 
                 childCliProcess.on('error', (error) => {
                     this.lastResp = { error: error, stdout: stdout, stderr: stderr };
-                    reject(this.lastResp);
+                    if (pass){
+                        reject(this.lastResp);
+                    }
                 });
 
                 childCliProcess.on('close', (code) => {
-                    if (code && code !== 0) {
+                    if (pass === undefined) {
+                        // don't care case
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
+                    } else if (code && code !== 0 && pass) {
+                        // non zero return code, should pass
+                        this.lastResp = { code: code, stdout: stdout, stderr: stderr };
+                        reject(this.lastResp);
+                    } else if (code && code === 0 && !pass) {
+                        // zero return code, should fail
+                        this.lastResp = { code: code, stdout: stdout, stderr: stderr };
+                        reject(this.lastResp);
                     } else {
                         this.lastResp = { code: code, stdout: stdout, stderr: stderr };
                         resolve(this.lastResp);
@@ -435,6 +454,8 @@ class Composer {
                 }, 60000);
 
                 childCliProcess.stdout.on('data', (data) => {
+                    data = stripAnsi(data);
+                    console.log(label, 'STDOUT', data);
                     stdout += data;
                     if(stdout.match(regex)) {
                         success = true;
@@ -443,6 +464,8 @@ class Composer {
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
+                    data = stripAnsi(data);
+                    console.log(label, 'STDERR', data);
                     stderr += data;
                 });
 
@@ -476,8 +499,29 @@ class Composer {
                 if(this.lastResp[type].match(regex)) {
                     resolve();
                 } else {
-                    reject('regex match on ' + type + ' failed');
+                    reject(`Regex match on ${type} failed.\nExpected: ${regex}\nActual: ${this.lastResp[type]}`);
                 }
+            }
+        });
+    }
+
+    /**
+     * Check that a file with a name matching the regex has been created.
+     * @param {RegExp} [regex] regular expression.
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkFileWasCreated(regex) {
+        return new Promise( (resolve, reject) => {
+            let fileExists = false;
+            fs.readdirSync('.').forEach((file) => {
+                if(file.match(regex)) {
+                    fileExists = true;
+                }
+            });
+            if(fileExists) {
+                resolve();
+            } else {
+                reject('could not find file with name matching ', regex);
             }
         });
     }
@@ -538,6 +582,26 @@ class Composer {
         });
     }
 
+        /**
+     * Check the last message matches JSON
+     * @param {String} name filename to write the data to
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    writeResponseData(name) {
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp.response) {
+                reject('a response was expected, but no response messages have been generated');
+            } else {
+                let pathname = path.resolve(name);
+                let buffer = Buffer.from(this.lastResp.response,'binary');
+                fs.writeFileSync(pathname,buffer);
+                resolve();
+            }
+        });
+    }
+
+
+
     /**
      * Save a matched pattern from the current console stdout as an alias in an internal map
      * @param {*} regex The regex to match on
@@ -564,6 +628,165 @@ class Composer {
         .catch((err) => {
             return Promise.reject(err);
         });
+    }
+
+    /**
+     * Convert a card with a secret to use HSM to manage it's private keys
+     * @param {string} cardFile the card
+     */
+    async convertToHSM(cardFile) {
+
+        try {
+            const adminConnection = new AdminConnection();
+            let cardBuffer = fs.readFileSync(cardFile);
+            let curCard = await IdCard.fromArchive(cardBuffer);
+            let cardName = BusinessNetworkCardStore.getDefaultCardName(curCard);
+            let ccp = curCard.getConnectionProfile();
+            ccp.client['x-hsm'] = {
+                'library': '/usr/local/lib/softhsm/libsofthsm2.so',
+                'slot': 0,
+                'pin': 98765432
+            };
+
+            let metadata = {
+                businessNetwork: curCard.getBusinessNetworkName(),
+                userName: curCard.getUserName(),
+                enrollmentSecret: curCard.getEnrollmentCredentials().secret
+            };
+            let newCard = new IdCard(metadata, ccp);
+
+            cardBuffer = await newCard.toArchive({ type: 'nodebuffer' });
+
+            let dir = path.dirname(cardFile);
+            let fn = path.basename(cardFile);
+            let nameEnd = fn.indexOf('@');
+            let newCardFile = path.join(dir, fn.substring(0, nameEnd) + '_hsm' + fn.substring(nameEnd, fn.length));
+
+            fs.writeFileSync(newCardFile, cardBuffer);
+
+            // ensure it doesn't exist.
+            const exists = await adminConnection.hasCard(cardName);
+            if (exists) {
+                await adminConnection.deleteCard(cardName);
+            }
+        } catch(err) {
+            throw new Error(`failed to convert to HSM and Import. Error was ${err}`);
+        }
+    }
+
+    /**
+     * extract a secret from a card and store it in the alias
+     * @param {*} alias the alias name
+     * @param {*} cardFile the card file
+     */
+    async extractSecret(alias, cardFile) {
+        let cardBuffer = fs.readFileSync(cardFile);
+        let curCard = await IdCard.fromArchive(cardBuffer);
+
+        this.aliasMap.set(alias, curCard.getEnrollmentCredentials().secret);
+    }
+
+    /**
+     * deploy the specified business network from a directory
+     * @param {*} name the name of the business network
+     */
+    async deployBusinessNetworkFromDirectory(name) {
+        // These steps assume that the arg «name» is the business network path,
+        // and is located in ./resource/sample-networks
+
+        if(this.busnets[name]) {
+            // Already deployed
+            return;
+        } else {
+            this.busnets[name] = name;
+        }
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        const packageJsonPath = path.join(__dirname, '../resources/sample-networks/'+name+'/package.json');
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        const networkName = packageJson.name;
+        const networkVersion = packageJson.version;
+
+        let response = await this.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org1 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org2 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.runCLI(undefined, `composer card delete -c ${adminId}`);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
+        response = await this.runCLI(true, 'composer card import --file networkadmin.card');
+        checkOutput(response);
+    }
+
+    /**
+     * deploy the specified business network archive
+     * @param {*} name the name of the business network
+     */
+    async deployBusinessNetworkArchive(name) {
+
+        if(this.busnets[name]) {
+            // Already deployed
+            return;
+        } else {
+            this.busnets[name] = name;
+        }
+
+        const bnaFile = `./tmp/${name}.bna`;
+        const adminId = `admin@${name}`;
+        const success = /Command succeeded/;
+        const checkOutput = (response) => {
+            if(!response.stdout.match(success)) {
+                throw new Error(response);
+            }
+        };
+
+        const banana = fs.readFileSync(path.resolve(bnaFile));
+        const definition = await BusinessNetworkDefinition.fromArchive(banana);
+        const networkName = definition.getName();
+        const networkVersion = definition.getVersion();
+
+        let response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org1 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network install --card TestPeerAdmin@org2 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
+        checkOutput(response);
+        response = await this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
+        checkOutput(response);
+        response = await this.runCLI(undefined, `composer card delete -c ${adminId}`);
+        // can't check the response here, if it exists the card is deleted and you get a success
+        // if it didn't exist then you get a failed message. however if there is a problem then the
+        // import won't work so check the response to this.
+        response = await this.runCLI(true, 'composer card import --file networkadmin.card');
+        checkOutput(response);
+    }
+
+    /**
+     * Loads a json file based on the type
+     *
+     * @param {String} type type of the card store to set
+     */
+    setCardStore(type){
+        switch (type) {
+        case 'redis':{
+            this.jsonConfig = fs.readFileSync(path.resolve(__dirname,'..','resources','cardstore-redis.json'));
+            break;
+        }
+        default:
+            throw new Error(`Unkown card store type ${type}`);
+
+        }
     }
 }
 

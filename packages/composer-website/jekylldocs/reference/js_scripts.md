@@ -28,7 +28,7 @@ The first line of comments above a transaction processor function contains a hum
 ```
 /**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 ```
@@ -46,7 +46,7 @@ A complete transaction processor function as detailed above would take the follo
 ```
 /**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 function transactionProcessor(parameter-name) {
@@ -81,7 +81,7 @@ The transaction processor function defines the `SampleTransaction` type as the a
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -93,13 +93,13 @@ async function sampleTransaction(tx) {
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    let assetRegistry = getAssetRegistry('org.acme.sample.SampleAsset');
+    let assetRegistry = getAssetRegistry('org.example.basic.SampleAsset');
 
     // Update the asset in the asset registry.
     await assetRegistry.update(tx.asset);
 
     // Emit an event for the modified asset.
-    let event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
+    let event = getFactory().newEvent('org.example.basic', 'SampleEvent');
     event.asset = tx.asset;
     event.oldValue = oldValue;
     event.newValue = tx.newValue;
@@ -114,7 +114,7 @@ Transaction processor functions will fail and roll back any changes already made
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -138,7 +138,7 @@ The following example includes nested relationships, the transaction has a relat
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 participant SampleParticipant identified by participantId {
   o String participantId
@@ -159,7 +159,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -184,7 +184,7 @@ In the example code below there are several promises, the transaction will not b
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 transaction SampleTransaction {
 
@@ -200,7 +200,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -214,7 +214,7 @@ however if you so wish you can still use old style promise chains
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 function sampleTransaction(tx) {
@@ -237,13 +237,19 @@ function sampleTransaction(tx) {
 
 ## Using APIs in transaction processor functions
 
-The {{site.data.conrefs.composer_full}} APIs can be called within transaction processor functions, in the code example below, the `getAssetRegistry` call returns a promise which is resolved before the transaction is complete.
+The {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} APIs can be called within transaction processor functions.
 
+
+### Calling the {{site.data.conrefs.composer_full}} APIs in transaction processor functions
+
+The {{site.data.conrefs.composer_full}} API can be called simply by calling API functions with the appropriate arguments in the transaction processor function.
+
+In the code example below, the `getAssetRegistry` call returns a promise which is resolved before the transaction is complete.
 
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 asset SampleAsset identified by assetId {
   o String assetId
@@ -261,7 +267,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -270,12 +276,51 @@ async function sampleTransaction(tx) {
     asset.value = tx.newValue;
     // Get the asset registry that stores the assets. Note that
     // getAssetRegistry() returns a promise, so we have to await for it.
-    let assetRegistry = await getAssetRegistry('org.acme.sample.SampleAsset');
+    let assetRegistry = await getAssetRegistry('org.example.basic.SampleAsset');
 
     // Update the asset in the asset registry. Again, note
     // that update() returns a promise, so so we have to return
     // the promise so that Composer waits for it to be resolved.
     await assetRegistry.update(asset);
+}
+```
+
+### Calling {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} APIs in transaction processor functions
+
+To call the {{site.data.conrefs.hlf_full}} API in a transaction processor function, the function `getNativeAPI` must be called, followed by a function from the {{site.data.conrefs.hlf_full}} API. Using the {{site.data.conrefs.hlf_full}} API gives you access to functionality which is not available in the {{site.data.conrefs.composer_full}} API.
+
+**IMPORTANT: Using the {{site.data.conrefs.hlf_full}} API such as `getState`, `putState`, `deleteState`, `getStateByPartialCompositeKey`, `getQueryResult` functions will bypass the {{site.data.conrefs.composer_full}} access control rules (ACLs).**
+
+In the example below, the {{site.data.conrefs.hlf_full}} API function `getHistoryForKey` is called, which returns the history of a specified asset as an iterator. The transaction processor function then stores the returned data in an array.
+
+For more information on the {{site.data.conrefs.hlf_full}} APIs you can call in a transaction processor function, see the [{{site.data.conrefs.hlf_full}} API documentation](https://fabric-shim.github.io/ChaincodeStub.html).
+
+```javascript
+async function simpleNativeHistoryTransaction (transaction) {    
+    const id = transaction.assetId;
+    const nativeSupport = transaction.nativeSupport;
+
+    const nativeKey = getNativeAPI().createCompositeKey('Asset:systest.transactions.SimpleStringAsset', [id]);
+    const iterator = await getNativeAPI().getHistoryForKey(nativeKey);
+    let results = [];
+    let res = {done : false};
+    while (!res.done) {
+        res = await iterator.next();
+
+        if (res && res.value && res.value.value) {
+            let val = res.value.value.toString('utf8');
+            if (val.length > 0) {
+                results.push(JSON.parse(val));
+            }
+        }
+        if (res && res.done) {
+            try {
+                iterator.close();
+            }
+            catch (err) {
+            }
+        }
+    }
 }
 ```
 

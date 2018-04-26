@@ -14,14 +14,19 @@
 
 'use strict';
 
+const DefaultModelFileLoader = require('./introspect/loaders/defaultmodelfileloader');
+const Factory = require('./factory');
 const Globalize = require('./globalize');
 const IllegalModelException = require('./introspect/illegalmodelexception');
-const ModelUtil = require('./modelutil');
+const Logger = require('./log/logger');
 const ModelFile = require('./introspect/modelfile');
+const ModelFileDownloader = require('./introspect/loaders/modelfiledownloader');
+const ModelUtil = require('./modelutil');
+const Serializer = require('./serializer');
+const SYSTEM_MODELS = require('./systemmodel');
 const TypeNotFoundException = require('./typenotfoundexception');
 
-const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODELS = require('./systemmodel');
+const LOG = Logger.getLog('ModelManager');
 
 /**
  * Manages the Composer model files.
@@ -57,6 +62,8 @@ class ModelManager {
         LOG.entry('constructor');
         this.modelFiles = {};
         this.addSystemModels();
+        this.factory = new Factory(this);
+        this.serializer = new Serializer(this.factory, this);
         LOG.exit('constructor');
     }
 
@@ -76,9 +83,7 @@ class ModelManager {
         });
 
         // now validate all the models
-        Object.keys(this.modelFiles).forEach((ns) => {
-            this.modelFiles[ns].validate();
-        });
+        this.validateModelFiles();
 
         LOG.exit(method);
     }
@@ -115,6 +120,19 @@ class ModelManager {
     }
 
     /**
+     * Throws an error with details about the existing namespace.
+     * @param {ModelFile} modelFile The model file that is trying to declare an existing namespace
+     * @private
+     */
+    _throwAlreadyExists(modelFile) {
+        const existingModelFileName = this.modelFiles[modelFile.getNamespace()].getName();
+        const postfix = existingModelFileName ? ` in file ${existingModelFileName}` : '';
+        const prefix = modelFile.getName() ? ` specified in file ${modelFile.getName()}` : '';
+        let errMsg = `Namespace ${modelFile.getNamespace()}${prefix} is already declared${postfix}`;
+        throw new Error(errMsg);
+    }
+
+    /**
      * Adds a Composer file (as a string) to the ModelManager.
      * Composer files have a single namespace. If a Composer file with the
      * same namespace has already been added to the ModelManager then it
@@ -124,10 +142,11 @@ class ModelManager {
      * used to add a set of files irrespective of dependencies.
      * @param {string} modelFile - The Composer file as a string
      * @param {string} fileName - an optional file name to associate with the model file
+     * @param {boolean} [disableValidation] - If true then the model files are not validated
      * @throws {IllegalModelException}
      * @return {Object} The newly added model file (internal).
      */
-    addModelFile(modelFile, fileName) {
+    addModelFile(modelFile, fileName, disableValidation) {
         const NAME = 'addModelFile';
         LOG.info(NAME, 'addModelFile', modelFile, fileName);
 
@@ -135,8 +154,7 @@ class ModelManager {
 
         if (typeof modelFile === 'string') {
             m = new ModelFile(this, modelFile, fileName);
-        }
-        else {
+        } else {
             m = modelFile;
         }
 
@@ -145,10 +163,12 @@ class ModelManager {
         }
 
         if (!this.modelFiles[m.getNamespace()]) {
-            m.validate();
+            if (!disableValidation) {
+                m.validate();
+            }
             this.modelFiles[m.getNamespace()] = m;
         } else {
-            throw new Error('namespace already exists');
+            this._throwAlreadyExists(m);
         }
 
         return m;
@@ -161,23 +181,16 @@ class ModelManager {
      * will be replaced.
      * @param {string} modelFile - The Composer file as a string
      * @param {string} fileName - an optional file name to associate with the model file
+     * @param {boolean} [disableValidation] - If true then the model files are not validated
      * @throws {IllegalModelException}
      * @returns {Object} The newly added model file (internal).
      */
-    updateModelFile(modelFile, fileName) {
+    updateModelFile(modelFile, fileName, disableValidation) {
         const NAME = 'updateModelFile';
         LOG.info(NAME, 'updateModelFile', modelFile, fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
-            let existing = this.modelFiles[m.getNamespace()];
-            if (!existing) {
-                throw new Error('model file does not exist');
-            } else if (existing.isSystemModelFile()) {
-                throw new Error('System namespace can not be updated');
-            }
-            m.validate();
-            this.modelFiles[m.getNamespace()] = m;
-            return m;
+            return this.updateModelFile(m,fileName,disableValidation);
         } else {
             let existing = this.modelFiles[modelFile.getNamespace()];
             if (!existing) {
@@ -185,7 +198,9 @@ class ModelManager {
             } else if (existing.isSystemModelFile()) {
                 throw new Error('System namespace can not be updated');
             }
-            modelFile.validate();
+            if (!disableValidation) {
+                modelFile.validate();
+            }
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
@@ -210,11 +225,12 @@ class ModelManager {
      * Add a set of Composer files to the model manager.
      * @param {string[]} modelFiles - An array of Composer files as
      * strings.
-     * @param {string[]} fileNames - An optional array of file names to
+     * @param {string[]} [fileNames] - An optional array of file names to
      * associate with the model files
+     * @param {boolean} [disableValidation] - If true then the model files are not validated
      * @returns {Object[]} The newly added model files (internal).
      */
-    addModelFiles(modelFiles, fileNames) {
+    addModelFiles(modelFiles, fileNames, disableValidation) {
         const NAME = 'addModelFiles';
         LOG.entry(NAME, 'addModelFiles', modelFiles, fileNames);
         const originalModelFiles = {};
@@ -239,9 +255,8 @@ class ModelManager {
                     if (!this.modelFiles[m.getNamespace()]) {
                         this.modelFiles[m.getNamespace()] = m;
                         newModelFiles.push(m);
-                    }
-                    else {
-                        throw new Error('namespace already exists');
+                    } else {
+                        this._throwAlreadyExists(m);
                     }
                 } else {
                     if (modelFile.isSystemModelFile()) {
@@ -250,28 +265,79 @@ class ModelManager {
                     if (!this.modelFiles[modelFile.getNamespace()]) {
                         this.modelFiles[modelFile.getNamespace()] = modelFile;
                         newModelFiles.push(modelFile);
-                    }
-                    else {
-                        throw new Error('namespace already exists');
+                    } else {
+                        this._throwAlreadyExists(modelFile);
                     }
                 }
             }
 
             // re-validate all the model files
-            for (let ns in this.modelFiles) {
-                this.modelFiles[ns].validate();
+            if (!disableValidation) {
+                this.validateModelFiles();
             }
 
             // return the model files.
             return newModelFiles;
-        }
-        catch (err) {
+        } catch (err) {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
         } finally {
             LOG.exit(NAME, newModelFiles);
         }
+    }
+
+
+    /**
+     * Validates all models files in this model manager
+     */
+    validateModelFiles() {
+        for (let ns in this.modelFiles) {
+            this.modelFiles[ns].validate();
+        }
+    }
+
+    /**
+     * Downloads all ModelFiles that are external dependencies and adds or
+     * updates them in this ModelManager.
+     * @param {Object} [options] - Options object passed to ModelFileLoaders
+     * @param {ModelFileDownloader} [modelFileDownloader] - an optional ModelFileDownloader
+     * @throws {IllegalModelException} if the models fail validation
+     * @return {Promise} a promise when the download and update operation is completed.
+     */
+    updateExternalModels(options, modelFileDownloader) {
+
+        const NAME = 'updateExternalModels';
+        LOG.info(NAME, 'updateExternalModels', options);
+
+        if(!modelFileDownloader) {
+            modelFileDownloader = new ModelFileDownloader(new DefaultModelFileLoader(this));
+        }
+
+        return modelFileDownloader.downloadExternalDependencies(this.getModelFiles(), options)
+                .then((externalModelFiles) => {
+                    const originalModelFiles = {};
+                    Object.assign(originalModelFiles, this.modelFiles);
+
+                    try {
+                        externalModelFiles.forEach((mf) => {
+                            const existing = this.modelFiles[mf.getNamespace()];
+
+                            if (existing) {
+                                this.updateModelFile(mf, mf.getName(), true); // disable validation
+                            } else {
+                                this.addModelFile(mf, mf.getName(), true); // disable validation
+                            }
+                        });
+
+                        // now everything is applied, we need to revalidate all models
+                        this.validateModelFiles();
+                    } catch (err) {
+                        this.modelFiles = {};
+                        Object.assign(this.modelFiles, originalModelFiles);
+                        throw err;
+                    }
+                });
     }
 
     /**
@@ -474,6 +540,22 @@ class ModelManager {
         return this.getModelFiles().reduce((prev, cur) => {
             return prev.concat(cur.getConceptDeclarations(includeSystemType));
         }, []);
+    }
+
+    /**
+     * Get a factory for creating new instances of types defined in this model manager.
+     * @return {Factory} A factory for creating new instances of types defined in this model manager.
+     */
+    getFactory() {
+        return this.factory;
+    }
+
+    /**
+     * Get a serializer for serializing instances of types defined in this model manager.
+     * @return {Serializer} A serializer for serializing instances of types defined in this model manager.
+     */
+    getSerializer() {
+        return this.serializer;
     }
 
 }

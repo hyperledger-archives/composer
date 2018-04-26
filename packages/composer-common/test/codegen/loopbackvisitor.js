@@ -1305,6 +1305,50 @@ describe('LoopbackVisitor', () => {
                     schemas.should.deep.equal([]);
                 });
 
+                it('should generate a schema for a concept with a single array property', () => {
+                    const modelFile = new ModelFile(modelManager, `
+                    namespace org.acme
+                    concept MyConcept {
+                        o String[] theValues
+                    }
+                    `);
+                    const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
+                    schemas.should.deep.equal([{
+                        acls: [],
+                        // base: 'PersistedModel',
+                        description: 'A concept named MyConcept',
+                        idInjection: false,
+                        methods: [],
+                        name: namespaces ? 'org_acme_MyConcept' : 'MyConcept',
+                        options: {
+                            composer: {
+                                type: 'concept',
+                                namespace: 'org.acme',
+                                name: 'MyConcept',
+                                fqn: 'org.acme.MyConcept',
+                                abstract: false
+                            },
+                            validateUpsert: true
+                        },
+                        plural: namespaces ? 'org.acme.MyConcept' : 'MyConcept',
+                        properties: {
+                            $class: {
+                                default: 'org.acme.MyConcept',
+                                description: 'The class identifier for this type',
+                                required: false,
+                                type: 'string'
+                            },
+                            theValues: {
+                                default: [],
+                                required: false,
+                                type: ['string']
+                            }
+                        },
+                        relations: {},
+                        validations: []
+                    }]);
+                });
+
             });
 
         });

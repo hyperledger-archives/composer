@@ -16,20 +16,37 @@
 
 module.exports = function () {
 
-    this.Given(/^I have generated crypto material/, function () {
+    this.Given(/^I have admin business cards available/, function () {
         return this.composer.setup();
+    });
+
+    this.Given(/^I have setup a (.+?) card wallet environment/, function (type) {
+        return this.composer.setCardStore(type);
     });
 
     this.Given(/^I have the following (.+?)$/, function (type, table) {
         return this.composer.checkExists(type, table);
     });
 
-    this.When(/^I run the following CLI command/, {timeout: 240 * 1000}, function (table) {
-        return this.composer.runCLI(table);
+    this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
+        return this.composer.extractSecret(alias, cardFile);
     });
 
-    this.When(/^I substitue the alias (.*?) and run the following CLI command$/, {timeout: 240 * 1000}, function (alias, table) {
-        return this.composer.runCLIWithAlias(alias, table);
+    this.Given(/^I have deployed the business network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
+        await this.composer.deployBusinessNetworkFromDirectory(name);
+    });
+
+    this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {
+        await this.composer.deployBusinessNetworkArchive(name);
+    });
+
+    this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
+        let pass = condition === 'pass' ? true : false;
+        return this.composer.runCLI(pass, table);
+    });
+
+    this.When(/^I substitue the alias (.*?) and run an expected (.*?) CLI command$/, {timeout: 240 * 1000}, function (alias, pass, table) {
+        return this.composer.runCLIWithAlias(alias, pass, table);
     });
 
     this.When(/^I spawn the following background task (.+?), and wait for \/(.+?)\/$/, {timeout: 240 * 1000}, function (label, regex, table) {
@@ -44,11 +61,19 @@ module.exports = function () {
         return this.composer.saveMatchingGroupAsAlias(new RegExp(regex, 'g'), group, alias);
     });
 
+    this.When(/^I convert a card to be HSM managed$/, function (cardFile) {
+        return this.composer.convertToHSM(cardFile);
+    });
+
     this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), false);
     });
 
     this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
         return this.composer.checkConsoleOutput(new RegExp(regex), true);
+    });
+
+    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (regex) {
+        return this.composer.checkFileWasCreated(new RegExp(regex));
     });
 };

@@ -21,22 +21,25 @@ const ReportCmd = require('../../lib/cmds/report/reportCommand.js');
 
 const chai = require('chai');
 const sinon = require('sinon');
-const assert = sinon.assert;
 const sinonChai = require('sinon-chai');
+const should = chai.should();
 chai.use(sinonChai);
 
 describe('composer report CLI', function() {
     const sandbox = sinon.sandbox.create();
     let consoleLogSpy;
-    let setupStub;
-    let reportStub;
-    let archiveStub;
+    let beginReportStub;
+    let collectBasicDiagnosticsStub;
+    let completeReportStub;
 
     beforeEach(function() {
         consoleLogSpy = sandbox.spy(console, 'log');
-        setupStub = sandbox.stub(composerReport, 'setupReportDir').returns('DIR');
-        reportStub = sandbox.stub(composerReport, 'createNodeReport');
-        archiveStub = sandbox.stub(composerReport, 'archiveReport').returns('ARCHIVE');
+        beginReportStub = sandbox.stub(composerReport, 'beginReport').returns({
+            reportId: 'REPORT',
+            reportDir: 'DIR'
+        });
+        collectBasicDiagnosticsStub = sandbox.stub(composerReport, 'collectBasicDiagnostics');
+        completeReportStub = sandbox.stub(composerReport, 'completeReport').returns('ARCHIVE');
     });
 
     afterEach(function() {
@@ -46,19 +49,51 @@ describe('composer report CLI', function() {
     it('should successfully run the composer report command', function() {
         const args = {};
         return ReportCmd.handler(args).then(() => {
-            assert.calledThrice(consoleLogSpy);
-            assert.calledWith(consoleLogSpy, sinon.match('Creating Composer report'));
-            assert.calledWith(consoleLogSpy, sinon.match('Triggering node report...'));
-            assert.calledWith(consoleLogSpy, sinon.match('Created archive file: ARCHIVE'));
-            assert.calledOnce(setupStub);
-            assert.calledWith(reportStub, 'DIR');
-            assert.calledWith(archiveStub, 'DIR');
+            consoleLogSpy.should.have.been.calledThrice;
+            consoleLogSpy.should.have.been.calledWith(sinon.match('Creating Composer report'));
+            consoleLogSpy.should.have.been.calledWith(sinon.match('Collecting diagnostic data...'));
+            consoleLogSpy.should.have.been.calledWith(sinon.match(/Created archive file: .*ARCHIVE/));
+            beginReportStub.should.have.been.calledOnce;
+            collectBasicDiagnosticsStub.should.have.been.calledWith('REPORT', 'DIR');
+            completeReportStub.should.have.been.calledWith('REPORT', 'DIR');
         });
     });
 
     it('should execute top level report command',()=>{
         let result = Report.handler({some:'args'});
         result.should.be.an.instanceOf(Promise);
+    });
+
+    it('should handle errors', function() {
+        let testErr = new Error('ERROR');
+        beginReportStub.throws(testErr);
+
+        let result;
+        try {
+            const args = {};
+            return ReportCmd.handler(args).then(() => {
+                should.fail('Should have thrown an error!');
+            });
+        } catch (err) {
+            result = err;
+        }
+
+        should.exist(result);
+        result.name.should.not.equal('DirectoryAccessError');
+    });
+
+    it('should throw DirectoryAccessError if the current directory is not writeable', function() {
+        let testErr = new Error('Access denied');
+        testErr.name = 'DirectoryAccessError';
+        beginReportStub.throws(testErr);
+
+        const args = {};
+        return ReportCmd.handler(args).then(() => {
+            should.fail('Should have been rejected!');
+        }).catch((err) => {
+            should.exist(err);
+            err.name.should.equal('DirectoryAccessError');
+        });
     });
 
 });

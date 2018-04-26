@@ -16,7 +16,9 @@
 
 const Wallet = require('../lib/wallet');
 
-const should = require('chai').should();
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+const should = chai.should();
 
 describe('Wallet', () => {
 
@@ -54,12 +56,10 @@ describe('Wallet', () => {
 
     });
 
-    describe('#list', () => {
+    describe('#listNames', () => {
 
         it('should throw as abstract method', () => {
-            (() => {
-                wallet.list();
-            }).should.throw(/abstract function called/);
+            return wallet.listNames().should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -67,9 +67,7 @@ describe('Wallet', () => {
     describe('#contains', () => {
 
         it('should throw as abstract method', () => {
-            (() => {
-                wallet.contains('id1');
-            }).should.throw(/abstract function called/);
+            return wallet.contains('id1').should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -77,29 +75,15 @@ describe('Wallet', () => {
     describe('#get', () => {
 
         it('should throw as abstract method', () => {
-            (() => {
-                wallet.get('id1');
-            }).should.throw(/abstract function called/);
+            return wallet.get('id1').should.be.rejectedWith(/abstract function called/);
         });
 
     });
 
-    describe('#add', () => {
+    describe('#put', () => {
 
         it('should throw as abstract method', () => {
-            (() => {
-                wallet.add('id1', 'value1');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#update', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                wallet.update('id1', 'value1');
-            }).should.throw(/abstract function called/);
+            return wallet.put('id1', 'value1').should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -107,9 +91,7 @@ describe('Wallet', () => {
     describe('#remove', () => {
 
         it('should throw as abstract method', () => {
-            (() => {
-                wallet.remove('id1');
-            }).should.throw(/abstract function called/);
+            return wallet.remove('id1').should.be.rejectedWith(/abstract function called/);
         });
 
     });

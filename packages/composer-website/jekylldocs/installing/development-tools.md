@@ -23,22 +23,21 @@ These instructions assume that you've not installed the tools and used them befo
 > To provide flexibility and enable the maximum number of dev, test and deployment scenarios, {{site.data.conrefs.composer_short}} is delivered as a set of components you can install with `npm` and control from the CLI.  These instructions will tell you how to install everything first, then how to control your development environment.
 
 # Installing components
-Please note the `@next` in the npm install commands. This is important to ensure you install the appropriate version to work with {{site.data.conrefs.hlf_full}} v1.1.
 
 ### Step 1: Install the CLI tools
 There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
 
 1. Essential CLI tools:
 
-        npm install -g composer-cli@next
+        npm install -g composer-cli
 
 2. Utility for running a REST Server on your machine to expose your business networks as RESTful APIs:
 
-        npm install -g composer-rest-server@next
+        npm install -g composer-rest-server
 
 3. Useful utility for generating application assets:
 
-        npm install -g generator-hyperledger-composer@next
+        npm install -g generator-hyperledger-composer
 
 4. Yeoman is a tool for generating applications, which utilises `generator-hyperledger-composer`:
 
@@ -49,7 +48,7 @@ If you've already tried {{site.data.conrefs.composer_short}} online, you'll have
 
 5. Browser app for simple editing and testing Business Networks:
 
-        npm install -g composer-playground@next
+        npm install -g composer-playground
 
 ### Step 3: Set up your IDE
 Whilst the browser app _can_ be used to work on your Business Network code, most users will prefer to work in an IDE.  Our favourite is `VSCode`, because a {{site.data.conrefs.composer_short}} extension is available.
@@ -61,20 +60,19 @@ Whilst the browser app _can_ be used to work on your Business Network code, most
 ### Step 4: Install {{site.data.conrefs.hlf_full}}
 This step gives you a local {{site.data.conrefs.hlf_full}} runtime to deploy your business networks to.
 
-8. In a directory of your choice (we will assume `~/fabric-tools`), get the `.tar.gz` file that contains the tools to install {{site.data.conrefs.hlf_full}}:
+8. In a directory of your choice (we will assume `~/fabric-dev-servers`), get the `.tar.gz` file that contains the tools to install {{site.data.conrefs.hlf_full}}:
 
-        mkdir ~/fabric-tools && cd ~/fabric-tools
+        mkdir ~/fabric-dev-servers && cd ~/fabric-dev-servers
 
         curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
         tar -xvf fabric-dev-servers.tar.gz
 
-      A `zip` is also available if you prefer: just replace the `.tar.gz` file with `fabric-dev-servers.zip` and the `tar -xvf` command with a `unzip` command in the above snippet.
+      A `zip` is also available if you prefer: just replace the `.tar.gz` file with `fabric-dev-servers.zip` and the `tar -xvf` command with a `unzip` command in the preceding snippet.
 
 
 9. Use the scripts you just downloaded and extracted to download a local {{site.data.conrefs.hlf_full}} runtime:
 
-        cd ~/fabric-tools
-        export FABRIC_VERSION=hlfv11
+        cd ~/fabric-dev-servers
         ./downloadFabric.sh
 
 > Congratulations, you've now installed everything required for the typical Developer Environment.
@@ -83,20 +81,19 @@ Read on to learn some of the most common things you'll do with this environment 
 # Controlling your dev environment
 
 ## Starting and stopping {{site.data.conrefs.hlf_full}}
-You control your runtime using a set of scripts which you'll find in `~/fabric-tools` if you followed the suggested defaults.  
+You control your runtime using a set of scripts which you'll find in `~/fabric-dev-servers` if you followed the suggested defaults.  
 
 The first time you start up a new runtime, you'll need to run the start script, then generate a PeerAdmin card:
 
-        cd ~/fabric-tools
-        export FABRIC_VERSION=hlfv11
+        cd ~/fabric-dev-servers
         ./startFabric.sh
         ./createPeerAdminCard.sh
 
-You can start and stop your runtime using `~/fabric-tools/stopFabric.sh`, and start it again with `~/fabric-tools/startFabric.sh`.
+You can start and stop your runtime using `~/fabric-dev-servers/stopFabric.sh`, and start it again with `~/fabric-dev-servers/startFabric.sh`.
 
-At the end of your development session, you run `~/fabric-tools/stopFabric.sh` and then `~/fabric-tools/teardownFabric.sh`.  Note that if you've run the teardown script, the next time you start the runtime, you'll need to create a new PeerAdmin card just like you did on first time startup.
+At the end of your development session, you run `~/fabric-dev-servers/stopFabric.sh` and then `~/fabric-dev-servers/teardownFabric.sh`.  Note that if you've run the teardown script, the next time you start the runtime, you'll need to create a new PeerAdmin card just like you did on first time startup.
 
-> The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you're looking for a runtime with more persistent state, you'll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.  For further details, see <INSERT LINK HERE>.
+> The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you're looking for a runtime with more persistent state, you'll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.
 
 ## Start the web app ("Playground")
 To start the web app, run:

@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 
 const common = require('composer-common');
@@ -9,7 +23,7 @@ const BusinessNetworkMetadata = common.BusinessNetworkMetadata;
 class Util {
 
     /**
-     * Validate the name of the business networ
+     * Validate the name of the business network
      *
      * @param {string} name name of the business network
      * @return {*} true or error message
@@ -57,7 +71,7 @@ class Util {
     /**
      * Check if the cardname is valid
      *
-     * @param {string} description the description
+     * @param {string} name the card name to validate
      * @return {*} return true or error message
      */
     static validateCardName(name) {
@@ -197,6 +211,43 @@ class Util {
         } else {
             return 'bna file name not valid. Must end in .bna';
         }
+    }
+
+    /**
+     * Validate the generator type
+     *
+     * @param {string} type type of the generator
+     * @return {*} return true or error message
+     */
+    static validateGeneratorType(type) {
+        if(type !== null && type !== undefined) {
+            return true;
+        } else {
+            return 'Generator type must be defined';
+        }
+    }
+
+    /**
+     * Validate the api
+     *
+     * @param {string} input api choice
+     * @return {*} return true or error message
+     */
+    static validateApi(input) {
+        if (input !== null && input !== undefined && input !== '') {
+            return true;
+        } else {
+            return 'Connection Profile cannot be null or empty.';
+        }
+    }
+
+    /**
+     * Simple log method to output to the console
+     * @param {string} msg the message to log
+     */
+    static log(msg){
+        // eslint-disable-next-line no-console
+        console.log(msg);
     }
 }
 

@@ -21,7 +21,11 @@ const fs = require('fs');
 const fsextra = require('fs-extra');
 const path = require('path');
 const thenifyAll = require('thenify-all');
+const jsrsa = require('jsrsasign');
+const KEYUTIL = jsrsa.KEYUTIL;
+const ecdsaKey = require('fabric-client/lib/impl/ecdsa/key.js');
 
+const cloneDeep = require('lodash').cloneDeep;
 const LOG = Logger.getLog('HLFConnectionManager');
 
 global.hfc = {
@@ -52,6 +56,8 @@ const HLFConnection = require('./hlfconnection');
 const HLFWalletProxy = require('./hlfwalletproxy');
 const Wallet = require('composer-common').Wallet;
 
+let HSMSuite = new Map();
+
 /**
  * Class representing a connection manager that establishes and manages
  * connections to one or more business networks running on Hyperledger Fabric,
@@ -61,6 +67,116 @@ const Wallet = require('composer-common').Wallet;
 class HLFConnectionManager extends ConnectionManager {
 
     /**
+     * Clear the HSM cache
+     */
+    static clearHSMCache() {
+        HSMSuite.clear();
+    }
+
+    /**
+     * Determine if we should be using HSM or not
+     * @param {object} ccp The common connection profile
+     * @return {boolean} true if to use HSM
+     */
+    static useHSM(ccp) {
+        const method = 'useHSM';
+        LOG.entry(method, ccp);
+
+        if (!ccp.client) {
+            return false;
+        }
+        const hsmConfig = ccp.client['x-hsm'];
+        let useHSM = false;
+        if (hsmConfig && hsmConfig.library && hsmConfig.library.trim().length !== 0 && hsmConfig.pin && hsmConfig.slot !== null && hsmConfig.slot !== undefined) {
+            useHSM = true;
+        }
+
+        LOG.exit(method, useHSM);
+        return useHSM;
+    }
+
+
+    /**
+     * Get a store location based on the cardname. If there is no card name then this means it is
+     * an identity request on HSM and we return some dummy location.
+     * @param {object} ccp The common connection profile
+     * @return {path} a path to use
+     */
+    static getStoreLocation(ccp) {
+        const method = 'getStoreLocation';
+        LOG.entry(method, ccp);
+        let pathToUse;
+        if (ccp.cardName) {
+            pathToUse = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', ccp.cardName);
+        } else {
+            pathToUse = path.join(composerUtil.homeDirectory(), '.composer', 'temp', 'transient');
+        }
+
+        LOG.exit(method, pathToUse);
+        return pathToUse;
+    }
+
+    /**
+     * return the value of an environment variable provided or the original value.
+     * @param {string} property the property value to see if it is a reference to an env var or not.
+     * @return {string} the value
+     */
+    static getValueOrEnv(property) {
+        let value = ('' + property).trim();
+        if (value.startsWith('{') && value.endsWith('}')) {
+            return process.env[value.substring(1, value.length - 1)];
+        }
+        return property;
+    }
+
+    /**
+     * get an appropriate HSM cryptosuite
+     * @param {object} ccp The Composer Connection Profile
+     * @param {path} keyValStorePath an appropriate path to use for the store
+     * @return {CryptoSuite} the HSM crypto suite to use
+     *
+     */
+    static getHSMCryptoSuite(ccp, keyValStorePath) {
+        const method = 'getHSMCryptoSuite';
+        LOG.entry(method, ccp, keyValStorePath);
+
+        const hsmConfig = ccp.client['x-hsm'];
+
+        let library = HLFConnectionManager.getValueOrEnv(hsmConfig.library);
+        if (!library) {
+            throw new Error('no value provided for HSM library property');
+        }
+
+        let slot = HLFConnectionManager.getValueOrEnv(hsmConfig.slot);
+        if (slot === null || slot === undefined) {
+            throw new Error('no value provided for HSM slot property');
+        }
+
+        let pin = HLFConnectionManager.getValueOrEnv(hsmConfig.pin);
+        if (!pin) {
+            throw new Error('no value provided for HSM pin property');
+        }
+        LOG.info(method, `HSM enabled to use library ${library} and slot ${slot}`);
+
+        //check the cache for an HSM cryptosuite
+        let key = '' + slot + '-' + pin;
+        let cryptoSuite = HSMSuite.get(key);
+        if (!cryptoSuite) {
+            LOG.debug(method, 'creating a new cryptosuite');
+            cryptoSuite = Client.newCryptoSuite({ software: false, lib: library, slot: slot * 1, pin: pin + '' });
+            // we need to set a path in the CryptoKeyStore even though it is using HSM otherwise
+            // it will make the private key ephemeral and not store it in the HSM
+            cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
+            HSMSuite.set(key, cryptoSuite);
+        } else {
+            LOG.debug(method, 'reusing an new cryptosuite');
+        }
+
+        LOG.exit(method, cryptoSuite);
+        return cryptoSuite;
+    }
+
+    /**
      * Create a new client.
      * @param {object} ccp The Common Connection Profile
      * @param {boolean} [setupStore] true if a store is required to be setup
@@ -68,19 +184,30 @@ class HLFConnectionManager extends ConnectionManager {
      * @return {Promise} A promise which resolves to a client or rejects if an error occurs
      */
     static async createClient(ccp, setupStore) {
+        const method = 'createClient';
+        LOG.entry(method, ccp, setupStore);
 
         let client;
         let wallet;
+        let useHSM = HLFConnectionManager.useHSM(ccp);
+
         try {
+
+            // check to see if we need to setup a store which requires some checks
+            // and setup info before the client can be created.
             if (setupStore) {
                 wallet = ccp.wallet || Wallet.getWallet();
 
                 if (!wallet && !ccp.cardName) {
-                    return Promise.reject(new Error('No wallet or card name has been specified'));
+                    throw new Error('No wallet or card name has been specified');
                 }
 
-                if (!wallet) {
-                    let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', ccp.cardName);
+                if (!wallet && !useHSM) {
+
+                    // if not using wallets and not using hsm then we are bog standard
+                    // credential store stuff and can use the ccp initCredentialStore
+                    // stuff so prep it for the loadFromConfig call.
+                    let storePath = HLFConnectionManager.getStoreLocation(ccp);
                     ccp.client.credentialStore = {
                         'path': storePath,
                         'cryptoStore': {
@@ -89,19 +216,94 @@ class HLFConnectionManager extends ConnectionManager {
                     };
                 }
             }
-            client = Client.loadFromConfig(ccp);
+
+            let clientccp = cloneDeep(ccp);
+            if (clientccp.wallet){
+                delete clientccp.wallet;
+            }
+            client = Client.loadFromConfig(clientccp);
             if (setupStore) {
-                if (wallet) {
+                // setup the state store and cryptosuite
+                if (useHSM) {
+                    await HLFConnectionManager.setupHSM(client, ccp, wallet);
+                } else if (wallet) {
                     await HLFConnectionManager.setupWallet(client, wallet);
                 } else {
+
+                    // setup a state store and place to store cryptosuite stuff using node-sdk
                     await client.initCredentialStores();
+                    delete ccp.client.credentialStore;
+                }
+            } else {
+                // setup the cryptosuite only. This is really only used by requestIdentity.
+                if (useHSM) {
+                    let hsmCryptoSuite = HLFConnectionManager.getHSMCryptoSuite(ccp, HLFConnectionManager.getStoreLocation(ccp));
+                    client.setCryptoSuite(hsmCryptoSuite);
+                } else {
+                    client.setCryptoSuite(Client.newCryptoSuite());
                 }
             }
         } catch(err) {
             let newError = new Error('Failed to create client from connection profile. ' + err);
             throw newError;
         }
+
+        LOG.exit(method, client);
         return client;
+    }
+
+        /**
+     * Link a wallet to the fabric-client store and cryptostore
+     * @param {Client} client the fabric client
+     * @param {Wallet} wallet the wallet implementation
+     */
+    static async setupWallet(client, wallet) {
+        const method = 'setupWallet';
+        LOG.entry(method, client, wallet);
+        try {
+            let store = await new HLFWalletProxy(wallet);
+            client.setStateStore(store);
+
+            const cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
+            const cryptoSuite = Client.newCryptoSuite();
+            cryptoSuite.setCryptoKeyStore(cryptostore);
+            client.setCryptoSuite(cryptoSuite);
+            LOG.exit(method);
+        } catch (error) {
+            LOG.error(method, error);
+            const newError = new Error('Error trying to setup a wallet. ' + error);
+            throw newError;
+        }
+    }
+
+    /**
+     * set up a cryptosuite and state store using HSM.
+     * note there is no support for wallets for the state store
+     * @param {Client} client the fabric client
+     * @param {object} ccp the profile with HSM specific details.
+     * @param {Wallet} wallet the wallet to use if defined.
+     */
+    static async setupHSM(client, ccp, wallet) {
+        const method = 'setupHSM';
+        LOG.entry(method, client, ccp, wallet);
+        let keyValStorePath = HLFConnectionManager.getStoreLocation(ccp);
+        let store;
+        try {
+            if (wallet) {
+                store = await new HLFWalletProxy(wallet);
+            } else {
+                store = await Client.newDefaultKeyValueStore({path: keyValStorePath});
+            }
+            client.setStateStore(store);
+
+            let hsmCryptoSuite = HLFConnectionManager.getHSMCryptoSuite(ccp, keyValStorePath);
+            client.setCryptoSuite(hsmCryptoSuite);
+            LOG.exit(method);
+        } catch(error) {
+            LOG.error(method, error);
+            const newError = new Error('error trying to setup a state store and HSM. ' + error);
+            throw newError;
+        }
     }
 
     /**
@@ -135,30 +337,6 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Link a wallet to the fabric-client store and cryptostore
-     * @param {Client} client the fabric client
-     * @param {Wallet} wallet the wallet implementation
-     */
-    static async setupWallet(client, wallet) {
-        const method = 'setupWallet';
-        LOG.entry(method, client, wallet);
-        try {
-            let store = await new HLFWalletProxy(wallet);
-            client.setStateStore(store);
-
-            const cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
-            const cryptoSuite = Client.newCryptoSuite();
-            cryptoSuite.setCryptoKeyStore(cryptostore);
-            client.setCryptoSuite(cryptoSuite);
-            LOG.exit(method);
-        } catch (error) {
-            LOG.error(method, error);
-            const newError = new Error('Error trying to setup a wallet. ' + error);
-            throw newError;
-        }
-    }
-
-    /**
      * Request an identity's certificates.
      *
      * @param {string} connectionProfile The name of the connection profile
@@ -187,8 +365,6 @@ class HLFConnectionManager extends ConnectionManager {
         let options = { enrollmentID: enrollmentID, enrollmentSecret: enrollmentSecret };
         const client = await HLFConnectionManager.createClient(connectionOptions, false);
 
-        //TODO: Need sdk to allow this or we get rid of requestIdentity
-        client._cryptoSuite = Client.newCryptoSuite();
         const caClient = client.getCertificateAuthority();
 
         let caName = caClient.getCaName();
@@ -196,7 +372,11 @@ class HLFConnectionManager extends ConnectionManager {
         try {
             let enrollment = await caClient.enroll(options);
             enrollment.caName = caName;
-            enrollment.key = enrollment.key.toBytes();
+            if (!HLFConnectionManager.useHSM(connectionOptions)) {
+                enrollment.key = enrollment.key.toBytes();
+            } else {
+                delete enrollment.key;
+            }
             LOG.exit(method);
             return enrollment;
         } catch (error) {
@@ -214,7 +394,6 @@ class HLFConnectionManager extends ConnectionManager {
      * @param {string} id the id to associate with the identity
      * @param {string} publicCert the public signer certificate
      * @param {string} privateKey the private key
-     * @returns {Promise} a promise
      */
     async importIdentity(connectionProfile, connectionOptions, id, publicCert, privateKey) {
         const method = 'importIdentity';
@@ -226,28 +405,36 @@ class HLFConnectionManager extends ConnectionManager {
         } else if (!connectionOptions || typeof connectionOptions !== 'object') {
             throw new Error('connectionOptions not specified or not an object');
         } else if (!id || typeof id !== 'string') {
-            return Promise.reject(new Error('id not specified or not a string'));
+            throw new Error('id not specified or not a string');
         } else if (!publicCert || typeof publicCert !== 'string') {
-            return Promise.reject(new Error('publicCert not specified or not a string'));
-        } else if (!privateKey || typeof privateKey !== 'string') {
-            return Promise.reject(new Error('privateKey not specified or not a string'));
+            throw new Error('publicCert not specified or not a string');
         }
 
-        //default the optional wallet
-
-        //TODO check if mspId, organisation is defined ? need to test nodesdk to see what it does
         let client = await HLFConnectionManager.createClient(connectionOptions, true);
         const mspID = client.getMspid();
 
+        let cryptoContent = {
+            signedCertPEM: publicCert
+        };
+
         try {
+            if (HLFConnectionManager.useHSM(connectionOptions)) {
+                let publicKey = KEYUTIL.getKey(publicCert);
+                let ecdsakey = new ecdsaKey(publicKey);
+                cryptoContent.privateKeyObj = await client.getCryptoSuite().getKey(Buffer.from(ecdsakey.getSKI(), 'hex'));
+
+            } else {
+                if (!privateKey || typeof privateKey !== 'string') {
+                    throw new Error('privateKey not specified or not a string');
+                }
+                cryptoContent.privateKeyPEM = privateKey;
+            }
+
             await client.createUser(
                 {
                     username: id,
                     mspid: mspID,
-                    cryptoContent: {
-                        privateKeyPEM: privateKey,
-                        signedCertPEM: publicCert
-                    }
+                    cryptoContent: cryptoContent
                 });
             LOG.exit(method);
         } catch (error) {
@@ -279,10 +466,8 @@ class HLFConnectionManager extends ConnectionManager {
         // Create a new client instance.
         const client = await HLFConnectionManager.createClient(connectOptions, true);
 
-        // TODO: check mspId and organisation have been defined node-sdk should handle nicely
-        // TODO: find a channel, should be provided by node sdk
-        let channelNames = Object.keys(client._network_config._network_config.channels);
-        const channel = client.getChannel(channelNames[0]);
+        // this should return the first defined channel.
+        const channel = client.getChannel();
         // Create a CA client.
         const caClient = client.getCertificateAuthority();
 
@@ -309,9 +494,11 @@ class HLFConnectionManager extends ConnectionManager {
         let result = null;
         if (user) {
             result = {
-                certificate: user.getIdentity()._certificate,
-                privateKey: user.getSigningIdentity()._signer._key.toBytes()
+                certificate: user.getIdentity()._certificate
             };
+            if (!HLFConnectionManager.useHSM(connectionOptions)) {
+                result.privateKey = user.getSigningIdentity()._signer._key.toBytes();
+            }
         }
         LOG.exit(method, result);
         return result;
@@ -346,7 +533,7 @@ class HLFConnectionManager extends ConnectionManager {
         // get and set and luckily we isolate the information based on the card name we can just forceably delete the directory.
         // we cannot support doing this for connection profiles that use keyValStore and no cardname provided.
         if (connectionOptions.cardName) {
-            let storePath = path.join(composerUtil.homeDirectory(), '.composer', 'client-data', connectionOptions.cardName);
+            let storePath = HLFConnectionManager.getStoreLocation(connectionOptions);
             let exists = await HLFConnectionManager._exists(storePath);
             if (exists) {
                 const thenifyFSExtra = thenifyAll(fsextra);
@@ -355,7 +542,7 @@ class HLFConnectionManager extends ConnectionManager {
             return exists;
 
         } else {
-            return Promise.reject(new Error('Unable to remove identity as no card name provided'));
+            throw new Error('Unable to remove identity as no card name provided');
         }
     }
 

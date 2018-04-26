@@ -1,7 +1,25 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /*eslint no-var: 0*/
 'use strict';
 
-function onSimpleTransactionWithPrimitiveTypes(transaction) {
+function onSimpleTransaction (transaction) {
+
+}
+
+function onSimpleTransactionWithPrimitiveTypes (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
@@ -23,7 +41,7 @@ function onSimpleTransactionWithPrimitiveTypes(transaction) {
     assertEqual('enumValue', transaction.enumValue, 'SUCH');
 }
 
-function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
+function onSimpleTransactionWithPrimitiveTypeArrays (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertArraysEqual = function (property, actuals, expecteds) {
         if (actuals.length !== expecteds.length) {
@@ -52,7 +70,7 @@ function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
     assertArraysEqual('enumValues', transaction.enumValues, ['SUCH', 'MANY']);
 }
 
-function onSimpleTransactionWithAssets(transaction) {
+function onSimpleTransactionWithAssets (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
@@ -71,7 +89,7 @@ function onSimpleTransactionWithAssets(transaction) {
     assertEqual('integerAsset.integerValue', transaction.integerAsset.integerValue, 5318008);
 }
 
-function onSimpleTransactionWithAssetArrays(transaction) {
+function onSimpleTransactionWithAssetArrays (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
@@ -96,7 +114,7 @@ function onSimpleTransactionWithAssetArrays(transaction) {
     assertEqual('integerAssets[1].integerValue', transaction.integerAssets[1].integerValue, 56373351);
 }
 
-function onSimpleTransactionWithAssetRelationships(transaction) {
+function onSimpleTransactionWithAssetRelationships (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
@@ -115,7 +133,7 @@ function onSimpleTransactionWithAssetRelationships(transaction) {
     assertEqual('integerAsset.integerValue', transaction.integerAsset.integerValue, 5318008);
 }
 
-function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
+function onSimpleTransactionWithAssetRelationshipArrays (transaction) {
     // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
@@ -140,7 +158,7 @@ function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
     assertEqual('integerAssets[1].integerValue', transaction.integerAssets[1].integerValue, 56373351);
 }
 
-function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
+function onGetAllAssetsFromAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -151,27 +169,47 @@ function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
                 return a.assetId.localeCompare(b.assetId);
             });
             // console.log(JSON.stringify(as));
-            if (as.length !== 2) { throw new Error('length does not match'); }
-            if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
-            if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
-            if (as[0].assetId !== 'stringAsset1') { throw new Error('first asset has invalid value'); }
-            if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first asset has invalid value'); }
-            if (as[1].assetId !== 'stringAsset2') { throw new Error('second asset has invalid value'); }
-            if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second asset has invalid value'); }
+            if (as.length !== 2) {
+                throw new Error('length does not match');
+            }
+            if (typeof as[0] !== 'object') {
+                throw new Error('first asset is not an object');
+            }
+            if (typeof as[1] !== 'object') {
+                throw new Error('second asset is not an object');
+            }
+            if (as[0].assetId !== 'stringAsset1') {
+                throw new Error('first asset has invalid value');
+            }
+            if (as[0].stringValue !== 'party parrot in hursley') {
+                throw new Error('first asset has invalid value');
+            }
+            if (as[1].assetId !== 'stringAsset2') {
+                throw new Error('second asset has invalid value');
+            }
+            if (as[1].stringValue !== 'party parrot in san francisco') {
+                throw new Error('second asset has invalid value');
+            }
         });
 }
 
 // example using async/await
-async function onGetAssetFromAssetRegistryTransaction(transaction) {
+async function onGetAssetFromAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     let ar = await getAssetRegistry('systest.transactions.SimpleStringAsset');
     let a = await ar.get('stringAsset1');
-    if (typeof a !== 'object') { return new Error('asset is not an object'); }
-    if (a.assetId !== 'stringAsset1') { return new Error('asset has invalid value'); }
-    if (a.stringValue !== 'party parrot in hursley') { return new Error('asset has invalid value'); }
+    if (typeof a !== 'object') {
+        return new Error('asset is not an object');
+    }
+    if (a.assetId !== 'stringAsset1') {
+        return new Error('asset has invalid value');
+    }
+    if (a.stringValue !== 'party parrot in hursley') {
+        return new Error('asset has invalid value');
+    }
 }
 
-function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
+function onAddAssetInTransactionToAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -179,7 +217,7 @@ function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
         });
 }
 
-function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(transaction) {
+function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -187,7 +225,7 @@ function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(trans
         });
 }
 
-function onAddNewAssetToAssetRegistryTransaction(transaction) {
+function onAddNewAssetToAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -198,7 +236,7 @@ function onAddNewAssetToAssetRegistryTransaction(transaction) {
         });
 }
 
-function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
+function onAddNewAssetWithRelationshipToAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -209,7 +247,7 @@ function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
         });
 }
 
-function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
+function onUpdateAssetInTransactionInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -217,7 +255,7 @@ function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
         });
 }
 
-function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
+function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -225,7 +263,7 @@ function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(tr
         });
 }
 
-function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
+function onUpdateNewAssetInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -236,7 +274,7 @@ function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
         });
 }
 
-function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
+function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -247,7 +285,7 @@ function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction)
         });
 }
 
-function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
+function onRemoveAssetInTransactionInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -255,7 +293,7 @@ function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
         });
 }
 
-function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
+function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -263,7 +301,7 @@ function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(tr
         });
 }
 
-function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
+function onRemoveNewAssetInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
@@ -274,7 +312,7 @@ function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
         });
 }
 
-function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction) {
+function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction (transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
@@ -291,7 +329,7 @@ function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction)
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function handleTheSingleAnnotatedTransaction(transaction) {
+function handleTheSingleAnnotatedTransaction (transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
@@ -307,7 +345,7 @@ function handleTheSingleAnnotatedTransaction(transaction) {
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function handleMultipleAnnotatedTransactionFirst(transaction) {
+function handleMultipleAnnotatedTransactionFirst (transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
@@ -323,7 +361,7 @@ function handleMultipleAnnotatedTransactionFirst(transaction) {
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function handleMultipleAnnotatedTransactionSecond(transaction) {
+function handleMultipleAnnotatedTransactionSecond (transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
@@ -338,7 +376,7 @@ function handleMultipleAnnotatedTransactionSecond(transaction) {
  * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function utilityFunc1(transaction) {
+function utilityFunc1 (transaction) {
     return utilityFuncA(transaction);
 }
 
@@ -348,7 +386,7 @@ function utilityFunc1(transaction) {
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function handleTheTransactionUsingUtilityFunctions(transaction) {
+function handleTheTransactionUsingUtilityFunctions (transaction) {
     return utilityFunc1(transaction);
 }
 
@@ -357,6 +395,150 @@ function handleTheTransactionUsingUtilityFunctions(transaction) {
  * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
  * @return {Promise} A promise that is resolved when complete.
  */
-function utilityFunc2(transaction) {
+function utilityFunc2 (transaction) {
     return utilityFuncB(transaction);
+}
+
+/**
+ * handle function with native api
+ * @param {systest.transactions.SimpleNativePutStateTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function simpleNativeAddStateTransaction (transaction) {
+    const id = transaction.assetId;
+    const value = transaction.stringValue;
+
+    const nativeKey = getNativeAPI().createCompositeKey('Asset:systest.transactions.SimpleStringAsset', [id]);
+
+    const data = {
+        $class : 'systest.transactions.SimpleStringAsset',
+        assetId : id,
+        stringValue : value
+    };
+
+    return getNativeAPI().putState(nativeKey, Buffer.from(JSON.stringify(data)));
+}
+
+/**
+ * handle function with native api
+ * @param {systest.transactions.SimpleNativeHistoryTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+async function simpleNativeHistoryTransaction (transaction) {
+    var assertEqual = function (property, actual, expected) {
+        if (typeof actual !== typeof expected) {
+            throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
+        } else if (actual instanceof Date) {
+            if (actual.getTime() !== expected.getTime()) {
+                throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') values not equal');
+            }
+        } else if (actual !== expected) {
+            throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') values not equal');
+        }
+    };
+
+    const id = transaction.assetId;
+    const nativeSupport = transaction.nativeSupport;
+
+    try {
+        const nativeKey = getNativeAPI().createCompositeKey('Asset:systest.transactions.SimpleStringAsset', [id]);
+        const iterator = await getNativeAPI().getHistoryForKey(nativeKey);
+        let results = [];
+        let res = {done : false};
+        while (!res.done) {
+            res = await iterator.next();
+
+            if (res && res.value && res.value.value) {
+                let val = res.value.value.toString('utf8');
+                if (val.length > 0) {
+                    results.push(JSON.parse(val));
+                }
+            }
+            if (res && res.done) {
+                try {
+                    iterator.close();
+                }
+                catch (err) {
+                }
+            }
+        }
+
+        assertEqual('results length', results.length, 2);
+        assertEqual('first string value', results[0].stringValue, 'hello world');
+        assertEqual('second string value', results[1].stringValue, 'hello bob');
+    } catch (error) {
+        if (nativeSupport) {
+            throw error;
+        }
+    }
+}
+
+/**
+ * handle function with native api
+ * @param {systest.transactions.AdvancedInvokeChainCodeTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+async function AdvancedInvokeChainCodeTransaction (transaction) {
+    const id = transaction.assetId;
+    const channel = transaction.channel;
+    const chainCodeName = transaction.chainCodeName;
+    const expectedValue = transaction.expectedValue;
+
+    let assertEqual = function (property, actual, expected) {
+        if (typeof actual !== typeof expected) {
+            throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
+        } else if (actual instanceof Date) {
+            if (actual.getTime() !== expected.getTime()) {
+                throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') values not equal');
+            }
+        } else if (actual !== expected) {
+            throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') values not equal');
+        }
+    };
+
+    const otherNetworkData = await getNativeAPI().invokeChaincode(chainCodeName, ['getResourceInRegistry', 'Asset', 'systest.transactions.assets.SimpleStringAsset', id], channel);
+
+    const stringAsset = new Buffer(otherNetworkData.payload.toArrayBuffer()).toString('utf8');
+    const asset = JSON.parse(stringAsset);
+
+    assertEqual('string value', asset.stringValue, expectedValue);
+}
+
+/**
+ * handle function with native api
+ * @param {systest.transactions.AdvancedInvokeChainCodeError} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+async function AdvancedInvokeChainCodeError (transaction) {
+    const channel = transaction.channel;
+    const chainCodeName = transaction.chainCodeName;
+
+    // 0 = ok, 1 = wrong error message, 2 = no error message
+    let resultOfTest = 2;
+    let error;
+    try {
+        await getNativeAPI().invokeChaincode(chainCodeName, ['getResourceInRegistry', 'Asset', 'systest.transactions.assets.SimpleStringAsset'], channel);
+    } catch(err) {
+        resultOfTest = 0;
+        if (err.message.match(/Invalid arguments .* to function .*, expecting/) === null) {
+            error = err;
+            resultOfTest = 1;
+        }
+    }
+
+    switch(resultOfTest) {
+    case 1:
+        throw new Error('unexpected error received: ' + error.message);
+    case 2:
+        throw new Error('expected an error to be thrown, but no error was thrown');
+    case 0:
+        break;
+    default:
+        throw new Error('ok, this should never have happened.');
+    }
+
 }

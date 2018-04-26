@@ -93,7 +93,6 @@ class Create {
      * @returns {Promise} resolved with the filename of the card when it has been written
      */
     static createCard(metadata,profileData,argv){
-        let fileName;
         // setup the id card with the meta data
         let idCard = new IdCard(metadata,profileData);
 
@@ -110,18 +109,7 @@ class Create {
             idCard.setCredentials(newCredentials);
         }
 
-        // handle the filename
-        // Default is userName@businessNetworkName.card if the card includes a business network name;
-        // otherwise userName@connectionProfileName.card.
-        if (!argv.file) {
-            if (metadata.hasOwnProperty('businessNetwork')){
-                fileName = metadata.userName+'@'+ metadata.businessNetwork+'.card';
-            } else {
-                fileName = metadata.userName+'@'+ profileData.name +'.card';
-            }
-        } else {
-            fileName = argv.file;
-        }
+        const fileName = cmdUtil.sanitizeCardFileName(argv.file || cmdUtil.getDefaultCardName(idCard));
 
         // finally write out the card file
         return Export.writeCardToFile(fileName,idCard)

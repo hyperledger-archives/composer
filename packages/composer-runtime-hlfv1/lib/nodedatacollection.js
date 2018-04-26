@@ -19,7 +19,9 @@ const NodeUtils = require('./nodeutils');
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('NodeDataCollection');
 
-
+/**
+ * Class representing a data collection provided by a {@link DataService}.
+ */
 class NodeDataCollection extends DataCollection {
 
     /**
@@ -37,10 +39,6 @@ class NodeDataCollection extends DataCollection {
         LOG.exit(method);
     }
 
-    toString() {
-        return `[DataCollection: + ${this.collectionID}]`;
-    }
-
     /**
      * Get all of the objects in this collection.
      * @return {Promise} A promise that will be resolved with an array of objects,
@@ -49,9 +47,12 @@ class NodeDataCollection extends DataCollection {
     async getAll() {
         const method = 'getAll';
         LOG.entry(method);
+
+        let t0 = process.hrtime();
         let iterator = await this.stub.getStateByPartialCompositeKey(this.collectionID, []);
         let results = await NodeUtils.getAllResults(iterator);
         LOG.exit(method, results);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
         return results;
     }
 
@@ -64,16 +65,19 @@ class NodeDataCollection extends DataCollection {
     async get(id) {
         const method = 'get';
         LOG.entry(method, id);
+        let t0 = process.hrtime();
 
         let key = this.stub.createCompositeKey(this.collectionID, [id]);
         let value = await this.stub.getState(key);
         if (value.length === 0) {
             const newErr = new Error(`Object with ID '${id}' in collection with ID '${this.collectionID}' does not exist`);
             LOG.error(method, newErr);
+            LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
             throw newErr;
         }
         let retVal = JSON.parse(value.toString('utf8'));
         LOG.exit(method, retVal);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
         return retVal;
     }
 
@@ -87,10 +91,12 @@ class NodeDataCollection extends DataCollection {
         const method = 'exists';
         LOG.entry(method, id);
 
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(this.collectionID, [id]);
         let value = await this.stub.getState(key);
         let retVal = value.length !== 0;
         LOG.exit(method, retVal);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
         return retVal;
     }
 
@@ -107,17 +113,21 @@ class NodeDataCollection extends DataCollection {
         const method = 'add';
         LOG.entry(method, id, object, force);
 
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(this.collectionID, [id]);
         if (!force) {
             let value = await this.stub.getState(key);
             if (value.length !== 0) {
                 const newErr =  new Error(`Failed to add object with ID '${id}' in collection with ID '${this.collectionID}' as the object already exists`);
                 LOG.error(method, newErr);
+                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
                 throw newErr;
             }
         }
         await this.stub.putState(key, Buffer.from(JSON.stringify(object)));
+
         LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
     }
 
     /**
@@ -131,36 +141,41 @@ class NodeDataCollection extends DataCollection {
     async update(id, object) {
         const method = 'update';
         LOG.entry(method, id, object);
+
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(this.collectionID, [id]);
         let value = await this.stub.getState(key);
         if (value.length === 0) {
             const newErr = new Error(`Failed to update object with ID '${id}' in collection with ID '${this.collectionID}' as the object does not exist`);
             LOG.error(method, newErr);
+            LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
             throw newErr;
         }
         await this.stub.putState(key, Buffer.from(JSON.stringify(object)));
         LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
     }
 
     /**
      * Remove an object from the collection.
      * @param {string} id The ID of the object.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async remove(id) {
         const method = 'remove';
         LOG.exit(method, id);
 
+        let t0 = process.hrtime();
         let key = this.stub.createCompositeKey(this.collectionID, [id]);
         let value = await this.stub.getState(key);
         if (value.length === 0) {
             const newErr = new Error(`Failed to delete object with ID '${id}' in collection with ID '${this.collectionID}' as the object does not exist`);
             LOG.error(method, newErr);
+            LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
             throw newErr;
         }
         await this.stub.deleteState(key);
         LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
     }
 }
 

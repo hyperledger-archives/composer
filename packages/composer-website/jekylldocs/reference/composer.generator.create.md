@@ -26,7 +26,7 @@ Options:
 
 ## Description
 
-This will take the  Composer business network definition as input and create artifacts related to writing new applications.
+This will take the {{site.data.conrefs.composer_full}} business network definition as input and create artifacts related to writing new applications.
 
 ## Options
 
@@ -43,6 +43,8 @@ The format of the artifacts that will be created.
 Shows the help text
 * `-v` `--version`  
 Shows the version number
+* `-o, --outputDir`
+The output directory for the generated files.
 
 ## Example Usage
 

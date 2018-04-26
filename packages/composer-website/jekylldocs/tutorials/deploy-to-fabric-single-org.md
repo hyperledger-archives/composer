@@ -10,9 +10,11 @@ excerpt: "This tutorial will walk you through the steps required to configure Co
 
 # Deploying a {{site.data.conrefs.composer_full}} blockchain business network to {{site.data.conrefs.hlf_full}} for a single organization
 
-In the [development environment](../installing/development-tools.html), a simple {{site.data.conrefs.hlf_full}} network is created for you (`fabric-dev-servers`), along with all of the {{site.data.conrefs.composer_full}} configuration that you need in order to deploy a blockchain business network.
+In the [development environment](../installing/development-tools.html), a simple development only {{site.data.conrefs.hlf_full}} single organization, single peer network is created for you (`fabric-dev-servers`), along with all of the {{site.data.conrefs.composer_full}} configuration that you need in order to deploy a blockchain business network.
 
 This tutorial will demonstrate the steps that an administrator needs to take in order to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for a single organization, including how to generate the necessary {{site.data.conrefs.composer_full}} configuration. A subsequent tutorial will demonstrate how to deploy a blockchain business network to an instance of {{site.data.conrefs.hlf_full}} for multiple organizations.
+
+During this tutorial, you may wish to refer to the [{{site.data.conrefs.hlf_full}} documentation](http://hyperledger-fabric.readthedocs.io).
 
 ## Prerequisites
 
@@ -22,21 +24,20 @@ This tutorial will demonstrate the steps that an administrator needs to take in 
 
 In order to follow this tutorial, you must start a {{site.data.conrefs.hlf_full}} network. You can use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment, or you can use your own {{site.data.conrefs.hlf_full}} network that you have built by following the {{site.data.conrefs.hlf_full}} documentation.
 
-The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment. If you use your own {{site.data.conrefs.hlf_full}} network, then you must map between the configuration detailed below and your own configuration.
+The tutorial will assume that you use the simple {{site.data.conrefs.hlf_full}} network provided in the development environment. If you use your own {{site.data.conrefs.hlf_full}} network, then you must map between the configuration detailed below and your own configuration and it should be a single organization network.
 
 1. Start a clean {{site.data.conrefs.hlf_full}} by running the following commands:
 
-        cd ~/fabric-tools
+        cd ~/fabric-dev-servers
         ./stopFabric.sh
         ./teardownFabric.sh
-        export FABRIC_VERSION=hlfv11
         ./downloadFabric.sh
         ./startFabric.sh
 
 2. Delete any business network cards that may exist in your wallet. It is safe to ignore any errors that state that the business network cards cannot be found:
 
-        composer card delete -n PeerAdmin@fabric-network
-        composer card delete -n admin@tutorial-network
+        composer card delete -c PeerAdmin@fabric-network
+        composer card delete -c admin@tutorial-network
 
 If these commands fail, then you have network cards from a previous version and you will have to delete the file system card store.
 
@@ -52,11 +53,11 @@ The simple {{site.data.conrefs.hlf_full}} network provided in the development en
 
 The configuration for `cryptogen` is stored in the file:
 
-    ~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config.yaml
+    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config.yaml
 
 The configuration for `configtxgen` is stored in the file:
 
-    ~/fabric-tools/fabric-scripts/hlfv11/composer/configtx.yaml
+    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/configtx.yaml
 
 You can find more information about these configuration tools, what they do, and how to use them by reading the {{site.data.conrefs.hlf_full}} documentation.
 
@@ -86,7 +87,7 @@ The organization `Org1` is configured with a user named `Admin@org1.example.com`
 
 The user `Admin@org1.example.com` has a set of certificates and private key files stored in the directory:
 
-    ~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 
 You will use some of these files later on to interact with the {{site.data.conrefs.hlf_full}} network.
 
@@ -111,7 +112,7 @@ A connection profile specifies all of the information required to locate and con
 
       The `name` property in a connection profile gives a name to the {{site.data.conrefs.hlf_full}} network, so we can reference it later on. In the connection profile you have just created, the name is `fabric-network`. You can use any name you like for the {{site.data.conrefs.hlf_full}} network.
 
-      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.x is supported, but you must specify the type of blockchain network to use. The x-type for {{site.data.conrefs.hlf_full}} v1.0 is `hlfv1`.
+      {{site.data.conrefs.composer_full}} is designed to be compatible with different types blockchain networks. Currently, only {{site.data.conrefs.hlf_full}} v1.x is supported, but you must specify the type of blockchain network to use. The x-type for {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} is `hlfv1`.
 
       The version number is the version of this connection profile format. Currently there is only 1 version of `1.0.0`.
 
@@ -280,7 +281,7 @@ In order to deploy a blockchain business network to this {{site.data.conrefs.hlf
 
 The administrator for our {{site.data.conrefs.hlf_full}} network is a user called `Admin@org1.example.com`. The certificates and private key files for this user are stored in the directory:
 
-    ~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    ~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 
 You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the `signcerts` subdirectory and is named `Admin@org1.example.com-cert.pem`. If you look at the contents of this file, then you will find a PEM encoded certificate similar to the following:
 
@@ -339,7 +340,7 @@ This is the path to the private key file for the user `Admin@org1.example.com` t
 
     -r PeerAdmin -r ChannelAdmin
 
-Here, we specify which roles the user has. This information is required so that {{site.data.conrefs.composer_full}} knows which users are able to perform which operations. The user `Admin@org1.example.com` is an administrator for the {{site.data.conrefs.hlf_full}} network, and has the roles `PeerAdmin` (ability to install chaincode) and `ChannelAdmin` (ability to instantiate chaincode).
+Here, we specify which roles the user has. This information is required so that {{site.data.conrefs.composer_full}} playground knows which users are able to perform which operations. The user `Admin@org1.example.com` is an administrator for the {{site.data.conrefs.hlf_full}} network, and has the roles `PeerAdmin` (ability to install chaincode) and `ChannelAdmin` (ability to instantiate chaincode).
 
 ## Step Six: Importing the business network card for the {{site.data.conrefs.hlf_full}} administrator
 
@@ -357,27 +358,25 @@ This is the path to the business network card file that we created in step five.
 
 You can now use this business network card by specifying the name `PeerAdmin@fabric-network`. You are now all set to deploy the blockchain business network to the {{site.data.conrefs.hlf_full}} network.
 
-We are going to deploy the blockchain business network `tutorial-network` that is created by following the [Developer Tutorial](./developer-tutorial.html).
+We are going to deploy the blockchain business network `tutorial-network` that is created by following the [Developer Tutorial](./developer-tutorial.html). If you haven't created a business network archive (.bna) file by following the developer tutorial, follow steps 1, 2, and 3 of the developer tutorial.
 
-## Step Seven: Installing the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes
+## Step Seven: Installing the {{site.data.conrefs.composer_full}} business network onto the {{site.data.conrefs.hlf_full}} peer nodes
 
-{{site.data.conrefs.composer_full}} includes a component called the {{site.data.conrefs.composer_full}} runtime that provides all of the functionality to host and support a business network archive, for example data validation, error handling, transaction processor function execution, and access control. In {{site.data.conrefs.hlf_full}} terms, the {{site.data.conrefs.composer_full}} runtime is a standard chaincode.
+In this step, you will install your blockchain business network onto all of your organizations {{site.data.conrefs.hlf_full}} peer nodes. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode install operation.
 
-In this step, you will install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes. In {{site.data.conrefs.hlf_full}} terms, this is a chaincode install operation.
+Run the `composer network install` command to install the {{site.data.conrefs.composer_full}} runtime onto the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
 
-Run the `composer runtime install` command to install the {{site.data.conrefs.composer_full}} runtime onto all of the {{site.data.conrefs.hlf_full}} peer nodes that you specified in the connection profile file you created in step three:
+    composer network install -c PeerAdmin@fabric-network -a tutorial-network@0.0.1.bna
 
-    composer runtime install -c PeerAdmin@fabric-network -n tutorial-network
-
-Let's explore the options that we passed to the `composer runtime install` command.
+Let's explore the options that we passed to the `composer network install` command.
 
     -c PeerAdmin@fabric-network
 
 This is the name of the business network card that we imported into the wallet in step six.
 
-    -n tutorial-network
+    -a tutorial-network@0.0.1.bna
 
-You must install a copy of the {{site.data.conrefs.composer_full}} runtime for each blockchain business network, and specify the name of the blockchain business network. Here we specify the name of the blockchain business network that we are deploying, `tutorial-network`.
+You must install a copy of the business network. Here we specify the file name of the blockchain business network that we are deploying, `tutorial-network@0.0.1.bna`.
 
 ## Step Eight: Starting the blockchain business network
 
@@ -385,7 +384,7 @@ In this step, you will start the blockchain business network. In {{site.data.con
 
 Run the `composer network start` command to start the blockchain business network:
 
-    composer network start -c PeerAdmin@fabric-network -a tutorial-network.bna -A admin -S adminpw
+    composer network start --networkName tutorial-network --networkVersion 0.0.1 -A admin -S adminpw -c PeerAdmin@fabric-network
 
 Let's explore the options that we passed to the `composer network start` command.
 
@@ -393,9 +392,13 @@ Let's explore the options that we passed to the `composer network start` command
 
 This is the name of the business network card that we imported into the wallet in step six.
 
-    -a tutorial-network.bna
+    --networkName tutorial-network
 
-This is the path to the business network archive that contains the business network definition for our blockchain business network called `tutorial-network`.
+This is the name of blockchain business network called `tutorial-network`.
+
+    --networkVersion 0.0.1
+
+This is the version of blockchain business network called `tutorial-network`, defined in the `version` property of the package.json for the business network
 
     -A admin
 
@@ -421,6 +424,7 @@ Run the `composer network ping` command to test the connection to the blockchain
 
     composer network ping -c admin@tutorial-network
 
+Check that the test result was successful, and there is a single participant listed for the business network with the name `NetworkAdmin`.
 
 ## Conclusion
 

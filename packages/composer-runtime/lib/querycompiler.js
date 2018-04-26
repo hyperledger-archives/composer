@@ -180,7 +180,7 @@ class QueryCompiler {
             name: query.getName(),
             text: select.getText(),
             hash: hash,
-            generator: compiledQueryGenerator
+            generator: compiledQueryGenerator,
         };
 
         LOG.exit(method, result);
@@ -268,17 +268,19 @@ class QueryCompiler {
         const query = {
             selector: {}
         };
-        query.selector.$class = resource;
+
+        // The \\ escape for $class is required to avoid CouchDB treating it as an operator.
+        query.selector['\\$class'] = resource;
 
         // Look up the type for this resource.
         const modelManager = select.getQuery().getQueryFile().getModelManager();
         const classDeclaration = modelManager.getType(resource);
         if (classDeclaration instanceof AssetDeclaration) {
-            query.selector.$registryType = 'Asset';
+            query.selector['\\$registryType'] = 'Asset';
         } else if (classDeclaration instanceof ParticipantDeclaration) {
-            query.selector.$registryType = 'Participant';
+            query.selector['\\$registryType'] = 'Participant';
         } else if (classDeclaration instanceof TransactionDeclaration) {
-            query.selector.$registryType = 'Transaction';
+            query.selector['\\$registryType'] = 'Transaction';
         } else {
             throw new Error('The query compiler does not support resources of this type');
         }
@@ -286,9 +288,9 @@ class QueryCompiler {
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {
-            query.selector.$registryId = registry;
+            query.selector['\\$registryId'] = registry;
         } else {
-            query.selector.$registryId = resource;
+            query.selector['\\$registryId'] = resource;
         }
 
         // Handle the where clause, if it exists.
@@ -367,14 +369,25 @@ class QueryCompiler {
         LOG.entry(method, orderBy, parameters);
 
         // Iterate over the sort criteria.
-        const result = {
-            sort: []
-        };
+
+        let fields = ['\\$class','\\$registryType','\\$registryId'];
+        let direction = null;
         orderBy.getSortCriteria().forEach((sort) => {
-            const temp = {};
-            temp[sort.getPropertyPath()] = sort.getDirection().toLowerCase();
-            result.sort.push(temp);
+            if(direction === null) {
+                direction = sort.getDirection().toLowerCase();
+            } else if(direction !== sort.getDirection().toLowerCase()) {
+                throw new Error('ORDER BY currently only supports a single direction for all fields.');
+            }
+            fields.push(sort.getPropertyPath());
         });
+
+        const result = {
+            sort: fields.map(field => {
+                const term = {};
+                term[field] = direction;
+                return term;
+            })
+        };
 
         LOG.exit(method, result);
         return result;
@@ -398,7 +411,7 @@ class QueryCompiler {
         // then define a getter to read the current parameter setting.
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof limitValue === 'function') {
             property.get = limitValue;
@@ -430,7 +443,7 @@ class QueryCompiler {
         // then define a getter to read the current parameter setting.
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof skipValue === 'function') {
             property.get = skipValue;
@@ -502,45 +515,38 @@ class QueryCompiler {
         let left = this.visit(ast.left, parameters);
         let right = this.visit(ast.right, parameters);
 
-        // Build the Mango selector for this operator.
-        let result = {};
-        // use the implicit format of $and format in mangodb query to support both couchdb and pounchdb
-        // as the explicit format of the $and is not fully supported in pouchdb.
-        let leftKeys = Object.keys(left);
-        let rightKeys = Object.keys(right);
-        let leftKeyValue = left[leftKeys[0]];
-        let nLeftKeys = leftKeys.length;
-        let nRightKeys = rightKeys.length;
-        if(operator === '$and' ){
-            if (nLeftKeys === 1 && leftKeys[0]=== '$or'){ // using explicit $and format when the left side first key is $or
-                result[operator] = [left, right];
-            } else if (nLeftKeys === 1 && leftKeys[0] === '$and'  ) { // add the right side to the left value array
-                leftKeyValue.push(right);
-                result[leftKeys[0]] = Object.assign(leftKeyValue);
-            } else if (nRightKeys === 1 && rightKeys[0] === '$or'){
-                result = Object.assign(left, right);
-            } else if( nLeftKeys >= 1 && nRightKeys >= 1 && leftKeys[0] !== '$or'){
-                // merge the same property values
-                result = Object.assign(left);
-                for( let i = 0; i < nRightKeys; i++ ){
-                    let rightKey = rightKeys[i];
-                    if( typeof(left[rightKey]) !== 'undefined' ){
-                       // find a matching key between left and right, merge the right key value to the left key
-                        result[rightKey] = Object.assign(left[rightKey], right[rightKey]);
-                    }else{
-                        // add the right item to the result
-                        result[rightKey] = right[rightKey];
+        const eliminateAND = function (lhs, rhs) {
+            const combined = {};
+            if(typeof lhs === 'object' && typeof rhs === 'object' && !(lhs.hasOwnProperty('$or') && rhs.hasOwnProperty('$or'))) {
+                // put all the selectors in the lhs in the combined selector
+                const leftProperties = Object.getOwnPropertyDescriptors(lhs);
+                const rightProperties = Object.getOwnPropertyDescriptors(rhs);
+                for (const key in leftProperties) {
+                    Object.defineProperty(combined, key, leftProperties[key]);
+                }
+                // then merge the rhs in
+                for (const key in rightProperties) {
+                    if (combined.hasOwnProperty(key)) {
+                        // already exists - merge
+                        const merged = eliminateAND(combined[key], rhs[key]);
+                        delete combined[key];
+                        combined[key] = merged;
+                    } else {
+                        Object.defineProperty(combined, key, rightProperties[key]);
                     }
                 }
-            } else {  // like left= true, right = false
-                result[operator] = [
-                    left,
-                    right
-                ];
+            } else {
+                // can't merge non-object, just return the $and
+                combined.$and = [lhs, rhs];
             }
+            return combined;
+        };
+
+        // Build the Mango selector for this operator.
+        let result = {};
+        if(operator === '$and') {
+            result = eliminateAND(left, right);
         } else {
-            // when operator is $or or the $and with the same property name eg. a<x<b,
-            // use the explicit format with an array of the left and right elements as the value
             result[operator] = [
                 left,
                 right
@@ -616,7 +622,7 @@ class QueryCompiler {
         result[left] = {};
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof right === 'function') {
             property.get = right;
@@ -707,7 +713,7 @@ class QueryCompiler {
         result[left] = {};
         const property = {
             enumerable: true,
-            configurable: false
+            configurable: true
         };
         if (typeof right === 'function') {
             property.get = right;

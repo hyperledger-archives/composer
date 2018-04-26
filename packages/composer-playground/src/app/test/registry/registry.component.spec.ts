@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -22,6 +35,7 @@ import { ResourceComponent } from '../resource/resource.component';
 import { ClientService } from '../../services/client.service';
 import { AlertService } from '../../basic-modals/alert.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { DrawerDismissReasons } from '../../common/drawer';
 
 import * as chai from 'chai';
 
@@ -250,6 +264,36 @@ describe(`RegistryComponent`, () => {
             tick();
             component.loadResources.should.be.called;
         }));
+
+        it('shoud handle closing by escape', fakeAsync(() => {
+            mockNgbModal.open = sandbox.stub().returns({
+                componentInstance: sandbox.stub(),
+                result: Promise.reject(DrawerDismissReasons.ESC)
+            });
+            mockAssetRegistry.id = 'registry_id';
+            component['_registry'] = mockAssetRegistry;
+
+            sinon.stub(component, 'loadResources');
+
+            component.openNewResourceModal();
+            tick();
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should handle closing due to an error', fakeAsync(() => {
+            mockNgbModal.open = sandbox.stub().returns({
+                componentInstance: sandbox.stub(),
+                result: Promise.reject('error message')
+            });
+            mockAssetRegistry.id = 'registry_id';
+            component['_registry'] = mockAssetRegistry;
+
+            sinon.stub(component, 'loadResources');
+
+            component.openNewResourceModal();
+            tick();
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('error message');
+        }));
     });
 
     describe('#hasOverflow', () => {
@@ -300,6 +344,41 @@ describe(`RegistryComponent`, () => {
             mockNgbModalRef.registryId.should.equal('registry_id');
             component.loadResources.should.be.called;
         }));
+
+        it('should handle closing by escape', fakeAsync(() => {
+            let mockNgbModalRef = sandbox.stub();
+            mockNgbModalRef.resource = null;
+
+            mockNgbModal.open = sandbox.stub().returns({
+                componentInstance: mockNgbModalRef,
+                result: Promise.reject(DrawerDismissReasons.ESC)
+            });
+            mockAssetRegistry.id = 'registry_id';
+            component['_registry'] = mockAssetRegistry;
+
+            sinon.stub(component, 'loadResources');
+
+            component.editResource(mockAsset);
+            tick();
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should handle closing due to an error', fakeAsync(() => {
+            let mockNgbModalRef = sandbox.stub();
+            mockNgbModalRef.resource = null;
+            mockNgbModal.open = sandbox.stub().returns({
+                componentInstance: mockNgbModalRef,
+                result: Promise.reject('error message')
+            });
+            mockAssetRegistry.id = 'registry_id';
+            component['_registry'] = mockAssetRegistry;
+
+            sinon.stub(component, 'loadResources');
+
+            component.editResource(mockAsset);
+            tick();
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('error message');
+        }));
     });
 
     describe('#openDeleteResourceModal', () => {
@@ -347,6 +426,26 @@ describe(`RegistryComponent`, () => {
             component.openDeleteResourceModal(mockResource);
             mockAlertService.errorStatus$.next.should.not.be.called;
             component.loadResources.should.not.be.called;
+        }));
+
+        it('should handle closing by escape', fakeAsync(() => {
+            sandbox.stub(component, 'loadResources');
+            mockNgbModalRef.result = Promise.reject(DrawerDismissReasons.ESC);
+            component['_registry'] = mockAssetRegistry;
+            component.openDeleteResourceModal(mockResource);
+            tick();
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            component.loadResources.should.not.have.been.called;
+        }));
+
+        it('should handle closing due to an error', fakeAsync(() => {
+            sandbox.stub(component, 'loadResources');
+            mockNgbModalRef.result = Promise.reject('error message');
+            component['_registry'] = mockAssetRegistry;
+            component.openDeleteResourceModal(mockResource);
+            tick();
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('error message');
+            component.loadResources.should.not.have.been.called;
         }));
     });
 
@@ -409,7 +508,7 @@ describe(`RegistryComponent`, () => {
 
             mockNgbModal.open = sinon.stub().returns({
                 componentInstance: componentInstance,
-                result: Promise.reject(1)
+                result: Promise.reject(DrawerDismissReasons.ESC)
             });
 
             let mockTransaction = {mock: 'transaction', eventsEmitted: ['event 1']};

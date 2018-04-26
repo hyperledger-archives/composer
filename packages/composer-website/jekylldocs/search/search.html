@@ -5,6 +5,19 @@ category: search
 sidebar: sidebars/accordion-toc0.md
 excerpt: Search
 ---
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <h1>Search Results</h1>
 
 <p id="search-results"></p>
@@ -17,7 +30,7 @@ excerpt: Search
         "author": "{{ post.author | xml_escape }}",
         "category": "{{ post.category | xml_escape }}",
         "content": {{ post.content | strip_html | strip_newlines | jsonify }},
-        "url": "{{site.baseurl}}/{{ post.url | xml_escape }}"
+        "url": "{{site.baseurl}}{{ post.url | xml_escape }}"
       }
       {% unless forloop.last %},{% endunless %}
     {% endfor %}

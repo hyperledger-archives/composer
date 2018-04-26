@@ -16,7 +16,7 @@
 
 const chalk = require('chalk');
 const cmdUtil = require('../../utils/cmdutils');
-
+const Pretty = require('prettyjson');
 /**
  * <p>
  * Composer "network loglevel" command
@@ -32,7 +32,6 @@ class LogLevel {
     */
     static handler(argv) {
         let adminConnection;
-        let businessNetworkName;
         let newlevel = argv.newlevel;
         let cardName = argv.card;
 
@@ -40,16 +39,26 @@ class LogLevel {
         return adminConnection.connect(cardName)
         .then(() => {
             if (newlevel) {
-                return adminConnection.setLogLevel(newlevel);
+                return adminConnection.setLogLevel(newlevel).then(()=>{
+                    return adminConnection.getLogLevel();
+                });
             } else {
                 return adminConnection.getLogLevel();
             }
         })
         .then((result) => {
             if (newlevel) {
-                cmdUtil.log(chalk.blue.bold('The logging level was successfully changed for: ')+businessNetworkName);
+                cmdUtil.log(chalk.blue.bold('The logging level was successfully processed and changed to: ')+result.debug);
             } else {
-                cmdUtil.log(chalk.blue.bold('The current logging level is: ')+result);
+                cmdUtil.log(chalk.blue.bold('The current logging level is: ')+result.debug);
+                if(argv.x){
+                    cmdUtil.log(chalk.blue.bold('\nFull details: '));
+                    cmdUtil.log(Pretty.render(result,{
+                        keysColor: 'blue',
+                        dashColor: 'blue',
+                        stringColor: 'white'
+                    }));
+                }
             }
         });
     }

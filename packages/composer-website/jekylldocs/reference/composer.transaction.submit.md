@@ -40,10 +40,10 @@ Example: `{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","tr
 
 ## Example command
 
-This command submits a transaction on the connection profile `defaultProfile` to the business network `digitalproperty-network` with the user identity `maeid1`, the user secret `Xurw3yU9zI0l`. The transaction submitted is `'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'`.
+This command submits a transaction to the business network `digitalproperty-network` using the business network card `maeid1@digitalproperty-network`. The transaction submitted is `'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'`.
 
 Here is the entire command:
 
 ```
-composer transaction submit -p defaultProfile -n digitalproperty-network -i maeid1 -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
+composer transaction submit -c maeid1@digitalproperty-network -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
 ```

@@ -16,6 +16,7 @@
 
 const NodeEventService = require('../lib/nodeeventservice');
 const EventService = require('composer-runtime').EventService;
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 
 const chai = require('chai');
@@ -28,14 +29,12 @@ describe('NodeEventService', () => {
 
     let eventService;
     let sandbox;
-    let mockStub = {
-        setEvent: (arg1, arg2) => {
-            console.log('setEvent Called with: ', arg1, arg2);
-        }
-    };
+    let mockStub;
+
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        mockStub = sinon.createStubInstance(ChaincodeStub);
         eventService = new NodeEventService(mockStub);
     });
 
@@ -50,12 +49,19 @@ describe('NodeEventService', () => {
     });
 
     describe('#transactionCommit', () => {
-        it ('should emit a list of events', () => {
+        it ('should emit a list of events', async () => {
             sinon.stub(eventService, 'getEvents').returns([{'event':'event'}]);
-            return eventService.transactionCommit()
-                .then(() => {
-                    sinon.assert.calledOnce(eventService.getEvents);
-                });
+            await eventService.transactionCommit();
+            sinon.assert.calledOnce(eventService.getEvents);
+            sinon.assert.calledOnce(mockStub.setEvent);
+            sinon.assert.calledWith(mockStub.setEvent, 'composer', Buffer.from('[{"event":"event"}]'));
+        });
+
+        it ('should not emit if events is an empty array', async () => {
+            sinon.stub(eventService, 'getEvents').returns([]);
+            await eventService.transactionCommit();
+            sinon.assert.calledOnce(eventService.getEvents);
+            sinon.assert.notCalled(mockStub.setEvent);
         });
     });
 });

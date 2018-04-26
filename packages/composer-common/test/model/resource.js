@@ -31,50 +31,76 @@ describe('Resource', function () {
     o String vin
     -->Person owner
   }
+  transaction ScrapCar {
+    -->Car car
+  }
   `;
 
     let modelManager = null;
-    let classDecl = null;
-
-    before(function () {
-        modelManager = new ModelManager();
-    });
 
     beforeEach(function () {
+        modelManager = new ModelManager();
         modelManager.addModelFile(levelOneModel);
-        classDecl = modelManager.getType('org.acme.l1.Person');
-    });
-
-    afterEach(function () {
-        modelManager.clearModelFiles();
     });
 
     describe('#getClassDeclaration', function() {
         it('should return the class declaraction', function () {
+            const classDecl = modelManager.getType('org.acme.l1.Person');
             const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             resource.getClassDeclaration().should.equal(classDecl);
         });
     });
 
     describe('#toJSON', () => {
-        it('should throw is toJSON is called', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
-            (function () {
-                resource.toJSON();
-            }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
+        it('should serialize an asset to a JavaScript object', function () {
+            const classDecl = modelManager.getType('org.acme.l1.Car');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Car', '456' );
+            resource.vin = '456';
+            resource.owner = modelManager.getFactory().newRelationship('org.acme.l1', 'Person', '123');
+            resource.toJSON().should.deep.equal({
+                $class: 'org.acme.l1.Car',
+                owner: 'resource:org.acme.l1.Person#123',
+                vin: '456'
+            });
+        });
+
+        it('should serialize a participant to a JavaScript object', function () {
+            const classDecl = modelManager.getType('org.acme.l1.Person');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
+            resource.ssn = '123';
+            resource.toJSON().should.deep.equal({
+                $class: 'org.acme.l1.Person',
+                ssn: '123'
+            });
+        });
+
+        it('should serialize a transaction to a JavaScript object', function () {
+            const classDecl = modelManager.getType('org.acme.l1.ScrapCar');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'ScrapCar', '789' );
+            resource.transactionId = '789';
+            resource.timestamp = new Date(0);
+            resource.car = modelManager.getFactory().newRelationship('org.acme.l1', 'Car', '456');
+            resource.toJSON().should.deep.equal({
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            });
         });
     });
 
     describe('#isRelationship', () => {
         it('should be false', () => {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
+            const classDecl = modelManager.getType('org.acme.l1.Person');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             resource.isRelationship().should.be.false;
         });
     });
 
     describe('#isResource', () => {
         it('should be true', () => {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
+            const classDecl = modelManager.getType('org.acme.l1.Person');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'Person', '123' );
             resource.isResource().should.be.true;
         });
     });

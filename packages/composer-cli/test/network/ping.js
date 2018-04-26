@@ -14,13 +14,10 @@
 
 'use strict';
 
-const Client = require('composer-client');
-const BusinessNetworkConnection = Client.BusinessNetworkConnection;
-const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
-
-const Ping = require('../../lib/cmds/network/pingCommand.js');
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
+const Ping = require('../../lib/cmds/network/pingCommand.js');
 
 const sinon = require('sinon');
 const chai = require('chai');
@@ -30,73 +27,103 @@ chai.use(require('chai-as-promised'));
 describe('composer network ping CLI unit tests', () => {
 
     let sandbox;
+    let argv;
     let mockBusinessNetworkConnection;
-    let mockBusinessNetworkDefinition;
+    let businessNetworkDefinition;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        argv = { card: 'cardname' };
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-
-        mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+        businessNetworkDefinition = new BusinessNetworkDefinition('test-network@1.0.0');
+        mockBusinessNetworkConnection.connect.resolves(businessNetworkDefinition);
         mockBusinessNetworkConnection.ping.resolves({
             version: '9.9.9',
-            participant: null
+            participant: null,
+            identity: null
         });
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
+        sandbox.spy(CmdUtil, 'log');
         sandbox.stub(process, 'exit');
-
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    it('should test the connection to the business network using the supplied card', () => {
-        let argv = {
-            card:'cardname'
-        };
-        return Ping.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-            });
+    it('should test the connection to the business network using the supplied card', async () => {
+        await Ping.handler(argv);
+        argv.thePromise.should.be.a('promise');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?<no participant found>/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?<no identity found>/));
     });
 
-
-
-    it('should display the participant if a participant was found', () => {
+    it('should display the participant if a participant was found', async () => {
         mockBusinessNetworkConnection.ping.resolves({
             version: '9.9.9',
-            participant: 'org.doge.Doge#DOGE_1'
+            participant: 'org.doge.Doge#DOGE_1',
+            identity: null
         });
-        let argv = {card:'cardname'};
-        return Ping.handler(argv)
-            .then((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-            });
+        await Ping.handler(argv);
+        argv.thePromise.should.be.a('promise');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?org.doge.Doge#DOGE_1/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?<no identity found>/));
     });
 
-    it('should error when the connection cannot be tested', () => {
+    it('should display the identity if an identity was found', async () => {
+        mockBusinessNetworkConnection.ping.resolves({
+            version: '9.9.9',
+            participant: null,
+            identity: 'org.hyperledger.composer.system.Identity#IDENTITY_1'
+        });
+        await Ping.handler(argv);
+        argv.thePromise.should.be.a('promise');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?<no participant found>/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?org.hyperledger.composer.system.Identity#IDENTITY_1/));
+    });
+
+    it('should display the participant and identity if both a participant and an identity was found', async () => {
+        mockBusinessNetworkConnection.ping.resolves({
+            version: '9.9.9',
+            participant: 'org.doge.Doge#DOGE_1',
+            identity: 'org.hyperledger.composer.system.Identity#IDENTITY_1'
+        });
+        await Ping.handler(argv);
+        argv.thePromise.should.be.a('promise');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
+        sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/Composer runtime version:.*?9.9.9/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/participant:.*?org.doge.Doge#DOGE_1/));
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(/identity:.*?org.hyperledger.composer.system.Identity#IDENTITY_1/));
+    });
+
+    it('should error when the connection cannot be tested', async () => {
         mockBusinessNetworkConnection.ping.rejects(new Error('such error'));
-        let argv = {
-            card:'cardname'
-        };
-        return Ping.handler(argv)
-            .catch((res) => {
-                argv.thePromise.should.be.a('promise');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'cardname');
-                sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-            });
+        await Ping.handler(argv)
+            .should.be.rejectedWith(/such error/);
+    });
+
+    it('should output business network version', async () => {
+        const expected = new RegExp('Business network version:.*?' + businessNetworkDefinition.getVersion());
+        await Ping.handler(argv);
+        sinon.assert.calledWith(CmdUtil.log, sinon.match(expected));
     });
 
 });

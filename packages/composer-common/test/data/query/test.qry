@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 query Q1 {
     description: "Select all drivers"
     statement: SELECT org.acme.Driver
@@ -19,7 +33,7 @@ query Q4 {
 
 /**
  * Multiline comment
- */ 
+ */
 query Q5 {
     description: "Select all Drivers called Dan Selman" // inline comment
     statement: SELECT org.acme.Driver WHERE (firstName=='Dan' AND lastName=='Selman')
@@ -46,100 +60,100 @@ query Q10 {description: "Limit" statement: SELECT org.acme.Driver LIMIT 5}
 
 
 query Q11 {
-    description: "Select all drivers aged 44" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged 44"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age==44)
 }
 
 query Q12 {
-    description: "Select all drivers aged less than 44" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged less than 44"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age<44)
 }
 
 query Q13 {
-    description: "Select all drivers aged less than or equal to 44" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged less than or equal to 44"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age <= 44)
 }
 
 query Q14 {
-    description: "Select all drivers aged older than 44" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than 44"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age >44)
 }
 
 query Q15 {
-    description: "Select all drivers aged older than or equal to 44" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than or equal to 44"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age>= 44)
 }
 
 query Q16 {
-    description: "Select all drivers aged older than or equal to PARAM" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than or equal to PARAM"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age>= _$ageParam)
 }
 
 query Q17 {
-    description: "Select all drivers aged older than PARAM" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than PARAM"
+    statement:
+        SELECT org.acme.Driver
             WHERE (_$ageParam < age)
 }
 
 query Q18 {
-    description: "Select all drivers aged older than PARAM" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged older than PARAM"
+    statement:
+        SELECT org.acme.Driver
             WHERE (_$ageParam < age)
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
                     LIMIT _$limitParam
                         SKIP _$skipParam
 
 }
 
 query Q19 {
-    description: "Select all drivers aged younger than 50 ordered by lastname, firstname" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select all drivers aged younger than 50 ordered by lastname, firstname"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age < 50)
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 
 query Q20{
-    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age < 50 AND firstName != 'Dan')
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 
 query Q21{
-    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select non Dan drivers aged younger than 50 ordered by lastname, firstname"
+    statement:
+        SELECT org.acme.Driver
             WHERE (age < 50 AND firstName != 'Dan')
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 
 query Q22{
-    description: "Select non Dan drivers or drivers aged younger than 50 ordered by lastname, firstname" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select non Dan drivers or drivers aged younger than 50 ordered by lastname, firstname"
+    statement:
+        SELECT org.acme.Driver
             WHERE ((age < 50 OR firstName != 'Dan') AND (lastName!='Selman'))
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 
 query Q23{
-    description: "Select by address property" 
-    statement: 
-        SELECT org.acme.Driver 
+    description: "Select by address property"
+    statement:
+        SELECT org.acme.Driver
             WHERE ((age < 50 OR firstName != 'Dan') AND (address.city.postcode!='London'))
 }
