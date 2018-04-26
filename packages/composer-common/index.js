@@ -94,7 +94,6 @@ module.exports.RelationshipDeclaration = require('./lib/introspect/relationshipd
 module.exports.Resource = require('./lib/model/resource');
 module.exports.ScriptManager = require('./lib/scriptmanager');
 module.exports.Script = require('./lib/introspect/script');
-module.exports.ScriptManager = require('./lib/scriptmanager');
 module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Select = require('./lib/query/select');
