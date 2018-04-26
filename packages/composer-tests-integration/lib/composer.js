@@ -215,6 +215,26 @@ class Composer {
     }
 
     /**
+     * Get all files recursively in a directoy
+     * @param {String} dir directory to search
+     * @param {String[]} fileList file list to append
+     * @returns {String[]} list of files in directory
+     */
+    getFilesInDirectory(dir, fileList){
+        fileList = fileList || [];
+        let files = fs.readdirSync(dir);
+        files.forEach((file) => {
+            let name = dir + '/' + file;
+            if (fs.statSync(name).isDirectory()){
+                this.getFilesInDirectory(name, fileList);
+            } else {
+                fileList.push(name);
+            }
+        });
+        return fileList;
+    }
+
+    /**
      * Check that the provided list of items (files or folders) exist
      * @param {String} type -  type (folder or file) that is being considered
      * @param {DataTable} table -  DataTable listing the items expeted to exist
@@ -231,6 +251,47 @@ class Composer {
             return Promise.resolve();
         } else {
             return Promise.reject('The following item(s) do not exist: ' + missing);
+        }
+    }
+
+    /**
+     * Check that the provided list of items exist in the passed folder
+     * @param {String} folder -  folder to be inspected
+     * @param {DataTable} table -  DataTable listing the items expected to exist
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkExistsStrict(folder, table) {
+        const passedFiles = table.raw();
+
+        // Make sure all paths are accounted for
+        const expectedFiles = [];
+        for (let file of passedFiles) {
+            expectedFiles.push(path.resolve(__dirname,folder,file.toString()));
+        }
+
+        // get all files
+        const allFiles = this.getFilesInDirectory(path.resolve(__dirname,folder));
+
+        // Check for missing items
+        let missingFiles =[];
+        for (let file of expectedFiles){
+            if(allFiles.indexOf(file) === -1){
+                missingFiles.push(file);
+            }
+        }
+        if (missingFiles.length !== 0) {
+            return Promise.reject('The following item(s) should exist: ' + missingFiles.toString());
+        }
+
+        // Check for superfluous items
+        let unexpectedFiles =[];
+        for (let file of allFiles){
+            if(expectedFiles.indexOf(file) === -1){
+                unexpectedFiles.push(file);
+            }
+        }
+        if (unexpectedFiles.length !== 0) {
+            return Promise.reject('The following item(s) should not exist: ' + unexpectedFiles.toString());
         }
     }
 

@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -21,14 +21,15 @@ Feature: Developer tutorial
 
     Scenario: Step One: Creating a business network structure
         When I run the yo command from the tutorial:
-            | command          | identifiedBy:create-network  |
-            | --appname        | identifiedBy:network-name    |
-            | --applicense     | identifiedBy:license         |
-            | --ns             | identifiedBy:namespace       |
+            | command          | identifiedBy:create-network   |
+            | --appname        | identifiedBy:network-name     |
+            | --applicense     | identifiedBy:license          |
+            | --ns             | identifiedBy:namespace        |
             | --appdescription | King conga\'s special network |
-            | --appauthor      | King Conga                   |
-            | --appemail       | king@conga-email             |
-            
+            | --appauthor      | King Conga                    |
+            | --appemail       | king@conga-email              |
+            | --empty          | identifiedBy:empty            |
+
         Then I have the following files
             | ../tutorial-network/.eslintrc.yml                    |
             | ../tutorial-network/README.md                        |
@@ -55,7 +56,7 @@ Feature: Developer tutorial
             """
         When I run the cli command from the tutorial:
             | command | identifiedBy:archive-create |
-            
+
         Then I have the following files
             | ../tutorial-network/tutorial-network@0.0.1.bna |
 
@@ -113,4 +114,3 @@ Feature: Developer tutorial
          When I kill task named REST-SERVER
          When I kill task named NPM
 
-    
