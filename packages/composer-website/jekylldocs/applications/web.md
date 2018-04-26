@@ -34,10 +34,10 @@ If you already have a Business Network Archive and would like to build a skeleto
 
 If you have already installed the development tools you will have {{site.data.conrefs.hlf_full}} already installed.
 
-Head to the `fabric-tools` directory and start {{site.data.conrefs.hlf_full}}. The following code is an example if you have used our development tools install guide:
+Head to the `fabric-dev-servers` directory and start {{site.data.conrefs.hlf_full}}. The following code is an example if you have used our development tools install guide:
 
 ```bash
-cd ~/fabric-tools
+cd ~/fabric-dev-servers
 ./startFabric.sh
 ./createPeerAdminCard.sh
 ```
