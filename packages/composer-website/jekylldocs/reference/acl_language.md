@@ -168,7 +168,7 @@ Resource Examples:
 
 **Transaction** defines the transaction that the participant must have submitted in order to perform the specified operation against the specified resource. If this clause is specified, and the participant did not submit a transaction of this type - for example, they are using the CRUD APIs - then the ACL rule does not allow access.
 
-**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an `if(...)` expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.
+**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal within an `if(...)` expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.
 
 **Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 
