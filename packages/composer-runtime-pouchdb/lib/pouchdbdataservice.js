@@ -20,6 +20,7 @@ const pouchCollate = require('pouchdb-collate');
 const PouchDB = require('pouchdb-core');
 const PouchDBDataCollection = require('./pouchdbdatacollection');
 const PouchDBUtils = require('./pouchdbutils');
+const version = require('../package.json').version;
 
 const LOG = Logger.getLog('PouchDBDataService');
 
@@ -70,9 +71,9 @@ class PouchDBDataService extends DataService {
         const method = 'constructor';
         LOG.entry(method, uuid, autocommit, options);
         if (uuid) {
-            this.db = PouchDBDataService.createPouchDB(`Composer:${uuid}`, options);
+            this.db = PouchDBDataService.createPouchDB(`Composer_${version}:${uuid}`, options);
         } else {
-            this.db = PouchDBDataService.createPouchDB('Composer', options);
+            this.db = PouchDBDataService.createPouchDB(`Composer_${version}`, options);
         }
         this.autocommit = !!autocommit;
         this.pendingActions = [];
