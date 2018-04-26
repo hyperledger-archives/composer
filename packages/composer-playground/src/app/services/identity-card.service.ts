@@ -85,7 +85,7 @@ export class IdentityCardService {
     public getAdminCardRef(qualifiedProfileName: string, role: string): string {
         let result;
 
-        if (this.currentCard && this.getCurrentIdentityCard().getRoles().includes(role)) {
+        if (this.currentCard && this.getCurrentIdentityCard().getRoles().includes(role) && this.getQualifiedProfileName(this.getCurrentIdentityCard().getConnectionProfile()) === qualifiedProfileName) {
             // Prefer the current card if it has the required role
             result = this.getCurrentCardRef();
         } else {

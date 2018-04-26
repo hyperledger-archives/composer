@@ -1158,7 +1158,6 @@ class HLFConnection extends Connection {
         });
     }
 
-
     /**
      * return the Channel peers that are in the organisation which matches the requested roles
      * @param {Array} peerRoles the peer roles that the returned list of peers need to satisfy
@@ -1172,6 +1171,17 @@ class HLFConnection extends Connection {
             });
         });
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        return this.client;
+    }
+
 }
 
 module.exports = HLFConnection;

@@ -89,6 +89,7 @@ scripts/storage
 ldap.port
 networkadmin.card
 my-bus-net
+tutorial-network
 
 #lock files
 package-lock.json

@@ -12,38 +12,7 @@
  limitations under the License.
 -->
 <div tabindex="-1">
-    <div *ngIf="header" class="modal-header">
-        <h1 [innerHTML]="header"></h1>
-    </div>
-    <section *ngIf="card" class="modal-body">
-        <identity-card [identity]="card" [preview]="true"></identity-card>
-        <div class="busy-details">
-            <ng-container *ngFor="let completed of busy.progress">
-                <div class="busy-title">
-                    <h2 [innerHTML]="completed"></h2>
-                    <div>
-                        <svg class="ibm-icon" aria-hidden="true">
-                            <use xlink:href="#icon-confirm_32"></use>
-                        </svg>
-                    </div>
-                </div>
-            </ng-container>
-
-            <div class="busy-title">
-                <h2 [innerHTML]="busy.title"></h2>
-                <div class="ibm-spinner-indeterminate small loop">
-                    <div class="loader">
-                        <svg class="circular" viewBox="25 25 50 50">
-                            <circle class="circle-path" cx="50" cy="50" r="20"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="busy-text" [innerHTML]="busy.text"></div>
-        </div>
-    </section>
-    <section *ngIf="!card" class="modal-body">
+    <section class="modal-body">
         <div class="contents">
             <div>
                 <span>Please Wait: </span>

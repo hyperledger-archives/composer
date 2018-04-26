@@ -33,4 +33,4 @@ Options:
   --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```
 
-Please refer to [Connector specific information](../managing/connector-information.html) for more information about connector specific options.
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.

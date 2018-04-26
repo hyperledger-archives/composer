@@ -51,8 +51,8 @@ export class TestComponent implements OnInit, OnDestroy {
                 let introspector = this.clientService.getBusinessNetwork().getIntrospector();
                 let modelClassDeclarations = introspector.getClassDeclarations();
                 modelClassDeclarations.forEach((modelClassDeclaration) => {
-                    // Generate list of all known (non-abstract) transaction types
-                    if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
+                    // Generate list of all known (non-abstract/non-system) transaction types
+                    if (!modelClassDeclaration.isAbstract() && !modelClassDeclaration.isSystemType() && modelClassDeclaration instanceof TransactionDeclaration) {
                         this.hasTransactions = true;
                     }
                 });

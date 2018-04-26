@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -46,6 +46,7 @@ rm -rf ${HOME}/.composer/cards/charlie*
 rm -rf ${HOME}/.composer/client-data/charlie*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
 rm -rf ./my-bus-net      # business network created from generator
+rm -rf ./tutorial-network      # business network created from generator in dev tut
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
 
@@ -104,6 +105,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         echo Using docker file ${DOCKER_FILE}
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
         cd ${DIR}
         cd ../composer-runtime-hlfv1
@@ -175,6 +177,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     if [ "${DOCKER_FILE}" != "" ]; then
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
     fi
 
     # Delete any written configuration.
@@ -195,6 +198,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer/client-data/ange*
     rm -rf ./tmp/*
     rm -rf ./my-bus-net
+    rm -rf ./tutorial-network
     rm -rf ./networkadmin
     rm -rf ${HOME}/.npmrc
     rm -f ./networkadmin.card

@@ -97,7 +97,7 @@ export class Login {
             return OperationsHelper.click(importButton);
         })
         .then(() => {
-            return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait)
+            return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.drawer'))), Constants.longWait);
         })
         .then(() => {
             let inputFileElement = element(by.id('file-importer_input'));

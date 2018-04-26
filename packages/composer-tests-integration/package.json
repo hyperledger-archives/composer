@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.19.2",
+  "version": "0.19.3",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test": "exit 0",
-    "test-tagged": "cucumber-js --tags @busnet",
+    "test-tagged": "cucumber-js --tags @cli-generate",
     "test-inner": "cucumber-js --tags 'not @cli-report'",
     "test-inner-nohsm": "cucumber-js --tags 'not @hsm'",
     "setup": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
@@ -34,8 +34,9 @@
   },
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
-    "composer-admin": "0.19.2",
-    "composer-common": "0.19.2",
+    "cheerio": "0.22.0",
+    "composer-admin": "0.19.3",
+    "composer-common": "0.19.3",
     "composer-wallet-redis": "0.0.11-20180318153457",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
@@ -58,7 +59,9 @@
       "my-bus-net",
       "coverage",
       "node_modules",
-      "ldap.port"
+      "ldap.port",
+      "out",
+      "resources/sample-networks"
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [

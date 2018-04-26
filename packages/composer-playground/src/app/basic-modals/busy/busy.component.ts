@@ -22,8 +22,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class BusyComponent {
     @Input() busy;
-    @Input() card;
-    @Input() header;
 
     constructor(public activeModal: NgbActiveModal) {
 

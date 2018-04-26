@@ -69,6 +69,17 @@ class Connection extends EventEmitter {
     }
 
     /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @abstract
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        throw new Error('abstract function called');
+    }
+
+    /**
      * Terminate the connection to the business network.
      * @abstract
      * @return {Promise} A promise that is resolved once the connection has been

@@ -22,5 +22,7 @@ resources/sample-networks/marbles-network
 resources/sample-networks/marbles-network-update
 resources/sample-networks/queries-network
 resources/sample-networks/trade-network
-resources/sample-networks/tutorial-network
+resources/sample-networks/test-network
 resources/sample-networks/carauction-network
+resources/sample-networks/empty-business-network
+resources/sample-networks/vehicle-manufacture-network

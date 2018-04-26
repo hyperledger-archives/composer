@@ -59,3 +59,5 @@ Example: `resource:net.biz.tutorial-network.Person#DanSelman@biznet.org`
 
 `--issuer, -x`
 Whether the new identity will be able to issue other new identities.
+
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.

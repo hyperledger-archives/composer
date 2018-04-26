@@ -40,6 +40,9 @@ describe('Playground Tutorial Define', (() => {
     const networkName = 'tutorial-network';
     const profile = browser.params.profile;
     const isFabricTest = (profile !== 'Web Browser');
+    const tutorialCode = Constants.codeBlocks.playgroundTutorial;
+    const defineCode = tutorialCode['files']['contents'];
+    const testCode = tutorialCode['transactions'];
 
     // Navigate to Editor base page and move past welcome splash
     beforeAll(() => {
@@ -106,7 +109,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Connecting to the business network', (() => {
         it('should let the user connect to their sample network', (() => {
-            let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/model.cto'];
+            let expectedFiles = Constants.emptyBusinessNetwork.files;
             return Login.connectViaIdCard(profile, networkName)
                 .then(() => {
                     // Should now be on main editor page for the business network
@@ -148,7 +151,7 @@ describe('Playground Tutorial Define', (() => {
             return Editor.makeFileActive('models/model.cto')
                 .then(() => {
                     // Change the code in the model file
-                    modelFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-model-file.cto', 'utf8').trim();
+                    modelFileCode = defineCode['model.cto'];
 
                     // Set the text for the model file in the code editor
                     return EditorFile.setEditorCodeMirrorText(modelFileCode);
@@ -212,7 +215,7 @@ describe('Playground Tutorial Define', (() => {
                         });
 
                     // Change the code in the model file
-                    let scriptFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-script-file.js', 'utf8').trim();
+                    let scriptFileCode = defineCode['script.js'];
 
                     // Set the text for the model file in the code editor
                     EditorFile.setEditorCodeMirrorText(scriptFileCode)
@@ -244,7 +247,7 @@ describe('Playground Tutorial Define', (() => {
     describe('Access', (() => {
         it('should have the correct acl file set', (() => {
 
-            let aclFileCode = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/tutorial-acl-file.acl', 'utf8').trim();
+            let aclFileCode = fs.readFileSync(Constants.defaultACL, 'utf8').trim();
 
             Editor.makeFileActive('permissions.acl')
                 .then(() => {
@@ -262,7 +265,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Upgrading the updated business network', (() => {
         it('should have the right number of files', (() => {
-            let expectedFiles = ['About\nREADME.md, package.json', 'Access Control\npermissions.acl', 'Model File\nmodels/model.cto', 'Script File\nlib/script.js'];
+            let expectedFiles = Constants.emptyBusinessNetwork.files.concat(['Script File\nlib/script.js']);
             Editor.retrieveNavigatorFileNames()
                 .then((filelist: any) => {
                     expect(filelist).to.be.an('array').lengthOf(4);
@@ -317,7 +320,7 @@ describe('Playground Tutorial Define', (() => {
                 })
                 .then((header) => {
                     expect(header).to.be.an('array').lengthOf(1);
-                    expect(header[0]).to.deep.equal('Participant registry for org.acme.mynetwork.Trader');
+                    expect(header[0]).to.deep.equal('Participant registry for org.example.mynetwork.Trader');
                 })
                 .then(() => {
                     return Test.retrieveParticipantTypes();
@@ -343,7 +346,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Creating participants', (() => {
         it('should create TRADER1', (() => {
-            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1.json', 'utf8').trim();
+            let trader1 = testCode.participants.trader1;
 
             Test.selectRegistry('participants', 'Trader')
                 .then(() => {
@@ -370,8 +373,8 @@ describe('Playground Tutorial Define', (() => {
         }));
 
         it('should create TRADER2', (() => {
-            let trader1 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER1.json', 'utf8').trim();
-            let trader2 = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/participants/TRADER2.json', 'utf8').trim();
+            let trader1 = testCode.participants.trader1;
+            let trader2 = testCode.participants.trader2;
 
             Test.selectRegistry('participants', 'Trader')
                 .then(() => {
@@ -405,7 +408,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Creating an asset', (() => {
         it('should create ABC', (() => {
-            let abc = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/assets/ABC.json', 'utf8').trim();
+            let abc = testCode.assets.abc;
 
             Test.selectRegistry('assets', 'Commodity')
                 .then(() => {
@@ -434,7 +437,7 @@ describe('Playground Tutorial Define', (() => {
 
     describe('Transferring the commodity between the participants', (() => {
         it('should transfer ABC from TRADER1 to TRADER2', (() => {
-            let transaction = fs.readFileSync(__dirname + '/../data/files/playground-tutorial/transactions/ABCtoTRADER2.json', 'utf8').trim();
+            let transaction = testCode.transactions.trade;
 
             Test.submitTransaction(transaction, 'Trade')
                 .then(() => {
@@ -445,7 +448,7 @@ describe('Playground Tutorial Define', (() => {
                             let asset = assets[0];
 
                             let data = JSON.parse(asset['data'].toString());
-                            expect(data['owner']).to.deep.equal('resource:org.acme.mynetwork.Trader#TRADER2');
+                            expect(data['owner']).to.deep.equal('resource:org.example.mynetwork.Trader#TRADER2');
                         })
                         .catch((err) => {
                             fail(err);

@@ -314,7 +314,7 @@ class Composer {
     async request(method, path, data, inputOptions = {}) {
         const options = Object.assign({}, {
             method,
-            uri: `http://localhost:3000${path}`,
+            uri: `${path}`,
             resolveWithFullResponse: true,
             simple: false,
             followAllRedirects: true,
@@ -367,7 +367,7 @@ class Composer {
             let env = process.env;
             if (this.jsonConfig){
                 env.NODE_CONFIG=this.jsonConfig;
-            }else {
+            } else {
                 delete env.NODE_CONFIG;
             }
 

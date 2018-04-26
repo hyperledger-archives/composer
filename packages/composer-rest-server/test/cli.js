@@ -87,6 +87,7 @@ describe('composer-rest-server CLI unit tests', () => {
             const settings = {
                 card: 'admin@org-acme-biznet',
                 namespaces: 'always',
+                apikey: undefined,
                 authentication: false,
                 multiuser: undefined,
                 websockets: true,
@@ -155,6 +156,53 @@ describe('composer-rest-server CLI unit tests', () => {
             const settings = {
                 card: 'admin@org-acme-biznet',
                 namespaces: 'always',
+                apikey: undefined,
+                port: undefined,
+                authentication: false,
+                multiuser: false,
+                websockets: true,
+                tls: false,
+                tlscert: defaultTlsCertificate,
+                tlskey: defaultTlsKey
+            };
+            sinon.assert.calledWith(server, settings);
+            sinon.assert.calledOnce(listen);
+            listen.args[0][0].should.equal(3000);
+            listen.args[0][1].should.be.a('function');
+        });
+    });
+
+    it('should start the server with apikey if apikey is specified', () => {
+        const APIKEY = 'CUSTOMAPIKEY';
+        let listen = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('port').returns(3000);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-c', 'admin@org-acme-biznet',
+            '-y', APIKEY
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub().resolves({
+            app: {
+                get
+            },
+            server: {
+                listen
+            }
+        });
+        return proxyquire('../cli', {
+            clear: () => { },
+            chalk: {
+                yellow: () => { return ''; }
+            },
+            './server/server': server
+        }).then(() => {
+            sinon.assert.notCalled(Util.getConnectionSettings);
+            const settings = {
+                card: 'admin@org-acme-biznet',
+                namespaces: 'always',
+                apikey: APIKEY,
                 port: undefined,
                 authentication: false,
                 multiuser: false,
@@ -199,6 +247,7 @@ describe('composer-rest-server CLI unit tests', () => {
             const settings = {
                 card: 'admin@org-acme-biznet',
                 namespaces: 'always',
+                apikey: undefined,
                 port: undefined,
                 authentication: true,
                 multiuser: false,
@@ -244,6 +293,7 @@ describe('composer-rest-server CLI unit tests', () => {
                 card: 'admin@org-acme-biznet',
                 namespaces: 'always',
                 port: undefined,
+                apikey: undefined,
                 authentication: true,
                 multiuser: true,
                 websockets: true,

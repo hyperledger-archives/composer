@@ -93,6 +93,20 @@ module.exports = function (composer) {
             extended: true,
         }));
 
+        // This configuration is required if an ApiKey is specified.
+        const apikey = !!composer.apikey;
+
+        if (apikey && composer.apikey !== '') {
+
+            // Enable REST API only if the APIKEY will match.
+            app.use((req, res, next) => {
+                if (req.get('x-api-key') !== composer.apikey){
+                    return res.sendStatus(401);
+                }
+                next();
+            });
+        }
+
         // The following configuration is only required if the authentication option has been specified.
         const authentication = !!composer.authentication;
         if (authentication) {

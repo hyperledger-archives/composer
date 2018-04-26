@@ -12,14 +12,31 @@
  * limitations under the License.
  */
 
+function getTarget() {
+    if (process.env.REST_SERVER_URLS) {
+        const restServerURLs = JSON.parse(process.env.REST_SERVER_URLS);
+        const restServerURL = restServerURLs['<%= businessNetworkName %>'];
+        if (restServerURL) {
+            return restServerURL;
+        }
+    }
+    if (process.env.REST_SERVER_URL) {
+        const restServerURL = process.env.REST_SERVER_URL;
+        return restServerURL;
+    }
+    return '<%= apiURL %>';
+}
+
+const target = getTarget();
+
 module.exports = [{
     context: ['/auth', '/api'],
-    target: process.env.REST_SERVER_URL || '<%= apiURL %>',
+    target,
     secure: true,
     changeOrigin: true
 }, {
     context: '/',
-    target: process.env.REST_SERVER_URL || '<%= apiURL %>',
+    target,
     secure: true,
     changeOrigin: true,
     ws: true,

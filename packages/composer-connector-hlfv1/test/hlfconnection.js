@@ -2214,4 +2214,13 @@ describe('HLFConnection', () => {
         });
 
     });
+
+    describe('#getNativeAPI', () => {
+
+        it('should return the underlying client object', () => {
+            connection.getNativeAPI().should.equal(mockClient);
+        });
+
+    });
+
 });
