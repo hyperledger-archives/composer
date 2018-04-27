@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Using OAUTH2.0 with a Composer REST server | Hyperledger Composer</title>
+    <title>Using Google OAUTH2.0 with a Composer REST server | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -174,7 +174,7 @@ ga('send', 'pageview');
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Using OAUTH2.0 with a Composer REST server</p>
+          <p>Using Google OAUTH2.0 with a Composer REST server</p>
           </div>
 
           <nav class="context-nav">
@@ -205,7 +205,7 @@ ga('send', 'pageview');
 <li><a href="/composer/unstable/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/unstable/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/unstable/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+<li><a href="/composer/unstable/tutorials/google_oauth2_rest">Using Google OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/unstable/playground/playground-index"><b>Using Playground</b><img src="/composer/unstable/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -369,9 +369,9 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="using-oauth2-0-with-a-rest-server">Using OAUTH2.0 with a  REST server</h1>
+              <h1 id="using-google-oauth2-0-with-a-rest-server">Using Google OAUTH2.0 with a  REST server</h1>
 
-<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network - the Commodity Trading network in this tutorial (an overview diagram is shown below - a more detailed diagram showing the authentication flow is shown further down). You will run the REST server in <a href="../integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network. An overview diagram is shown below, and a more detailed diagram showing the authentication flow is shown further down. You will run the REST server in <a href="../integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the sample Trade network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
 
 <p><img src="../assets/img/tutorials/auth/intro_diagram.png" alt="Google Authentication and REST Server Overview"></p>
 
@@ -431,7 +431,7 @@ ln -s node_modules .node_modules
 </code></pre></div>
 <p>The parameter given the –t flag is the name you want to give to this Docker image, this can be up to you to name - but for this guide the image will be called ‘myorg/composer-rest-server’.</p>
 
-<p>You should see output similar to the following with the bottom 2 lines indicating it was &#39;Successfuly built&#39;:</p>
+<p>You should see output similar to the following with the bottom 2 lines indicating it was &#39;Successfully built&#39;:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/composer-rest-server .
 Sending build context to Docker daemon  4.203GB
 Step 1/2 : FROM hyperledger/composer-rest-server
@@ -544,7 +544,7 @@ composer network ping -c admin@trade-network
 <h2 class='everybody'> Step 6:  Create the REST server Administrator for the Composer REST server instance  </h2>
 
 <ol>
-<li>Create a REST Adninistrator identity <code>restadmin</code> and an associated business network card (used to launch the REST server later).</li>
+<li>Create a REST Administrator identity called <code>restadmin</code> and an associated business network card (used to launch the REST server later).</li>
 </ol>
 <div class="highlight"><pre><code class="language-" data-lang="">composer participant add -c admin@trade-network -d '{"$class":"org.hyperledger.composer.system.NetworkAdmin", "participantId":"restadmin"}'
 composer identity issue -c admin@trade-network -f restadmin.card -u restadmin -a "resource:org.hyperledger.composer.system.NetworkAdmin#restadmin"
@@ -560,7 +560,7 @@ composer network ping -c restadmin@trade-network
 </ol>
 
 <p>The one liner below will substitute the &#39;localhost&#39; addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our &#39;test&#39; authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/
+<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/ 
 </code></pre></div>
 <h2 class='everybody'> Step 7:  Launch the persistent REST server instance   </h2>
 
@@ -623,7 +623,7 @@ composer card import -f jdoe.card
 <ol>
 <li>Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network
+<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network/ 
 </code></pre></div>
 <ol>
 <li>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</li>
@@ -637,7 +637,7 @@ composer card import -f jdoe.card
 composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.example.trading.Trader#trader2"
 composer card import -f kcoe.card
 
-sed -e 's/localhost:/orderer.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network
+sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network/ 
 
 composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
 </code></pre></div>
