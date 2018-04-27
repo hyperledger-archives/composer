@@ -76,10 +76,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
-    "mkdirp": "0.5.1",
-    "rimraf": "2.5.4"
   },
   "nyc": {
     "exclude": [
