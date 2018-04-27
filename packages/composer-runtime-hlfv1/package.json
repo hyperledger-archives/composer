@@ -42,7 +42,8 @@
     "license-check-and-add": "2.3.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0",
-    "sinon": "2.3.8"
+    "sinon": "2.3.8",
+    "composer-common": "0.19.3"
   },
   "license-check-and-add-config": {
     "folder": ".",
@@ -87,8 +88,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "composer-runtime": "0.19.3",
     "fabric-shim": "1.1.0",
     "jsrsasign": "8.0.3",

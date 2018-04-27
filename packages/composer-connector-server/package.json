@@ -66,8 +66,10 @@
       }
     }
   },
+  "peerDependencies": {
+    "composer-common": "0.19.3"
+  },
   "dependencies": {
-    "composer-common": "0.19.3",
     "composer-connector-hlfv1": "0.19.3",
     "serializerr": "1.0.3",
     "socket.io": "1.7.3",
@@ -75,6 +77,7 @@
     "yargs": "10.0.3"
   },
   "devDependencies": {
+    "composer-common": "0.19.3",
     "chai": "3.5.0",
     "composer-connector-embedded": "0.19.3",
     "eslint": "3.17.1",

@@ -69,7 +69,8 @@
       "_configs",
       "_template",
       "bin/opus",
-      "test/testfile.md"
+      "test/testfile.md",
+      "_tmp"
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
