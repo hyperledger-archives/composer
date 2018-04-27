@@ -50,6 +50,10 @@ rm -rf ./tutorial-network      # business network created from generator in dev 
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
 
+# remove anything already there
+docker kill $(docker ps -q) && docker rm $(docker ps -qa) --force
+
+
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
     cd ../composer-runtime-hlfv1
