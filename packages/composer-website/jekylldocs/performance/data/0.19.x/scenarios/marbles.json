@@ -1,0 +1,33 @@
+{
+    "test": "marbles",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers": 1,
+                                    "headline" : {"tps": 26.74, "load": 10,  "latency": 0.37},
+                                    "chaincode": {"memory": "113MB", "CPU": "29.16%", "NetworkIn": "84.4MB", "NetworkOut": "72.3MB", "DiscRead": "0B", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "339MB", "CPU": "41%", "NetworkIn": "278.8MB", "NetworkOut": "440.9MB", "DiscRead": "0B", "DiscWrite": "75.2MB"},
+                                    "couchDB": {"memory": "173.7MB", "CPU": "218.18%", "NetworkIn": "84.0MB", "NetworkOut": "147.2MB", "DiscRead": "0B", "DiscWrite": "103.1MB"}
+                                },
+                                {
+                                    "peers": 1,
+                                    "headline" : {"tps": 31.34, "load": 20,  "latency": 0.65},
+                                    "chaincode": {"memory": "139.4MB", "CPU": "32.62%", "NetworkIn": "83.9MB", "NetworkOut": "69.8MB", "DiscRead": "0B", "DiscWrite": "0MB"},
+                                    "peer": {"memory": "368.7MB", "CPU": "49.2%", "NetworkIn": "279.9MB", "NetworkOut": "446MB", "DiscRead": "0B", "DiscWrite": "71.5MB"},
+                                    "couchDB": {"memory": "218.7MB", "CPU": "210.66%", "NetworkIn": "94.0MB", "NetworkOut": "150.7MB", "DiscRead": "0B", "DiscWrite": "87.2MB"}
+                                },
+                                {
+                                    "peers": 1,
+                                    "headline" : {"tps": 32.18, "load": 100,  "latency": 3.14},
+                                    "chaincode": {"memory": "115.4MB", "CPU": "32.29%", "NetworkIn": "81.1MB", "NetworkOut": "68.6MB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "356.8MB", "CPU": "51.02%", "NetworkIn": "282.9MB", "NetworkOut": "450.8MB", "DiscRead": "0B", "DiscWrite": "71.8MB"},
+                                    "couchDB": {"memory": "175.3MB", "CPU": "212.03%", "NetworkIn": "100.7MB", "NetworkOut": "155.3MB", "DiscRead": "0B", "DiscWrite": "85.4MB"}
+                                }
+                            ]
+                    },
+                    {
+                    "orgs": 3,
+                    "peerResults" : []
+                }]
+}

@@ -1,0 +1,33 @@
+{
+    "test": "bond",
+    "orgResults" : [{
+                    "orgs": 2,
+                    "peerResults" : [
+                                {
+                                    "peers" : 1,
+                                    "headline" : {"tps": 37.78, "load": 20, "latency": 0.53},
+                                    "chaincode": {"memory": "109.7MB", "CPU": "32.33%", "NetworkIn": "61.4MB", "NetworkOut": "51.7MB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "357.8MB", "CPU": "50.1%", "NetworkIn": "216.1MB", "NetworkOut": "380.6MB", "DiscRead": "0B", "DiscWrite": "60.5MB"},
+                                    "couchDB": {"memory": "161.0MB", "CPU": "205%", "NetworkIn": "70.5MB", "NetworkOut": "108.4MB", "DiscRead": "0B", "DiscWrite": "72.9MB"}
+                                },
+                                {
+                                    "peers": 2,
+                                    "headline" : {"tps": 14, "latency": 1.1},
+                                    "chaincode": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "couchDB": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"}
+                                },
+                                {
+                                    "peers": 3,
+                                    "headline" : {"tps": 10, "latency": 1.8},
+                                    "chaincode": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "peer": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"},
+                                    "couchDB": {"memory": "91MB", "CPU": "16.2%", "NetworkIn": "766KB", "NetworkOut": "885KB", "DiscRead": "0B", "DiscWrite": "1.2MB"}
+                                }
+                            ]
+                    },
+                    {
+                    "orgs": 3,
+                    "peerResults" : []
+                }]
+}
