@@ -205,7 +205,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using Google OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/playground/playground-index"><b>Using Playground</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -391,7 +391,7 @@ ga('send', 'pageview');
 
 <ol>
 <li><p>Start a clean Hyperledger Fabric by running the following commands:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
 ./stopFabric.sh
 ./teardownFabric.sh
 ./downloadFabric.sh
@@ -415,10 +415,10 @@ composer card delete -c admin@tutorial-network
 <p>The simple Hyperledger Fabric network provided in the development environment has been configured using the Hyperledger Fabric configuration tools <code>cryptogen</code> and <code>configtxgen</code>.</p>
 
 <p>The configuration for <code>cryptogen</code> is stored in the file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config.yaml
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config.yaml
 </code></pre></div>
 <p>The configuration for <code>configtxgen</code> is stored in the file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/configtx.yaml
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-dev-servers/fabric-scripts/hlfv11/composer/configtx.yaml
 </code></pre></div>
 <p>You can find more information about these configuration tools, what they do, and how to use them by reading the Hyperledger Fabric documentation.</p>
 
@@ -458,7 +458,7 @@ composer card delete -c admin@tutorial-network
 <p>The organization <code>Org1</code> is configured with a user named <code>Admin@org1.example.com</code>. This user is an administrator. Administrators for an organization have the permission to install the code for a blockchain business network onto their organization&#39;s peers, and can also have the permission to start the blockchain business network, depending on configuration. In this tutorial, you will deploy a blockchain business network by acting as the user <code>Admin@org1.example.com</code>.</p>
 
 <p>The user <code>Admin@org1.example.com</code> has a set of certificates and private key files stored in the directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 </code></pre></div>
 <p>You will use some of these files later on to interact with the Hyperledger Fabric network.</p>
 
@@ -640,7 +640,7 @@ The blockchain business network will be deployed to all of the specified peer no
 <p>In order to deploy a blockchain business network to this Hyperledger Fabric network, we must identify ourselves as an administrator with the permissions to perform this operation. In this step, you locate the files required to identify yourself as an administrator.</p>
 
 <p>The administrator for our Hyperledger Fabric network is a user called <code>Admin@org1.example.com</code>. The certificates and private key files for this user are stored in the directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-dev-servers/fabric-scripts/hlfv11/composer/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 </code></pre></div>
 <p>You must first locate the certificate file for this user. The certificate is the public part of the identity. The certificate file can be found in the <code>signcerts</code> subdirectory and is named <code>Admin@org1.example.com-cert.pem</code>. If you look at the contents of this file, then you will find a PEM encoded certificate similar to the following:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE-----

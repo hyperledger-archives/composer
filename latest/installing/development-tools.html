@@ -205,7 +205,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using Google OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/playground/playground-index"><b>Using Playground</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -429,15 +429,15 @@ Note that the Business Networks you create can also be deployed to Hyperledger F
 <p>This step gives you a local Hyperledger Fabric runtime to deploy your business networks to.</p>
 
 <ol>
-<li><p>In a directory of your choice (we will assume <code>~/fabric-tools</code>), get the <code>.tar.gz</code> file that contains the tools to install Hyperledger Fabric:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">mkdir ~/fabric-tools &amp;&amp; cd ~/fabric-tools
+<li><p>In a directory of your choice (we will assume <code>~/fabric-dev-servers</code>), get the <code>.tar.gz</code> file that contains the tools to install Hyperledger Fabric:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">mkdir ~/fabric-dev-servers &amp;&amp; cd ~/fabric-dev-servers
 
 curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
 tar -xvf fabric-dev-servers.tar.gz
 </code></pre></div>
 <p>A <code>zip</code> is also available if you prefer: just replace the <code>.tar.gz</code> file with <code>fabric-dev-servers.zip</code> and the <code>tar -xvf</code> command with a <code>unzip</code> command in the preceding snippet.</p></li>
 <li><p>Use the scripts you just downloaded and extracted to download a local Hyperledger Fabric runtime:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-dev-servers
 ./downloadFabric.sh
 </code></pre></div></li>
 </ol>
@@ -451,16 +451,16 @@ Read on to learn some of the most common things you&#39;ll do with this environm
 
 <h2 id="starting-and-stopping-hyperledger-fabric">Starting and stopping Hyperledger Fabric</h2>
 
-<p>You control your runtime using a set of scripts which you&#39;ll find in <code>~/fabric-tools</code> if you followed the suggested defaults.  </p>
+<p>You control your runtime using a set of scripts which you&#39;ll find in <code>~/fabric-dev-servers</code> if you followed the suggested defaults.  </p>
 
 <p>The first time you start up a new runtime, you&#39;ll need to run the start script, then generate a PeerAdmin card:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    cd ~/fabric-tools
+<div class="highlight"><pre><code class="language-" data-lang="">    cd ~/fabric-dev-servers
     ./startFabric.sh
     ./createPeerAdminCard.sh
 </code></pre></div>
-<p>You can start and stop your runtime using <code>~/fabric-tools/stopFabric.sh</code>, and start it again with <code>~/fabric-tools/startFabric.sh</code>.</p>
+<p>You can start and stop your runtime using <code>~/fabric-dev-servers/stopFabric.sh</code>, and start it again with <code>~/fabric-dev-servers/startFabric.sh</code>.</p>
 
-<p>At the end of your development session, you run <code>~/fabric-tools/stopFabric.sh</code> and then <code>~/fabric-tools/teardownFabric.sh</code>.  Note that if you&#39;ve run the teardown script, the next time you start the runtime, you&#39;ll need to create a new PeerAdmin card just like you did on first time startup.</p>
+<p>At the end of your development session, you run <code>~/fabric-dev-servers/stopFabric.sh</code> and then <code>~/fabric-dev-servers/teardownFabric.sh</code>.  Note that if you&#39;ve run the teardown script, the next time you start the runtime, you&#39;ll need to create a new PeerAdmin card just like you did on first time startup.</p>
 
 <blockquote>
 <p>The local runtime is intended to be frequently started, stopped and torn down, for development use.  If you&#39;re looking for a runtime with more persistent state, you&#39;ll want to run one outside of the dev environment, and deploy Business Networks to it.  Examples of this include running it via Kubernetes, or on a managed platform such as IBM Cloud.</p>

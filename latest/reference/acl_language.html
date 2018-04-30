@@ -205,7 +205,7 @@ ga('send', 'pageview');
 <li><a href="/composer/latest/tutorials/deploy-to-fabric-multi-org">Deploying to a multi-organization Hyperledger Fabric</a></li>
 <li><a href="/composer/latest/tutorials/invoke-composer-network">Interacting with other business networks</a></li>
 <li><a href="/composer/latest/tutorials/acl-trading">Access Control Tutorial - Commodity Trading</a></li>
-<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using OAUTH2.0 with a Composer REST server</a></li>
+<li><a href="/composer/latest/tutorials/google_oauth2_rest">Using Google OAUTH2.0 with a Composer REST server</a></li>
 </ul></li>
 <li><p><a href="/composer/latest/playground/playground-index"><b>Using Playground</b><img src="/composer/latest/assets/img/Caret_SW_2.svg" class="caret"></a></p>
 
@@ -514,7 +514,7 @@ ga('send', 'pageview');
 
 <p><strong>Transaction</strong> defines the transaction that the participant must have submitted in order to perform the specified operation against the specified resource. If this clause is specified, and the participant did not submit a transaction of this type - for example, they are using the CRUD APIs - then the ACL rule does not allow access.</p>
 
-<p><strong>Condition</strong> is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an <code>if(...)</code> expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.</p>
+<p><strong>Condition</strong> is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal within an <code>if(...)</code> expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.</p>
 
 <p><strong>Action</strong> identifies the action of the rule. It must be one of: ALLOW, DENY.</p>
 
