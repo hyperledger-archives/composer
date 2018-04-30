@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -54,34 +54,43 @@ Feature: CLI cards steps
             """
             composer card list
             """
-        Then The stdout information should include text matching /The following Business Network Cards are available:/
-        And The stdout information should include text matching /Connection Profile: hlfv1/
-        And The stdout information should include text matching /┌────────────────────┬────────────────────┬──────────────────┐/
-        And The stdout information should include text matching /│ Card Name          │ UserId             │ Business Network │/
-        And The stdout information should include text matching /├────────────────────┼────────────────────┼──────────────────┤/
-        And The stdout information should include text matching /│ PeerAdmin@hlfv1    │ PeerAdmin          │                  │/
-        And The stdout information should include text matching /├────────────────────┼────────────────────┼──────────────────┤/
-        And The stdout information should include text matching /│ TestPeerAdmin@org1 │ TestPeerAdmin@org1 │                  │/
-        And The stdout information should include text matching /├────────────────────┼────────────────────┼──────────────────┤/
-        And The stdout information should include text matching /│ TestPeerAdmin@org2 │ TestPeerAdmin@org2 │                  │/
-        And The stdout information should include text matching /└────────────────────┴────────────────────┴──────────────────┘/
-        And The stdout information should include text matching /Command succeeded/
+        Then The stdout information should strictly contain the following text block
+        """
+        The following Business Network Cards are available:
+
+        Connection Profile: hlfv1
+        ┌────────────────────┬────────────────────┬──────────────────┐
+        │ Card Name          │ UserId             │ Business Network │
+        ├────────────────────┼────────────────────┼──────────────────┤
+        │ PeerAdmin@hlfv1    │ PeerAdmin          │                  │
+        ├────────────────────┼────────────────────┼──────────────────┤
+        │ TestPeerAdmin@org1 │ TestPeerAdmin@org1 │                  │
+        ├────────────────────┼────────────────────┼──────────────────┤
+        │ TestPeerAdmin@org2 │ TestPeerAdmin@org2 │                  │
+        └────────────────────┴────────────────────┴──────────────────┘
+
+
+        Issue composer card list --card <Card Name> to get details a specific card
+
+        Command succeeded
+
+        """
 
     Scenario: When using the CLI, I can see the details of the card that I just imported
         When I run the following expected pass CLI command
             """
             composer card list -c PeerAdmin@hlfv1
             """
-        Then The stdout information should include text matching /userName:            PeerAdmin/
+        Then The stdout information should include text matching /userName: PeerAdmin/
         And The stdout information should include text matching /description:/
         And The stdout information should include text matching /businessNetworkName:/
-        And The stdout information should include text matching /identityId:          [0-9a-z]{64}/
+        And The stdout information should include text matching /identityId: [0-9a-z]{64}/
         And The stdout information should include text matching /roles:/
         And The stdout information should include text matching /- ChannelAdmin/
         And The stdout information should include text matching /connectionProfile:/
-        And The stdout information should include text matching /  name:   hlfv1/
-        And The stdout information should include text matching /  x-type: hlfv1/
-        And The stdout information should include text matching /credentials:         Credentials set/
+        And The stdout information should include text matching /name:   hlfv1/
+        And The stdout information should include text strictly matching /  x-type: hlfv1/
+        And The stdout information should include text matching /credentials: Credentials set/
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I should get an error if I try to delete a card which doesn't exist

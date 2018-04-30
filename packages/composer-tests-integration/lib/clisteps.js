@@ -65,15 +65,27 @@ module.exports = function () {
         return this.composer.convertToHSM(cardFile);
     });
 
-    this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
-        return this.composer.checkConsoleOutput(new RegExp(regex), false);
+    this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutput(match, false);
     });
 
-    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
-        return this.composer.checkConsoleOutput(new RegExp(regex), true);
+    this.Then(/^The stdout information should include text strictly matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutputStrict(match, false);
     });
 
-    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (regex) {
-        return this.composer.checkFileWasCreated(new RegExp(regex));
+    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutput(match, true);
+    });
+
+    this.Then(/^The stderr information should include text strictly matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutputStrict(match, true);
+    });
+
+    this.Then(/^The stdout information should strictly contain the following text block/, function (text) {
+        return this.composer.checkTextBlock(text, false);
+    });
+
+    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (match) {
+        return this.composer.checkFileWasCreated(match);
     });
 };
