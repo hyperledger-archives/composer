@@ -218,7 +218,7 @@ class Composer {
      * Check that the provided list of items (files or folders) exist
      * @param {String} type -  type (folder or file) that is being considered
      * @param {DataTable} table -  DataTable listing the items expeted to exist
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkExists(type, table) {
         const rows = table.raw();
@@ -478,12 +478,42 @@ class Composer {
     }
 
     /**
-     * Check the last message with regex
+     * Check the last message with regex ignoring multiple whitespace
+     * @param {RegExp} match Optional rstring match.
+     * @param {boolean} isError boolean to indicate if testing error or not
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    checkConsoleOutput(match, isError) {
+        let type;
+
+        if(isError){
+            type = 'stderr';
+        } else {
+            type = 'stdout';
+        }
+
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
+            } else if (match) {
+                let modRegEx = match.toString().replace(/ +(?= )/g,'');
+                let modResp = this.lastResp[type].replace(/ +(?= )/g,'');
+                if(modResp.match(modRegEx)) {
+                    resolve();
+                } else {
+                    reject(`Regex match on ${type} failed with mulitple whitespace characters removed.\nExpected: ${modRegEx}\nActual: ${modResp}`);
+                }
+            }
+        });
+    }
+
+    /**
+     * Check the last message with regex inclusive of whitespace
      * @param {RegExp} [regex] Optional regular expression.
      * @param {boolean} isError boolean to indicate if testing error or not
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    checkConsoleOutput(regex, isError) {
+    checkConsoleOutputStrict(regex, isError) {
         let type;
 
         if(isError){
@@ -506,9 +536,38 @@ class Composer {
     }
 
     /**
+     * Check the last message with an expected block of text
+     * @param {String} text block of text that should exist
+     * @param {Boolean} isError boolean to indicate if testing stdErr or stdOut
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    checkTextBlock(text, isError) {
+        let type;
+        const textBuffer = new Buffer.from(text);
+        const utf8Text = textBuffer.toString('utf8');
+        if(isError){
+            type = 'stderr';
+        } else {
+            type = 'stdout';
+        }
+
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
+            } else {
+                if(this.lastResp[type].match(utf8Text)) {
+                    resolve();
+                } else {
+                    reject(`Regex match on ${type} text block failed.\nExpected: ${utf8Text}\nActual: ${this.lastResp[type]}`);
+                }
+            }
+        });
+    }
+
+    /**
      * Check that a file with a name matching the regex has been created.
      * @param {RegExp} [regex] regular expression.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkFileWasCreated(regex) {
         return new Promise( (resolve, reject) => {
@@ -529,7 +588,7 @@ class Composer {
     /**
      * Check the HTTP response status
      * @param {Number} code expected HTTP response code.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseCode(code) {
         return new Promise( (resolve, reject) => {
@@ -546,7 +605,7 @@ class Composer {
     /**
      * Check the last message with regex
      * @param {RegExp} [regex] Optional regular expression.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseBody(regex) {
         return new Promise( (resolve, reject) => {
@@ -565,7 +624,7 @@ class Composer {
     /**
      * Check the last message matches JSON
      * @param {*} pattern Expected json
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseJSON(pattern) {
         return new Promise( (resolve, reject) => {
@@ -585,7 +644,7 @@ class Composer {
         /**
      * Check the last message matches JSON
      * @param {String} name filename to write the data to
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     writeResponseData(name) {
         return new Promise( (resolve, reject) => {
@@ -607,7 +666,7 @@ class Composer {
      * @param {*} regex The regex to match on
      * @param {*} group The matched regex group to save
      * @param {*} alias The alias to save the matched regex under
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     saveMatchingGroupAsAlias(regex, group, alias) {
         let type = 'stdout';
