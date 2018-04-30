@@ -283,7 +283,13 @@ module.exports = yeoman.Base.extend({
 
         return this._optionOrPrompt(liveConnectQuestion)
             .then((answers) => {
-                this.liveNetwork = answers.liveNetwork;
+                if (typeof(answers.liveNetwork) === 'string' && answers.liveNetwork === 'true') {
+                    this.liveNetwork = true;
+                } else if (typeof(answers.liveNetwork) === 'string' && answers.liveNetwork === 'false') {
+                    this.liveNetwork = false;
+                } else {
+                    this.liveNetwork = answers.liveNetwork;
+                }
             })
             .then(() => {
                 if (this.liveNetwork) {
@@ -570,15 +576,15 @@ module.exports = yeoman.Base.extend({
                 conceptProperties.forEach((property) => {
                     if (property.constructor.name === 'Field') {
                         if (property.isTypeEnum()) {
-                                            // handle enumerations
+                            // handle enumerations
                             let enumValues = [];
-                                            // compose array of enumeration values
+                            // compose array of enumeration values
                             enumerations.forEach(enumeration => {
                                 if (enumeration.name === property.getType()) {
                                     enumValues = enumeration.properties;
                                 }
                             });
-            // add meta information to the field list
+                            // add meta information to the field list
                             tempList.push({
                                 'name': property.getName(),
                                 'type': property.getType(),
