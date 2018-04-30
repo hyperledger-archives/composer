@@ -28,6 +28,10 @@ module.exports = function () {
         return this.composer.checkExists(type, table);
     });
 
+    this.Given(/^Folder (.+?) should only contain the following files/, function (folder, table) {
+        return this.composer.checkExistsStrict(folder, table);
+    });
+
     this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
         return this.composer.extractSecret(alias, cardFile);
     });

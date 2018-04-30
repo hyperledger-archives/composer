@@ -44,6 +44,8 @@ The easiest way to get started is to use the Yeoman generator to create a skelet
 
 4. Select <code-block type="arguments" sub-type="yo" identifier="namespace" > `org.example.mynetwork` </code-block> as the namespace.
 
+5. Select <code-block type="arguments" sub-type="yo" identifier="empty" > `No` </code-block> when asked whether to generate an empty network or not.
+
 ## Step Two: Defining a business network
 
 A business network is made up of assets, participants, transactions, access control rules, and optionally events and queries. In the skeleton business network created in the previous steps, there is a model (`.cto`) file which will contain the class definitions for all assets, participants, and transactions in the business network. The skeleton business network also contains an access control (`permissions.acl`) document with basic access control rules, a script (`logic.js`) file containing transaction processor functions, and a `package.json` file containing business network metadata.

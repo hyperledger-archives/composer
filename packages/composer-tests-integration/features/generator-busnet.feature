@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -18,7 +18,25 @@ Feature: Business Network Generator
     Background:
         Given I have admin business cards available
 
-    Scenario: Using the Composer generator, I can generate a template network
+    @generateOne
+    Scenario: Using the Composer generator, I can generate an empty template network
+        When I run the following expected pass CLI command
+            | command | yo hyperledger-composer:businessnetwork |
+            | --appname | my-empty-bus-net |
+            | --appdescription | a description for my business network |
+            | --appauthor | Captain Conga |
+            | --appemail | conga@congaverse.com |
+            | --applicense | Apache2.0 |
+            | --ns | conga.busnet |
+            | --empty | yes |
+        Then Folder ../my-empty-bus-net should only contain the following files
+            | .eslintrc.yml |
+            | README.md |
+            | package.json |
+            | permissions.acl |
+            | models/conga.busnet.cto |
+
+    Scenario: Using the Composer generator, I can generate a populated template network
         When I run the following expected pass CLI command
             | command | yo hyperledger-composer:businessnetwork |
             | --appname | my-bus-net |
@@ -27,16 +45,17 @@ Feature: Business Network Generator
             | --appemail | conga@congaverse.com |
             | --applicense | Apache2.0 |
             | --ns | conga.busnet |
-        Then I have the following files
-            | ../my-bus-net/.eslintrc.yml |
-            | ../my-bus-net/README.md |
-            | ../my-bus-net/package.json |
-            | ../my-bus-net/permissions.acl |
-            | ../my-bus-net/models/conga.busnet.cto |
-            | ../my-bus-net/lib/logic.js |
-            | ../my-bus-net/test/logic.js |
-            | ../my-bus-net/features/sample.feature |
-            | ../my-bus-net/features/support/index.js |
+            | --empty | no |
+        Then Folder ../my-bus-net should only contain the following files
+            | .eslintrc.yml |
+            | README.md |
+            | package.json |
+            | permissions.acl |
+            | models/conga.busnet.cto |
+            | lib/logic.js |
+            | test/logic.js |
+            | features/sample.feature |
+            | features/support/index.js |
 
     Scenario: Using the Composer generator, I can install the business network packages
         When I run the following expected pass CLI command
