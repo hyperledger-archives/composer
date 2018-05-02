@@ -86,6 +86,18 @@ for (const i in packages) {
                 }
             }
         }
+        for (const dependency in currentPackage.peerDependencies) {
+            const currentValue = currentPackage.peerDependencies[dependency];
+            if (dependency === otherPackage.name) {
+                if (currentValue !== targetDependency) {
+                    if (!badDependencies[i]) {
+                        badDependencies[i] = [];
+                    }
+                    badDependencies[i].push({ dependency: dependency, currentValue: currentValue });
+                    mismatch = true;
+                }
+            }
+        }        
     }
 }
 

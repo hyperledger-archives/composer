@@ -60,6 +60,12 @@ for (const i in packages) {
                 currentPackage.devDependencies[dependency] = targetVersion;
             }
         }
+        for (const dependency in currentPackage.peerDependencies) {
+            const currentValue = currentPackage.peerDependencies[dependency];
+            if (dependency === otherPackage.name) {
+                currentPackage.peerDependencies[dependency] = targetVersion;
+            }
+        }        
     }
     const packageFile = path.resolve(packagesDirectory, i, 'package.json');
     fs.writeFileSync(packageFile, JSON.stringify(currentPackage, null, 2), 'utf8');
