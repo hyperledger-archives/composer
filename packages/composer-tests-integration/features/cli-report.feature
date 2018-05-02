@@ -13,10 +13,17 @@
 #
 
 @cli @cli-report
-Feature: Cli steps
+Feature: CLI report steps
 
     Background:
         Given I have admin business cards available
+
+    Scenario: Using the CLI, I should get an error if I try and provide any command line arguments
+    When I run the following expected fail CLI command
+        """
+        composer report -idonotknowwhatiamdoing
+        """
+    Then The stderr information should include text matching /Unknown arguments/
 
     Scenario: Using the CLI, I can run a composer report command to create a file about the current environment
         When I run the following expected pass CLI command
