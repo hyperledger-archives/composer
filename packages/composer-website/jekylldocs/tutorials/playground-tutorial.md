@@ -33,6 +33,8 @@ Next, we want to create a new business network from scratch. A business network 
 
 5. Now that our network is defined, click **Deploy**.
 
+**NOTE:** If you are using playground locally and connecting to a _real_ Fabric please refer to the additional notes at the bottom of the tutorial.
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
 </video>
@@ -118,6 +120,9 @@ For more information on writing transaction processor functions, check our [docu
 
       This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
+      <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+      <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_5.mp4" type="video/mp4" />
+      </video>
 
 ## Step Six: Access control
 
@@ -132,6 +137,8 @@ For more information on access control files, check our [documentation](../refer
 Now that we have model, script, and access control files, we need to deploy and test our business network.
 
 Click **Deploy changes** to upgrade the business network.
+
+**NOTE:** If you are using playground locally and connecting to a _real_ Fabric please refer to the additional notes at the bottom of the tutorial.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
@@ -257,6 +264,28 @@ To test the _Trade_ transaction:
 Now that transactions have successfully run, we should log out of the business network, ending up at the **My Business Network** screen where we started.
 
 1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **My Business Networks**.
+
+##Deploying a Business Network to a real Fabric.
+Using Playground locally, you can use connections to "Web Browser" which works in the browser local storage, or you can use Connections to a _real_ Fabric usually in a group called "hlfv1"
+
+If you are connecting to a _real_ Fabric, then you will likely have already created a Card for an identity with PeerAdmin and ChannelAdmin roles - this is often called PeerAdmin.  This is the card that you use to Deploy and Update your network with Composer.
+
+When you are deploying your network to a _real_ Fabric there are additional fields to complete before you can click the **Deploy** button - you need to supply the details of the **Network Administrator**.
+
+Scroll to the bottom of the Deploy Screen to find **CREDENTIALS FOR NETWORK ADMINISTRATOR**.  For a simple Development Fabric and many Test networks you can supply an ID and Secret.
+  Enrollment ID - admin
+  Enrollment Secret - adminpw
+
+When the ID and Secret are specified, you can click the **Deploy** button and resume the tutorial at Step Three.
+
+If you are working with a Custom or Production Fabric - contact your Fabric Administrator for details of the Network Administrator.
+
+##Updating a Business Network when connected to a real Fabric
+When you are using a _real_ Fabric and click **Deploy Changes** you will see an addition popup dialog asking you to specify an Installation Card and an Upgrade card from dropdown lists.  Typically you specify the same PeerAdmin card as used to deploy the initial network.  If you are uncertain, contact your Fabric Administrator.
+
+Select the cards, and click the **Upgrade** button.  Note that on a real Fabric this can take a few minutes to complete.
+
+Resume the Tutorial at Step Eight.
 
 ## What next?
 
