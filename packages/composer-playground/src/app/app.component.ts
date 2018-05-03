@@ -24,7 +24,6 @@ import { InitializationService } from './services/initialization.service';
 import { BusyComponent } from './basic-modals/busy';
 import { ErrorComponent } from './basic-modals/error';
 import { WelcomeComponent } from './welcome';
-import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
@@ -100,17 +99,15 @@ export class AppComponent implements OnInit, OnDestroy {
             })
         ];
 
-        return this.checkVersion().then((success) => {
-            if (!success) {
-                this.openVersionModal();
-            }
-            try {
-              let config = this.configService.getConfig();
-              return Promise.resolve(config);
-            } catch (err) {
-              return this.configService.loadConfig();
-            }
-        }).then((config) => {
+        let initialiseConfigPromise;
+        try {
+            let config = this.configService.getConfig();
+            initialiseConfigPromise = Promise.resolve(config);
+        } catch (err) {
+            initialiseConfigPromise = this.configService.loadConfig();
+        }
+
+        return initialiseConfigPromise.then((config) => {
             this.config = config;
             this.setTitle(this.config['title']);
             this.composerBanner = config['banner'];
@@ -245,48 +242,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     openWelcomeModal() {
-        return this.checkVersion().then((success) => {
-            if (success) {
-                this.modalService.open(WelcomeComponent);
-            } else {
-                this.modalService.open(VersionCheckComponent);
-            }
-        });
-    }
-
-    openVersionModal() {
-        this.modalService.open(VersionCheckComponent);
-    }
-
-    checkVersion(): Promise<boolean> {
-        let currentPlaygroundVersion = this.getPlaygroundDetails();
-
-        if (currentPlaygroundVersion === null) {
-            return this.setPlaygroundDetails().then(() => {
-                return true;
-            });
-        } else {
-            return this.aboutService.getVersions().then((versions) => {
-                let latestPlaygroundVersion = versions.playground.version;
-                if (currentPlaygroundVersion !== latestPlaygroundVersion) {
-                    return false;
-                } else {
-                    return true;
-                }
-            });
-        }
-    }
-
-    setPlaygroundDetails(): Promise<any> {
-        let key = `playgroundVersion`;
-        return this.aboutService.getVersions().then((versions) => {
-            this.localStorageService.set(key, versions.playground.version);
-        });
-    }
-
-    getPlaygroundDetails(): string {
-        let key = `playgroundVersion`;
-        return this.localStorageService.get<string>(key);
+        this.modalService.open(WelcomeComponent);
     }
 
     setTitle(newTitle: string) {

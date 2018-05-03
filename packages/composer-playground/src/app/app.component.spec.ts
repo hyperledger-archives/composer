@@ -36,6 +36,7 @@ import { AboutService } from './services/about.service';
 import { ConfigService } from './services/config.service';
 import { Config } from './services/config/configStructure.service';
 import { FileService } from './services/file.service';
+import { WelcomeComponent } from './welcome';
 
 import { IdCard } from 'composer-common';
 import { AdminConnection } from 'composer-admin';
@@ -178,8 +179,6 @@ describe('AppComponent', () => {
     let activatedRoute: ActivatedRouteStub;
     let routerStub: RouterStub;
 
-    let checkVersionStub;
-
     let analyticsMock;
 
     beforeEach(async(() => {
@@ -232,12 +231,9 @@ describe('AppComponent', () => {
     beforeEach(async(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
-        checkVersionStub = sinon.stub(component, 'checkVersion');
     }));
 
-    function updateComponent(checkVersion = true) {
-        checkVersionStub.returns(Promise.resolve(checkVersion));
-
+    function updateComponent() {
         // trigger initial data binding
         fixture.detectChanges();
 
@@ -340,60 +336,6 @@ describe('AppComponent', () => {
         });
 
         it('should not send analytics', fakeAsync(() => {
-            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
-            mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
-
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
-
-            updateComponent(false);
-
-            tick();
-
-            analyticsMock.should.not.have.been.called;
-
-            checkVersionStub.should.have.been.called;
-            openVersionModalStub.should.have.been.called;
-        }));
-
-        it('should send analytics', fakeAsync(() => {
-            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
-            mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
-
-            component['submitAnalytics'] = true;
-
-            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/banana', nav: 'end'};
-
-            updateComponent(false);
-
-            tick();
-
-            analyticsMock.firstCall.should.have.been.calledWith('set', 'page', '/banana');
-            analyticsMock.secondCall.should.have.been.calledWith('send', 'pageview');
-
-            checkVersionStub.should.have.been.called;
-            openVersionModalStub.should.have.been.called;
-        }));
-
-        it('should check version and open version modal', fakeAsync(() => {
-            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
-            mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
-
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
-
-            updateComponent(false);
-
-            tick();
-
-            checkVersionStub.should.have.been.called;
-            openVersionModalStub.should.have.been.called;
-
-        }));
-
-        it('should check version and not open version modal', fakeAsync(() => {
-            let openVersionModalStub = sinon.stub(component, 'openVersionModal');
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
@@ -403,9 +345,23 @@ describe('AppComponent', () => {
 
             tick();
 
-            checkVersionStub.should.have.been.called;
-            openVersionModalStub.should.not.have.been.called;
+            analyticsMock.should.not.have.been.called;
+        }));
 
+        it('should send analytics', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
+
+            component['submitAnalytics'] = true;
+
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/banana', nav: 'end'};
+
+            updateComponent();
+
+            tick();
+
+            analyticsMock.firstCall.should.have.been.calledWith('set', 'page', '/banana');
+            analyticsMock.secondCall.should.have.been.calledWith('send', 'pageview');
         }));
 
         it('should not do anything on non navigation end events', fakeAsync(() => {
@@ -430,8 +386,6 @@ describe('AppComponent', () => {
             tick();
 
             component['showHeaderLinks'].should.equal(true);
-
-            checkVersionStub.should.have.been.called;
         }));
 
         it('should not show header links if not logged in', fakeAsync(() => {
@@ -442,8 +396,6 @@ describe('AppComponent', () => {
             tick();
 
             component['showHeaderLinks'].should.equal(false);
-
-            checkVersionStub.should.have.been.called;
         }));
 
         it('should not show header links if redirected to login', fakeAsync(() => {
@@ -454,8 +406,6 @@ describe('AppComponent', () => {
             tick();
 
             component['showHeaderLinks'].should.equal(false);
-
-            checkVersionStub.should.have.been.called;
         }));
 
         it('should set the config using get config if config is loaded', fakeAsync(() => {
@@ -982,189 +932,8 @@ describe('AppComponent', () => {
 
             tick();
 
-            checkVersionStub.should.have.been.called;
-
-            mockModal.open.should.have.been.called;
+            mockModal.open.should.have.been.calledWith(WelcomeComponent);
         }));
-
-        it('should open the version modal', fakeAsync(() => {
-            activatedRoute.testParams = {};
-
-            updateComponent(false);
-
-            component['openWelcomeModal']();
-
-            tick();
-
-            checkVersionStub.should.have.been.called;
-
-            mockModal.open.should.have.been.called;
-        }));
-    });
-
-    describe('openVersionModal', () => {
-        let mockOnBusy;
-        let mockOnError;
-        let mockOnTransactionEvent;
-        let mockQueryParamsUpdated;
-
-        beforeEach(async(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-            mockModal.open.returns({componentInstance: {}});
-
-        }));
-
-        it('should open version modal', () => {
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            component['openVersionModal']();
-
-            mockModal.open.should.have.been.called;
-        });
-    });
-
-    describe('checkVersion', () => {
-        let mockOnBusy;
-        let mockOnError;
-        let mockOnTransactionEvent;
-        let mockQueryParamsUpdated;
-
-        beforeEach(async(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-        }));
-
-        it('should check the version return true', fakeAsync(() => {
-            let getPlayGroundDetailsStub = sinon.stub(component, 'getPlaygroundDetails').returns(null);
-            let setPlayGroundDetailsStub = sinon.stub(component, 'setPlaygroundDetails').returns(Promise.resolve());
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            checkVersionStub.restore();
-
-            component['checkVersion']().then((result) => {
-                result.should.equal(true);
-            });
-
-            tick();
-
-            getPlayGroundDetailsStub.should.have.been.called;
-            setPlayGroundDetailsStub.should.have.been.called;
-        }));
-
-        it('should check the version when already have playground details and return true', fakeAsync(() => {
-            let getPlayGroundDetailsStub = sinon.stub(component, 'getPlaygroundDetails').returns(1.0);
-            let setPlayGroundDetailsStub = sinon.stub(component, 'setPlaygroundDetails');
-
-            mockAboutService.getVersions.returns(Promise.resolve({playground: {version: 1.0}}));
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            checkVersionStub.restore();
-
-            component['checkVersion']().then((result) => {
-                result.should.equal(true);
-            });
-
-            tick();
-
-            getPlayGroundDetailsStub.should.have.been.called;
-            setPlayGroundDetailsStub.should.not.have.been.called;
-            mockAboutService.getVersions.should.have.been.called;
-        }));
-
-        it('should check the version when already have playground details and return false when versions don\'t match', fakeAsync(() => {
-            let getPlayGroundDetailsStub = sinon.stub(component, 'getPlaygroundDetails').returns(1.4);
-            let setPlayGroundDetailsStub = sinon.stub(component, 'setPlaygroundDetails');
-
-            mockAboutService.getVersions.returns(Promise.resolve({playground: {version: 1.0}}));
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            checkVersionStub.restore();
-
-            component['checkVersion']().then((result) => {
-                result.should.equal(false);
-            });
-
-            tick();
-
-            getPlayGroundDetailsStub.should.have.been.called;
-            setPlayGroundDetailsStub.should.not.have.been.called;
-            mockAboutService.getVersions.should.have.been.called;
-        }));
-    });
-
-    describe('setPlaygroundDetails', () => {
-        let mockOnBusy;
-        let mockOnError;
-        let mockOnTransactionEvent;
-        let mockQueryParamsUpdated;
-
-        beforeEach(async(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-
-        }));
-
-        it('should set the playground details', fakeAsync(() => {
-            mockAboutService.getVersions.returns(Promise.resolve({playground: {version: 1.0}}));
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            component['setPlaygroundDetails']();
-
-            tick();
-
-            mockAboutService.getVersions.should.have.been.called;
-            mockLocalStorageService.set.should.have.been.calledWith('playgroundVersion', 1.0);
-        }));
-    });
-
-    describe('getPlaygroundDetails', () => {
-        let mockOnBusy;
-        let mockOnError;
-        let mockOnTransactionEvent;
-        let mockQueryParamsUpdated;
-
-        beforeEach(async(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-            mockOnTransactionEvent = sinon.stub(component, 'onTransactionEvent');
-            mockQueryParamsUpdated = sinon.stub(component, 'queryParamsUpdated');
-
-        }));
-
-        it('should get the playground details', () => {
-            mockLocalStorageService.get.returns('1.0');
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            let result = component['getPlaygroundDetails']();
-
-            mockLocalStorageService.get.should.have.been.calledWith('playgroundVersion');
-
-            result.should.equal('1.0');
-        });
     });
 
     describe('logout', () => {

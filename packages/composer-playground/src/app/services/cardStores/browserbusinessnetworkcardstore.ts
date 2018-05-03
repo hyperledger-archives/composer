@@ -13,6 +13,8 @@
  */
 import { BusinessNetworkCardStore, IdCard } from 'composer-common';
 
+import * as packageObject from '../../../../package.json';
+
 /**
  * The playground business network store provides a combined view over
  * a business network store persisted in the web browser
@@ -20,7 +22,7 @@ import { BusinessNetworkCardStore, IdCard } from 'composer-common';
 export class BrowserBusinessNetworkCardStore extends BusinessNetworkCardStore {
 
     private webStorage: Storage;
-    private prefix = 'business-network-card';
+    private prefix = `_Composer_Cards_${packageObject.version}:`;
 
     constructor() {
         super();

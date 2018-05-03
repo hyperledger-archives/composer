@@ -33,11 +33,12 @@ import { AppState, InternalStateType } from './app.service';
 import { BasicModalsModule } from './basic-modals/basic-modals.module';
 import { WelcomeComponent } from './welcome';
 import { NoContentComponent } from './no-content';
-import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
 import { DrawerModule } from './common/drawer';
 import { TutorialLinkModule } from './common/tutorial-link';
 import { DeployModule } from './deploy/deploy.module';
+
+import * as packageObject from '../../package.json';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -66,13 +67,11 @@ type StoreType = {
 @NgModule({
     bootstrap: [AppComponent],
     entryComponents: [
-        VersionCheckComponent,
         WelcomeComponent
     ],
     declarations: [
         AppComponent,
         NoContentComponent,
-        VersionCheckComponent,
         WelcomeComponent
     ],
     imports: [ // import Angular's modules
@@ -84,7 +83,7 @@ type StoreType = {
         HttpModule,
         ServicesModule,
         LocalStorageModule.withConfig({
-            prefix: '',
+            prefix: `_Composer_${packageObject.version}`,
             storageType: 'localStorage'
         }),
         NgbModule.forRoot(),
