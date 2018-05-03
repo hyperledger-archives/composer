@@ -391,6 +391,8 @@ ga('send', 'pageview');
 <li><p>Now that our network is defined, click <strong>Deploy</strong>.</p></li>
 </ol>
 
+<p><strong>NOTE:</strong> If you are using playground locally and connecting to a <em>real</em> Fabric please refer to the additional notes at the bottom of the tutorial.</p>
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/unstable/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
 </video>
@@ -471,7 +473,11 @@ transaction Trade {
 </code></pre></div>
 <p></code-block></p>
 
-<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p></li>
+<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
+
+<p><video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+  <source src="/composer/unstable/assets/img/tutorials/playground/vs_code_5.mp4" type="video/mp4" />
+  </video></p></li>
 </ol>
 
 <h2 id="step-six-access-control">Step Six: Access control</h2>
@@ -487,6 +493,8 @@ transaction Trade {
 <p>Now that we have model, script, and access control files, we need to deploy and test our business network.</p>
 
 <p>Click <strong>Deploy changes</strong> to upgrade the business network.</p>
+
+<p><strong>NOTE:</strong> If you are using playground locally and connecting to a <em>real</em> Fabric please refer to the additional notes at the bottom of the tutorial.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/unstable/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
@@ -602,6 +610,30 @@ transaction Trade {
 <ol>
 <li>In the upper-right of the screen is a button labelled <strong>admin</strong>. This lists your current identity, to log out, click <strong>admin</strong> to open the dropdown menu, and click <strong>My Business Networks</strong>.</li>
 </ol>
+
+<h2 id="deploying-a-business-network-to-a-real-fabric">Deploying a Business Network to a real Fabric.</h2>
+
+<p>Using Playground locally, you can use connections to &quot;Web Browser&quot; which works in the browser local storage, or you can use Connections to a <em>real</em> Fabric usually in a group called &quot;hlfv1&quot;</p>
+
+<p>If you are connecting to a <em>real</em> Fabric, then you will likely have already created a Card for an identity with PeerAdmin and ChannelAdmin roles - this is often called PeerAdmin.  This is the card that you use to Deploy and Update your network with Composer.</p>
+
+<p>When you are deploying your network to a <em>real</em> Fabric there are additional fields to complete before you can click the <strong>Deploy</strong> button - you need to supply the details of the <strong>Network Administrator</strong>.</p>
+
+<p>Scroll to the bottom of the Deploy Screen to find <strong>CREDENTIALS FOR NETWORK ADMINISTRATOR</strong>.  For a simple Development Fabric and many Test networks you can supply an ID and Secret.
+  Enrollment ID - admin
+  Enrollment Secret - adminpw</p>
+
+<p>When the ID and Secret are specified, you can click the <strong>Deploy</strong> button and resume the tutorial at Step Three.</p>
+
+<p>If you are working with a Custom or Production Fabric - contact your Fabric Administrator for details of the Network Administrator.</p>
+
+<h2 id="updating-a-business-network-when-connected-to-a-real-fabric">Updating a Business Network when connected to a real Fabric</h2>
+
+<p>When you are using a <em>real</em> Fabric and click <strong>Deploy Changes</strong> you will see an addition popup dialog asking you to specify an Installation Card and an Upgrade card from dropdown lists.  Typically you specify the same PeerAdmin card as used to deploy the initial network.  If you are uncertain, contact your Fabric Administrator.</p>
+
+<p>Select the cards, and click the <strong>Upgrade</strong> button.  Note that on a real Fabric this can take a few minutes to complete.</p>
+
+<p>Resume the Tutorial at Step Eight.</p>
 
 <h2 id="what-next">What next?</h2>
 
