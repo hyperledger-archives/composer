@@ -132,26 +132,20 @@ describe('hyperledger-composer:businessnetwork', function () {
             assert(fs.existsSync(packageFile), 'No package.json file detected in test run');
 
             let myPackage = require(packageFile);
-            assert(myPackage.name === passedBusNetName, 'incorrect name in package file');
-            assert(myPackage.author === passedAuthor, 'incorrect author in package file');
-            assert(myPackage.email === passedEmail, 'incorrect email in package file');
-            assert(myPackage.license === passedLic, 'incorrect license in package file');
+            assert.strictEqual(myPackage.name, passedBusNetName, 'incorrect name in package file');
+            assert.strictEqual(myPackage.author, passedAuthor, 'incorrect author in package file');
+            assert.strictEqual(myPackage.email, passedEmail, 'incorrect email in package file');
+            assert.strictEqual(myPackage.license, passedLic, 'incorrect license in package file');
             assert.strictEqual(myPackage.dependencies, undefined, 'there should be no production dependencies in package file');
-            assert.deepStrictEqual(myPackage.devDependencies, {
-                chai: 'latest',
-                'chai-as-promised': 'latest',
+            assert.objectContent(myPackage.devDependencies, {
                 'composer-admin': `^${version}`,
                 'composer-cli': `^${version}`,
                 'composer-client': `^${version}`,
                 'composer-common': `^${version}`,
                 'composer-connector-embedded': `^${version}`,
                 'composer-cucumber-steps': `^${version}`,
-                cucumber: '^2.2.0',
-                eslint: 'latest',
-                mkdirp: 'latest',
-                mocha: 'latest',
-                nyc: 'latest'
-            }, 'incorrect development dependencies in package file');
+            });
+            assert.objectContent(myPackage.engines, { composer: `^${version}`});
         });
     });
 

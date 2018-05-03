@@ -1,6 +1,6 @@
 {
   "name": "composer-documentation",
-  "version": "0.19.4",
+  "version": "0.19.5",
   "description": "Generates documentation packages for Hyperlegder Composer Business Networks",
   "bin": {
     "opus": "bin/opus"
@@ -37,9 +37,9 @@
   "dependencies": {
     "chalk": "1.1.3",
     "comment-parser": "0.4.0",
-    "composer-admin": "0.19.4",
-    "composer-client": "0.19.4",
-    "composer-common": "0.19.4",
+    "composer-admin": "0.19.5",
+    "composer-client": "0.19.5",
+    "composer-common": "0.19.5",
     "debug-stream": "3.0.1",
     "doctrine": "2.0.0",
     "js-yaml": "3.10.0",

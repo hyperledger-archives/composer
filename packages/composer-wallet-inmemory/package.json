@@ -1,6 +1,6 @@
 {
   "name": "composer-wallet-inmemory",
-  "version": "0.19.4",
+  "version": "0.19.5",
   "description": "The Hyperledger Fabric v1.x Node.JS runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",

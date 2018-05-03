@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.19.4",
+  "version": "0.19.5",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -8,12 +8,9 @@
     "npm": ">=5"
   },
   "scripts": {
-    "jsdocpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "systemnsDocs": "../composer-documentation/bin/opus --archive dummy.bna --outdir ./jekylldocs/systemns --config ../composer-documentation/_configs/sns-config.yaml --nsDocsRoot ../composer-common/lib/system/",
-    "doc": "npm run apiref && ./scripts/generate-uml.sh && npm run jsdocpub",
+    "doc": "npm run apiref && ./scripts/generate-uml.sh",
     "apiref": "npm run systemnsDocs && mkdirp ./jsondata && ./scripts/generate-apidocs.sh ",
-    "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
-    "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
     "full:v0.16": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_v0.16.yml",
     "full:v0.16-unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_v0.16-unstable.yml",
@@ -42,12 +39,11 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "0.19.4",
-    "composer-client": "0.19.4",
-    "composer-common": "0.19.4",
-    "composer-documentation": "0.19.4",
-    "composer-runtime": "0.19.4",
-    "jsdoc": "3.5.5",
+    "composer-admin": "0.19.5",
+    "composer-client": "0.19.5",
+    "composer-common": "0.19.5",
+    "composer-documentation": "0.19.5",
+    "composer-runtime": "0.19.5",
     "license-check-and-add": "2.3.1",
     "mkdirp": "0.5.1",
     "node-plantuml": "0.5.0",
