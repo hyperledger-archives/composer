@@ -425,7 +425,7 @@ class Composer {
             let command = cmd;
             let stdout = '';
             let stderr = '';
-            let env = process.env;
+            let env = Object.create( process.env );
             if (this.jsonConfig){
                 env.NODE_CONFIG=this.jsonConfig;
             } else {
@@ -434,7 +434,10 @@ class Composer {
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command,{env});
+                const options = {
+                    env: env
+                };
+                let childCliProcess = childProcess.exec(command, options);
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
