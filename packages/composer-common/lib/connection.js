@@ -165,20 +165,8 @@ class Connection extends EventEmitter {
             throw new Error('Incorrect Business Network Identifier');
         }
 
-        let options={};
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
-        let id = transaction.getIdentifier();
-        if (id === null || id === undefined) {
-            id = await Util.createTransactionId(securityContext);
-            transaction.setIdentifier(id.idStr);
-            options.transactionId = id.id;
-        }
-        let timestamp = transaction.timestamp;
-        if (timestamp === null || timestamp === undefined) {
-            timestamp = transaction.timestamp = new Date();
-        }
-        let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)],options);
+        return Util.submitTransaction(securityContext,transaction,currentDeployedNetwork.getSerializer());
     }
 
     /**
@@ -199,21 +187,10 @@ class Connection extends EventEmitter {
         let businessNetworkJSON = JSON.parse(buffer.toString());
         let businessNetworkArchive = Buffer.from(businessNetworkJSON.data, 'base64');
         let currentDeployedNetwork = await BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-        let options = {};
+
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
-        let id = transaction.getIdentifier();
-        if (id === null || id === undefined) {
-            id = await Util.createTransactionId(securityContext);
-            transaction.setIdentifier(id.idStr);
-            options.transactionId = id.id;
-        }
-        let timestamp = transaction.timestamp;
-        if (timestamp === null || timestamp === undefined) {
-            timestamp = transaction.timestamp = new Date();
-        }
         transaction.newLogLevel = loglevel;
-        let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)],options);
+        return Util.submitTransaction(securityContext,transaction,currentDeployedNetwork.getSerializer());
     }
 
     /**
