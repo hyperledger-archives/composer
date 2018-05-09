@@ -16,9 +16,7 @@
 Feature: CLI cards steps using redis
 
     Background:
-        Given I have admin business cards available
-        
-        
+        Given I have setup a redis card wallet environment
 
     Scenario: Using the CLI, I can create a business network card using a connection profile and certificates
         Given I have the following items
@@ -42,7 +40,6 @@ Feature: CLI cards steps using redis
     Scenario: Using the CLI, I can import a business network card
         Given I have the following files
             | ../tmp/PeerAdmin.card |
-        And I have setup a redis card wallet environment
         When I run the following expected pass CLI command
             """
             composer card import --file ./tmp/PeerAdmin.card
@@ -51,9 +48,13 @@ Feature: CLI cards steps using redis
         And The stdout information should include text matching /Card file: ./tmp/PeerAdmin.card/
         And The stdout information should include text matching /Card name: PeerAdmin@hlfv1/
         And The stdout information should include text matching /Command succeeded/
+        And I run the following expected pass CLI command
+            """
+            docker exec composer-wallet-redis redis-cli keys "cards/*"
+            """
+        And The stdout information should include text strictly matching /cards\/PeerAdmin@hlfv1/
 
     Scenario: Using the CLI, I can see the card that I just imported in the list of cards
-        Given I have setup a redis card wallet environment
         When I run the following expected pass CLI command
             """
             composer card list
@@ -68,7 +69,6 @@ Feature: CLI cards steps using redis
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: When using the CLI, I can see the details of the card that I just imported
-        Given I have setup a redis card wallet environment
         When I run the following expected pass CLI command
             """
             composer card list -c PeerAdmin@hlfv1
@@ -86,7 +86,6 @@ Feature: CLI cards steps using redis
         And The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I should get an error if I try to delete a card which doesn't exist
-        Given I have setup a redis card wallet environment
         When I run the following expected fail CLI command
             """
             composer card delete -c nobody@penguin
@@ -94,7 +93,6 @@ Feature: CLI cards steps using redis
         Then The stdout information should include text matching /Command failed/
 
     Scenario: Using the CLI, I can export a card that exists in my wallet
-        Given I have setup a redis card wallet environment
         When I run the following expected pass CLI command
             """
             composer card export --card PeerAdmin@hlfv1 --file ./tmp/ExportedPeerAdmin.card
@@ -104,15 +102,13 @@ Feature: CLI cards steps using redis
             | ../tmp/PeerAdmin.card |
 
     Scenario: Using the CLI, I can delete a named card that exists
-        Given I have setup a redis card wallet environment
         When I run the following expected pass CLI command
             """
             composer card delete --card PeerAdmin@hlfv1
             """
         Then The stdout information should include text matching /Command succeeded/
 
-    Scenario: Using the CLI, I get a relevant message when I import a card that has invalid name format created from an invalid common connection profile.
-        Given I have setup a redis card wallet environment
+    Scenario: Using the CLI, I get a relevant message when I import a card that has invalid name format created from an invalid common connection profile
         And I have the following files
             | ../resources/cards/PeerAdminInvalidName@hlfv1.card |
         When I run the following expected fail CLI command

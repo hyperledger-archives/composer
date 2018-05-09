@@ -15,9 +15,6 @@
 @cli @cli-cards
 Feature: CLI cards steps
 
-    Background:
-        Given I have admin business cards available
-
     Scenario: Using the CLI, I can create a business network card using a connection profile and certificates
         Given I have the following items
             | ../hlfv1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts |
@@ -54,27 +51,14 @@ Feature: CLI cards steps
             """
             composer card list
             """
-        Then The stdout information should strictly contain the following text block
-        """
-        The following Business Network Cards are available:
-
-        Connection Profile: hlfv1
-        ┌────────────────────┬────────────────────┬──────────────────┐
-        │ Card Name          │ UserId             │ Business Network │
-        ├────────────────────┼────────────────────┼──────────────────┤
-        │ PeerAdmin@hlfv1    │ PeerAdmin          │                  │
-        ├────────────────────┼────────────────────┼──────────────────┤
-        │ TestPeerAdmin@org1 │ TestPeerAdmin@org1 │                  │
-        ├────────────────────┼────────────────────┼──────────────────┤
-        │ TestPeerAdmin@org2 │ TestPeerAdmin@org2 │                  │
-        └────────────────────┴────────────────────┴──────────────────┘
-
-
-        Issue composer card list --card <Card Name> to get details a specific card
-
-        Command succeeded
-
-        """
+        Then The stdout information should include text matching /The following Business Network Cards are available:/
+        And The stdout information should include text matching /Connection Profile: hlfv1/
+        And The stdout information should include text matching /┌─+┬─+┬─+┐/
+        And The stdout information should include text matching /│ Card Name\s+│ UserId\s+│ Business Network\s+│/
+        And The stdout information should include text matching /├─+┼─+┼─+┤/
+        And The stdout information should include text matching /│ PeerAdmin@hlfv1\s+│ PeerAdmin\s+│\s+│/
+        And The stdout information should include text matching /└─+┴─+┴─+┘/
+        And The stdout information should include text matching /Command succeeded/
 
     Scenario: When using the CLI, I can see the details of the card that I just imported
         When I run the following expected pass CLI command
