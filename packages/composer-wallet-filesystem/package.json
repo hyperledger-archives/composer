@@ -77,7 +77,7 @@
     }
   },
   "peerDependencies": {
-    "composer-common": "0.19.3"
+    "composer-common": "0.19.5"
   },
   "dependencies": {
     "mkdirp": "0.5.1",
