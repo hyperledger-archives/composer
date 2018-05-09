@@ -62,6 +62,9 @@ for (const packageIndex in packages) {
     for (const dependency in currentPackage.devDependencies) {
         checkValue(packageIndex, dependency, currentPackage.devDependencies[dependency]);
     }
+    for (const dependency in currentPackage.peerDependencies) {
+        checkValue(packageIndex, dependency, currentPackage.peerDependencies[dependency]);
+    }    
 }
 
 if (Object.keys(badDependencies).length > 0) {
