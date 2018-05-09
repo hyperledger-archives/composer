@@ -104,7 +104,8 @@
       ".yml",
       ".yaml",
       ".txt",
-      ".zip"
+      ".zip",
+      ".tgz"
     ],
     "insert_license": false,
     "license_formats": {

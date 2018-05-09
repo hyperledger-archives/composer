@@ -83,15 +83,26 @@
     "exact_paths_method": "EXCLUDE",
     "exact_paths": [
       "node_modules",
-      ".tern-project"
+      ".tern-project",
+      ".pm2"
+  
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
       ".yml",
       ".yaml",
+      ".tgz",
+      ".key",
+      ".card",
       ".gz",
+      ".pem",
+      ".bna",
+      ".crt",
       ".tx",
-      ".block"
+      ".block",
+      ".log",
+      ".pid",
+      ".port"
     ],
     "insert_license": false,
     "license_formats": {

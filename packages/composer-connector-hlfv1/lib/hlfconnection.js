@@ -635,7 +635,8 @@ class HLFConnection extends Connection {
             // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
             this._checkEventhubs();
 
-            const transactionId = this.client.newTransactionID();
+
+            const transactionId = this._validateTxId(startOptions);
             const proposal = {
                 chaincodeType: 'node',
                 chaincodeId: businessNetworkName,
@@ -898,19 +899,8 @@ class HLFConnection extends Connection {
             return Promise.reject(error);
         }
 
-        let txId;
-        if (options && options.transactionId) {
+        let txId = this._validateTxId(options);
 
-            // see if we have a proper transactionID object or perhaps its the data of a transactionId
-            if (options.transactionId instanceof TransactionID) {
-                txId = options.transactionId;
-            } else {
-                txId = this.client.newTransactionID();
-                Object.assign(txId, options.transactionId);
-            }
-        } else {
-            txId = this.client.newTransactionID();
-        }
         let eventHandler;
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
@@ -1180,6 +1170,28 @@ class HLFConnection extends Connection {
      */
     getNativeAPI() {
         return this.client;
+
+    }
+
+    /** Based on the options passed in, determine the transaction id that is to be used
+     * @param {Object} options options to process
+     * @return {TransactionId} transactionId object
+     */
+    _validateTxId(options){
+        let txId;
+        if (options && options.transactionId) {
+
+            // see if we have a proper transactionID object or perhaps its the data of a transactionId
+            if (options.transactionId instanceof TransactionID) {
+                txId = options.transactionId;
+            } else {
+                txId = this.client.newTransactionID();
+                Object.assign(txId, options.transactionId);
+            }
+        } else {
+            txId = this.client.newTransactionID();
+        }
+        return txId;
     }
 
 }
