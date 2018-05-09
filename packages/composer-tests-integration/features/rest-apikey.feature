@@ -24,7 +24,11 @@ Feature: Rest steps
         When I make a GET request to /api/system/ping
         Then The response code should be 401
 
-    Scenario: Using a secured REST API, requests are accepted if the API key is supplied
+    Scenario: Using a secured REST API, requests are rejeted if the wrong API key is supplied
+        When I make a GET request to /api/system/ping with API key "cOnGa"
+        Then The response code should be 401
+
+    Scenario: Using a secured REST API, requests are accepted if the correct API key is supplied
         When I make a GET request to /api/system/ping with API key "conga"
         Then The response code should be 200
         And The response body should be JSON matching
