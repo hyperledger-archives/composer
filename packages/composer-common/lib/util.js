@@ -102,10 +102,10 @@ class Util {
      *
      * @param {SecurityContext} securityContext - The user's security context
      * @param {resource|object} transaction - the transaction
-     * @param {Serializer} serializer  needed if the transaction passed is not a resource but pure json
-     * @param {string} functionName - The name of the function to call default is submitTransaction.
+     * @param {Serializer} [serializer]  needed ONLY if the transaction passed is not a resource but pure json
+     * @param {string} [functionName]  The name of the function to call default is submitTransaction.
      */
-    static async submitTransaction(securityContext,  transaction, serializer, functionName = 'submitTransaction'){
+    static async submitTransaction(securityContext,  transaction, serializer,functionName = 'submitTransaction'){
         Util.securityCheck(securityContext);
 
         let txId = await Util.createTransactionId(securityContext);
@@ -121,7 +121,6 @@ class Util {
         }
 
         await Util.invokeChainCode(securityContext, functionName, [JSON.stringify(json)], { transactionId: txId.id });
-
 
     }
 

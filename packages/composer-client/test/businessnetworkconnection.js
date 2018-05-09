@@ -813,17 +813,7 @@ describe('BusinessNetworkConnection', () => {
 
             // Create the transaction.
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
-            if (tx instanceof Resource){
-                console.log('resource');
-            } else {
-                console.log('not a resource');
-            }
             delete tx.$identifier;
-            if (tx instanceof Resource){
-                console.log('resource');
-            } else {
-                console.log('not a resource');
-            }
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
