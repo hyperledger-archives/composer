@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.19.5",
+  "version": "0.19.6",
   "description": "The proxying client connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -65,7 +65,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
-    "composer-common": "0.19.5",
+    "composer-common": "0.19.6",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "license-check-and-add": "2.3.1",
@@ -77,7 +77,7 @@
     "watchify": "3.7.0"
   },
   "peerDependencies": {
-    "composer-common": "0.19.5"
+    "composer-common": "0.19.6"
   },
   "dependencies": {
     "socket.io-client": "1.7.3"
