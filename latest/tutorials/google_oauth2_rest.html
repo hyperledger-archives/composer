@@ -54,32 +54,6 @@
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
   
-    <!--
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-<!-- Google Analytics -->
-<script>
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
-ga('require', 'outboundLinkTracker');
-ga('require', 'eventTracker');
-ga('send', 'pageview');
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/composer/latest/assets/js/autotrack.js"></script>
-<!-- End Google Analytics -->
-
-  
 
   
     <link href="/composer/latest/assets/css/normalize.css" rel="stylesheet">
@@ -371,7 +345,7 @@ ga('send', 'pageview');
             
               <h1 id="using-google-oauth2-0-with-a-rest-server">Using Google OAUTH2.0 with a  REST server</h1>
 
-<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network. An overview diagram is shown below, and a more detailed diagram showing the authentication flow is shown further down. You will run the REST server in <a href="../integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the sample Trade network as different blockchain identities, accessing resources through the REST APIs. Ideally, you will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
+<p>This tutorial provides an insight into configuring the OAUTH2.0 authentication strategy  (eg. for Google, Facebook, Twitter authentication providers etc) to authorize access to resources in a configured REST Server instance - and allow end users of a blockchain network to interact with a deployed smart contract/business network. An overview diagram is shown below, and a more detailed diagram showing the authentication flow is shown further down. You will run the REST server in <a href="../integrating/enabling-multiuser.html">multi user mode</a> and test interacting with the sample Trade network as different blockchain identities, accessing resources through the REST APIs. You will need to set up your own Google account / authorization scheme to do this (see appendix on the steps to do this - doesn&#39;t take long), or minimally, use the ID/metadata provided in this tutorial. Suffice to say, it uses Hyperledger Composer as the underlying blockchain network.</p>
 
 <p><img src="../assets/img/tutorials/auth/intro_diagram.png" alt="Google Authentication and REST Server Overview"></p>
 
@@ -464,7 +438,7 @@ Successfully tagged myorg/composer-rest-server:latest
 <h2 class='everybody'> Step 3: Define Environment variables for REST Server instance configuration </h2>
 
 <ol>
-<li>Create a file called <code>envvars.txt</code> in your $HOME directory and paste in the following configuration settings - note that you will need to <strong>replace the client ID and clientSecret</strong> with your <strong>own</strong> Google API + client information below  (as shown in the Appendix)</li>
+<li>Create a file called <code>envvars.txt</code> in your $HOME directory and paste in the following configuration settings - note that you will need to <strong>replace the client ID and clientSecret</strong> shown below, with your <strong>own</strong> Google API + client information below  (as shown in the Appendix)</li>
 </ol>
 <div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CARD=restadmin@trade-network
 COMPOSER_NAMESPACES=never
@@ -560,7 +534,7 @@ composer network ping -c restadmin@trade-network
 </ol>
 
 <p>The one liner below will substitute the &#39;localhost&#39; addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our &#39;test&#39; authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/ 
+<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/ 
 </code></pre></div>
 <h2 class='everybody'> Step 7:  Launch the persistent REST server instance   </h2>
 
@@ -623,7 +597,7 @@ composer card import -f jdoe.card
 <ol>
 <li>Once again, because we will use this identity to test inside the persistent REST docker container - we will need to change the hostnames to represent the docker resolvable hostnames - once again run this one-liner to carry out those changes quickly:</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network/ 
+<div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  &lt; $HOME/.composer/cards/jdoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/jdoe@trade-network/ 
 </code></pre></div>
 <ol>
 <li>We need to export the card to a file - to use for importing elsewhere  - ie the card that we will use to import to the wallet in our browser client - and therefore at this point, we can discard the initial business network card file for <code>jdoe</code>.</li>
@@ -637,7 +611,7 @@ composer card import -f jdoe.card
 composer identity issue -c admin@trade-network -f kcoe.card -u kcoe -a "resource:org.example.trading.Trader#trader2"
 composer card import -f kcoe.card
 
-sed -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/peer0.org1.example.com:/' -e 's/localhost:/ca.org1.example.com:/'  -e 's/localhost:/orderer.example.com:/' &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network/ 
+sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network/ 
 
 composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
 </code></pre></div>
@@ -652,12 +626,12 @@ composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
 <p><img src="../assets/img/tutorials/auth/google_auth.png" alt="Google Authentication"></p>
 
 <ol>
-<li>Login using the following credentials: (example - as advised, you should set up your own per the instructions in the appendix section of this tutorial):</li>
+<li>Login using the following credentials: (example shown below - as advised, you should set up your own per the instructions in the appendix section of this tutorial):</li>
 </ol>
 
 <ul>
 <li>Email: <a href="mailto:composeruser01@gmail.com">composeruser01@gmail.com</a></li>
-<li>Password: composer00</li>
+<li>Password: <password></li>
 </ul>
 
 <ol>
