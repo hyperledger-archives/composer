@@ -61,6 +61,7 @@
     "file_type_method": "EXCLUDE",
     "file_types": [
       ".yml"
+      ,".tgz"
     ],
     "insert_license": false,
     "default_format": {

@@ -18,7 +18,6 @@ const BusinessNetworkDefinition = require('./businessnetworkdefinition.js');
 const ConnectionManager = require('./connectionmanager');
 const EventEmitter = require('events');
 const Util = require('./util');
-const uuid = require('uuid');
 
 /**
  * Base class representing a connection to a business network.
@@ -167,17 +166,7 @@ class Connection extends EventEmitter {
         }
 
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','ResetBusinessNetwork');
-        let id = transaction.getIdentifier();
-        if (id === null || id === undefined) {
-            id = uuid.v4();
-            transaction.setIdentifier(id);
-        }
-        let timestamp = transaction.timestamp;
-        if (timestamp === null || timestamp === undefined) {
-            timestamp = transaction.timestamp = new Date();
-        }
-        let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        return Util.submitTransaction(securityContext,transaction,currentDeployedNetwork.getSerializer());
     }
 
     /**
@@ -200,18 +189,8 @@ class Connection extends EventEmitter {
         let currentDeployedNetwork = await BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
 
         let transaction = currentDeployedNetwork.getFactory().newTransaction('org.hyperledger.composer.system','SetLogLevel');
-        let id = transaction.getIdentifier();
-        if (id === null || id === undefined) {
-            id = uuid.v4();
-            transaction.setIdentifier(id);
-        }
-        let timestamp = transaction.timestamp;
-        if (timestamp === null || timestamp === undefined) {
-            timestamp = transaction.timestamp = new Date();
-        }
         transaction.newLogLevel = loglevel;
-        let data = currentDeployedNetwork.getSerializer().toJSON(transaction);
-        await Util.invokeChainCode(securityContext, 'submitTransaction', [JSON.stringify(data)]);
+        return Util.submitTransaction(securityContext,transaction,currentDeployedNetwork.getSerializer());
     }
 
     /**

@@ -28,7 +28,6 @@ const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
 const Registry = require('./registry');
 const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const LOG = Logger.getLog('BusinessNetworkConnection');
@@ -519,15 +518,9 @@ class BusinessNetworkConnection extends EventEmitter {
         if (!(classDeclaration instanceof TransactionDeclaration)) {
             throw new Error(classDeclaration.getFullyQualifiedName() + ' is not a transaction');
         }
+        transaction.timestamp = new Date();
 
-        return Util.createTransactionId(this.securityContext)
-            .then((id) => {
-                transaction.setIdentifier(id.idStr);
-                transaction.timestamp = new Date();
-                let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
-                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(data)], { transactionId: id.id });
-            });
-
+        return Util.submitTransaction(this.securityContext,transaction,this.getBusinessNetwork().getSerializer());
     }
 
     /**
@@ -665,10 +658,9 @@ class BusinessNetworkConnection extends EventEmitter {
         LOG.entry(method);
         const json = {
             $class: 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId: uuid.v4(),
             timestamp: new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
+        return Util.submitTransaction(this.securityContext, json)
             .then(() => {
                 LOG.exit(method);
             });

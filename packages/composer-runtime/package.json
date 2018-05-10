@@ -63,7 +63,9 @@
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
-      ".yml"
+      ".yml",
+      ".tgz"
+
     ],
     "insert_license": false,
     "license_formats": {

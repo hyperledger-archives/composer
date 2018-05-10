@@ -13,7 +13,7 @@
  */
 
 'use strict';
-
+const Resource = require('./model/resource');
 const Globalize = require('./globalize');
 const os = require('os');
 const path = require('path');
@@ -94,6 +94,34 @@ class Util {
         });
 
         return securityContext.getConnection().invokeChainCode(securityContext, functionName, args, options);
+    }
+
+    /**
+     * Takes a json structure of a transaction, and processes this for transaction id
+     * Passes it on to the invokeChainCode fn
+     *
+     * @param {SecurityContext} securityContext - The user's security context
+     * @param {resource|object} transaction - the transaction
+     * @param {Serializer} [serializer]  needed ONLY if the transaction passed is not a resource but pure json
+     * @param {string} [functionName]  The name of the function to call default is submitTransaction.
+     */
+    static async submitTransaction(securityContext,  transaction, serializer,functionName = 'submitTransaction'){
+        Util.securityCheck(securityContext);
+
+        let txId = await Util.createTransactionId(securityContext);
+        let json;
+
+        if (transaction instanceof Resource){
+            transaction.setIdentifier(txId.idStr);
+            json = serializer.toJSON(transaction);
+
+        } else {
+            transaction.transactionId = txId.idStr;
+            json=transaction;
+        }
+
+        await Util.invokeChainCode(securityContext, functionName, [JSON.stringify(json)], { transactionId: txId.id });
+
     }
 
     /**

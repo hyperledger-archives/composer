@@ -43,5 +43,5 @@ exclude: [
          ]
 
 google_tracking_id:
-  development: UA-91314349-2
-  production: UA-91314349-1
+  development-disabled: UA-91314349-2
+  production-disabled: UA-91314349-1

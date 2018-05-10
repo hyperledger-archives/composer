@@ -22,7 +22,7 @@ const IdCard = require('composer-common').IdCard;
 const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const SecurityContext = require('composer-common').SecurityContext;
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
+
 
 const version = require('../package.json').version;
 
@@ -40,7 +40,7 @@ describe('AdminConnection', () => {
         name: testProfileName,
         'x-type': 'hlfv1'
     };
-
+    const startTxId = {idStr:'c89291eb-969f-4b04-b653-82deb5ee0ba1'};
     let mockConnectionManager;
     let mockConnection;
     let mockSecurityContext;
@@ -107,7 +107,7 @@ describe('AdminConnection', () => {
         faultyCard = new IdCard(faultyMetaData, minimalConnectionProfile);
         credentialsCard = new IdCard(minimalMetadata, minimalConnectionProfile);
         credentialsCard.setCredentials(validCredentials);
-
+        sandbox.stub(Util, 'createTransactionId').resolves(startTxId);
     });
 
     afterEach(() => {
@@ -236,6 +236,7 @@ describe('AdminConnection', () => {
     });
 
     describe('#start', () => {
+
         const networkName = 'network-name';
         const networkVersion = '1.0.0-test';
         const identityName = 'admin';
@@ -268,7 +269,7 @@ describe('AdminConnection', () => {
         const expectedStartTransaction = {
             $class : 'org.hyperledger.composer.system.StartBusinessNetwork',
             timestamp : '1970-01-01T00:00:00.000Z',
-            transactionId : sinon.match.string
+            transactionId : startTxId.idStr
         };
         const expectedNetworkAdminBootstrapTransactions = {
             bootstrapTransactions : [
@@ -317,6 +318,7 @@ describe('AdminConnection', () => {
             mockSecurityContext.getUser.returns(identityName);
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
+
         });
 
         it('should error if neither networkAdmins or bootstrapTransactions specified', () => {
@@ -494,14 +496,14 @@ describe('AdminConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version : version
             })));
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
@@ -538,23 +540,23 @@ describe('AdminConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
-                    sinon.assert.calledOnce(Util.securityCheck);
+                    sinon.assert.calledTwice(Util.securityCheck);
                 });
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+
             mockConnection.invokeChainCode.resolves();
             adminConnection.connection = mockConnection;
             return adminConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
