@@ -16,9 +16,8 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 /* tslint:disable:object-literal-key-quotes */
-import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
-import { EventEmitter } from '@angular/core';
-import { FormsModule, Validators } from '@angular/forms';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';

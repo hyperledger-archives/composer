@@ -15,25 +15,19 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input, Component } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Component, Directive, Input } from '@angular/core';
 import { TestComponent } from './test.component';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Resource } from 'composer-common';
+import { BusinessNetworkDefinition, Introspector, Resource, TransactionDeclaration } from 'composer-common';
 import { DrawerDismissReasons } from '../common/drawer';
 
 import * as sinon from 'sinon';
 
 import * as chai from 'chai';
 import { BusinessNetworkConnection } from 'composer-client';
-import {
-    Introspector,
-    BusinessNetworkDefinition,
-    TransactionDeclaration
-} from 'composer-common';
 
 let should = chai.should();
 

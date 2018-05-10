@@ -97,6 +97,7 @@ describe('Authentication REST API unit tests', () => {
     after(() => {
         ldapserver.close();
         delete process.env.COMPOSER_PROVIDERS;
+        return adminConnection.undeploy();
     });
 
     describe('POST /auth/ldap', () => {

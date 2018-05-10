@@ -33,12 +33,14 @@ class PouchDBDataCollection extends DataCollection {
      * @param {DataService} dataService The owning data service.
      * @param {Dexie} db The database to use.
      * @param {string} collectionId The collection ID to use.
+     * @param {string} uuid The uuid to use
      */
-    constructor(dataService, db, collectionId) {
+    constructor(dataService, db, collectionId, uuid) {
         super(dataService);
         const method = 'constructor';
         LOG.entry(method, dataService, db, collectionId);
         this.db = db;
+        this.uuid = uuid;
         this.collectionId = collectionId;
         LOG.exit(method);
     }
@@ -52,8 +54,15 @@ class PouchDBDataCollection extends DataCollection {
     getAll() {
         const method = 'getAll';
         LOG.entry(method);
-        const startKey = pouchCollate.toIndexableString([this.collectionId]);
-        const endKey = pouchCollate.toIndexableString([this.collectionId, '\uffff']);
+        let compositeKey = [this.collectionId];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const startKey = pouchCollate.toIndexableString(compositeKey);
+        const endCompositeKey = compositeKey;
+        endCompositeKey.push('\uffff');
+        const endKey = pouchCollate.toIndexableString(endCompositeKey);
         return this.db.allDocs({ include_docs: true, startkey: startKey, endkey: endKey, inclusive_end: false })
             .then((response) => {
                 const result = response.rows.map((row) => {
@@ -76,7 +85,12 @@ class PouchDBDataCollection extends DataCollection {
     get(id) {
         const method = 'get';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([this.collectionId, id]);
+        let compositeKey = [this.collectionId, id];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (!doc) {
@@ -97,7 +111,12 @@ class PouchDBDataCollection extends DataCollection {
     exists(id) {
         const method = 'exists';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([this.collectionId, id]);
+        let compositeKey = [this.collectionId, id];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 LOG.exit(method, !!doc);
@@ -118,7 +137,14 @@ class PouchDBDataCollection extends DataCollection {
         const method = 'add';
         LOG.entry(method, id, object, force);
         force = !!force;
-        const key = pouchCollate.toIndexableString([this.collectionId, id]);
+
+        let compositeKey = [this.collectionId, id];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+            object.$networkId = this.uuid;
+        }
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (doc && !force) {
@@ -141,7 +167,13 @@ class PouchDBDataCollection extends DataCollection {
     update(id, object) {
         const method = 'update';
         LOG.entry(method, id, object);
-        const key = pouchCollate.toIndexableString([this.collectionId, id]);
+        let compositeKey = [this.collectionId, id];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+            object.$networkId = this.uuid;
+        }
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (!doc) {
@@ -163,7 +195,12 @@ class PouchDBDataCollection extends DataCollection {
     remove(id) {
         const method = 'remove';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([this.collectionId, id]);
+        let compositeKey = [this.collectionId, id];
+        if(this.uuid) {
+            compositeKey.unshift(this.uuid);
+        }
+
+        const key = pouchCollate.toIndexableString(compositeKey);
         return PouchDBUtils.getDocument(this.db, key)
             .then((doc) => {
                 if (!doc) {

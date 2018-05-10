@@ -15,7 +15,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -25,24 +25,24 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
 
 import {
-    Resource,
-    BusinessNetworkDefinition,
-    Serializer,
-    Introspector,
     AssetDeclaration,
-    ParticipantDeclaration,
-    TransactionDeclaration,
+    BusinessNetworkDefinition,
     ClassDeclaration,
     Factory,
-    ModelFile
-
+    Introspector,
+    ModelFile,
+    ParticipantDeclaration,
+    Resource,
+    Serializer,
+    TransactionDeclaration
 } from 'composer-common';
 
-import { BusinessNetworkConnection, AssetRegistry } from 'composer-client';
+import { AssetRegistry, BusinessNetworkConnection } from 'composer-client';
 
 import { ResourceComponent } from './resource.component';
 
 import * as sinon from 'sinon';
+
 let should = chai.should();
 
 @Component({
