@@ -72,9 +72,6 @@
       }
     }
   },
-  "peerDependencies": {
-    "composer-common": "0.19.6"
-  },
   "dependencies": {
     "composer-runtime": "0.19.6",
     "composer-runtime-pouchdb": "0.19.6",
