@@ -85,7 +85,7 @@ Feature: Cli network steps
     Scenario: Using the CLI, I can create new Assets by submitting transactions
         When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.hyperledger_composer.marbles.NewMarble", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
+            composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         And The stdout information should include text matching /Command succeeded/
