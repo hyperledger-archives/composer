@@ -24,7 +24,7 @@
 set -e
 
 # Array of supported versions
-declare -a versions=('trusty' 'xenial' 'yakkety');
+declare -a versions=('trusty' 'xenial' 'yakkety' 'bionic');
 
 # check the version and extract codename of ubuntu if release codename not provided by user
 if [ -z "$1" ]; then
@@ -101,7 +101,12 @@ fi
 
 # Install Docker
 echo "# Installing Docker"
-sudo apt-get -y install docker-ce
+
+if [ "${CODENAME}" == "bionic" ]; then
+    sudo apt-get -y install docker.io
+else
+    sudo apt-get -y install docker-ce
+fi
 
 # Add user account to the docker group
 sudo usermod -aG docker $(whoami)
@@ -115,7 +120,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 # Install python v2 if required
 set +e
 COUNT="$(python -V 2>&1 | grep -c 2.)"
-if [ ${COUNT} -ne 1 ]
+if [ ${COUNT} -ne 0 ]
 then
    sudo apt-get install -y python-minimal
 fi
