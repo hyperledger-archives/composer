@@ -44,16 +44,16 @@ Business network cards are stored in a business network card store, which by def
 
 ### Step 4: Uninstall {{site.data.conrefs.hlf_full}}
 
-You control your local {{site.data.conrefs.hlf_full}} runtime using a set of scripts which you'll find in `~/fabric-tools` if you followed the suggested defaults.
+You control your local {{site.data.conrefs.hlf_full}} runtime using a set of scripts which you'll find in `~/fabric-dev-servers` if you followed the suggested defaults.
 
 1. Stop the local {{site.data.conrefs.hlf_full}} runtime and remove any runtime Docker containers or images:
 
-        ~/fabric-tools/stopFabric.sh
-        ~/fabric-tools/teardownFabric.sh
+        ~/fabric-dev-servers/stopFabric.sh
+        ~/fabric-dev-servers/teardownFabric.sh
 
 2. Uninstall the local {{site.data.conrefs.hlf_full}} runtime:
 
-        rm -rf ~/fabric-tools
+        rm -rf ~/fabric-dev-servers
 
 > Congratulations, you have uninstalled your development environment. To continue developing your blockchain applications, you will need to install the development tools from scratch.
 
