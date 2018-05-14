@@ -58,7 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
                 return results;
             }
         }
@@ -97,7 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
                 return results;
             }
         }

@@ -37,8 +37,11 @@ class EngineQueries {
     executeQuery(context, args) {
         const method = 'executeQuery';
         LOG.entry(method, context, args);
+        let t0 = process.hrtime();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'executeQuery', ['queryType', 'query', 'parameters']));
         }
 
@@ -48,6 +51,7 @@ class EngineQueries {
 
         // Validate the query type.
         if (queryType !== 'build' && queryType !== 'named') {
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
             throw new Error(util.format('Invalid argument "queryType" with value "%s", expecting "build" or "named"', [queryType]));
         }
 
@@ -92,6 +96,7 @@ class EngineQueries {
             })
             .then((objects) => {
                 LOG.exit(method, objects);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
                 return objects;
             });
 

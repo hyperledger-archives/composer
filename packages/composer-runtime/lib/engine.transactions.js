@@ -35,8 +35,11 @@ class EngineTransactions {
     submitTransaction(context, args) {
         const method = 'submitTransaction';
         LOG.entry(method, context, args);
+        let t0 = process.hrtime();
+
         if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'submitTransaction', [ 'serializedResource']));
         }
 
@@ -68,7 +71,6 @@ class EngineTransactions {
         LOG.debug(method, 'Parsed transaction, resolving it', transaction);
         let resolvedTransaction;
 
-
         // Get the historian.
         LOG.debug(method, 'Getting historian');
         return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord')
@@ -89,7 +91,6 @@ class EngineTransactions {
                 return context.getResolver().resolve(transaction);
             })
             .then((resolvedTransaction_) => {
-
                 // Save the resolved transaction.
                 resolvedTransaction = resolvedTransaction_;
 
@@ -107,7 +108,6 @@ class EngineTransactions {
 
             })
             .then(() => {
-
                 // Execute any user transaction processor functions.
                 const api = context.getApi();
                 return context.getCompiledScriptBundle().execute(api, resolvedTransaction)
@@ -117,7 +117,6 @@ class EngineTransactions {
 
             })
             .then(() => {
-
                 // Check that a transaction processor function was executed.
                 if (totalCount === 0) {
                     const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
@@ -140,6 +139,7 @@ class EngineTransactions {
             .then(() => {
                 context.clearTransaction();
                 LOG.exit(method);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
             });
 
     }
@@ -154,6 +154,7 @@ class EngineTransactions {
     createHistorianRecord(transaction,context) {
         const method = 'createHistorianRecord';
         LOG.entry(method,transaction,context);
+        let t0 = process.hrtime();
         // For reference the historian record looks like this
         // asset HistorianRecord identified by transactionId {
         //     o String      transactionId
@@ -197,7 +198,6 @@ class EngineTransactions {
         }
 
         // get the cached indentity
-        // TODO there is the issue with the Admin userid that will be resolved in due course
         let id = context.getIdentity();
         if (id){
             record.identityUsed = factory.newRelationship(id.getNamespace(),id.getType(),id.getIdentifier());
@@ -205,7 +205,8 @@ class EngineTransactions {
             LOG.debug(method, 'assuming admin userid again');
         }
 
-
+        LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (process.hrtime(t0)[0]*1e3 + process.hrtime(t0)[1]*1e-6));
         return Promise.resolve(record);
 
     }
