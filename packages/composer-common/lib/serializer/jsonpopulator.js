@@ -20,6 +20,46 @@ const RelationshipDeclaration = require('../introspect/relationshipdeclaration')
 const Relationship = require('../model/relationship');
 const Util = require('../util');
 const ModelUtil = require('../modelutil');
+const ValidationException = require('./validationexception');
+
+/**
+ * Check if a given property name is a system property, e.g. '$class'.
+ * @param {String} name property name.
+ * @return {boolean} true for a system property; otherwise false.
+ * @private
+ */
+function isSystemProperty(name) {
+    return name.startsWith('$');
+}
+
+/**
+ * Get all properties on a resource object that both have a value and are not system properties.
+ * @param {Object} resourceData JSON object representation of a resource.
+ * @return {Array} property names.
+ * @private
+ */
+function getAssignableProperties(resourceData) {
+    return Object.keys(resourceData).filter((property) => {
+        return !isSystemProperty(property) && !Util.isNull(resourceData[property]);
+    });
+}
+
+/**
+ * Assert that all resource properties exist in a given class declaration.
+ * @param {Array} properties Property names.
+ * @param {ClassDeclaration} classDeclaration class declaration.
+ * @throws {ValidationException} if any properties are not defined by the class declaration.
+ * @private
+ */
+function validateProperties(properties, classDeclaration) {
+    const expectedProperties = classDeclaration.getProperties().map((property) => property.getName());
+    const invalidProperties = properties.filter((property) => !expectedProperties.includes(property));
+    if (invalidProperties.length > 0) {
+        const errorText = `Unexpected properties for type ${classDeclaration.getFullyQualifiedName()}: ` +
+            invalidProperties.join(', ');
+        throw new ValidationException(errorText);
+    }
+}
 
 /**
  * Populates a Resource with data from a JSON object graph. The JSON objects
@@ -74,15 +114,16 @@ class JSONPopulator {
         const jsonObj = parameters.jsonStack.pop();
         const resourceObj = parameters.resourceStack.pop();
 
-        const properties = classDeclaration.getProperties();
-        for(let n=0; n < properties.length; n++) {
-            const property = properties[n];
-            const value = jsonObj[property.getName()];
-            if(!Util.isNull(value)) {
-                parameters.jsonStack.push(value);
-                resourceObj[property.getName()] = property.accept(this,parameters);
-            }
-        }
+        const properties = getAssignableProperties(jsonObj);
+        validateProperties(properties, classDeclaration);
+
+        properties.forEach((property) => {
+            const value = jsonObj[property];
+            parameters.jsonStack.push(value);
+            const classProperty = classDeclaration.getProperty(property);
+            resourceObj[property] = classProperty.accept(this,parameters);
+        });
+
         return resourceObj;
     }
 
@@ -110,7 +151,6 @@ class JSONPopulator {
 
         return result;
     }
-
 
     /**
     *
