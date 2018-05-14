@@ -31,7 +31,6 @@
             "coverage",
             "dist",
             "node_modules",
-            "docker",
             "e2e/data/files/importBanned.wombat",
             "e2e/data/files/importReadMe.md"
         ],
@@ -52,6 +51,11 @@
             ".block"
         ],
         "insert_license": false,
+        "default_format": {
+            "eachLine": {
+                "prepend": "# "
+            }
+        },
         "license_formats": {
             "js|ts|scss|cto|acl|qry": {
                 "prepend": "/*",
@@ -60,7 +64,7 @@
                     "prepend": " * "
                 }
             },
-            "gitkeep|cfignore|nvmrc|npmrc|editorconfig": {
+            "gitkeep|cfignore|nvmrc|npmrc|editorconfig|ppc64le": {
                 "eachLine": {
                     "prepend": "# "
                 }

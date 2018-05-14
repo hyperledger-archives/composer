@@ -72,7 +72,6 @@
     "exact_paths": [
       "composer-logs",
       "coverage",
-      "docker",
       "gen",
       "node_modules",
       ".nyc-output"
