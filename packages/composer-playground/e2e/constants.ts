@@ -30,6 +30,9 @@ export class Constants {
     static readonly webPlaygroundPort = 3001;
     static readonly fabricPlaygroundPort = 3002;
 
+    static readonly fabricCPName = 'hlfv1';
+    static readonly webCPName = 'web-$default';
+
     static readonly downloadLocation = path.join(__dirname, 'downloads');
     static readonly sampleNetworkDir = path.join(__dirname, 'data/sample-networks');
     static readonly tempDir = path.join(__dirname, 'tmp');

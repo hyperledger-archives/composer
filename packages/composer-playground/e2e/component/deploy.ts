@@ -100,6 +100,11 @@ export class Deploy {
 
     }
 
+    static goBackToLogin() {
+        let backButton = element(by.css('.action'));
+        return OperationsHelper.click(backButton);
+    }
+
     // Deploy
     static clickDeploy() {
        return OperationsHelper.click(element(by.id('import_confirm')));

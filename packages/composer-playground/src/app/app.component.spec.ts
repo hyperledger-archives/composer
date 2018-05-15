@@ -66,6 +66,7 @@ class RouterStub {
     }
 
     set eventParams(event) {
+        console.log('I AM A CHICKEN');
         let nav;
         if (event.nav === 'end') {
             nav = new NavigationEnd(0, event.url, event.urlAfterRedirects);
@@ -344,7 +345,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent(false);
 
@@ -381,7 +382,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent(false);
 
@@ -397,7 +398,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent();
 
@@ -421,7 +422,7 @@ describe('AppComponent', () => {
         }));
 
         it('should show header links if logged in', fakeAsync(() => {
-            routerStub.eventParams = {url: '/editor', nav: 'end'};
+            routerStub.eventParams = {url: '/editor', urlAfterRedirects: '/editor', nav: 'end'};
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
