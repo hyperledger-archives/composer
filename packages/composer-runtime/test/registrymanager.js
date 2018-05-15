@@ -28,7 +28,6 @@ const Serializer = require('composer-common').Serializer;
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
-chai.use(require('chai-subset'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
@@ -249,14 +248,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -272,14 +269,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -287,7 +282,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -295,7 +289,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             });
@@ -308,15 +301,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }, {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
@@ -330,14 +314,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Participant',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -345,7 +327,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             });
@@ -355,11 +336,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(1);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }]);
                 });
         });
 
@@ -368,14 +344,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -383,7 +357,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -391,7 +364,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             });
@@ -404,11 +376,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(1);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([ {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
@@ -417,14 +384,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -432,7 +397,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -440,7 +404,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             });
@@ -453,15 +416,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }, {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
@@ -490,12 +444,6 @@ describe('RegistryManager', () => {
             return registryManager.get('Asset', 'doges')
                 .then((registry) => {
                     registry.should.be.an.instanceOf(Registry);
-                    registry.should.containSubset({
-                        type: 'Asset',
-                        // registryId: 'doges',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    });
                 });
         });
 

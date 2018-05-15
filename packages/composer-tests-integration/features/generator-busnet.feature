@@ -93,7 +93,7 @@ Feature: Business Network Generator
     Scenario: I can create an asset in the deployed template business network
          When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@my-bus-net -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "conga.busnet.SampleAsset", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#conga.busnet.SampleAsset", "resources": [{"$class": "conga.busnet.SampleAsset","assetId": "newAsset","value": "101", "owner": "conga.busnet.SampleParticipant#bob"}]}'
+            composer transaction submit --card admin@my-bus-net -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#conga.busnet.SampleAsset", "resources": [{"$class": "conga.busnet.SampleAsset","assetId": "newAsset","value": "101", "owner": "conga.busnet.SampleParticipant#bob"}]}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         Then The stdout information should include text matching /Command succeeded/

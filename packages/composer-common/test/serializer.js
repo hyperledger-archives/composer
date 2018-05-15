@@ -296,6 +296,29 @@ describe('Serializer', () => {
             }).should.throw(/missing required field/);
         });
 
+        it('should error on unexpected properties', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: 'blah'
+            };
+            (() => serializer.fromJSON(json))
+                .should.throw(/WRONG/);
+        });
+
+        it('should not error on unexpected properties if their value is undefined', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.should.be.an.instanceOf(Resource);
+        });
     });
 
 });

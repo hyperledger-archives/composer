@@ -36,8 +36,11 @@ class EngineResources {
     getAllResourcesInRegistry(context, args) {
         const method = 'getAllResourcesInRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllResourcesInRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -53,6 +56,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -67,8 +71,11 @@ class EngineResources {
     getResourceInRegistry(context, args) {
         const method = 'getResourceInRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -83,6 +90,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -97,8 +105,11 @@ class EngineResources {
     existsResourceInRegistry(context, args) {
         const method = 'existsResourceInRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'existsResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -110,6 +121,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -125,8 +137,11 @@ class EngineResources {
     resolveAllResourcesInRegistry(context, args) {
         const method = 'resolveAllResourcesInRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveAllResourcesInRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -155,6 +170,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -170,8 +186,11 @@ class EngineResources {
     resolveResourceInRegistry(context, args) {
         const method = 'resolveResourceInRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'resolveResourceInRegistry', ['registryType', 'registryId', 'resourceId']));
         }
         let registryType = args[0];
@@ -191,6 +210,7 @@ class EngineResources {
             })
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
