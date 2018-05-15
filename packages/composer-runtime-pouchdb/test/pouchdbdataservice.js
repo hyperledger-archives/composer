@@ -212,8 +212,49 @@ describe('PouchDBDataService', () => {
                 .should.be.rejectedWith(/Collection with ID .* does not exist/);
         });
 
-        it('should return an existing collection', () => {
+        it('should not perform a retrieve via getDocument() if passed a boolean true bypass parameter', () => {
+            let bypass = true;
+            return dataService.getCollection('doges1', bypass)
+                .then((result) => {
+                    pouchCollate.toIndexableString.should.not.have.been.called;
+                });
+        });
+
+        it('should perform a retrieve via getDocument() if passed a boolean false bypass parameter', () => {
+            let bypass = false;
+            return dataService.getCollection('doges1', bypass)
+                .then((result) => {
+                    pouchCollate.toIndexableString.should.have.been.called;
+                });
+        });
+
+        it('should perform a retrieve via getDocument() if not passed a bypass parameter', () => {
             return dataService.getCollection('doges1')
+                .then((result) => {
+                    pouchCollate.toIndexableString.should.have.been.called;
+                });
+        });
+
+        it('should return an existing collection if no bypass flags are passed', () => {
+            return dataService.getCollection('doges1')
+                .then((result) => {
+                    result.should.be.an.instanceOf(PouchDBDataCollection);
+                    result.db.should.equal(dataService.db);
+                    result.collectionId.should.equal('doges1');
+                });
+        });
+
+        it('should return an existing collection when retrieving', () => {
+            return dataService.getCollection('doges1', false)
+                .then((result) => {
+                    result.should.be.an.instanceOf(PouchDBDataCollection);
+                    result.db.should.equal(dataService.db);
+                    result.collectionId.should.equal('doges1');
+                });
+        });
+
+        it('should return an existing collection when bypassing retrieve', () => {
+            return dataService.getCollection('doges1', true)
                 .then((result) => {
                     result.should.be.an.instanceOf(PouchDBDataCollection);
                     result.db.should.equal(dataService.db);

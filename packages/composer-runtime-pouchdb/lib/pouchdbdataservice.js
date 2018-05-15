@@ -150,22 +150,28 @@ class PouchDBDataService extends DataService {
    /**
     * Get the collection with the specified ID.
     * @param {string} id The ID of the collection.
+    * @param {Boolean} bypass bypass existence check
     * @return {Promise} A promise that will be resolved with a {@link DataCollection}
     * when complete, or rejected with an error.
     */
-    getCollection(id) {
+    async getCollection(id, bypass) {
         const method = 'getCollection';
         LOG.entry(method, id);
-        const key = pouchCollate.toIndexableString([collectionObjectType, id]);
-        return PouchDBUtils.getDocument(this.db, key)
-            .then((doc) => {
-                if (!doc) {
-                    throw new Error(`Collection with ID '${id}' does not exist`);
-                }
-                let result = new PouchDBDataCollection(this, this.db, id);
-                LOG.exit(method, result);
-                return result;
-            });
+
+        if (bypass) {
+            let result = new PouchDBDataCollection(this, this.db, id);
+            LOG.exit(method, result);
+            return result;
+        } else {
+            const key = pouchCollate.toIndexableString([collectionObjectType, id]);
+            let doc = await PouchDBUtils.getDocument(this.db, key);
+            if (!doc) {
+                throw new Error(`Collection with ID '${id}' does not exist`);
+            }
+            let result = new PouchDBDataCollection(this, this.db, id);
+            LOG.exit(method, result);
+            return result;
+        }
     }
 
    /**
