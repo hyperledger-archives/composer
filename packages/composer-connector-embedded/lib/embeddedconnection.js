@@ -441,7 +441,7 @@ class EmbeddedConnection extends Connection {
      * @return {Promise} A promise that is resolved with a null
      */
     async createTransactionId(securityContext) {
-        return Promise.resolve(null);
+        return null;
     }
 
     /**
