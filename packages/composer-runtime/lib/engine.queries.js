@@ -37,8 +37,11 @@ class EngineQueries {
     executeQuery(context, args) {
         const method = 'executeQuery';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'executeQuery', ['queryType', 'query', 'parameters']));
         }
 
@@ -92,6 +95,7 @@ class EngineQueries {
             })
             .then((objects) => {
                 LOG.exit(method, objects);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return objects;
             });
 

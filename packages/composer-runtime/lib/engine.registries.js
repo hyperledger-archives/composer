@@ -36,8 +36,11 @@ class EngineRegistries {
     getAllRegistries(context, args) {
         const method = 'getAllRegistries';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getAllRegistries', ['registryType','includeSystem']));
         }
         let registryType = args[0];
@@ -45,6 +48,7 @@ class EngineRegistries {
         return context.getRegistryManager().getAll(registryType,includeSystem)
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -59,8 +63,11 @@ class EngineRegistries {
     getRegistry(context, args) {
         const method = 'getRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'getRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -68,6 +75,7 @@ class EngineRegistries {
         return context.getRegistryManager().get(registryType, registryId)
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -82,8 +90,11 @@ class EngineRegistries {
     existsRegistry(context, args) {
         const method = 'existsRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 2) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'existsRegistry', ['registryType', 'registryId']));
         }
         let registryType = args[0];
@@ -91,6 +102,7 @@ class EngineRegistries {
         return context.getRegistryManager().exists(registryType, registryId)
             .then((result) => {
                 LOG.exit(method, result);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return result;
             });
     }
@@ -105,8 +117,11 @@ class EngineRegistries {
     addRegistry(context, args) {
         const method = 'addRegistry';
         LOG.entry(method, context, args);
+        const t0 = Date.now();
+
         if (args.length !== 3) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'addRegistry', ['registryType', 'registryId', 'registryName']));
         }
         let registryType = args[0];
@@ -116,6 +131,7 @@ class EngineRegistries {
         return context.getRegistryManager().add(registryType, registryId, registryName)
             .then(() => {
                 LOG.exit(method);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             });
     }
 

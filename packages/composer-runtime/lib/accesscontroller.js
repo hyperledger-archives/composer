@@ -87,12 +87,15 @@ class AccessController {
     check(resource, access) {
         const method = 'check';
         LOG.entry(method, resource.getFullyQualifiedIdentifier(), access);
+        const t0 = Date.now();
+
         // Check to see if a participant has been set. If not, then ACL
         // enforcement is not enabled.
         let participant = this.participant;
         if (!participant) {
             LOG.debug(method, 'No participant');
             LOG.exit(method);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
@@ -105,6 +108,7 @@ class AccessController {
         if (!aclManager.getAclFile()) {
             LOG.debug(method, 'No ACL file');
             LOG.exit(method);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             return Promise.resolve();
         }
 
@@ -132,6 +136,7 @@ class AccessController {
                 // If a ACL rule permitted the action, return.
                 if (result) {
                     LOG.exit(method);
+                    LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                     return;
                 }
 
@@ -141,6 +146,7 @@ class AccessController {
             })
             .catch((error) => {
                 LOG.error(method, error);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 throw error;
             });
     }
