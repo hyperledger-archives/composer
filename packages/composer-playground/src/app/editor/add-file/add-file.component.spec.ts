@@ -412,7 +412,7 @@ This business network defines:
 
             component.fileType.should.equal('cto');
             component.currentFile.should.equal(mockModelFile);
-            component.currentFileName.should.equal('models/org.acme.model.cto');
+            component.currentFileName.should.equal('models/org.example.model.cto');
         }));
 
         it('should append the file number to the cto file name and namespace', fakeAsync(inject([FileService], (fileService: FileService) => {
@@ -420,7 +420,7 @@ This business network defines:
             tick();
 
             let existingModelFile = sinon.createStubInstance(ModelFile);
-            existingModelFile.getNamespace.returns('org.acme.model');
+            existingModelFile.getNamespace.returns('org.example.model');
             mockFileService.getModelFiles.returns([existingModelFile]);
 
             let modelRadioElement = addFileElement.query(By.css('#file-type-cto'));
@@ -430,10 +430,10 @@ This business network defines:
             fixture.detectChanges();
             tick();
 
-            mockFileService.createModelFile.should.have.been.calledWith(sinon.match(/namespace org.acme.model0/), 'models/org.acme.model0.cto');
+            mockFileService.createModelFile.should.have.been.calledWith(sinon.match(/namespace org.example.model0/), 'models/org.example.model0.cto');
             component.fileType.should.equal('cto');
             component.currentFile.should.equal(mockModelFile);
-            component.currentFileName.should.equal('models/org.acme.model0.cto');
+            component.currentFileName.should.equal('models/org.example.model0.cto');
         })));
 
         it('should change current file to a query file upon calling createQueryFile', fakeAsync(() => {
