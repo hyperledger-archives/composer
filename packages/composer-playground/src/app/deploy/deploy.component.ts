@@ -234,7 +234,7 @@ rule NetworkAdminSystem {
  * limitations under the License.
  */
 
-namespace org.acme.empty
+namespace org.example.empty
 `;
 
         this.currentBusinessNetworkPromise = Promise.resolve().then(() => {

@@ -34,7 +34,7 @@ export class AddFileComponent {
     maxFileSize: number = 5242880;
     supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl', '.qry'];
 
-    addModelNamespace: string = 'org.acme.model';
+    addModelNamespace: string = 'org.example.model';
     addModelPath: string = 'models/';
     addModelFileExtension: string = '.cto';
     addScriptFileName: string = 'lib/script';
