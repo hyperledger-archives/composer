@@ -553,23 +553,43 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * initialize the channel if it hasn't been done
-     *
-     * @returns {Promise} a promise that the channel is initialized
+     * initialize the channel if it hasn't been done, manipulate the peer list in the channel to cycle
+     * through ledger peers if any are down. This is a workaround until a better soln from
+     * https://jira.hyperledger.org/browse/FAB-10065
+     * is available.
      * @private
      */
-    _initializeChannel() {
+    async _initializeChannel() {
         const method = '_initializeChannel';
         LOG.entry(method);
-        if (!this.initialized) {
-            return this.channel.initialize()
-                .then(() => {
-                    LOG.exit(method);
-                    this.initialized = true;
-                });
+
+        const ledgerPeers = this.channel.getPeers().filter((cPeer) => {
+            return cPeer.isInRole(FABRIC_CONSTANTS.NetworkConfig.LEDGER_QUERY_ROLE);
+        });
+
+        let ledgerPeerIndex = 0;
+
+        while (!this.initialized) {
+            try {
+                await this.channel.initialize();
+                this.initialized = true;
+            } catch(error) {
+                LOG.warn(method, `error trying to initialize channel. Error returned ${error}`);
+                if (ledgerPeerIndex === ledgerPeers.length - 1) {
+                    throw new Error(`Unable to initalize channel. Attempted to contact ${ledgerPeers.length} Peers. Last error was ${error}`);
+                }
+                ledgerPeerIndex++;
+                const nextPeer = ledgerPeers[ledgerPeerIndex];
+                LOG.info(method, `Moving ${nextPeer.getName()} to top of queue`);
+                const peerIndex = this.channel.getPeers().indexOf(nextPeer);
+                this.channel.getPeers().splice(peerIndex, 1);
+                this.channel.getPeers().unshift(nextPeer);
+            }
         }
-        LOG.exit(method);
-        return Promise.resolve();
+
+        // log the state of initialized although not explicitly returned
+        LOG.exit(method, this.initialized);
+
     }
 
     /**
