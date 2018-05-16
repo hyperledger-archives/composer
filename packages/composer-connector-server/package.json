@@ -66,10 +66,9 @@
       }
     }
   },
-  "peerDependencies": {
-    "composer-common": "0.19.6"
-  },
   "dependencies": {
+    "composer-common": "0.19.6",
+    "composer-connector-embedded": "0.19.6",
     "composer-connector-hlfv1": "0.19.6",
     "serializerr": "1.0.3",
     "socket.io": "1.7.3",
@@ -78,8 +77,6 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "composer-common": "0.19.6",
-    "composer-connector-embedded": "0.19.6",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "license-check-and-add": "2.3.1",

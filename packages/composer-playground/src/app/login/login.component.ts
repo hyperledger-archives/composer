@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
@@ -57,6 +57,7 @@ export class LoginComponent implements OnInit {
     private config = new Config();
 
     constructor(private router: Router,
+                private route: ActivatedRoute,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private identityCardService: IdentityCardService,
@@ -75,7 +76,42 @@ export class LoginComponent implements OnInit {
                 this.usingLocally = !this.configService.isWebOnly();
                 this.config = this.configService.getConfig();
                 return this.loadIdentityCards();
+            }).then(() => {
+                this.router.events.subscribe((event) => {
+                    console.log('ROUTER SUB', event);
+                    if (event instanceof NavigationEnd) {
+                        this.handleRouteChange();
+                    }
+                });
+                this.handleRouteChange();
             });
+    }
+
+    handleRouteChange() {
+        switch (this.route.snapshot.fragment) {
+        case 'deploy':      this.deployNetwork(decodeURIComponent(this.route.snapshot.queryParams['ref']));
+                            break;
+        case 'create-card': this.createIdCard();
+                            break;
+        default:            if (this.route.snapshot.fragment || Object.keys(this.route.snapshot.queryParams).length > 0) {
+                                this.goLoginMain();
+                            } else {
+                                this.closeSubView();
+                            }
+                            break;
+        }
+    }
+
+    goLoginMain(): void {
+        this.router.navigate(['/login']);
+    }
+
+    goDeploy(connectionProfileRef): void {
+        this.router.navigate(['/login'], {fragment: 'deploy', queryParams: {ref: connectionProfileRef}});
+    }
+
+    goCreateCard(): void {
+        this.router.navigate(['/login'], {fragment: 'create-card'});
     }
 
     loadIdentityCards(reload: boolean = false): Promise<void> {
@@ -218,16 +254,20 @@ export class LoginComponent implements OnInit {
     }
 
     createIdCard(): void {
+        if (!this.usingLocally) {
+            this.goLoginMain();
+            return;
+        }
         this.showSubScreen = true;
         this.creatingIdCard = true;
     }
 
     finishedCardCreation(event) {
         if (event) {
-            this.closeSubView();
+            this.goLoginMain();
             return this.loadIdentityCards();
         } else {
-            this.closeSubView();
+            this.goLoginMain();
         }
     }
 
@@ -236,6 +276,11 @@ export class LoginComponent implements OnInit {
     }
 
     deployNetwork(connectionProfileRef): void {
+        if (!this.canDeploy(connectionProfileRef)) {
+            this.goLoginMain();
+            return;
+        }
+
         let peerCardRef = this.identityCardService.getAdminCardRef(connectionProfileRef, IdentityCardService.peerAdminRole);
 
         this.identityCardService.setCurrentIdentityCard(peerCardRef);
@@ -251,9 +296,7 @@ export class LoginComponent implements OnInit {
     }
 
     finishedDeploying(): Promise<void> {
-        this.showSubScreen = false;
-        this.showDeployNetwork = false;
-
+        this.goLoginMain();
         return this.loadIdentityCards(true);
     }
 

@@ -17,7 +17,7 @@
         <button id="importIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import Business Network Card</span>
         </button>
-        <button id="createIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="createIdCard()">
+        <button id="createIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="goCreateCard()">
             <span>Create Business Network Card</span>
         </button>
     </div>
@@ -43,7 +43,7 @@
             </identity-card>
             <button type="button" class="connection-profile-card"
                     *ngIf="canDeploy(connectionProfileRef)"
-                    (click)="deployNetwork(connectionProfileRef)">
+                    (click)="goDeploy(connectionProfileRef)">
                 <span class="card-content">
                     <svg class="ibm-icon" aria-hidden="true">
                         <use xlink:href="#icon-Network_Create"></use>
@@ -63,7 +63,7 @@
 </section>
 <section class="sub-view" *ngIf="showSubScreen">
     <div class="header">
-        <button type="button" class="action" (click)="closeSubView()">
+        <button type="button" class="action" (click)="goLoginMain()">
             <svg class="ibm-icon vertical-top rotate" aria-hidden="true">
                 <use xlink:href="#icon-forward_16"></use>
             </svg>

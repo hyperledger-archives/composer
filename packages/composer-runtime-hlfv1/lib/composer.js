@@ -86,8 +86,8 @@ class Composer {
      * @returns {promise} a promise that resolves with either a shim success status or shim error status
      */
     async Init(stub) {
-        let t0 = process.hrtime();
         const method = 'Init';
+        const t0 = Date.now();
         try {
             await this.container.initLogging(stub);
             LOG.entry(method, stub);
@@ -97,12 +97,12 @@ class Composer {
             let nodeContext = this._createContext(engine, stub);
             await engine.init(nodeContext, fcn, params);
             LOG.exit(method);
-            LOG.debug('@PERF ' + method, 'Total duration for txnID [' + stub.getTxID() + ']: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
-            LOG.debug('@PERF ' + method, 'Total duration for txnID [' + stub.getTxID() + ']: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }
@@ -115,8 +115,8 @@ class Composer {
      * @returns {promise} a promise that resolves with either a shim success status or shim error status
      */
     async Invoke(stub) {
-        let t0 = process.hrtime();
         const method = 'Invoke';
+        const t0 = Date.now();
         try {
             await this.container.initLogging(stub);
             LOG.entry(method, stub);
@@ -127,16 +127,16 @@ class Composer {
             let payload = await engine.invoke(nodeContext, fcn, params);
             if (payload !== null && payload !== undefined) {
                 LOG.exit(method, payload);
-                LOG.debug('@PERF ' + method, 'Total duration for txnID [' + stub.getTxID() + ']: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
                 return shim.success(Buffer.from(JSON.stringify(payload)));
             }
             LOG.exit(method);
-            LOG.debug('@PERF ' + method, 'Total duration for txnID [' + stub.getTxID() + ']: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
-            LOG.debug('@PERF ' + method, 'Total duration for txnID [' + stub.getTxID() + ']: ', process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }

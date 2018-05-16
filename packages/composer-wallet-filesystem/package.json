@@ -76,9 +76,6 @@
       }
     }
   },
-  "peerDependencies": {
-    "composer-common": "0.19.6"
-  },
   "dependencies": {
     "mkdirp": "0.5.1",
     "rimraf": "2.5.4"

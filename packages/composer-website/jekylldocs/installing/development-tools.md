@@ -27,6 +27,8 @@ These instructions assume that you've not installed the tools and used them befo
 ### Step 1: Install the CLI tools
 There are a few useful CLI tools for {{site.data.conrefs.composer_short}} developers.  The most important one is `composer-cli`, which contains all the essential operations, so we'll install that first.  Next, we'll also pick up `generator-hyperledger-composer`, `composer-rest-server` and `Yeoman` plus the `generator-hyperledger-composer`.  Those last 3 are not core parts of the development environment, but they'll be useful if you're following the tutorials or developing applications that interact with your Business Network, so we'll get them installed now.
 
+Note that you **should not** use `su` or `sudo` for the following npm commands.
+
 1. Essential CLI tools:
 
         npm install -g composer-cli

@@ -141,11 +141,13 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         let welcomePromise;
-        if (event['url'] === '/login' && this.showWelcome) {
+        if (event['url'].startsWith('/login') && event['url'] !== '/login') {
+            this.showWelcome = false;
+        } else if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
         }
 
-        if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
+        if (event['url'].startsWith('/login') || event['urlAfterRedirects'].startsWith('/login')) {
             this.showHeaderLinks = false;
             try {
               this.config = this.configService.getConfig();
