@@ -56,6 +56,7 @@ const packages = [
     'composer-runtime-pouchdb',
     'composer-runtime-embedded',
     'composer-connector-embedded',
+    'composer-connector-proxy',
     'composer-admin',
     'composer-client',
     'loopback-connector-composer',

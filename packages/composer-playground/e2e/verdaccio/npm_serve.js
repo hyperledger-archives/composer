@@ -61,6 +61,10 @@ let packages = [
     'composer-report',
     'composer-cli',
     'composer-connector-server',
+    'composer-connector-proxy',
+    'composer-connector-embedded',
+    'composer-runtime-embedded',
+    'composer-runtime-pouchdb',
     'composer-playground-api',
     'composer-playground',
     'composer-documentation'

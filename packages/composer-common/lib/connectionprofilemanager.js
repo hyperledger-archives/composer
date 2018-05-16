@@ -85,7 +85,8 @@ class ConnectionProfileManager {
             .then(() => {
                 let connectionManager = connectionManagers[connectionType];
                 if (!connectionManager) {
-                    const mod = `composer-connector-${connectionType}`;
+                    const delegateTypeIndex = connectionType.toLowerCase().lastIndexOf('@');
+                    const mod = delegateTypeIndex === -1 || delegateTypeIndex === connectionType.length - 1 ? `composer-connector-${connectionType}` : `composer-connector-${connectionType.substring(delegateTypeIndex + 1)}`;
                     LOG.debug(METHOD, 'Looking for module', mod);
                     try {
                         // Check for the connection manager class registered using
