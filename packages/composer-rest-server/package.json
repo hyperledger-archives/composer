@@ -91,7 +91,6 @@
       "out",
       "composer-logs",
       "cli.js",
-      "docker",
       "public/lib/loadSwaggerUI.js"
     ],
     "file_type_method": "EXCLUDE",
@@ -100,6 +99,11 @@
       ".pem"
     ],
     "insert_license": false,
+    "default_format": {
+      "eachLine": {
+          "prepend": "# "
+      }
+    },
     "license_formats": {
       "js|qry|acl|cto|css": {
         "prepend": "/*",
@@ -108,7 +112,7 @@
           "prepend": " * "
         }
       },
-      "npmrc|editorconfig": {
+      "npmrc|editorconfig|ppc64Ie": {
         "eachLine": {
           "prepend": "# "
         }

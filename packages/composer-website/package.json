@@ -58,7 +58,6 @@
     "exact_paths_method": "EXCLUDE",
     "exact_paths": [
       "node_modules",
-      "jekylldocs/_plugins",
       "jsdoc-template/static",
       "jekylldocs/assets/js/autotrack.js",
       "jekylldocs/assets/js/libs/prettify.js",
@@ -88,7 +87,7 @@
           "prepend": " * "
         }
       },
-      "npmrc|editorconfig": {
+      "npmrc|editorconfig|rb": {
         "eachLine": {
           "prepend": "# "
         }
