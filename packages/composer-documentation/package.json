@@ -65,9 +65,9 @@
       "node_modules",
       "lib/processors/parsers",
       "out",
-      "_bnaTemplate",
+      "_bnaTemplate/assets.default/js",
       "_configs",
-      "_template",
+      "_template/assets.default",
       "bin/opus",
       "test/testfile.md",
       "_tmp"
@@ -75,16 +75,21 @@
     "file_type_method": "EXCLUDE",
     "file_types": [
       ".yml",
-      ".bna"
+      ".bna",
+      ".css"
     ],
     "insert_license": false,
     "license_formats": {
-      "js|pegjs": {
+      "js|pegjs|scss": {
         "prepend": "/*",
         "append": " */",
         "eachLine": {
           "prepend": " * "
         }
+      },
+      "njk": {
+        "prepend": "{#",
+        "append": "#}"
       },
       "md": {
         "file": "../../markdown-license.txt"

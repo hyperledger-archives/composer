@@ -111,6 +111,17 @@ describe('ConnectorServer', () => {
 
     });
 
+    describe('#getConnectionType', () => {
+        it('should return the complete type if there is no @ in the type', () => {
+            ConnectorServer.getConnectionType({'x-type':'hlfv1'}).should.equal('hlfv1');
+        });
+
+        it('should remove the delegated type', () => {
+            ConnectorServer.getConnectionType({'x-type':'embedded@proxy'}).should.equal('embedded');
+        });
+
+    });
+
     describe('#constructor', () => {
 
         const isFunction = (object) => {
@@ -446,13 +457,32 @@ describe('ConnectorServer', () => {
     describe('#connectionManagerConnect', () => {
 
         it('should connect', () => {
-            mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).resolves(mockConnection);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs(connectionProfile, businessNetworkIdentifier, connectionOptions).resolves(mockConnection);
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
             return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileManager.connect);
-                    sinon.assert.calledWith(mockConnectionProfileManager.connect, connectionProfile, businessNetworkIdentifier);
+                    sinon.assert.calledOnce(mockConnectionManager.connect);
+                    sinon.assert.calledWith(mockConnectionManager.connect, connectionProfile, businessNetworkIdentifier, connectionOptions);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, connectionID);
+                    connectorServer.connections[connectionID].should.equal(mockConnection);
+                });
+        });
+        it('should handle connect for a delegated type', () => {
+            const delegatedConnectionProfile = {
+                'x-type': 'embedded@proxy'
+            };
+
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs('embedded').resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs('myprofile', businessNetworkIdentifier, delegatedConnectionProfile).resolves(mockConnection);
+            sandbox.stub(uuid, 'v4').returns(connectionID);
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerConnect('myprofile', businessNetworkIdentifier, delegatedConnectionProfile, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.connect);
+                    sinon.assert.calledWith(mockConnectionManager.connect, 'myprofile', businessNetworkIdentifier, delegatedConnectionProfile);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null, connectionID);
                     connectorServer.connections[connectionID].should.equal(mockConnection);
@@ -460,7 +490,8 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle connection errors', () => {
-            mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).rejects(new Error('connection error'));
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs(connectionProfile, businessNetworkIdentifier, connectionOptions).rejects(new Error('connection error'));
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
             return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
