@@ -55,10 +55,13 @@ class EmbeddedConnectionManager extends ConnectionManager {
         const name = certificateObj.getName();
         const issuer = certificateObj.getIssuer();
         let secret = uuid.v4().substring(0, 8);
+        let options = {};
 
         // Allow an existing identity to be replaced in the connector wallet.
         if (await identities.exists(id)) {
-            secret = (await identities.get(id)).secret;
+            const curid = await identities.get(id);
+            secret = curid.secret;
+            options = curid.options;
             await identities.remove(id);
         }
         const identity = {
@@ -70,7 +73,7 @@ class EmbeddedConnectionManager extends ConnectionManager {
             publicKey,
             privateKey,
             imported: true,
-            options: {}
+            options
         };
 
         await identities.add(id, identity);

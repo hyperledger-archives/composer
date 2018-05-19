@@ -36,7 +36,7 @@ export class AdminService {
         if (ENV && ENV !== 'development') {
             ProxyConnectionManager.setConnectorServerURL(window.location.origin);
         }
-
+        ConnectionProfileManager.registerConnectionManager('proxy', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlf', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlfv1', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
