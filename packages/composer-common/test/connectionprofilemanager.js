@@ -91,6 +91,16 @@ describe('ConnectionProfileManager', () => {
             return cpm.getConnectionManagerByType( 'foo' ).should.eventually.be.an.instanceOf(TestConnectionManager);
         });
 
+        it('should use a registered delegated connection manager', () => {
+            /** test class */
+            class TestProxyConnectionManager extends ConnectionManager { }
+            ConnectionProfileManager.registerConnectionManager('testproxy', TestProxyConnectionManager);
+            let cpm = new ConnectionProfileManager();
+            cpm.should.not.be.null;
+            return cpm.getConnectionManagerByType( 'foo@testproxy' ).should.eventually.be.an.instanceOf(TestProxyConnectionManager);
+        });
+
+
         it('should handle a type of foo@ as foo@ when dynamically loading', () => {
             /** test class */
             class TestConnectionManager extends ConnectionManager { }

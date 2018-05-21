@@ -65,7 +65,6 @@ describe('EmbeddedConnectionManager', () => {
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
             await connectionManager.importIdentity('devFabric1', { connect: 'options' }, 'doge', testCertificate, testPrivateKey);
             sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
-            //const adminIdentityIdentifier = mockIdentitiesDataCollection.add.getCall(1).args[0];
             const adminIdentity1 = mockIdentitiesDataCollection.add.getCall(0).args[1];
             const adminIdentityIdentifier = adminIdentity1.identifier;
             const certificateObj = new Certificate(adminIdentity1.certificate);
@@ -78,14 +77,11 @@ describe('EmbeddedConnectionManager', () => {
             adminIdentity1.name.should.equal('doge');
             adminIdentity1.secret.should.equal('f892c30a');
             adminIdentity1.imported.should.be.true;
-            //const adminIdentity2 = mockIdentitiesDataCollection.add.getCall(1).args[1];
-            //adminIdentity1.should.deep.equal(adminIdentity2);
         });
 
         it('should replace existing identity with new identity if the identity exists', async () => {
-            //sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
             mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
-            mockIdentitiesDataCollection.get.withArgs('doge').resolves({secret: 'orgSecret'});
+            mockIdentitiesDataCollection.get.withArgs('doge').resolves({secret: 'orgSecret', options : {issuer: true}});
             mockIdentitiesDataCollection.add.withArgs('doge').resolves();
 
             await connectionManager.importIdentity('devFabric1', { connect: 'options' }, 'doge', testCertificate, testPrivateKey);
@@ -94,9 +90,6 @@ describe('EmbeddedConnectionManager', () => {
 
             sinon.assert.calledOnce(mockIdentitiesDataCollection.add);
             const adminIdentity1 = mockIdentitiesDataCollection.add.getCall(0).args[1];
-            //const adminIdentityIdentifier = mockIdentitiesDataCollection.add.getCall(1).args[0];
-            //const adminIdentity2 = mockIdentitiesDataCollection.add.getCall(1).args[1];
-            //adminIdentity1.should.deep.equal(adminIdentity2);
             const adminIdentityIdentifier = adminIdentity1.identifier;
             const certificateObj = new Certificate(adminIdentity1.certificate);
             certificateObj.getIdentifier().should.equal(adminIdentityIdentifier);
@@ -107,6 +100,7 @@ describe('EmbeddedConnectionManager', () => {
             adminIdentity1.issuer.should.equal('a3e3a2d42f1c55e1485c4d06ba8b5c64f83f697939346687b32bacaae5e38c8f');
             adminIdentity1.name.should.equal('doge');
             adminIdentity1.secret.should.equal('orgSecret');
+            adminIdentity1.options.issuer.should.equal(true);
             adminIdentity1.imported.should.be.true;
         });
 
@@ -199,7 +193,6 @@ describe('EmbeddedConnectionManager', () => {
             result.should.be.true;
             sinon.assert.calledOnce(mockIdentitiesDataCollection.update);
             sinon.assert.calledWith(mockIdentitiesDataCollection.update.firstCall, 'doge', notImportedIdentity);
-            //sinon.assert.calledWith(mockIdentitiesDataCollection.update.secondCall, notImportedIdentity.identifier, notImportedIdentity);
         });
 
         it('should do nothing if identity not imported', async () => {
