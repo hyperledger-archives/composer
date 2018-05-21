@@ -65,7 +65,7 @@ class ConnectionProfileManager {
     /**
      * Retrieves the ConnectionManager for the given connection type.
      *
-     * @param {String} connectionType The connection type
+     * @param {String} connectionType The connection type, eg hlfv1, embedded, embedded@proxy
      * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
      * object once the connection is established, or rejected with a connection error.
      */
@@ -91,7 +91,8 @@ class ConnectionProfileManager {
                     try {
                         // Check for the connection manager class registered using
                         // registerConnectionManager (used by the web connector).
-                        let connectionManagerClass = connectionManagerClasses[connectionType];
+                        const actualType = delegateTypeIndex !== -1 && delegateTypeIndex < connectionType.length - 1 ? connectionType.substring(delegateTypeIndex + 1) : connectionType;
+                        const connectionManagerClass = connectionManagerClasses[actualType];
                         if (connectionManagerClass) {
                             connectionManager = new (connectionManagerClass)(this);
                         } else {
