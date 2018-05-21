@@ -116,24 +116,32 @@ class NodeDataService extends DataService {
    /**
     * Get the collection with the specified ID.
     * @param {string} id The ID of the collection.
+    * @param {Boolean} bypass bypass existence check
     * @return {Promise} A promise that will be resolved with a {@link DataCollection}
     * when complete, or rejected with an error.
     */
-    async getCollection(id) {
+    async getCollection(id, bypass) {
         const method = 'getCollection';
         LOG.entry(method, id);
         const t0 = Date.now();
 
-        let key = this.stub.createCompositeKey(collectionObjectType, [id]);
-        let value = await this.stub.getState(key);
-        if (value.length === 0) {
+        if (bypass) {
+            let retVal = new NodeDataCollection(this, this.stub, id);
+            LOG.exit(method, retVal);
             LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
-            throw new Error(`Collection with ID ${id} does not exist`);
+            return retVal;
+        } else {
+            let key = this.stub.createCompositeKey(collectionObjectType, [id]);
+            let value = await this.stub.getState(key);
+            if (value.length === 0) {
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+                throw new Error(`Collection with ID ${id} does not exist`);
+            }
+            let retVal = new NodeDataCollection(this, this.stub, id);
+            LOG.exit(method, retVal);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            return retVal;
         }
-        let retVal = new NodeDataCollection(this, this.stub, id);
-        LOG.exit(method, retVal);
-        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
-        return retVal;
     }
 
    /**

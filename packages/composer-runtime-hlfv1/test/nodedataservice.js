@@ -113,7 +113,38 @@ describe('NodeDataService', () => {
     });
 
     describe('#getCollection', () => {
-        it('should get a collection', () => {
+
+        it('should throw an error if collection doesn\'t exist', () => {
+            mockStub.getState.resolves(Buffer.from(''));
+            return dataService.getCollection('key').should.be.rejectedWith(/does not exist/);
+        });
+
+        it('should not perform a retrieve via getState() if passed a boolean true bypass parameter', () => {
+            let bypass = true;
+            return dataService.getCollection('myCollection', bypass)
+                .then((result) => {
+                    mockStub.getState.should.not.have.been.called;
+                });
+        });
+
+        it('should perform a retrieve via getState() if passed a boolean false bypass parameter', () => {
+            let bypass = false;
+            mockStub.getState.resolves(Buffer.from('{"data":"something"}'));
+            return dataService.getCollection('myCollection', bypass)
+                .then((result) => {
+                    mockStub.getState.should.have.been.called;
+                });
+        });
+
+        it('should perform a retrieve via getState() if not passed a bypass parameter', () => {
+            mockStub.getState.resolves(Buffer.from('{"data":"something"}'));
+            return dataService.getCollection('myCollection')
+                .then((result) => {
+                    mockStub.getState.should.have.been.called;
+                });
+        });
+
+        it('should get a collection when no flags are passed', () => {
             mockStub.getState.resolves(Buffer.from('{"data":"something"}'));
 
             return dataService.getCollection('myCollection')
@@ -125,9 +156,28 @@ describe('NodeDataService', () => {
                 });
         });
 
-        it('should throw an error if collection doesn\'t exist', () => {
-            mockStub.getState.resolves(Buffer.from(''));
-            return dataService.getCollection('key').should.be.rejectedWith(/does not exist/);
+        it('should get a collection when not bypassing the getState() route', () => {
+            mockStub.getState.resolves(Buffer.from('{"data":"something"}'));
+
+            return dataService.getCollection('myCollection', false)
+                .then((result) => {
+                    sinon.assert.calledOnce(mockStub.createCompositeKey);
+                    sinon.assert.calledWith(mockStub.createCompositeKey, '$syscollections', ['myCollection']);
+                    result.should.be.an.instanceOf(NodeDataCollection);
+                    result.collectionID.should.equal('myCollection');
+                });
+        });
+
+        it('should get a collection when bypassing the getState() route', () => {
+            mockStub.getState.resolves(Buffer.from('{"data":"something"}'));
+
+            return dataService.getCollection('myCollection', true)
+                .then((result) => {
+                    sinon.assert.notCalled(mockStub.createCompositeKey);
+                    sinon.assert.notCalled(mockStub.createCompositeKey);
+                    result.should.be.an.instanceOf(NodeDataCollection);
+                    result.collectionID.should.equal('myCollection');
+                });
         });
 
     });
