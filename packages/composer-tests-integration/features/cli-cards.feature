@@ -91,7 +91,7 @@ Feature: CLI cards steps
             """
         Then The stdout information should include text matching /Command succeeded/
         And I have the following files
-            | ../tmp/PeerAdmin.card |
+            | ../tmp/ExportedPeerAdmin.card |
 
     Scenario: Using the CLI, I can delete a named card that exists
         When I run the following expected pass CLI command

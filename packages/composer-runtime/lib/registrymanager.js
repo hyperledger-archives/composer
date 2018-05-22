@@ -87,7 +87,7 @@ class RegistryManager extends EventEmitter {
 
     /**
      * Create the default regsitries
-     * @param {Boolean} force if set to true, will add without checking for existence#
+     * @param {Boolean} force if set to true, will add without checking for existence
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
@@ -162,7 +162,6 @@ class RegistryManager extends EventEmitter {
                     const type = classDeclaration.getSystemType();
                     const fqn = classDeclaration.getFullyQualifiedName();
                     const systemType = classDeclaration.isSystemType();
-                    // console.log('Creating System registry', type, fqn, systemType);
                     LOG.debug(method, 'Creating registry', type, fqn, systemType);
                     if (force) {
                         return this.add(type, fqn, `${type} registry for ${fqn}`, true, systemType);
@@ -195,7 +194,7 @@ class RegistryManager extends EventEmitter {
                 registries = registries.filter((registry) => {
                     return registry.type === type;
                 });
-                LOG.debug(method, 'Filtered registries down to', registries.length);
+                LOG.debug(method, `Filtered registries on ${type} down to`, registries.length);
                 return registries.reduce((prev, registry) => {
                     return prev.then((result) => {
 
@@ -226,44 +225,86 @@ class RegistryManager extends EventEmitter {
     }
 
     /**
+     * Check if a passed registry type and ID is a Composer generated registry, created within
+     * createNetworkDefaults() or createSystemDefaults()
+     * @param {string} type The type of the registry.
+     * @param {string} id The ID of the registry.
+     * @return {Boolean} Boolean true if the registry is a standard type; false if not
+     */
+    async isComposerGenerated(type, id) {
+        const method = 'isComposerGenerated';
+        LOG.entry(method);
+        try {
+            let clz = await this.introspector.getClassDeclaration(id);
+            let notVirtual = !(VIRTUAL_TYPES.indexOf(clz.getName()) > -1);
+            let isInstance = (clz instanceof AssetDeclaration) || (clz instanceof ParticipantDeclaration) || (clz instanceof TransactionDeclaration);
+            if (notVirtual && isInstance && !clz.isAbstract()) {
+                LOG.exit(method, true);
+                return true;
+            } else {
+                LOG.exit(method, false);
+                return false;
+            }
+        } catch (err) {
+            LOG.exit(method, false);
+            return false;
+        }
+    }
+
+    /**
      * Get a registry with the specified type, and ID.
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
+     * @param {Boolean} ensure If the get() call is being called within an ensure
      * @return {Promise} A promise that is resolved with a {@link Registry}
      * objects when complete, or rejected with an error.
      */
-    get(type, id) {
-        let collectionID = type + ':' + id;
-        let resource;
-        let simpledata;
-        LOG.entry('get', collectionID);
+    async get(type, id, ensure) {
+        const method = 'get';
+        const collectionID = type + ':' + id;
+        LOG.entry(method, collectionID);
 
-        // During business network start/update, new registries may be created. Unfortunately we can't directly
+        // Look up any cached registries first. During business network start/update, new registries may be created. Unfortunately we can't directly
         // read them, so we look them up in the registry cache instead.
-        let registry = this.sysregistryCache[collectionID];
-        if (registry) {
-            return Promise.resolve(registry);
+        const cachedRegistry = this.sysregistryCache[collectionID];
+        if (cachedRegistry) {
+            LOG.debug(method, 'Returning registry from sysregistry cache');
+            LOG.exit(method);
+            return cachedRegistry;
         }
 
-        // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
-        return this.sysregistries.get(collectionID)
-            .then((result) => {
-                simpledata = result;
-                // do we have permission to be looking at this??
-                resource = this.serializer.fromJSON(result);
-                return this.accessController.check(resource, 'READ');
-            })
-            .then(() => {
-                // if we got here then, we the accessController.check was OK, get the dataCollection with the actual information
-                // for the require registry
-                return this.dataService.getCollection(collectionID);
-            })
-            .then((dataCollection) => {
-                // and form up the actual registry object
-                // TODO: Does this really need to take the the 3 parametrs type,registryId and name??
-                // TODO: this really doens't seem right
-                return this.createRegistry(dataCollection, this.serializer, this.accessController, simpledata.type, simpledata.registryId, simpledata.name, simpledata.system);
-            });
+        // Check if a known type and conditionally retrieve dataCollection to reduce stub.get() calls
+        const stdType = await this.isComposerGenerated(type, id);
+        let registry;
+        if (stdType && !ensure) {
+            // Build from factory to avoid stub.get() and deserialisation cost
+            let clz = this.introspector.getClassDeclaration(id);
+            let resource = this.factory.newResource('org.hyperledger.composer.system', TYPE_MAP[type], id);
+            resource.name = `${type} registry for ${clz.getFullyQualifiedName()}`;
+            resource.system = clz.isSystemType();
+            // Perform READ ACL check on registry resource
+            await this.accessController.check(resource, 'READ');
+            const dataCollection = await this.dataService.getCollection(collectionID, true /* disable existence check */);
+            registry = await this.createRegistry(dataCollection, this.serializer, this.accessController, type, resource.registryId, resource.name, resource.system);
+
+            // System registry, so cache it for possible use later
+            this.sysregistryCache[collectionID] = registry;
+        } else {
+            // go to the sysregistries datacollection and get the 'resource' for the registry we are interested in
+            const json = await this.sysregistries.get(collectionID);
+            // do we have permission to be looking at this??
+            const resource = this.serializer.fromJSON(json);
+            await this.accessController.check(resource, 'READ');
+            // if we got here then, we the accessController.check was OK, get the dataCollection with the actual information
+            // for the require registry
+            const dataCollection = await this.dataService.getCollection(collectionID, false);
+            // and form up the actual registry object to access the dataCollection
+            // TODO: Does this really need to take the the 3 parametrs type,registryId and name??
+            // TODO: this really doens't seem right
+            registry = await this.createRegistry(dataCollection, this.serializer, this.accessController, resource.type, resource.registryId, resource.name, resource.system);
+        }
+        LOG.exit(method, registry);
+        return registry;
     }
 
     /**
@@ -304,17 +345,6 @@ class RegistryManager extends EventEmitter {
             });
 
     }
-
-    /**
-     * An event signalling that a registry has been added.
-     * @event RegistryManager#registryadded
-     * @protected
-     * @type {object}
-     * @param {Registry} registry The registry.
-     * @param {string} registryType The type of the registry.
-     * @param {string} registryId The ID of the registry.
-     * @param {string} registryName The name of the registry.
-     */
 
     /**
      * Add a new registry with the specified type, ID, and name.
@@ -390,7 +420,7 @@ class RegistryManager extends EventEmitter {
     ensure(type, id, name, system) {
         const method = 'ensure';
         LOG.entry(method, type, id, name, system);
-        return this.get(type, id)
+        return this.get(type, id, true)
             .catch((error) => {
                 LOG.debug(method, 'The registry does not exist, creating');
                 return this.add(type, id, name, false, system);

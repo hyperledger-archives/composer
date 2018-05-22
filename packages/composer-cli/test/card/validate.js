@@ -55,10 +55,22 @@ describe('Unit test of profiles against schemas', function() {
         expect(validate.validateProfile(profile)).to.deep.equal([EXPECTED]);
     });
 
-    it('should return 2 errors for connection profile with neither name nor xtype', function() {
+    it('should return 1 error for connection profile with neither name nor xtype', function() {
         let profile = require('../../test/card/data/connection.no.name.no.xtype.json');
-        expect(validate.validateProfile(profile).length).to.equal(2);
+        const results = validate.validateProfile(profile);
+        expect(results.length).to.equal(1);
+        expect(results[0]).to.include('Connection profile has no `x-type` property defined');
     });
+
+    it('should not fail validation if x-type is not hlfv1', function() {
+        let profile = {
+            'x-type' : 'embedded'
+        };
+        const results = validate.validateProfile(profile);
+        expect(results).to.be.undefined;
+
+    });
+
 
     it('should return 2 errors for connection profile in documentation profile', function() {
         let EXPECTED = {

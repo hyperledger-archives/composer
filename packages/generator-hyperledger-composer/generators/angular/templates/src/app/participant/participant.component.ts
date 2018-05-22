@@ -16,10 +16,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { <%= currentParticipant.name %>Service } from './<%= currentParticipant.name %>.service';
 import 'rxjs/add/operator/toPromise';
+
 @Component({
-	selector: 'app-<%= currentParticipant.name %>',
-	templateUrl: './<%= currentParticipant.name %>.component.html',
-	styleUrls: ['./<%= currentParticipant.name %>.component.css'],
+  selector: 'app-<%= currentParticipant.name.toLowerCase() %>',
+  templateUrl: './<%= currentParticipant.name %>.component.html',
+  styleUrls: ['./<%= currentParticipant.name %>.component.css'],
   providers: [<%= currentParticipant.name %>Service]
 })
 export class <%= currentParticipant.name %>Component implements OnInit {
@@ -29,26 +30,26 @@ export class <%= currentParticipant.name %>Component implements OnInit {
   private allParticipants;
   private participant;
   private currentId;
-	private errorMessage;
+  private errorMessage;
 
-  <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-      <% if(currentParticipant.properties[x].array === true && currentParticipant.properties[x].enum === true){ %>
-          <%= currentParticipant.properties[x].name %> = { value: [] };
-        <% }else{ %>
-          <%= currentParticipant.properties[x].name %> = new FormControl("", Validators.required);
-        <% } %>
-  <%}%>
+        <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+            <%_ if(currentParticipant.properties[x].array === true && currentParticipant.properties[x].enum === true){ _%>
+  <% _%>        <%= currentParticipant.properties[x].name %> = { value: [] };
+              <%_ }else{ _%>
+  <% _%>        <%= currentParticipant.properties[x].name %> = new FormControl('', Validators.required);
+              <%_ } _%>
+        <%_}_%>
 
 
-  constructor(private service<%= currentParticipant.name %>:<%= currentParticipant.name %>Service, fb: FormBuilder) {
+  constructor(private service<%= currentParticipant.name %>: <%= currentParticipant.name %>Service, fb: FormBuilder) {
     this.myForm = fb.group({
-    <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          <%= currentParticipant.properties[x].name %>:this.<%=currentParticipant.properties[x].name%>
-        <% }else{ %>
-          <%=currentParticipant.properties[x].name%>:this.<%=currentParticipant.properties[x].name%>,
-        <% } %>
-    <% }%>
+          <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+      <% _%>    <%= currentParticipant.properties[x].name %>: this.<%=currentParticipant.properties[x].name%>
+              <%_ }else{ _%>
+      <% _%>    <%=currentParticipant.properties[x].name%>: this.<%=currentParticipant.properties[x].name%>,
+              <%_ } _%>
+          <%_ }_%>
     });
   };
 
@@ -57,26 +58,23 @@ export class <%= currentParticipant.name %>Component implements OnInit {
   }
 
   loadAll(): Promise<any> {
-    let tempList = [];
+    const tempList = [];
     return this.service<%= currentParticipant.name %>.getAll()
     .toPromise()
     .then((result) => {
-			this.errorMessage = null;
+      this.errorMessage = null;
       result.forEach(participant => {
         tempList.push(participant);
       });
       this.allParticipants = tempList;
     })
     .catch((error) => {
-        if(error == 'Server error'){
-            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-        }
-        else if(error == '404 - Not Found'){
-				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
-        }
-        else{
-            this.errorMessage = error;
-        }
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else if (error === '404 - Not Found') {
+        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+        this.errorMessage = error;
+      }
     });
   }
 
@@ -107,82 +105,79 @@ export class <%= currentParticipant.name %>Component implements OnInit {
 
   addParticipant(form: any): Promise<any> {
     this.participant = {
-      $class: "<%= namespace %>.<%= currentParticipant.name %>",
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          "<%= currentParticipant.properties[x].name %>":this.<%= currentParticipant.properties[x].name %>.value
-        <% }else{ %>
-          "<%=currentParticipant.properties[x].name%>":this.<%= currentParticipant.properties[x].name %>.value,
-        <% } %>
-      <% }%>
+      $class: '<%= namespace %>.<%= currentParticipant.name %>',
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+      <% _%>    '<%= currentParticipant.properties[x].name %>': this.<%= currentParticipant.properties[x].name %>.value
+              <%_ }else{ _%>
+      <% _%>    '<%=currentParticipant.properties[x].name%>': this.<%= currentParticipant.properties[x].name %>.value,
+              <%_ } _%>
+            <%_ }_%>
     };
 
     this.myForm.setValue({
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          "<%= currentParticipant.properties[x].name %>":null
-        <% }else{ %>
-          "<%=currentParticipant.properties[x].name%>":null,
-        <% } %>
-      <% }%>
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+      <% _%>      '<%= currentParticipant.properties[x].name %>': null
+              <%_ }else{ _%>
+      <% _%>      '<%=currentParticipant.properties[x].name%>': null,
+              <%_ } _%>
+            <%_ }_%>
     });
 
     return this.service<%= currentParticipant.name %>.addParticipant(this.participant)
     .toPromise()
     .then(() => {
-			this.errorMessage = null;
+      this.errorMessage = null;
       this.myForm.setValue({
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          "<%= currentParticipant.properties[x].name %>":null %>
-        <% }else{ %>
-          "<%=currentParticipant.properties[x].name%>":null,
-        <% } %>
-      <% }%>
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+        <% _%>    '<%= currentParticipant.properties[x].name %>': null
+              <%_ }else{ _%>
+        <% _%>    '<%=currentParticipant.properties[x].name%>': null,
+              <%_ } _%>
+            <%_ }_%>
       });
     })
     .catch((error) => {
-        if(error == 'Server error'){
-            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-        }
-        else{
-            this.errorMessage = error;
-        }
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else {
+        this.errorMessage = error;
+      }
     });
   }
 
 
    updateParticipant(form: any): Promise<any> {
     this.participant = {
-      $class: "<%= namespace %>.<%= currentParticipant.name %>",
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          <% if(currentParticipant.properties[x].name != currentParticipant.identifier){ %>
-            "<%= currentParticipant.properties[x].name %>":this.<%= currentParticipant.properties[x].name %>.value
-          <% } %>
-        <% }else{ %>
-          <% if(currentParticipant.properties[x].name != currentParticipant.identifier){ %>
-            "<%=currentParticipant.properties[x].name%>":this.<%= currentParticipant.properties[x].name %>.value,
-          <% } %>
-        <% } %>
-    <% }%>
+      $class: '<%= namespace %>.<%= currentParticipant.name %>',
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+                <%_ if(currentParticipant.properties[x].name != currentParticipant.identifier){ _%>
+      <% _%>      '<%= currentParticipant.properties[x].name %>': this.<%= currentParticipant.properties[x].name %>.value
+                <%_ } _%>
+              <%_ }else{ _%>
+                <%_ if(currentParticipant.properties[x].name != currentParticipant.identifier){ _%>
+      <% _%>      '<%=currentParticipant.properties[x].name%>': this.<%= currentParticipant.properties[x].name %>.value,
+                <%_ } _%>
+              <%_ } _%>
+            <%_ } _%>
     };
 
-    return this.service<%= currentParticipant.name %>.updateParticipant(form.get("<%=participantIdentifier%>").value,this.participant)
-		.toPromise()
-		.then(() => {
-			this.errorMessage = null;
-		})
-		.catch((error) => {
-            if(error == 'Server error'){
-				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-			}
-            else if(error == '404 - Not Found'){
-				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
-			}
-			else{
-				this.errorMessage = error;
-			}
+    return this.service<%= currentParticipant.name %>.updateParticipant(form.get('<%=participantIdentifier%>').value, this.participant)
+    .toPromise()
+    .then(() => {
+      this.errorMessage = null;
+    })
+    .catch((error) => {
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else if (error === '404 - Not Found') {
+        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+      } else {
+        this.errorMessage = error;
+      }
     });
   }
 
@@ -190,84 +185,76 @@ export class <%= currentParticipant.name %>Component implements OnInit {
   deleteParticipant(): Promise<any> {
 
     return this.service<%= currentParticipant.name %>.deleteParticipant(this.currentId)
-		.toPromise()
-		.then(() => {
-			this.errorMessage = null;
-		})
-		.catch((error) => {
-            if(error == 'Server error'){
-				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-			}
-			else if(error == '404 - Not Found'){
-				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
-			}
-			else{
-				this.errorMessage = error;
-			}
+    .toPromise()
+    .then(() => {
+      this.errorMessage = null;
+    })
+    .catch((error) => {
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else if (error === '404 - Not Found') {
+        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+      } else {
+        this.errorMessage = error;
+      }
     });
   }
 
-  setId(id: any): void{
+  setId(id: any): void {
     this.currentId = id;
   }
 
-  getForm(id: any): Promise<any>{
+  getForm(id: any): Promise<any> {
 
     return this.service<%= currentParticipant.name %>.getparticipant(id)
     .toPromise()
     .then((result) => {
-			this.errorMessage = null;
-      let formObject = {
-        <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-          <% if(x == currentParticipant.properties.length-1){ %>
-            "<%= currentParticipant.properties[x].name %>":null %>
-          <% }else{ %>
-            "<%=currentParticipant.properties[x].name%>":null,
-          <% } %>
-        <% } %>
+      this.errorMessage = null;
+      const formObject = {
+              <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+                <%_ if(x == currentParticipant.properties.length-1){ _%>
+        <% _%>    '<%= currentParticipant.properties[x].name %>': null
+                <%_ }else{ _%>
+        <% _%>    '<%=currentParticipant.properties[x].name%>': null,
+                <%_ } _%>
+              <%_ } _%>
       };
 
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+      <% _%>  if (result.<%=currentParticipant.properties[x].name%>) {
+                <%_ if(currentParticipant.properties[x].array === true){ _%>
+        <% _%>    this.<%= currentParticipant.properties[x].name %> = { value: result.<%= currentParticipant.properties[x].name %> };
+                <%_ }else{ _%>
+        <% _%>    formObject.<%= currentParticipant.properties[x].name %> = result.<%= currentParticipant.properties[x].name %>;
+                <%_ } _%>
+      <% _%>  } else {
+        <% _%>    formObject.<%= currentParticipant.properties[x].name %> = null;
+      }
 
-
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        if(result.<%=currentParticipant.properties[x].name%>){
-          <% if(currentParticipant.properties[x].array === true){ %>
-            this.<%= currentParticipant.properties[x].name %> = { value: result.<%= currentParticipant.properties[x].name %> };
-          <% }else{ %>
-            formObject.<%= currentParticipant.properties[x].name %> = result.<%= currentParticipant.properties[x].name %>;
-          <% } %>
-        }else{
-          formObject.<%= currentParticipant.properties[x].name %> = null;
-        }
-      <%}%>
-
+            <%_}_%>
       this.myForm.setValue(formObject);
-
     })
     .catch((error) => {
-        if(error == 'Server error'){
-            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-        }
-        else if(error == '404 - Not Found'){
-				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
-        }
-        else{
-            this.errorMessage = error;
-        }
+      if (error === 'Server error') {
+        this.errorMessage = 'Could not connect to REST server. Please check your configuration details';
+      } else if (error === '404 - Not Found') {
+        this.errorMessage = '404 - Could not find API route. Please check your available APIs.';
+      } else {
+        this.errorMessage = error;
+      }
     });
 
   }
 
-  resetForm(): void{
+  resetForm(): void {
     this.myForm.setValue({
-      <% for(var x=0;x<currentParticipant.properties.length;x++){ %>
-        <% if(x == currentParticipant.properties.length-1){ %>
-          "<%= currentParticipant.properties[x].name %>":null %>
-        <% }else{ %>
-          "<%=currentParticipant.properties[x].name%>":null,
-        <% } %>
-      <% }%>
-      });
+            <%_ for(var x=0;x<currentParticipant.properties.length;x++){ _%>
+              <%_ if(x == currentParticipant.properties.length-1){ _%>
+      <% _%>     '<%= currentParticipant.properties[x].name %>': null
+              <%_ } else { _%>
+      <% _%>     '<%=currentParticipant.properties[x].name%>': null,
+              <%_ } _%>
+            <%_ } _%>
+    });
   }
-
 }

@@ -54,10 +54,11 @@ class DataService extends Service {
     * Get the collection with the specified ID.
     * @abstract
     * @param {string} id The ID of the collection.
+    * @param {Boolean} bypass bypass existence check
     * @return {Promise} A promise that will be resolved with a {@link DataCollection}
     * when complete, or rejected with an error.
     */
-    async getCollection(id) {
+    async getCollection(id, bypass) {
         throw new Error('abstract function called');
     }
 

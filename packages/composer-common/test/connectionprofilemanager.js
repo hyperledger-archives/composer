@@ -91,6 +91,42 @@ describe('ConnectionProfileManager', () => {
             return cpm.getConnectionManagerByType( 'foo' ).should.eventually.be.an.instanceOf(TestConnectionManager);
         });
 
+        it('should use a registered delegated connection manager', () => {
+            /** test class */
+            class TestProxyConnectionManager extends ConnectionManager { }
+            ConnectionProfileManager.registerConnectionManager('testproxy', TestProxyConnectionManager);
+            let cpm = new ConnectionProfileManager();
+            cpm.should.not.be.null;
+            return cpm.getConnectionManagerByType( 'foo@testproxy' ).should.eventually.be.an.instanceOf(TestProxyConnectionManager);
+        });
+
+
+        it('should handle a type of foo@ as foo@ when dynamically loading', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            const module = {
+                require: sinon.stub()
+            };
+            module.require.withArgs('composer-connector-foo@').returns(TestConnectionManager);
+            let cpm = new ConnectionProfileManager();
+            cpm.should.not.be.null;
+            ConnectionProfileManager.registerConnectionManagerLoader(module);
+            return cpm.getConnectionManagerByType( 'foo@' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
+        it('should dynamically load a delegated connection manager for handling connections', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            const module = {
+                require: sinon.stub()
+            };
+            module.require.withArgs('composer-connector-delegated').returns(TestConnectionManager);
+            let cpm = new ConnectionProfileManager();
+            cpm.should.not.be.null;
+            ConnectionProfileManager.registerConnectionManagerLoader(module);
+            return cpm.getConnectionManagerByType( 'foo@delegated' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
         it('should dynamically load the connection manager from a registered connection manager module', () => {
             /** test class */
             class TestConnectionManager extends ConnectionManager { }
