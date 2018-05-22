@@ -122,6 +122,25 @@ describe('Logger', () => {
             sinon.assert.calledWith(stubLogger.log, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['arg1','arg2','arg3']);
         });
 
+        it('should handle internal logger throwing an error', () => {
+            let stubLogger=  {
+                log: sinon.stub().onFirstCall().throws(new Error('I do not like the args'))
+            };
+
+            let stubArg2 = {
+                toString: sinon.stub().returns('My To String')
+            };
+
+            Logger.setFunctionalLogger(stubLogger);
+            Logger._envDebug='composer[debug]:*';
+            let logger = new Logger('ScriptManager');
+
+            logger.intlog('debug','methodname','message','arg1',stubArg2,'arg3');
+            sinon.assert.calledTwice(stubLogger.log);
+            sinon.assert.calledWith(stubLogger.log.firstCall, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['arg1',stubArg2,'arg3']);
+            sinon.assert.calledWith(stubLogger.log.secondCall, 'debug', sinon.match(/ScriptManager.*methodname\(\)/), 'message',['arg1','My To String','arg3']);
+        });
+
         it('should log to the functional logger, errors', () => {
             let stubLogger=  {
                 log: sinon.stub()
