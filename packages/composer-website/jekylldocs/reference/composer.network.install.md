@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Hyperledger Composer Runtime Start CLI
+title: Hyperledger Composer Network Install CLI
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Composer Runtime Install
+excerpt: Composer Network Install
 ---
 
 # {{site.data.conrefs.composer_full}} Network Install
