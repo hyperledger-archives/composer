@@ -68,12 +68,6 @@ class FileSystemWallet extends Wallet{
         this.fs = options.fs || nodefs;
         mkdirp.sync(this.storePath,{fs:this.fs});
 
-        this._readFile = util.promisify(this.fs.readFile);
-        this._writeFile = util.promisify(this.fs.writeFile);
-        this._stat = util.promisify(this.fs.stat);
-        this._readdir = util.promisify(this.fs.readdir);
-        this._unlink = util.promisify(this.fs.unlink);
-
         this.rimrafOptions = Object.assign({}, this.fs);
         this.rimrafOptions.disableGlob = true;
     }
@@ -86,6 +80,7 @@ class FileSystemWallet extends Wallet{
      * error.
      */
     listNames() {
+        this._readdir = util.promisify(this.fs.readdir);
         return this._readdir(this.storePath)
           .then((result)=>{
 
@@ -107,6 +102,7 @@ class FileSystemWallet extends Wallet{
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
+        this._stat = util.promisify(this.fs.stat);
         return this._stat(this._path(name))
          .then(()=>{
              return true;
@@ -136,6 +132,7 @@ class FileSystemWallet extends Wallet{
                     return card.toArchive({ type: 'nodebuffer' });
                 });
             } else {
+                this._readFile = util.promisify(this.fs.readFile);
                 return this._readFile(this._path(name),'utf8')
                 .then((result)=>{
                     if (result.startsWith('BASE64')){
@@ -160,7 +157,7 @@ class FileSystemWallet extends Wallet{
         if (!name) {
             return Promise.reject(new Error('Name must be specified'));
         }
-
+        this._writeFile = util.promisify(this.fs.writeFile);
         if (arguments[2]){
             let card = arguments[2];
             return card.toDirectory(this._path(name));
@@ -196,6 +193,7 @@ class FileSystemWallet extends Wallet{
                         if(dir){
                             return rimraf(this._path(name),this.rimrafOptions);
                         }else {
+                            this._unlink = util.promisify(this.fs.unlink);
                             return this._unlink(this._path(name));
                         }
                     }).then(()=>{return true;});
