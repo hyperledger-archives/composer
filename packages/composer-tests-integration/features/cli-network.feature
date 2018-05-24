@@ -150,6 +150,15 @@ Feature: Cli network steps
         Then The stdout information should include text matching /composer\[debug\]:*/
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Checking the chain code container logs should have the correct loglevels
+        Given I have started watching for the chain code logs
+        When I run the following expected pass CLI command
+            """
+            composer network list --card admin@marbles-network
+            """
+        Then Then the maximum log level should be debug
+        And The stdout information should include text matching /Command succeeded/
+
     Scenario: Using the CLI, I can create set the log level of the running network
         When I run the following expected pass CLI command
             """

@@ -26,6 +26,26 @@ const path = require('path');
 const request = require('request-promise-any');
 const sleep = require('sleep-promise');
 const stripAnsi = require('strip-ansi');
+const axios = require('axios');
+
+const LOG_LEVEL_SILLY = 5;
+const LOG_LEVEL_DEBUG = 4;
+const LOG_LEVEL_VERBOSE = 3;
+const LOG_LEVEL_INFO = 2;
+const LOG_LEVEL_WARN = 1;
+const LOG_LEVEL_ERROR = 0;
+const LOG_LEVEL_NONE = -1;
+
+// Mapping between strings and log levels.
+const _logLevelAsString = {
+    silly: LOG_LEVEL_SILLY,
+    debug: LOG_LEVEL_DEBUG,
+    verbose: LOG_LEVEL_VERBOSE,
+    info: LOG_LEVEL_INFO,
+    warn: LOG_LEVEL_WARN,
+    error: LOG_LEVEL_ERROR,
+    none: LOG_LEVEL_NONE
+};
 
 let generated = false;
 
@@ -911,6 +931,75 @@ class Composer {
 
         }
     }
+
+    /**
+     * Start watching the logs
+     */
+    startWatchingLogs(){
+        this.logPromise = this.getCCLogs();
+    }
+
+    /**
+     * @param {String} logLevel the maximum loglevel to check for
+     * @return {Promise} resolved if all go, reject with exception if not
+     */
+    async checkMaximumLogLevel(logLevel){
+
+
+        let logs = await this.logPromise;
+        let maxLogLevelInt = _logLevelAsString[logLevel.toLowerCase()];
+        for (let logEntry of logs){
+            let currentLogLevelInt = _logLevelAsString[logEntry.type.toLowerCase()];
+            if (currentLogLevelInt>maxLogLevelInt){
+                throw new Error(`${logEntry.type} too high`);
+            }
+        }
+        return('all good');
+
+
+    }
+
+    /**
+     * @return {promise} resolved when the logs are collected
+     */
+    async getCCLogs() {
+        let uri = 'http://127.0.0.1:8000/logs/name:dev-*?colors=off';
+
+        // GET request for remote image
+        let response = await axios({
+            method:'get',
+            url:uri,
+            responseType:'stream'
+        });
+        let allLogPoints = [];
+
+        let  logInvokeComplete = new Promise((resolve,reject) => {
+            response.data.on('data', (chunk) => {
+                let chunkString= chunk.toString();
+                let line = chunkString.substring(chunkString.indexOf('|')+1);
+                if (line.match(/\d\d\d\d-\d\d-\d\d\D\d\d:\d\d:\d\d.*\[.*\]/)){
+                    let logPoint={};
+
+                    logPoint.type = line.substring(36,45).trim();
+                    logPoint.file = line.substring(46,71).trim();
+                    logPoint.logPointmethod = line.substring(72,98).trim();
+                    logPoint.msg = line.substring(98).trim();
+                    // console.log(`${type} ${file} ${method} ${msg}`);
+                    allLogPoints.push(logPoint);
+                    if (logPoint.msg.match(/Total duration for txnID/)){
+                        response.data.destroy();
+                        resolve(allLogPoints);
+                    }
+                }
+            });
+        });
+
+
+        return logInvokeComplete;
+    }
+
 }
+
+
 
 module.exports = Composer;
