@@ -73,7 +73,7 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   async function testConnection() {
       let businessNetworkConnection = new BusinessNetworkConnection();
       try {
-          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          await businessNetworkConnection.connect('maeid1@network');
           let result = await businessNetworkConnection.ping();
           console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
           await businessNetworkConnection.disconnect();
