@@ -940,18 +940,25 @@ class Composer {
     }
 
     /**
+     * Stop watching the logs by destroying the stream.
+     */
+    async stopWatchingLogs(){
+        this.logStream.destroy();
+        this.logs = await this.logPromise;
+    }
+
+    /**
      * @param {String} logLevel the maximum loglevel to check for
      * @return {Promise} resolved if all go, reject with exception if not
      */
     async checkMaximumLogLevel(logLevel){
 
-
-        let logs = await this.logPromise;
         let maxLogLevelInt = _logLevelAsString[logLevel.toLowerCase()];
-        for (let logEntry of logs){
+
+        for (let logEntry of this.logs){
             let currentLogLevelInt = _logLevelAsString[logEntry.type.toLowerCase()];
             if (currentLogLevelInt>maxLogLevelInt){
-                throw new Error(`${logEntry.type} too high`);
+                throw new Error(`${logEntry.type} is too high.  LogEntry is [${logEntry.type} ${logEntry.method} ${logEntry.file} ${logEntry.msg}]`);
             }
         }
         return('all good');
@@ -972,25 +979,27 @@ class Composer {
             responseType:'stream'
         });
         let allLogPoints = [];
+        this.logStream = response.data;
 
         let  logInvokeComplete = new Promise((resolve,reject) => {
             response.data.on('data', (chunk) => {
                 let chunkString= chunk.toString();
                 let line = chunkString.substring(chunkString.indexOf('|')+1);
+
                 if (line.match(/\d\d\d\d-\d\d-\d\d\D\d\d:\d\d:\d\d.*\[.*\]/)){
+
                     let logPoint={};
 
                     logPoint.type = line.substring(36,45).trim();
                     logPoint.file = line.substring(46,71).trim();
-                    logPoint.logPointmethod = line.substring(72,98).trim();
+                    logPoint.method = line.substring(72,98).trim();
                     logPoint.msg = line.substring(98).trim();
-                    // console.log(`${type} ${file} ${method} ${msg}`);
+
                     allLogPoints.push(logPoint);
-                    if (logPoint.msg.match(/Total duration for txnID/)){
-                        response.data.destroy();
-                        resolve(allLogPoints);
-                    }
                 }
+            });
+            response.data.on('close',()=>{
+                resolve(allLogPoints);
             });
         });
 

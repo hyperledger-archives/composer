@@ -32,7 +32,7 @@ module.exports = function () {
         return this.composer.checkExistsStrict(folder, table);
     });
 
-    this.Given(/^I have started watching for the chain code logs/, function () {
+    this.Given(/^I start watching the chain code logs/, function () {
         return this.composer.startWatchingLogs();
     });
 
@@ -98,7 +98,11 @@ module.exports = function () {
         return this.composer.checkFileWasCreated(match);
     });
 
-    this.Then(/^Then the maximum log level should be \/(.+?)\/$/, function (match) {
-        return this.composer.checkMaximumLogLevel(match);
+    this.Then(/^I stop watching the chain code logs$/, function () {
+        return this.composer.stopWatchingLogs();
+    });
+
+    this.Then(/^Then the maximum log level should be (.+?)$/, function (level) {
+        return this.composer.checkMaximumLogLevel(level);
     });
 };
