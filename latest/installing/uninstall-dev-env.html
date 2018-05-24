@@ -385,15 +385,15 @@
 
 <h3 id="step-4-uninstall-hyperledger-fabric">Step 4: Uninstall Hyperledger Fabric</h3>
 
-<p>You control your local Hyperledger Fabric runtime using a set of scripts which you&#39;ll find in <code>~/fabric-tools</code> if you followed the suggested defaults.</p>
+<p>You control your local Hyperledger Fabric runtime using a set of scripts which you&#39;ll find in <code>~/fabric-dev-servers</code> if you followed the suggested defaults.</p>
 
 <ol>
 <li><p>Stop the local Hyperledger Fabric runtime and remove any runtime Docker containers or images:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-tools/stopFabric.sh
-~/fabric-tools/teardownFabric.sh
+<div class="highlight"><pre><code class="language-" data-lang="">~/fabric-dev-servers/stopFabric.sh
+~/fabric-dev-servers/teardownFabric.sh
 </code></pre></div></li>
 <li><p>Uninstall the local Hyperledger Fabric runtime:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">rm -rf ~/fabric-tools
+<div class="highlight"><pre><code class="language-" data-lang="">rm -rf ~/fabric-dev-servers
 </code></pre></div></li>
 </ol>
 
