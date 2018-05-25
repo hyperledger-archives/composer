@@ -936,14 +936,20 @@ class Composer {
      * Start watching the logs
      */
     startWatchingLogs(){
-        this.logPromise = this.getCCLogs();
+        console.log('> startWaching');
+        this.getCCLogs();
+        console.log('< startWatching'+this.logPromise);
     }
 
     /**
      * Stop watching the logs by destroying the stream.
      */
     async stopWatchingLogs(){
-        this.logStream.destroy();
+        console.log(`Stop watching the logs ${this.logStream}`);
+        // first check to see if there is a stream
+        if (this.logStream){
+            this.logStream.destroy();
+        }
         this.logs = await this.logPromise;
     }
 
@@ -963,33 +969,42 @@ class Composer {
         }
         return('all good');
 
-
     }
 
     /**
-     * @return {promise} resolved when the logs are collected
+     * This collects the logs from the Docker log collection 'agent'
+     * Logspout is the docket image that is being used to collect them
+     * and make them available over http via a rest api
+
      */
-    async getCCLogs() {
+    getCCLogs() {
+        // looking for just the chain code containers (prefixed dev-) and for no ANSI colouring
         let uri = 'http://127.0.0.1:8000/logs/name:dev-*?colors=off';
 
-        // GET request for remote image
-        let response = await axios({
-            method:'get',
-            url:uri,
-            responseType:'stream'
-        });
-        let allLogPoints = [];
-        this.logStream = response.data;
 
-        let  logInvokeComplete = new Promise((resolve,reject) => {
+
+        // Streaming the data back
+        this.logPromise = new Promise(async (resolve,reject) => {
+            console.log('Making get request');
+            // GET request for remote image
+            let response = await axios({
+                method:'get',
+                url:uri,
+                responseType:'stream'
+            });
+            let allLogPoints = [];
+            this.logStream = response.data;
+            console.log(`The log stream is ${this.logStream} `);
             response.data.on('data', (chunk) => {
                 let chunkString= chunk.toString();
+                // strip off the Logspout prefix (the docker image name)
+                // the regex is to just focus on the main logs lines, and not any continuations
                 let line = chunkString.substring(chunkString.indexOf('|')+1);
 
                 if (line.match(/\d\d\d\d-\d\d-\d\d\D\d\d:\d\d:\d\d.*\[.*\]/)){
 
                     let logPoint={};
-
+                    // assumes the fixed format of the log messages
                     logPoint.type = line.substring(36,45).trim();
                     logPoint.file = line.substring(46,71).trim();
                     logPoint.method = line.substring(72,98).trim();
@@ -998,13 +1013,16 @@ class Composer {
                     allLogPoints.push(logPoint);
                 }
             });
+
+            // when stream is closed, resolve the promise with all the log points currently captured
             response.data.on('close',()=>{
                 resolve(allLogPoints);
             });
         });
 
+        console.log(`The log promise is ${this.logPromise}`);
 
-        return logInvokeComplete;
+
     }
 
 }
