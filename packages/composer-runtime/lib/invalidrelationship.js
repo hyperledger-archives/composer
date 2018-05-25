@@ -60,10 +60,14 @@ class InvalidRelationship extends Relationship {
                     configurable: false,
                     enumerable: true,
                     get: () => {
-                        throw error;
+                        const err = new Error(`attempt to get property ${propertyName} on an InvalidRelationship is not allowed. InvalidRelationship created due to ${error.message}`);
+                        LOG.error(err);
+                        throw err;
                     },
                     set: () => {
-                        throw error;
+                        const err = new Error(`attempt to set property ${propertyName} on an InvalidRelationship is not allowed. InvalidRelationship created due to ${error.message}`);
+                        LOG.error(err);
+                        throw err;
                     }
                 });
             }
