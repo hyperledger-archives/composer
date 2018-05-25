@@ -91,7 +91,7 @@
   },
   "dependencies": {
     "composer-runtime": "0.19.7",
-    "fabric-shim": "1.1.0",
+    "fabric-shim": "1.1.2",
     "jsrsasign": "8.0.3",
     "request": "2.81.0"
   },
