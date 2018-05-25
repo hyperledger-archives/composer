@@ -669,7 +669,7 @@ class HLFConnection extends Connection {
 
             LOG.debug(method, 'sending instantiate proposal', proposal);
             const proposalResponse = await this.channel.sendInstantiateProposal(proposal);
-            await this._sendTransactionForProposal(proposalResponse, transactionId);
+            await this._sendTransaction(proposalResponse, transactionId);
         } catch(error) {
             const newError = new Error('Error trying to start business network. ' + error);
             LOG.error(method, error);
@@ -684,8 +684,8 @@ class HLFConnection extends Connection {
      * @async
      * @private
      */
-    async _sendTransactionForProposal(proposalResponse, transactionId) {
-        const method = '_sendTransactionForProposal';
+    async _sendTransaction(proposalResponse, transactionId) {
+        const method = '_sendTransaction';
         LOG.entry(method, proposalResponse);
 
         // Validate the instantiate proposal results
@@ -708,7 +708,18 @@ class HLFConnection extends Connection {
             eventHandler.cancelListening();
             throw new Error(`Failed to send peer responses for transaction '${transactionId.getTransactionID()}' to orderer. Response status '${response.status}'`);
         }
-        await eventHandler.waitForEvents();
+
+        try {
+            await eventHandler.waitForEvents();
+        } catch (error) {
+            // Investigate proposal response results and log if they differ and rethrow
+            if (!this.channel.compareProposalResponseResults(validResponses)) {
+                const warning = 'Peers do not agree, Read Write sets differ';
+                LOG.warn(method, warning);
+            }
+            throw error;
+        }
+
         LOG.exit(method);
     }
 
@@ -764,21 +775,13 @@ class HLFConnection extends Connection {
 
             }
         });
+
         if (validResponses.length === 0 && ignoredErrors < responses.length) {
             const errorMessages = [ 'No valid responses from any peers.' ];
             invalidResponseMsgs.forEach(invalidResponse => errorMessages.push(invalidResponse));
             throw new Error(errorMessages.join('\n'));
         }
 
-        // if it was a proposal and some of the responses were good, check that they compare
-        // but we can't reject it as we don't know if it would still pass the endorsement policy
-        // and if we did this would allow a malicious peer to stop transactions so we
-        // issue a warning so that it get's logged, but we don't know which peer(s) it was
-        if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
-            const warning = 'Peers do not agree, Read Write sets differ';
-            LOG.warn(method, warning);
-            invalidResponseMsgs.push(warning);
-        }
         LOG.exit(method, ignoredErrors);
         return {ignoredErrors, validResponses, invalidResponseMsgs};
     }
@@ -1144,7 +1147,7 @@ class HLFConnection extends Connection {
 
             LOG.debug(method, 'sending upgrade proposal', proposal);
             const proposalResults = await this.channel.sendUpgradeProposal(proposal);
-            await this._sendTransactionForProposal(proposalResults, transactionId);
+            await this._sendTransaction(proposalResults, transactionId);
         } catch(error) {
             const newError = new Error('Error trying to upgrade business network. ' + error);
             LOG.error(method, error);
