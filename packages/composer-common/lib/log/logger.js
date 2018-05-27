@@ -175,7 +175,17 @@ class Logger {
             }
 
             // use the local version of padding rather than sprintf etc for speed
-            _logger.log(logLevel,callbackData+':'+this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg, args);
+            const preamble = callbackData + ':' + this.padRight(this.str25,this.className) + ':' + this.padRight(this.str25,method+'()');
+
+            try {
+                _logger.log(logLevel, preamble, msg, args);
+            } catch(error) {
+                // an error can be thrown if for example using the winsonInjector logger and an argument is
+                // an InvalidRelationship where attempts to get object defined properties (which the winstonInjecttor does)
+                // throws an error.
+                let safeArgs = args.map(arg => arg.toString());
+                _logger.log(logLevel, preamble, msg, safeArgs);
+            }
         }
 
     }
