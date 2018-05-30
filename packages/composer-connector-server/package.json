@@ -70,6 +70,7 @@
     "composer-common": "0.19.9",
     "composer-connector-embedded": "0.19.9",
     "composer-connector-hlfv1": "0.19.9",
+    "composer-wallet-filesystem": "0.19.9",
     "serializerr": "1.0.3",
     "socket.io": "1.7.3",
     "uuid": "3.0.1",

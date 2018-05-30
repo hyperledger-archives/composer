@@ -15,7 +15,7 @@
 'use strict';
 
 const { BusinessNetworkDefinition } = require('composer-common');
-const ConnectionManager = require('composer-common').ConnectionManager;
+const ProxyConnectionManager = require('../lib/proxyconnectionmanager');
 const ProxyConnection = require('../lib/proxyconnection');
 const ProxySecurityContext = require('../lib/proxysecuritycontext');
 const serializerr = require('serializerr');
@@ -42,7 +42,7 @@ describe('ProxyConnection', () => {
     let mockSecurityContext;
 
     beforeEach(() => {
-        mockConnectionManager = sinon.createStubInstance(ConnectionManager);
+        mockConnectionManager = sinon.createStubInstance(ProxyConnectionManager);
         mockSocket = {
             emit: sinon.stub(),
             removeListener: sinon.stub()
@@ -60,6 +60,8 @@ describe('ProxyConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionDisconnect', connectionID, sinon.match.func);
+                    sinon.assert.calledOnce(mockConnectionManager.disconnect);
+                    sinon.assert.calledWith(mockConnectionManager.disconnect, connection.connectionID);
                     mockSocket.removeListener.withArgs('events', sinon.match.func).yield();
                 });
         });

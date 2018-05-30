@@ -42,6 +42,9 @@
     "nyc": "11.1.0",
     "sinon": "2.3.8"
   },
+  "dependencies": {
+    "composer-common": "0.19.9"
+  },
   "license-check-and-add-config": {
     "folder": ".",
     "license": "LICENSE.txt",
