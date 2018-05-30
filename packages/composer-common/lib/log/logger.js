@@ -464,8 +464,8 @@ class Logger {
             let maxfiles = process.env.COMPOSER_LOGFILE_QTY || 100;
 
             let d = new Date();
-            let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1,d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
-            let datestamp = sprintf('%d%02d%02d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1);
+            let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
+            let datestamp = sprintf('%d%02d%02d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate());
             resolvedFilename = resolvedFilename.replace(/DATESTAMP/g, datestamp);
             resolvedFilename = resolvedFilename.replace(/TIMESTAMP/g, timestamp);
             resolvedFilename = resolvedFilename.replace(/PID/g, process.pid);
