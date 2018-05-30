@@ -445,6 +445,18 @@ class EmbeddedConnection extends Connection {
     }
 
     /**
+     * Undeploy a business network definition.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} networkName Name of the business network to remove
+     * @async
+     */
+    async undeploy(securityContext, networkName) {
+        await this.dataService.removeAllData();
+        delete businessNetworks[networkName];
+        delete chaincodes[networkName];
+    }
+
+    /**
      * Get the native API for this connection. The native API returned is specific
      * to the underlying blockchain platform, and may throw an error if there is no
      * native API available.

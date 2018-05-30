@@ -34,6 +34,7 @@ const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('../lib/hlfconnectionmanager');
 const HLFSecurityContext = require('../lib/hlfsecuritycontext');
 const HLFQueryHandler = require('../lib/hlfqueryhandler');
+const HLFEventHandler = require('../lib/hlftxeventhandler');
 
 const path = require('path');
 const semver = require('semver');
@@ -1220,6 +1221,19 @@ describe('HLFConnection', () => {
                         sinon.assert.calledOnce(connection._checkEventhubs);
                     });
             });
+
+            it('should throw an error if peers do not agree', () => {
+                let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
+                mockEventHandler.waitForEvents.throws(new Error('such error'));
+                sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
+
+                mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
+                mockChannel.verifyProposalResponse.returns(true);
+                mockChannel.compareProposalResponseResults.returns(false);
+                mockEventHub1.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
+                connection.start(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion(), '{"start":"json"}')
+                .should.be.rejectedWith(/such error'/);
+            });
         });
 
         describe('#upgrade', () => {
@@ -1292,6 +1306,67 @@ describe('HLFConnection', () => {
                 return connection.upgrade(mockSecurityContext, mockBusinessNetwork.getName(), mockBusinessNetwork.getVersion())
                     .should.be.rejectedWith(failureResponse.status);
             });
+        });
+    });
+
+    describe('#_sendTransaction', () => {
+
+        it('should log if compareProposals returns false',  async () => {
+
+            let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
+            mockEventHandler.waitForEvents.throws(new Error('such error'));
+            sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
+
+            const responses = [
+                {
+                    response: {
+                        status: 500,
+                        payload: 'such error'
+                    }
+                }
+            ];
+            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: responses});
+
+            mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(false);
+
+            try {
+                await connection._sendTransaction(responses, mockTransactionID);
+                sinon.assert.fail('should have thrown');
+            } catch (err) {
+                sinon.assert.calledWith(logWarnSpy, '_sendTransaction', 'Peers do not agree, Read Write sets differ');
+            }
+
+        });
+
+        it('should not log if compareProposals returns false',  async () => {
+
+            let mockEventHandler = sinon.createStubInstance(HLFEventHandler);
+            mockEventHandler.waitForEvents.throws(new Error('such error'));
+            sandbox.stub(HLFConnection, 'createTxEventHandler').returns(mockEventHandler);
+
+            const responses = [
+                {
+                    response: {
+                        status: 500,
+                        payload: 'such error'
+                    }
+                }
+            ];
+            sandbox.stub(connection, '_validatePeerResponses').returns({ignoredErrors: 0, validResponses: responses});
+
+            mockChannel.sendTransaction.resolves({ status: 'SUCCESS' });
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            try {
+                await connection._sendTransaction(responses, mockTransactionID);
+                sinon.assert.fail('should have thrown');
+            } catch (err) {
+                sinon.assert.notCalled(logWarnSpy);
+            }
+
         });
     });
 
@@ -1428,22 +1503,6 @@ describe('HLFConnection', () => {
             mockChannel.compareProposalResponseResults.returns(true);
             connection._validatePeerResponses(responses, true);
             sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', sinon.match(/Proposal response from peer failed verification/));
-        });
-
-        it('should log if compareProposals returns false', () => {
-            const responses = [
-                {
-                    response: {
-                        status: 200,
-                        payload: 'no error'
-                    }
-                }
-            ];
-
-            mockChannel.verifyProposalResponse.returns(true);
-            mockChannel.compareProposalResponseResults.returns(false);
-            connection._validatePeerResponses(responses, true);
-            sinon.assert.calledWith(logWarnSpy, '_validatePeerResponses', 'Peers do not agree, Read Write sets differ');
         });
 
         it('should not try to check proposal responses if not a response from a proposal', () => {

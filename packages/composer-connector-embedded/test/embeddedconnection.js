@@ -626,6 +626,15 @@ describe('EmbeddedConnection', () => {
 
     });
 
+    describe('#undeploy', () => {
+        it('should remove prevoiusly installed business network', async () => {
+            await connection.install(mockSecurityContext, businessNetworkDefinition);
+            await connection.undeploy(mockSecurityContext, businessNetworkDefinition.getName());
+            await connection.install(mockSecurityContext, businessNetworkDefinition)
+                .should.not.be.rejected;
+        });
+    });
+
     describe('#getNativeAPI', () => {
 
         it('should throw as not supported', () => {
