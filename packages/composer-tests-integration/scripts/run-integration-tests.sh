@@ -167,6 +167,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
        docker run -p 6379:6379 --name composer-wallet-redis -d redis  && \
        docker exec composer-wallet-redis redis-cli -c flushall
 
+    docker run -d --name="logspout" \
+	    --volume=/var/run/docker.sock:/var/run/docker.sock \
+	    --publish=127.0.0.1:8000:80 \
+	    gliderlabs/logspout
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
