@@ -24,6 +24,7 @@ const ConnectorServer = require('..');
 const SecurityContext = require('composer-common').SecurityContext;
 const Logger= require('composer-common').Logger;
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -152,7 +153,8 @@ describe('ConnectorServer', () => {
                 '/api/connectionUpgrade',
                 '/api/connectionManagerExportIdentity',
                 '/api/connectionManagerRemoveIdentity',
-                '/api/connectionCreateTransactionId'
+                '/api/connectionCreateTransactionId',
+                '/api/ping'
             ].sort());
             mockSocket.on.args.forEach((args) => {
                 isFunction(args[1]).should.be.true;
@@ -169,6 +171,17 @@ describe('ConnectorServer', () => {
             } finally {
                 delete ConnectorServer.prototype.foo;
             }
+        });
+
+    });
+
+    describe('#ping', () => {
+
+        it('should ping', async () => {
+            const cb = sinon.stub();
+            await connectorServer.ping(cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null, { version });
         });
 
     });
