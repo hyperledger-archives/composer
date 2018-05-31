@@ -15,19 +15,17 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { AdminService } from './admin.service';
-import { IdCard } from 'composer-common';
+import { BusinessNetworkCardStore, BusinessNetworkDefinition, IdCard } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-
-let should = chai.should();
-
 import { AlertService } from '../basic-modals/alert.service';
-import { BusinessNetworkDefinition, BusinessNetworkCardStore } from 'composer-common';
 import { AdminConnection } from 'composer-admin';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
+
+let should = chai.should();
 
 describe('AdminService', () => {
 
@@ -94,9 +92,9 @@ describe('AdminService', () => {
         beforeEach(() => {
             mockIdCard = new IdCard({userName: 'banana', businessNetwork: 'myNetwork'}, {
                 'x-type': 'web',
-                'name': 'myProfile'
+                'name': '$default'
             });
-            mockIdCard1 = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': 'myProfile'});
+            mockIdCard1 = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
         });
 
         it('should return if connected', fakeAsync(inject([AdminService], (service: AdminService) => {
@@ -131,7 +129,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Connecting to Business Network myNetwork',
-                text: 'using connection profile myProfile'
+                text: 'using connection profile web',
+                force: true
             });
 
             mockGetAdminConnection.should.have.been.called;
@@ -153,7 +152,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Connecting without a business network',
-                text: 'using connection profile myProfile'
+                text: 'using connection profile myProfile',
+                force: true
             });
 
             mockGetAdminConnection.should.have.been.called;
@@ -177,7 +177,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Connecting to Business Network myNetwork',
-                text: 'using connection profile myProfile'
+                text: 'using connection profile web',
+                force: true
             });
 
             mockGetAdminConnection.should.have.been.called;
@@ -205,7 +206,8 @@ describe('AdminService', () => {
 
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Connecting to Business Network myNetwork',
-                text: 'using connection profile myProfile'
+                text: 'using connection profile web',
+                force: true
             });
 
             mockGetAdminConnection.should.have.been.called;

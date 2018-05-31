@@ -32,10 +32,11 @@ describe('Event REST API unit tests', () => {
     let httpServer;
     let businessNetworkConnection;
     let idCard;
+    let adminConnection;
 
     before(() => {
         const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
-        const adminConnection = new AdminConnection({ cardStore });
+        adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
 
@@ -73,8 +74,10 @@ describe('Event REST API unit tests', () => {
             businessNetworkConnection = new BusinessNetworkConnection({ cardStore });
             return businessNetworkConnection.connect('admin@bond-network');
         });
+    });
 
-
+    after(() => {
+        return adminConnection.undeploy();
     });
 
     describe('WebSockets', () => {

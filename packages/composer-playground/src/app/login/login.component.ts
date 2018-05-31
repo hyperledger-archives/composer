@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
@@ -22,8 +22,8 @@ import { ConnectConfirmComponent } from '../basic-modals/connect-confirm/connect
 import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
+import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DrawerDismissReasons, DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
 
 import { IdCard } from 'composer-common';
@@ -89,16 +89,19 @@ export class LoginComponent implements OnInit {
 
     handleRouteChange() {
         switch (this.route.snapshot.fragment) {
-        case 'deploy':      this.deployNetwork(decodeURIComponent(this.route.snapshot.queryParams['ref']));
-                            break;
-        case 'create-card': this.createIdCard();
-                            break;
-        default:            if (this.route.snapshot.fragment || Object.keys(this.route.snapshot.queryParams).length > 0) {
-                                this.goLoginMain();
-                            } else {
-                                this.closeSubView();
-                            }
-                            break;
+            case 'deploy':
+                this.deployNetwork(decodeURIComponent(this.route.snapshot.queryParams['ref']));
+                break;
+            case 'create-card':
+                this.createIdCard();
+                break;
+            default:
+                if (this.route.snapshot.fragment || Object.keys(this.route.snapshot.queryParams).length > 0) {
+                    this.goLoginMain();
+                } else {
+                    this.closeSubView();
+                }
+                break;
         }
     }
 
@@ -351,8 +354,12 @@ export class LoginComponent implements OnInit {
                     let deletePromise: Promise<void>;
                     let cards = this.identityCardService.getAllCardsForBusinessNetwork(card.getBusinessNetworkName(), this.identityCardService.getQualifiedProfileName(card.getConnectionProfile()));
                     if (card.getConnectionProfile()['x-type'] === 'web' && cards.size === 1) {
-                           deletePromise = this.adminService.connect(cardRef, card, true)
+                        deletePromise = this.adminService.connect(cardRef, card, true)
                             .then(() => {
+                                this.alertService.busyStatus$.next({
+                                    title: 'Undeploying business network',
+                                    force: true
+                                });
                                 return this.adminService.undeploy(card.getBusinessNetworkName());
                             });
                     } else {
@@ -363,6 +370,7 @@ export class LoginComponent implements OnInit {
                         .then(() => {
                             return this.identityCardService.deleteIdentityCard(cardRef)
                                 .then(() => {
+                                    this.alertService.busyStatus$.next(null);
                                     this.alertService.successStatus$.next({
                                         title: 'ID Card Removed',
                                         text: 'The ID card was successfully removed from My Wallet.',

@@ -59,10 +59,11 @@ const clone = require('clone');
         let participantRegistry;
         let serializer;
         let idCard;
+        let adminConnection;
 
         before(() => {
             const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
-            const adminConnection = new AdminConnection({ cardStore });
+            adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
 
@@ -109,6 +110,10 @@ const clone = require('clone');
                     serializer.fromJSON(participantData[1])
                 ]);
             });
+        });
+
+        after(() => {
+            return adminConnection.undeploy();
         });
 
         describe(`GET / namespaces[${namespaces}]`, () => {

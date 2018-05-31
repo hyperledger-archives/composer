@@ -19,10 +19,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import {
-    BusinessNetworkDefinition,
-    TransactionDeclaration
-} from 'composer-common';
+import { BusinessNetworkDefinition, TransactionDeclaration } from 'composer-common';
 
 @Injectable()
 export class ClientService {
@@ -79,9 +76,11 @@ export class ClientService {
         let cardName = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
-            text: 'Using the connection profile ' + card.getConnectionProfile().name
+            text: 'Using the connection profile ' + connectionProfileName,
+            force: true
         });
 
         this.connectingPromise = this.adminService.connect(cardName, card, force)
@@ -89,7 +88,6 @@ export class ClientService {
                 return this.refresh();
             })
             .then(() => {
-                console.log('connected');
                 this.isConnected = true;
                 this.connectingPromise = null;
                 this.alertService.busyStatus$.next(null);
@@ -109,9 +107,12 @@ export class ClientService {
         let cardRef = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
+
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
-            text: 'refreshing the connection to ' + card.getConnectionProfile().name
+            text: 'refreshing the connection to ' + connectionProfileName,
+            force: true
         });
 
         return this.getBusinessNetworkConnection().disconnect()
