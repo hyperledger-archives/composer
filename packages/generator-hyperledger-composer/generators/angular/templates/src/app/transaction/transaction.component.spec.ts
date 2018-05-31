@@ -56,25 +56,6 @@ describe('<%= transactionName %>Component', () => {
 
   }));
 
-  /*beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ <%= transactionName %>Component ],
-imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule
-  ],
-providers: [<%= transactionName %>Service,DataService,]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(<%= transactionName %>Component);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });*/
 
   it('should create', () => {
     expect(component).toBeTruthy();

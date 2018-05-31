@@ -56,26 +56,6 @@ describe('<%= participantName %>Component', () => {
 
   }));
 
-  /*beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ <%= participantName %>Component ],
-imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule
-  ],
-providers: [<%= participantName %>Service,DataService,]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(<%= participantName %>Component);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });*/
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });

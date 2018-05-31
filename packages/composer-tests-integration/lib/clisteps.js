@@ -66,6 +66,10 @@ module.exports = function () {
         return this.composer.killBackground(label);
     });
 
+    this.When(/^I kill process on port (.+?)$/, {timeout: 240 * 1000}, function (port) {
+        return this.composer.killPortProcess(port);
+    });
+
     this.When(/^I save group (.+?) from the console output matching pattern (.+?) as alias (.*?)$/, function (group, regex, alias) {
         return this.composer.saveMatchingGroupAsAlias(new RegExp(regex, 'g'), group, alias);
     });

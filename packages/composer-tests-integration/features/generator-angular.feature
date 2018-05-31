@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -49,3 +49,7 @@ Feature: Angular Application Generator
             npm run e2e --prefix ./my-angular-app
             """
         Then The stdout information should include text matching /SUCCESS/
+
+    Scenario: Finally, shutdown the REST server and angular app
+        When I kill process on port 4200
+        When I kill process on port 3000
