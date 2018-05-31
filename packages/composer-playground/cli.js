@@ -44,11 +44,13 @@ if (process.env.COMPOSER_CONFIG) {
     config = JSON.parse(process.env.COMPOSER_CONFIG);
 }
 
-const method = 'main';
-LOG.entry(method);
+(async function main() {
+    const method = 'main';
+    LOG.entry(method);
 
-require('.')(argv.port, argv.test, config);
+    await require('.')(argv.port, argv.test, config);
 
-if (!isDocker()) {
-    opener(`http://localhost:${argv.port}`);
-}
+    if (!isDocker()) {
+        opener(`http://localhost:${argv.port}`);
+    }
+})();

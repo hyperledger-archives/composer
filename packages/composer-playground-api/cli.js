@@ -39,16 +39,16 @@ const Logger = require('composer-common').Logger;
 Logger.setCLIDefaults();
 const LOG = Logger.getLog('PlaygroundAPI');
 
+(async function main() {
+    const method = 'main';
+    LOG.entry(method);
 
+    const app = await require('.')(argv.port, argv.test);
 
-const method = 'main';
-LOG.entry(method);
-
-const app = require('.')(argv.port, argv.test);
-
-if (process.env.COMPOSER_CONFIG) {
-    const config = JSON.parse(process.env.COMPOSER_CONFIG);
-    app.get('/config.json', (req, res, next) => {
-        res.json(config);
-    });
-}
+    if (process.env.COMPOSER_CONFIG) {
+        const config = JSON.parse(process.env.COMPOSER_CONFIG);
+        app.get('/config.json', (req, res, next) => {
+            res.json(config);
+        });
+    }
+})();
