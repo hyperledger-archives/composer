@@ -15,8 +15,8 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Directive, Input, Component } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Directive, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as sinon from 'sinon';
 
@@ -28,7 +28,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueIdentityComponent } from './issue-identity.component';
 import { AlertService } from '../../basic-modals/alert.service';
 import { ClientService } from '../../services/client.service';
-import { BusinessNetworkConnection, ParticipantRegistry } from 'composer-client';
+import { BusinessNetworkConnection } from 'composer-client';
 import { Resource } from 'composer-common';
 
 @Directive({
@@ -127,7 +127,6 @@ describe('IssueIdentityComponent', () => {
             component['loadParticipants']();
 
             let expected = ['Emperor', 'King', 'Macaroni'];
-            console.log('PARTICIPANT FQIs', component['participantFQIs']);
             component['participantFQIs'].should.deep.equal(expected);
         }));
     });

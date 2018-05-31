@@ -88,6 +88,10 @@ describe('Access with APIKEY unit tests', () => {
             });
     });
 
+    after(() => {
+        return adminConnection.undeploy();
+    });
+
     describe('GET /api/system/ping', () => {
 
         it('should return 401 Unauthorized if APIKEY is not specified', () => {

@@ -216,12 +216,11 @@ chai.use(require('chai-http'));
         let assetRegistry;
         let participantRegistry;
         let serializer;
-
-
+        let adminConnection;
 
         before(() => {
             const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
-            const adminConnection = new AdminConnection({ cardStore });
+            adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
 
@@ -297,7 +296,9 @@ chai.use(require('chai-http'));
             });
         });
 
-
+        after(() => {
+            return adminConnection.undeploy();
+        });
 
         describe(`GET / namespaces[${namespaces}]`, () => {
 
