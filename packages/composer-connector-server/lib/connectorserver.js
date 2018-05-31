@@ -18,6 +18,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const LOG = Logger.getLog('ConnectorServer');
 
@@ -78,6 +79,14 @@ class ConnectorServer {
         this.connections = {};
         this.securityContexts = {};
         LOG.exit(method);
+    }
+
+    /**
+     * Test the connection to the connector server.
+     * @param {function} callback The callback to call when complete.
+     */
+    async ping(callback) {
+        callback(null, { version });
     }
 
     /**

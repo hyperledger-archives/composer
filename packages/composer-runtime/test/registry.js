@@ -390,6 +390,27 @@ describe('Registry', () => {
             return registry.add(mockResource).should.be.rejected;
         });
 
+        it('should skip testAdd if option provided', () => {
+            mockDataCollection.add.resolves();
+            let mockEventHandler = sinon.stub();
+            registry.on('resourceadded', mockEventHandler);
+            return registry.add(mockResource, {noTest: true})
+                .then(() => {
+                    sinon.assert.notCalled(mockAccessController.check);
+                    sinon.assert.calledWith(mockDataCollection.add, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryId: 'doges',
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge1'
+                    });
+                    sinon.assert.calledOnce(mockEventHandler);
+                    sinon.assert.calledWith(mockEventHandler, {
+                        registry: registry,
+                        resource: mockResource
+                    });
+                });
+        });
+
     });
 
     describe('#updateAll', () => {

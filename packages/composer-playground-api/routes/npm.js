@@ -39,17 +39,10 @@ const LOG = Logger.getLog('NPM');
 const sampleList = [{name : 'basic-sample-network'}];
 const fs = require('fs');
 
-let router = null;
-
 module.exports = (app, testMode) => {
 
-    // Did we already create a router?
-    if (router !== null) {
-        return router;
-    }
-
     // Create a new router.
-    router = express.Router();
+    const router = express.Router();
 
     app.use('/', router);
 
