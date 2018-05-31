@@ -29,7 +29,7 @@ Options:
   --card, -c                 The cardname to use to upgrade the network  [string] [required]
   --networkName, -n          Name of the business network to upgrade  [required]
   --networkVersion, -V       Version of the business network to upgrade to  [required]
-  --option, -o               Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o               Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```
 
