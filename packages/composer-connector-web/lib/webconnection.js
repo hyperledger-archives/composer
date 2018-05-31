@@ -156,7 +156,7 @@ class WebConnection extends Connection {
      * @async
      */
     async undeploy(securityContext, networkName) {
-        await WebDataService.newNetworkDataService(networkName, true).destroy();
+        await WebDataService.newNetworkDataService(networkName, true).removeAllData();
         const chaincodeStore = await this.getChaincodeStore();
         await chaincodeStore.removeNetwork(networkName);
         this.savedNetwork = null;
