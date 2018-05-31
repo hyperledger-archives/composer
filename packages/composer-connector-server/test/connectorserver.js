@@ -340,10 +340,10 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'public key', 'private key');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key');
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -353,7 +353,7 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -369,10 +369,10 @@ describe('ConnectorServer', () => {
             const cb = sinon.stub();
             mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
             connectionOptions.wallet='WRONG';
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'public key', 'private key');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'certificate', 'private key');
                 });
         });
 

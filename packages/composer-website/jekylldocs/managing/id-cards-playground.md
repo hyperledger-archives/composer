@@ -101,7 +101,7 @@ Importing and exporting business network cards is the simplest way to grant acce
 
 2. On the **My Wallet** page, click the **Export** icon on the business network card you wish to export. The business network card should download as a `.card` file.
 
-_Please note_: If you export a business network card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and public key which are then used to identify participants. Alternatively, if you export a business network card that has been used before, it will already contain the certificate and public key.
+_Please note_: If you export a business network card that has never been used, for example to send to a new participant, it will contain the enrollment ID and enrollment secret required to obtain the certificate and private key which are then used to identify participants. Alternatively, if you export a business network card that has been used before, it will already contain the certificate and private key.
 
 **Important**: Exported identity cards should be handled with care since they contain unprotected credentials. For example, you should never send identity cards via email or other unencrypted means of communication.
 
