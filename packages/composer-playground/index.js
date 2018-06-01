@@ -28,10 +28,10 @@ const playgroundAPI = require('composer-playground-api');
  * @param {Object} [config] The configuration.
  * @return {Object} The Express.js application.
  */
-function createServer (port, testMode, config) {
+async function createServer (port, testMode, config) {
 
     // Create the playground API server.
-    const app = playgroundAPI(port, testMode);
+    const app = await playgroundAPI(port, testMode);
 
     const dist = path.resolve(__dirname, 'dist');
 

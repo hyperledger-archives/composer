@@ -399,13 +399,13 @@ describe('Globalization', function() {
 
         it('check message in toJSON()', function() {
             let formatter = Globalize.messageFormatter('serializer-tojson-notcobject');
-            formatter().should.equal('Serializer.toJSON only accepts instances of Resource.');
+            formatter().should.equal('Serializer.toJSON only accepts Concept, Event, Asset, Participant or Transaction.');
 
             const modelManager = new ModelManager();
             expect(function() {
                 let serializer = new Serializer(true, modelManager);
                 serializer.toJSON({});
-            }).to.throw(Error, 'Serializer.toJSON only accepts instances of Resource.');
+            }).to.throw(Error, 'Serializer.toJSON only accepts Concept, Event, Asset, Participant or Transaction.');
         });
     });
 
