@@ -50,7 +50,7 @@ module.exports = function () {
     });
 
     this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
-        let pass = condition === 'pass' ? true : false;
+        const pass = (condition === 'pass');
         return this.composer.runCLI(pass, table);
     });
 
