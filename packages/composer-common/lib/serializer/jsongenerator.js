@@ -204,6 +204,7 @@ class JSONGenerator {
                 if (this.permitResourcesForRelationships && item instanceof Resource) {
                     let fqi = item.getFullyQualifiedIdentifier();
                     if (parameters.seenResources.has(fqi)) {
+                        parameters.writer.writeComma();
                         let relationshipText = this.getRelationshipText(relationshipDeclaration, item);
                         parameters.writer.writeStringValue(relationshipText);
                     } else {
