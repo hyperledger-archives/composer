@@ -82,6 +82,26 @@ Feature: Cli network steps
         Then The stdout information should include text matching /org.hyperledger_composer.marbles.NewMarble/
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, errors creating new assets are displayed to the user
+        When I run the following expected fail CLI command
+            """
+            composer transaction submit
+                --card admin@marbles-network
+                -d '{
+                    "$class": "org.hyperledger.composer.system.AddAsset",
+                    "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble",
+                    "resources": [{
+                        "$class": "org.hyperledger_composer.marbles.NewMarble",
+                        "marbleId": "101",
+                        "size": "SMALL",
+                        "color": "RED",
+                        "owner": "resource:org.hyperledger_composer.marbles.Player#bob",
+                        "ALL_YOUR_BASE_ARE_BELONG_TO_US": "A value"
+                    }]
+                }'
+            """
+        Then The stdout information should include text matching /ALL_YOUR_BASE_ARE_BELONG_TO_US/
+
     Scenario: Using the CLI, I can create new Assets by submitting transactions
         When I run the following expected pass CLI command
             """
@@ -161,7 +181,7 @@ Feature: Cli network steps
             """
             composer network list --card admin@marbles-network
             """
-        Then I stop watching the chain code logs  
+        Then I stop watching the chain code logs
         And  Then the maximum log level should be debug
         And  The stdout information should include text matching /Command succeeded/
 
@@ -185,6 +205,6 @@ Feature: Cli network steps
             """
             composer network loglevel --card admin@marbles-network --newlevel 'composer[warn]:*'
             """
-        Then I stop watching the chain code logs  
+        Then I stop watching the chain code logs
         And  Then the maximum log level should be info
         And  The stdout information should include text matching /Command succeeded/
