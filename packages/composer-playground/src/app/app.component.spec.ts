@@ -18,10 +18,10 @@
 /* tslint:disable:use-host-property-decorator*/
 /* tslint:disable:no-input-rename*/
 /* tslint:disable:member-ordering*/
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
-import { Directive, Input, Injectable } from '@angular/core';
+import { Directive, Injectable, Input } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ClientService } from './services/client.service';
 import { InitializationService } from './services/initialization.service';
@@ -29,7 +29,7 @@ import { IdentityCardService } from './services/identity-card.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AlertService } from './basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { BusinessNetworkConnection } from 'composer-client';
 import { AdminService } from './services/admin.service';
 import { AboutService } from './services/about.service';
@@ -344,7 +344,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent(false);
 
@@ -381,7 +381,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent(false);
 
@@ -397,7 +397,7 @@ describe('AppComponent', () => {
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 
-            routerStub.eventParams = {url: '/bob', nav: 'end'};
+            routerStub.eventParams = {url: '/bob', urlAfterRedirects: '/bob', nav: 'end'};
 
             updateComponent();
 
@@ -421,7 +421,7 @@ describe('AppComponent', () => {
         }));
 
         it('should show header links if logged in', fakeAsync(() => {
-            routerStub.eventParams = {url: '/editor', nav: 'end'};
+            routerStub.eventParams = {url: '/editor', urlAfterRedirects: '/editor', nav: 'end'};
             mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.getBusinessNetwork.returns({getName: sinon.stub().returns('bob')});
 

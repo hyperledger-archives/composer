@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -44,11 +44,18 @@ rm -rf ${HOME}/.composer/cards/ange*
 rm -rf ${HOME}/.composer/client-data/ange*
 rm -rf ${HOME}/.composer/cards/charlie*
 rm -rf ${HOME}/.composer/client-data/charlie*
+rm -rf ${HOME}/.composer/cards/yaml*
+rm -rf ${HOME}/.composer/client-data/yaml*
 rm -rf ./tmp/*           # temp folder for BNA files that are generated
-rm -rf ./my-bus-net      # business network created from generator
+rm -rf ./my-empty-bus-net      # a business network created from generator
+rm -rf ./my-bus-net      # a business network created from generator
 rm -rf ./tutorial-network      # business network created from generator in dev tut
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
+
+# remove anything already there
+docker kill $(docker ps -q) && docker rm $(docker ps -qa) --force
+
 
 rm -rf ${HOME}/.npmrc
 if [ "${DOCKER_FILE}" != "" ]; then
@@ -105,6 +112,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
         echo Using docker file ${DOCKER_FILE}
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} up -d
         cd ${DIR}
         cd ../composer-runtime-hlfv1
@@ -159,6 +167,10 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
        docker run -p 6379:6379 --name composer-wallet-redis -d redis  && \
        docker exec composer-wallet-redis redis-cli -c flushall
 
+    docker run -d --name="logspout" \
+	    --volume=/var/run/docker.sock:/var/run/docker.sock \
+	    --publish=127.0.0.1:8000:80 \
+	    gliderlabs/logspout
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
@@ -176,6 +188,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     if [ "${DOCKER_FILE}" != "" ]; then
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} kill
         ARCH=$ARCH docker-compose -f ${DOCKER_FILE} down
+        docker rmi -f $(docker images -aq dev-*) || true
     fi
 
     # Delete any written configuration.
@@ -195,6 +208,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.composer/cards/ange*
     rm -rf ${HOME}/.composer/client-data/ange*
     rm -rf ./tmp/*
+    rm -rf ./my-empty-bus-net
     rm -rf ./my-bus-net
     rm -rf ./tutorial-network
     rm -rf ./networkadmin

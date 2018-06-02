@@ -17,7 +17,8 @@
 const ClassDeclaration = require('../introspect/classdeclaration');
 const EnumDeclaration = require('../introspect/enumdeclaration');
 const Field = require('../introspect/field');
-const leftPad = require('left-pad');
+// const leftPad = require('left-pad');
+const padStart = require('lodash.padstart');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Util = require('../util');
@@ -218,7 +219,7 @@ class InstanceGenerator {
      */
     generateRandomId(classDeclaration) {
         let id = Math.round(Math.random() * 9999).toString();
-        id = leftPad(id, 4, '0');
+        id = padStart(id, 4, '0');
         return id;
     }
 

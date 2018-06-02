@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -21,24 +21,25 @@ Feature: Developer tutorial
 
     Scenario: Step One: Creating a business network structure
         When I run the yo command from the tutorial:
-            | command          | identifiedBy:create-network  |
-            | --appname        | identifiedBy:network-name    |
-            | --applicense     | identifiedBy:license         |
-            | --ns             | identifiedBy:namespace       |
+            | command          | identifiedBy:create-network   |
+            | --appname        | identifiedBy:network-name     |
+            | --applicense     | identifiedBy:license          |
+            | --ns             | identifiedBy:namespace        |
             | --appdescription | King conga\'s special network |
-            | --appauthor      | King Conga                   |
-            | --appemail       | king@conga-email             |
-            
+            | --appauthor      | King Conga                    |
+            | --appemail       | king@conga-email              |
+            | --empty          | identifiedBy:empty            |
+
         Then I have the following files
-            | ../tutorial-network/.eslintrc.yml                 |
-            | ../tutorial-network/README.md                     |
-            | ../tutorial-network/package.json                  |
-            | ../tutorial-network/permissions.acl               |
-            | ../tutorial-network/models/org.acme.mynetwork.cto |
-            | ../tutorial-network/lib/logic.js                  |
-            | ../tutorial-network/test/logic.js                 |
-            | ../tutorial-network/features/sample.feature       |
-            | ../tutorial-network/features/support/index.js     |
+            | ../tutorial-network/.eslintrc.yml                    |
+            | ../tutorial-network/README.md                        |
+            | ../tutorial-network/package.json                     |
+            | ../tutorial-network/permissions.acl                  |
+            | ../tutorial-network/models/org.example.mynetwork.cto |
+            | ../tutorial-network/lib/logic.js                     |
+            | ../tutorial-network/test/logic.js                    |
+            | ../tutorial-network/features/sample.feature          |
+            | ../tutorial-network/features/support/index.js        |
 
     Scenario: Step Two: Defining a business network
         Given I have used the tutorial to create a network called tutorial-network
@@ -55,7 +56,7 @@ Feature: Developer tutorial
             """
         When I run the cli command from the tutorial:
             | command | identifiedBy:archive-create |
-            
+
         Then I have the following files
             | ../tutorial-network/tutorial-network@0.0.1.bna |
 
@@ -113,4 +114,3 @@ Feature: Developer tutorial
          When I kill task named REST-SERVER
          When I kill task named NPM
 
-    

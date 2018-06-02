@@ -17,14 +17,14 @@ A model M' is **compatible** with model M if instances created with model M are 
 The following terms are used throughout this document:
 
 - _Class_ : the declaration of the structure of an asset, participant, transaction, concept or event
-- _Instance_ : an instance of a class, for example if org.example.Vehicle is an asset (class), then org.example.Vehicle#ABC123 is an **instance** of an org.acme.Vehicle
-- _Property_ : a member (or field) defined by a class, including a relationship. For example the class org.example.Vehicle may have a property called `model` of type `string`.
+- _Instance_ : an instance of a class, for example if org.example.basic.SampleAsset is an asset (class), then org.example.basic.SampleAsset#ABC123 is an **instance** of an org.example.basic.SampleAsset
+- _Property_ : a member (or field) defined by a class, including a relationship. For example the class org.example.basic.SampleAsset may have a property called `value` of type `string`.
 
 
 A class (the asset SampleAsset):
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 asset SampleAsset identified by assetId {
   o String assetId
@@ -37,9 +37,9 @@ An instance of the class:
 
 ```
 {
-  "$class": "org.acme.sample.SampleAsset",
+  "$class": "org.example.basic.SampleAsset",
   "assetId": "assetId:6463",
-  "owner": "resource:org.acme.sample.SampleParticipant#participantId:8091",
+  "owner": "resource:org.example.basic.SampleParticipant#participantId:8091",
   "value": "secret plant frequently ruler"
 }
 ```

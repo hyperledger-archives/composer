@@ -16,7 +16,7 @@
 const util=require('util');
 const rimraf = util.promisify(require('rimraf'));
 const mkdirp = require('mkdirp');
-const homedir = require('homedir');
+const os = require('os');
 const path= require('path');
 
 module.exports.getStore = require('../index.js').getStore;
@@ -32,7 +32,7 @@ module.exports.correctConfigs=[
 module.exports.clean=async ()=>{
     await rimraf('/tmp/filestemwallet');
     mkdirp.sync('/tmp/filestemwallet');
-    await rimraf(path.resolve(homedir(),'.composer'));
+    await rimraf(path.resolve(os.homedir(),'.composer'));
 };
 
 module.exports.messages={

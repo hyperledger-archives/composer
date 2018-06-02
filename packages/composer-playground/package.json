@@ -1,6 +1,6 @@
 {
     "name": "composer-playground",
-    "version": "0.19.2",
+    "version": "0.19.8",
     "description": "A test harness/UI for the web runtime container for Hyperledger Composer",
     "engines": {
         "node": ">=8",
@@ -31,7 +31,6 @@
             "coverage",
             "dist",
             "node_modules",
-            "docker",
             "e2e/data/files/importBanned.wombat",
             "e2e/data/files/importReadMe.md"
         ],
@@ -52,6 +51,11 @@
             ".block"
         ],
         "insert_license": false,
+        "default_format": {
+            "eachLine": {
+                "prepend": "# "
+            }
+        },
         "license_formats": {
             "js|ts|scss|cto|acl|qry": {
                 "prepend": "/*",
@@ -60,7 +64,7 @@
                     "prepend": " * "
                 }
             },
-            "gitkeep|cfignore|nvmrc|npmrc|editorconfig": {
+            "gitkeep|cfignore|nvmrc|npmrc|editorconfig|ppc64le": {
                 "eachLine": {
                     "prepend": "# "
                 }
@@ -128,10 +132,10 @@
     },
     "dependencies": {
         "cheerio": "0.22.0",
-        "composer-common": "0.19.2",
-        "composer-playground-api": "0.19.2",
-        "composer-wallet-filesystem": "0.19.2",
-        "composer-wallet-inmemory": "0.19.2",
+        "composer-common": "0.19.8",
+        "composer-playground-api": "0.19.8",
+        "composer-wallet-filesystem": "0.19.8",
+        "composer-wallet-inmemory": "0.19.8",
         "express": "4.15.2",
         "is-docker": "1.1.0",
         "opener": "1.4.2",
@@ -181,12 +185,12 @@
         "clone": "2.1.1",
         "codelyzer": "2.0.1",
         "codemirror": "5.26.0",
-        "composer-admin": "0.19.2",
-        "composer-client": "0.19.2",
-        "composer-connector-proxy": "0.19.2",
-        "composer-connector-web": "0.19.2",
-        "composer-runtime": "0.19.2",
-        "composer-runtime-web": "0.19.2",
+        "composer-admin": "0.19.8",
+        "composer-client": "0.19.8",
+        "composer-connector-proxy": "0.19.8",
+        "composer-connector-web": "0.19.8",
+        "composer-runtime": "0.19.8",
+        "composer-runtime-web": "0.19.8",
         "copy-webpack-plugin": "4.0.1",
         "core-js": "2.4.1",
         "css-loader": "0.26.1",
@@ -199,7 +203,6 @@
         "file-loader": "0.10.0",
         "file-saver": "1.3.3",
         "gh-pages": "0.12.0",
-        "homedir": "0.6.0",
         "html-webpack-plugin": "2.25.0",
         "ie-shim": "0.1.0",
         "imports-loader": "0.7.0",

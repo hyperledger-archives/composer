@@ -28,7 +28,7 @@ The first line of comments above a transaction processor function contains a hum
 ```
 /**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 ```
@@ -46,7 +46,7 @@ A complete transaction processor function as detailed above would take the follo
 ```
 /**
 * A transaction processor function description
-* @param {org.example.sampleTransaction} parameter-name A human description of the parameter
+* @param {org.example.basic.SampleTransaction} parameter-name A human description of the parameter
 * @transaction
 */
 function transactionProcessor(parameter-name) {
@@ -81,7 +81,7 @@ The transaction processor function defines the `SampleTransaction` type as the a
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -93,13 +93,13 @@ async function sampleTransaction(tx) {
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    let assetRegistry = getAssetRegistry('org.acme.sample.SampleAsset');
+    let assetRegistry = getAssetRegistry('org.example.basic.SampleAsset');
 
     // Update the asset in the asset registry.
     await assetRegistry.update(tx.asset);
 
     // Emit an event for the modified asset.
-    let event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
+    let event = getFactory().newEvent('org.example.basic', 'SampleEvent');
     event.asset = tx.asset;
     event.oldValue = oldValue;
     event.newValue = tx.newValue;
@@ -114,7 +114,7 @@ Transaction processor functions will fail and roll back any changes already made
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -138,7 +138,7 @@ The following example includes nested relationships, the transaction has a relat
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 participant SampleParticipant identified by participantId {
   o String participantId
@@ -159,7 +159,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -184,7 +184,7 @@ In the example code below there are several promises, the transaction will not b
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 transaction SampleTransaction {
 
@@ -200,7 +200,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -214,7 +214,7 @@ however if you so wish you can still use old style promise chains
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 function sampleTransaction(tx) {
@@ -249,7 +249,7 @@ In the code example below, the `getAssetRegistry` call returns a promise which i
 Model file:
 
 ```
-namespace org.acme.sample
+namespace org.example.basic
 
 asset SampleAsset identified by assetId {
   o String assetId
@@ -267,7 +267,7 @@ Script file:
 ```javascript
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.example.basic.SampleTransaction} tx The sample transaction instance.
  * @transaction
  */
 async function sampleTransaction(tx) {
@@ -276,7 +276,7 @@ async function sampleTransaction(tx) {
     asset.value = tx.newValue;
     // Get the asset registry that stores the assets. Note that
     // getAssetRegistry() returns a promise, so we have to await for it.
-    let assetRegistry = await getAssetRegistry('org.acme.sample.SampleAsset');
+    let assetRegistry = await getAssetRegistry('org.example.basic.SampleAsset');
 
     // Update the asset in the asset registry. Again, note
     // that update() returns a promise, so so we have to return

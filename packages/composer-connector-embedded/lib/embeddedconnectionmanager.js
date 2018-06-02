@@ -54,7 +54,16 @@ class EmbeddedConnectionManager extends ConnectionManager {
         const publicKey = certificateObj.getPublicKey();
         const name = certificateObj.getName();
         const issuer = certificateObj.getIssuer();
-        const secret = uuid.v4().substring(0, 8);
+        let secret = uuid.v4().substring(0, 8);
+        let options = {};
+
+        // Allow an existing identity to be replaced in the connector wallet.
+        if (await identities.exists(id)) {
+            const curid = await identities.get(id);
+            secret = curid.secret;
+            options = curid.options;
+            await identities.remove(id);
+        }
         const identity = {
             identifier,
             name,
@@ -64,10 +73,10 @@ class EmbeddedConnectionManager extends ConnectionManager {
             publicKey,
             privateKey,
             imported: true,
-            options: {}
+            options
         };
+
         await identities.add(id, identity);
-        await identities.add(identifier, identity);
     }
 
      /**
@@ -84,8 +93,12 @@ class EmbeddedConnectionManager extends ConnectionManager {
         if (!exists) {
             return null;
         }
-        const { certificate, privateKey } = await identities.get(id);
-        return { certificate, privateKey };
+
+        const { certificate, privateKey, imported } = await identities.get(id);
+        if (imported) {
+            return { certificate, privateKey };
+        }
+        return null;
     }
 
     /**
@@ -97,12 +110,18 @@ class EmbeddedConnectionManager extends ConnectionManager {
      * or rejects with an error.
      */
     async removeIdentity(connectionProfile, connectionOptions, id) {
-        // The embedded connector uses the identities collection as the ca registry as well which
-        // effectively means that remove identity cannot have an implementation. For example it would
-        // remove an entry that has been created by issueIdentity when you import a card with a secret
-        // for the same identity and thus effectively removes the existence of the identity.
-        // This problem was shown when running the multiuser rest tests.
-        // So just do nothing for now.
+        const identities = await this.dataService.ensureCollection(IDENTITY_COLLECTION_ID);
+        const exists = await identities.exists(id);
+        if (!exists) {
+            return exists;
+        }
+        const identity = await identities.get(id);
+        if (identity.imported) {
+            identity.imported = false;
+            await identities.update(id, identity);
+            return true;
+        }
+
         return false;
     }
 

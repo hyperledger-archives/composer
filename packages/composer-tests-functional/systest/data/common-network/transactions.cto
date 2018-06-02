@@ -41,6 +41,10 @@ asset SimpleRelationshipsAsset identified by assetId {
     --> SimpleStringAsset[] stringAssets
 }
 
+transaction SimpleTransaction {
+
+}
+
 transaction SimpleTransactionWithPrimitiveTypes {
 
     o String stringValue
@@ -181,4 +185,10 @@ transaction AdvancedInvokeChainCodeTransaction {
     o String chainCodeName
     o String expectedValue
 }
+
+transaction AdvancedInvokeChainCodeError {
+    o String channel
+    o String chainCodeName
+}
+
 

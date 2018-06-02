@@ -18,9 +18,9 @@
 /* tslint:disable:use-host-property-decorator*/
 /* tslint:disable:no-input-rename*/
 /* tslint:disable:member-ordering*/
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Input, Component, Output, EventEmitter } from '@angular/core';
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject } from 'rxjs/Rx';
@@ -32,10 +32,9 @@ import { AlertService } from '../basic-modals/alert.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
-import { BusinessNetworkDefinition } from 'composer-common';
+import { BusinessNetworkDefinition, IdCard } from 'composer-common';
 
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
-import { IdCard } from 'composer-common';
+import { DrawerDismissReasons, DrawerService } from '../common/drawer';
 import { LoginComponent } from './login.component';
 
 import * as fileSaver from 'file-saver';
@@ -59,6 +58,7 @@ class RouterStub {
     set eventParams(event) {
         let nav;
         if (event.nav === 'end') {
+            console.log('MY ONLY FRIEND THE END');
             nav = new NavigationEnd(0, event.url, event.urlAfterRedirects);
         } else {
             nav = new NavigationStart(0, event.url);
@@ -78,6 +78,38 @@ class RouterStub {
 
     navigate = sinon.stub();
 
+}
+
+export class ActivatedRouteStub {
+
+    // ActivatedRoute.queryParams is Observable
+    private subject = new BehaviorSubject(this.testParams);
+    public queryParams = this.subject.asObservable();
+
+    // Test parameters
+    private _testParams: {};
+    get testParams() {
+        return this._testParams;
+    }
+
+    set testParams(queryParams: {}) {
+        this._testParams = queryParams;
+        this.subject.next(queryParams);
+    }
+
+    private _testFragment: string;
+    get testFragment() {
+        return this._testFragment;
+    }
+
+    set testFragment(fragment: string) {
+        this._testFragment = fragment;
+    }
+
+    // ActivatedRoute.snapshot.params
+    get snapshot() {
+        return {queryParams: this.testParams, fragment: this.testFragment};
+    }
 }
 
 @Component({
@@ -165,6 +197,7 @@ describe(`LoginComponent`, () => {
     let mockModal;
     let mockDrawer;
     let businessNetworkMock;
+    let activatedRoute;
 
     beforeEach(() => {
         mockIdentityCardService = sinon.createStubInstance(IdentityCardService);
@@ -180,6 +213,7 @@ describe(`LoginComponent`, () => {
         businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
 
         routerStub = new RouterStub();
+        activatedRoute = new ActivatedRouteStub();
 
         mockAlertService.successStatus$ = {next: sinon.stub()};
         mockAlertService.busyStatus$ = {next: sinon.stub()};
@@ -199,6 +233,7 @@ describe(`LoginComponent`, () => {
                 {provide: IdentityCardService, useValue: mockIdentityCardService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: Router, useValue: routerStub},
+                {provide: ActivatedRoute, useValue: activatedRoute},
                 {provide: AdminService, useValue: mockAdminService},
                 {provide: InitializationService, useValue: mockInitializationService},
                 {provide: SampleBusinessNetworkService, useValue: mockSampleBusinessNetworkService},
@@ -218,6 +253,11 @@ describe(`LoginComponent`, () => {
     });
 
     describe('ngOnInit', () => {
+        let handleRouteChangeStub;
+        beforeEach(() => {
+            handleRouteChangeStub = sinon.stub(component, 'handleRouteChange');
+        });
+
         it('should load identity cards', fakeAsync(() => {
             mockInitializationService.initialize.returns(Promise.resolve());
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
@@ -253,6 +293,102 @@ describe(`LoginComponent`, () => {
             mockConfigService.getConfig.should.have.been.called;
             component['config'].should.deep.equal(mockConfig);
         }));
+
+        it('should handle the route change', fakeAsync(() => {
+            mockInitializationService.initialize.returns(Promise.resolve());
+            let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
+            mockConfigService.getConfig.returns(mockConfig);
+
+            component.ngOnInit();
+
+            tick();
+
+            routerStub.eventParams = {url: '/login', nav: 'end'};
+
+            handleRouteChangeStub.should.have.been.called;
+        }));
+    });
+
+    describe('handleRouteChange', () => {
+        it('should clear the URL to /login if hits default with invalid fragment and having queryParams', () => {
+            activatedRoute.testFragment = 'penguin';
+            activatedRoute.testParams = {ref: 'ABC'};
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
+
+            component['handleRouteChange']();
+
+            goLoginMainStub.should.have.been.called;
+        });
+
+        it('should clear the URL to /login if hits default with no fragment but having queryParams', () => {
+            activatedRoute.testParams = {ref: 'ABC'};
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
+
+            component['handleRouteChange']();
+
+            goLoginMainStub.should.have.been.called;
+        });
+
+        it('should clear the URL to /login if hits default with invalid fragment but having no queryParams', () => {
+            activatedRoute.testFragment = 'penguin';
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
+
+            component['handleRouteChange']();
+
+            goLoginMainStub.should.have.been.called;
+        });
+
+        it('should call closeSubView when no queryParams or fragment passed', () => {
+            activatedRoute.testParams = {};
+            let closeSubViewStub = sinon.stub(component, 'closeSubView');
+
+            component['handleRouteChange']();
+
+            closeSubViewStub.should.have.been.called;
+        });
+
+        it('should display deploy screen when #deploy in url using ref in params', () => {
+            let deployNetworkStub = sinon.stub(component, 'deployNetwork');
+            activatedRoute.testFragment = 'deploy';
+            activatedRoute.testParams = 'ABC';
+
+            component['handleRouteChange']();
+
+            deployNetworkStub.should.have.been.called;
+        });
+
+        it('should display card create screen when #create-card is in the URL', () => {
+            let createIdCardStub = sinon.stub(component, 'createIdCard');
+            activatedRoute.testFragment = 'create-card';
+
+            component['handleRouteChange']();
+
+            createIdCardStub.should.have.been.called;
+        });
+    });
+
+    describe('goLoginMain', () => {
+        it('should navigate the user to /login', () => {
+            component['goLoginMain']();
+
+            routerStub.navigate.should.have.been.calledWith(['/login']);
+        });
+    });
+
+    describe('goDeploy', () => {
+        it('should navigate the user to /login', () => {
+            component['goDeploy']('ABC');
+
+            routerStub.navigate.should.have.been.calledWith(['/login'], {fragment: 'deploy', queryParams: {ref: 'ABC'}});
+        });
+    });
+
+    describe('goCreateCard', () => {
+        it('should navigate the user to /login', () => {
+            component['goCreateCard']();
+
+            routerStub.navigate.should.have.been.calledWith(['/login'], {fragment: 'create-card'});
+        });
     });
 
     describe('loadIdentityCards', () => {
@@ -471,9 +607,23 @@ describe(`LoginComponent`, () => {
     });
 
     describe('createIdCard', () => {
+        it('should return the user to the main login screen if no using locally', () => {
+            component['usingLocally'] = false;
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
+            component['showSubScreen'] = false;
+            component['creatingIdCard'] = false;
+
+            component['createIdCard']();
+
+            goLoginMainStub.should.have.been.called;
+            component['showSubScreen'].should.be.false;
+            component['creatingIdCard'].should.be.false;
+        });
+
         it('should open the ID card screen', () => {
             component['showSubScreen'] = false;
             component['creatingIdCard'] = false;
+            component['usingLocally'] = true;
 
             component['createIdCard']();
             component['showSubScreen'].should.be.true;
@@ -484,21 +634,21 @@ describe(`LoginComponent`, () => {
     describe('finishedCardCreation', () => {
         it('should close the subscreen and refresh identity cards on success', () => {
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
-            let closeSubViewStub = sinon.stub(component, 'closeSubView');
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
 
             component['finishedCardCreation'](true);
 
-            closeSubViewStub.should.have.been.called;
+            goLoginMainStub.should.have.been.called;
             loadIdentityCardsStub.should.have.been.called;
         });
 
         it('should call closeSubView() on failure', () => {
             let loadIdentityCardsStub = sinon.stub(component, 'loadIdentityCards');
-            let closeSubViewStub = sinon.stub(component, 'closeSubView');
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
 
             component['finishedCardCreation'](false);
 
-            closeSubViewStub.should.have.been.called;
+            goLoginMainStub.should.have.been.called;
             loadIdentityCardsStub.should.not.have.been.called;
         });
     });
@@ -613,6 +763,10 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
 
+            mockAlertService.busyStatus$.next.should.have.been.calledWith({
+                title: 'Undeploying business network',
+                force: true
+            });
             mockAlertService.successStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));
@@ -670,7 +824,24 @@ describe(`LoginComponent`, () => {
     });
 
     describe('deployNetwork', () => {
+        it('should return the user to the login main view if they cannot deploy', fakeAsync(() => {
+            let canDeployStub = sinon.stub(component, 'canDeploy');
+            canDeployStub.returns(false);
+
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
+
+            component.deployNetwork('1234');
+
+            tick();
+
+            mockIdentityCardService.getAdminCardRef.should.not.have.been.called;
+            goLoginMainStub.should.have.been.called;
+        }));
+
         it('should deploy a new business network showing credentials', fakeAsync(() => {
+            let canDeployStub = sinon.stub(component, 'canDeploy');
+            canDeployStub.returns(true);
+
             component['indestructibleCards'] = [];
 
             mockIdentityCardService.getAdminCardRef.returns('4321');
@@ -688,6 +859,9 @@ describe(`LoginComponent`, () => {
         }));
 
         it('should deploy a new business network not showing credentials', fakeAsync(() => {
+            let canDeployStub = sinon.stub(component, 'canDeploy');
+            canDeployStub.returns(true);
+
             component['indestructibleCards'] = ['4321'];
 
             mockIdentityCardService.getAdminCardRef.returns('4321');
@@ -707,17 +881,13 @@ describe(`LoginComponent`, () => {
 
     describe('finishedDeploying', () => {
         it('should finish deploying', () => {
-            component['showSubScreen'] = true;
-
             let loadStub = sinon.stub(component, 'loadIdentityCards');
+            let goLoginMainStub = sinon.stub(component, 'goLoginMain');
 
-            component['showDeployNetwork'] = true;
             component.finishedDeploying();
 
-            component['showSubScreen'].should.equal(false);
-            component['showDeployNetwork'].should.equal(false);
-
             loadStub.should.have.been.called;
+            goLoginMainStub.should.have.been.called;
         });
     });
 
@@ -840,7 +1010,7 @@ describe(`LoginComponent`, () => {
 
             mockIdCard3 = sinon.createStubInstance(IdCard);
             mockIdCard3.getUserName.returns('card2');
-            mockIdCard3.getBusinessNetworkName.returns('my-alphabet-network');
+            mockIdCard3.getBusinessNetworkName.returns('my-z-alphabet-network');
             mockIdCard3.getRoles.returns(['PeerAdmin']);
 
             mockIdCard4 = sinon.createStubInstance(IdCard);
@@ -886,7 +1056,7 @@ describe(`LoginComponent`, () => {
 
             cardRefs.sort(component['sortIdCards'].bind(component));
 
-            cardRefs.should.deep.equal(['myCardRef5', 'myCardRef2', 'myCardRef4', 'myCardRef7', 'myCardRef3', 'myCardRef6', 'myCardRef1']);
+            cardRefs.should.deep.equal(['myCardRef5', 'myCardRef2', 'myCardRef4', 'myCardRef7', 'myCardRef6', 'myCardRef1', 'myCardRef3']);
         });
     });
 

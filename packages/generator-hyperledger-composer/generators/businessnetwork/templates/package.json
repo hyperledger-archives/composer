@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "composer": "<%= composerversion %>"
+  },
   "name": "<%= appname %>",
   "version": "0.0.1",
   "description": "<%= appdescription %>",
@@ -8,6 +11,10 @@
     "lint": "eslint .",
     "test": "nyc mocha -t 0 test/*.js && cucumber-js"
   },
+  "keywords": [
+    "composer",
+    "composer-network"
+  ],
   "author": "<%= appauthor %>",
   "email": "<%= appemail %>",
   "license": "<%= applicense %>",

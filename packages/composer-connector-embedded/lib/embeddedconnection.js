@@ -20,6 +20,9 @@ const EmbeddedSecurityContext = require('./embeddedsecuritycontext');
 const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const uuid = require('uuid');
 
+// A map of installed chaincodes keyed by name and version
+const installedChaincodes = new Map();
+
 // A mapping of business networks to chaincode IDs.
 const businessNetworks = {};
 
@@ -43,6 +46,26 @@ class EmbeddedConnection extends Connection {
         for (let id in chaincodes) {
             delete chaincodes[id];
         }
+        installedChaincodes.clear();
+    }
+
+    /**
+     * Add chaincode package to the list of installed chaincodes, keyed off of the name and version only.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition the business network definition which defines the chaincode
+     */
+    static addInstalledChaincode(businessNetworkDefinition) {
+        const key = `${businessNetworkDefinition.getName()}@${businessNetworkDefinition.getVersion()}`;
+        installedChaincodes.set(key, businessNetworkDefinition);
+    }
+
+    /**
+     * Retrieve a business network definition chaincode keyed off name and version.∂
+     * @param {string} name The name of the chaincode to retrieve
+     * @param {string} version The version of the chaincode to retrieve
+     * @returns {BusinessNetworkDefinition} A business network definition chaincode or null if not found.
+     */
+    static getInstalledChaincode(name, version) {
+        return installedChaincodes.get(`${name}@${version}`);
     }
 
     /**
@@ -116,7 +139,6 @@ class EmbeddedConnection extends Connection {
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         this.dataService = new EmbeddedDataService(null, true);
-        this.installedBusinessNetwork = null;
     }
 
     /**
@@ -135,12 +157,24 @@ class EmbeddedConnection extends Connection {
      */
     async login(enrollmentID, enrollmentSecret) {
         const identity = await this.testIdentity(enrollmentID, enrollmentSecret);
+
+        // no businessNetworkIdentitier implies fabric identity, not an identity
+        // that can be enrolled and should already be imported.
         if (!this.businessNetworkIdentifier) {
             return new EmbeddedSecurityContext(this, identity);
         }
         let chaincodeUUID = EmbeddedConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile);
         if (!chaincodeUUID) {
             throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
+        }
+
+        // simulate enrolment and import which would occur on a login if
+        // no imported credentials. Note that no enrolment counting is done in
+        // this simulation.
+        if (!identity.imported) {
+            identity.imported = true;
+            const identities = await this.getIdentities();
+            await identities.update(enrollmentID, identity);
         }
         const result = new EmbeddedSecurityContext(this, identity);
         result.setChaincodeID(chaincodeUUID);
@@ -152,9 +186,11 @@ class EmbeddedConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} businessNetworkDefinition The business network definition that will be started
      * @param {Object} installOptions connector specific installation options
+     * @returns {Promise} returns a resolved promise to indicate success
      */
     async install(securityContext, businessNetworkDefinition, installOptions) {
-        this.businessNetworkDefinition = businessNetworkDefinition;
+        EmbeddedConnection.addInstalledChaincode(businessNetworkDefinition);
+        return Promise.resolve();
     }
 
     /**
@@ -166,15 +202,52 @@ class EmbeddedConnection extends Connection {
      * @param {Object} startOptions connector specific start options
      */
     async start(securityContext, businessNetworkIdentifier, businessNetworkVersion, startTransaction, startOptions) {
-        let container = EmbeddedConnection.createContainer();
-        let identity = securityContext.getIdentity();
-        let chaincodeUUID = container.getUUID();
-        let engine = EmbeddedConnection.createEngine(container);
-        this.installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(this.businessNetworkDefinition);
+        const installedChaincode = EmbeddedConnection.getInstalledChaincode(businessNetworkIdentifier, businessNetworkVersion);
+        if (!installedChaincode) {
+            throw new Error(`${businessNetworkIdentifier} version ${businessNetworkVersion} has not been installed`);
+        }
+        const installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(installedChaincode);
+
+        const container = EmbeddedConnection.createContainer();
+        const identity = securityContext.getIdentity();
+        const chaincodeUUID = container.getUUID();
+        const engine = EmbeddedConnection.createEngine(container);
+
         EmbeddedConnection.addBusinessNetwork(businessNetworkIdentifier, this.connectionProfile, chaincodeUUID);
-        EmbeddedConnection.addChaincode(chaincodeUUID, container, engine, this.installedBusinessNetwork);
-        let context = new EmbeddedContext(engine, identity, this, this.installedBusinessNetwork);
+        EmbeddedConnection.addChaincode(chaincodeUUID, container, engine, installedBusinessNetwork);
+
+        let context = new EmbeddedContext(engine, identity, this, installedBusinessNetwork);
         await engine.init(context, 'start', [startTransaction]);
+    }
+
+    /**
+     * Upgrade a business network. This connector implementation effectively allows you to
+     * switch between installed chaincodes, and doesn't complain even if you switch to the
+     * same chaincode.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The name of the business network to upgrade.
+     * @param {String} businessNetworkVersion The version of the business network to upgrade.
+     * @param {Object} upgradeOptions connector specific start options
+     * @async
+     */
+    async upgrade(securityContext, businessNetworkIdentifier, businessNetworkVersion, upgradeOptions) {
+        let installedChaincode = EmbeddedConnection.getInstalledChaincode(businessNetworkIdentifier, businessNetworkVersion);
+        if (!installedChaincode) {
+            throw new Error(`${businessNetworkIdentifier} version ${businessNetworkVersion} has not been installed`);
+        }
+        let chaincodeUUID = EmbeddedConnection.getBusinessNetwork(businessNetworkIdentifier, this.connectionProfile);
+        if (!chaincodeUUID) {
+            throw new Error(`Unable to upgrade, ${businessNetworkIdentifier} has not been started`);
+        }
+
+        const {container, engine} = EmbeddedConnection.getChaincode(chaincodeUUID);
+        let installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(installedChaincode);
+
+        // This adds or replaces
+        EmbeddedConnection.addChaincode(chaincodeUUID, container, engine, installedBusinessNetwork);
+        const identity = securityContext.getIdentity();
+        let context = new EmbeddedContext(engine, identity, this, installedBusinessNetwork);
+        await engine.init(context, 'upgrade');
     }
 
     /**
@@ -197,6 +270,9 @@ class EmbeddedConnection extends Connection {
      * chaincode function once it has been invoked, or rejected with an error.
      */
     async queryChainCode(securityContext, functionName, args) {
+        if (!this.businessNetworkIdentifier) {
+            throw new Error('No business network has been specified for this connection');
+        }
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
@@ -212,6 +288,10 @@ class EmbeddedConnection extends Connection {
      * @param {string[]} args The arguments to pass to the chaincode function.
      */
     async invokeChainCode(securityContext, functionName, args) {
+        if (!this.businessNetworkIdentifier) {
+            throw new Error('No business network has been specified for this connection');
+        }
+
         let identity = securityContext.getIdentity();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
@@ -272,12 +352,12 @@ class EmbeddedConnection extends Connection {
         };
         const identities = await this.getIdentities();
         await identities.add('admin', identity);
-        await identities.add(identifier, identity);
         return identity;
     }
 
     /**
      * Test the specified identity name and secret to ensure that it is valid.
+     * admin userid doesn't require a secret.
      * @param {string} identityName The name for the identity.
      * @param {string} identitySecret The secret for the identity.
      * @return {Promise} A promise that is resolved if the user ID and secret
@@ -326,7 +406,7 @@ class EmbeddedConnection extends Connection {
         if (exists) {
             const identity = await identities.get(identityName);
             return {
-                userID: identity.name,
+                userID: identityName,
                 userSecret: identity.secret
             };
         }
@@ -348,9 +428,8 @@ class EmbeddedConnection extends Connection {
             options: options || {}
         };
         await identities.add(identityName, identity);
-        await identities.add(identifier, identity);
         return {
-            userID: identity.name,
+            userID: identityName,
             userSecret: identity.secret
         };
     }
@@ -359,11 +438,31 @@ class EmbeddedConnection extends Connection {
      * Create a new transaction id
      * Note: as this is not a real fabric it returns null to let the composer-common use uuid to create one.
      * @param {SecurityContext} securityContext The participant's security context.
-     * @return {Promise} A promise that is resolved with a generated user
-     * secret once the new identity has been created, or rejected with an error.
+     * @return {Promise} A promise that is resolved with a null
      */
     async createTransactionId(securityContext) {
         return null;
+    }
+
+    /**
+     * Undeploy a business network definition.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {String} networkName Name of the business network to remove
+     * @async
+     */
+    async undeploy(securityContext, networkName) {
+        await this.dataService.removeAllData();
+        delete businessNetworks[networkName];
+        delete chaincodes[networkName];
+    }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     */
+    getNativeAPI() {
+        throw new Error('native API not available when using the embedded connector');
     }
 
 }

@@ -129,7 +129,7 @@ class Context {
         this.container = options.container;
 
         LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
-        this.sysregistries = options.sysregistries || await this.getDataService().getCollection('$sysregistries');
+        this.sysregistries = options.sysregistries || await this.getDataService().getCollection('$sysregistries', true);
 
         if (options.function === 'init') {
             // No point loading the participant as no participants exist!

@@ -20,7 +20,7 @@ const EnumDeclaration = require('./introspect/enumdeclaration');
 const Globalize = require('./globalize');
 const JSONGenerator = require('./serializer/jsongenerator');
 const JSONPopulator = require('./serializer/jsonpopulator');
-const Resource = require('./model/resource');
+const Typed = require('./model/typed');
 const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
@@ -91,7 +91,7 @@ class Serializer {
      */
     toJSON(resource, options) {
         // correct instance type
-        if(!(resource instanceof Resource)) {
+        if(!(resource instanceof Typed)) {
             throw new Error(Globalize.formatMessage('serializer-tojson-notcobject'));
         }
 

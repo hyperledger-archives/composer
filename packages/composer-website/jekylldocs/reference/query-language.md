@@ -45,7 +45,7 @@ In practical terms, this query returns all drivers who do not have the lastName 
 query Q20{
     description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered from A-Z by firstName"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE ((age < _$ageParam OR firstName == 'Dan') AND (lastName != 'Selman'))
                 ORDER BY [lastName ASC, firstName ASC]
 }
@@ -59,7 +59,7 @@ Queries can be written with undefined parameters that must be supplied when runn
 query Q17 {
     description: "Select all drivers aged older than PARAM"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (_$ageParam < age)
 }
 ```
@@ -73,7 +73,7 @@ The `CONTAINS` filter is used to search a array field in a node. The below query
 query Q18 {
     description: "Select all drivers who has the following interests"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (badges CONTAINS ['punctual', 'steady-driving'])
 }
 ```

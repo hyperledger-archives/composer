@@ -56,6 +56,7 @@ describe('Multiple user REST API unit tests', () => {
     let aliceAdminCard, aliceAdminCardData;
     let bobCard, bobCardData;
     let idCard;
+    let adminConnection;
 
     const binaryParser = (res, cb) => {
         res.setEncoding('binary');
@@ -70,7 +71,7 @@ describe('Multiple user REST API unit tests', () => {
 
     before(() => {
         const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
-        const adminConnection = new AdminConnection({ cardStore });
+        adminConnection = new AdminConnection({ cardStore });
         let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
         const deployCardName = 'deployer-card';
 
@@ -183,6 +184,7 @@ describe('Multiple user REST API unit tests', () => {
     after(() => {
         ldapserver.close();
         delete process.env.COMPOSER_PROVIDERS;
+        return adminConnection.undeploy();
     });
 
     describe('GET /api/system/ping', () => {

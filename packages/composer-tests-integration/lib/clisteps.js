@@ -28,6 +28,15 @@ module.exports = function () {
         return this.composer.checkExists(type, table);
     });
 
+    this.Given(/^Folder (.+?) should only contain the following files/, function (folder, table) {
+        return this.composer.checkExistsStrict(folder, table);
+    });
+
+    this.Given(/^I start watching the chain code logs/, function () {
+        return this.composer.startWatchingLogs();
+    });
+
+
     this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
         return this.composer.extractSecret(alias, cardFile);
     });
@@ -41,7 +50,7 @@ module.exports = function () {
     });
 
     this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
-        let pass = condition === 'pass' ? true : false;
+        const pass = (condition === 'pass');
         return this.composer.runCLI(pass, table);
     });
 
@@ -65,15 +74,35 @@ module.exports = function () {
         return this.composer.convertToHSM(cardFile);
     });
 
-    this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (regex) {
-        return this.composer.checkConsoleOutput(new RegExp(regex), false);
+    this.Then(/^The stdout information should include text matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutput(match, false);
     });
 
-    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (regex) {
-        return this.composer.checkConsoleOutput(new RegExp(regex), true);
+    this.Then(/^The stdout information should include text strictly matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutputStrict(match, false);
     });
 
-    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (regex) {
-        return this.composer.checkFileWasCreated(new RegExp(regex));
+    this.Then(/^The stderr information should include text matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutput(match, true);
+    });
+
+    this.Then(/^The stderr information should include text strictly matching \/(.+?)\/$/, function (match) {
+        return this.composer.checkConsoleOutputStrict(match, true);
+    });
+
+    this.Then(/^The stdout information should strictly contain the following text block/, function (text) {
+        return this.composer.checkTextBlock(text, false);
+    });
+
+    this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (match) {
+        return this.composer.checkFileWasCreated(match);
+    });
+
+    this.Then(/^I stop watching the chain code logs$/, function () {
+        return this.composer.stopWatchingLogs();
+    });
+
+    this.Then(/^Then the maximum log level should be (.+?)$/, function (level) {
+        return this.composer.checkMaximumLogLevel(level);
     });
 };

@@ -10,7 +10,7 @@
   },
   "name": "composer",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.19.2",
+  "version": "0.19.8",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -46,6 +46,7 @@
       "node_modules",
       "packages",
       "softhsm",
+      "build.cfg",
       "ISSUE_TEMPLATE.md",
       "NOTICES.md",
       "PULL_REQUEST_TEMPLATE.md",
@@ -57,7 +58,6 @@
       ".yml",
       ".log",
       ".enc",
-      ".cfg",
       ".xmind",
       ".deb"
     ],
@@ -70,7 +70,7 @@
           "prepend": " * "
         }
       },
-      "gitattributes": {
+      "gitattributes|cfg": {
         "eachLine": {
           "prepend": "# "
         }

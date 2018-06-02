@@ -38,7 +38,7 @@ In order to assist anybody starting from scratch, we have produced guides on set
 
 Start with the [Step-by-step development environment setup](./contrib-notes/getting-started.md)
 
-Everything installed and ready code? Great! Issues are tracked in GitHub, if you are looking for a place to start with the code then it might be worth tackling a [bug](https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22).
+Everything installed and ready code? Great! Issues are tracked in GitHub, if you are looking for a place to start with the code then it might be worth tackling a [bug](https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22) or [*good first issue*](https://github.com/hyperledger/composer/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) - the latter being a good issue for first-time contributors.
 
 ## License <a name="license"></a>
-Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the [LICENSE](LICENSE) file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.
+Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.

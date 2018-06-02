@@ -17,34 +17,44 @@ import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
-import { DataService }     from './data.service';
+import { DataService } from './data.service';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-// import { TransactionComponent } from './Transaction/Transaction.component'
-<% for(var x=0;x<assetComponentNames.length;x++){ %>
+<%_ _%>
+<%_ for(var x=0;x<assetComponentNames.length;x++){ %>
 import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= assetList[x].name %>.component';<% } %>
+<%_ _%>
+<%_ for(var x=0;x<participantComponentNames.length;x++){ %>
+import { <%= participantComponentNames[x] %> } from './<%= participantList[x].name %>/<%= participantList[x].name %>.component';<% } %>
+<%_ _%>
+<%_ for(var x=0;x<transactionComponentNames.length;x++){ %>
+import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.component';<% } %>
 
-<% for(var x=0;x<participantComponentNames.length;x++){ %>
-  import { <%= participantComponentNames[x] %> } from './<%= participantList[x].name %>/<%= participantList[x].name %>.component';<% } %>
-
-<% for(var x=0;x<transactionComponentNames.length;x++){ %>
-  import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.component';<% } %>
-@NgModule({
+  @NgModule({
   declarations: [
     AppComponent,
-		HomeComponent,
-    // TransactionComponent,
-    <% for(var x=0;x<assetComponentNames.length;x++){ %><% if(x == assetComponentNames.length-1){ %>
-    <%= assetComponentNames[x] %><%}else{%><%= assetComponentNames[x] %>,<% } %>
-    <% } %>,
-
-    <% for(var x=0;x<participantComponentNames.length;x++){ %><% if(x == participantComponentNames.length-1){ %>
-      <%= participantComponentNames[x] %><%}else{%><%= participantComponentNames[x] %>,<% } %>
-      <% } %>,
-
-    <% for(var x=0;x<transactionComponentNames.length;x++){ %><% if(x == transactionComponentNames.length-1){ %>
-        <%= transactionComponentNames[x] %><%}else{%><%= transactionComponentNames[x] %>,<% } %>
-        <% } %>
+    HomeComponent,
+          <%_ for(var x=0;x<assetComponentNames.length;x++){ _%>
+            <%_ if(x == assetComponentNames.length-1) {_%>
+    <%_ %>    <%= assetComponentNames[x] _%>
+            <%_ } else { _%>
+    <%_ %>    <%= assetComponentNames[x] %>,
+            <%_ } _%>
+          <%_ } _%>,
+          <%_ for(var x=0;x<participantComponentNames.length;x++){ _%>
+            <%_ if(x == participantComponentNames.length-1){ _%>
+    <%_ %>    <%= participantComponentNames[x] _%>
+            <%_ } else { _%>
+    <%_ %>    <%= participantComponentNames[x] %>,
+            <%_ } _%>
+          <%_ } _%>,
+          <%_ for(var x=0;x<transactionComponentNames.length;x++){ _%>
+            <%_ if(x == transactionComponentNames.length-1){ _%>
+    <%_ %>    <%= transactionComponentNames[x] _%>
+            <%_ } else { _%>
+    <%_ %>    <%= transactionComponentNames[x] %>,
+            <%_ } _%>
+          <%_ } %>
   ],
   imports: [
     BrowserModule,

@@ -33,6 +33,8 @@ Next, we want to create a new business network from scratch. A business network 
 
 5. Now that our network is defined, click **Deploy**.
 
+**NOTE:** If you are using playground locally and connecting to a _real_ Fabric please refer to the additional notes at the bottom of the tutorial.
+
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_1.mp4" type="video/mp4" />
 </video>
@@ -67,7 +69,7 @@ For more information on our modeling language, check our [documentation](../refe
         /**
          * My commodity trading network
          */
-        namespace org.acme.mynetwork
+        namespace org.example.mynetwork
         asset Commodity identified by tradingSymbol {
             o String tradingSymbol
             o String description
@@ -105,12 +107,12 @@ For more information on writing transaction processor functions, check our [docu
 
         /**
          * Track the trade of a commodity from one trader to another
-         * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+         * @param {org.example.mynetwork.Trade} trade - the trade to be processed
          * @transaction
          */
         async function tradeCommodity(trade) {
             trade.commodity.owner = trade.newOwner;
-            let assetRegistry = await getAssetRegistry('org.acme.mynetwork.Commodity');
+            let assetRegistry = await getAssetRegistry('org.example.mynetwork.Commodity');
             await assetRegistry.update(trade.commodity);
         }
 
@@ -118,6 +120,9 @@ For more information on writing transaction processor functions, check our [docu
 
       This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
+      <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+      <source src="{{ site.baseurl }}/assets/img/tutorials/playground/vs_code_5.mp4" type="video/mp4" />
+      </video>
 
 ## Step Six: Access control
 
@@ -132,6 +137,8 @@ For more information on access control files, check our [documentation](../refer
 Now that we have model, script, and access control files, we need to deploy and test our business network.
 
 Click **Deploy changes** to upgrade the business network.
+
+**NOTE:** If you are using playground locally and connecting to a _real_ Fabric please refer to the additional notes at the bottom of the tutorial.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
@@ -159,7 +166,7 @@ The first thing we should add to our business network is two participants.
       <code-block type="transactions" sub-type="participants" identifier="trader1" >
 
         {
-          "$class": "org.acme.mynetwork.Trader",
+          "$class": "org.example.mynetwork.Trader",
           "tradeId": "TRADER1",
           "firstName": "Jenny",
           "lastName": "Jones"
@@ -174,7 +181,7 @@ The first thing we should add to our business network is two participants.
       <code-block type="transactions" sub-type="participants" identifier="trader2">
 
         {
-          "$class": "org.acme.mynetwork.Trader",
+          "$class": "org.example.mynetwork.Trader",
           "tradeId": "TRADER2",
           "firstName": "Amy",
           "lastName": "Williams"
@@ -201,12 +208,12 @@ Now that we have two _Trader_ participants, we need something for them to trade.
       <code-block type="transactions" sub-type="assets" identifier="abc" >
 
         {
-          "$class": "org.acme.mynetwork.Commodity",
+          "$class": "org.example.mynetwork.Commodity",
           "tradingSymbol": "ABC",
           "description": "Test commodity",
           "mainExchange": "Euronext",
           "quantity": 72.297,
-          "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
+          "owner": "resource:org.example.mynetwork.Trader#TRADER1"
         }
 
       </code-block>
@@ -235,16 +242,16 @@ To test the _Trade_ transaction:
       <code-block type="transactions" sub-type="transactions" identifier="trade" >
 
         {
-          "$class": "org.acme.mynetwork.Trade",
-          "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
-          "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
+          "$class": "org.example.mynetwork.Trade",
+          "commodity": "resource:org.example.mynetwork.Commodity#ABC",
+          "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
         }
 
       </code-block>
 
 4. Click **Submit**.
 
-5. Check that our asset has changed ownership from `TRADER1` to `TRADER2`, by expanding the data section for the asset. You should see that the owner is listed as `resource:org.acme.mynetwork.Trader#TRADER2`.
+5. Check that our asset has changed ownership from `TRADER1` to `TRADER2`, by expanding the data section for the asset. You should see that the owner is listed as `resource:org.example.mynetwork.Trader#TRADER2`.
 
 6. To view the full transaction history of our business network, click **All Transactions** on the left. Here is a list of each transaction as they were submitted. You can see that certain actions we performed using the UI, like creating the _Trader_ participants and the _Commodity_ asset, are recorded as transactions, even though they're not defined as transactions in our business network model. These transactions are known as 'System Transactions' and are common to all business networks, and defined in the {{site.data.conrefs.composer_full}} Runtime.
 
@@ -257,6 +264,28 @@ To test the _Trade_ transaction:
 Now that transactions have successfully run, we should log out of the business network, ending up at the **My Business Network** screen where we started.
 
 1. In the upper-right of the screen is a button labelled **admin**. This lists your current identity, to log out, click **admin** to open the dropdown menu, and click **My Business Networks**.
+
+##Deploying a Business Network to a real Fabric.
+Using Playground locally, you can use connections to "Web Browser" which works in the browser local storage, or you can use Connections to a _real_ Fabric usually in a group called "hlfv1"
+
+If you are connecting to a _real_ Fabric, then you will likely have already created a Card for an identity with PeerAdmin and ChannelAdmin roles - this is often called PeerAdmin.  This is the card that you use to Deploy and Update your network with Composer.
+
+When you are deploying your network to a _real_ Fabric there are additional fields to complete before you can click the **Deploy** button - you need to supply the details of the **Network Administrator**.
+
+Scroll to the bottom of the Deploy Screen to find **CREDENTIALS FOR NETWORK ADMINISTRATOR**.  For a simple Development Fabric and many Test networks you can supply an ID and Secret.
+  Enrollment ID - admin
+  Enrollment Secret - adminpw
+
+When the ID and Secret are specified, you can click the **Deploy** button and resume the tutorial at Step Three.
+
+If you are working with a Custom or Production Fabric - contact your Fabric Administrator for details of the Network Administrator.
+
+##Updating a Business Network when connected to a real Fabric
+When you are using a _real_ Fabric and click **Deploy Changes** you will see an addition popup dialog asking you to specify an Installation Card and an Upgrade card from dropdown lists.  Typically you specify the same PeerAdmin card as used to deploy the initial network.  If you are uncertain, contact your Fabric Administrator.
+
+Select the cards, and click the **Upgrade** button.  Note that on a real Fabric this can take a few minutes to complete.
+
+Resume the Tutorial at Step Eight.
 
 ## What next?
 

@@ -4,18 +4,18 @@
 
 'use strict';
 const fs = require('fs');
+const os = require('os');
 const Client = require('composer-client');
 const Admin = require('composer-admin');
 const Common = require('composer-common');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 const AdminConnection = Admin.AdminConnection;
-const homedir = require('homedir');
 
-const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
+const PROFILE_ROOT = os.homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
-const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
+const CREDENTIALS_ROOT = os.homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 require('chai').should();

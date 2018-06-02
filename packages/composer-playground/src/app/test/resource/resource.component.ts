@@ -11,19 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../../services/client.service';
-import { InitializationService } from '../../services/initialization.service';
 import {
-    ClassDeclaration,
     AssetDeclaration,
+    ClassDeclaration,
+    Field,
     ParticipantDeclaration,
-    TransactionDeclaration,
-    Field
+    TransactionDeclaration
 } from 'composer-common';
-import leftPad = require('left-pad');
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -33,6 +30,7 @@ import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
+import leftPad = require('left-pad');
 
 @Component({
     selector: 'resource-modal',

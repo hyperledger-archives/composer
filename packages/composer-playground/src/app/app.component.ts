@@ -11,8 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -141,11 +141,13 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         let welcomePromise;
-        if (event['url'] === '/login' && this.showWelcome) {
+        if (event['url'].startsWith('/login') && event['url'] !== '/login') {
+            this.showWelcome = false;
+        } else if (event['url'] === '/login' && this.showWelcome) {
             welcomePromise = this.openWelcomeModal();
         }
 
-        if (event['url'] === '/login' || event['urlAfterRedirects'] === '/login') {
+        if (event['url'].startsWith('/login') || event['urlAfterRedirects'].startsWith('/login')) {
             this.showHeaderLinks = false;
             try {
               this.config = this.configService.getConfig();
@@ -212,12 +214,6 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!this.busyModalRef) {
             this.busyModalRef = this.modalService.open(BusyComponent);
             this.busyModalRef.componentInstance.busy = busyStatus;
-            if (busyStatus.header) {
-                this.busyModalRef.componentInstance.header = busyStatus.header;
-            }
-            if (busyStatus.card) {
-                this.busyModalRef.componentInstance.card = busyStatus.card;
-            }
         } else {
             this.busyModalRef.componentInstance.busy = busyStatus;
         }

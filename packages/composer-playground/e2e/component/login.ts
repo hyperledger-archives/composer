@@ -20,8 +20,13 @@ import { OperationsHelper } from '../utils/operations-helper';
 import { BusyAlert } from './alert';
 import * as fs from 'fs';
 import * as path from 'path';
+import { create } from 'domain';
 
 export class Login {
+
+    static waitToAppear() {
+        return browser.wait(ExpectedConditions.visibilityOf(element(by.css('.connection-profile'))), Constants.longWait);
+    }
 
     static deployNewToProfile(profile: string) {
         // Wish to find named connection profile and then select/click the 'empty' deploy card
@@ -151,5 +156,10 @@ export class Login {
                 return __dirname + '/../downloads/' + cardName.split('@')[0] + '.card';
             });
         });
+    }
+
+    static createNewBusinessNetworkCard() {
+        let createButton = element(by.css('#createIdCard'));
+        return OperationsHelper.click(createButton);
     }
 }

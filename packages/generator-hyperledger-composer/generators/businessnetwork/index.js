@@ -70,6 +70,22 @@ module.exports = yeoman.Base.extend({
                 default: 'org.example.biznet',
                 store: true,
                 validate: Util.validateNamespace
+            },
+            {
+                type: 'list',
+                name: 'empty',
+                message: 'Do you want to generate an empty template network?',
+                default: 'false',
+                store: true,
+                choices: [{
+                    name: 'Yes: generate an empty template network',
+                    value: 'yes'
+                },
+                {
+                    name: 'No: generate a populated sample network',
+                    value: 'no'
+                }
+                ]
             }
         ];
 
@@ -81,6 +97,7 @@ module.exports = yeoman.Base.extend({
                 this.appdescription = answers.appdescription;
                 this.appauthor = answers.appauthor;
                 this.applicense = answers.applicense;
+                this.empty = answers.empty;
             });
     },
 
@@ -90,15 +107,24 @@ module.exports = yeoman.Base.extend({
 
     writing: function() {
         let model = this._generateTemplateModel();
-        this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
-        this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
-        this.fs.copyTpl(this.templatePath('permissions.acl'), this.destinationPath('permissions.acl'), model);
-        this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
-        /* istanbul ignore else */
-        if (!this.ismodel) {
-            this.fs.copyTpl(this.templatePath('./features'), this.destinationPath('./features'), model);
-            this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
-            this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);
+        if (this.empty && this.empty.toLocaleLowerCase().localeCompare('yes') === 0) {
+            this.fs.copyTpl(this.templatePath('package.json'), this.destinationPath('package.json'), model);
+            this.fs.copyTpl(this.templatePath('README.md'), this.destinationPath('README.md'), model);
+            this.fs.copyTpl(this.templatePath('models/empty_namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
+            this.fs.copyTpl(this.templatePath('empty_permissions.acl'), this.destinationPath('permissions.acl'), model);
+            this.fs.copyTpl(this.templatePath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
+        } else {
+            this.fs.copyTpl(this.templatePath('package.json'), this.destinationPath('package.json'), model);
+            this.fs.copyTpl(this.templatePath('README.md'), this.destinationPath('README.md'), model);
+            this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
+            this.fs.copyTpl(this.templatePath('permissions.acl'), this.destinationPath('permissions.acl'), model);
+            this.fs.copyTpl(this.templatePath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
+            /* istanbul ignore else */
+            if (!this.ismodel) {
+                this.fs.copyTpl(this.templatePath('./features'), this.destinationPath('./features'), model);
+                this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
+                this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);
+            }
         }
     },
 

@@ -18,8 +18,8 @@ const BrowserFS = require('browserfs/dist/node/index');
 const bfs_fs = BrowserFS.BFSRequire('fs');
 const FileWallet = require('../lib/filewallet');
 const fs = require('fs');
-const homedir = require('homedir');
 const mkdirp = require('mkdirp');
+const os = require('os');
 const path = require('path');
 
 const chai = require('chai');
@@ -49,7 +49,7 @@ describe('FileWallet', () => {
     describe('#getHomeDirectory', () => {
 
         it('should return the home directory', () => {
-            FileWallet.getHomeDirectory().should.equal(homedir());
+            FileWallet.getHomeDirectory().should.equal(os.homedir());
         });
 
     });
@@ -74,12 +74,6 @@ describe('FileWallet', () => {
             sandbox.stub(FileWallet, 'getHomeDirectory').returns('/home/doge1');
             fileWallet = new FileWallet();
             fileWallet.directory.should.equal(path.resolve('/home/doge1', '.composer-credentials'));
-        });
-
-        it('should use the root directory by default if no home directory available', () => {
-            sandbox.stub(FileWallet, 'getHomeDirectory').returns(null);
-            fileWallet = new FileWallet();
-            fileWallet.directory.should.equal(path.resolve('/', '.composer-credentials'));
         });
 
         it('should use the specified directory', () => {

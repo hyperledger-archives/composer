@@ -40,6 +40,11 @@ module.exports = function () {
         await startRestServer.apply(this, [name]);
     });
 
+    this.Given('I have a secured REST API server for {word} using API key {string}', {timeout: 240 * 1000}, async function (name, apiKey) {
+        delete process.env.COMPOSER_PROVIDERS;
+        await startRestServer.apply(this, [name, ['--apikey', apiKey]]);
+    });
+
     this.Given(/^I have an authenticated REST API server for (.+?)$/, {timeout: 240 * 1000}, async function (name) {
         const port = fs.readFileSync(path.resolve(__dirname, '..', 'ldap.port'));
         process.env.COMPOSER_PROVIDERS = JSON.stringify({
@@ -139,6 +144,15 @@ module.exports = function () {
 
     this.When(/^I make a GET request to ([^ ]+?) with filter (.+?)$/, function (urlPath, filter) {
         return this.composer.request('GET', `http://localhost:3000${urlPath}` + '?filter=' + encodeURIComponent(filter));
+    });
+
+    this.When('I make a GET request to {word} with API key {string}', function (urlPath, apiKey) {
+        const requestOptions = {
+            headers: {
+                'x-api-key': apiKey
+            }
+        };
+        return this.composer.request('GET', `http://localhost:3000${urlPath}`, null, requestOptions);
     });
 
     this.When('I shutdown the REST server', function() {

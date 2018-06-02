@@ -17,8 +17,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
 
 import { AdminConnection } from 'composer-admin';
-import { ConnectionProfileManager, Logger, BusinessNetworkDefinition, IdCard } from 'composer-common';
-
+import { BusinessNetworkDefinition, ConnectionProfileManager, IdCard } from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 
@@ -36,7 +35,7 @@ export class AdminService {
         if (ENV && ENV !== 'development') {
             ProxyConnectionManager.setConnectorServerURL(window.location.origin);
         }
-
+        ConnectionProfileManager.registerConnectionManager('proxy', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlf', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlfv1', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
@@ -61,9 +60,11 @@ export class AdminService {
 
         console.log('Establishing admin connection ...');
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
         this.alertService.busyStatus$.next({
             title: card.getBusinessNetworkName() ? 'Connecting to Business Network ' + card.getBusinessNetworkName() : 'Connecting without a business network',
-            text: 'using connection profile ' + card.getConnectionProfile().name
+            text: 'using connection profile ' + connectionProfileName,
+            force: true
         });
 
         this.connectingPromise = this.getAdminConnection().connect(cardName)

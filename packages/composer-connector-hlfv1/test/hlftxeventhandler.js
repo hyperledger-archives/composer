@@ -23,9 +23,6 @@ const chai = require('chai');
 const should = chai.should();
 chai.use(require('chai-as-promised'));
 
-
-
-
 describe('HLFTxEventHandler', () => {
 
     let sandbox, logWarnSpy;

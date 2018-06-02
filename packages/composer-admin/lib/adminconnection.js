@@ -20,7 +20,6 @@ const Factory = require('composer-common').Factory;
 const Logger = require('composer-common').Logger;
 const ModelManager = require('composer-common').ModelManager;
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
 const IdCard = require('composer-common').IdCard;
 const Serializer = require('composer-common').Serializer;
 
@@ -287,11 +286,12 @@ class AdminConnection {
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
         return Promise.resolve()
-            .then(() => {
+            .then(()=>{
 
                 // Create a new instance of a start transaction.
-                const startTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
+                const startTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork',startOptions.transactionId.idStr);
                 const classDeclaration = startTransaction.getClassDeclaration();
+                delete startOptions.transactionId;
 
                 let hasNetworkAdmins = startOptions && startOptions.networkAdmins && startOptions.networkAdmins.length > 0;
                 let hasBootStrapTransactions = startOptions && startOptions.bootstrapTransactions && startOptions.bootstrapTransactions.length > 0;
@@ -444,7 +444,11 @@ class AdminConnection {
         Util.securityCheck(this.securityContext);
         let networkAdmins = startOptions.networkAdmins;
         // Build the start transaction.
-        return this._buildStartTransaction(startOptions)
+        return Util.createTransactionId(this.securityContext)
+            .then((id) =>{
+                startOptions.transactionId = id;
+                return this._buildStartTransaction(startOptions);
+            })
             .then((startTransactionJSON) => {
                 // Now we can start the business network.
                 return this.connection.start(this.securityContext, networkName, networkVersion, JSON.stringify(startTransactionJSON), startOptions);
@@ -619,13 +623,13 @@ class AdminConnection {
         LOG.entry(method);
         const json = {
             $class : 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId : uuid.v4(),
             timestamp : new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
+        return Util.submitTransaction(this.securityContext,json)
             .then(() => {
                 LOG.exit(method);
             });
+
     }
 
     /**
@@ -756,6 +760,20 @@ class AdminConnection {
                 throw new Error('failed to request identity. ' + error.message);
             });
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        if (!this.connection) {
+            throw new Error('not connected; must call connect() first');
+        }
+        return this.connection.getNativeAPI();
+    }
+
 }
 
 module.exports = AdminConnection;

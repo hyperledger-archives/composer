@@ -33,8 +33,8 @@ class NodeUtils {
     static async getAllResults(iterator) {
         const method = 'getAllResults';
         LOG.entry(method, iterator);
+        const t0 = Date.now();
 
-        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -58,7 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }
@@ -75,8 +75,8 @@ class NodeUtils {
     static async deleteAllResults(iterator, stub) {
         const method = 'deleteAllResults';
         LOG.entry(method, iterator, stub);
+        const t0 = Date.now();
 
-        let t0 = process.hrtime();
         let results = [];
         let logResults = [];
         let res = {done: false};
@@ -97,7 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
-                LOG.debug('@PERF ' + method, 'Total duration: ' + process.hrtime(t0)[0] + '.' + process.hrtime(t0)[1]);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }

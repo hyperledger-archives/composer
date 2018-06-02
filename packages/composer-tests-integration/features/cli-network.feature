@@ -17,7 +17,7 @@ Feature: Cli network steps
 
     Background:
         Given I have admin business cards available
-        And I have deployed the business network marbles-network
+       And I have deployed the business network marbles-network
 
     Scenario: Using the CLI, I can ping the network that I just started
         When I run the following expected pass CLI command
@@ -82,10 +82,30 @@ Feature: Cli network steps
         Then The stdout information should include text matching /org.hyperledger_composer.marbles.NewMarble/
         And The stdout information should include text matching /Command succeeded/
 
+    Scenario: Using the CLI, errors creating new assets are displayed to the user
+        When I run the following expected fail CLI command
+            """
+            composer transaction submit
+                --card admin@marbles-network
+                -d '{
+                    "$class": "org.hyperledger.composer.system.AddAsset",
+                    "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble",
+                    "resources": [{
+                        "$class": "org.hyperledger_composer.marbles.NewMarble",
+                        "marbleId": "101",
+                        "size": "SMALL",
+                        "color": "RED",
+                        "owner": "resource:org.hyperledger_composer.marbles.Player#bob",
+                        "ALL_YOUR_BASE_ARE_BELONG_TO_US": "A value"
+                    }]
+                }'
+            """
+        Then The stdout information should include text matching /ALL_YOUR_BASE_ARE_BELONG_TO_US/
+
     Scenario: Using the CLI, I can create new Assets by submitting transactions
         When I run the following expected pass CLI command
             """
-            composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset","registryType": "Asset","registryId": "org.hyperledger_composer.marbles.NewMarble", "targetRegistry" : "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
+            composer transaction submit --card admin@marbles-network -d '{"$class": "org.hyperledger.composer.system.AddAsset", "targetRegistry": "resource:org.hyperledger.composer.system.AssetRegistry#org.hyperledger_composer.marbles.NewMarble", "resources": [{"$class": "org.hyperledger_composer.marbles.NewMarble","marbleId": "101","size": "SMALL","color": "RED","owner": "resource:org.hyperledger_composer.marbles.Player#bob"}]}'
             """
         Then The stdout information should include text matching /Transaction Submitted./
         And The stdout information should include text matching /Command succeeded/
@@ -150,6 +170,21 @@ Feature: Cli network steps
         Then The stdout information should include text matching /composer\[debug\]:*/
         And The stdout information should include text matching /Command succeeded/
 
+
+    Scenario: Checking the chain code container logs should have the correct loglevels
+        Given I run the following expected pass CLI command
+            """
+            composer network loglevel --card admin@marbles-network --newlevel 'composer[debug]:*'
+            """
+        When I start watching the chain code logs
+        And I run the following expected pass CLI command
+            """
+            composer network list --card admin@marbles-network
+            """
+        Then I stop watching the chain code logs
+        And  Then the maximum log level should be debug
+        And  The stdout information should include text matching /Command succeeded/
+
     Scenario: Using the CLI, I can create set the log level of the running network
         When I run the following expected pass CLI command
             """
@@ -157,3 +192,19 @@ Feature: Cli network steps
             """
         Then The stdout information should include text matching /composer\[info\]:acls/
         And The stdout information should include text matching /Command succeeded/
+
+    Scenario: Checking the chain code container logs should have the correct loglevels
+        When I run the following expected pass CLI command
+            """
+            composer network loglevel --card admin@marbles-network --newlevel 'composer[info]:*'
+            """
+        And The stdout information should include text matching /composer\[info\]:\*/
+        And The stdout information should include text matching /Command succeeded/
+        When I start watching the chain code logs
+        And I run the following expected pass CLI command
+            """
+            composer network loglevel --card admin@marbles-network --newlevel 'composer[warn]:*'
+            """
+        Then I stop watching the chain code logs
+        And  Then the maximum log level should be info
+        And  The stdout information should include text matching /Command succeeded/

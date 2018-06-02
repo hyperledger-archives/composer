@@ -32,116 +32,89 @@ class EngineTransactions {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    submitTransaction(context, args) {
+    async submitTransaction(context, args) {
         const method = 'submitTransaction';
         LOG.entry(method, context, args);
+
+        const t0 = Date.now();
+
         if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'submitTransaction', [ 'serializedResource']));
         }
-
-        // Find the default transaction registry.
-        let registryManager = context.getRegistryManager();
-        let transaction = null;
-        let historian = null;
-        let txRegistry = null;
 
         // Parse the transaction from the JSON string..
         LOG.debug(method, 'Parsing transaction from JSON');
         let transactionData = JSON.parse(args[0]);
 
         // Now we need to convert the JavaScript object into a transaction resource.
-        LOG.debug(method, 'Parsing transaction from parsed JSON object');
-        // First we parse *our* copy, that is not resolved. This is the copy that gets added to the
+        // This is *our* copy, that is not resolved. It is the copy that gets added to the
         // transaction registry, and is the one in the context (for adding log entries).
-        transaction = context.getSerializer().fromJSON(transactionData);
+        LOG.debug(method, 'Parsing transaction from parsed JSON object');
+        const transaction = context.getSerializer().fromJSON(transactionData);
+        const txClass = transaction.getFullyQualifiedType();
 
         // Store the transaction in the context.
         context.setTransaction(transaction);
 
-        // This is the count of transaction processor functions executed.
-        let totalCount = 0;
+        // Get the transaction and historian registries
+        let registryManager = context.getRegistryManager();
 
-        let txClass = transaction.getFullyQualifiedType();
-        LOG.debug(method, 'Getting default transaction registry for '+txClass);
+        LOG.debug(method, 'Getting default transaction registry for ' + txClass);
+        const txRegistry = await registryManager.get('Transaction', txClass);
+
+        LOG.debug(method, 'Getting historian registry');
+        const historian = await registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord');
+
+        // Form the historian record
+        const record = await this.createHistorianRecord(transaction, context);
+
+        // check that we can add to both these registries ahead of time
+        LOG.debug(method, 'Validating ability to create in Transaction and Historian registries');
+        let canTxAdd = await txRegistry.testAdd(transaction);
+        let canHistorianAdd = await historian.testAdd(record);
+
+        if (canTxAdd || canHistorianAdd){
+            throw canTxAdd ? canTxAdd : canHistorianAdd;
+        }
+
         // Resolve the users copy of the transaction.
-        LOG.debug(method, 'Parsed transaction, resolving it', transaction);
-        let resolvedTransaction;
+        LOG.debug(method, 'Resolving transaction', transaction);
+        const resolvedTransaction = await context.getResolver().resolve(transaction);
 
+        // Execute any system transaction processor functions.
+        let count = 0;
+        let totalCount = 0;
+        for (let transactionHandler of context.getTransactionHandlers()) {
+            count = await transactionHandler.execute(context.getApi(), resolvedTransaction);
+            totalCount += count;
+        }
 
-        // Get the historian.
-        LOG.debug(method, 'Getting historian');
-        return registryManager.get('Asset', 'org.hyperledger.composer.system.HistorianRecord')
-            .then((result) => {
-                historian = result;
-                LOG.debug(method, 'Getting default transaction registry for '+txClass);
-                return registryManager.get('Transaction', txClass);
-            })
-            .then((result) => {
-                txRegistry = result;
-                // check that we can add to both these registries ahead of time
-                return txRegistry.testAdd(transaction);
-            })
-            .then((result)=>{
-                if (result){
-                    throw result;
-                }
-                return context.getResolver().resolve(transaction);
-            })
-            .then((resolvedTransaction_) => {
+        // Execute any user transaction processor functions.
+        count = await context.getCompiledScriptBundle().execute(context.getApi(), resolvedTransaction);
+        totalCount += count;
 
-                // Save the resolved transaction.
-                resolvedTransaction = resolvedTransaction_;
+        // Check that a transaction processor function was executed.
+        if (totalCount === 0) {
+            const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
+            LOG.error(method, error);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+            throw error;
+        }
 
-                // Execute any system transaction processor functions.
-                const api = context.getApi();
-                return context.getTransactionHandlers().reduce((promise, transactionHandler) => {
-                    return promise.then(() => {
+        // Store the transaction in the transaction registry.
+        LOG.debug(method, 'Storing executed transaction in Transaction registry');
+        await txRegistry.add(transaction, {noTest: true});
 
-                        return transactionHandler.execute(api, resolvedTransaction)
-                            .then((count) => {
-                                totalCount += count;
-                            });
-                    });
-                }, Promise.resolve());
+        // Store the transaction in the historian registry.
+        LOG.debug(method, 'Storing Historian record in Historian registry');
+        await historian.add(record, {noTest: true});
 
-            })
-            .then(() => {
-
-                // Execute any user transaction processor functions.
-                const api = context.getApi();
-                return context.getCompiledScriptBundle().execute(api, resolvedTransaction)
-                    .then((count) => {
-                        totalCount += count;
-                    });
-
-            })
-            .then(() => {
-
-                // Check that a transaction processor function was executed.
-                if (totalCount === 0) {
-                    const error = new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
-                    LOG.error(method, error);
-                    throw error;
-                }
-
-                // Store the transaction in the transaction registry.
-                LOG.debug(method, 'Storing executed transaction in transaction registry');
-                return txRegistry.add(transaction);
-            })
-            .then(()=>{
-                return this.createHistorianRecord(transaction,context);
-            })
-            .then((result) => {
-                // Store the transaction in the transaction registry.
-                LOG.debug(method, 'Storing historian record in the registry');
-                return historian.add(result);
-            })
-            .then(() => {
-                context.clearTransaction();
-                LOG.exit(method);
-            });
-
+        context.clearTransaction();
+        LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
+        return Promise.resolve();
     }
 
     /**
@@ -154,6 +127,8 @@ class EngineTransactions {
     createHistorianRecord(transaction,context) {
         const method = 'createHistorianRecord';
         LOG.entry(method,transaction,context);
+        const t0 = Date.now();
+
         // For reference the historian record looks like this
         // asset HistorianRecord identified by transactionId {
         //     o String      transactionId
@@ -205,9 +180,9 @@ class EngineTransactions {
             LOG.debug(method, 'assuming admin userid again');
         }
 
-
+        LOG.exit(method);
+        LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
         return Promise.resolve(record);
-
     }
 
 }

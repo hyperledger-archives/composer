@@ -58,7 +58,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 1st record:
 
     {
-          "$class": "org.acme.trading.Trader",
+          "$class": "org.example.trading.Trader",
           "tradeId": "TRADER1",
           "firstName": "Jenny",
           "lastName": "Jones"
@@ -72,7 +72,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 2nd record:
 
     {
-        "$class": "org.acme.trading.Trader",
+        "$class": "org.example.trading.Trader",
         "tradeId": "TRADER2",
         "firstName": "Jack",
         "lastName": "Sock"
@@ -81,7 +81,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 3rd record:
 
     {
-      "$class": "org.acme.trading.Trader",
+      "$class": "org.example.trading.Trader",
       "tradeId": "TRADER3",
       "firstName": "Rainer",
       "lastName": "Valens"
@@ -90,7 +90,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 4th record:
 
     {
-      "$class": "org.acme.trading.Trader",
+      "$class": "org.example.trading.Trader",
       "tradeId": "TRADER4",
       "firstName": "Davor",
       "lastName": "Dolittle"
@@ -100,7 +100,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 5th record:
 
     {
-      "$class": "org.acme.trading.Trader",
+      "$class": "org.example.trading.Trader",
       "tradeId": "TRADER5",
       "firstName": "Steve",
       "lastName": "Alonso"
@@ -109,7 +109,7 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 6th record:
 
     {
-      "$class": "org.acme.trading.Trader",
+      "$class": "org.example.trading.Trader",
       "tradeId": "TRADER6",
       "firstName": "Lars",
       "lastName": "Graf"
@@ -126,67 +126,67 @@ We'll use the sample business network (`trade-network`) sourced from the Compose
 1st record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "EMA",
       "description": "Corn",
       "mainExchange": "EURONEXT",
       "quantity": 10,
-      "owner": "resource:org.acme.trading.Trader#TRADER1"
+      "owner": "resource:org.example.trading.Trader#TRADER1"
     }
 
 2nd record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "CC",
       "description": "Cocoa",
       "mainExchange": "ICE",
       "quantity": 80,
-      "owner": "resource:org.acme.trading.Trader#TRADER2"
+      "owner": "resource:org.example.trading.Trader#TRADER2"
     }
 
 3rd record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "HO",
       "description": "Heating Oil",
       "mainExchange": "NYMEX",
       "quantity": 40,
-      "owner": "resource:org.acme.trading.Trader#TRADER3"
+      "owner": "resource:org.example.trading.Trader#TRADER3"
     }
 
 4th record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "HG",
       "description": "Copper",
       "mainExchange": "COMEX",
       "quantity": 100,
-      "owner": "resource:org.acme.trading.Trader#TRADER4"
+      "owner": "resource:org.example.trading.Trader#TRADER4"
     }
 
 5th record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "SM",
       "description": "Soybean Meal",
       "mainExchange": "CBOT",
       "quantity": 70,
-      "owner": "resource:org.acme.trading.Trader#TRADER5"
+      "owner": "resource:org.example.trading.Trader#TRADER5"
     }
 
 6th record:
 
     {
-      "$class": "org.acme.trading.Commodity",
+      "$class": "org.example.trading.Commodity",
       "tradingSymbol": "AG",
       "description": "Silver",
       "mainExchange": "CBOT",
       "quantity": 60,
-      "owner": "resource:org.acme.trading.Trader#TRADER6"
+      "owner": "resource:org.example.trading.Trader#TRADER6"
     }
 
 ### Create Identities to test ACLs
@@ -220,7 +220,7 @@ Before we begin, we will need to remove one 'global' rule in `permissions.acl` f
         description: "Allow all participants access to all resources"
         participant: "ANY"
         operation: ALL
-        resource: "org.acme.trading.*"
+        resource: "org.example.trading.*"
         action: ALLOW
     }
 
@@ -242,7 +242,7 @@ In terms of our rule objectives - these are the policies we want to apply:
 3. Ensure Traders can only see the history of transactions they have created.
 4. Allow a Participant of type REG (Regulator) the authority to see the history of all historical transactions committed by Traders (as well as working with their own participant profile) - there are two rule subsets for this - 4a and 4b.
 
-It is important to note at this point that the namespace `org.acme.trading` (our Commodity Trading business network) has no business network ACLS defined (just has system ones) and therefore access to resources inside that business network are implicity 'denied' by default.
+It is important to note at this point that the namespace `org.example.trading` (our Commodity Trading business network) has no business network ACLS defined (just has system ones) and therefore access to resources inside that business network are implicity 'denied' by default.
 
 #### Rule 1a - Trader profile restriction rule
 
@@ -258,9 +258,9 @@ Rule:
 
     rule R1a_TraderSeeUpdateThemselvesOnly {
       description: "Trader can see and update their own record only"
-      participant(t): "org.acme.trading.Trader"
+      participant(t): "org.example.trading.Trader"
       operation: READ, UPDATE
-      resource(v): "org.acme.trading.Trader"
+      resource(v): "org.example.trading.Trader"
       condition: (v.getIdentifier() == t.getIdentifier())
       action: ALLOW
     }
@@ -286,9 +286,9 @@ Rule:
 
     rule R1b_TraderSeeTheirCommodities {
       description: "Trader can see/work with their own Commodities"
-      participant(t): "org.acme.trading.Trader"
+      participant(t): "org.example.trading.Trader"
       operation: ALL
-      resource(c): "org.acme.trading.Commodity"
+      resource(c): "org.example.trading.Commodity"
       condition: (c.owner.getIdentifier() == t.getIdentifier())
       action: ALLOW
     }
@@ -315,9 +315,9 @@ We need a rule to enable a Trader to submit `Trade` transactions for which they 
 JSON to copy:
 
     {
-      "$class": "org.acme.trading.Trade",
-      "commodity": "resource:org.acme.trading.Commodity#EMA",
-      "newOwner": "resource:org.acme.trading.Trader#TRADER2"
+      "$class": "org.example.trading.Trade",
+      "commodity": "resource:org.example.trading.Commodity#EMA",
+      "newOwner": "resource:org.example.trading.Trader#TRADER2"
     }
 
 
@@ -331,9 +331,9 @@ Rule:
 
     rule R2_EnableTradeTxn {
         description: "Enable Traders to submit transactions"
-        participant: "org.acme.trading.Trader"
+        participant: "org.example.trading.Trader"
         operation: ALL
-        resource: "org.acme.trading.Trade"
+        resource: "org.example.trading.Trade"
         action: ALLOW
     }
 
@@ -350,9 +350,9 @@ a. Click on the 'Test' tab. Submit a `Trade` Transaction copying and pasting thi
 JSON to copy:
 
     {
-      "$class": "org.acme.trading.Trade",
-      "commodity": "resource:org.acme.trading.Commodity#EMA",
-      "newOwner": "resource:org.acme.trading.Trader#TRADER2"
+      "$class": "org.example.trading.Trade",
+      "commodity": "resource:org.example.trading.Commodity#EMA",
+      "newOwner": "resource:org.example.trading.Trader#TRADER2"
     }
 
 b. Confirm that the transaction has now been submitted by going to 'All Transactions' (on the left) and the first record in the Historian shows a `TRADE` transaction confirms the transfer. Participant TRADER1 no longer owns the commodity. By contrast, a switch to identity `tid2` will reveal it has two Commodity records as TRADER2 was the recipient owner.
@@ -375,7 +375,7 @@ Rule:
 
     rule R3_TradersSeeOwnHistoryOnly {
       description: "Traders should be able to see the history of their own transactions only"
-      participant(t): "org.acme.trading.Trader"
+      participant(t): "org.example.trading.Trader"
       operation: READ
       resource(v): "org.hyperledger.composer.system.HistorianRecord"
       condition: (v.participantInvoking.getIdentifier() != t.getIdentifier())
@@ -419,7 +419,7 @@ Create the record:
 
 
     {
-      "$class": "org.acme.trading.Regulator",
+      "$class": "org.example.trading.Regulator",
       "regId": "Reg101",
       "firstName": "Jon",
       "lastName": "Doe"
@@ -436,9 +436,9 @@ Rule:
 
     rule R4a_RegulatorSeeThemselves {
       description: "Regulators can see and update their own record"
-      participant: "org.acme.trading.Regulator"
+      participant: "org.example.trading.Regulator"
       operation: READ, UPDATE
-      resource: "org.acme.trading.Regulator"
+      resource: "org.example.trading.Regulator"
       action: ALLOW
     }
 
@@ -463,9 +463,9 @@ Rule:
 
     rule R4b_RegTransView {
         description: "Grant Regulator full access to Trade Transactions"
-        participant: "org.acme.trading.Regulator"
+        participant: "org.example.trading.Regulator"
         operation: ALL
-        resource: "org.acme.trading.Trade"
+        resource: "org.example.trading.Trade"
         action: ALLOW
     }
 

@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IllegalModelException = require('../introspect/illegalmodelexception');
+const IllegalAclException = require('./illegalaclexception');
 const ModelUtil = require('../modelutil');
 
 /**
@@ -35,11 +35,11 @@ class ModelBinding {
      * @param {AclRule} aclRule - the AclRule for this ModelBinding
      * @param {Object} ast - the AST created by the parser
      * @param {Object} variableAst - the variable binding AST created by the parser
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      */
     constructor(aclRule, ast, variableAst) {
         if(!aclRule || !ast) {
-            throw new IllegalModelException('Invalid AclRule or AST');
+            throw new IllegalAclException('Invalid AclRule or AST');
         }
 
         this.ast = ast;
@@ -78,7 +78,7 @@ class ModelBinding {
     /**
      * Process the AST and build the model
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     process() {
@@ -97,7 +97,7 @@ class ModelBinding {
     }
 
     /**
-     * Returns strind representation of this object
+     * Returns string representation of this object
      *
      * @return {string} the string version of the object
      */
@@ -153,7 +153,7 @@ class ModelBinding {
     /**
      * Semantic validation of the structure of this ModelBinding.
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     validate() {
@@ -171,26 +171,29 @@ class ModelBinding {
             if (namespaces.findIndex(function (element, index, array) {
                 return (ns === element || element.startsWith(ns + '.'));
             })=== -1) {
-                throw new IllegalModelException('Failed to find namespace ' + this.qualifiedName);
+                throw new IllegalAclException(`Expected namespace \"${this.qualifiedName}\" to be defined`, this.aclRule.getAclFile(), this.ast.location);
             }
         } else if (ModelUtil.isWildcardName(this.qualifiedName)) {
             const modelFile = mm.getModelFile(ns);
 
             if(!modelFile) {
-                throw new IllegalModelException('Failed to find namespace ' + this.qualifiedName);
+                throw new IllegalAclException(`Expected namespace \"${this.qualifiedName}\" to be defined`, this.aclRule.getAclFile(), this.ast.location);
             }
         } else {
+            if (!ns) {
+                throw new IllegalAclException(`Expected class \"${this.qualifiedName}\" to include namespace`, this.aclRule.getAclFile(), this.ast.location);
+            }
             const modelFile = mm.getModelFile(ns);
 
             if(!modelFile) {
-                throw new IllegalModelException('Failed to find namespace ' + ns);
+                throw new IllegalAclException(`Expected class \"${this.qualifiedName}\" to be defined but namespace \"${ns}\" not found`, this.aclRule.getAclFile(), this.ast.location);
             }
 
             const className = ModelUtil.getShortName(this.qualifiedName);
             const classDeclaration = modelFile.getLocalType(className);
 
             if(!classDeclaration) {
-                throw new IllegalModelException('Failed to find class ' + this.qualifiedName);
+                throw new IllegalAclException(`Expected class \"${this.qualifiedName}\" to be defined`, this.aclRule.getAclFile(), this.ast.location);
             }
 
             this.classDeclaration = classDeclaration;

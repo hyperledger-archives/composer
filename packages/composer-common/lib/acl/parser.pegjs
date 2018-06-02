@@ -1386,7 +1386,7 @@ SimpleRule
         type: "SimpleRule",
         id: ruleId,
         noun: noun,
-        verbs: verbs,
+        operation: verbs,
         participant: participant,
         transaction: transaction,
         action: action,
@@ -1417,7 +1417,7 @@ VariableBinding
         id: ruleId,
         noun: noun,
         nounVariable: nounVariable,
-        verbs: verbs,
+        operation: verbs,
         participant: participant,
         participantVariable: participantVariable,
         transaction: transaction,
@@ -1495,7 +1495,10 @@ AdditionalBasicVerb = __ "," __ verb:BasicVerb
  */
 BasicVerbList = first:BasicVerb others:(AdditionalBasicVerb)*
 {
-    return [first].concat(others);
+    return {
+      verbs: [first].concat(others),
+      location: location()
+    };
 }
 
 /**
@@ -1503,7 +1506,10 @@ BasicVerbList = first:BasicVerb others:(AdditionalBasicVerb)*
  */
 AllVerb = 'ALL'
 {
-    return ['ALL']
+    return {
+      verbs: ['ALL'],
+      location: location()
+    };
 }
 
 /**

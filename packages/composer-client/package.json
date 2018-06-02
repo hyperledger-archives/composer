@@ -1,6 +1,6 @@
 {
   "name": "composer-client",
-  "version": "0.19.2",
+  "version": "0.19.8",
   "description": "The node.js client library for Hyperledger Composer, a development framework for Hyperledger Fabric",
   "engines": {
     "node": ">=8",
@@ -37,10 +37,10 @@
     "exact_paths_method": "EXCLUDE",
     "exact_paths": [
       "api.txt",
-      "changelog.txt",
       "composer-logs",
       "coverage",
       "index.d.ts",
+      "LICENSE.txt",
       "node_modules",
       ".nyc-output",
       "out",
@@ -60,7 +60,7 @@
           "prepend": " * "
         }
       },
-      "npmrc|editorconfig": {
+      "npmrc|editorconfig|txt": {
         "eachLine": {
           "prepend": "# "
         }
@@ -71,10 +71,11 @@
     }
   },
   "dependencies": {
-    "composer-common": "0.19.2",
-    "composer-connector-hlfv1": "0.19.2",
-    "composer-wallet-filesystem": "0.19.2",
-    "composer-wallet-inmemory": "0.19.2",
+    "composer-common": "0.19.8",
+    "composer-connector-hlfv1": "0.19.8",
+    "composer-connector-proxy": "0.19.8",
+    "composer-wallet-filesystem": "0.19.8",
+    "composer-wallet-inmemory": "0.19.8",
     "uuid": "3.0.1"
   },
   "devDependencies": {

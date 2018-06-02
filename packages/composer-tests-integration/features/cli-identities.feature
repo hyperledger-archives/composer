@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -54,6 +54,14 @@ Feature: Cli-identities steps
             composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"ange","firstName":"angela","lastName":"angleton"}'
             """
         Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can create new Participants
+        When I run the following expected pass CLI command
+            """
+            composer participant add --card admin@basic-sample-network -d '{"$class":"org.acme.sample.SampleParticipant","participantId":"yaml","firstName":"y","lastName":"aml"}'
+            """
+        Then The stdout information should include text matching /Command succeeded/
+
 
     Scenario: Using the CLI, I can check that my new Participants were created
         When I run the following expected pass CLI command
@@ -159,6 +167,65 @@ Feature: Cli-identities steps
         Then The stdout information should include text matching /The connection to the network was successfully tested: basic-sample-network/
         Then The stdout information should include text matching /version:/
         Then The stdout information should include text matching /participant: org.acme.sample.SampleParticipant#sal/
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can issue an Identity to the participant called Yaml
+        When I run the following expected pass CLI command
+            """
+            composer identity issue --card admin@basic-sample-network -u yaml -a org.acme.sample.SampleParticipant#yaml -f ./tmp/yaml_DONOTIMPORT@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/yaml_DONOTIMPORT@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can request the idenity for yaml
+        Given I have saved the secret in file to YAML_SECRET
+           """
+           ./tmp/yaml_DONOTIMPORT@basic-sample-network.card
+           """
+        When I substitue the alias YAML_SECRET and run an expected pass CLI command
+           """
+           composer identity request --card admin@basic-sample-network -u yaml -s YAML_SECRET -d ./tmp
+           """
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/yaml-pub.pem |
+            | ../tmp/yaml-priv.pem |
+
+    Scenario: Using the CLI, I can create a card for the yaml identity
+        When I run the following expected pass CLI command
+            | command | composer card create |
+            | -p | ./profiles/basic-connection-org1.yaml |
+            | -u | yaml |
+            | -n | basic-sample-network |
+            | -c | ./tmp/yaml-pub.pem |
+            | -k | ./tmp/yaml-priv.pem |
+            | -f | ./tmp/yaml@basic-sample-network.card |
+
+        Then The stdout information should include text matching /Command succeeded/
+        Then I have the following files
+            | ../tmp/yaml@basic-sample-network.card |
+
+    Scenario: Using the CLI, I can import the card that was just created
+        Given I have the following files
+            | ../tmp/yaml@basic-sample-network.card |
+        When I run the following expected pass CLI command
+            """
+            composer card import --file ./tmp/yaml@basic-sample-network.card
+            """
+        Then The stdout information should include text matching /Successfully imported business network card/
+        Then The stdout information should include text matching /Card file: ./tmp/yaml@basic-sample-network.card/
+        Then The stdout information should include text matching /Card name: yaml@basic-sample-network/
+        Then The stdout information should include text matching /Command succeeded/
+
+    Scenario: Using the CLI, I can validate my user yaml through a network ping
+        When I run the following expected pass CLI command
+            """
+            composer network ping --card yaml@basic-sample-network
+            """
+        Then The stdout information should include text matching /The connection to the network was successfully tested: basic-sample-network/
+        Then The stdout information should include text matching /version:/
+        Then The stdout information should include text matching /participant: org.acme.sample.SampleParticipant#yaml/
         Then The stdout information should include text matching /Command succeeded/
 
     Scenario: Using the CLI, I can issue an Identity with issuer authority to the participant called Ange

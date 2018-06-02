@@ -18,6 +18,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const LOG = Logger.getLog('ConnectorServer');
 
@@ -39,6 +40,18 @@ class ConnectorServer {
         } else {
             return realSerializerr(new Error(error.toString()));
         }
+    }
+
+    /**
+     * Get the type of connection from the connection profile stripping off any routing connection
+     * information that could have routed the connection request (ie xyz@proxy)
+     * @param {object} connectionProfile the connection profile
+     * @returns {string} the appropriate connection type to use
+     */
+    static getConnectionType(connectionProfile) {
+        let type = connectionProfile['x-type'].trim();
+        let index = type.toLowerCase().lastIndexOf('@');
+        return index === -1 ? type : type.substring(0, index);
     }
 
     /**
@@ -69,6 +82,14 @@ class ConnectorServer {
     }
 
     /**
+     * Test the connection to the connector server.
+     * @param {function} callback The callback to call when complete.
+     */
+    async ping(callback) {
+        callback(null, { version });
+    }
+
+    /**
      * Handle a request from the client to get a busines network card.
      * @param {string} cardName The name of the card.
      * @param {function} callback The callback to call when complete.
@@ -83,7 +104,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -104,7 +125,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -128,7 +149,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -152,7 +173,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -173,7 +194,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -193,7 +214,7 @@ class ConnectorServer {
         const method = 'connectionManagerImportIdentity';
         LOG.entry(method, connectionProfile, id, certificate, privateKey);
         connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
+        return this.connectionProfileManager.getConnectionManagerByType(ConnectorServer.getConnectionType(connectionOptions))
             .then((connectionManager) => {
                 return connectionManager.importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey);
             })
@@ -202,7 +223,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -220,12 +241,12 @@ class ConnectorServer {
         LOG.entry(method, connectionProfile, id);
         try {
             connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-            const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type']);
+            const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(ConnectorServer.getConnectionType(connectionOptions));
             const deleted = await connectionManager.removeIdentity(connectionProfile, connectionOptions, id);
             callback(null, deleted);
             LOG.exit(method);
         } catch (error) {
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
         }
@@ -244,7 +265,7 @@ class ConnectorServer {
         const method = 'connectionManagerExportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
         connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-        return this.connectionProfileManager.getConnectionManagerByType(connectionOptions['x-type'])
+        return this.connectionProfileManager.getConnectionManagerByType(ConnectorServer.getConnectionType(connectionOptions))
             .then((connectionManager) => {
                 return connectionManager.exportIdentity(connectionProfileName, connectionOptions, id);
             })
@@ -253,7 +274,7 @@ class ConnectorServer {
                 LOG.exit(method, credentials);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -271,13 +292,17 @@ class ConnectorServer {
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
         try {
             connectionOptions.wallet = await this.businessNetworkCardStore.getWallet(connectionOptions.cardName);
-            const connection = await this.connectionProfileManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions);
+            let connectionManager = await this.connectionProfileManager.getConnectionManagerByType(ConnectorServer.getConnectionType(connectionOptions));
+
+            // don't have to worry about changing the connectionOptions for x-type as that information is not processed
+            // by an connector connect call or by the connectors themselves. x-type is purely for use by the connectionprofilemanager
+            const connection = await connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions);
             const connectionID = uuid.v4();
             this.connections[connectionID] = connection;
             callback(null, connectionID);
             LOG.exit(method, connectionID);
         } catch (error) {
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
         }
@@ -295,7 +320,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -311,7 +336,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -331,7 +356,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -350,7 +375,7 @@ class ConnectorServer {
                 });
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -371,7 +396,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -379,7 +404,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -404,7 +429,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -427,7 +452,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -435,7 +460,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -446,7 +471,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -468,7 +493,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -476,7 +501,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -487,7 +512,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -506,7 +531,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -514,7 +539,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -525,7 +550,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -546,7 +571,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -554,7 +579,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -565,7 +590,7 @@ class ConnectorServer {
                 LOG.exit(method, result.toString());
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -588,7 +613,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -596,7 +621,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -607,7 +632,7 @@ class ConnectorServer {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
@@ -628,7 +653,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -636,7 +661,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -647,7 +672,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -666,7 +691,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -674,7 +699,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -685,7 +710,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
@@ -704,7 +729,7 @@ class ConnectorServer {
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -712,7 +737,7 @@ class ConnectorServer {
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
-            LOG.error(error);
+            LOG.error(method, error);
             callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
             return Promise.resolve();
@@ -723,7 +748,7 @@ class ConnectorServer {
                 LOG.exit(method, result);
             })
             .catch((error) => {
-                LOG.error(error);
+                LOG.error(method, error);
                 callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });

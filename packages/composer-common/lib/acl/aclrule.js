@@ -14,9 +14,10 @@
 
 'use strict';
 
-const IllegalModelException = require('../introspect/illegalmodelexception');
+const IllegalAclException = require('./illegalaclexception');
 const ModelBinding = require('./modelbinding');
 const ParticipantDeclaration = require('../introspect/participantdeclaration');
+const Operation = require('./operation');
 const Predicate = require('./predicate');
 const TransactionDeclaration = require('../introspect/transactiondeclaration');
 
@@ -37,11 +38,11 @@ class AclRule {
      *
      * @param {AclFile} aclFile - the AclFile for this rule
      * @param {string} ast - the AST created by the parser
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      */
     constructor(aclFile, ast) {
         if(!aclFile || !ast) {
-            throw new IllegalModelException('Invalid AclFile or AST');
+            throw new IllegalAclException('Invalid AclFile or AST');
         }
 
         this.ast = ast;
@@ -72,13 +73,13 @@ class AclRule {
     /**
      * Process the AST and build the model
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     process() {
         this.name = this.ast.id.name;
         this.noun = new ModelBinding(this, this.ast.noun, this.ast.nounVariable);
-        this.verbs = this.ast.verbs;
+        this.operation = new Operation(this, this.ast.operation);
 
         this.participant = null;
         if(this.ast.participant && this.ast.participant !== 'ANY') {
@@ -105,26 +106,19 @@ class AclRule {
     /**
      * Semantic validation of the structure of this AclRule.
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     validate() {
         this.noun.validate();
-
-        const foundVerbs = {};
-        this.verbs.forEach((verb) => {
-            if (foundVerbs[verb]) {
-                throw new IllegalModelException(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
-            }
-            foundVerbs[verb] = true;
-        });
+        this.operation.validate();
 
         if(this.participant) {
             this.participant.validate();
 
             let participantClassDeclaration = this.participant.getClassDeclaration();
             if (participantClassDeclaration && !(participantClassDeclaration instanceof ParticipantDeclaration)) {
-                throw new IllegalModelException(`The participant '${participantClassDeclaration.getName()}' must be a participant`);
+                throw new IllegalAclException(`Expected '${participantClassDeclaration.getName()}' to be a participant`, this.aclFile, this.participant.ast.location);
             }
         }
 
@@ -133,7 +127,7 @@ class AclRule {
 
             let transactionClassDeclaration = this.transaction.getClassDeclaration();
             if (transactionClassDeclaration && !(transactionClassDeclaration instanceof TransactionDeclaration)) {
-                throw new IllegalModelException(`The transaction '${transactionClassDeclaration.getName()}' must be a transaction`);
+                throw new IllegalAclException(`Expected '${transactionClassDeclaration.getName()}' to be a transaction`, this.aclFile, this.transaction.ast.location);
             }
         }
 
@@ -166,7 +160,7 @@ class AclRule {
      * @return {string} the verb
      */
     getVerbs() {
-        return this.verbs;
+        return this.operation.verbs;
     }
 
     /**

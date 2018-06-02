@@ -1,4 +1,16 @@
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 # This is the changelog for Hyperledger Composer. It lists all significant changes to
 # functionality and public API.
 #
@@ -11,6 +23,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.19.2 {ef6884530844c8fad762ea4d97f07a03} 2018-04-13
+- Added getNativeAPI() function to client APIs
+
 Version 0.18.2 {bf66cd693a52a1f40f2db5cccd004381} 2018-03-13
 - Fix incorrectly documented api
 

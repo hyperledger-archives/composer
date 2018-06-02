@@ -22,35 +22,33 @@ import 'rxjs/Rx';
 @Injectable()
 export class <%= participantName %>Service {
 
-	<% if(apiNamespace == 'always'){ %>
-		private NAMESPACE: string = '<%= namespace %>.<%= participantName %>';
-	<% }else{ %>
-		private NAMESPACE: string = '<%= participantName %>';
-	<% } %>
+	<%_ if(apiNamespace == 'always'){ _%>
+  private NAMESPACE = '<%= namespace %>.<%= participantName %>';
+	<%_ } else { _%>
+  private NAMESPACE = '<%= participantName %>';
+	<%_ } _%>
 
+  constructor(private dataService: DataService<<%= participantName %>>) {
+  };
 
+  public getAll(): Observable<<%= participantName %>[]> {
+    return this.dataService.getAll(this.NAMESPACE);
+  }
 
-    constructor(private dataService: DataService<<%= participantName %>>) {
-    };
+  public getparticipant(id: any): Observable<<%= participantName %>> {
+    return this.dataService.getSingle(this.NAMESPACE, id);
+  }
 
-    public getAll(): Observable<<%= participantName %>[]> {
-        return this.dataService.getAll(this.NAMESPACE);
-    }
+  public addParticipant(itemToAdd: any): Observable<<%= participantName %>> {
+    return this.dataService.add(this.NAMESPACE, itemToAdd);
+  }
 
-    public getparticipant(id: any): Observable<<%= participantName %>> {
-      return this.dataService.getSingle(this.NAMESPACE, id);
-    }
+  public updateParticipant(id: any, itemToUpdate: any): Observable<<%= participantName %>> {
+    return this.dataService.update(this.NAMESPACE, id, itemToUpdate);
+  }
 
-    public addParticipant(itemToAdd: any): Observable<<%= participantName %>> {
-      return this.dataService.add(this.NAMESPACE, itemToAdd);
-    }
-
-    public updateParticipant(id: any, itemToUpdate: any): Observable<<%= participantName %>> {
-      return this.dataService.update(this.NAMESPACE, id, itemToUpdate);
-    }
-
-    public deleteParticipant(id: any): Observable<<%= participantName %>> {
-      return this.dataService.delete(this.NAMESPACE, id);
-    }
+  public deleteParticipant(id: any): Observable<<%= participantName %>> {
+    return this.dataService.delete(this.NAMESPACE, id);
+  }
 
 }

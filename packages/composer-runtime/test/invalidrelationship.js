@@ -73,73 +73,73 @@ describe('InvalidRelationship', () => {
         it('should throw attempting to get the primitive value', () => {
             (() => {
                 relationship.value === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/ such error/);
         });
 
         it('should throw attempting to set the primitive value', () => {
             (() => {
                 relationship.value = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to get the primitive array value', () => {
             (() => {
                 relationship.values[1] === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to set the primitive array value', () => {
             (() => {
                 relationship.values[1] = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to get the concept value', () => {
             (() => {
                 relationship.concept.value === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to set the concept value', () => {
             (() => {
                 relationship.concept.value = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to get the concept array value', () => {
             (() => {
                 relationship.concepts[1].value === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to set the concept array value', () => {
             (() => {
                 relationship.concepts[1].value = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to get the relationship value', () => {
             (() => {
                 relationship.owner.value === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to set the relationship value', () => {
             (() => {
                 relationship.owner.value = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to get the relationship array value', () => {
             (() => {
                 relationship.owners[1].value === 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
         it('should throw attempting to set the relationship array value', () => {
             (() => {
                 relationship.owners[1].value = 'hello';
-            }).should.throw(/such error/);
+            }).should.throw(/.*is not allowed.*such error/);
         });
 
     });

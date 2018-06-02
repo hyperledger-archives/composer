@@ -1,6 +1,6 @@
 {
   "name": "composer-playground-api",
-  "version": "0.19.2",
+  "version": "0.19.8",
   "description": "The REST API for the Hyperledger Composer Playground",
   "engines": {
     "node": ">=8",
@@ -75,13 +75,13 @@
     "nyc": "11.1.0",
     "proxyquire": "1.7.11",
     "sinon": "2.3.8",
-    "verdaccio": "2.6.4"
+    "socket.io-client": "1.7.3"
   },
   "dependencies": {
     "async": "2.5.0",
     "body-parser": "1.17.0",
-    "composer-common": "0.19.2",
-    "composer-connector-server": "0.19.2",
+    "composer-common": "0.19.8",
+    "composer-connector-server": "0.19.8",
     "dotenv": "4.0.0",
     "express": "4.15.2",
     "http-status": "1.0.1",
@@ -99,7 +99,6 @@
       "systest/**",
       "test/**",
       "config/environment/**",
-      "index.js",
       "lib/util.js",
       "cli.js"
     ],

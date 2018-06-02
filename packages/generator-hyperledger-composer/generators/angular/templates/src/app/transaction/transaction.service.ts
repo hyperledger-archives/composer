@@ -22,36 +22,34 @@ import 'rxjs/Rx';
 @Injectable()
 export class <%= transactionName %>Service {
 
-	<% if(apiNamespace == 'always'){ %>
-		private NAMESPACE: string = '<%= namespace %>.<%= transactionName %>';
-	<% }else{ %>
-		private NAMESPACE: string = '<%= transactionName %>';
-	<% } %>
+      	<%_ if(apiNamespace == 'always'){ _%>
+  <% _%>  private NAMESPACE = '<%= namespace %>.<%= transactionName %>';
+      	<%_ }else{ _%>
+  <% _%>  private NAMESPACE = '<%= transactionName %>';
+      	<%_ } _%>
 
+  constructor(private dataService: DataService<<%= transactionName %>>) {
+  };
 
+  public getAll(): Observable<<%= transactionName %>[]> {
+      return this.dataService.getAll(this.NAMESPACE);
+  }
 
-    constructor(private dataService: DataService<<%= transactionName %>>) {
-    };
+  public getTransaction(id: any): Observable<<%= transactionName %>> {
+    return this.dataService.getSingle(this.NAMESPACE, id);
+  }
 
-    public getAll(): Observable<<%= transactionName %>[]> {
-        return this.dataService.getAll(this.NAMESPACE);
-    }
+  public addTransaction(itemToAdd: any): Observable<<%= transactionName %>> {
+    return this.dataService.add(this.NAMESPACE, itemToAdd);
+  }
 
-    public getTransaction(id: any): Observable<<%= transactionName %>> {
-      return this.dataService.getSingle(this.NAMESPACE, id);
-    }
+  public updateTransaction(id: any, itemToUpdate: any): Observable<<%= transactionName %>> {
+    return this.dataService.update(this.NAMESPACE, id, itemToUpdate);
+  }
 
-    public addTransaction(itemToAdd: any): Observable<<%= transactionName %>> {
-      return this.dataService.add(this.NAMESPACE, itemToAdd);
-    }
-
-    public updateTransaction(id: any, itemToUpdate: any): Observable<<%= transactionName %>> {
-      return this.dataService.update(this.NAMESPACE, id, itemToUpdate);
-    }
-
-    public deleteTransaction(id: any): Observable<<%= transactionName %>> {
-      return this.dataService.delete(this.NAMESPACE, id);
-    }
+  public deleteTransaction(id: any): Observable<<%= transactionName %>> {
+    return this.dataService.delete(this.NAMESPACE, id);
+  }
 
 }
 

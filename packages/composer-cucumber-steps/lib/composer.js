@@ -645,18 +645,38 @@ class Composer {
      * @return {*} correctly typed value.
      */
     convertValueToType (value, type) {
-        switch (type) {
-        case 'Boolean':
-            return new Boolean(value).valueOf();
-        case 'DateTime':
-            return new Date(value);
-        case 'Double':
-            return Number.parseFloat(value);
-        case 'Integer':
-        case 'Long':
-            return Number.parseInt(value);
-        default:
-            return value;
+        try {
+            switch (type) {
+            case 'Boolean':
+                if (value !== 'true' && value !== 'false') {
+                    throw new Error();
+                }
+                return value === 'true';
+            case 'DateTime': {
+                const result = new Date(value);
+                result.toISOString();
+                return result;
+            }
+            case 'Double': {
+                const result = Number.parseFloat(value);
+                if (isNaN(result)) {
+                    throw new Error();
+                }
+                return result;
+            }
+            case 'Integer':
+            case 'Long': {
+                const result = Number.parseInt(value);
+                if (isNaN(result)) {
+                    throw new Error();
+                }
+                return result;
+            }
+            default:
+                return value;
+            }
+        } catch (error) {
+            throw new Error(`Invalid value "${value}" for type "${type}"`);
         }
     }
 

@@ -27,14 +27,19 @@ class Validate {
      * @return {Object} undef if the profile is valid, error array otherwise.
      */
     static validateProfile(profile) {
-        let schema = require('./schema/ccpschema.json');
-        let validate = new ajv({ allErrors : true }).compile(schema);
-        validate(profile);
-        if(validate.errors) {
-            return validate.errors;
-        } else {
-            return;
+        if (!profile['x-type']) {
+            return ['Connection profile has no `x-type` property defined. It is not valid for this version of composer'];
         }
+
+        if (profile['x-type'].startsWith('hlfv1')) {
+            let schema = require('./schema/ccpschema.json');
+            let validate = new ajv({ allErrors : true }).compile(schema);
+            validate(profile);
+            if(validate.errors) {
+                return validate.errors;
+            }
+        }
+        return;
     }
 }
 module.exports = Validate;

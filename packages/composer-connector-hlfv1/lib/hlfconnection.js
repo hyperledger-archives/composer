@@ -553,23 +553,43 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * initialize the channel if it hasn't been done
-     *
-     * @returns {Promise} a promise that the channel is initialized
+     * initialize the channel if it hasn't been done, manipulate the peer list in the channel to cycle
+     * through ledger peers if any are down. This is a workaround until a better soln from
+     * https://jira.hyperledger.org/browse/FAB-10065
+     * is available.
      * @private
      */
-    _initializeChannel() {
+    async _initializeChannel() {
         const method = '_initializeChannel';
         LOG.entry(method);
-        if (!this.initialized) {
-            return this.channel.initialize()
-                .then(() => {
-                    LOG.exit(method);
-                    this.initialized = true;
-                });
+
+        const ledgerPeers = this.channel.getPeers().filter((cPeer) => {
+            return cPeer.isInRole(FABRIC_CONSTANTS.NetworkConfig.LEDGER_QUERY_ROLE);
+        });
+
+        let ledgerPeerIndex = 0;
+
+        while (!this.initialized) {
+            try {
+                await this.channel.initialize();
+                this.initialized = true;
+            } catch(error) {
+                LOG.warn(method, `error trying to initialize channel. Error returned ${error}`);
+                if (ledgerPeerIndex === ledgerPeers.length - 1) {
+                    throw new Error(`Unable to initalize channel. Attempted to contact ${ledgerPeers.length} Peers. Last error was ${error}`);
+                }
+                ledgerPeerIndex++;
+                const nextPeer = ledgerPeers[ledgerPeerIndex];
+                LOG.info(method, `Moving ${nextPeer.getName()} to top of queue`);
+                const peerIndex = this.channel.getPeers().indexOf(nextPeer);
+                this.channel.getPeers().splice(peerIndex, 1);
+                this.channel.getPeers().unshift(nextPeer);
+            }
         }
-        LOG.exit(method);
-        return Promise.resolve();
+
+        // log the state of initialized although not explicitly returned
+        LOG.exit(method, this.initialized);
+
     }
 
     /**
@@ -635,7 +655,8 @@ class HLFConnection extends Connection {
             // check the event hubs and reconnect if possible. Do it here as the connection attempts are asynchronous
             this._checkEventhubs();
 
-            const transactionId = this.client.newTransactionID();
+
+            const transactionId = this._validateTxId(startOptions);
             const proposal = {
                 chaincodeType: 'node',
                 chaincodeId: businessNetworkName,
@@ -648,7 +669,7 @@ class HLFConnection extends Connection {
 
             LOG.debug(method, 'sending instantiate proposal', proposal);
             const proposalResponse = await this.channel.sendInstantiateProposal(proposal);
-            await this._sendTransactionForProposal(proposalResponse, transactionId);
+            await this._sendTransaction(proposalResponse, transactionId);
         } catch(error) {
             const newError = new Error('Error trying to start business network. ' + error);
             LOG.error(method, error);
@@ -663,8 +684,8 @@ class HLFConnection extends Connection {
      * @async
      * @private
      */
-    async _sendTransactionForProposal(proposalResponse, transactionId) {
-        const method = '_sendTransactionForProposal';
+    async _sendTransaction(proposalResponse, transactionId) {
+        const method = '_sendTransaction';
         LOG.entry(method, proposalResponse);
 
         // Validate the instantiate proposal results
@@ -687,7 +708,18 @@ class HLFConnection extends Connection {
             eventHandler.cancelListening();
             throw new Error(`Failed to send peer responses for transaction '${transactionId.getTransactionID()}' to orderer. Response status '${response.status}'`);
         }
-        await eventHandler.waitForEvents();
+
+        try {
+            await eventHandler.waitForEvents();
+        } catch (error) {
+            // Investigate proposal response results and log if they differ and rethrow
+            if (!this.channel.compareProposalResponseResults(validResponses)) {
+                const warning = 'Peers do not agree, Read Write sets differ';
+                LOG.warn(method, warning);
+            }
+            throw error;
+        }
+
         LOG.exit(method);
     }
 
@@ -743,21 +775,13 @@ class HLFConnection extends Connection {
 
             }
         });
+
         if (validResponses.length === 0 && ignoredErrors < responses.length) {
             const errorMessages = [ 'No valid responses from any peers.' ];
             invalidResponseMsgs.forEach(invalidResponse => errorMessages.push(invalidResponse));
             throw new Error(errorMessages.join('\n'));
         }
 
-        // if it was a proposal and some of the responses were good, check that they compare
-        // but we can't reject it as we don't know if it would still pass the endorsement policy
-        // and if we did this would allow a malicious peer to stop transactions so we
-        // issue a warning so that it get's logged, but we don't know which peer(s) it was
-        if (isProposal && !this.channel.compareProposalResponseResults(validResponses)) {
-            const warning = 'Peers do not agree, Read Write sets differ';
-            LOG.warn(method, warning);
-            invalidResponseMsgs.push(warning);
-        }
         LOG.exit(method, ignoredErrors);
         return {ignoredErrors, validResponses, invalidResponseMsgs};
     }
@@ -898,19 +922,8 @@ class HLFConnection extends Connection {
             return Promise.reject(error);
         }
 
-        let txId;
-        if (options && options.transactionId) {
+        let txId = this._validateTxId(options);
 
-            // see if we have a proper transactionID object or perhaps its the data of a transactionId
-            if (options.transactionId instanceof TransactionID) {
-                txId = options.transactionId;
-            } else {
-                txId = this.client.newTransactionID();
-                Object.assign(txId, options.transactionId);
-            }
-        } else {
-            txId = this.client.newTransactionID();
-        }
         let eventHandler;
 
         // initialize the channel if it hasn't been initialized already otherwise verification will fail.
@@ -1134,7 +1147,7 @@ class HLFConnection extends Connection {
 
             LOG.debug(method, 'sending upgrade proposal', proposal);
             const proposalResults = await this.channel.sendUpgradeProposal(proposal);
-            await this._sendTransactionForProposal(proposalResults, transactionId);
+            await this._sendTransaction(proposalResults, transactionId);
         } catch(error) {
             const newError = new Error('Error trying to upgrade business network. ' + error);
             LOG.error(method, error);
@@ -1158,7 +1171,6 @@ class HLFConnection extends Connection {
         });
     }
 
-
     /**
      * return the Channel peers that are in the organisation which matches the requested roles
      * @param {Array} peerRoles the peer roles that the returned list of peers need to satisfy
@@ -1172,6 +1184,39 @@ class HLFConnection extends Connection {
             });
         });
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        return this.client;
+
+    }
+
+    /** Based on the options passed in, determine the transaction id that is to be used
+     * @param {Object} options options to process
+     * @return {TransactionId} transactionId object
+     */
+    _validateTxId(options){
+        let txId;
+        if (options && options.transactionId) {
+
+            // see if we have a proper transactionID object or perhaps its the data of a transactionId
+            if (options.transactionId instanceof TransactionID) {
+                txId = options.transactionId;
+            } else {
+                txId = this.client.newTransactionID();
+                Object.assign(txId, options.transactionId);
+            }
+        } else {
+            txId = this.client.newTransactionID();
+        }
+        return txId;
+    }
+
 }
 
 module.exports = HLFConnection;

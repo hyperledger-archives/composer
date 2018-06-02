@@ -26,6 +26,26 @@ const path = require('path');
 const request = require('request-promise-any');
 const sleep = require('sleep-promise');
 const stripAnsi = require('strip-ansi');
+const axios = require('axios');
+
+const LOG_LEVEL_SILLY = 5;
+const LOG_LEVEL_DEBUG = 4;
+const LOG_LEVEL_VERBOSE = 3;
+const LOG_LEVEL_INFO = 2;
+const LOG_LEVEL_WARN = 1;
+const LOG_LEVEL_ERROR = 0;
+const LOG_LEVEL_NONE = -1;
+
+// Mapping between strings and log levels.
+const _logLevelAsString = {
+    silly: LOG_LEVEL_SILLY,
+    debug: LOG_LEVEL_DEBUG,
+    verbose: LOG_LEVEL_VERBOSE,
+    info: LOG_LEVEL_INFO,
+    warn: LOG_LEVEL_WARN,
+    error: LOG_LEVEL_ERROR,
+    none: LOG_LEVEL_NONE
+};
 
 let generated = false;
 
@@ -215,10 +235,30 @@ class Composer {
     }
 
     /**
+     * Get all files recursively in a directoy
+     * @param {String} dir directory to search
+     * @param {String[]} fileList file list to append
+     * @returns {String[]} list of files in directory
+     */
+    getFilesInDirectory(dir, fileList){
+        fileList = fileList || [];
+        let files = fs.readdirSync(dir);
+        files.forEach((file) => {
+            let name = dir + '/' + file;
+            if (fs.statSync(name).isDirectory()){
+                this.getFilesInDirectory(name, fileList);
+            } else {
+                fileList.push(name);
+            }
+        });
+        return fileList;
+    }
+
+    /**
      * Check that the provided list of items (files or folders) exist
      * @param {String} type -  type (folder or file) that is being considered
      * @param {DataTable} table -  DataTable listing the items expeted to exist
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkExists(type, table) {
         const rows = table.raw();
@@ -231,6 +271,47 @@ class Composer {
             return Promise.resolve();
         } else {
             return Promise.reject('The following item(s) do not exist: ' + missing);
+        }
+    }
+
+    /**
+     * Check that the provided list of items exist in the passed folder
+     * @param {String} folder -  folder to be inspected
+     * @param {DataTable} table -  DataTable listing the items expected to exist
+     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     */
+    checkExistsStrict(folder, table) {
+        const passedFiles = table.raw();
+
+        // Make sure all paths are accounted for
+        const expectedFiles = [];
+        for (let file of passedFiles) {
+            expectedFiles.push(path.resolve(__dirname,folder,file.toString()));
+        }
+
+        // get all files
+        const allFiles = this.getFilesInDirectory(path.resolve(__dirname,folder));
+
+        // Check for missing items
+        let missingFiles =[];
+        for (let file of expectedFiles){
+            if(allFiles.indexOf(file) === -1){
+                missingFiles.push(file);
+            }
+        }
+        if (missingFiles.length !== 0) {
+            return Promise.reject('The following item(s) should exist: ' + missingFiles.toString());
+        }
+
+        // Check for superfluous items
+        let unexpectedFiles =[];
+        for (let file of allFiles){
+            if(expectedFiles.indexOf(file) === -1){
+                unexpectedFiles.push(file);
+            }
+        }
+        if (unexpectedFiles.length !== 0) {
+            return Promise.reject('The following item(s) should not exist: ' + unexpectedFiles.toString());
         }
     }
 
@@ -361,10 +442,10 @@ class Composer {
         if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
-            let command = cmd;
+            const command = cmd.replace(/\s*[\n\r]+\s*/g, ' ');
             let stdout = '';
             let stderr = '';
-            let env = process.env;
+            let env = Object.create( process.env );
             if (this.jsonConfig){
                 env.NODE_CONFIG=this.jsonConfig;
             } else {
@@ -373,7 +454,10 @@ class Composer {
 
             return new Promise( (resolve, reject) => {
 
-                let childCliProcess = childProcess.exec(command,{env});
+                const options = {
+                    env: env
+                };
+                let childCliProcess = childProcess.exec(command, options);
 
                 childCliProcess.stdout.setEncoding('utf8');
                 childCliProcess.stderr.setEncoding('utf8');
@@ -478,12 +562,42 @@ class Composer {
     }
 
     /**
-     * Check the last message with regex
+     * Check the last message with regex ignoring multiple whitespace
+     * @param {RegExp} match Optional rstring match.
+     * @param {boolean} isError boolean to indicate if testing error or not
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    checkConsoleOutput(match, isError) {
+        let type;
+
+        if(isError){
+            type = 'stderr';
+        } else {
+            type = 'stdout';
+        }
+
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
+            } else if (match) {
+                let modRegEx = match.toString().replace(/ +(?= )/g,'');
+                let modResp = this.lastResp[type].replace(/ +(?= )/g,'');
+                if(modResp.match(modRegEx)) {
+                    resolve();
+                } else {
+                    reject(`Regex match on ${type} failed with mulitple whitespace characters removed.\nExpected: ${modRegEx}\nActual: ${modResp}`);
+                }
+            }
+        });
+    }
+
+    /**
+     * Check the last message with regex inclusive of whitespace
      * @param {RegExp} [regex] Optional regular expression.
      * @param {boolean} isError boolean to indicate if testing error or not
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
-    checkConsoleOutput(regex, isError) {
+    checkConsoleOutputStrict(regex, isError) {
         let type;
 
         if(isError){
@@ -506,9 +620,38 @@ class Composer {
     }
 
     /**
+     * Check the last message with an expected block of text
+     * @param {String} text block of text that should exist
+     * @param {Boolean} isError boolean to indicate if testing stdErr or stdOut
+     * @return {Promise} - Promise that will be resolved or rejected with an error
+     */
+    checkTextBlock(text, isError) {
+        let type;
+        const textBuffer = new Buffer.from(text);
+        const utf8Text = textBuffer.toString('utf8');
+        if(isError){
+            type = 'stderr';
+        } else {
+            type = 'stdout';
+        }
+
+        return new Promise( (resolve, reject) => {
+            if (!this.lastResp || !this.lastResp[type]) {
+                reject('a ' + type + ' response was expected, but no response messages have been generated');
+            } else {
+                if(this.lastResp[type].match(utf8Text)) {
+                    resolve();
+                } else {
+                    reject(`Regex match on ${type} text block failed.\nExpected: ${utf8Text}\nActual: ${this.lastResp[type]}`);
+                }
+            }
+        });
+    }
+
+    /**
      * Check that a file with a name matching the regex has been created.
      * @param {RegExp} [regex] regular expression.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkFileWasCreated(regex) {
         return new Promise( (resolve, reject) => {
@@ -529,7 +672,7 @@ class Composer {
     /**
      * Check the HTTP response status
      * @param {Number} code expected HTTP response code.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseCode(code) {
         return new Promise( (resolve, reject) => {
@@ -546,7 +689,7 @@ class Composer {
     /**
      * Check the last message with regex
      * @param {RegExp} [regex] Optional regular expression.
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseBody(regex) {
         return new Promise( (resolve, reject) => {
@@ -565,7 +708,7 @@ class Composer {
     /**
      * Check the last message matches JSON
      * @param {*} pattern Expected json
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     checkResponseJSON(pattern) {
         return new Promise( (resolve, reject) => {
@@ -585,7 +728,7 @@ class Composer {
         /**
      * Check the last message matches JSON
      * @param {String} name filename to write the data to
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     writeResponseData(name) {
         return new Promise( (resolve, reject) => {
@@ -607,7 +750,7 @@ class Composer {
      * @param {*} regex The regex to match on
      * @param {*} group The matched regex group to save
      * @param {*} alias The alias to save the matched regex under
-     * @return {Promise} - Pomise that will be resolved or rejected with an error
+     * @return {Promise} - Promise that will be resolved or rejected with an error
      */
     saveMatchingGroupAsAlias(regex, group, alias) {
         let type = 'stdout';
@@ -788,6 +931,102 @@ class Composer {
 
         }
     }
+
+    /**
+     * Start watching the logs
+     */
+    startWatchingLogs(){
+        console.log('> startWaching');
+        this.getCCLogs();
+        console.log('< startWatching'+this.logPromise);
+    }
+
+    /**
+     * Stop watching the logs by destroying the stream.
+     */
+    async stopWatchingLogs(){
+        console.log(`Stop watching the logs ${this.logStream}`);
+        // first check to see if there is a stream
+        if (this.logStream){
+            this.logStream.destroy();
+        }
+        this.logs = await this.logPromise;
+    }
+
+    /**
+     * @param {String} logLevel the maximum loglevel to check for
+     * @return {Promise} resolved if all go, reject with exception if not
+     */
+    async checkMaximumLogLevel(logLevel){
+
+        let maxLogLevelInt = _logLevelAsString[logLevel.toLowerCase()];
+
+        for (let logEntry of this.logs){
+            let currentLogLevelInt = _logLevelAsString[logEntry.type.toLowerCase()];
+            if (currentLogLevelInt>maxLogLevelInt){
+                throw new Error(`${logEntry.type} is too high.  LogEntry is [${logEntry.type} ${logEntry.method} ${logEntry.file} ${logEntry.msg}]`);
+            }
+        }
+        return('all good');
+
+    }
+
+    /**
+     * This collects the logs from the Docker log collection 'agent'
+     * Logspout is the docket image that is being used to collect them
+     * and make them available over http via a rest api
+
+     */
+    getCCLogs() {
+        // looking for just the chain code containers (prefixed dev-) and for no ANSI colouring
+        let uri = 'http://127.0.0.1:8000/logs/name:dev-*?colors=off';
+
+
+
+        // Streaming the data back
+        this.logPromise = new Promise(async (resolve,reject) => {
+            console.log('Making get request');
+            // GET request for remote image
+            let response = await axios({
+                method:'get',
+                url:uri,
+                responseType:'stream'
+            });
+            let allLogPoints = [];
+            this.logStream = response.data;
+            console.log(`The log stream is ${this.logStream} `);
+            response.data.on('data', (chunk) => {
+                let chunkString= chunk.toString();
+                // strip off the Logspout prefix (the docker image name)
+                // the regex is to just focus on the main logs lines, and not any continuations
+                let line = chunkString.substring(chunkString.indexOf('|')+1);
+
+                if (line.match(/\d\d\d\d-\d\d-\d\d\D\d\d:\d\d:\d\d.*\[.*\]/)){
+
+                    let logPoint={};
+                    // assumes the fixed format of the log messages
+                    logPoint.type = line.substring(36,45).trim();
+                    logPoint.file = line.substring(46,71).trim();
+                    logPoint.method = line.substring(72,98).trim();
+                    logPoint.msg = line.substring(98).trim();
+
+                    allLogPoints.push(logPoint);
+                }
+            });
+
+            // when stream is closed, resolve the promise with all the log points currently captured
+            response.data.on('close',()=>{
+                resolve(allLogPoints);
+            });
+        });
+
+        console.log(`The log promise is ${this.logPromise}`);
+
+
+    }
+
 }
+
+
 
 module.exports = Composer;
