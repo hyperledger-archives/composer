@@ -1,45 +1,160 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { Headers, Http, RequestOptions } from '@angular/http';
-
+import { <%= currentTransaction.name %>Service } from './<%= currentTransaction.name %>.service';
+import 'rxjs/add/operator/toPromise';
 @Component({
-	selector: 'app-Transaction',
-	templateUrl: './Transaction.component.html',
-	styleUrls: ['./Transaction.component.css']
+	selector: 'app-<%= currentTransaction.name %>',
+	templateUrl: './<%= currentTransaction.name %>.transaction.html',
+//	styleUrls: ['./<%= currentTransaction.name %>.transaction.css'],
+  providers: [<%= currentTransaction.name %>Service]
 })
-export class TransactionComponent implements OnInit {
+export class <%= currentTransaction.name %>Component implements OnInit {
 
   myForm: FormGroup;
+  transaction = {}
 
-  private allTransactions;
-  private Transaction;
-  private currentId;
+	<% function printnameSpace(transaction){ %>
+		<% if (namespaces[transaction.type] === undefined ) { %>
+			"<%= namespaces[transaction.name] %>"
+		<% } else { %>
+			"<%= namespaces[transaction.type] %>"
+		<% } %>
+	<% } %>
+
+  <% function recOnProperties(transaction) { %>
+
+      <% if (transaction.properties === undefined) { %>
+          "$class" : <% printnameSpace(transaction) %>
+      <% } else { %>
+          "$class" : <% printnameSpace(transaction) %>,
+      	   <% for ( let q = 0 ; q < transaction.properties.length; q++) { %>
+				<% if (q === transaction.properties.length - 1){ %>
+					
+					<% if (transaction.properties[q].array === true || transaction.properties[q].isArray === true) { %>
+						
+						<% if (transaction.properties[q].properties === undefined) { %>
+							<%= transaction.properties[q].name %> : [ "" ]
+						<% } else { %>
+							<%= transaction.properties[q].name %> : [ { <% recOnProperties(transaction.properties[q])  %> } ]
+						<% } %>
+
+                    <% } else { %>
+
+                           
+            			<% if (transaction.properties[q].properties === undefined) { %>
+            				<%= transaction.properties[q].name %> : ""
+            			<% } else { %>
+            				<%= transaction.properties[q].name %> : { <% recOnProperties(transaction.properties[q])  %> }
+            			<% } %> 
+
+                    <% } %>
+        		<% } else { %>
+					<% if (transaction.properties[q].array === true || transaction.properties[q].isArray === true) { %>
+						
+						<% if (transaction.properties[q].properties === undefined) { %>
+							<%= transaction.properties[q].name %> : [ "" ],
+						<% } else { %>
+							<%= transaction.properties[q].name %> : [ { <% recOnProperties(transaction.properties[q]) %> } ],
+						<% } %>
+
+                    <% } else { %>
+
+						<% if (transaction.properties[q].properties === undefined) { %>
+            				<%= transaction.properties[q].name %> : "",
+            			<% } else { %>
+            				<%= transaction.properties[q].name %> : { <% recOnProperties(transaction.properties[q]) %> },
+            			<% } %>
 
 
-  constructor(private http: Http) {};
+                    <% } %>
+        		<% } %>
+        	<% } %>
+        <% } %>
+    <% } %>
 
-  ngOnInit():void {
-    console.log('about to load all tx');
-    this.loadAll();
-  }
 
-  loadAll(): Promise<any> {
-    let tempList = [];
-    console.log('about to get all tx');
-    return this.getDataFromUrl('/transaction').then((result) => {
-      result.forEach(Transaction => {
-        tempList.push(Transaction);
-      });
-      this.allTransactions = tempList;
-      console.log('Transactions:',this.allTransactions)
-    });
-  }
 
-  getDataFromUrl(url: string): Promise<any> {
-        return this.http.get(url).toPromise().then(response => {
-            return response.json();
-        });
-    };
+	constructor( private http: <%= currentTransaction.name %>Service ){}
 
+	submitTransction(){
+		console.log(this.transaction)
+
+		this.http.submit(this.transaction).toPromise().
+			then((res)=>{console.log(res); this.clearValue();}).
+			catch((error)=>{console.log(error);});
+	}
+
+	ngOnInit(){ this.clearValue() }
+
+	<% function printTransaction(currentTransaction) { %>
+		<% if (currentTransaction.properties === undefined){ %>
+
+			<% if(currentTransaction.enum === true){ %>
+				<%= currentTransaction.name %> : { value: [] }
+			<% } else{ %>
+				<%= currentTransaction.name %> : ""
+			<% } %>
+
+		<% } else { %>
+
+			<%= currentTransaction.name %> : {
+				<% recOnProperties(currentTransaction) %>
+			}
+		<% } %>
+	<% } %>
+
+	<% function printWithDotTransaction(currentTransaction) { %> 
+
+		<% if (currentTransaction.properties === undefined){ %>
+
+			<% if(currentTransaction.enum === true){ %>
+				<%= currentTransaction.name %> : { value: [] ],
+			<% } else{ %>
+				<%= currentTransaction.name %> : "",
+			<% } %>
+
+		<% } else { %>
+
+			<%= currentTransaction.name %> : {
+				<% recOnProperties(currentTransaction) %>
+			},
+	   <% } %>
+	<% } %>
+	clearValue(){
+		this.transaction = {
+            <% if (currentTransaction.properties === undefined) { %>
+                "$class" : <% printnameSpace(currentTransaction) %>
+            <% } else { %>
+                "$class" : <% printnameSpace(currentTransaction) %>,
+            <% } %>
+			<% for(var x = 0 ; x < currentTransaction.properties.length;  x++){ %>
+
+				<% if (currentTransaction.properties.length -1 === x) { %>
+
+                    <% if (currentTransaction.properties[x].array === true) { %>
+						[
+							<% printTransaction(currentTransaction.properties[x]) %>
+						]
+                    <% }else { %>
+                    
+						<% printTransaction(currentTransaction.properties[x]) %>
+                        
+                    <% } %>
+				<% } else { %>
+                    <% if (currentTransaction.properties[x].array === true) { %>
+    					[
+							<% printWithDotTransaction(currentTransaction.properties[x]) %>
+
+						]
+					<% } else { %>
+						
+						<% printWithDotTransaction(currentTransaction.properties[x]) %>
+
+					
+                    <% } %>
+				<% } %>
+			<% } %>
+			}
+	}
 
 }

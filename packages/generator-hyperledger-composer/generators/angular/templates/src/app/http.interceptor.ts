@@ -25,23 +25,16 @@ export class NoopInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.headers = new Headers();
-
-        <% if(authentication != 'N'){ %>
-          var cookiesValue = this.createKey(this.connect_sid) + this.createKey(this.access_token) + this.createKey(this.userId);
-
-          this.headers.append('Content-Type', 'application/json');
-          this.headers.append('Accept', 'application/json');
-          const changedReq = req.clone({
-              withCredentials : true,
-              headers: req.headers.set('Cookie', cookiesValue).set('Content-Type','application/json').set('Accept','application/json')
-          });
-        <% }else{ %>
-          const changedReq = req.clone({
-                 withCredentials : true,
-                 headers: req.headers.set('Content-Type','application/json').set('Accept','application/json')
-             });
-        <% } %>
-
+	
+        var cookiesValue = this.createKey(this.connect_sid) + this.createKey(this.access_token) + this.createKey(this.userId);
+        
+        this.headers.append('Content-Type', 'application/json');
+        this.headers.append('Accept', 'application/json');
+        debugger;
+        const changedReq = req.clone({
+            withCredentials : true,
+            headers: req.headers.set('Cookie', cookiesValue)
+        });
         return next.handle(changedReq);
     }
 }

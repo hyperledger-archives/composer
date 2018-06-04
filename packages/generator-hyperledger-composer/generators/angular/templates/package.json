@@ -8,7 +8,7 @@
   "scripts": {
     "ng": "ng",
 <% if(apiServer == 'generate'){ %>
-    "app": "composer-rest-server --card <%= cardName %> -N <%= apiNamespace %> -P <%= apiPort %>",
+    "app": "composer-rest-server --card <%= cardName %> -n <%= apiNamespace %> -p <%= apiPort %>",
     "start": "concurrently \"ng serve --host 0.0.0.0\" \"npm run app\"",
 <% }else{ %>
     "start": "ng serve",
@@ -28,6 +28,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "ngx-cookie-service": "^1.0.9",
     "bootstrap": "^3.3.7",
     "composer-client": "latest",
     "composer-rest-server": "latest",
@@ -35,7 +36,6 @@
     "config": "^1.21.0",
     "core-js": "^2.4.1",
     "jquery": "^3.2.1",
-    "ngx-cookie-service": "^1.0.9",
     "rxjs": "^5.1.0",
     "tether": "^1.4.0",
     "zone.js": "^0.8.4"

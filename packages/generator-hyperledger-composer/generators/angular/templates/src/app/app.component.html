@@ -1,21 +1,31 @@
 <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#"><%=businessNetworkIdentifier%></a>
-    </div>
-    <ul class="nav navbar-nav navbar-right">
-      <li class=""><a [routerLink]="['/']">Home</a></li>
-      <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Assets
-          <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <% for(var x=0;x<assetList.length;x++){ %>
-          <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
-          <%}%>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#"><%=businessNetworkIdentifier%></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li class=""><a [routerLink]="['/']">Home</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Assets
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <% for(var x=0;x<assetList.length;x++){ %>
+                    <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
+                    <%}%>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction
+                <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <% for(var x=0;x<transactionList.length;x++){ %>
+                <li><a [routerLink]="['/<%=transactionList[x].name%>']"><%=transactionList[x].name%></a></li>
+                <%}%>
+              </ul>
+            </li>
         </ul>
-      </li>
-    </ul>
-  </div>
+    </div>
 </nav>
 
 <router-outlet></router-outlet>

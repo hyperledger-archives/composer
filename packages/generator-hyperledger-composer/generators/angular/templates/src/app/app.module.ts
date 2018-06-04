@@ -1,24 +1,32 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AppRoutingModule } from './app-routing.module';
-import { DataService }     from './data.service';
-import { Configuration }     from './configuration';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { NoopInterceptor } from './http.interceptor';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
 import { CookieService } from 'ngx-cookie-service';
 
-// import { TransactionComponent } from './Transaction/Transaction.component'
+import { AppRoutingModule } from './app-routing.module';
+import { Configuration }     from './configuration';
+import { DataService }     from './data.service';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NoopInterceptor } from 'app/http.interceptor';
+
 <% for(var x=0;x<assetComponentNames.length;x++){ %>
 import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= assetList[x].name %>.component';<% } %>
 
+<% for(var x=0;x<transactionComponentNames.length;x++){ %>
+  import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.transaction';<% } %>
+  
 @NgModule({
   declarations: [
     AppComponent,
-		HomeComponent,
+    HomeComponent,
+    <% for(var x=0;x<transactionComponentNames.length;x++){ %>
+    <%= transactionComponentNames[x] %>,
+    <% } %>
+  
     // TransactionComponent,
     <% for(var x=0;x<assetComponentNames.length;x++){ %><% if(x == assetComponentNames.length-1){ %>
     <%= assetComponentNames[x] %><%}else{%><%= assetComponentNames[x] %>,<% } %>
@@ -29,18 +37,17 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    HttpModule,
     AppRoutingModule
   ],
   providers: [
     Configuration,
     DataService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: NoopInterceptor,
-      multi: true,
-    },
-    CookieService
+    CookieService ,
+   {
+       provide: HTTP_INTERCEPTORS,
+       useClass: NoopInterceptor,
+       multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })
