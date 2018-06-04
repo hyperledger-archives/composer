@@ -18,9 +18,9 @@
 /* tslint:disable:use-host-property-decorator*/
 /* tslint:disable:no-input-rename*/
 /* tslint:disable:member-ordering*/
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Input, Component, Output, EventEmitter } from '@angular/core';
-import { Router, NavigationEnd, NavigationStart, ActivatedRoute } from '@angular/router';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject } from 'rxjs/Rx';
@@ -32,10 +32,9 @@ import { AlertService } from '../basic-modals/alert.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
-import { BusinessNetworkDefinition } from 'composer-common';
+import { BusinessNetworkDefinition, IdCard } from 'composer-common';
 
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
-import { IdCard } from 'composer-common';
+import { DrawerDismissReasons, DrawerService } from '../common/drawer';
 import { LoginComponent } from './login.component';
 
 import * as fileSaver from 'file-saver';
@@ -764,6 +763,10 @@ describe(`LoginComponent`, () => {
             mockIdentityCardService.deleteIdentityCard.should.have.been.calledWith('myCardRef');
             loadIdentityCardsStub.should.have.been.called;
 
+            mockAlertService.busyStatus$.next.should.have.been.calledWith({
+                title: 'Undeploying business network',
+                force: true
+            });
             mockAlertService.successStatus$.next.should.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
         }));

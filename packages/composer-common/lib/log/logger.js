@@ -175,7 +175,17 @@ class Logger {
             }
 
             // use the local version of padding rather than sprintf etc for speed
-            _logger.log(logLevel,callbackData+':'+this.padRight(this.str25,this.className)+':'+this.padRight(this.str25,method+'()'),msg, args);
+            const preamble = callbackData + ':' + this.padRight(this.str25,this.className) + ':' + this.padRight(this.str25,method+'()');
+
+            try {
+                _logger.log(logLevel, preamble, msg, args);
+            } catch(error) {
+                // an error can be thrown if for example using the winsonInjector logger and an argument is
+                // an InvalidRelationship where attempts to get object defined properties (which the winstonInjecttor does)
+                // throws an error.
+                let safeArgs = args.map(arg => arg.toString());
+                _logger.log(logLevel, preamble, msg, safeArgs);
+            }
         }
 
     }
@@ -454,8 +464,8 @@ class Logger {
             let maxfiles = process.env.COMPOSER_LOGFILE_QTY || 100;
 
             let d = new Date();
-            let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1,d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
-            let datestamp = sprintf('%d%02d%02d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()+1);
+            let timestamp = sprintf('%d%02d%02d-%02d%02d%02d-%03d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),d.getHours(),d.getMinutes(),d.getSeconds(),d.getMilliseconds());
+            let datestamp = sprintf('%d%02d%02d',d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate());
             resolvedFilename = resolvedFilename.replace(/DATESTAMP/g, datestamp);
             resolvedFilename = resolvedFilename.replace(/TIMESTAMP/g, timestamp);
             resolvedFilename = resolvedFilename.replace(/PID/g, process.pid);

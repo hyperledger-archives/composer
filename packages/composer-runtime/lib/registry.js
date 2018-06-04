@@ -156,12 +156,17 @@ class Registry extends EventEmitter {
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
      * @param {boolean} [options.forceAdd] Forces adding the object even if it present (default to false)
+     * @param {boolean} [options.noTest] skips application of the testAdd method (default to false)
      */
     async add(resource, options = {}) {
-        const error = await this.testAdd(resource);
-        if (error) {
-            throw error;
+
+        if (!options.noTest){
+            const error = await this.testAdd(resource);
+            if (error) {
+                throw error;
+            }
         }
+
         const id = resource.getIdentifier();
         options = Object.assign({}, baseDefaultOptions, options);
         let object = this.serializer.toJSON(resource, options);

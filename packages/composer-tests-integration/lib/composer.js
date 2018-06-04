@@ -26,6 +26,26 @@ const path = require('path');
 const request = require('request-promise-any');
 const sleep = require('sleep-promise');
 const stripAnsi = require('strip-ansi');
+const axios = require('axios');
+
+const LOG_LEVEL_SILLY = 5;
+const LOG_LEVEL_DEBUG = 4;
+const LOG_LEVEL_VERBOSE = 3;
+const LOG_LEVEL_INFO = 2;
+const LOG_LEVEL_WARN = 1;
+const LOG_LEVEL_ERROR = 0;
+const LOG_LEVEL_NONE = -1;
+
+// Mapping between strings and log levels.
+const _logLevelAsString = {
+    silly: LOG_LEVEL_SILLY,
+    debug: LOG_LEVEL_DEBUG,
+    verbose: LOG_LEVEL_VERBOSE,
+    info: LOG_LEVEL_INFO,
+    warn: LOG_LEVEL_WARN,
+    error: LOG_LEVEL_ERROR,
+    none: LOG_LEVEL_NONE
+};
 
 let generated = false;
 
@@ -422,7 +442,7 @@ class Composer {
         if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
-            let command = cmd;
+            const command = cmd.replace(/\s*[\n\r]+\s*/g, ' ');
             let stdout = '';
             let stderr = '';
             let env = Object.create( process.env );
@@ -911,6 +931,102 @@ class Composer {
 
         }
     }
+
+    /**
+     * Start watching the logs
+     */
+    startWatchingLogs(){
+        console.log('> startWaching');
+        this.getCCLogs();
+        console.log('< startWatching'+this.logPromise);
+    }
+
+    /**
+     * Stop watching the logs by destroying the stream.
+     */
+    async stopWatchingLogs(){
+        console.log(`Stop watching the logs ${this.logStream}`);
+        // first check to see if there is a stream
+        if (this.logStream){
+            this.logStream.destroy();
+        }
+        this.logs = await this.logPromise;
+    }
+
+    /**
+     * @param {String} logLevel the maximum loglevel to check for
+     * @return {Promise} resolved if all go, reject with exception if not
+     */
+    async checkMaximumLogLevel(logLevel){
+
+        let maxLogLevelInt = _logLevelAsString[logLevel.toLowerCase()];
+
+        for (let logEntry of this.logs){
+            let currentLogLevelInt = _logLevelAsString[logEntry.type.toLowerCase()];
+            if (currentLogLevelInt>maxLogLevelInt){
+                throw new Error(`${logEntry.type} is too high.  LogEntry is [${logEntry.type} ${logEntry.method} ${logEntry.file} ${logEntry.msg}]`);
+            }
+        }
+        return('all good');
+
+    }
+
+    /**
+     * This collects the logs from the Docker log collection 'agent'
+     * Logspout is the docket image that is being used to collect them
+     * and make them available over http via a rest api
+
+     */
+    getCCLogs() {
+        // looking for just the chain code containers (prefixed dev-) and for no ANSI colouring
+        let uri = 'http://127.0.0.1:8000/logs/name:dev-*?colors=off';
+
+
+
+        // Streaming the data back
+        this.logPromise = new Promise(async (resolve,reject) => {
+            console.log('Making get request');
+            // GET request for remote image
+            let response = await axios({
+                method:'get',
+                url:uri,
+                responseType:'stream'
+            });
+            let allLogPoints = [];
+            this.logStream = response.data;
+            console.log(`The log stream is ${this.logStream} `);
+            response.data.on('data', (chunk) => {
+                let chunkString= chunk.toString();
+                // strip off the Logspout prefix (the docker image name)
+                // the regex is to just focus on the main logs lines, and not any continuations
+                let line = chunkString.substring(chunkString.indexOf('|')+1);
+
+                if (line.match(/\d\d\d\d-\d\d-\d\d\D\d\d:\d\d:\d\d.*\[.*\]/)){
+
+                    let logPoint={};
+                    // assumes the fixed format of the log messages
+                    logPoint.type = line.substring(36,45).trim();
+                    logPoint.file = line.substring(46,71).trim();
+                    logPoint.method = line.substring(72,98).trim();
+                    logPoint.msg = line.substring(98).trim();
+
+                    allLogPoints.push(logPoint);
+                }
+            });
+
+            // when stream is closed, resolve the promise with all the log points currently captured
+            response.data.on('close',()=>{
+                resolve(allLogPoints);
+            });
+        });
+
+        console.log(`The log promise is ${this.logPromise}`);
+
+
+    }
+
 }
+
+
 
 module.exports = Composer;

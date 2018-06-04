@@ -144,19 +144,19 @@ describe('ProxyConnectionManager', () => {
         });
 
         it('should send a importIdentity call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func).yields(null);
+            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', sinon.match.func).yields(null);
             sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
-            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key')
+            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key')
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
-                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', sinon.match.func);
                     sinon.assert.calledTwice(mockSocket.on);
                 });
         });
 
         it('should handle an error from the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', sinon.match.func).yields(serializedError);
-            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key')
+            mockSocket.emit.withArgs('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', sinon.match.func).yields(serializedError);
+            return connectionManager.importIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key')
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 

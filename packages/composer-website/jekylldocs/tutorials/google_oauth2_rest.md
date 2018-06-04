@@ -220,7 +220,7 @@ composer network ping -c restadmin@trade-network
 
 3. Because we are hosting our REST server in another location with its own specific network IP information, we need to update the connection.json - so that the docker hostnames (from within the persistent REST server instance) can resolve each other's IP addresses.
 
-The one liner below will substitute the 'localhost' addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our 'test' authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.
+The one-liner below will substitute the 'localhost' addresses with docker hostnames and create a new `connection.json` - which goes into the card of our REST administrator. We will also use this custom connection.json file for our 'test' authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.
 
 ```
 sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  < $HOME/.composer/cards/restadmin@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/ 
@@ -248,12 +248,14 @@ myorg/composer-rest-server
 
 This will output the ID of the Docker container eg . `690f2a5f10776c15c11d9def917fc64f2a98160855a1697d53bd46985caf7934` and confirm that the REST server has been indeed started.
 
-2. Check that all is ok with our ocontainer - you can see that it is running using the following commands:
+2. Check that all is ok with our container - you can see that it is running using the following commands:
 
 ```
 docker ps |grep rest
 docker logs rest
 ```
+
+Look for " Browse your REST API at http://localhost:3000/explorer " at the end of the log - and retrace steps (above) if not there.
 
 <h2 class='everybody'> Step 8:  Test the REST APIs are protected and require authorization   </h2>
 
@@ -305,7 +307,7 @@ composer card import -f kcoe.card
 
 sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  < $HOME/.composer/cards/kcoe@trade-network/connection.json  > /tmp/connection.json && cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network/ 
 
-composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+composer card export -f kcoe_exp.card -c kcoe@trade-network ; rm kcoe.card
 ```
 
 These cards can now be imported, then used into the REST client (ie the browser) in the next section.
@@ -326,7 +328,7 @@ These cards can now be imported, then used into the REST client (ie the browser)
 ![REST Server with Access Token](../assets/img/tutorials/auth/rest-server-token.png)
 
 
-While our REST server has authenticated to Google+ OAUTH2.0 service - defined by its project/client scope and using the client credentials set up in the Appendix for our OAUTH2.0 service - we have not actually done anything yet in terms of blockchain identity or using business network cards to interact with our Trade Commodity business network - we will do that next,  using the `jdoe` identity we created earlier.
+While our REST server has authenticated to Google+ OAUTH2.0 service (defined by its project/client scope, and using the client credentials set up in the Appendix for our OAUTH2.0 service), we have not actually done anything yet, in terms of blockchain identity or using business network cards to interact with our Trade Commodity business network - we will do that next,  using the `jdoe` identity we created earlier.
 
 <h2 class='everybody'> Step 11:  Check the Default Wallet and Import the card and set a default Identity  </h2>
 

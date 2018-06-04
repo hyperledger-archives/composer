@@ -22,7 +22,7 @@ module.exports.builder =function (yargs) {
         'newUserId': { alias: 'u', required: false, describe: 'The user ID for the new identity', type: 'string' },
         'participantId': { alias: 'a', required: true, describe: 'The participant to issue the new identity to', type: 'string' },
         'issuer': { alias: 'x', required: false, describe: 'If the new identity should be able to issue other new identities', type: 'boolean' },
-        'option': { alias: 'o', required: false, describe: 'Options that are specific specific to connection. Multiple options are specified by repeating this option', type: 'string' },
+        'option': { alias: 'o', required: false, describe: 'Options that are specific to connection. Multiple options are specified by repeating this option', type: 'string' },
         'optionsFile': { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
         'card': {alias: 'c', required: false, describe: 'Name of the network card to use for issuing', type: 'string'},
         'file': {alias: 'f', required: false, describe: 'The card file name for the new identity', type: 'string' }
