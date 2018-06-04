@@ -51,6 +51,7 @@ const mockResponseConfigService = {
     webonly: true,
     title: 'My Title',
     banner: ['My', 'Banner'],
+    docURL: 'https://doc_url',
     links: {
         docs: 'My Docs',
         tutorial: 'My Tutorial',
@@ -98,6 +99,7 @@ describe('FooterComponent', () => {
             myConfig.webonly = true;
             myConfig.title = 'My Title';
             myConfig.banner = ['My', 'Banner'];
+            myConfig.docURL = 'https://doc_url';
             myConfig.links = {
                 docs: 'My Docs',
                 tutorial: 'My Tutorial',
@@ -142,6 +144,7 @@ describe('FooterComponent', () => {
             myConfig.webonly = true;
             myConfig.title = 'My Title';
             myConfig.banner = ['My', 'Banner'];
+            myConfig.docURL = 'https://doc_url';
             myConfig.links = {
                 docs: 'My Docs',
                 tutorial: 'My Tutorial',
@@ -169,6 +172,7 @@ describe('FooterComponent', () => {
             myConfig.webonly = true;
             myConfig.title = 'My Title';
             myConfig.banner = ['My', 'Banner'];
+            myConfig.docURL = 'https://doc_url';
             myConfig.links = {
                 docs: 'My Docs',
                 tutorial: 'My Tutorial',
