@@ -32,6 +32,11 @@ module.exports = function () {
         return this.composer.checkExistsStrict(folder, table);
     });
 
+    this.Given(/^I start watching the chain code logs/, function () {
+        return this.composer.startWatchingLogs();
+    });
+
+
     this.Given(/^I have saved the secret in file to (.+?)$/, function(alias, cardFile) {
         return this.composer.extractSecret(alias, cardFile);
     });
@@ -45,7 +50,7 @@ module.exports = function () {
     });
 
     this.When(/^I run the following expected (.*?) CLI command/, {timeout: 240 * 1000}, function (condition, table) {
-        let pass = condition === 'pass' ? true : false;
+        const pass = (condition === 'pass');
         return this.composer.runCLI(pass, table);
     });
 
@@ -91,5 +96,13 @@ module.exports = function () {
 
     this.Then(/^A new file matching this regex should be created \/(.+?)\/$/, function (match) {
         return this.composer.checkFileWasCreated(match);
+    });
+
+    this.Then(/^I stop watching the chain code logs$/, function () {
+        return this.composer.stopWatchingLogs();
+    });
+
+    this.Then(/^Then the maximum log level should be (.+?)$/, function (level) {
+        return this.composer.checkMaximumLogLevel(level);
     });
 };

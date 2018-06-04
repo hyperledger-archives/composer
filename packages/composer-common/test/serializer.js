@@ -18,6 +18,7 @@ const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
 const Relationship = require('../lib/model/relationship');
 const Resource = require('../lib/model/resource');
+const Concept = require('../lib/model/concept');
 const Serializer = require('../lib/serializer');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 
@@ -55,6 +56,11 @@ describe('Serializer', () => {
         o String newValue
         }
 
+        concept Address {
+            o String city
+            o String country
+        }
+
         event SampleEvent{
         --> SampleAsset asset
         o String newValue
@@ -90,7 +96,7 @@ describe('Serializer', () => {
         it('should throw if resource not a Resource', () => {
             (() => {
                 serializer.toJSON([{}]);
-            }).should.throw(/only accepts instances of Resource/);
+            }).should.throw(/only accepts/);
         });
 
         it('should throw if the class declaration cannot be found', () => {
@@ -173,6 +179,17 @@ describe('Serializer', () => {
             }).should.throw(/missing required field/);
         });
 
+        it('should serialize a concept', () => {
+            let address = factory.newConcept('org.acme.sample', 'Address');
+            address.city = 'Winchester';
+            address.country = 'UK';
+            const json = serializer.toJSON(address);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.Address',
+                country: 'UK',
+                city: 'Winchester'
+            });
+        });
     });
 
     describe('#fromJSON', () => {
@@ -233,6 +250,18 @@ describe('Serializer', () => {
             resource.timestamp.should.exist;
             resource.asset.should.be.an.instanceOf(Relationship);
             resource.newValue.should.equal('the value');
+        });
+
+        it('should deserialize a valid concept', () => {
+            let json = {
+                $class: 'org.acme.sample.Address',
+                city: 'Winchester',
+                country: 'UK'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Concept);
+            resource.city.should.equal('Winchester');
+            resource.country.should.equal('UK');
         });
 
         it('should throw validation errors if the validate flag is not specified', () => {
