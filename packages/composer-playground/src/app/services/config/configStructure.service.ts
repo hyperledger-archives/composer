@@ -15,6 +15,7 @@ export class Config {
   public webonly: boolean = false;
   public title: string = '';
   public banner: Array<string> = ['', ''];
+  public docURL: string = '';
   public links: object = {
     docs: <string> '',
     tutorial: <string> '',
@@ -33,6 +34,7 @@ export class Config {
     this.webonly = false;
     this.title = 'Hyperledger Composer';
     this.banner = ['Hyperledger', 'Composer Playground'];
+    this.docURL = 'https://hyperledger.github.io/composer/latest';
     this.links = {
       docs: <string> 'https://hyperledger.github.io/composer/latest/introduction/introduction.html',
       tutorial: <string> 'https://hyperledger.github.io/composer/latest/tutorials/playground-tutorial.html',
