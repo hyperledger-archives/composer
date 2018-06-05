@@ -459,7 +459,7 @@ class Composer {
         if (typeof cmd !== 'string') {
             return Promise.reject('Command passed to function was not a string');
         } else {
-            let command = cmd;
+            const command = cmd.replace(/\s*[\n\r]+\s*/g, ' ');
             let stdout = '';
             let stderr = '';
             let env = Object.create(process.env);

@@ -25,7 +25,7 @@ Options:
   -v, --version              Show version number  [boolean]
   --archiveFile, -a  The business network archive file name  [string] [required]
   --card, -c         The cardname to use to install the network  [string] [required]
-  --option, -o       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O  A file containing options that are specific to connection  [string]  
 ```
 

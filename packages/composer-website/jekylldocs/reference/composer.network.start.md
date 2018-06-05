@@ -16,7 +16,7 @@ Before using this command, read the topic [Deploying and Updating Business Netwo
 _Please Note_: You **must** first install the business network to the {{site.data.conrefs.hlf_full}} peers by using the `composer network install` command.
 
 ```
-composer network start --networkName <business-network-name> --networkVersion <business-network-version> --networkAdmin <admin-name> --networkAdminEnrollSecret adminpw --card <peer-admin-card> --file <admin-card-file-name>
+composer network start --networkName <business-network-name> --networkVersion <business-network-version> --networkAdmin <admin-name> --networkAdminEnrollSecret <enroll-secret> --card <peer-admin-card> --file <admin-card-file-name>
 ```
 
 ## Considerations
@@ -31,7 +31,7 @@ Options:
   --networkName, -n                  Name of the business network to start  [required]
   --networkVersion, -V               Version of the business network to start  [required]
   --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
-  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o                       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
   --networkAdmin, -A                 The identity name of the business network administrator  [string] [required]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]
