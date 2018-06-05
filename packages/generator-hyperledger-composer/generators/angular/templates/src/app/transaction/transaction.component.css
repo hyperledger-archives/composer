@@ -12,9 +12,10 @@
  * limitations under the License.
  */
 .container {
-    width: 100%;
-    padding-left: 72px;
-    padding-right: 72px;
+    margin-left: 72px;
+    margin-right: 32px;
+    background-color: #F4F4F4;
+    border-radius: 5px;
 }
 
 .btn-primary {
@@ -126,10 +127,13 @@ label {
 }
 .transaction-title{
     font-family: inherit;
-    font-size: 24px;
+    font-size: 18px;
     color: #4E4E4E;
-    letter-spacing: 0.28px;
+    letter-spacing: 0.21px;
     line-height: 28px;
+    display: inline-block;
+    margin-top: 30px;
+    margin-left: 20px;
 }
 .info{
     font-family: inherit;
@@ -159,6 +163,22 @@ label {
 .plus-svg{
     color: #fff;
     fill: currentColor;
+}
+
+.invoke_cancel {
+    font-size: 14px;
+    color: #6C4CC4;
+    letter-spacing: 0.2px;
+    float: right;
+    margin-top: 30px;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 32px;
+}
+
+.invokeTransactionBtn {
+    float: right;
+    margin: 32px;
 }
 
 /***.transaction-properties:hover, .transaction-properties:hover span{  
