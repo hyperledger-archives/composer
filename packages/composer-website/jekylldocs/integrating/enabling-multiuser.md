@@ -36,7 +36,7 @@ For example, here is the command for the business network that is deployed as pa
 
     composer-rest-server -c admin@my-network -m true
 
-The `-m true` argument automatically enables REST API authentication. You can alternatively supply both arguments, `-a true -m true`, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.
+The `-m true` argument automatically enables REST API authentication. You can alternatively supply both arguments, `-a true -m true`, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism. The environment variable `COMPOSER_MULTIUSER` can be set to `true` or `false` inplace of using `-m` on the command line. 
 
 Now, navigate to the REST API explorer at [http://localhost:3000/explorer/](http://localhost:3000/explorer/). If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an `A business network card has not been specified` error message.
 

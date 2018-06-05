@@ -16,7 +16,7 @@ Before using this command, read the topic [Deploying and Updating Business Netwo
 _Please Note_: You **must** first install the business network to the {{site.data.conrefs.hlf_full}} peers by using the `composer network install` command.
 
 ```
-composer network start --networkName <business-network-name> --networkVersion <business-network-version> --networkAdmin <admin-name> --networkAdminEnrollSecret adminpw --card <peer-admin-card> --file <admin-card-file-name>
+composer network start --networkName <business-network-name> --networkVersion <business-network-version> --networkAdmin <admin-name> --networkAdminEnrollSecret <enroll-secret> --card <peer-admin-card> --file <admin-card-file-name>
 ```
 
 ## Considerations
