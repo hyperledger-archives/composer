@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-// import { TransactionComponent } from './Transaction/Transaction.component'
+// import { TransactionComponent } from './transaction_logic/transaction.logic.component'
 import { HomeComponent } from './home/home.component';
 <% for(var x=0;x<assetComponentNames.length;x++){ %>
 import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= assetList[x].name %>.component';<% } %>
 
 <% for(var x=0;x<transactionComponentNames.length;x++){ %>
   import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.transaction';<% } %>
-  
+
 
 const routes: Routes = [
     // { path: 'transaction', component: TransactionComponent },

@@ -58,7 +58,7 @@ module.exports = yeoman.Base.extend({
 
     prompting: function () {
         console.log('Welcome to the Hyperledger Composer Angular project generator');
-        
+
 
         return this.prompt([{
             type: 'confirm',
@@ -320,13 +320,13 @@ module.exports = yeoman.Base.extend({
 
             assetList.forEach((asset) => { assetComponentNames.push(asset.name + 'Component'); });
 
-            transactionList.forEach((transaction) => { transactionServiceNames.push(transaction.name + 'Service'); });
+            transactionList.forEach((transaction) => { transactionServiceNames.push(transaction.name + 'LogicService'); });
 
-            transactionList.forEach((transaction) => { transactionComponentNames.push(transaction.name + 'Component'); });
+            transactionList.forEach((transaction) => { transactionComponentNames.push(transaction.name + 'LogicComponent'); });
 
 
             let model = this._generateTemplateModel();
-            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|Transaction)*'), this.destinationPath(), model);
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|transaction_logic)*'), this.destinationPath(), model);
             this.fs.move(this.destinationPath('_dot_angular-cli.json'), this.destinationPath('.angular-cli.json'));
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
@@ -348,34 +348,34 @@ module.exports = yeoman.Base.extend({
                 var namepspacesMap = orangeUtils.fillNamespaceMap([participantList, conceptList,transactionList], assetList);
 
                 this.fs.copyTpl(
-                    this.templatePath('src/app/Transaction/Transaction.component.ts'),
+                    this.templatePath('src/app/transaction_logic/transaction.logic.component.ts'),
                     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.transaction.ts'), {
                         currentTransaction: transactionList[x], namespaces: namepspacesMap
                     }
                 );
 
                 this.fs.copyTpl(
-                    this.templatePath('src/app/Transaction/Transaction.component.html'),
+                    this.templatePath('src/app/transaction_logic/transaction.logic.component.html'),
                     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.transaction.html'), {
                         currentTransaction: transactionList[x], properties: transactionList[x].properties, name : transactionList[x].name
                     }
                 );
 
                 this.fs.copyTpl(
-                    this.templatePath('src/app/Transaction/Transaction.service.ts'),
+                    this.templatePath('src/app/transaction_logic/transaction_logic.service.ts'),
                     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.service.ts'), {
                         transactionName: transactionList[x].name, namespace: transactionList[x].fqn, apiNamespace: apiNamespace
                     }
                 );
                 // this.fs.copyTpl(
-                //     this.templatePath('src/app/Transaction/Transaction.component.spec.ts'),
+                //     this.templatePath('src/app/transaction_logic/transaction.logic.component.spec.ts'),
                 //     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.spec.ts'), {
                 //         assetName: assetList[x].name
                 //     }
                 // );
 
                 // this.fs.copyTpl(
-                //     this.templatePath('src/app/Transaction/Transaction.component.css'),
+                //     this.templatePath('src/app/transaction_logic/transaction.logic.component.css'),
                 //     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.css'), {
                 //         styling: '{}'
                 //     }

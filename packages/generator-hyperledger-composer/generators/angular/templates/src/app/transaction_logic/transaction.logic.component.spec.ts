@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { TransactionComponent } from './Transaction.component';
+import { TransactionComponent } from './transaction.logic.component';
 
 describe('TransactionComponent', () => {
   let component: TransactionComponent;

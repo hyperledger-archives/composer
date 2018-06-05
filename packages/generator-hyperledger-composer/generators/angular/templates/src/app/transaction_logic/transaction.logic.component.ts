@@ -1,14 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { <%= currentTransaction.name %>Service } from './<%= currentTransaction.name %>.service';
+import { <%= currentTransaction.name %>LogicService } from './<%= currentTransaction.name %>.logic.service';
 import 'rxjs/add/operator/toPromise';
 @Component({
-	selector: 'app-<%= currentTransaction.name %>',
-	templateUrl: './<%= currentTransaction.name %>.transaction.html',
-//	styleUrls: ['./<%= currentTransaction.name %>.transaction.css'],
-  providers: [<%= currentTransaction.name %>Service]
+	selector: 'app-<%= currentTransaction.name %>logic',
+	templateUrl: './<%= currentTransaction.name %>.logic.transaction.html',
+//	styleUrls: ['./<%= currentTransaction.name %>.logic.transaction.css'],
+  providers: [<%= currentTransaction.name %>LogicService]
 })
-export class <%= currentTransaction.name %>Component implements OnInit {
+export class <%= currentTransaction.name %>LogicComponent implements OnInit {
 
   myForm: FormGroup;
   transaction = {}
@@ -29,9 +29,9 @@ export class <%= currentTransaction.name %>Component implements OnInit {
           "$class" : <% printnameSpace(transaction) %>,
       	   <% for ( let q = 0 ; q < transaction.properties.length; q++) { %>
 				<% if (q === transaction.properties.length - 1){ %>
-					
+
 					<% if (transaction.properties[q].array === true || transaction.properties[q].isArray === true) { %>
-						
+
 						<% if (transaction.properties[q].properties === undefined) { %>
 							<%= transaction.properties[q].name %> : [ "" ]
 						<% } else { %>
@@ -40,17 +40,17 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 
                     <% } else { %>
 
-                           
+
             			<% if (transaction.properties[q].properties === undefined) { %>
             				<%= transaction.properties[q].name %> : ""
             			<% } else { %>
             				<%= transaction.properties[q].name %> : { <% recOnProperties(transaction.properties[q])  %> }
-            			<% } %> 
+            			<% } %>
 
                     <% } %>
         		<% } else { %>
 					<% if (transaction.properties[q].array === true || transaction.properties[q].isArray === true) { %>
-						
+
 						<% if (transaction.properties[q].properties === undefined) { %>
 							<%= transaction.properties[q].name %> : [ "" ],
 						<% } else { %>
@@ -74,7 +74,7 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 
 
 
-	constructor( private http: <%= currentTransaction.name %>Service ){}
+	constructor( private http: <%= currentTransaction.name %>LogicService ){}
 
 	submitTransction(){
 		console.log(this.transaction)
@@ -103,7 +103,7 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 		<% } %>
 	<% } %>
 
-	<% function printWithDotTransaction(currentTransaction) { %> 
+	<% function printWithDotTransaction(currentTransaction) { %>
 
 		<% if (currentTransaction.properties === undefined){ %>
 
@@ -136,9 +136,9 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 							<% printTransaction(currentTransaction.properties[x]) %>
 						]
                     <% }else { %>
-                    
+
 						<% printTransaction(currentTransaction.properties[x]) %>
-                        
+
                     <% } %>
 				<% } else { %>
                     <% if (currentTransaction.properties[x].array === true) { %>
@@ -147,10 +147,10 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 
 						]
 					<% } else { %>
-						
+
 						<% printWithDotTransaction(currentTransaction.properties[x]) %>
 
-					
+
                     <% } %>
 				<% } %>
 			<% } %>
