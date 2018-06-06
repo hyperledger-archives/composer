@@ -21,7 +21,7 @@ npm-debug.log*
 pids
 *.pid
 *.seed
-
+.vscode
 # License files
 license-*.txt
 
