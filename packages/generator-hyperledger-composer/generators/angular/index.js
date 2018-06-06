@@ -692,7 +692,8 @@ module.exports = yeoman.Base.extend({
                             } else if (property.constructor.name === 'RelationshipDeclaration') {
                                 tempList.push({
                                     'name': property.getName(),
-                                    'type': property.getType()
+                                    'type': property.getType(),
+                                    'isRelational' : true
                                 });
                             } else {
                                 console.log('Unknown property constructor name: ' + property);

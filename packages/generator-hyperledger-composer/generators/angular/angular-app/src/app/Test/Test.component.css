@@ -1,0 +1,177 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.container {
+    width: 100%;
+    padding-left: 72px;
+    padding-right: 72px;
+}
+
+.btn-primary {
+    background: #844AE4;
+    border-radius: 4px;
+    border: 0px;
+    font-size: 14px;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    line-height: 10px;
+    height: 40px;
+    width: 153px;
+    float: right;
+    margin-top: 5%;
+}
+
+.table > thead > tr > th {
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.table > thead > tr > th.info {
+    background: #FFF;
+}
+.modal-title {
+    font-family: inherit;
+    font-size: 24px;
+    color: #4E4E4E;
+    letter-spacing: 0.28px;
+    line-height: 28px;
+    padding-top: 15px;
+}
+.modal-intro {
+    font-family: inherit;
+    font-size: 14px;
+    color: #545454;
+    line-height: 20px;
+    padding-top: 15px;
+
+}
+.modal-header{
+    background: #F4F4F4;
+    border-radius: 5px;
+    border-bottom: 1px solid #F4F4F4;
+}
+.modal-body{
+    background: #F4F4F4;
+    border-radius: 5px;
+}
+.modal-footer{
+    background: #F4F4F4;
+    border-radius: 5px;
+    border-top: 1px solid #f4f4f4
+}
+.form-control{
+    color: #393939;
+    height: 42px;
+    border: 1px solid #ffffff;
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.075); 
+    border-radius: 4px;
+    resize: none;
+
+}
+label {
+    color: #545454;
+}
+.modal-content{
+    margin-top: 15%;
+    margin-bottom: 15%;
+    box-shadow: 0 0px 0px;
+    border: 0px;
+
+}
+.btn-default {
+    color: #844EF4;
+    background-color: #ffffff;
+    border-color: #844EF4;
+    border-radius: 4px;
+    width: 76px;
+    height: 40px;
+}
+.btn-danger{
+    color: #ffffff;
+    background-color: #844AE4;
+    border-color: #844AE4;
+    border-radius: 4px;
+    width: 76px;
+    height: 40px;
+}
+.btn-danger:focus{
+    background-color: #4D21A8;
+    border-color: #4D21A8;
+}
+.btn-success {
+    color: #ffffff;
+    background-color: #844AE4;
+    border-color: #844AE4;
+    border-radius: 4px;
+    width: 76px;
+    height: 40px;
+}
+.btn-success:focus{
+    background-color: #4D21A8;
+    border-color: #4D21A8;
+}
+.btn-default:focus{
+    background-color: #fff;
+    border-color: #4d21a8;  
+    color: #4d21a8;      
+}
+.asset-title{
+    font-family: inherit;
+    font-size: 24px;
+    color: #4E4E4E;
+    letter-spacing: 0.28px;
+    line-height: 28px;
+}
+.info{
+    font-family: inherit;
+    font-size: 14px;
+    color: #343C41;
+    letter-spacing: 0.2px;
+    line-height: 24px;
+}
+.info-actions{
+    font-family: inherit;
+    font-size: 14px;
+    color: #343C41;
+    letter-spacing: 0.2px;
+    line-height: 24px;
+    padding-left: 24px;
+}
+.asset-properties{
+    font-family: inherit;
+    font-size: 14px;
+    color: #848484;
+    line-height: 42px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+.plus-svg{
+    color: #fff;
+    fill: currentColor;
+}
+
+/***.asset-properties:hover, .asset-properties:hover span{  
+overflow: visible;
+position: relative;
+ make readable design 
+background-color: #FFFFFF;
+border: 1px solid #FFFFFF;
+border-radius: 4px;
+padding: 3px;
+/* compensate padding and border size to avoid jerking 
+margin-left: -4px;
+}
+***/
+
+

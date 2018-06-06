@@ -69,7 +69,7 @@ module.exports = {
         for (let q = 0 ; q < tranasctions.length ; q++){
             for (let qq = 0 ; qq < tranasctions[q].properties.length; qq++){
 
-                if (tranasctions[q].properties[qq].constructor.name === 'RelationshipDeclaration'){ continue; }
+                if (tranasctions[q].properties[qq].isRelational === true || tranasctions[q].properties[qq].constructor.name === 'RelationshipDeclaration' ){ continue; }
 
                 for (let vl in conceptList){
                     if (tranasctions[q].properties[qq].type === conceptList[vl].name){
