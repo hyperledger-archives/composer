@@ -101,7 +101,6 @@ module.exports = yeoman.Base.extend({
                 store: true,
                 validate: Util.validateDescription
             },
-
             {
                 type: 'input',
                 name: 'authorName',
@@ -294,9 +293,9 @@ module.exports = yeoman.Base.extend({
 
         return this._optionOrPrompt(liveConnectQuestion)
             .then((answers) => {
-                if (typeof (answers.liveNetwork) === 'string' && answers.liveNetwork === 'true') {
+                if (typeof(answers.liveNetwork) === 'string' && answers.liveNetwork === 'true') {
                     this.liveNetwork = true;
-                } else if (typeof (answers.liveNetwork) === 'string' && answers.liveNetwork === 'false') {
+                } else if (typeof(answers.liveNetwork) === 'string' && answers.liveNetwork === 'false') {
                     this.liveNetwork = false;
                 } else {
                     this.liveNetwork = answers.liveNetwork;
@@ -379,6 +378,9 @@ module.exports = yeoman.Base.extend({
                     });
             } else {
                 fs.readFile(this.fileName, (err, buffer) => {
+                    if (err) {
+                        throw err;
+                    }
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;
@@ -412,6 +414,7 @@ module.exports = yeoman.Base.extend({
             namespaceList = modelManager.getNamespaces();
             enumerations = modelManager.getEnumDeclarations();
 
+            // ASSET
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -481,7 +484,6 @@ module.exports = yeoman.Base.extend({
                     });
             });
 
-            
             assetList.forEach((asset) => {
                 assetServiceNames.push(asset.name + 'Service');
             });
@@ -490,6 +492,7 @@ module.exports = yeoman.Base.extend({
                 assetComponentNames.push(asset.name + 'Component');
             });
 
+            // Participant
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -567,6 +570,7 @@ module.exports = yeoman.Base.extend({
                 participantComponentNames.push(participant.name + 'Component');
             });
 
+            // CONCEPT
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -641,6 +645,7 @@ module.exports = yeoman.Base.extend({
                 conceptComponentNames.push(concept.name + 'Component');
             });
 
+            // TRNASCTION AND TRANSACTION LOGIC
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -810,7 +815,6 @@ module.exports = yeoman.Base.extend({
                     }
                 );
             }
-
             for (let x = 0; x < transactionList.length; x++) {
                 this.fs.copyTpl(
                     this.templatePath('src/app/transaction/transaction.component.ts'),
@@ -1005,8 +1009,8 @@ module.exports = yeoman.Base.extend({
             participantServiceNames: participantServiceNames,
             participantComponentNames: participantComponentNames,
             transactionList: transactionList,
-            transactionComponentNames: transactionComponentNames,
-            transactionServiceNames: transactionServiceNames,
+            transactionComponentNames : transactionComponentNames,
+            transactionServiceNames : transactionServiceNames,
             networkIdentifier: networkIdentifier,
             connectionProfileName: connectionProfileName,
             enrollmentId: enrollmentId,

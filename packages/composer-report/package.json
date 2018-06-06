@@ -1,0 +1,92 @@
+{
+  "name": "composer-report",
+  "version": "0.19.8",
+  "description": "Hyperledger Composer diagnostics",
+  "bin": "bin/cmd.js",
+  "main": "lib/report.js",
+  "scripts": {
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "postlint": "npm run licchk",
+    "licchk": "license-check-and-add",
+    "test": "nyc mocha --recursive -t 10000",
+    "mocha": "mocha --recursive -t 10000",
+    "nyc": "nyc mocha --recursive -t 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperledger/composer.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "chai-things": "0.2.0",
+    "eslint": "3.17.1",
+    "license-check-and-add": "2.3.1",
+    "mocha": "3.4.2",
+    "nyc": "11.1.0",
+    "sinon": "2.3.8"
+  },
+  "dependencies": {
+    "moment": "2.19.3",
+    "node-report": "2.2.1",
+    "tar": "4.3.0"
+  },
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "LICENSE.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      "coverage",
+      "node_modules",
+      ".nyc-output",
+      "out"
+    ],
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".yml"
+    ],
+    "insert_license": false,
+    "license_formats": {
+      "js": {
+        "prepend": "/*",
+        "append": " */",
+        "eachLine": {
+          "prepend": " * "
+        }
+      },
+      "editorconfig": {
+        "eachLine": {
+          "prepend": "# "
+        }
+      },
+      "md": {
+        "file": "../../markdown-license.txt"
+      }
+    }
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "out/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
+  }
+}

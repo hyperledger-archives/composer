@@ -33,19 +33,21 @@ The `statement` property contains the defining rules of the query, and can have 
 - `SKIP` is an optional operator which defines the number of results to skip.
 - `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
 
+> Note: If you're using {{site.data.conrefs.hlf_full}}  {{site.data.conrefs.hlf_latest}} or below, the `LIMIT` and `SKIP` won't work as there is an issue passing the params to couchdb from fabric. Reference to {{site.data.conrefs.hlf_full}} issue : [FAB-2809](https://jira.hyperledger.org/browse/FAB-2809)
+
 #### Example Query
 
 This query returns all drivers from the default registry whose age is less than the supplied parameter _or_ whose firstName is "Dan", as long as their lastName is not "Selman".
 
-In practical terms, this query returns all drivers who do not have the lastName "Selman", as long as they are under a defined age, or have the firstName Dan, and orders the results by lastName ascending and firstName descending.
+In practical terms, this query returns all drivers who do not have the lastName "Selman", as long as they are under a defined age, or have the firstName Dan, and orders the results by lastName ascending and firstName ascending.
 
 ```
 query Q20{
-    description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered by lastname, firstname"
+    description: "Select all drivers younger than the supplied age parameter or who are named Dan and whose lastName is not Selman, ordered from A-Z by firstName"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE ((age < _$ageParam OR firstName == 'Dan') AND (lastName != 'Selman'))
-                ORDER BY [lastName ASC, firstName DESC]
+                ORDER BY [lastName ASC, firstName ASC]
 }
 ```
 
@@ -57,8 +59,22 @@ Queries can be written with undefined parameters that must be supplied when runn
 query Q17 {
     description: "Select all drivers aged older than PARAM"
     statement:
-        SELECT org.acme.Driver
+        SELECT org.example.Driver
             WHERE (_$ageParam < age)
+}
+```
+
+#### Sample Contains queries
+
+The `CONTAINS` filter is used to search a array field in a node. The below query returns all the drivers who earned the punctual and steady-driving badges. Considering that the badges is of array type in driver participant.
+
+
+```
+query Q18 {
+    description: "Select all drivers who has the following interests"
+    statement:
+        SELECT org.example.Driver
+            WHERE (badges CONTAINS ['punctual', 'steady-driving'])
 }
 ```
 

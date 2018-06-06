@@ -30,8 +30,8 @@ class Export {
     */
     static handler(args) {
 
-        const cardName = args.name;
-        const fileName = args.file || (cardName + '.card');
+        const cardName = args.card;
+        const fileName = cmdUtil.sanitizeCardFileName(args.file || cardName);
 
         const adminConnection = cmdUtil.createAdminConnection();
         return adminConnection.exportCard(cardName)

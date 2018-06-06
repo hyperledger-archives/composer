@@ -15,7 +15,7 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
+
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const EventDeclaration = require('composer-common').EventDeclaration;
@@ -25,7 +25,7 @@ const TransactionDeclaration = require('composer-common').TransactionDeclaration
 const thenifyAll = require('thenify-all');
 const IdCard = require('composer-common').IdCard;
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
+
 require('chai').should();
 const fs = thenifyAll(require('fs'));
 
@@ -86,8 +86,7 @@ class Composer {
      * error.
      */
     initialize () {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        return this.createAdminConnection()
+        return this.createAdminConnection({ wallet : { type: 'composer-wallet-inmemory' } })
             .then((adminConnection) => {
                 this.adminConnection = adminConnection;
             });
@@ -121,10 +120,10 @@ class Composer {
                 this.introspector = this.businessNetworkDefinition.getIntrospector();
                 this.serializer = this.businessNetworkDefinition.getSerializer();
 
-                return this.adminConnection.install(this.businessNetworkDefinition.getName());
+                return this.adminConnection.install(this.businessNetworkDefinition);
             })
             .then(() => {
-                return this.adminConnection.start(this.businessNetworkDefinition, {
+                return this.adminConnection.start(this.businessNetworkDefinition.getName(), this.businessNetworkDefinition.getVersion(), {
                     networkAdmins : [{
                         userName : 'admin',
                         enrollmentSecret  : 'adminpw'
@@ -173,7 +172,7 @@ class Composer {
      * error.
      */
     createAdminConnection () {
-        const adminConnection = new AdminConnection({fs : bfs_fs});
+        const adminConnection = new AdminConnection();
         let card = this.createBusinessNetworkCard();
         return adminConnection.importCard('PeerAdminCard', card)
             .then(() => {
@@ -214,7 +213,8 @@ class Composer {
      * error.
      */
     createBusinessNetworkConnection (cardName) {
-        const businessNetworkConnection = new BusinessNetworkConnection({fs : bfs_fs});
+
+        const businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.on('event', (event) => {
 
             this.events.push(event);
@@ -550,7 +550,7 @@ class Composer {
             })
             .then((hasCard) => {
                 if (!hasCard) {
-                    throw new Error('no such card for ' + userID);
+                    throw new Error('has not been registered');
                 }
                 return this.businessNetworkConnection.disconnect();
             })
@@ -645,18 +645,38 @@ class Composer {
      * @return {*} correctly typed value.
      */
     convertValueToType (value, type) {
-        switch (type) {
-        case 'Boolean':
-            return new Boolean(value).valueOf();
-        case 'DateTime':
-            return new Date(value);
-        case 'Double':
-            return Number.parseFloat(value);
-        case 'Integer':
-        case 'Long':
-            return Number.parseInt(value);
-        default:
-            return value;
+        try {
+            switch (type) {
+            case 'Boolean':
+                if (value !== 'true' && value !== 'false') {
+                    throw new Error();
+                }
+                return value === 'true';
+            case 'DateTime': {
+                const result = new Date(value);
+                result.toISOString();
+                return result;
+            }
+            case 'Double': {
+                const result = Number.parseFloat(value);
+                if (isNaN(result)) {
+                    throw new Error();
+                }
+                return result;
+            }
+            case 'Integer':
+            case 'Long': {
+                const result = Number.parseInt(value);
+                if (isNaN(result)) {
+                    throw new Error();
+                }
+                return result;
+            }
+            default:
+                return value;
+            }
+        } catch (error) {
+            throw new Error(`Invalid value "${value}" for type "${type}"`);
         }
     }
 

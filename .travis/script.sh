@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # Exit on first error, print all commands.
 set -ev
@@ -23,32 +36,35 @@ if [ "${DOCS}" != "" ]; then
     # Change into the docs directory.
     cd "${DIR}/packages/composer-website"
 
-    # Build the installers.
-    ./build-installers.sh
-
     # Build the documentation.
     npm run doc
 
     if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
 
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
             npm run full:unstable
             npm run linkcheck:unstable
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
             npm run full:next-unstable
             npm run linkcheck:next-unstable
+        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
+            npm run full:v0.16-unstable
+            npm run linkcheck:v0.16-unstable
         else 
             _exit "Unknown build focus" 1 
         fi
 
     elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
 
-        if [[ "${BUILD_FOCUS}" = "latest" ]]; then
+        if [[ "${BUILD_FOCUS}" == "latest" ]]; then
             npm run full:latest
             npm run linkcheck:latest
-        elif [[ "${BUILD_FOCUS}" = "next" ]]; then
+        elif [[ "${BUILD_FOCUS}" == "next" ]]; then
             npm run full:next
             npm run linkcheck:next
+        elif [[ "${BUILD_FOCUS}" == "v0.16" ]]; then
+            npm run full:v0.16
+            npm run linkcheck:v0.16
         else 
             _exit "Unknown build focus" 1 
         fi
@@ -65,7 +81,7 @@ elif [ "${FVTEST}" != "" ]; then
     # append to the previous line to get duration timestamps....  | gnomon --real-time=false 
 
 # Are we running playground e2e tests?
-elif [ "${INTEST}" = "e2e" ]; then
+elif [ "${INTEST}" == "e2e" ]; then
 
     # Run the playground e2e tests.
     cd "${DIR}/packages/composer-playground"

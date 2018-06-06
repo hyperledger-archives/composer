@@ -46,9 +46,6 @@
     letter-spacing: 0.28px;
     color: #5D636A;
 }
-.network-name:hover{
-    letter-spacing: 2px;
-}
 
 .navbar-nav > li {
     margin-right: 12px;

@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AdminService } from './admin.service';
@@ -28,6 +41,9 @@ const defaultCardProperties = {
 @Injectable()
 export class IdentityCardService {
 
+    static readonly peerAdminRole = 'PeerAdmin';
+    static readonly channelAdminRole = 'ChannelAdmin';
+
     currentCard: string;
 
     private idCards: Map<string, IdCard> = new Map<string, IdCard>();
@@ -36,11 +52,6 @@ export class IdentityCardService {
 
     constructor(private adminService: AdminService,
                 private localStorageService: LocalStorageService) {
-        Logger.setFunctionalLogger({
-            // tslint:disable-next-line:no-empty
-            log: () => {
-            }
-        });
     }
 
     public getCurrentCardRef(): string {
@@ -69,6 +80,36 @@ export class IdentityCardService {
         });
 
         return cardRefs;
+    }
+
+    public getAdminCardRef(qualifiedProfileName: string, role: string): string {
+        let result;
+
+        if (this.currentCard && this.getCurrentIdentityCard().getRoles().includes(role) && this.getQualifiedProfileName(this.getCurrentIdentityCard().getConnectionProfile()) === qualifiedProfileName) {
+            // Prefer the current card if it has the required role
+            result = this.getCurrentCardRef();
+        } else {
+            // Otherwise use the first available card with the required role if there is one
+            result = this.getIdentityCardRefsWithProfileAndRole(qualifiedProfileName, role)[0];
+        }
+
+        return result;
+    }
+
+    public canDeploy(qualifiedProfileName: string): boolean {
+        let peerCardRef = this.getIdentityCardRefsWithProfileAndRole(qualifiedProfileName, 'PeerAdmin')[0];
+
+        if (!peerCardRef) {
+            return false;
+        }
+
+        let channelCardRef = this.getIdentityCardRefsWithProfileAndRole(qualifiedProfileName, 'ChannelAdmin')[0];
+
+        if (!channelCardRef) {
+            return false;
+        }
+
+        return true;
     }
 
     public getIdentityCardForExport(cardRef: string): Promise<IdCard> {

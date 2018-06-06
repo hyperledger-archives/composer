@@ -1,4 +1,16 @@
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 # This is the changelog for Hyperledger Composer. It lists all significant changes to
 # functionality and public API.
 #
@@ -11,6 +23,30 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.19.1 {f6814276d318be3b4ed0f6212bc77c6f} 2018-04-06
+- Enable simple JSON.stringify serialization of resources
+
+Version 0.18.2 {354087f4e85b14e02e7c8284cca2583f} 2018-03-20
+- Add CouchDB index compiler
+
+Version 0.18.0 {fe7cf822029dc013cdf3c272bd9d2a59} 2018-02-28
+- Updates for cloud wallets
+- File system and Memory cardstore gone as explicit externals
+
+Version 0.17.7 {9b23cddaef6ca9a26d5515dafbec861e} 2018-02-22
+- Added CertificateUtil to public API
+
+Version 0.17.6 {9e7162818f534ebe111e74b98449f36e} 2018-02-21
+- Add option to disable dependency processing in BusinessNetworkDefinition.fromDirectory
+
+Version 0.17.5 {e7ec4335f8faa9e7b3845dddc4adc7ee} 2018-02-13
+- Added Certificate to public API
+- Add BusinessNetworkDefinition.toDirectory function
+
+Version 0.17.3 {205addc32fc3286a787edec70c6a952f} 2018-01-30
+- Added ability to load models from URL
+
 Version 0.15.2 {fcb7a3866eb7f9d0b3c46924ae932824} 2017-11-22
 - Extend ParseException with file name
 - Make private number of constructors and removed exceptions from formally documented API

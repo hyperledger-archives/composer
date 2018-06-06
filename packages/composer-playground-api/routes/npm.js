@@ -39,17 +39,10 @@ const LOG = Logger.getLog('NPM');
 const sampleList = [{name : 'basic-sample-network'}];
 const fs = require('fs');
 
-let router = null;
-
 module.exports = (app, testMode) => {
 
-    // Did we already create a router?
-    if (router !== null) {
-        return router;
-    }
-
     // Create a new router.
-    router = express.Router();
+    const router = express.Router();
 
     app.use('/', router);
 
@@ -307,7 +300,7 @@ module.exports = (app, testMode) => {
 
 
         if (testMode) {
-            let readStream = fs.createReadStream(__dirname + '/../basic-sample-network-0.1.9.tgz');
+            let readStream = fs.createReadStream(__dirname + '/../basic-sample-network-0.2.2.tgz');
 
             return downloadSample(readStream, res);
         }

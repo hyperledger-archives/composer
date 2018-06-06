@@ -54,13 +54,13 @@ Lists all cards currently in your wallet: [composer card list](./composer.card.l
 
 ## Business Network management
 
-`composer network deploy`
+`composer network install`
 
-Deploy a Business Network Definition: [composer network deploy](./composer.network.deploy.html)
+Install a business network archive to an organization's {{site.data.conrefs.hlf_full}} peer(s): [composer network install](./composer.network.install.html)
 
-`composer network undeploy`
+`composer network start`
 
-Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.html)
+Start an already installed business network: [composer network start](./composer.network.start.html)
 
 `composer network list`
 
@@ -74,26 +74,9 @@ Return or update the log level for the composer runtime: [`composer network logl
 
 Test the connection to a deployed a Business Network: [composer network ping](./composer.network.ping.html)
 
-`composer network update`
-
-Update a deployed Business Network: [composer network update](./composer.network.update.html)
-
 `composer network upgrade`
 
 Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.html)
-
-`composer network start`
-
-Deploy a business network archive to a {{site.data.conrefs.hlf_full}} peer that already has the {{site.data.conrefs.composer_full}} runtime installed: [composer network start](./composer.network.start.html)
-
-`composer runtime install`
-
-Install the {{site.data.conrefs.composer_full}} runtime to a {{site.data.conrefs.hlf_full}} peer: [composer runtime install](./composer.runtime.install.html)
-
-`composer network upgrade`
-
-Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.md)
-
 
 ## Participant and Identity management
 
@@ -117,8 +100,24 @@ List all identities in a business network: [composer identity list](./composer.i
 
 Revoke an identity from a participant: [composer identity revoke](./composer.identity.revoke.html)
 
+## Support diagnostics
+
+`composer report`
+
+Create a diagnostic report: [composer report](./composer.report.html)
+
 ## Transaction execution
 
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.html)
+
+## {{site.data.conrefs.composer_short}} Generator
+
+`composer generator create`
+
+Create files useful for application development: [composer generator create](./composer.generator.create.html)
+
+`composer generator docs`
+
+Create documentation for a business network definition: [composer generator docs](./composer.generator.docs.html)

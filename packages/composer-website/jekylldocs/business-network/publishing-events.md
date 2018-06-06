@@ -31,14 +31,14 @@ Before you begin adding events to your business network, you should have a good 
          * @param {org.namespace.BasicEventTransaction} basicEventTransaction
          * @transaction
          */
-        function basicEventTransaction(basicEventTransaction) {
-            var factory = getFactory();
+        async function basicEventTransaction(basicEventTransaction) {
+            let factory = getFactory();
 
-            var basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
+            let basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
             emit(basicEvent);
         }
 
-This transaction creates and emits an event of the `BasicEvent` type as defined in the business network's model file. For more information on the getFactory function, see the [{{site.data.conrefs.composer_short}} API documentation](https://hyperledger.github.io/composer/jsdoc/module-composer-runtime.html#getFactory).
+This transaction creates and emits an event of the `BasicEvent` type as defined in the business network's model file. For more information on the getFactory function, see the [{{site.data.conrefs.composer_short}} API documentation](../jsdoc/module-composer-runtime.html#getFactory).
 
 ## What next?
 

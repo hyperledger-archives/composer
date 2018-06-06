@@ -15,24 +15,28 @@
 'use strict';
 
 const LoggingService = require('composer-runtime').LoggingService;
+const Logger = require('composer-common').Logger;
 const NodeLoggingService = require('../lib/nodeloggingservice');
-const MockStub = require('./mockstub');
+const ChaincodeStub = require('fabric-shim/lib/stub');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+let chaiSubset = require('chai-subset');
+chai.use(chaiSubset);
 
 describe('NodeLoggingService', () => {
 
     let loggingService;
     let sandbox, mockStub;
-    let outputStub;
+
 
     beforeEach(() => {
         loggingService = new NodeLoggingService();
         sandbox = sinon.sandbox.create();
-        mockStub = sinon.createStubInstance(MockStub);
+        mockStub = sinon.createStubInstance(ChaincodeStub);
+        mockStub.putState.resolves();
         mockStub.getTxID.returns('1548a95f57863bce4566');
         loggingService.stub = mockStub;
         mockStub.putState.resolves();
@@ -50,279 +54,131 @@ describe('NodeLoggingService', () => {
 
     });
 
-    describe('#logCritical', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+    describe('#setLoggerCfg',()=>{
+        it('should call the putState method',()=>{
+            let cfg = {debug:'everything'};
+            loggingService.setLoggerCfg(cfg);
+            sinon.assert.calledOnce(mockStub.putState);
+            sinon.assert.calledWith(mockStub.putState,'ComposerLogCfg',Buffer.from(JSON.stringify(cfg)));
+        });
+    });
+
+
+    describe('#getDefaultCfg', () => {
+
+        it('should return the default values', () => {
+            delete  process.env.CORE_CHAINCODE_LOGGING_LEVEL;
+            let value = loggingService.getDefaultCfg();
+            value.debug.should.equal('composer[error]:*');
         });
 
-        it('should call the console logger and log', () => {
-            loggingService.currentLogLevel = 500;  //debug level
-            loggingService.logCritical('doge1');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge1');
-
-            loggingService.currentLogLevel = 0;  //critical
-            loggingService.logCritical('doge');
-            sinon.assert.calledTwice(outputStub);
+        it('should return the default value if the enviroment variable is invalid', () => {
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='wibble';
+            let value = loggingService.getDefaultCfg();
+            value.debug.should.equal('composer[error]:*');
         });
 
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = -1;  //off
-            loggingService.logCritical('doge');
-            sinon.assert.notCalled(outputStub);
+        it('should map fabric container values to valid composer debug strings', () => {
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='CRITICAL';
+            loggingService.getDefaultCfg().debug.should.equal('composer[error]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='ERROR';
+            loggingService.getDefaultCfg().debug.should.equal('composer[error]:*');
+
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='WARNING';
+            loggingService.getDefaultCfg().debug.should.equal('composer[warning]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='NOTICE';
+            loggingService.getDefaultCfg().debug.should.equal('composer[info]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='INFO';
+            loggingService.getDefaultCfg().debug.should.equal('composer[verbose]:*');
+
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL='DEBUG';
+            loggingService.getDefaultCfg().debug.should.equal('composer[debug]:*');
         });
 
     });
 
-    describe('#logDebug', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+    describe('#getLoggerCfg',async  () => {
+
+        it('should default if nothing in state', async () => {
+            loggingService.stub.getState.returns([]);
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({'origin':'default-runtime-hlfv1'});
         });
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  // debug
-            loggingService.logDebug('doge2');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge2');
+        it('should return what was in state',async () => {
+            loggingService.stub.getState.returns(JSON.stringify({batman:'hero'}));
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset({batman:'hero'});
         });
 
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 400; // info
-            loggingService.logDebug('doge');
-            sinon.assert.notCalled(outputStub);
-        });
-
-
-    });
-
-    describe('#logError', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
-        });
-
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500; //debug
-            loggingService.logError('doge3');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge3');
-
-            loggingService.currentLogLevel = 100; //error
-            loggingService.logError('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 0; // critical
-            loggingService.logError('doge');
-            sinon.assert.notCalled(outputStub);
+        it('should have state set by the default logger module ',async ()=>{
+            loggingService.stub.getState.returns(JSON.stringify({origin:'default-logger-module'}));
+            let result = await loggingService.getLoggerCfg();
+            chai.expect(result).to.containSubset(loggingService.getDefaultCfg());
         });
 
     });
 
-    describe('#logInfo', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
+    describe('#initLogging', async  () => {
+
+        it('should set the logging state to the current logger config', async () => {
+            sandbox.stub(Logger, 'setLoggerCfg');
+            sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
+            await loggingService.initLogging(mockStub);
+            sinon.assert.calledOnce(Logger.setLoggerCfg);
+            sinon.assert.calledWith(Logger.setLoggerCfg, 'some config', true);
         });
 
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500; //debug
-            loggingService.logInfo('doge4');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge4');
-
-            loggingService.currentLogLevel = 400; //info
-            loggingService.logInfo('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 300; //notice
-            loggingService.logInfo('doge');
-            sinon.assert.notCalled(outputStub);
-        });
-
-    });
-
-    describe('#logNotice', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
-        });
-
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  //debug
-            loggingService.logNotice('doge5');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge5');
-
-            loggingService.currentLogLevel = 300;  //notice
-            loggingService.logNotice('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 200;  // warning
-            loggingService.logNotice('doge');
-            sinon.assert.notCalled(outputStub);
-        });
-
-    });
-
-    describe('#logWarning', () => {
-        beforeEach(() => {
-            outputStub = sinon.stub(loggingService, '_outputMessage');
-        });
-
-        it('should call the console logger', () => {
-            loggingService.currentLogLevel = 500;  //debug
-            loggingService.logWarning('doge6');
-            sinon.assert.calledOnce(outputStub);
-            sinon.assert.calledWith(outputStub, 'doge6');
-
-            loggingService.currentLogLevel = 200;  //warning
-            loggingService.logWarning('doge');
-            sinon.assert.calledTwice(outputStub);
-        });
-
-        it('should call the console logger but not log', () => {
-            loggingService.currentLogLevel = 100; //error
-            loggingService.logInfo('doge');
-            sinon.assert.notCalled(outputStub);
-        });
-
-
-    });
-
-    describe('#initLogging', () => {
-
-        it('should init logging if not init', () => {
-            let enableStub = sinon.stub(loggingService, '_enableLogging').resolves();
-            return loggingService.initLogging(mockStub)
-                .then(() => {
-                    sinon.assert.calledOnce(enableStub);
-                });
-        });
-
-        it('should no-op if logging already enabled', () => {
-            let enableStub = sinon.stub(loggingService, '_enableLogging').resolves();
-            loggingService.currentLogLevel = 100;
-            return loggingService.initLogging(mockStub)
-                .then(() => {
-                    sinon.assert.notCalled(enableStub);
-                });
-        });
-
-    });
-
-
-    describe('#_enableLogging', () => {
-
-        it('should get logging level from world state', () => {
-            mockStub.getState.resolves('WARNING');
-            return loggingService._enableLogging()
-                .then(() => {
-                    loggingService.currentLogLevel.should.equal(200);
-                });
-        });
-
-        it('should get logging level from env', () => {
-            mockStub.getState.resolves('');
-            process.env.CORE_CHAINCODE_LOGGING_LEVEL = 'DEBUG';
-            return loggingService._enableLogging()
-            .then(() => {
-                loggingService.currentLogLevel.should.equal(500);
-                delete process.env.CORE_CHAINCODE_LOGGING_LEVEL;
-            });
-        });
-
-        it('should default to INFO if no other source', () => {
-            mockStub.getState.resolves('');
-            return loggingService._enableLogging()
-                .then(() => {
-                    loggingService.currentLogLevel.should.equal(400);
-                });
-        });
-
-        it('should default to INFO if getState returns unknown log level', () => {
-            mockStub.getState.resolves('ALEVEL');
-            return loggingService._enableLogging()
-                .then(() => {
-                    loggingService.currentLogLevel.should.equal(400);
-                });
-        });
-
-        it('should default to INFO if env returns unknown log level', () => {
-            mockStub.getState.resolves('');
-            process.env.CORE_CHAINCODE_LOGGING_LEVEL = 'ALEVEL';
-            return loggingService._enableLogging()
-            .then(() => {
-                loggingService.currentLogLevel.should.equal(400);
-                delete process.env.CORE_CHAINCODE_LOGGING_LEVEL;
-            });
-        });
-
-        it('should default to INFO if getState returns an error', () => {
-            mockStub.getState.rejects(new Error('an error'));
-            return loggingService._enableLogging()
-            .then(() => {
-                loggingService.currentLogLevel.should.equal(400);
-            });
-        });
-
-    });
-
-    describe('#setLogLevel', () => {
-        it('should set the log level', () => {
-            mockStub.putState.resolves();
-            loggingService.setLogLevel('notice')
-                .then(() => {
-                    loggingService.currentLogLevel.should.equal(300);
-                    sinon.assert.calledOnce(mockStub.putState);
-                    sinon.assert.calledWith(mockStub.putState, 'ComposerLogLevel', 'NOTICE');
-                });
-        });
-
-        it('should throw error if putState fails', () => {
-            mockStub.putState.rejects(new Error('put failed'));
-            loggingService.setLogLevel('notice')
-                .should.be.rejectedWith(/put failed/);
-        });
-
-        it('should throw error if not a valid log level', () => {
-            loggingService.setLogLevel('rubbish')
-                .should.be.rejectedWith(/not a valid/);
+        it('should register a callback to supplement the logging output', async () => {
+            sandbox.stub(Logger, 'setLoggerCfg');
+            sandbox.stub(Logger, 'setCallBack').callsArgWith(0, 'debug');
+            sandbox.stub(loggingService, 'getLoggerCfg').returns('some config');
+            await loggingService.initLogging(mockStub);
+            sinon.assert.calledOnce(Logger.setCallBack);
+            sinon.assert.calledWith(Logger.setCallBack, sinon.match.func);
+            sinon.assert.calledOnce(mockStub.getTxID);
         });
 
 
 
     });
 
-    describe('#getLogLevel', () => {
-
-        it('should return correct log level string', () => {
-
-            loggingService.currentLogLevel = -1;
-            loggingService.getLogLevel().should.equal('NOT_ENABLED');
-            loggingService.currentLogLevel = 0;
-            loggingService.getLogLevel().should.equal('CRITICAL');
-            loggingService.currentLogLevel = 100;
-            loggingService.getLogLevel().should.equal('ERROR');
-            loggingService.currentLogLevel = 200;
-            loggingService.getLogLevel().should.equal('WARNING');
-            loggingService.currentLogLevel = 300;
-            loggingService.getLogLevel().should.equal('NOTICE');
-            loggingService.currentLogLevel = 400;
-            loggingService.getLogLevel().should.equal('INFO');
-            loggingService.currentLogLevel = 500;
-            loggingService.getLogLevel().should.equal('DEBUG');
-
+    describe('#mapCfg', async ()=>{
+        let expectedDefault = 'composer[error]:*';
+        it('should handle an empty string with default value',()=>{
+            loggingService.mapCfg('').should.equal(expectedDefault);
+        });
+        it('should handle an empt-ish string with default value',()=>{
+            loggingService.mapCfg(',').should.equal(expectedDefault);
+        });
+        it('should handle a valid fabric value',()=>{
+            loggingService.mapCfg('CRITICAL').should.equal('composer[error]:*');
+            loggingService.mapCfg('ERROR').should.equal('composer[error]:*');
+            loggingService.mapCfg('WARNING').should.equal('composer[warning]:*');
+            loggingService.mapCfg('NOTICE').should.equal('composer[info]:*');
+            loggingService.mapCfg('INFO').should.equal('composer[verbose]:*');
+            loggingService.mapCfg('DEBUG').should.equal('composer[debug]:*');
         });
 
-    });
-
-    describe('#_outputMessage', () => {
-
-        it('should output a message', () => {
-            loggingService._outputMessage('a message', 500);
+        it('should handle a valid composer value',()=>{
+            loggingService.mapCfg('composer[info]:*').should.equal('composer[info]:*');
+            loggingService.mapCfg('composer[debug]:classname,composer[info]:someother,composer[error]:*').should.equal('composer[debug]:classname,composer[info]:someother,composer[error]:*');
         });
+        it('should handle a * (everything)',()=>{
+            loggingService.mapCfg('*').should.equal(expectedDefault);
+        });
+        it('should handle a mix of composer and fabric, with fabric the answer',()=>{
+            loggingService.mapCfg('composer[info]:*,Critical').should.equal('composer[error]:*');
+        });
+        it('should handle incorrect strings',()=>{
+            loggingService.mapCfg('wibble').should.equal(expectedDefault);
+            loggingService.mapCfg('wibble,stuff').should.equal(expectedDefault);
+            loggingService.mapCfg('composer[stuff]').should.equal(expectedDefault);
+        });
+
     });
 });

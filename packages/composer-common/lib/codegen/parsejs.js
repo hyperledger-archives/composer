@@ -21,6 +21,49 @@ const PlantUMLGenerator = require('./fromjs/plantumlgenerator');
 const APISignatureGenerator = require('./fromjs/apisignaturegenerator');
 const JavaScriptParser = require('./javascriptparser');
 const JSONGenerator = require('./fromjs/jsongenerator');
+
+/**
+ * Processes a single Javascript file (.js extension)
+ *
+ * @param {string} file - the file to process
+ * @param {Object} fileProcessor - the processor instance to use to generate code
+ * @private
+ */
+function processFile(file, fileProcessor) {
+    let filePath = path.parse(file);
+    if (filePath.ext === '.js' && filePath.base !== 'parser.js') {  //ignore the generated parsers
+        let fileContents = fs.readFileSync(file, 'utf8');
+        // Specify ES2017 (ES8) as that has async/await, which we use in our APIs.
+        const parser = new JavaScriptParser(fileContents, program.private, 8, false);
+        fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
+    }
+}
+
+/**
+ * Processes all the Javascript files within a directory.
+ *
+ * @param {string} path - the path to process
+ * @param {Object} fileProcessor - the processor instance to use to generate code
+ * @private
+ */
+function processDirectory(path, fileProcessor) {
+    let items = [];
+    fs.walk(path)
+        .on('readable', function (item) {
+            while ((item = this.read())) {
+                if (item.stats.isFile()) {
+                    items.push(item.path);
+                }
+            }
+        })
+        .on('end', () => {
+            items.sort();
+            items.forEach((item) => {
+                processFile(item, fileProcessor);
+            });
+        });
+}
+
 /**
  * Generates Plant UML files from Javascript source files
  *
@@ -66,43 +109,3 @@ else if (program.single){
     console.log('no file option given');
 }
 
-/**
- * Processes all the Javascript files within a directory.
- *
- * @param {string} path - the path to process
- * @param {Object} fileProcessor - the processor instance to use to generate code
- * @private
- */
-function processDirectory(path, fileProcessor) {
-    let items = [];
-    fs.walk(path)
-        .on('readable', function (item) {
-            while ((item = this.read())) {
-                if (item.stats.isFile()) {
-                    items.push(item.path);
-                }
-            }
-        })
-        .on('end', () => {
-            items.sort();
-            items.forEach((item) => {
-                processFile(item, fileProcessor);
-            });
-        });
-}
-
-/**
- * Processes a single Javascript file (.js extension)
- *
- * @param {string} file - the file to process
- * @param {Object} fileProcessor - the processor instance to use to generate code
- * @private
- */
-function processFile(file, fileProcessor) {
-    let filePath = path.parse(file);
-    if (filePath.ext === '.js' && filePath.base !== 'parser.js') {  //ignore the generated parsers
-        let fileContents = fs.readFileSync(file, 'utf8');
-        const parser = new JavaScriptParser(fileContents, program.private, null, false);
-        fileProcessor.generate(program, file, parser.getIncludes(), parser.getClasses(), parser.getFunctions());
-    }
-}

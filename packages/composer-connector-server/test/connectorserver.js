@@ -22,7 +22,9 @@ const ConnectionManager = require('composer-common').ConnectionManager;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('..');
 const SecurityContext = require('composer-common').SecurityContext;
+const Logger= require('composer-common').Logger;
 const uuid = require('uuid');
+const version = require('../package.json').version;
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -58,6 +60,7 @@ describe('ConnectorServer', () => {
     let mockSocket;
     let mockBusinessNetworkDefinition;
     let connectorServer;
+    let mockLogger;
     let sandbox;
 
     beforeEach(() => {
@@ -75,6 +78,14 @@ describe('ConnectorServer', () => {
         connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
         sandbox = sinon.sandbox.create();
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+
+        mockLogger = {
+            log: sinon.stub()
+        };
+
+
+        Logger.setFunctionalLogger(mockLogger);
+
     });
 
     afterEach(() => {
@@ -101,7 +112,22 @@ describe('ConnectorServer', () => {
 
     });
 
+    describe('#getConnectionType', () => {
+        it('should return the complete type if there is no @ in the type', () => {
+            ConnectorServer.getConnectionType({'x-type':'hlfv1'}).should.equal('hlfv1');
+        });
+
+        it('should remove the delegated type', () => {
+            ConnectorServer.getConnectionType({'x-type':'embedded@proxy'}).should.equal('embedded');
+        });
+
+    });
+
     describe('#constructor', () => {
+
+        const isFunction = (object) => {
+            return !!(object && object.constructor && object.call && object.apply);
+        };
 
         it('should register handlers for all exposed functions', () => {
             const functions = mockSocket.on.args.map((args) => {
@@ -114,7 +140,6 @@ describe('ConnectorServer', () => {
                 '/api/businessNetworkCardStorePut',
                 '/api/businessNetworkCardStoreDelete',
                 '/api/connectionCreateIdentity',
-                '/api/connectionDeploy',
                 '/api/connectionDisconnect',
                 '/api/connectionInstall',
                 '/api/connectionInvokeChainCode',
@@ -125,14 +150,14 @@ describe('ConnectorServer', () => {
                 '/api/connectionPing',
                 '/api/connectionQueryChainCode',
                 '/api/connectionStart',
-                '/api/connectionUndeploy',
-                '/api/connectionUpdate',
+                '/api/connectionUpgrade',
                 '/api/connectionManagerExportIdentity',
                 '/api/connectionManagerRemoveIdentity',
-                '/api/connectionCreateTransactionId'
+                '/api/connectionCreateTransactionId',
+                '/api/ping'
             ].sort());
             mockSocket.on.args.forEach((args) => {
-                args[1].should.be.a('function');
+                isFunction(args[1]).should.be.true;
             });
         });
 
@@ -141,11 +166,22 @@ describe('ConnectorServer', () => {
             try {
                 connectorServer = new ConnectorServer(mockBusinessNetworkCardStore, mockConnectionProfileManager, mockSocket);
                 mockSocket.on.args.forEach((args) => {
-                    args[1].should.be.a('function');
+                    isFunction(args[1]).should.be.true;
                 });
             } finally {
                 delete ConnectorServer.prototype.foo;
             }
+        });
+
+    });
+
+    describe('#ping', () => {
+
+        it('should ping', async () => {
+            const cb = sinon.stub();
+            await connectorServer.ping(cb);
+            sinon.assert.calledOnce(cb);
+            sinon.assert.calledWith(cb, null, { version });
         });
 
     });
@@ -304,10 +340,10 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.resolves();
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.importIdentity);
-                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'public key', 'private key');
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity, connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key');
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -317,13 +353,26 @@ describe('ConnectorServer', () => {
             mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
             mockConnectionManager.importIdentity.rejects(new Error('import error'));
             const cb = sinon.stub();
-            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'public key', 'private key', cb)
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
                     serializedError.name.should.equal('Error');
                     serializedError.message.should.equal('import error');
                     serializedError.stack.should.be.a('string');
+                });
+        });
+
+        it('should import an identity, using the wallet from the internal cardstore', () => {
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.importIdentity.resolves();
+            const cb = sinon.stub();
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            return connectorServer.connectionManagerImportIdentity(connectionProfile, connectionOptions, 'bob1', 'certificate', 'private key', cb)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.importIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1', 'certificate', 'private key');
                 });
         });
 
@@ -354,6 +403,22 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledWith(callback, ConnectorServer.serializerr(expected));
                 });
         });
+
+        it('should export an identity, using correct card store', function () {
+            const id = 'bob1';
+            const expected = {key : 'value'};
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.exportIdentity.withArgs(connectionProfile, connectionOptions, id).resolves(expected);
+            const callback = sinon.stub();
+            return connectorServer.connectionManagerExportIdentity(connectionProfile, connectionOptions, id, callback)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.exportIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), id);
+                });
+        });
+
     });
 
     describe('#connectionManagerRemoveIdentity', () => {
@@ -385,19 +450,52 @@ describe('ConnectorServer', () => {
                 });
         });
 
+        it('should remove an identity, using the correct cardstore', () => {
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.removeIdentity.resolves(true);
+            mockBusinessNetworkCardStore.getWallet.returns('CORRECT');
+            connectionOptions.wallet='WRONG';
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerRemoveIdentity(connectionProfile, connectionOptions, 'bob1', cb)
+                .then(() => {
+                    sinon.assert.calledWith(mockBusinessNetworkCardStore.getWallet,connectionOptions.cardName);
+                    sinon.assert.calledWith(mockConnectionManager.removeIdentity,connectionProfile, sinon.match({wallet:'CORRECT'}), 'bob1');
+
+                });
+        });
+
     });
 
 
     describe('#connectionManagerConnect', () => {
 
         it('should connect', () => {
-            mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).resolves(mockConnection);
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs(connectionProfile, businessNetworkIdentifier, connectionOptions).resolves(mockConnection);
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
             return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionProfileManager.connect);
-                    sinon.assert.calledWith(mockConnectionProfileManager.connect, connectionProfile, businessNetworkIdentifier);
+                    sinon.assert.calledOnce(mockConnectionManager.connect);
+                    sinon.assert.calledWith(mockConnectionManager.connect, connectionProfile, businessNetworkIdentifier, connectionOptions);
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null, connectionID);
+                    connectorServer.connections[connectionID].should.equal(mockConnection);
+                });
+        });
+        it('should handle connect for a delegated type', () => {
+            const delegatedConnectionProfile = {
+                'x-type': 'embedded@proxy'
+            };
+
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs('embedded').resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs('myprofile', businessNetworkIdentifier, delegatedConnectionProfile).resolves(mockConnection);
+            sandbox.stub(uuid, 'v4').returns(connectionID);
+            const cb = sinon.stub();
+            return connectorServer.connectionManagerConnect('myprofile', businessNetworkIdentifier, delegatedConnectionProfile, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnectionManager.connect);
+                    sinon.assert.calledWith(mockConnectionManager.connect, 'myprofile', businessNetworkIdentifier, delegatedConnectionProfile);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null, connectionID);
                     connectorServer.connections[connectionID].should.equal(mockConnection);
@@ -405,7 +503,8 @@ describe('ConnectorServer', () => {
         });
 
         it('should handle connection errors', () => {
-            mockConnectionProfileManager.connect.withArgs(connectionProfile, businessNetworkIdentifier).rejects(new Error('connection error'));
+            mockConnectionProfileManager.getConnectionManagerByType.withArgs(connectionType).resolves(mockConnectionManager);
+            mockConnectionManager.connect.withArgs(connectionProfile, businessNetworkIdentifier, connectionOptions).rejects(new Error('connection error'));
             sandbox.stub(uuid, 'v4').returns(connectionID);
             const cb = sinon.stub();
             return connectorServer.connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, cb)
@@ -523,21 +622,67 @@ describe('ConnectorServer', () => {
         });
 
         it('should install', () => {
-            mockConnection.install.withArgs(mockSecurityContext, businessNetworkIdentifier).resolves();
+            mockConnection.install.resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.install);
-                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, businessNetworkIdentifier);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
         });
 
+        it('should install and provide option of npmrcFile when no install options', () => {
+            process.env.NPMRC_FILE='/tmp/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), null, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
+        it('should install and provide option of npmrcFile along with other install options', () => {
+            process.env.NPMRC_FILE='/tmp2/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {someopt: 'opt'}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp2/npmrc', someopt: 'opt'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
+        it('should not overwrite a provided npmrcFile entry', () => {
+            process.env.NPMRC_FILE='/tmp3/npmrc';
+            mockConnection.install.resolves();
+            sandbox.stub(uuid, 'v4').returns(securityContextID);
+            const cb = sinon.stub();
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {npmrcFile: '/tmp/npmrc'}, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.install);
+                    sinon.assert.calledWith(mockConnection.install, mockSecurityContext, mockBusinessNetworkDefinition, {npmrcFile: '/tmp/npmrc'});
+                    sinon.assert.calledOnce(cb);
+                    sinon.assert.calledWith(cb, null);
+                    delete process.env.NPMRC_FILE;
+                });
+        });
+
+
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(invalidID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(invalidID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -549,7 +694,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, invalidID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, invalidID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -562,7 +707,7 @@ describe('ConnectorServer', () => {
         it('should handle install errors', () => {
             mockConnection.install.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionInstall(connectionID, securityContextID, 'org-acme-biznet', {}, cb)
+            return connectorServer.connectionInstall(connectionID, securityContextID, Buffer.from('fake bna'), {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -582,13 +727,13 @@ describe('ConnectorServer', () => {
         });
 
         it('should start', () => {
-            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
+            mockConnection.start.withArgs(mockSecurityContext, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.start);
-                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
+                    sinon.assert.calledWith(mockConnection.start, mockSecurityContext, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1});
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -596,7 +741,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(invalidID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -608,7 +753,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(connectionID, invalidID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -621,7 +766,7 @@ describe('ConnectorServer', () => {
         it('should handle start errors', () => {
             mockConnection.start.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionStart(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', '{"start":"json"}', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -633,21 +778,20 @@ describe('ConnectorServer', () => {
 
     });
 
-    describe('#connectionDeploy', () => {
-
+    describe('#connectionUpgrade', () => {
         beforeEach(() => {
             connectorServer.connections[connectionID] = mockConnection;
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should deploy', () => {
-            mockConnection.deploy.withArgs(mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1}).resolves();
+        it('should upgrade', () => {
+            mockConnection.upgrade.withArgs(mockSecurityContext, 'org-acme-biznet', '1.0.0', {opt : 1}).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionUpgrade(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, 'org-acme-biznet', '{"start":"json"}', {opt : 1});
+                    sinon.assert.calledOnce(mockConnection.upgrade);
+                    sinon.assert.calledWith(mockConnection.upgrade, mockSecurityContext, 'org-acme-biznet', '1.0.0', {opt : 1});
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -655,7 +799,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(invalidID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionUpgrade(invalidID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -667,7 +811,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, invalidID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionUpgrade(connectionID, invalidID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -677,10 +821,10 @@ describe('ConnectorServer', () => {
                 });
         });
 
-        it('should handle deploy errors', () => {
-            mockConnection.deploy.rejects(new Error('such error'));
+        it('should handle start errors', () => {
+            mockConnection.upgrade.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, 'org-acme-biznet', '{"start":"json"}', {opt : 1}, cb)
+            return connectorServer.connectionUpgrade(connectionID, securityContextID, 'org-acme-biznet', '1.0.0', {opt : 1}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -689,128 +833,6 @@ describe('ConnectorServer', () => {
                     serializedError.stack.should.be.a('string');
                 });
         });
-
-    });
-
-    describe('#connectionUpdate', () => {
-
-        beforeEach(() => {
-            connectorServer.connections[connectionID] = mockConnection;
-            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
-        });
-
-        it('should update', () => {
-            mockConnection.update.withArgs(mockSecurityContext, mockBusinessNetworkDefinition).resolves();
-            sandbox.stub(uuid, 'v4').returns(securityContextID);
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                    const buffer = BusinessNetworkDefinition.fromArchive.args[0][0];
-                    Buffer.isBuffer(buffer).should.be.true;
-                    Buffer.from('hello world').compare(buffer).should.equal(0);
-                    sinon.assert.calledOnce(mockConnection.update);
-                    sinon.assert.calledWith(mockConnection.update, mockSecurityContext, mockBusinessNetworkDefinition);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should handle an invalid connection ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(invalidID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No connection found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle an invalid security context ID ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, invalidID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No security context found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle update errors', () => {
-            mockConnection.update.rejects(new Error('such error'));
-            const cb = sinon.stub();
-            return connectorServer.connectionUpdate(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.equal('such error');
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-    });
-
-    describe('#connectionUndeploy', () => {
-
-        beforeEach(() => {
-            connectorServer.connections[connectionID] = mockConnection;
-            connectorServer.securityContexts[securityContextID] = mockSecurityContext;
-        });
-
-        it('should undeploy', () => {
-            mockConnection.undeploy.withArgs(mockSecurityContext, businessNetworkIdentifier).resolves();
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.undeploy);
-                    sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, businessNetworkIdentifier);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should handle an invalid connection ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(invalidID, securityContextID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No connection found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle an invalid security context ID ID', () => {
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, invalidID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.match(/No security context found with ID/);
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
-        it('should handle undeploy errors', () => {
-            mockConnection.undeploy.rejects(new Error('such error'));
-            const cb = sinon.stub();
-            return connectorServer.connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, cb)
-                .then(() => {
-                    sinon.assert.calledOnce(cb);
-                    const serializedError = cb.args[0][0];
-                    serializedError.name.should.equal('Error');
-                    serializedError.message.should.equal('such error');
-                    serializedError.stack.should.be.a('string');
-                });
-        });
-
     });
 
     describe('#connectionPing', () => {

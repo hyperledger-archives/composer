@@ -1,31 +1,43 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { ClientService } from './client.service';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-
-let should = chai.should();
-let expect = chai.expect;
-
 import { AdminService } from './admin.service';
 import { AlertService } from '../basic-modals/alert.service';
 import {
-    BusinessNetworkDefinition,
-    ModelFile,
-    Script,
     AclFile,
-    QueryFile,
+    BusinessNetworkCardStore,
+    BusinessNetworkDefinition,
     IdCard,
-    BusinessNetworkCardStore
+    ModelFile,
+    QueryFile,
+    Script
 } from 'composer-common';
 import { BusinessNetworkConnection } from 'composer-client';
 import { IdentityService } from './identity.service';
 import { IdentityCardService } from './identity-card.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
+
+let should = chai.should();
+let expect = chai.expect;
 
 describe('ClientService', () => {
 
@@ -62,7 +74,7 @@ describe('ClientService', () => {
         alertMock.errorStatus$ = {next: sinon.stub()};
         alertMock.busyStatus$ = {next: sinon.stub()};
 
-        idCard = new IdCard({userName: 'banana'}, {type: 'web', name: 'myProfile'});
+        idCard = new IdCard({userName: 'banana'}, {'x-type': 'web', 'name': '$default'});
         identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
         identityCardServiceMock.getCurrentCardRef.returns('cardRef');
 
@@ -120,12 +132,55 @@ describe('ClientService', () => {
         }));
 
         it('should create business network if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('1.0.0')
+            };
             businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
             let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
             let result = service.getBusinessNetwork();
 
             businessNetworkConnectionMock.should.have.been.called;
             result.should.deep.equal(businessNetworkDefMock);
+        }));
+
+        it('should retrieve the deployed business network version if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('1.0.0')
+            };
+            businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
+            sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            let result = service.getBusinessNetwork();
+
+            metadataMock.getVersion.should.have.been.called;
+            result.should.deep.equal(businessNetworkDefMock);
+        }));
+    });
+
+    describe('getDeployedBusinessNetworkVersion', () => {
+        it('should get the deployed business network version', inject([ClientService], (service: ClientService) => {
+            service['deployedBusinessNetworkVersion'] = 'deployedVersion';
+
+            let result = service.getDeployedBusinessNetworkVersion();
+
+            result.should.equal('deployedVersion');
+        }));
+
+        it('should create business network if it doesn\'t exist', inject([ClientService], (service: ClientService) => {
+            let metadataMock = {
+                getVersion: sinon.stub().returns('deployedVersion')
+            };
+            businessNetworkConMock.getBusinessNetwork.returns(businessNetworkDefMock);
+            businessNetworkDefMock.getMetadata.returns(metadataMock);
+            sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            let result = service.getDeployedBusinessNetworkVersion();
+
+            metadataMock.getVersion.should.have.been.called;
+            result.should.equal('deployedVersion');
         }));
     });
 
@@ -157,7 +212,36 @@ describe('ClientService', () => {
             alertMock.busyStatus$.next.should.have.been.calledTwice;
             alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
                 title: 'Establishing connection',
-                text: 'Using the connection profile myProfile'
+                text: 'Using the connection profile web',
+                force: true
+            });
+
+            adminMock.connect.should.have.been.calledWith('cardRef', idCard, false);
+
+            refreshMock.should.have.been.called;
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
+
+        it('should connect if not connected to hlfv1 connection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+            identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
+
+            adminMock.connect.returns(Promise.resolve());
+            let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            service.ensureConnected(false);
+
+            tick();
+
+            alertMock.busyStatus$.next.should.have.been.calledTwice;
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Establishing connection',
+                text: 'Using the connection profile myProfile',
+                force: true
             });
 
             adminMock.connect.should.have.been.calledWith('cardRef', idCard, false);
@@ -216,7 +300,29 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
-                text: 'refreshing the connection to myProfile'
+                text: 'refreshing the connection to web',
+                force: true
+            });
+        })));
+
+        it('should diconnect and reconnect the business network connection with hlfv1 connection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            idCard = new IdCard({userName: 'banana'}, {'x-type': 'hlfv1', 'name': 'myProfile'});
+            identityCardServiceMock.getCurrentIdentityCard.returns(idCard);
+
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+
+            service.refresh();
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile',
+                force: true
             });
         })));
 
@@ -233,7 +339,8 @@ describe('ClientService', () => {
             businessNetworkConMock.connect.should.have.been.calledWith('cardRef');
             alertMock.busyStatus$.next.should.have.been.calledWith({
                 title: 'Refreshing Connection',
-                text: 'refreshing the connection to myProfile'
+                text: 'refreshing the connection to web',
+                force: true
             });
         })));
     });

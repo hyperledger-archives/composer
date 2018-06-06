@@ -1,5 +1,5 @@
 # Contributing to Composer
-* [Step-by-step developement environment setup](./getting-started.md)
+* [Step-by-step development environment setup](./getting-started.md)
 * [Suggested IDE setup](./ide-setup.md)
 * Currently reading ->  [Coding Guidelines](./coding-guidelines.md)
 * [Pull Request Guidelines](./submitting-pull-request.md)
@@ -124,29 +124,81 @@ Hyperledger Composer tests use an assertion library called [chai](http://chaijs.
 
 The Hyperledger Composer project uses a code coverage tool called [Istanbul](https://gotwarlost.github.io/istanbul/) to ensure that all the code is tested, including statements, branches, and functions. This helps to improve the quality of the Hyperledger Composer tests. The output of Istanbul can be used to see where any specific tests need to be added to ensure complete code coverage.
 
+### How to run a local development version of the Playground UI
+In order to run Playground UI locally you can:
+- Run `scripts/devStart.sh` in the _composer-playground-api_ package; followed by
+- Run `npm start` in the _composer-playground_ package
+- Visit `localhost:3000` from your browser
+
+The `devStart.sh` script above sets up a local (Verdaccio) npm registry and populates it with development versions of
+Composer packages required for deployment to Fabric to work in a local development environment.
+
 ### How to run local code inside a real fabric
 When fabric builds the image for the chaincode container, it does this by doing an npm install against the package.json
-of the package `composer-runtime-hlfv1`. This presents a problem as it pulls the code base that has been published to
-the npm registry rather than your local code base. To be able to work with your latest code base you need to run the
-fabric peer in development mode. The following provides steps by example on how to do this.
+of the business network archive. The install process adds required dependencies on Composer packages to the package.json,
+referring to the Composer version used to perform the install. This causes an issue during development since the local
+Composer version used to perform the install is one that has not yet been published to the public npm registry, and so
+these dependencies cannot be resolved when the business network is started.
 
-- Ensure you have the latest fabric-dev-servers package and have set your fabric runtime to V1.1 `export FABRIC_VERSION=hlfv11`
-- Start the fabric in development mode using the -d or --dev option. eg `./startFabric.sh -d`
-- create and import your PeerAdmin card if you haven't done so before eg `./createPeerAdmin.sh` 
-- Open a command window and change to the `packages/composer-runtime-hlfv1` directory
-- Start the Composer chaincode with an appropriate business network name and version of the composer-runtime-hlfv1 (The version you need is the version defined in the package.json of the composer-runtime-hlfv1 package. In this example I have shown a version number of `0.17.0`) eg.
+A solution to this problem is to package the dependencies required at runtime within the business network archive before
+install. To achieve this:
+
+1. Local versons of the following packages should be packaged up using the `npm pack` command:
+   - `composer-common`
+   - `composer-runtime`
+   - `composer-runtime-hlfv1`
+2. The package.json of the business network archive updated to refer to these package files on the local file system.
+
+The install process will include these packaged dependencies in the chaincode sent to the Fabric peer.
+
+The following script can be used to create npm packages (ending in _-dev.tgz_) of the required dependencies in the
+current working directory, once the `packageDir` variable has been changed to point to the location of the Composer
+packages in your development environment.
+```bash
+#!/bin/bash
+  
+localDir="$(pwd)"
+packageDir="${HOME}/DEV_DIRECTORY/composer/packages"
+
+for dependency in composer-common composer-runtime composer-runtime-hlfv1; do
+    cd "${packageDir}/${dependency}"
+    packFile="$(npm pack | tail -1)"
+    echo "Created pack file: ${packFile}"
+    mv "${packFile}" "${localDir}/${dependency}-dev.tgz"
+done
 ```
-CORE_CHAINCODE_ID_NAME="mynetwork:0.17.0" node start.js --peer.address grpc://localhost:7052
+
+The package.json of your business network archive then needs the following dependencies added, which should point to
+the actual location of the packages files on your file system.
+```javascript
+"dependencies": {
+  "composer-common": "/PATH/TO/composer-common-dev.tgz",
+  "composer-runtime": "/PATH/TO/composer-runtime-dev.tgz",
+  "composer-runtime-hlfv1": "/PATH/TO/composer-runtime-hlfv1-dev.tgz"
+}
 ```
-- install a composer runtime package (note this doesn't get used but has to be present on the peer) Assuming you are still in the composer-runtime-hlfv1 directory eg.
+
+Note that the `composer archive create` command will (currently) fail if used to create a new BNA file from a directory
+containing a package.json with the package file dependencies above. Instead, just unzip a previously created BNA file,
+modify the package.json and zip up again to create the BNA.
+
+A business network archive containing package dependencies can be installed to Fabric directly using the
+`composer network install` command. The following provides steps by example on how to do this.
+
+- Ensure you have the latest fabric-dev-servers package
+- Start the Fabric using `./startFabric.sh`
+- Create and import your PeerAdmin card if you haven't done so before using `./createPeerAdmin.sh` 
+- Install your pre-prepared business network archive
 ```
-node ../composer-cli/cli.js runtime install -n mynetwork -c PeerAdmin@hlfv1
+node composer-cli/cli.js network install --card PeerAdmin@hlfv1 --archiveFile test-network@0.0.1.bna`
 ```
-- instantiate the chaincode, this will drive your running node process you started earlier.
+- instantiate the chaincode.
 ```
-node cli.js network start -a mynetwork.bna -c PeerAdmin@hlfv1 -A admin -S adminpw
+node composer-cli/cli.js network start --card PeerAdmin@hlfv1 -networkAdmin admin -networkAdminEnrollSecret adminpw
 ```
-You should now see output in the window running the chaincode showing it executing.
 
 # Next step
 Move on to read [Pull Request Guidelines](./submitting-pull-request.md)
+
+## License <a name="license"></a>
+Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.

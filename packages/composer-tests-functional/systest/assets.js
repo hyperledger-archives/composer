@@ -22,24 +22,21 @@ const path = require('path');
 const TestUtil = require('./testutil');
 
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
+chai.should();
 
 describe('Asset system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardstore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardstore,bnID, 0);
-    });
-
     let businessNetworkDefinition;
     let client;
 
-
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, but supplying "UNKNOWN"
         const modelFiles = [
             { fileName: 'UNKNOWN', contents:fs.readFileSync(path.resolve(__dirname, 'data/assets.cto'), 'utf8') }
@@ -52,18 +49,17 @@ describe('Asset system tests', function() {
 
         bnID = businessNetworkDefinition.getName();
 
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardstore) => {
-                cardstore = _cardstore;
-                return TestUtil.getClient(cardstore,'systest-assets')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardstore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardstore,'systest-assets');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardstore,bnID, 0);
     });
 
     let createAsset = (assetId) => {
@@ -467,6 +463,51 @@ describe('Asset system tests', function() {
             })
             .then(function () {
                 return client.getAssetRegistry('systest.assets.SimpleAssetRelationshipContainer');
+            })
+            .then(function (result) {
+                assetContainerRegistry = result;
+                let assetContainer = createAssetRelationshipContainer();
+                let factory = client.getBusinessNetwork().getFactory();
+                assetContainer.simpleAsset = factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAssets = [
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset3')
+                ];
+                return assetContainerRegistry.add(assetContainer);
+            })
+            .then(function () {
+                return assetContainerRegistry.getAll();
+            })
+            .then(function (assetContainers) {
+                assetContainers.length.should.equal(1);
+                validateAssetRelationshipContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.get('dogeAssetRelationshipContainer');
+            })
+            .then(function (assetContainer) {
+                validateAssetRelationshipContainer(assetContainer, 'dogeAssetRelationshipContainer');
+            });
+    });
+
+    it('should store assets in the correct registry obtained from general get registry call', () => {
+        let assetRegistry;
+        let assetContainerRegistry;
+        return client
+            .getRegistry('systest.assets.SimpleAsset')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset2');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset3');
+                return assetRegistry.add(asset);
+            })
+            .then(function () {
+                return client.getRegistry('systest.assets.SimpleAssetRelationshipContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;

@@ -15,13 +15,19 @@
 'use strict';
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const fs = require('fs');
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
+const Factory = require('composer-common').Factory;
 const Logger = require('composer-common').Logger;
+const ModelManager = require('composer-common').ModelManager;
 const Util = require('composer-common').Util;
-const uuid = require('uuid');
 const IdCard = require('composer-common').IdCard;
+const Serializer = require('composer-common').Serializer;
+
 const LOG = Logger.getLog('AdminConnection');
+
+const systemModelManager = new ModelManager();
+const systemFactory = new Factory(systemModelManager);
+const systemSerializer = new Serializer(systemFactory, systemModelManager);
 
 /**
  * This class creates an administration connection to a Hyperledger Composer runtime. The
@@ -60,7 +66,7 @@ class AdminConnection {
         LOG.entry(method, options);
         options = options || {};
 
-        this.cardStore = options.cardStore || new FileSystemCardStore({fs : options.fs || fs});
+        this.cardStore = options.cardStore || NetworkCardStoreManager.getCardStore(options.wallet);
         this.connectionProfileManager = new ConnectionProfileManager();
         this.connection = null;
         this.securityContext = null;
@@ -74,36 +80,23 @@ class AdminConnection {
      * @param {IdCard} card The card to import
      * @return {Promise} Resolved when the card is imported, resolves to true if updated, false if added.
      */
-    importCard(name, card) {
-        let connectionProfileData = card.getConnectionProfile();
-        let connectionManager;
+    async importCard(name, card) {
+        const connectionProfileData = card.getConnectionProfile();
         connectionProfileData.cardName = name;
-        let updated = false;
-        return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
-            .then((connectionManager_) => {
-                connectionManager = connectionManager_;
-                return this.cardStore.has(name);
-            })
-            .then((exists) => {
-                updated = exists;
-                if (exists) {
-                    return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
-                }
-            })
-            .then(() => {
-                return this.cardStore.put(name, card);
-            })
-            .then(() => {
-                // if we have a certificate and privateKey we should ask the connection manager to import
-                let certificate = card.getCredentials().certificate;
-                let privateKey = card.getCredentials().privateKey;
-                if (certificate && privateKey){
-                    return connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
-                }
-            })
-            .then(() => {
-                return updated;
-            });
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        const exists = this.cardStore.has(name);
+        if (exists) {
+            await connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+        }
+        // if we have a certificate and optionally a privateKey we should ask the connection manager to import
+        const certificate = card.getCredentials().certificate;
+        const privateKey = card.getCredentials().privateKey;
+        connectionProfileData.wallet = await this.cardStore.getWallet(name);
+        if (certificate){
+            await connectionManager.importIdentity(connectionProfileData.name, connectionProfileData, card.getUserName(), certificate, privateKey);
+        }
+        await this.cardStore.put(name, card);
+        return exists;
     }
 
     /**
@@ -113,32 +106,24 @@ class AdminConnection {
      * @param {String} cardName The name of the card that needs to be exported
      * @return {Promise} resolved with an instance of the network id card populated
      */
-    exportCard (cardName) {
-        let card;
-        return this.cardStore.get(cardName)
-            .then((result) => {
-                card = result;
-                let credentials = card.getCredentials();
-                //anything set? if so don't go and get the credentials again
-                if (credentials.certificate || credentials.privateKey) {
-                    return card;
-                } else {
-                    // check to make sure the credentials are present and if not then extract them.
-                    let connectionProfileData = card.getConnectionProfile();
-                    connectionProfileData.cardName = cardName;
-                    return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type'])
-                        .then((connectionManager) => {
-                            return connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
-                        })
-                        .then((result) => {
-                            if (result) {
-                                //{ certificate: String, privateKey: String }
-                                card.setCredentials(result);
-                            }
-                            return card;
-                        });
-                }
-            });
+    async exportCard (cardName) {
+        const card = await this.cardStore.get(cardName);
+        const credentials = card.getCredentials();
+        //anything set? if so don't go and get the credentials again
+        if (credentials.certificate || credentials.privateKey) {
+            return card;
+        }
+        // check to make sure the credentials are present and if not then extract them.
+        const connectionProfileData = card.getConnectionProfile();
+        connectionProfileData.cardName = cardName;
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        connectionProfileData.wallet = await this.cardStore.getWallet(cardName);
+        const identity = await connectionManager.exportIdentity(connectionProfileData.name, connectionProfileData, card.getUserName());
+        if (identity) {
+            //{ certificate: String, privateKey: String }
+            card.setCredentials(identity);
+        }
+        return card;
     }
 
     /**
@@ -155,31 +140,16 @@ class AdminConnection {
      * @returns {Promise} Resolves with true if the existing card was deleted; rejected otherwise.
      * @private
      */
-    _deleteCard(name) {
-        let connectionManager;
-        let connectionProfileData;
-        let cardUserName;
-        let deleted;
-
-        return this.cardStore.get(name)
-        .then((card) => {
-            connectionProfileData = card.getConnectionProfile();
-            cardUserName = card.getUserName();
-            connectionProfileData.cardName = name;
-            return this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
-        })
-        .then((connectionManager_) => {
-            connectionManager = connectionManager_;
-            return this.cardStore.delete(name);
-        })
-        .then((deleted_) => {
-            deleted = deleted_;
-            return connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, cardUserName);
-        })
-        .then(() => {
-            return deleted;
-        });
-
+    async _deleteCard(name) {
+        const card = await this.cardStore.get(name);
+        const connectionProfileData = card.getConnectionProfile();
+        const cardUserName = card.getUserName();
+        connectionProfileData.cardName = name;
+        connectionProfileData.wallet = await this.cardStore.getWallet(name);
+        const connectionManager = await this.connectionProfileManager.getConnectionManagerByType(connectionProfileData['x-type']);
+        const deleted = await this.cardStore.delete(name);
+        await connectionManager.removeIdentity(connectionProfileData.name, connectionProfileData, cardUserName);
+        return deleted;
     }
 
     /**
@@ -221,41 +191,29 @@ class AdminConnection {
      *     // Add optional error handling here.
      * }
      * @param {String} cardName - The name of the business network card
-     * @return {Promise} A promise that when resolved indicates the connection is complete
      */
-    connect (cardName) {
-        const method = 'connectWithCard';
+    async connect (cardName) {
+        const method = 'connect';
         LOG.entry(method, cardName);
-
-        let card;
-
-        return this.cardStore.get(cardName)
-            .then((card_) => {
-                card = card_;
-                return this.connectionProfileManager.connectWithData(
-                    card.getConnectionProfile(),
-                    card.getBusinessNetworkName(),
-                    {cardName : cardName});
-            })
-            .then((connection) => {
-                this.connection = connection;
-                let secret = card.getEnrollmentCredentials();
-                if (!secret) {
-                    secret = 'na';
-                } else {
-                    secret = secret.secret;
-                }
-                return connection.login(card.getUserName(), secret);
-            })
-            .then((securityContext) => {
-                this.securityContext = securityContext;
-                this.securityContext.card = card;
-                if (card.getBusinessNetworkName()) {
-                    return this.ping(this.securityContext);
-                }
-            }).then(() => {
-                return;
-            });
+        const card = await this.cardStore.get(cardName);
+        const wallet = await this.cardStore.getWallet(cardName);
+        this.connection = await this.connectionProfileManager.connectWithData(
+            card.getConnectionProfile(),
+            card.getBusinessNetworkName(),
+            { cardName, wallet }
+        );
+        let secret = card.getEnrollmentCredentials();
+        if (!secret) {
+            secret = 'na';
+        } else {
+            secret = secret.secret;
+        }
+        this.securityContext = await this.connection.login(card.getUserName(), secret);
+        this.securityContext.card = card;
+        if (card.getBusinessNetworkName()) {
+            await this.ping(this.securityContext);
+        }
+        LOG.exit(method);
     }
 
     /**
@@ -286,93 +244,54 @@ class AdminConnection {
     }
 
     /**
-     * Installs the Hyperledger Composer runtime to the Hyperledger Fabric in preparation
-     * for the business network to be started. The connection must be connected for this method to succeed.
-     * You must pass the name of the business network that is defined in your archive that this
-     * runtime will be started with.
+     * Installs a business network as chaincode to Hyperledger Fabric in preparation
+     * for the business network to be started.
+     *
+     * The connection must be connected for this method to succeed.
+     *
      * @example
      * // Install the Hyperledger Composer runtime
      * let adminConnection = new AdminConnection();
      * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * try {
      *    await adminConnection.connect('adminCard@hlfv1')
-     *    await adminConnection.install(businessNetworkDefinition.getName());
-     *     // Business network definition installed
-     * } catch(error){
+     *    await adminConnection.install(businessNetworkDefinition);
+     *    // Business network installed
+     * } catch (error) {
      *     // Add optional error handling here.
      * }
-     * @param {String} businessNetworkName - The name of business network which will be used to start this runtime.
+     * @param {String} businessNetworkDefinition - The business network to be installed
      * @param {Object} installOptions connector specific install options
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * deployed.
-     *
+     * @return {Promise} A promise that will be fufilled when the business network has been installed
      */
-    install (businessNetworkName, installOptions) {
+    install (businessNetworkDefinition, installOptions) {
         return Promise.resolve().then(() => {
             Util.securityCheck(this.securityContext);
-            return this.connection.install(this.securityContext, businessNetworkName, installOptions);
+            return this.connection.install(this.securityContext, businessNetworkDefinition, installOptions);
         });
-    }
-
-    /**
-     * Generate an array of bootstrap transactions for the business network.
-     * @private
-     * @param {Factory} factory The factory to use.
-     * @param {String} identityName The name of the current identity.
-     * @param {String} identityCertificate The certificate for the current identity.
-     * @return {Resource[]} An array of bootstrap transactions for the business network.
-     */
-    _generateBootstrapTransactions (factory, identityName, identityCertificate) {
-        const method = '_generateBootstrapTransactions';
-        LOG.entry(method);
-        const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', identityName);
-        const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
-        const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
-        Object.assign(addParticipantTransaction, {
-            resources : [participant],
-            targetRegistry
-        });
-        LOG.debug(method, 'Created bootstrap transaction to add participant', addParticipantTransaction);
-        const bindIdentityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
-        Object.assign(bindIdentityTransaction, {
-            participant : factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', identityName),
-            certificate : identityCertificate
-        });
-        LOG.debug(method, 'Created bootstrap transaction to bind identity', bindIdentityTransaction);
-        const result = [
-            addParticipantTransaction,
-            bindIdentityTransaction
-        ];
-        LOG.exit(method, result);
-        return result;
     }
 
     /**
      * Build the JSON for the start transaction.
      * @private
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
      * @param {Object} [startOptions] The options for starting the business network.
-     * @param {Object} [startOptions.card] The card to be used as the NetworkAdmin
+     * @param {Object[]} [startOptions.networkAdmins] Network admin credentials.
+     * @param {Object[]} [startOptions.bootstrapTransactions] Bootstrap transactions.
      * @return {Promise} A promise that will be fufilled with the JSON for the start transaction.
      */
-    _buildStartTransaction (businessNetworkDefinition, startOptions) {
+    _buildStartTransaction (startOptions) {
         const method = '_buildStartTransaction';
-        LOG.entry(method, businessNetworkDefinition, startOptions);
+        LOG.entry(method, startOptions);
 
         // Get the current identity - we may need it to bind the
         // identity to a network admin participant.
         return Promise.resolve()
-            .then(() => {
-                return businessNetworkDefinition.toArchive({ date: new Date(545184000000) });
-            })
-            .then((businessNetworkArchive) => {
+            .then(()=>{
 
                 // Create a new instance of a start transaction.
-                const factory = businessNetworkDefinition.getFactory();
-                const serializer = businessNetworkDefinition.getSerializer();
-                const startTransaction = factory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork');
+                const startTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'StartBusinessNetwork',startOptions.transactionId.idStr);
                 const classDeclaration = startTransaction.getClassDeclaration();
-                startTransaction.businessNetworkArchive = businessNetworkArchive.toString('base64');
+                delete startOptions.transactionId;
 
                 let hasNetworkAdmins = startOptions && startOptions.networkAdmins && startOptions.networkAdmins.length > 0;
                 let hasBootStrapTransactions = startOptions && startOptions.bootstrapTransactions && startOptions.bootstrapTransactions.length > 0;
@@ -387,7 +306,7 @@ class AdminConnection {
 
                 startOptions.networkAdmins = startOptions.networkAdmins || [];
 
-                let bootstrapTransactions = this._buildNetworkAdminTransactions(businessNetworkDefinition, startOptions.networkAdmins);
+                let bootstrapTransactions = this._buildNetworkAdminTransactions(startOptions.networkAdmins);
 
                 // Merge the start options and bootstrap transactions.
                 if (startOptions.bootstrapTransactions) {
@@ -399,7 +318,7 @@ class AdminConnection {
                 // Otherwise, parse all of the supplied bootstrap transactions.
                 // if (startOptions.bootstrapTransactions) {
                 startTransaction.bootstrapTransactions = startOptions.bootstrapTransactions.map((bootstrapTransactionJSON) => {
-                    return serializer.fromJSON(bootstrapTransactionJSON);
+                    return systemSerializer.fromJSON(bootstrapTransactionJSON, { validate: false });
                 });
 
                 //
@@ -418,7 +337,7 @@ class AdminConnection {
                 });
 
                 // Now we can start the business network.
-                const startTransactionJSON = serializer.toJSON(startTransaction);
+                const startTransactionJSON = systemSerializer.toJSON(startTransaction, { validate: false });
                 LOG.exit(method, startTransactionJSON);
                 return startTransactionJSON;
 
@@ -427,19 +346,14 @@ class AdminConnection {
 
     /**
      * Build the transactions to create a set of network administrators
-     *
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition usual network definition
      * @param {Object[]} networkAdmins array of objects that are defining the network admins
      *                                 [ { name, certificate } , { name, enrollmentSecret  }]
      * @return {Object[]} The bootstrap transactions.
      * @private
      */
-    _buildNetworkAdminTransactions (businessNetworkDefinition, networkAdmins) {
+    _buildNetworkAdminTransactions (networkAdmins) {
         const method = '_buildNetworkAdminTransactions';
-        LOG.entry(method, businessNetworkDefinition, networkAdmins);
-
-        const factory = businessNetworkDefinition.getFactory();
-        const serializer = businessNetworkDefinition.getSerializer();
+        LOG.entry(method, networkAdmins);
 
       //  if (!networkAdmins){return [];}
         // Convert the network administrators into add participant transactions.
@@ -448,9 +362,9 @@ class AdminConnection {
                 throw new Error('A user name must be specified for all network administrators');
             }
 
-            const participant = factory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName);
-            const targetRegistry = factory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
-            const addParticipantTransaction = factory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
+            const participant = systemFactory.newResource('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName);
+            const targetRegistry = systemFactory.newRelationship('org.hyperledger.composer.system', 'ParticipantRegistry', participant.getFullyQualifiedType());
+            const addParticipantTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'AddParticipant');
             Object.assign(addParticipantTransaction, {
                 resources : [participant],
                 targetRegistry
@@ -465,17 +379,17 @@ class AdminConnection {
             // Handle a certificate which requires a bind identity transaction.
             let identityTransaction;
             if (networkAdmin.certificate) {
-                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
+                identityTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'BindIdentity');
                 Object.assign(identityTransaction, {
-                    participant : factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
+                    participant : systemFactory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
                     certificate : networkAdmin.certificate
                 });
                 LOG.debug(method, 'Created bootstrap transaction to bind identity', identityTransaction);
             } else if (networkAdmin.enrollmentSecret) {
                 // Handle an enrollment secret which requires an issue identity transaction.
-                identityTransaction = factory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
+                identityTransaction = systemFactory.newTransaction('org.hyperledger.composer.system', 'IssueIdentity');
                 Object.assign(identityTransaction, {
-                    participant : factory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
+                    participant : systemFactory.newRelationship('org.hyperledger.composer.system', 'NetworkAdmin', networkAdmin.userName),
                     identityName : networkAdmin.userName
                 });
                 LOG.debug(method, 'Created bootstrap transaction to issue identity', identityTransaction);
@@ -489,7 +403,7 @@ class AdminConnection {
         // Serialize all of the transactions into a single array.
         const transactions = addParticipantTransactions.concat(identityTransactions);
         const json = transactions.map((transaction) => {
-            return serializer.toJSON(transaction);
+            return systemSerializer.toJSON(transaction);
         });
         LOG.debug(method, 'Bootstrap transactions', JSON.stringify(json));
         LOG.exit(method, json);
@@ -505,10 +419,9 @@ class AdminConnection {
      * @example
      * // Start a Business Network Definition
      * let adminConnection = new AdminConnection();
-     * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
      * try {
      *     await adminConnection.connect('userCard@network')
-     *     await adminConnection.start(businessNetworkDefinition,
+     *     await adminConnection.start(networkName, networkVersion,
      *              { networkAdmins:
      *                  [ {userName : 'admin', enrollmentSecret:'adminpw'} ]
      *              }
@@ -517,23 +430,28 @@ class AdminConnection {
      * } catch(error){
      *     // Add optional error handling here.
      * }
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to start
+     * @param {String} networkName - Name of the business network to start
+     * @param {String} networkVersion - Version of the business network to start
      * @param {Object} [startOptions] connector specific start options
      *                  networkAdmins:   [ { userName, certificate } , { userName, enrollmentSecret  }]
      *
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed - with a MAP of cards key is name
      */
-    start(businessNetworkDefinition, startOptions) {
+    start(networkName, networkVersion, startOptions) {
         const method = 'start';
-        LOG.entry(method, businessNetworkDefinition, startOptions);
+        LOG.entry(method, networkName, networkVersion, startOptions);
         Util.securityCheck(this.securityContext);
         let networkAdmins = startOptions.networkAdmins;
         // Build the start transaction.
-        return this._buildStartTransaction(businessNetworkDefinition, startOptions)
+        return Util.createTransactionId(this.securityContext)
+            .then((id) =>{
+                startOptions.transactionId = id;
+                return this._buildStartTransaction(startOptions);
+            })
             .then((startTransactionJSON) => {
                 // Now we can start the business network.
-                return this.connection.start(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), startOptions);
+                return this.connection.start(this.securityContext, networkName, networkVersion, JSON.stringify(startTransactionJSON), startOptions);
             })
             .then(() => {
 
@@ -548,7 +466,7 @@ class AdminConnection {
                         let metadata= {
                             version : 1,
                             userName : networkAdmin.userName,
-                            businessNetwork : businessNetworkDefinition.getName()
+                            businessNetwork : networkName
                         };
 
                         let newCard;
@@ -566,93 +484,6 @@ class AdminConnection {
                 LOG.exit(method);
                 return createdCards;
             });
-    }
-
-    /**
-     * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
-     * be connected for this method to succeed.
-     * @example
-     * // Deploy a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.deploy(businessNetworkDefinition)
-     *    // Business network definition deployed
-     * } catch(error) {
-     *     // Add error handling here.
-     * }
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
-     * @param {Object} deployOptions connector specific deployment options
-     *                deployOptions.card the card to use for the NetworkAdmin
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * deployed.
-     * @deprecated Please install() and start()
-     */
-    deploy (businessNetworkDefinition, deployOptions) {
-        const method = 'deploy';
-        LOG.entry(method, businessNetworkDefinition, deployOptions);
-        Util.securityCheck(this.securityContext);
-
-        // Build the start transaction.
-
-        return this._buildStartTransaction(businessNetworkDefinition, deployOptions)
-            .then((startTransactionJSON) => {
-                // Now we can deploy the business network.
-                return this.connection.deploy(this.securityContext, businessNetworkDefinition.getName(), JSON.stringify(startTransactionJSON), deployOptions);
-            })
-            .then(() => {
-                LOG.exit(method);
-            });
-    }
-
-    /**
-     * Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no
-     * longer be able to process transactions.
-     * @example
-     * // Undeploy a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.undeploy('network-name')
-     *    // Undeployed Business Network Definition
-     * } catch(error){
-     *     // Add error handling here.
-     * }
-     * @param {String} businessNetworkName - The name of business network that will be used to start this runtime.
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * undeployed.
-     */
-    undeploy (businessNetworkName) {
-        return Promise.resolve().then(() => {
-            Util.securityCheck(this.securityContext);
-            return this.connection.undeploy(this.securityContext, businessNetworkName);
-        });
-    }
-
-    /**
-     * Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
-     * must have been previously deployed.
-     * @example
-     * // Updates a Business Network Definition
-     * let adminConnection = new AdminConnection();
-     * let businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(myArchive);
-     * try {
-     *    await adminConnection.connect('userCard@network')
-     *    await adminConnection.update(businessNetworkDefinition)
-     *    // Business network definition updated
-     * } catch(error){
-     *     // Add optional error handling here.
-     * }
-     * @param {BusinessNetworkDefinition} businessNetworkDefinition - The new BusinessNetworkDefinition
-     * @return {Promise} A promise that will be fufilled when the business network has been
-     * updated.
-     */
-    update (businessNetworkDefinition) {
-        return Promise.resolve().then(() => {
-            Util.securityCheck(this.securityContext);
-            return this.connection.update(this.securityContext, businessNetworkDefinition);
-        });
     }
 
     /**
@@ -684,17 +515,18 @@ class AdminConnection {
     }
 
     /**
-     * Upgrades an existing business network's composer runtime to a later level.
-     * The connection must be connected specifying the business network identifier as part of the
-     * connection for this method to succeed.
+     * Upgrades an existing business network to a later level.
+     * @param {string} businessNetworkName The name of the business network
+     * @param {string} businessNetworkVersion The version of the business network
+     * @param {object} [upgradeOptions] connector specific options
      * @return {Promise} A promise that will be fufilled when the composer runtime has been upgraded,
      * or rejected otherwise.
      * @example
      * // Upgrade the Hyperledger Composer runtime
      * let adminConnection = new AdminConnection();
      * try {
-     *    await adminConnection.connect('userCard@networkName')
-     *    await adminConnection.upgrade();
+     *    await adminConnection.connect('PeerAdmin@hlfv1')
+     *    await adminConnection.upgrade('digitalproperty-network', '2.0.0');
      *
      *    // Business network definition upgraded
      * } catch(error) => {
@@ -702,10 +534,25 @@ class AdminConnection {
      * }
      * @memberof AdminConnection
      */
-    upgrade () {
+    upgrade(businessNetworkName, businessNetworkVersion, upgradeOptions) {
         return Promise.resolve().then(() => {
             Util.securityCheck(this.securityContext);
-            return this.connection.upgrade(this.securityContext);
+            return this.connection.upgrade(this.securityContext, businessNetworkName, businessNetworkVersion, upgradeOptions);
+        });
+    }
+
+    /**
+     * Undeploys a business network.
+     * <p>
+     * <strong>Note: this this currently not supported with Hyperledger Fabric and will throw an error.</strong>
+     * @param {String} businessNetworkName The name of business network to remove.
+     * @return {Promise} A promise that will be fufilled when the business network has been
+     * undeployed.
+     */
+    undeploy(businessNetworkName) {
+        return Promise.resolve().then(() => {
+            Util.securityCheck(this.securityContext);
+            return this.connection.undeploy(this.securityContext, businessNetworkName);
         });
     }
 
@@ -776,13 +623,13 @@ class AdminConnection {
         LOG.entry(method);
         const json = {
             $class : 'org.hyperledger.composer.system.ActivateCurrentIdentity',
-            transactionId : uuid.v4(),
             timestamp : new Date().toISOString()
         };
-        return Util.invokeChainCode(this.securityContext, 'submitTransaction', [JSON.stringify(json)])
+        return Util.submitTransaction(this.securityContext,json)
             .then(() => {
                 LOG.exit(method);
             });
+
     }
 
     /**
@@ -913,6 +760,20 @@ class AdminConnection {
                 throw new Error('failed to request identity. ' + error.message);
             });
     }
+
+    /**
+     * Get the native API for this connection. The native API returned is specific
+     * to the underlying blockchain platform, and may throw an error if there is no
+     * native API available.
+     * @return {*} The native API for this connection.
+     */
+    getNativeAPI() {
+        if (!this.connection) {
+            throw new Error('not connected; must call connect() first');
+        }
+        return this.connection.getNativeAPI();
+    }
+
 }
 
 module.exports = AdminConnection;

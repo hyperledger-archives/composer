@@ -1,15 +1,29 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IdentityService } from '../services/identity.service';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
+import { ConnectConfirmComponent } from '../basic-modals/connect-confirm/connect-confirm.component';
 import { IdentityCardService } from '../services/identity-card.service';
 import { ConfigService } from '../services/config.service';
 import { Config } from '../services/config/configStructure.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DrawerService, DrawerDismissReasons } from '../common/drawer';
+import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DrawerDismissReasons, DrawerService } from '../common/drawer';
 import { ImportIdentityComponent } from './import-identity';
 
 import { IdCard } from 'composer-common';
@@ -43,6 +57,7 @@ export class LoginComponent implements OnInit {
     private config = new Config();
 
     constructor(private router: Router,
+                private route: ActivatedRoute,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
                 private identityCardService: IdentityCardService,
@@ -61,7 +76,45 @@ export class LoginComponent implements OnInit {
                 this.usingLocally = !this.configService.isWebOnly();
                 this.config = this.configService.getConfig();
                 return this.loadIdentityCards();
+            }).then(() => {
+                this.router.events.subscribe((event) => {
+                    console.log('ROUTER SUB', event);
+                    if (event instanceof NavigationEnd) {
+                        this.handleRouteChange();
+                    }
+                });
+                this.handleRouteChange();
             });
+    }
+
+    handleRouteChange() {
+        switch (this.route.snapshot.fragment) {
+            case 'deploy':
+                this.deployNetwork(decodeURIComponent(this.route.snapshot.queryParams['ref']));
+                break;
+            case 'create-card':
+                this.createIdCard();
+                break;
+            default:
+                if (this.route.snapshot.fragment || Object.keys(this.route.snapshot.queryParams).length > 0) {
+                    this.goLoginMain();
+                } else {
+                    this.closeSubView();
+                }
+                break;
+        }
+    }
+
+    goLoginMain(): void {
+        this.router.navigate(['/login']);
+    }
+
+    goDeploy(connectionProfileRef): void {
+        this.router.navigate(['/login'], {fragment: 'deploy', queryParams: {ref: connectionProfileRef}});
+    }
+
+    goCreateCard(): void {
+        this.router.navigate(['/login'], {fragment: 'create-card'});
     }
 
     loadIdentityCards(reload: boolean = false): Promise<void> {
@@ -129,11 +182,24 @@ export class LoginComponent implements OnInit {
         });
     }
 
-    changeIdentity(cardRef: string): Promise<boolean | void> {
+    changeIdentity(cardRef: string, connectionProfileRef: string): Promise<boolean | void> {
         let card = this.idCards.get(cardRef);
         let businessNetworkName = card.getBusinessNetworkName();
 
-        return this.identityCardService.setCurrentIdentityCard(cardRef)
+        let confirmConnectPromise: Promise<void>;
+        if (this.canDeploy(connectionProfileRef)) {
+            confirmConnectPromise = Promise.resolve();
+        } else {
+            // Show a warning if the business network cannot be updated
+            const confirmModalRef = this.modalService.open(ConnectConfirmComponent);
+            confirmModalRef.componentInstance.network = businessNetworkName;
+            confirmConnectPromise = confirmModalRef.result;
+        }
+
+        return confirmConnectPromise
+            .then((result) => {
+                return this.identityCardService.setCurrentIdentityCard(cardRef);
+            })
             .then(() => {
                 return this.clientService.ensureConnected(true);
             })
@@ -141,7 +207,9 @@ export class LoginComponent implements OnInit {
                 return this.router.navigate(['editor']);
             })
             .catch((error) => {
-                this.alertService.errorStatus$.next(error);
+                if (error && error !== ModalDismissReasons.BACKDROP_CLICK && error !== ModalDismissReasons.ESC) {
+                    this.alertService.errorStatus$.next(error);
+                }
             });
     }
 
@@ -172,7 +240,7 @@ export class LoginComponent implements OnInit {
                     title: 'Connecting to network',
                     force: true
                 });
-                return this.changeIdentity('playgroundSample@basic-sample-network');
+                return this.changeIdentity('playgroundSample@basic-sample-network', connectionProfileRef);
             });
     }
 
@@ -189,37 +257,34 @@ export class LoginComponent implements OnInit {
     }
 
     createIdCard(): void {
+        if (!this.usingLocally) {
+            this.goLoginMain();
+            return;
+        }
         this.showSubScreen = true;
         this.creatingIdCard = true;
     }
 
     finishedCardCreation(event) {
         if (event) {
-            this.closeSubView();
+            this.goLoginMain();
             return this.loadIdentityCards();
         } else {
-            this.closeSubView();
+            this.goLoginMain();
         }
     }
 
     canDeploy(connectionProfileRef): boolean {
-        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
-
-        if (!peerCardRef) {
-            return false;
-        }
-
-        let channelCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'ChannelAdmin')[0];
-
-        if (!channelCardRef) {
-            return false;
-        }
-
-        return true;
+        return this.identityCardService.canDeploy(connectionProfileRef);
     }
 
     deployNetwork(connectionProfileRef): void {
-        let peerCardRef = this.identityCardService.getIdentityCardRefsWithProfileAndRole(connectionProfileRef, 'PeerAdmin')[0];
+        if (!this.canDeploy(connectionProfileRef)) {
+            this.goLoginMain();
+            return;
+        }
+
+        let peerCardRef = this.identityCardService.getAdminCardRef(connectionProfileRef, IdentityCardService.peerAdminRole);
 
         this.identityCardService.setCurrentIdentityCard(peerCardRef);
 
@@ -234,9 +299,7 @@ export class LoginComponent implements OnInit {
     }
 
     finishedDeploying(): Promise<void> {
-        this.showSubScreen = false;
-        this.showDeployNetwork = false;
-
+        this.goLoginMain();
         return this.loadIdentityCards(true);
     }
 
@@ -291,8 +354,12 @@ export class LoginComponent implements OnInit {
                     let deletePromise: Promise<void>;
                     let cards = this.identityCardService.getAllCardsForBusinessNetwork(card.getBusinessNetworkName(), this.identityCardService.getQualifiedProfileName(card.getConnectionProfile()));
                     if (card.getConnectionProfile()['x-type'] === 'web' && cards.size === 1) {
-                           deletePromise = this.adminService.connect(cardRef, card, true)
+                        deletePromise = this.adminService.connect(cardRef, card, true)
                             .then(() => {
+                                this.alertService.busyStatus$.next({
+                                    title: 'Undeploying business network',
+                                    force: true
+                                });
                                 return this.adminService.undeploy(card.getBusinessNetworkName());
                             });
                     } else {
@@ -303,6 +370,7 @@ export class LoginComponent implements OnInit {
                         .then(() => {
                             return this.identityCardService.deleteIdentityCard(cardRef)
                                 .then(() => {
+                                    this.alertService.busyStatus$.next(null);
                                     this.alertService.successStatus$.next({
                                         title: 'ID Card Removed',
                                         text: 'The ID card was successfully removed from My Wallet.',

@@ -2,7 +2,7 @@ title: Hyperledger Composer
 description: Create business networks and application for Hyperledger
 
 email:
-url: "https://hyperledger.github.io/composer/"
+url: "https://hyperledger.github.io"
 
 
 #For publishing to your own gh-pages branch of the Docs repo this will need to
@@ -43,5 +43,5 @@ exclude: [
          ]
 
 google_tracking_id:
-  development: UA-91314349-2
-  production: UA-91314349-1
+  development-disabled: UA-91314349-2
+  production-disabled: UA-91314349-1

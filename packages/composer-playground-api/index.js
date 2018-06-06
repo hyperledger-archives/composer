@@ -16,16 +16,14 @@
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('composer-connector-server');
-const fs = require('fs');
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const http = require('http');
-const socketIO = require('socket.io');
 const Logger = require('composer-common').Logger;
-const Util = require('./lib/util');
+const NetworkCardStoreManager = require('composer-common').NetworkCardStoreManager;
 const npmRoute = require('./routes/npm');
+const socketIO = require('socket.io');
+const Util = require('./lib/util');
 
 const LOG = Logger.getLog('PlaygroundAPI');
-
 /**
  * Create an Express.js application that hosts both the REST API for Composer Playground
  * and the Connector Server for supporting the proxy connector.
@@ -33,7 +31,7 @@ const LOG = Logger.getLog('PlaygroundAPI');
  * @param {testMode} testMode Is the api started in test mode
  * @return {Object} The Express.js application.
  */
-function createServer (port, testMode) {
+async function createServer (port, testMode) {
     const method = 'createServer';
     LOG.entry(method, port, testMode);
 
@@ -41,7 +39,7 @@ function createServer (port, testMode) {
 
     npmRoute(app, testMode);
 
-    const businessNetworkCardStore = new FileSystemCardStore(fs);
+    const businessNetworkCardStore = NetworkCardStoreManager.getCardStore();
     const connectionProfileManager = new ConnectionProfileManager();
 
     // Create the Express server.
@@ -51,16 +49,23 @@ function createServer (port, testMode) {
     const io = socketIO(server);
     io.on('connect', (socket) => {
         LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
+        socket.on('disconnect', (reason) => {
+            LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected (${reason})`);
+        });
         new ConnectorServer(businessNetworkCardStore, connectionProfileManager, socket);
     });
-    io.on('disconnect', (socket) => {
-        LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
+
+    port = await new Promise((resolve, reject) => {
+        server.listen(port, (error) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(server.address().port);
+        });
     });
 
-    server.listen(port);
     // Save the port back into the app. If the port was 0, it will now have
     // been set to a dynamically assigned port.
-    port = server.address().port;
     app.set('port', port);
     LOG.info(method, `Playground API started on port ${port}`);
     if(testMode) {

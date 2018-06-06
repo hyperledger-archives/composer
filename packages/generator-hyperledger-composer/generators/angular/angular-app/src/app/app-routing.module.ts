@@ -17,24 +17,22 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 
-import { SampleAssetComponent } from './SampleAsset/SampleAsset.component';
-import { TestComponent } from './Test/Test.component';
+import { CommodityComponent } from './Commodity/Commodity.component';
 
-import { UserComponent } from './User/User.component';
+import { TraderComponent } from './Trader/Trader.component';
 
-import { ChangeAssetValueComponent } from './ChangeAssetValue/ChangeAssetValue.component';
+import { TradeComponent } from './Trade/Trade.component';
 
 
-  import { ChangeAssetValueLogicComponent } from './ChangeAssetValueLogic/ChangeAssetValueLogic.transaction';
+  import { TradeLogicComponent } from './TradeLogic/TradeLogic.transaction';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'SampleAsset', component: SampleAssetComponent },
-  { path: 'Test', component: TestComponent },
-  { path: 'User', component: UserComponent },
-  { path: 'ChangeAssetValue', component: ChangeAssetValueComponent },
+  { path: 'Commodity', component: CommodityComponent },
+  { path: 'Trader', component: TraderComponent },
+  { path: 'Trade', component: TradeComponent },
         
-          { path: 'ChangeAssetValueLogic', component: ChangeAssetValueLogicComponent},
+          { path: 'TradeLogic', component: TradeLogicComponent},
           
     
   { path: '**', redirectTo: '' }

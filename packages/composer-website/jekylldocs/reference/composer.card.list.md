@@ -11,7 +11,7 @@ excerpt: Hyperledger Composer Card List
 List all business network cards stored in the local wallet, or if a card is specified, display details of that business network card.
 
 ```
-composer card list --name admin@tutorial-network
+composer card list --card admin@tutorial-network
 ```
 
 ## Syntax
@@ -20,6 +20,6 @@ composer card list --name admin@tutorial-network
 Options:
   --help         Show help  [boolean]
   -v, --version  Show version number  [boolean]
-  --name, -n     The name used to identify the card  [string]
+  --card, -c     The name of the card to list  [string]
   --quiet, -q    Only display the card name  [boolean]
 ```

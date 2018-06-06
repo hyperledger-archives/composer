@@ -15,7 +15,6 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
@@ -134,10 +133,11 @@ chai.use(require('chai-http'));
         let participantRegistry;
         let serializer;
         let idCard;
+        let adminConnection;
 
         before(() => {
-            const cardStore = new MemoryCardStore();
-            const adminConnection = new AdminConnection({ cardStore });
+            const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
+            adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
 
@@ -154,10 +154,10 @@ chai.use(require('chai-http'));
             .then((result) => {
                 businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.install(businessNetworkDefinition.getName());
+                return adminConnection.install(businessNetworkDefinition);
             })
             .then(()=>{
-                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
+                return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(),{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
@@ -192,6 +192,9 @@ chai.use(require('chai-http'));
             });
         });
 
+        after(() => {
+            return adminConnection.undeploy();
+        });
 
         describe(`POST / namespaces[${namespaces}]`, () => {
 

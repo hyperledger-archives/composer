@@ -31,13 +31,13 @@ describe('Starting tests for angular-app', function() {
     })
   });
 
-  it('network-name should be test@0.0.1',() => {
+  it('network-name should be tutorial-network@0.0.1',() => {
     element(by.css('.network-name')).getWebElement()
     .then((webElement) => {
       return webElement.getText();
     })
     .then((txt) => {
-      expect(txt).toBe('test@0.0.1.bna');
+      expect(txt).toBe('tutorial-network@0.0.1.bna');
     });
   });
 
@@ -52,72 +52,54 @@ describe('Starting tests for angular-app', function() {
   });
 
   
-    it('SampleAsset component should be loadable',() => {
-      page.navigateTo('/SampleAsset');
+    it('Commodity component should be loadable',() => {
+      page.navigateTo('/Commodity');
       browser.findElement(by.id('assetName'))
       .then((assetName) => {
         return assetName.getText();
       })
       .then((txt) => {
-        expect(txt).toBe('SampleAsset');
+        expect(txt).toBe('Commodity');
       });
     });
 
-    it('SampleAsset table should have 3 columns',() => {
-      page.navigateTo('/SampleAsset');
+    it('Commodity table should have 6 columns',() => {
+      page.navigateTo('/Commodity');
       element.all(by.css('.thead-cols th')).then(function(arr) {
-        expect(arr.length).toEqual(3); // Addition of 1 for 'Action' column
-      });
-    });
-  
-    it('Test component should be loadable',() => {
-      page.navigateTo('/Test');
-      browser.findElement(by.id('assetName'))
-      .then((assetName) => {
-        return assetName.getText();
-      })
-      .then((txt) => {
-        expect(txt).toBe('Test');
-      });
-    });
-
-    it('Test table should have 2 columns',() => {
-      page.navigateTo('/Test');
-      element.all(by.css('.thead-cols th')).then(function(arr) {
-        expect(arr.length).toEqual(2); // Addition of 1 for 'Action' column
+        expect(arr.length).toEqual(6); // Addition of 1 for 'Action' column
       });
     });
   
 
   
-    it('User component should be loadable',() => {
-      page.navigateTo('/User');
+    it('Trader component should be loadable',() => {
+      page.navigateTo('/Trader');
       browser.findElement(by.id('participantName'))
       .then((participantName) => {
         return participantName.getText();
       })
       .then((txt) => {
-        expect(txt).toBe('User');
+        expect(txt).toBe('Trader');
       });
     });
 
-    it('User table should have 2 columns',() => {
-      page.navigateTo('/User');
+    it('Trader table should have 4 columns',() => {
+      page.navigateTo('/Trader');
       element.all(by.css('.thead-cols th')).then(function(arr) {
-        expect(arr.length).toEqual(2); // Addition of 1 for 'Action' column
+        expect(arr.length).toEqual(4); // Addition of 1 for 'Action' column
       });
     });
   
 
   
-    it('ChangeAssetValue component should be loadable',() => {
-      page.navigateTo('/ChangeAssetValue');
+    it('Trade component should be loadable',() => {
+      page.navigateTo('/Trade');
       browser.findElement(by.id('transactionName'))
       .then((transactionName) => {
         return transactionName.getText();
       })
       .then((txt) => {
-        expect(txt).toBe('ChangeAssetValue');
+        expect(txt).toBe('Trade');
       });
     });
   

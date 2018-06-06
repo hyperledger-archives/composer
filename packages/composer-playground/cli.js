@@ -34,52 +34,23 @@ const argv = require('yargs')
 const isDocker = require('is-docker');
 const Logger = require('composer-common').Logger;
 const opener = require('opener');
-const util = require('util');
 
 const LOG = Logger.getLog('Composer');
+Logger.setCLIDefaults();
 
-Logger.setFunctionalLogger({
-    log: (level, method, msg, args) => {
-        args = args || [];
-        let formattedArguments = args.map((arg) => {
-            if (arg === Object(arg)) {
-                // It's an object, array, or function, so serialize it as JSON.
-                try {
-                    return JSON.stringify(arg);
-                } catch (e) {
-                    return arg;
-                }
-            } else {
-                return arg;
-            }
-        }).join(', ');
-        /* eslint-disable no-console */
-        switch (level) {
-            case 'debug':
-                return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-            case 'warn':
-                return console.warn(util.format('%s %s %s', method, msg, formattedArguments));
-            case 'info':
-                return console.info(util.format('%s %s %s', method, msg, formattedArguments));
-            case 'verbose':
-                return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-            case 'error':
-                return console.error(util.format('%s %s %s', method, msg, formattedArguments));
-        }
-        /* eslint-enable no-console */
-    }
-});
 
 let config;
 if (process.env.COMPOSER_CONFIG) {
     config = JSON.parse(process.env.COMPOSER_CONFIG);
 }
 
-const method = 'main';
-LOG.entry(method);
+(async function main() {
+    const method = 'main';
+    LOG.entry(method);
 
-require('.')(argv.port, argv.test, config);
+    await require('.')(argv.port, argv.test, config);
 
-if (!isDocker()) {
-    opener(`http://localhost:${argv.port}`);
-}
+    if (!isDocker()) {
+        opener(`http://localhost:${argv.port}`);
+    }
+})();

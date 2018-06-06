@@ -1,15 +1,34 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 
 let yeoman = require('yeoman-generator');
+let optionOrPrompt = require('yeoman-option-or-prompt');
+let Util = require('../util');
 
 module.exports = yeoman.Base.extend({
+
+    _optionOrPrompt: optionOrPrompt,
+
     constructor: function() {
         yeoman.Base.apply(this, arguments);
         this.options = this.env.options;
     },
 
     prompting: function() {
-        console.log('Welcome to the model generator');
+        Util.log('Welcome to the model generator');
 
         let questions = [
             {
@@ -17,53 +36,28 @@ module.exports = yeoman.Base.extend({
                 name: 'appname',
                 message: 'Model project name:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1 && input === input.toLowerCase()) {
-                        return true;
-                    } else {
-                        return 'Name cannot be null, empty or contain a space or uppercase character.';
-                    }
-                }
+                validate: Util.validateBusinessNetworkName
             },
             {
                 type: 'input',
                 name: 'appdescription',
                 message: 'Description:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Description cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateDescription
             },
             {
                 type: 'input',
                 name: 'appauthor',
                 message: 'Author name: ',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author name cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateAuthorName
             },
             {
                 type: 'input',
                 name: 'appemail',
                 message: 'Author email:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    }
-                    else {
-                        return 'Author email cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateAuthorEmail
             },
             {
                 type: 'input',
@@ -71,35 +65,23 @@ module.exports = yeoman.Base.extend({
                 message: 'License:',
                 default: 'Apache-2.0',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Licence cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateLicense
             },
             {
                 type: 'input',
-                name: 'namespace',
+                name: 'ns',
                 message: 'Namespace:',
-                default: 'org.acme.biznet',
+                default: 'org.example.mynetwork',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must mactch: ^(?:[a-z]\d*(?:\.[a-z])?)+$';
-                    }
-                }
+                validate: Util.validateNamespace
             }
         ];
 
-        return this.prompt(questions)
+        return this._optionOrPrompt(questions)
             .then((answers) => {
                 this.appname = answers.appname;
                 this.appemail = answers.appemail;
-                this.namespace = answers.namespace;
+                this.namespace = answers.ns;
                 this.appdescription = answers.appdescription;
                 this.appauthor = answers.appauthor;
                 this.applicense = answers.applicense;

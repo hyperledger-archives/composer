@@ -47,7 +47,7 @@
 
         "serializer-constructor-factorynull": "Factory cannot be null",
         "serializer-constructor-modelmanagernull": "ModelManager cannot be null",
-        "serializer-tojson-notcobject": "Serializer.toJSON only accepts instances of Resource.",
+        "serializer-tojson-notcobject": "Serializer.toJSON only accepts Concept, Event, Asset, Participant or Transaction.",
 
         "util-securitycheck-novalidcontext": "A valid SecurityContext must be specified.",
 

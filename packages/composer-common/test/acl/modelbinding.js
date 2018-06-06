@@ -41,6 +41,7 @@ describe('ModelBinding', () => {
     const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing.*'};
     const missingRecursiveNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing.**'};
     const missing = {'type':'Binding','qualifiedName':'org.missing.Missing.*','instanceId':'ABC123'};
+    const noNS = {'type':'Binding','qualifiedName':'any'};
 
     beforeEach(() => {
         aclFile = sinon.createStubInstance(AclFile);
@@ -123,7 +124,7 @@ describe('ModelBinding', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missingClass );
                 modelBinding.validate();
-            }).should.throw(/Failed to find class org.acme.Missing/);
+            }).should.throw(/^Expected class \"org\.acme\.Missing\" to be defined$/);
         });
 
         it('should detect reference to missing namespace in the modelmanager', () => {
@@ -131,28 +132,35 @@ describe('ModelBinding', () => {
                 modelBinding = new ModelBinding( aclRule, classAst );
                 sinon.stub(modelManager,'getModelFile').returns(false);
                 modelBinding.validate();
-            }).should.throw(/Failed to find namespace org.acme/);
+            }).should.throw(/Expected class \"org\.acme\.Car\" to be defined but namespace \"org\.acme\" not found/);
         });
 
         it('should detect reference to missing namespace', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missingNamespace );
                 modelBinding.validate();
-            }).should.throw(/Failed to find namespace org.missing.Missing/);
+            }).should.throw(/Expected namespace \"org\.missing\.Missing\.\*\" to be defined/);
         });
 
         it('should detect reference to missing recursive namespace', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missingRecursiveNamespace );
                 modelBinding.validate();
-            }).should.throw(/Failed to find namespace org.missing.Missing/);
+            }).should.throw(/Expected namespace \"org\.missing\.Missing\.\*\*" to be defined/);
         });
 
         it('should detect reference to missing namespace with variable name', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missing );
                 modelBinding.validate();
-            }).should.throw(/Failed to find namespace org.missing.Missing/);
+            }).should.throw(/Expected namespace \"org\.missing\.Missing\.\*" to be defined/);
+        });
+
+        it('should detect reference to class with no namespace', () => {
+            (() => {
+                modelBinding = new ModelBinding( aclRule, noNS );
+                modelBinding.validate();
+            }).should.throw(/Expected class \"any\" to include namespace/);
         });
 
     });

@@ -33,93 +33,59 @@ class LoopBackWallet extends Wallet {
 
     /**
      * List all of the credentials in the wallet.
-     * @abstract
      * @return {Promise} A promise that is resolved with
      * an array of credential names, or rejected with an
      * error.
      */
-    list() {
-        return this.card.reload()
-            .then((card) => {
-                return Object.keys(card.data).sort();
-            });
+    async listNames() {
+        const card = await this.card.reload();
+        return Object.keys(card.data).sort();
     }
 
     /**
      * Check to see if the named credentials are in
      * the wallet.
-     * @abstract
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved with
      * a boolean; true if the named credentials are in the
      * wallet, false otherwise.
      */
-    contains(name) {
-        return this.card.reload()
-            .then((card) => {
-                return card.data.hasOwnProperty(name);
-            });
+    async contains(name) {
+        const card = await this.card.reload();
+        return card.data.hasOwnProperty(name);
     }
 
     /**
      * Get the named credentials from the wallet.
-     * @abstract
      * @param {string} name The name of the credentials.
      * @return {Promise} A promise that is resolved with
      * the named credentials, or rejected with an error.
      */
-    get(name) {
-        return this.card.reload()
-            .then((card) => {
-                return card.data[name];
-            });
+    async get(name) {
+        const card = await this.card.reload();
+        return card.data[name];
     }
 
     /**
      * Add a new credential to the wallet.
-     * @abstract
      * @param {string} name The name of the credentials.
      * @param {string} value The credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
+     * @param {Object} [meta] Optional object with meta data
      */
-    add(name, value) {
-        return this.card.reload()
-            .then((card) => {
-                card.data[name] = value;
-                return card.save();
-            });
-    }
-
-    /**
-     * Update existing credentials in the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @param {string} value The credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
-     */
-    update(name, value) {
-        return this.card.reload()
-            .then((card) => {
-                card.data[name] = value;
-                return card.save();
-            });
+    async put(name, value, meta = {}) {
+        const card = await this.card.reload();
+        card.data[name] = value;
+        await card.save();
     }
 
     /**
      * Remove existing credentials from the wallet.
-     * @abstract
      * @param {string} name The name of the credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
      */
-    remove(name) {
-        return this.card.reload()
-            .then((card) => {
-                delete card.data[name];
-                return card.save();
-            });
+    async remove(name) {
+        const card = await this.card.reload();
+        delete card.data[name];
+        await card.save();
     }
 
 }

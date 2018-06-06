@@ -36,48 +36,19 @@ const argv = require('yargs')
     .argv;
 
 const Logger = require('composer-common').Logger;
-const util = require('util');
-
+Logger.setCLIDefaults();
 const LOG = Logger.getLog('PlaygroundAPI');
 
-Logger.setFunctionalLogger({
-    log: (level, method, msg, args) => {
-        args = args || [];
-        let formattedArguments = args.map((arg) => {
-            if (arg === Object(arg)) {
-                // It's an object, array, or function, so serialize it as JSON.
-                try {
-                    return JSON.stringify(arg);
-                } catch (e) {
-                    return arg;
-                }
-            } else {
-                return arg;
-            }
-        }).join(', ');
-        switch (level) {
-        case 'debug':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'warn':
-            return console.warn(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'info':
-            return console.info(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'verbose':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'error':
-            return console.error(util.format('%s %s %s', method, msg, formattedArguments));
-        }
+(async function main() {
+    const method = 'main';
+    LOG.entry(method);
+
+    const app = await require('.')(argv.port, argv.test);
+
+    if (process.env.COMPOSER_CONFIG) {
+        const config = JSON.parse(process.env.COMPOSER_CONFIG);
+        app.get('/config.json', (req, res, next) => {
+            res.json(config);
+        });
     }
-});
-
-const method = 'main';
-LOG.entry(method);
-
-const app = require('.')(argv.port, argv.test);
-
-if (process.env.COMPOSER_CONFIG) {
-    const config = JSON.parse(process.env.COMPOSER_CONFIG);
-    app.get('/config.json', (req, res, next) => {
-        res.json(config);
-    });
-}
+})();

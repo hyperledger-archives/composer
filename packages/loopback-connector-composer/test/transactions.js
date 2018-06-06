@@ -15,7 +15,6 @@
 'use strict';
 
 const AdminConnection = require('composer-admin').AdminConnection;
-const MemoryCardStore = require('composer-common').MemoryCardStore;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const connector = require('..');
@@ -132,7 +131,7 @@ chai.use(require('chai-as-promised'));
         let idCard;
 
         before(() => {
-            const cardStore = new MemoryCardStore();
+            const cardStore = require('composer-common').NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
             adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', secret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
@@ -150,10 +149,10 @@ chai.use(require('chai-as-promised'));
             .then((result) => {
                 businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.install(businessNetworkDefinition.getName());
+                return adminConnection.install(businessNetworkDefinition);
             })
             .then(()=>{
-                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
+                return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret :'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });

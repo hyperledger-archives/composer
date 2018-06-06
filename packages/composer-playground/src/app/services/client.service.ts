@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Injectable } from '@angular/core';
 
 import { AdminService } from './admin.service';
@@ -6,10 +19,7 @@ import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
-import {
-    BusinessNetworkDefinition,
-    TransactionDeclaration
-} from 'composer-common';
+import { BusinessNetworkDefinition, TransactionDeclaration } from 'composer-common';
 
 @Injectable()
 export class ClientService {
@@ -18,6 +28,7 @@ export class ClientService {
     private connectingPromise: Promise<any> = null;
 
     private currentBusinessNetwork: BusinessNetworkDefinition = null;
+    private deployedBusinessNetworkVersion: string = null;
 
     constructor(private adminService: AdminService,
                 private identityCardService: IdentityCardService,
@@ -42,9 +53,17 @@ export class ClientService {
     getBusinessNetwork(): BusinessNetworkDefinition {
         if (!this.currentBusinessNetwork) {
             this.currentBusinessNetwork = this.getBusinessNetworkConnection().getBusinessNetwork();
+            this.deployedBusinessNetworkVersion = this.currentBusinessNetwork.getMetadata().getVersion();
         }
 
         return this.currentBusinessNetwork;
+    }
+
+    getDeployedBusinessNetworkVersion(): string {
+        if (!this.deployedBusinessNetworkVersion) {
+            this.deployedBusinessNetworkVersion = this.getBusinessNetwork().getMetadata().getVersion();
+        }
+        return this.deployedBusinessNetworkVersion;
     }
 
     ensureConnected(force: boolean = false): Promise<any> {
@@ -57,9 +76,11 @@ export class ClientService {
         let cardName = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
         this.alertService.busyStatus$.next({
             title: 'Establishing connection',
-            text: 'Using the connection profile ' + card.getConnectionProfile().name
+            text: 'Using the connection profile ' + connectionProfileName,
+            force: true
         });
 
         this.connectingPromise = this.adminService.connect(cardName, card, force)
@@ -67,7 +88,6 @@ export class ClientService {
                 return this.refresh();
             })
             .then(() => {
-                console.log('connected');
                 this.isConnected = true;
                 this.connectingPromise = null;
                 this.alertService.busyStatus$.next(null);
@@ -83,12 +103,16 @@ export class ClientService {
 
     refresh(): Promise<any> {
         this.currentBusinessNetwork = null;
+        this.deployedBusinessNetworkVersion = null;
         let cardRef = this.identityCardService.getCurrentCardRef();
         let card = this.identityCardService.getCurrentIdentityCard();
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
+
         this.alertService.busyStatus$.next({
             title: 'Refreshing Connection',
-            text: 'refreshing the connection to ' + card.getConnectionProfile().name
+            text: 'refreshing the connection to ' + connectionProfileName,
+            force: true
         });
 
         return this.getBusinessNetworkConnection().disconnect()

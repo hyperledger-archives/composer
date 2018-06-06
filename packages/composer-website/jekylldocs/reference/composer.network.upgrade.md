@@ -10,15 +10,13 @@ excerpt: Composer Network Update CLI
 
 ---
 
-The `composer network upgrade` utility is used to update a deployed business network archive from local disk to a {{site.data.conrefs.hlf_full}} runtime.
+The `composer network upgrade` utility is used to upgrade the {{site.data.conrefs.composer_full}} business network to a new version.
 
 ```
-composer network upgrade -c <business-network-card>
+composer network upgrade -n <business-network-name> -V <business-network-version> -c <business-network-card>
 ```
 
-`composer network upgrade` upgrades the {{site.data.conrefs.composer_full}} runtime of the named business network to use a new micro version. Before running the `composer network upgrade` command, a new version of the {{site.data.conrefs.composer_full}} runtime must have been deployed to a blockchain node by using the `composer runtime install` command.
-
-*Please Note*: `composer network upgrade` is only suitable for upgrading between micro versions of the {{site.data.conrefs.composer_full}} runtime. Micro versions are defined as the third decimal number of a release, for example, in release 0.9.2, the major version is 0, the minor version is 9, and the micro version is 2.
+`composer network upgrade` upgrades the named {{site.data.conrefs.composer_full}} business network. Before running the `composer network upgrade` command, a new version of the {{site.data.conrefs.composer_full}} business network must have been installed to a blockchain node by using the `composer network install` command.
 
 ### Options
 
@@ -26,7 +24,13 @@ composer network upgrade -c <business-network-card>
 composer network upgrade [options]
 
 Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  -c, --card                   The business network card defining the network to upgrade. [string]
+  --help                     Show help  [boolean]
+  -v, --version              Show version number  [boolean]
+  --card, -c                 The cardname to use to upgrade the network  [string] [required]
+  --networkName, -n          Name of the business network to upgrade  [required]
+  --networkVersion, -V       Version of the business network to upgrade to  [required]
+  --option, -o               Options that are specific to connection. Multiple options are specified by repeating this option  [string]
+  --optionsFile, -O          A file containing options that are specific to connection  [string]
 ```
+
+Please refer to [Connector specific information](../managing/connector-information.html) for more information about connecting to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}.

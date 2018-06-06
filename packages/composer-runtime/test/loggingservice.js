@@ -22,85 +22,51 @@ describe('LoggingService', () => {
 
     let loggingService = new LoggingService();
 
-    describe('#logCritical', () => {
+    describe('#getLoggerCfg', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.logCritical('wow such log');
+                loggingService.getLoggerCfg();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+    describe('#setLoggerCfg', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.setLoggerCfg();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+    describe('#initLogging', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.initLogging();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+    describe('#callback', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                loggingService.callback();
             }).should.throw(/abstract function called/);
         });
 
     });
 
-    describe('#logDebug', () => {
+    describe('#mapCfg', () => {
 
         it('should throw as abstract method', () => {
             (() => {
-                loggingService.logDebug('wow such log');
+                loggingService.mapCfg();
             }).should.throw(/abstract function called/);
         });
 
     });
-
-    describe('#logError', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.logError('wow such log');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#logInfo', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.logInfo('wow such log');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#logNotice', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.logNotice('wow such log');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#logWarning', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.logWarning('wow such log');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#setLogLevel', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.setLogLevel('wow such log');
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#getLogLevel', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                loggingService.getLogLevel();
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
 
 });

@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.17.1",
+  "version": "0.19.8",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -8,21 +8,24 @@
     "npm": ">=5"
   },
   "scripts": {
-    "jsdocpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
-    "doc": "npm run apiref && ./scripts/generate-uml.sh && npm run jsdocpub",
-    "apiref": "mkdirp ./jsondata && ./scripts/generate-apidocs.sh ",
-    "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
-    "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
+    "systemnsDocs": "../composer-documentation/bin/opus --archive dummy.bna --outdir ./jekylldocs/systemns --config ../composer-documentation/_configs/sns-config.yaml --nsDocsRoot ../composer-common/lib/system/",
+    "doc": "npm run apiref && ./scripts/generate-uml.sh",
+    "apiref": "npm run systemnsDocs && mkdirp ./jsondata && ./scripts/generate-apidocs.sh ",
     "jekyllserve": "./scripts/setup-jekyll.sh && npm run apiref && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
+    "full:v0.16": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_v0.16.yml",
+    "full:v0.16-unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_v0.16-unstable.yml",
     "full:latest": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_latest.yml",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
     "full:next": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_next.yml",
     "full:next-unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_next-unstable.yml",
     "changelog": "./scripts/changelog.sh",
+    "linkcheck:v0.16": "./scripts/linkcheck.sh v0.16",
+    "linkcheck:v0.16-unstable": "./scripts/linkcheck.sh v0.16-unstable",
     "linkcheck:latest": "./scripts/linkcheck.sh latest",
     "linkcheck:unstable": "./scripts/linkcheck.sh unstable",
     "linkcheck:next": "./scripts/linkcheck.sh next",
-    "linkcheck:next-unstable": "./scripts/linkcheck.sh next-unstable"
+    "linkcheck:next-unstable": "./scripts/linkcheck.sh next-unstable",
+    "licchk": "license-check-and-add"
   },
   "repository": {
     "type": "git",
@@ -36,16 +39,67 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "0.17.1",
-    "composer-client": "0.17.1",
-    "composer-common": "0.17.1",
-    "composer-runtime": "0.17.1",
-    "jsdoc": "3.5.5",
+    "composer-admin": "0.19.8",
+    "composer-client": "0.19.8",
+    "composer-common": "0.19.8",
+    "composer-documentation": "0.19.8",
+    "composer-runtime": "0.19.8",
+    "license-check-and-add": "2.3.1",
     "mkdirp": "0.5.1",
     "node-plantuml": "0.5.0",
     "sanitize-html": "1.14.1"
   },
   "dependencies": {
     "jekyll": "3.0.0-beta1"
+  },
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "LICENSE.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      "node_modules",
+      "jsdoc-template/static",
+      "jekylldocs/assets/js/autotrack.js",
+      "jekylldocs/assets/js/libs/prettify.js",
+      "jekylldocs/assets/js/lunr.js",
+      "jekylldocs/api",
+      "jekylldocs/jsdoc",
+      "jekylldocs/_site"
+    ],
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".md",
+      ".yml",
+      ".mp4",
+      ".txt",
+      ".conf",
+      ".css",
+      ".tpl",
+      ".uml",
+      ".log"
+    ],
+    "insert_license": false,
+    "license_formats": {
+      "js|scss": {
+        "prepend": "/*",
+        "append": " */",
+        "eachLine": {
+          "prepend": " * "
+        }
+      },
+      "npmrc|editorconfig|rb": {
+        "eachLine": {
+          "prepend": "# "
+        }
+      },
+      "tmpl": {
+        "prepend": "{#",
+        "append": "#}"
+      },
+      "njk": {
+        "prepend": "{#",
+        "append": "-#}"
+      }
+    }
   }
 }

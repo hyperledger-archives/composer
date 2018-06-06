@@ -1,11 +1,23 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Injectable } from '@angular/core';
 
 import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkCardStoreService } from './cardStores/businessnetworkcardstore.service';
 
 import { AdminConnection } from 'composer-admin';
-import { ConnectionProfileManager, Logger, BusinessNetworkDefinition, IdCard } from 'composer-common';
-
+import { BusinessNetworkDefinition, ConnectionProfileManager, IdCard } from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 
@@ -18,17 +30,12 @@ export class AdminService {
 
     constructor(private alertService: AlertService,
                 private businessNetworkCardStoreService: BusinessNetworkCardStoreService) {
-        Logger.setFunctionalLogger({
-            // tslint:disable-next-line:no-empty
-            log: () => {
-            }
-        });
         // The proxy connection manager defaults to http://localhost:15699,
         // but that is not suitable for anything other than development.
         if (ENV && ENV !== 'development') {
             ProxyConnectionManager.setConnectorServerURL(window.location.origin);
         }
-
+        ConnectionProfileManager.registerConnectionManager('proxy', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlf', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlfv1', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
@@ -53,9 +60,11 @@ export class AdminService {
 
         console.log('Establishing admin connection ...');
 
+        const connectionProfileName = card.getConnectionProfile()['x-type'] === 'web' ? 'web' : card.getConnectionProfile().name;
         this.alertService.busyStatus$.next({
             title: card.getBusinessNetworkName() ? 'Connecting to Business Network ' + card.getBusinessNetworkName() : 'Connecting without a business network',
-            text: 'using connection profile ' + card.getConnectionProfile().name
+            text: 'using connection profile ' + connectionProfileName,
+            force: true
         });
 
         this.connectingPromise = this.getAdminConnection().connect(cardName)
@@ -83,24 +92,20 @@ export class AdminService {
         return this.getAdminConnection().reset(businessNetworkDefinitionName);
     }
 
-    public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().deploy(businessNetworkDefinition);
+    public upgrade(businessNetworkName: String, businessNetworkVersion: String): Promise<void> {
+        return this.getAdminConnection().upgrade(businessNetworkName, businessNetworkVersion);
     }
 
-    public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
-        return this.getAdminConnection().update(businessNetworkDefinition);
+    public install(businessNetworkDefinition: BusinessNetworkDefinition): Promise<void> {
+        return this.getAdminConnection().install(businessNetworkDefinition);
     }
 
-    public install(businessNetworkDefinitionName: string): Promise<void> {
-        return this.getAdminConnection().install(businessNetworkDefinitionName);
+    public start(businessNetworkName: String, businessNetworkVersion: String, startOptions?: object): Promise<Map<string, IdCard>> {
+        return this.getAdminConnection().start(businessNetworkName, businessNetworkVersion, startOptions);
     }
 
-    public start(businessNetworkDefinition: BusinessNetworkDefinition, startOptions?: object): Promise<Map<string, IdCard>> {
-        return this.getAdminConnection().start(businessNetworkDefinition, startOptions);
-    }
-
-    public undeploy(businessNetworkDefinitionName: string): Promise<void> {
-        return this.getAdminConnection().undeploy(businessNetworkDefinitionName);
+    public undeploy(businessNetworkName: String): Promise<void> {
+        return this.getAdminConnection().undeploy(businessNetworkName);
     }
 
     public importCard(cardName: string, card: IdCard): Promise<void> {

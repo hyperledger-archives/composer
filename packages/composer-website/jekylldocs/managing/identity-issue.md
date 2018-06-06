@@ -39,20 +39,22 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
-      })
-      .then((result) => {
+
+  async function identityIssue() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let result = await businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
           console.log(`userID = ${result.userID}`);
           console.log(`userSecret = ${result.userSecret}`);
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
-          console.error(error);
+          await businessNetworkConnection.disconnect();
+      } catch(error) {
+          console.log(error);
           process.exit(1);
-      });
+      }
+  }
+  
+  identityIssue();
   ```
   * Command line
 
@@ -60,28 +62,35 @@ The example assumes that an instance, `net.biz.digitalPropertyNetwork#mae@biznet
   composer identity issue -c admin@network -f maeid1.card -u maeid1 -a "resource:net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
   ```
 
+  This will issue card for the user maeid1 and export a card file in your current directory.
+
 2. As the participant, test the connection to the business network
   * JavaScript API
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.ping();
-      })
-      .then((result) => {
+
+  async function testConnection() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let result = await businessNetworkConnection.ping();
           console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
+          await businessNetworkConnection.disconnect();
+      } catch((error) {
           console.error(error);
           process.exit(1);
-      });
+      }
+  }
+
+  testConnection();
   ```
 
   * Command line
 
   ```bash
+  composer card import -f maeid1@network.card
   composer network ping -c maeid1@network
   ```
+
+  You need to make sure to import the card into business network before pinging.

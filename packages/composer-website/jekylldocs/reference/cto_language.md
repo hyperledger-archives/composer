@@ -72,8 +72,8 @@ A resource definition has the following properties:
 
 
         /**
-        * An abstract Vehicle asset.
-        */
+         * An abstract Vehicle asset.
+         */
         abstract asset Vehicle identified by vin {
           o String vin
         }
@@ -83,14 +83,14 @@ A resource definition has the following properties:
 6. A set of relationships to other Composer types that are not owned by the resource but that may be referenced from the resource. Relationships are unidirectional.
 
 
-    /**
-     * A Field asset. A Field is related to a list of animals
-     */
-    asset Field identified by fieldId {
-      o String fieldId
-      o String name
-      --> Animal[] animals
-    }
+        /**
+         * A Field asset. A Field is related to a list of animals
+         */
+        asset Field identified by fieldId {
+          o String fieldId
+          o String name
+          --> Animal[] animals
+        }
 
 
 ### Declarations of enumerated types
@@ -99,12 +99,12 @@ Enumerated types are used to specify a type that may have 1 or N possible values
 
 ```
 /**
-* An enumerated type
-*/
+ * An enumerated type
+ */
 enum ProductType {
-o DAIRY
-o BEEF
-o VEGETABLES
+  o DAIRY
+  o BEEF
+  o VEGETABLES
 }
 ```
 
@@ -114,6 +114,7 @@ When another resource is created, for example, a participant, a property of that
 participant Farmer identified by farmerId {
     o String farmerId
     o ProductType primaryProduct
+}
 ```
 
 
@@ -133,6 +134,16 @@ abstract concept Address {
 
 concept UnitedStatesAddress extends Address {
   o String zipcode
+}
+```
+
+You can then use this concept, for example
+
+```
+participant Farmer identified by farmerId {
+    o String farmerId
+    o UnitedStatesAddress address
+    o ProductType primaryProduct
 }
 ```
 

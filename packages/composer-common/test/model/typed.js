@@ -79,7 +79,8 @@ describe('Typed', () => {
             'DateTime': '2017-09-26T22:35:53.871Z',
             'Double': 3.142,
             'Integer': 32768,
-            'Long': 10485760
+            'Long': 10485760,
+            'Test': 'THREE',
         };
 
         Object.keys(defaultValues).forEach((defaultValueType) => {
@@ -88,6 +89,11 @@ describe('Typed', () => {
                 const defaultValue = defaultValues[defaultValueType];
                 modelManager.addModelFile(`
                 namespace org.acme.defaults
+                enum Test {
+                    o ONE
+                    o TWO
+                    o THREE
+                }
                 asset DefaultAsset identified by assetId {
                     o String assetId
                     o ${defaultValueType} value default=${JSON.stringify(defaultValue)}

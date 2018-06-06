@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IllegalModelException = require('../introspect/illegalmodelexception');
+const IllegalAclException = require('./illegalaclexception');
 
 /**
  * Predicate captures a conditional Javascript expression:
@@ -32,11 +32,11 @@ class Predicate {
      *
      * @param {AclRule} aclRule - the AclRule for this Predicate
      * @param {Object} ast - the AST created by the parser
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      */
     constructor(aclRule, ast) {
         if(!aclRule || !ast) {
-            throw new IllegalModelException('Invalid AclRule or AST');
+            throw new IllegalAclException('Invalid AclRule or AST');
         }
 
         this.expression = ast;
@@ -76,7 +76,7 @@ class Predicate {
     /**
      * Process the AST and build the model
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     process() {
@@ -85,7 +85,7 @@ class Predicate {
     /**
      * Semantic validation of the structure of this ModelBinding.
      *
-     * @throws {IllegalModelException}
+     * @throws {IllegalAclException}
      * @private
      */
     validate() {

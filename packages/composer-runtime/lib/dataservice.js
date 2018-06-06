@@ -35,34 +35,7 @@ class DataService extends Service {
      * @return {Promise} A promise that will be resolved with a {@link DataCollection}
      * when complete, or rejected with an error.
      */
-    createCollection(id, force) {
-        force = !!force;
-        return new Promise((resolve, reject) => {
-            this._createCollection(id, force, (error, dataCollection) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(dataCollection);
-            });
-        });
-    }
-
-    /**
-     * @callback createCollectionCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {DataCollection} dataCollection The data collection.
-     */
-
-    /**
-     * Create a collection with the specified ID.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the collection.
-     * @param {force} force force creation, don't check for existence 1st
-     * @param {createCollectionCallback} callback The callback function to call when complete.
-     */
-    _createCollection(id, force, callback) {
+    async createCollection(id, force) {
         throw new Error('abstract function called');
     }
 
@@ -73,31 +46,7 @@ class DataService extends Service {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    deleteCollection(id) {
-        return new Promise((resolve, reject) => {
-            this._deleteCollection(id, (error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * @callback deleteCollectionCallback
-     * @protected
-     * @param {Error} error The error if any.
-     */
-
-    /**
-     * Delete a collection with the specified ID.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the collection.
-     * @param {deleteCollectionCallback} callback The callback function to call when complete.
-     */
-    _deleteCollection(id, callback) {
+    async deleteCollection(id) {
         throw new Error('abstract function called');
     }
 
@@ -105,35 +54,11 @@ class DataService extends Service {
     * Get the collection with the specified ID.
     * @abstract
     * @param {string} id The ID of the collection.
+    * @param {Boolean} bypass bypass existence check
     * @return {Promise} A promise that will be resolved with a {@link DataCollection}
     * when complete, or rejected with an error.
     */
-    getCollection(id) {
-        return new Promise((resolve, reject) => {
-            this._getCollection(id, (error, dataCollection) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(dataCollection);
-            });
-        });
-    }
-
-    /**
-     * @callback getCollectionCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {DataCollection} dataCollection The data collection.
-     */
-
-    /**
-     * Get the collection with the specified ID.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the collection.
-     * @param {getCollectionCallback} callback The callback function to call when complete.
-     */
-    _getCollection(id, callback) {
+    async getCollection(id, bypass) {
         throw new Error('abstract function called');
     }
 
@@ -144,32 +69,7 @@ class DataService extends Service {
      * @return {Promise} A promise that will be resolved with a boolean
      * indicating whether the collection exists.
      */
-    existsCollection(id) {
-        return new Promise((resolve, reject) => {
-            this._existsCollection(id, (error, exists) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(exists);
-            });
-        });
-    }
-
-    /**
-     * @callback existsCollectionCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {DataCollection} dataCollection The data collection.
-     */
-
-    /**
-     * Determine whether the collection with the specified ID exists.
-     * @abstract
-     * @private
-     * @param {string} id The ID of the collection.
-     * @param {existsCollectionCallback} callback The callback function to call when complete.
-     */
-    _existsCollection(id, callback) {
+    async existsCollection(id) {
         throw new Error('abstract function called');
     }
 
@@ -181,32 +81,7 @@ class DataService extends Service {
      * @return {Promise} A promise that will be resolved with an array of objects
      * when complete, or rejected with an error.
      */
-    executeQuery(queryString) {
-        return new Promise((resolve, reject) => {
-            this._executeQuery(queryString, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(result);
-            });
-        });
-    }
-
-    /**
-     * @callback executeQueryCallback
-     * @protected
-     * @param {Error} error The error if any.
-     * @param {Object[]} objects The objects.
-     */
-
-    /**
-     * Execute a query across all objects stored in all collections, using a query
-     * string that is dependent on the current Blockchain platform.
-     * @abstract
-     * @param {string} queryString The query string for the current Blockchain platform.
-     * @param {executeQueryCallback} callback The callback function to call when complete.
-     */
-    _executeQuery(queryString, callback) {
+    async executeQuery(queryString) {
         throw new Error('abstract function called');
     }
 

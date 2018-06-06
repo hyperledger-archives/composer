@@ -15,10 +15,7 @@
 'use strict';
 
 // Karma configuration
-// Generated on Sat Nov 12 2016 22:36:17 GMT+0000 (GMT)
-
-const processGlobal = require.resolve('browserfs/dist/shims/process.js');
-const browserfsPath = require.resolve('browserfs');
+// Generated on Fri Nov 18 2016 16:08:11 GMT+0000 (GMT)
 
 module.exports = function(config) {
     config.set({
@@ -29,23 +26,26 @@ module.exports = function(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'browserify'],
+        frameworks: ['mocha', 'chai'],
 
 
         // list of files / patterns to load in the browser
         files: [
+            require.resolve('babel-polyfill/browser.js'),
             'systest/**/*.js'
         ],
 
 
         // list of files to exclude
-        exclude: [],
+        exclude: [
+            'systest/data/**'
+        ],
 
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'systest/**/*.js': ['browserify']
+            'systest/**/*.js': ['webpack']
         },
 
 
@@ -65,7 +65,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_DEBUG,
+        logLevel: config.LOG_INFO,
 
 
         // enable / disable watching file and executing tests whenever any file changes
@@ -81,26 +81,46 @@ module.exports = function(config) {
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: false,
 
-        // Concurrency level    // how many browser should be started simultaneous
+        // Concurrency level
+        // how many browser should be started simultaneous
         concurrency: Infinity,
 
-        browserify: {
-            debug: true,
-            transform: ['brfs'],
-            builtins: Object.assign({}, require('browserify/lib/builtins'), {
-                buffer: require.resolve('browserfs/dist/shims/buffer.js'),
-                fs: require.resolve('browserfs/dist/shims/fs.js'),
-                path: require.resolve('browserfs/dist/shims/path.js'),
-            }),
-            insertGlobalVars: {
-                // process, Buffer, and BrowserFS globals.
-                // BrowserFS global is not required if you include browserfs.js
-                // in a script tag.
-                process: function () { return 'require(\''+processGlobal+'\')'; },
-                Buffer: function () { return 'require(\'buffer\').Buffer'; },
-                BrowserFS: function () { return 'require(\'' + browserfsPath + '\')'; }
+        webpack: {
+            // karma watches the test entry points
+            // (you don't need to specify the entry option)
+            // webpack watches dependencies
+
+            // webpack configuration
+            module: {
+                rules: [
+                    {
+                        test: /systest\/.*\.js$/,
+                        loader: 'transform-loader?brfs'
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /(node_modules(?!\/(composer|yallist|jsonata|uri-js))|bower_components)/,
+                        loader: 'babel-loader',
+                        query: {
+                            presets: [require.resolve('babel-preset-latest')]
+                        }
+                    }
+                ]
+            },
+            node: {
+                fs: 'empty',
+                net: 'empty',
+                tls: 'empty'
             }
         },
+
+        webpackMiddleware: {
+            // webpack-dev-middleware configuration
+            // i. e.
+            stats: 'errors-only'
+        },
+
+        browserNoActivityTimeout: 30000,
 
         client: {
             captureConsole: !!process.env.DEBUG,
@@ -115,7 +135,7 @@ module.exports = function(config) {
             suppressFailed: false, // do not print information about failed tests
             suppressPassed: false, // do not print information about passed tests
             suppressSkipped: true, // do not print information about skipped tests
-            showSpecTiming: false // print the time elapsed for each spec
+            showSpecTiming: true // print the time elapsed for each spec
         }
     });
 };

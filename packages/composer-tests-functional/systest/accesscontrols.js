@@ -16,26 +16,24 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
+const TestUtil = require('./testutil');
 const uuid = require('uuid');
 
-const TestUtil = require('./testutil');
-
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
-process.setMaxListeners(Infinity);
+if (process.setMaxListeners) {
+    process.setMaxListeners(Infinity);
+}
 
 describe('Access control system tests', function() {
-
     this.retries(TestUtil.retries());
 
     let bnID;
-
-
     let businessNetworkDefinition;
     let client, aliceClient, bobClient;
     let alice, bob;
@@ -44,11 +42,11 @@ describe('Access control system tests', function() {
     let aliceCar, bobCar;
     let cardStore;
 
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
+    before(async () => {
+        await TestUtil.setUp();
     });
 
-    before(function () {
+    before(async () => {
 
         // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
@@ -71,21 +69,17 @@ describe('Access control system tests', function() {
 
         bnID = businessNetworkDefinition.getName();
 
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-accesscontrols')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-accesscontrols');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
         let factory = client.getBusinessNetwork().getFactory();
         alice = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
         alice.firstName = 'Alice';
@@ -101,57 +95,22 @@ describe('Access control system tests', function() {
         bobCar = factory.newResource('systest.accesscontrols', 'SampleAsset', 'BO85 CAR');
         bobCar.theValue = 'Bob\'s car';
         bobCar.owner = factory.newRelationship('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
-        let aliceIdentity = uuid.v4(), bobIdentity = uuid.v4();
-        return client.getParticipantRegistry('systest.accesscontrols.SampleParticipant')
-            .then((participantRegistry) => {
-                return participantRegistry.addAll([alice, bob]);
-            })
-            .then(() => {
-                return client.issueIdentity(alice, aliceIdentity);
-            })
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-accesscontrols', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                aliceClient = result;
-                return client.issueIdentity(bob, bobIdentity);
-            })
-            .then((identity) => {
-                return TestUtil.getClient(cardStore,'systest-accesscontrols', identity.userID, identity.userSecret);
-            })
-            .then((result) => {
-                bobClient = result;
-                return client.getAssetRegistry('systest.accesscontrols.SampleAsset');
-            })
-            .then((assetRegistry) => {
-                return assetRegistry.addAll([aliceCar, bobCar]);
-            })
-            .then(() => {
-
-                return aliceClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
-            })
-            .then((assetRegistry) => {
-                aliceAssetRegistry = assetRegistry;
-                return bobClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
-            })
-            .then((assetRegistry) => {
-                bobAssetRegistry = assetRegistry;
-                return aliceClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
-            })
-            .then((participantRegistry) => {
-                aliceParticipantRegistry = participantRegistry;
-                return bobClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
-            })
-            .then((participantRegistry) => {
-                bobParticipantRegistry = participantRegistry;
-            });
+        const participantRegistry = await client.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
+        await participantRegistry.addAll([alice, bob]);
+        const aliceIdentity = await client.issueIdentity(alice, uuid.v4());
+        aliceClient = await TestUtil.getClient(cardStore,'systest-accesscontrols', aliceIdentity.userID, aliceIdentity.userSecret);
+        const bobIdentity = await client.issueIdentity(bob, uuid.v4());
+        bobClient = await TestUtil.getClient(cardStore,'systest-accesscontrols', bobIdentity.userID, bobIdentity.userSecret);
+        const assetRegistry = await client.getAssetRegistry('systest.accesscontrols.SampleAsset');
+        await assetRegistry.addAll([aliceCar, bobCar]);
+        aliceAssetRegistry = await aliceClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
+        bobAssetRegistry = await bobClient.getAssetRegistry('systest.accesscontrols.SampleAsset');
+        aliceParticipantRegistry = await aliceClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
+        bobParticipantRegistry = await bobClient.getParticipantRegistry('systest.accesscontrols.SampleParticipant');
     });
 
-    afterEach(() => {
-        return TestUtil.getClient(cardStore,'systest-accesscontrols')
-            .then((result) => {
-                client = result;
-            });
+    afterEach(async () => {
+        client = await TestUtil.getClient(cardStore,'systest-accesscontrols');
     });
 
     it('should reject transaction if you do not have permission to execute it', () => {

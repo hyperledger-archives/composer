@@ -16,8 +16,9 @@
 
 const shim = require('fabric-shim');
 const NodeContext = require('./nodecontext');
-const Engine = require('composer-runtime').Engine;
+const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const NodeContainer = require('./nodecontainer');
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 
 const Logger = require('composer-common').Logger;
 const LOG = Logger.getLog('Composer');
@@ -26,27 +27,55 @@ const LOG = Logger.getLog('Composer');
  * This is the composer chaincode that implements the
  * interface required by the chaincode shim.
  *
- *
  * @class Composer
  */
 class Composer {
 
     /**
-     * Creates an instance of Composer chaincode.
+     * Initial set up of Composer on a peer, including starting the Fabric shim.
+     * Should be called (only) from the peer startup script.
      */
-    constructor() {
+    static async start() {
+        try {
+            const networkDefinition = await BusinessNetworkDefinition.fromDirectory('.', { processDependencies: false });
+            const installedBusinessNetwork = await InstalledBusinessNetwork.newInstance(networkDefinition);
+            shim.start(new Composer(installedBusinessNetwork));
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.log(error);
+        }
+    }
+
+    /**
+     * Creates an instance of Composer chaincode.
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork installed business network information information
+     */
+    constructor(installedBusinessNetwork) {
         const method = 'constructor';
-        LOG.entry(method);
+        LOG.entry(method, installedBusinessNetwork);
         this.container = new NodeContainer();
+        this.installedBusinessNetwork = installedBusinessNetwork;
         LOG.exit(method);
     }
 
+    /**
+     * Create an instance of the Composer engine.
+     * @private
+     * @return {Engine} an instance of the Composer engine.
+     */
     _createEngine() {
         return new Engine(this.container);
     }
 
+    /**
+     * Create an instance of the Composer context.
+     * @private
+     * @param {Engine} engine the Composer engine.
+     * @param {any} stub the shim instance for this invocation
+     * @return {NodeContext} an instance of the Composer context.
+     */
     _createContext(engine, stub) {
-        return new NodeContext(engine, stub);
+        return new NodeContext(engine, stub, this.installedBusinessNetwork);
     }
 
     /**
@@ -58,18 +87,22 @@ class Composer {
      */
     async Init(stub) {
         const method = 'Init';
-        LOG.entry(method, stub);
-        let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
-        let engine = this._createEngine();
-        let nodeContext = this._createContext(engine, stub);
+        const t0 = Date.now();
         try {
             await this.container.initLogging(stub);
+            LOG.entry(method, stub);
+
+            let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
+            let engine = this._createEngine();
+            let nodeContext = this._createContext(engine, stub);
             await engine.init(nodeContext, fcn, params);
             LOG.exit(method);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }
@@ -83,24 +116,27 @@ class Composer {
      */
     async Invoke(stub) {
         const method = 'Invoke';
-        LOG.entry(method, stub);
-
-        let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
-
-        let engine = this._createEngine();
-        let nodeContext = this._createContext(engine, stub);
+        const t0 = Date.now();
         try {
             await this.container.initLogging(stub);
+            LOG.entry(method, stub);
+            let {fcn: fcn, params: params} = stub.getFunctionAndParameters();
+
+            let engine = this._createEngine();
+            let nodeContext = this._createContext(engine, stub);
             let payload = await engine.invoke(nodeContext, fcn, params);
             if (payload !== null && payload !== undefined) {
                 LOG.exit(method, payload);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
                 return shim.success(Buffer.from(JSON.stringify(payload)));
             }
             LOG.exit(method);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.success();
         }
         catch(err) {
             LOG.error(method, err);
+            LOG.debug('@PERF ' + method, 'Total (ms) duration for txnID [' + stub.getTxID() + ']: ' + (Date.now() - t0).toFixed(2));
             return shim.error(err);
         }
     }

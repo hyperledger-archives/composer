@@ -38,6 +38,8 @@ describe('composer card export CLI', function() {
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(adminConnectionStub);
         consoleLogSpy = sandbox.spy(console, 'log');
         sandbox.stub(process, 'exit');
+        // Throw by default for writing files so we can allow only certain file names in specific tests
+        sandbox.stub(fs, 'writeFileSync').throws();
 
         testCard = new IdCard({ userName: 'conga' }, { name: 'profileName' });
     });
@@ -47,38 +49,52 @@ describe('composer card export CLI', function() {
     });
 
     it('should export to specified file name', function() {
-        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName);
+        fs.writeFileSync.withArgs(cardFileName).returns();
         const args = {
             file: cardFileName,
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
 
         adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.exportCard);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.name));
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.card));
+        });
+    });
+
+    it('should always export to .card file', function() {
+        const fileName = '/TestCard';
+        fs.writeFileSync.withArgs(fileName + '.card').returns();
+        const args = {
+            file: fileName,
+            card : 'CARD_NAME'
+        };
+
+        adminConnectionStub.exportCard.resolves(testCard);
+        return ExportCmd.handler(args).then(() => {
+            sinon.assert.calledOnce(adminConnectionStub.exportCard);
+            sinon.assert.calledWith(consoleLogSpy, sinon.match(args.card));
         });
     });
 
     it('should export to default file name if none specified', function() {
         const args = {
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
-        const expectedFileName = args.name + '.card';
-        sandbox.stub(fs, 'writeFileSync').withArgs(expectedFileName);
+        const expectedFileName = sinon.match(new RegExp(args.card + '\.card$'));
+        fs.writeFileSync.withArgs(expectedFileName).returns();
 
         adminConnectionStub.exportCard.resolves(testCard);
         return ExportCmd.handler(args).then(() => {
             sinon.assert.calledOnce(adminConnectionStub.exportCard);
-            sinon.assert.calledWith(consoleLogSpy, sinon.match(expectedFileName));
+            sinon.assert.calledWith(consoleLogSpy, expectedFileName);
         });
     });
 
     it('should copy with the file system write failing', function() {
-        sandbox.stub(fs, 'writeFileSync').withArgs(cardFileName).throws(new Error('Failed to write'));
         const args = {
             file: cardFileName,
-            name : 'CARD_NAME'
+            card : 'CARD_NAME'
         };
 
         adminConnectionStub.exportCard.resolves(testCard);

@@ -14,7 +14,6 @@
 
 'use strict';
 
-const FileSystemCardStore = require('composer-common').FileSystemCardStore;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
@@ -68,6 +67,7 @@ describe('BusinessNetworkConnection', () => {
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext.getConnection.returns(mockConnection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockBusinessNetworkDefinition.getName.returns('super-doge-network');
         businessNetworkConnection = new BusinessNetworkConnection();
         businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
         modelManager = new ModelManager();
@@ -115,10 +115,12 @@ describe('BusinessNetworkConnection', () => {
             businessNetworkConnection.cardStore.should.equal(mockCardStore);
         });
 
-        it('should create a new instance with a file system card store', () => {
-            businessNetworkConnection = new BusinessNetworkConnection();
+        it('should create a new instance with a specified wallet', () => {
+            const wallet = {type:'composer-wallet-inmemory'};
+
+            businessNetworkConnection = new BusinessNetworkConnection({wallet : wallet});
             should.equal(businessNetworkConnection.connection, null);
-            businessNetworkConnection.cardStore.should.be.an.instanceOf(FileSystemCardStore);
+            businessNetworkConnection.cardStore.should.be.an.instanceOf(BusinessNetworkCardStore);
         });
     });
 
@@ -813,9 +815,6 @@ describe('BusinessNetworkConnection', () => {
             const tx = factory.newTransaction('org.acme.sample', 'SampleTransaction');
             delete tx.$identifier;
 
-            // Stub the UUID generator.
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
-
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode').resolves();
             sandbox.stub(Util, 'createTransactionId').resolves({
@@ -1042,14 +1041,17 @@ describe('BusinessNetworkConnection', () => {
             mockConnection.ping.onSecondCall().resolves(Buffer.from(JSON.stringify({
                 version : version
             })));
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .then(() => {
                     sinon.assert.calledTwice(mockConnection.ping);
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
@@ -1087,21 +1089,28 @@ describe('BusinessNetworkConnection', () => {
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
             mockConnection.invokeChainCode.resolves();
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
-                    sinon.assert.calledOnce(Util.securityCheck);
+                    sinon.assert.calledTwice(Util.securityCheck);
                 });
         });
 
         it('should submit a request to the chaincode for activation', () => {
-            sandbox.stub(uuid, 'v4').returns('c89291eb-969f-4b04-b653-82deb5ee0ba1');
+            sandbox.stub(Util, 'createTransactionId').resolves({
+                id : 'c89291eb-969f-4b04-b653-82deb5ee0ba1',
+                idStr : 'c89291eb-969f-4b04-b653-82deb5ee0ba1'
+            });
             mockConnection.invokeChainCode.resolves();
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.activate()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.invokeChainCode);
-                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1","timestamp":"1970-01-01T00:00:00.000Z"}']);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'submitTransaction', ['{"$class":"org.hyperledger.composer.system.ActivateCurrentIdentity","timestamp":"1970-01-01T00:00:00.000Z","transactionId":"c89291eb-969f-4b04-b653-82deb5ee0ba1"}']);
                 });
         });
 
@@ -1144,6 +1153,45 @@ describe('BusinessNetworkConnection', () => {
                 .catch((error) => {
                     error.should.match(/does not exist /);
                 });
+        });
+
+        it('should throw an error if the identity exists in the registry and connection is requires registry check', () => {
+            mockConnection.registryCheckRequired.returns(true);
+
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.getAll.resolves([{name: 'dogeid1'}]);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
+
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            .catch((error) => {
+                error.should.match(/Identity with name dogeid1 already exists in super-doge-network/);
+            });
+        });
+
+        it('should submit a request to the chaincode if the identity does not exist in the registry and connection is WebConnection', () => {
+            mockConnection.registryCheckRequired.returns(true);
+
+            let identityRegistry = sinon.createStubInstance(IdentityRegistry);
+            identityRegistry.getAll.resolves([{name: 'dogeid0'}]);
+            sandbox.stub(IdentityRegistry, 'getIdentityRegistry').resolves(identityRegistry);
+
+            sandbox.stub(businessNetworkConnection, 'submitTransaction').resolves();
+
+            return businessNetworkConnection.issueIdentity('org.acme.sample.SampleParticipant#dogeid1', 'dogeid1')
+            .then((result) => {
+                sinon.assert.calledOnce(mockConnection.createIdentity);
+                sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                sinon.assert.calledOnce(businessNetworkConnection.submitTransaction);
+                const tx = businessNetworkConnection.submitTransaction.args[0][0];
+                tx.instanceOf('org.hyperledger.composer.system.IssueIdentity').should.be.true;
+                tx.participant.isRelationship().should.be.true;
+                tx.participant.getFullyQualifiedIdentifier().should.equal('org.acme.sample.SampleParticipant#dogeid1');
+                tx.identityName.should.equal('dogeid1');
+                result.should.deep.equal({
+                    userID : 'dogeid1',
+                    userSecret : 'suchsecret'
+                });
+            });
         });
 
         it('should submit a request to the chaincode for a fully qualified identifier', () => {
@@ -1447,6 +1495,29 @@ describe('BusinessNetworkConnection', () => {
                 .should.be.rejectedWith(/identity registry/);
 
         });
+    });
+
+    describe('#getNativeAPI', () => {
+
+        it('should throw an error if not connected', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
+            };
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            (() => {
+                businessNetworkConnection.getNativeAPI();
+            }).should.throw(/not connected; must call connect\(\) first/);
+        });
+
+        it('should return the native API from the connection', () => {
+            const nativeAPI = {
+                getChannel: sinon.stub().returns({ channel: true })
+            };
+            mockConnection.getNativeAPI.returns(nativeAPI);
+            businessNetworkConnection.connection = mockConnection;
+            businessNetworkConnection.getNativeAPI().getChannel().should.deep.equal({ channel: true });
+        });
+
     });
 
 });

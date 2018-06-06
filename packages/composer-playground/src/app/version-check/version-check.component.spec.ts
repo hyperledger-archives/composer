@@ -1,8 +1,21 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement, NgZone } from '@angular/core';
 
@@ -11,8 +24,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageService } from 'angular-2-local-storage';
 
 import * as sinon from 'sinon';
-import { IdentityCardService } from '../services/identity-card.service';
-import { IdCard } from 'composer-common';
 
 describe('VersionCheckComponent', () => {
     let component: VersionCheckComponent;
@@ -26,21 +37,18 @@ describe('VersionCheckComponent', () => {
     };
 
     let localStorageServiceMock;
-    let identityCardServiceMock;
 
     let indexDBMock = sinon.stub(indexedDB, 'deleteDatabase').returns(Promise.resolve());
 
     beforeEach(async(() => {
         localStorageServiceMock = sinon.createStubInstance(LocalStorageService);
-        identityCardServiceMock = sinon.createStubInstance(IdentityCardService);
 
         TestBed.configureTestingModule({
             declarations: [VersionCheckComponent],
             providers: [
                 {provide: NgbActiveModal, useValue: ngbActiveModalMock},
                 {provide: NgZone, useValue: new NgZone({})},
-                {provide: LocalStorageService, useValue: localStorageServiceMock},
-                {provide: IdentityCardService, useValue: identityCardServiceMock}
+                {provide: LocalStorageService, useValue: localStorageServiceMock}
             ]
         }).compileComponents();
     }));
@@ -52,18 +60,6 @@ describe('VersionCheckComponent', () => {
         element = debug.nativeElement;
 
         fixture.detectChanges();
-
-        let cardOne = new IdCard({userName : 'bob', businessNetwork: 'bn1'}, {'name' : 'cp1', 'x-type': 'hlfv1' });
-        let cardTwo = new IdCard({userName : 'fred', businessNetwork: 'bn2'}, {'name' : 'cp1', 'x-type': 'web' });
-        let cardThree = new IdCard({userName : 'jim'}, {'name' : 'cp1', 'x-type': 'web' });
-
-        let cardMap: Map<string, IdCard> = new Map<string, IdCard>();
-
-        cardMap.set('cardOne', cardOne);
-        cardMap.set('cardTwo', cardTwo);
-        cardMap.set('cardThree', cardThree);
-
-        identityCardServiceMock.getIdentityCards.returns(Promise.resolve(cardMap));
     });
 
     it('should create component', () => {
@@ -82,9 +78,8 @@ describe('VersionCheckComponent', () => {
 
         tick();
 
-        indexDBMock.should.have.been.calledTwice;
-        indexDBMock.firstCall.should.have.been.calledWith('_pouch_Composer:bn2');
-        indexDBMock.secondCall.should.have.been.calledWith('_pouch_Composer');
+        indexDBMock.should.have.been.calledOnce;
+        indexDBMock.firstCall.should.have.been.calledWith('_pouch_Composer');
 
         localStorageServiceMock.clearAll.should.have.been.called;
         runOutsideAngularStub.should.have.been.called;

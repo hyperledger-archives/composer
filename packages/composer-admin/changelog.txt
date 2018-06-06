@@ -11,6 +11,22 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.19.2 {48b9483d500a3516b7c0c85d05dc8bca} 2018-04-13
+- Added getNativeAPI() function to client APIs
+
+Version 0.18.2 {2eaf92e11c0efbe6a90c35e6e91b5577} 2018-03-15
+- Update AdminConnection.undeploy function
+
+Version 0.18.1 {46a3b7260056aafce0549512bae8f606} 2018-03-07
+- Converted AdminConnection.connect to async/await
+- Remove AdminConnection.update function
+- Changed AdminConnection.upgrade parameters
+- Remove deprecated AdminConnection.deploy function
+- Change AdminConnection.start to take network name and version only
+
+Version 0.17.3 {2a7a1bab9acd373fcf0421b2c4cb88b0} 2018-2-5
+- Add business network name and upgrade options to upgrade API
+
 Version 0.15.2 {e884fc077830200cc28a41dc5110a8f2} 2017-11-24
 - Correct type of the BusinessNetworkName to string
 

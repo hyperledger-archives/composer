@@ -4,7 +4,7 @@ title: Listing all identities in a business network
 category: tasks
 section: managing
 sidebar: sidebars/accordion-toc0.md
-excerpt: "[**A new identity can be issued to a participant using either the API or the command line**](../managing/identity-issue.html). Once a new identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant."
+excerpt: "Identities issued or bound to a participant create a mapping. In order to perform identity management operations in a deployed business network, you will need to [list](../managing/identity-list.html) and review the set of identities in the identity registry."
 index-order: 806
 ---
 
@@ -34,24 +34,22 @@ Otherwise the identity registry will be empty and you will not see any results.
 
   ```javascript
   const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-  let businessNetworkConnection = new BusinessNetworkConnection();
-  return businessNetworkConnection.connect('admin@digitalPropertyNetwork')
-      .then(() => {
-          return businessNetworkConnection.getIdentityRegistry();
-      })
-      .then((identityRegistry) => {
-          return identityRegistry.getAll();
-      })
-      .then((identities) => {
+
+  async function identityList() {
+      let businessNetworkConnection = new BusinessNetworkConnection();
+      try {
+          await businessNetworkConnection.connect('admin@digitalPropertyNetwork');
+          let identityRegistry = await businessNetworkConnection.getIdentityRegistry();
+          let identities = await identityRegistry.getAll();
           identities.forEach((identity) => {
             console.log(`identityId = ${identity.identityId}, name = ${identity.name}, state = ${identity.state}`);
           });
-          return businessNetworkConnection.disconnect();
-      })
-      .catch((error) => {
-          console.error(error);
+          await businessNetworkConnection.disconnect();
+      } catch(error) {
+          console.log(error);
           process.exit(1);
-      });
+      }
+  }
   ```
   * Command line
 

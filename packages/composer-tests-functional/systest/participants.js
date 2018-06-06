@@ -15,29 +15,26 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
-
 const TestUtil = require('./testutil');
 
 const chai = require('chai');
-chai.should();
-chai.use(require('chai-subset'));
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
 describe('Participant system tests', function() {
 
     this.retries(TestUtil.retries());
+
     let cardStore;
     let bnID;
-    beforeEach(() => {
-        return TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
-    });
     let businessNetworkDefinition;
     let client;
 
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying undefined as the value
         const modelFiles = [
             { fileName: undefined, contents: fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8') }
@@ -47,18 +44,17 @@ describe('Participant system tests', function() {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         bnID = businessNetworkDefinition.getName();
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-participants')
-                    .then((result) => {
-                        client = result;
-                    });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-participants');
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
+    });
+
+    beforeEach(async () => {
+        await TestUtil.resetBusinessNetwork(cardStore,bnID, 0);
     });
 
     let createParticipant = (participantId) => {
@@ -418,6 +414,50 @@ describe('Participant system tests', function() {
             })
             .then(function () {
                 return client.getParticipantRegistry('systest.participants.SimpleParticipantContainer');
+            })
+            .then(function (result) {
+                participantContainerRegistry = result;
+                let participantContainer = createParticipantContainer();
+                participantContainer.simpleParticipant = createParticipant('dogeParticipant1');
+                participantContainer.simpleParticipants = [
+                    createParticipant('dogeParticipant2'),
+                    createParticipant('dogeParticipant3')
+                ];
+                return participantContainerRegistry.add(participantContainer);
+            })
+            .then(function () {
+                return participantContainerRegistry.getAll();
+            })
+            .then(function (participantContainers) {
+                participantContainers.length.should.equal(1);
+                validateParticipantContainer(participantContainers[0], 'dogeParticipantContainer');
+                return participantContainerRegistry.get('dogeParticipantContainer');
+            })
+            .then(function (participantContainer) {
+                validateParticipantContainer(participantContainer, 'dogeParticipantContainer');
+            });
+    });
+
+    it('should store participants obtaining the registry from the generic call', () => {
+        let participantRegistry;
+        let participantContainerRegistry;
+        return client
+            .getRegistry('systest.participants.SimpleParticipant')
+            .then(function (result) {
+                participantRegistry = result;
+                let participant = createParticipant('dogeParticipant1');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                let participant = createParticipant('dogeParticipant2');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                let participant = createParticipant('dogeParticipant3');
+                return participantRegistry.add(participant);
+            })
+            .then(function () {
+                return client.getRegistry('systest.participants.SimpleParticipantContainer');
             })
             .then(function (result) {
                 participantContainerRegistry = result;

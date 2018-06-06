@@ -42,7 +42,7 @@ The following are prerequisites for installing the required development tools:
 If you're running on Ubuntu, you can download the prerequisites using the following commands:
 
 ```bash
-curl -O https://hyperledger.github.io/composer/prereqs-ubuntu.sh
+curl -O {{site.url}}{{site.baseurl}}/prereqs-ubuntu.sh
 
 chmod u+x prereqs-ubuntu.sh
 ```
@@ -130,7 +130,7 @@ node --version
 
 ## Install Docker
 
-Follow the instructions here to install Docker for Max (stable):
+Follow the instructions here to install Docker for Mac (stable):
 https://docs.docker.com/docker-for-mac/install/
 
 After running the installed Docker application you should have the whale icon in your menu bar, with a green “Docker is running” status.

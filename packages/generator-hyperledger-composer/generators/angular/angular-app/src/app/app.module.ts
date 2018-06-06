@@ -26,28 +26,26 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { HomeComponent } from './home/home.component';
 
-import { SampleAssetComponent } from './SampleAsset/SampleAsset.component';
-import { TestComponent } from './Test/Test.component';
+import { CommodityComponent } from './Commodity/Commodity.component';
 
-import { UserComponent } from './User/User.component';
+import { TraderComponent } from './Trader/Trader.component';
 
-import { ChangeAssetValueComponent } from './ChangeAssetValue/ChangeAssetValue.component';
+import { TradeComponent } from './Trade/Trade.component';
 
 
-  import { ChangeAssetValueLogicComponent } from './ChangeAssetValueLogic/ChangeAssetValueLogic.transaction';
+  import { TradeLogicComponent } from './TradeLogic/TradeLogic.transaction';
 
   @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     
-      ChangeAssetValueLogicComponent,
+      TradeLogicComponent,
       
     
-    SampleAssetComponent,
-    TestComponent,
-    UserComponent,
-    ChangeAssetValueComponent
+    CommodityComponent,
+    TraderComponent,
+    TradeComponent
   ],
   imports: [
     BrowserModule,

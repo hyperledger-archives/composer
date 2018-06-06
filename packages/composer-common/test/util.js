@@ -24,23 +24,47 @@ const uuid = require('uuid');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
-
+const Resource = require('../lib/model/resource');
+const Serializer = require('../lib/serializer');
+const ModelManager = require('../lib/modelmanager');
 chai.use(chaiAsPromised);
 chai.should();
 
 describe('Util', function () {
 
+    const levelOneModel = `namespace org.acme.l1
+  participant Person identified by ssn {
+    o String ssn
+  }
+  asset Car identified by vin {
+    o String vin
+    -->Person owner
+  }
+  transaction ScrapCar {
+   -->Car car
+  }
+  `;
+
+    let modelManager = null;
     let mockConnection;
     let mockSecurityContext;
     let sandbox;
+
+    let mockSerializer;
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
         mockConnection = sinon.createStubInstance(Connection);
         mockConnection.invokeChainCode.returns(Promise.resolve());
         mockConnection.queryChainCode.returns(Promise.resolve());
+        mockConnection.createTransactionId.resolves({id:'tx1234567890',idStr:'1234567890'});
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockSecurityContext.getConnection.returns(mockConnection);
+
+        mockSerializer = sinon.createStubInstance(Serializer);
+
+        modelManager = new ModelManager();
+        modelManager.addModelFile(levelOneModel);
     });
 
     afterEach(function () {
@@ -72,6 +96,52 @@ describe('Util', function () {
         });
 
     });
+
+    describe('#submitTransaction',  function() {
+
+        it('should process a transaction as json', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            return Util
+                .submitTransaction(mockSecurityContext,json)
+                .then(() => {
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{transactionId:'tx1234567890'});
+                });
+        });
+
+        it('should process a transaction as resource', function () {
+            let stub = sandbox.stub(Util, 'securityCheck');
+            let json =  {
+                $class: 'org.acme.l1.ScrapCar',
+                car: 'resource:org.acme.l1.Car#456',
+                timestamp: '1970-01-01T00:00:00.000Z',
+                transactionId: '789'
+            };
+            const classDecl = modelManager.getType('org.acme.l1.ScrapCar');
+            const resource = new Resource(modelManager, classDecl, 'org.acme.l1', 'ScrapCar', '789' );
+            let setIdSpy = sinon.spy(resource,'setIdentifier');
+            mockSerializer.toJSON.returns(json);
+            resource.timestamp = new Date(0);
+            resource.car = modelManager.getFactory().newRelationship('org.acme.l1', 'Car', '456');
+            return Util
+                .submitTransaction(mockSecurityContext,resource,mockSerializer)
+                .then(() => {
+                    sinon.assert.called(setIdSpy);
+                    sinon.assert.called(stub);
+                    sinon.assert.called(mockConnection.invokeChainCode);
+                    sinon.assert.calledWith(mockConnection.invokeChainCode,mockSecurityContext,'submitTransaction',[JSON.stringify(json)],{transactionId:'tx1234567890'});
+                });
+        });
+
+    });
+
 
     describe('#queryChainCode', function () {
 

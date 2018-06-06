@@ -43,8 +43,7 @@ class List {
         let spinner;
         let cardName = argv.card;
 
-        spinner = ora('List business network from card '+ cardName );
-        spinner.start();
+        spinner = ora('List business network from card '+ cardName ).start();
 
         businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
         return businessNetworkConnection.connect(cardName)
@@ -113,9 +112,8 @@ class List {
             return businessNetworkConnection.disconnect();
         })
         .catch(error => {
-            if (spinner) {
-                spinner.fail();
-            }
+            spinner.fail();
+
             cmdUtil.log(List.getError(error));
             throw error;
         });

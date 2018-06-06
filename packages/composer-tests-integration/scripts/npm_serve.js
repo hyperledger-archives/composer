@@ -15,9 +15,9 @@
 'use strict';
 
 const exec = require('child_process').exec;
+const version = require('../../../lerna.json').version;
 
-const lernaFile = require('../../../lerna.json');
-let version = lernaFile.version;
+const NPM_RETRIES = 10;
 
 /**
  * Invoke a promisified exec
@@ -25,21 +25,22 @@ let version = lernaFile.version;
  * @returns {Promise} - a Promise that is resolved or rejected
  */
 function invokeCmd(cmd) {
-    console.log('running command: ', cmd);
     return new Promise((resolve, reject) => {
         let proc = exec(cmd);
-        // Log all output of Protractor run
+        // Log all output
         proc.stdout.on('data', function(data) {
+            // eslint-disable-next-line no-console
             console.log(data);
         });
         // Log ony error output
         proc.stderr.on('data', function(data) {
+            // eslint-disable-next-line no-console
             console.log('stdErr: ' + data);
         });
         // Capture Protactor return code
         proc.on('close', function(code) {
             if(code !== 0) {
-                reject();
+                return reject(new Error(`Failed to execute "${cmd}" with return code ${code}`));
             }
             resolve();
         });
@@ -47,35 +48,114 @@ function invokeCmd(cmd) {
 }
 
 // Required packages for serving
-let packages = [
+const packages = [
     'composer-runtime',
     'composer-common',
     'composer-runtime-hlfv1',
     'composer-connector-hlfv1',
+    'composer-runtime-pouchdb',
+    'composer-runtime-embedded',
+    'composer-connector-embedded',
+    'composer-connector-proxy',
     'composer-admin',
     'composer-client',
     'loopback-connector-composer',
     'composer-rest-server',
-    'composer-cli'];
+    'composer-report',
+    'composer-cucumber-steps',
+    'composer-cli',
+    'composer-wallet-inmemory',
+    'composer-wallet-filesystem',
+    'generator-hyperledger-composer',
+    'composer-documentation'];
 
 // Packages to be installed in integration test(s)
-let testPackages = [
-    'composer-cli'
+const testPackages = [
+    'composer-cli',
+    'composer-rest-server',
+    'generator-hyperledger-composer'
 ];
 
-return packages.reduce((promiseChain, p) => {
-    // Set registry and publish
-    return promiseChain.then(() => {
-        console.log('Publishing package ' + p + ' to local npm server');
-        return invokeCmd('npm publish --registry http://localhost:4873 ../' + p);
-    });
-}, Promise.resolve())
-.then(() => {
-    // Globally install test packages
-    return testPackages.reduce((promiseChain, p) => {
-        return promiseChain.then(() => {
-            console.log('installing package ' + p + '@' + version + ' from npm server');
-            return invokeCmd('npm install --registry http://localhost:4873 -g ' + p + '@' + version);
-        });
-    }, Promise.resolve());
-});
+// Third party packages.
+const thirdPartyPackages = [
+    // Required for running the generators.
+    'yo',
+    // Required for REST server authentication.
+    'passport-ldapauth',
+    // Required for REST server persistence.
+    'loopback-connector-mongodb'
+];
+
+(async function () {
+
+    try {
+
+        // Set registry and publish
+        for (const p of packages) {
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Publishing package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm publish --registry http://localhost:4873 ../${p}`);
+                    console.log(`Published package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to publish package ${p} to local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not publish package ${p} to local npm server`);
+                process.exit(1);
+            }
+        }
+
+        // Globally install test packages
+        for (const p of testPackages) {
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Installing test package ${p}@${version} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm install --registry http://localhost:4873 -g ${p}@${version}`);
+                    console.log(`Installed test package ${p} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to install test package ${p} from local npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not install test package ${p} from local npm server`);
+                process.exit(1);
+            }
+        }
+
+        // Globally install third party packages
+        for (const p of thirdPartyPackages) {
+            let published = false;
+            for (let i = 0; i < NPM_RETRIES; i++) {
+                console.log(`Installing third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                try {
+                    await invokeCmd(`npm install -g ${p}`);
+                    console.log(`Installed third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    published = true;
+                    break;
+                } catch (error) {
+                    console.error(`Failed to install third party package ${p} from public npm server (attempt ${i+1}/${NPM_RETRIES})`);
+                    console.error(error);
+                }
+            }
+            if (!published) {
+                console.error(`Aborting, could not install third party package ${p} from public npm server`);
+                process.exit(1);
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+
+})();

@@ -30,16 +30,16 @@ const LOG = Logger.getLog('NodeContext');
  * @protected
  */
 class NodeContext extends Context {
-
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
-     * @param {Object} identity The current identity.
+     * @param {any} stub the shim instance for this invocation
+     * @param {InstalledBusinessNetwork} installedBusinessNetwork installed business network information
      */
-    constructor(engine, stub) {
+    constructor(engine, stub, installedBusinessNetwork) {
         const method = 'constructor';
-        LOG.entry(method, engine, stub);
-        super(engine);
+        LOG.entry(method, engine, stub, installedBusinessNetwork);
+        super(engine, installedBusinessNetwork);
         this.stub = stub;
         this.dataService = new NodeDataService(this.stub);
         this.identityService = new NodeIdentityService(this.stub);
@@ -99,6 +99,17 @@ class NodeContext extends Context {
 
         LOG.exit(method, this.httpService);
         return this.httpService;
+    }
+
+    /**
+     * Get the native fabric api
+     * @returns {FabricChainCodeStub} The chain code stub to access the fabric api
+     */
+    getNativeAPI() {
+        const method = 'getNativeAPI';
+        LOG.entry(method);
+        LOG.exit(method, this.stub);
+        return this.stub;
     }
 }
 

@@ -3,14 +3,14 @@ node_js:
     - '8'
 matrix:
     include:
-        - {}
-        - env: DOCS=full FC_TASK=docs
-        - env: FVTEST=embedded,proxy,web FC_TASK=systest
-#        - env: SYSTEST=hlfv1_tls FC_TASK=systest
-        - env: FVTEST=hlfv1-1_tls FC_TASK=systest
-        - env: FVTEST=hlfv1-2_tls FC_TASK=systest
         - env: INTEST=hlfv1 FC_TASK=systest
+        - env: FVTEST=hlfv1-2_tls FC_TASK=systest
+        - env: FVTEST=hlfv1-1_tls FC_TASK=systest
         - env: INTEST=e2e FC_TASK=systest
+        - {}
+        - env: FVTEST=hlfv1_hsm FC_TASK=systest
+        - env: FVTEST=embedded,proxy,web FC_TASK=systest
+        - env: DOCS=full FC_TASK=docs
 dist: trusty
 addons:
     apt:

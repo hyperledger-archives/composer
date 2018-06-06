@@ -1,11 +1,23 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 /* tslint:disable:object-literal-key-quotes */
-import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
-import { EventEmitter } from '@angular/core';
-import { FormsModule, Validators } from '@angular/forms';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ConnectionProfileComponent } from './connection-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';

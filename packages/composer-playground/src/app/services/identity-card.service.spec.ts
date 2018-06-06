@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /* tslint:disable:no-unused-variable */
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
@@ -70,6 +83,45 @@ describe('IdentityCardService', () => {
 
             service.getIndestructibleIdentityCards().should.deep.equal(['uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']);
         })));
+    });
+
+    describe('canDeploy', () => {
+        it('should return true if PeerAdmin and ChannelAdmin cards are available', inject([IdentityCardService], (service: IdentityCardService) => {
+            let getIdentityCardRefsWithProfileAndRoleStub = sinon.stub(service, 'getIdentityCardRefsWithProfileAndRole').returns(['web-cardRef']);
+
+            let result = service.canDeploy('1234');
+
+            result.should.equal(true);
+
+            getIdentityCardRefsWithProfileAndRoleStub.should.have.been.calledTwice;
+            getIdentityCardRefsWithProfileAndRoleStub.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
+            getIdentityCardRefsWithProfileAndRoleStub.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+        }));
+
+        it('should return false if no PeerAdmin Role', inject([IdentityCardService], (service: IdentityCardService) => {
+            let getIdentityCardRefsWithProfileAndRoleStub = sinon.stub(service, 'getIdentityCardRefsWithProfileAndRole').returns([]);
+
+            let result = service.canDeploy('1234');
+
+            result.should.equal(false);
+
+            getIdentityCardRefsWithProfileAndRoleStub.should.have.been.calledOnce;
+            getIdentityCardRefsWithProfileAndRoleStub.should.have.been.calledWith('1234', 'PeerAdmin');
+        }));
+
+        it('should not show deploy button if not got ChannelAdmin role', inject([IdentityCardService], (service: IdentityCardService) => {
+            let getIdentityCardRefsWithProfileAndRoleStub = sinon.stub(service, 'getIdentityCardRefsWithProfileAndRole');
+            getIdentityCardRefsWithProfileAndRoleStub.onFirstCall().returns(['web-cardRef']);
+            getIdentityCardRefsWithProfileAndRoleStub.onSecondCall().returns([]);
+
+            let result = service.canDeploy('1234');
+
+            result.should.equal(false);
+
+            getIdentityCardRefsWithProfileAndRoleStub.should.have.been.calledTwice;
+            getIdentityCardRefsWithProfileAndRoleStub.firstCall.should.have.been.calledWith('1234', 'PeerAdmin');
+            getIdentityCardRefsWithProfileAndRoleStub.secondCall.should.have.been.calledWith('1234', 'ChannelAdmin');
+        }));
     });
 
     describe('#getIdentityCardForExport', () => {
@@ -589,6 +641,88 @@ describe('IdentityCardService', () => {
             let result = service.getIdentityCardRefsWithProfileAndRole('myProfile', 'wotNoRole');
 
             result.should.be.empty;
+        }));
+    });
+
+    describe('getAdminCardRef', () => {
+        let mockIdCard1;
+        let mockIdCard2;
+        let mockIdCard3;
+        let mockIdCard4;
+        let mockConnectionProfile;
+        let mockConnectionProfile2;
+        let mockCardMap;
+        let connectionProfileName;
+        let connectionProfileName2;
+
+        beforeEach(() => {
+            mockConnectionProfile = {name: 'myProfile'};
+            mockConnectionProfile2 = {name: 'myOtherProfile'};
+
+            mockIdCard1 = sinon.createStubInstance(IdCard);
+            mockIdCard1.getUserName.returns('card1');
+            mockIdCard1.getConnectionProfile.returns(mockConnectionProfile);
+            mockIdCard1.getRoles.returns(['myRole']);
+
+            mockIdCard2 = sinon.createStubInstance(IdCard);
+            mockIdCard2.getUserName.returns('card2');
+            mockIdCard2.getConnectionProfile.returns(mockConnectionProfile);
+            mockIdCard2.getRoles.returns(['myOtherRole']);
+
+            mockIdCard3 = sinon.createStubInstance(IdCard);
+            mockIdCard3.getUserName.returns('card3');
+            mockIdCard3.getConnectionProfile.returns(mockConnectionProfile);
+            mockIdCard3.getRoles.returns(['myRole']);
+
+            mockIdCard4 = sinon.createStubInstance(IdCard);
+            mockIdCard4.getUserName.returns('card4');
+            mockIdCard4.getConnectionProfile.returns(mockConnectionProfile2);
+            mockIdCard4.getRoles.returns(['myRole']);
+
+            mockCardMap = new Map<string, IdCard>();
+            mockCardMap.set('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard1);
+            mockCardMap.set('uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard2);
+            mockCardMap.set('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard3);
+            mockCardMap.set('uuid4xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', mockIdCard4);
+
+            connectionProfileName = hash(mockConnectionProfile) + '-myProfile';
+            connectionProfileName2 = hash(mockConnectionProfile2) + '-myOtherProfile';
+        });
+
+        it('should get the current card ref if it has the required role', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['currentCard'] = 'uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            service['idCards'] = mockCardMap;
+
+            let result = service.getAdminCardRef(connectionProfileName, 'myRole');
+
+            result.should.equal('uuid3xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+        }));
+
+        it('should get the first available card that has the required role', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['currentCard'] = 'uuid2xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            service['idCards'] = mockCardMap;
+
+            let result = service.getAdminCardRef(connectionProfileName, 'myRole');
+
+            result.should.equal('uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+        }));
+
+        it('should get the first available card that has the required role when the passed qualified profile name does not match that of the current card', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            service['idCards'] = mockCardMap;
+
+            let result = service.getAdminCardRef(connectionProfileName2, 'myRole');
+
+            result.should.equal('uuid4xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+        }));
+
+        it('should not get a card if there were none with the required role', inject([IdentityCardService], (service: IdentityCardService) => {
+            service['currentCard'] = 'uuid1xxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+            service['idCards'] = mockCardMap;
+
+            let result = service.getAdminCardRef(connectionProfileName, 'wotNoRole');
+
+            should.not.exist(result);
         }));
     });
 

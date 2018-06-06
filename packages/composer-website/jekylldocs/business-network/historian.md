@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Historian
 category: concepts
 section: business-network
-index-order: 510
+index-order: 511
 sidebar: sidebars/accordion-toc0.md
 excerpt: The Hyperledger Composer Historian is a registry that is populated with records of transactions, the participant submitting the transaction, and the identity used.
 ---
@@ -73,7 +73,7 @@ rule historianAccess{
 
 ## Retrieving historian data
 
-Data from the historian registry can be retrieved using either an API call, or queries.
+Data from the historian registry can be retrieved using either an API call, or queries. All examples that follow make use of the async/await feature and assume that the code is encapsulated in a function with the `async` attribute.
 
 ### Using the client and REST APIs with historian
 
@@ -87,38 +87,34 @@ A GET call of `system/historian/{id}` using the REST API will return the `Histor
 
 Historian can be queried in the same manner as other registries. For example, a typical query to return all `HistorianRecord` assets would be as follows:
 
-```
-    .then(() => {       
-        return businessNetworkConnection.getHistorian();
-    }).then((historian) => {
-        return historian.getAll();
-    }).then((historianRecords) => {        
-        console.log(prettyoutput(historianRecords));
-    })
+```javascript
+    let historian = await businessNetworkConnection.getHistorian();
+    let historianRecords = await historian.getAll();
+    console.log(prettyoutput(historianRecords));
 ```
 
 As this is a 'getAll' call it will potentially return high volume of data. Therefore the query capability is vital in being able to select a subset of records. A typical example would be to select records based on a time. This uses the query capability to select records where the transaction timestamp is past a certain point. The returned records can be processed in the same way.
 
-```
+```javascript
   let now = new Date();
   now.setMinutes(10);  // set the date to be time you want to query from
 
   let q1 = businessNetworkConnection.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord ' +
                                                 'WHERE (transactionTimestamp > _$justnow)');   
 
-  return businessNetworkConnection.query(q1,{justnow:now});
+  await businessNetworkConnection.query(q1,{justnow:now});
 ```
 
 More advanced queries can be used; for example, the following query selects and returns the Add, Update, and Remove asset system transactions.
 
-```
+```javascript
   // build the special query for historian records
   let q1 = businessNetworkConnection.buildQuery(
       `SELECT org.hyperledger.composer.system.HistorianRecord
           WHERE (transactionType == 'AddAsset' OR transactionType == 'UpdateAsset' OR transactionType == 'RemoveAsset')`
   );      
 
-  return businessNetworkConnection.query(q1);
+  await businessNetworkConnection.query(q1);
 
 ```
 

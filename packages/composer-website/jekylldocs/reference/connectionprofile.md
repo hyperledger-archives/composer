@@ -4,7 +4,7 @@ title: Connection Profiles
 section: reference
 index-order: 1006
 sidebar: sidebars/accordion-toc0.md
-excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0.
+excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v1.1.
 ---
 
 # Connection Profiles
@@ -13,9 +13,9 @@ excerpt: In order to connect your business network to a fabric, you must [**defi
 
 A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect to a runtime.
 
-## Creating a Connection Profile for {{site.data.conrefs.hlf_full}} v1.1
+## Creating a Connection Profile for {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}
 
-{{site.data.conrefs.hlf_full}} defines the format of the connection profile. The following is an example of a single organisation fabric network
+{{site.data.conrefs.hlf_full}} defines the format of the connection profile. The following is an example of a single organization fabric network
 
 ```
 {
@@ -43,9 +43,9 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             ],
             "peers": {
                 "peer0.org1.example.com": {
-                    "endorsingPeer": true
-                    "chaincodeQuery": true
-                    "ledgerQuery": true
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
                     "eventSource": true
                 }
             }
@@ -84,11 +84,12 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
 Official documentation for this structure can be found here:  https://fabric-sdk-node.github.io/tutorial-network-config.html.
 
-The {{site.data.conrefs.hlf_full}} v1.1 connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The v1.1 connection profile defines all the servers that exist, not only in your organisation but all organisations as well as all defined channels.
+The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile is significantly different to the connection profiles used by previous versions of {{site.data.conrefs.composer_full}}. The {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} connection profile defines all the servers that exist, not only in your organization but all organizations as well as all defined channels.
 
 The full capability of the connection profile is not given here and not all of it is supported but this will be discussed in the sections.
 
 The following sections define the server details:
+
 - Orderers
 - Peers
 - Certificate Authorities
@@ -101,7 +102,7 @@ Organizational details are defined in:
 
 ### General information
 
-```    
+```
 "name": "hlfv1",
 "x-type": "hlfv1",
 "x-commitTimeout": 300,
@@ -109,7 +110,7 @@ Organizational details are defined in:
 ```
 
 - `name` is a name used to refer to the connection profile, and is required.
-- `x-type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.1, `x-type` must be `hlfv1`.
+- `x-type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}}, `x-type` must be `hlfv1`.
 - `x-commitTimeout` defines the number of seconds to wait for a commit response to be received for a transaction.
 - `version` defines the version of a connection profile and currently only a version of `1.0.0` is supported.
 
@@ -135,7 +136,7 @@ This section defines all the available orderers, the example here provides a bas
             "ssl-target-name-override": "orderer.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- <etc> "
+            "pem": "-----BEGIN CERTIFICATE----- <etc> "
         }
     }
 },
@@ -169,8 +170,8 @@ Peer definitions are similar to orderer definitions in structure, but you should
             "ssl-target-name-override": "peer.org1.example.com"
         },
         "tlsCACerts": {
-            pem: "-----BEGIN CERTIFICATE----- <etc> "
-        }        
+            "pem": "-----BEGIN CERTIFICATE----- <etc> "
+        }
     }
 },
 ```
@@ -244,9 +245,9 @@ This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that 
         ],
         "peers": {
             "peer0.org1.example.com": {
-                "endorsingPeer": true
-                "chaincodeQuery": true
-                "ledgerQuery": true
+                "endorsingPeer": true,
+                "chaincodeQuery": true,
+                "ledgerQuery": true,
                 "eventSource": true
             }
         }
@@ -255,6 +256,7 @@ This defines the various {{site.data.conrefs.hlf_full}} peers and orderers that 
 ```
 
 A peer has 4 possible roles. If a role is not specified then it is assumed to be true.
+
 - `endorsingPeer` means that peer is there to endorse transactions and must have chaincode instantiated.
 - `chaincodeQuery` means that peer is able to handle chaincode query requests and must have chaincode instantiated.
 - `ledgerQuery` means that peer is able to perform a ledger query. This does not require chaincode to be instantiated on that peer.
@@ -283,6 +285,7 @@ In this section you define the `organization` you belong to, in the example this
 
 ### Common properties
 When defining a peer or orderer there are some common options you can use. These are:
+
 - `grpcOptions`
 - `tlsCACerts`
 
@@ -294,13 +297,17 @@ For example a peer definition might look like:
     "eventUrl": "grpcs://peer0.org1.example.com:7053"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15        
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- <etc> "
+        "pem": "-----BEGIN CERTIFICATE----- <etc> "
     }
 }
 ```
+
+The grpc message lengths are in bytes and the timeout is in milliseconds. the grpc options are not specific to the connection profile and are the same properties defined by grpc itself.
 
 A similar thing could be done for an orderer definition:
 
@@ -308,13 +315,62 @@ A similar thing could be done for an orderer definition:
 "orderer.example.com": {
     "url": "grpcs://orderer.example.com:7050",
     "grpcOptions": {
-        "ssl-target-name-override": "peer.org1.example.com",
-        "grpc-max-send-message-length": 15
+        "ssl-target-name-override": "orderer.example.com",
+        "grpc.keepalive_time_ms": 600000,
+        "grpc.max_send_message_length": 15728640,
+        "grpc.max_receive_message_length": 15728640
     },
     "tlsCACerts": {
-        pem: "-----BEGIN CERTIFICATE----- <etc> "
+        "pem": "-----BEGIN CERTIFICATE----- <etc> "
     }
 }
 ```
 
 There are other `grpcOptions` available, please refer to the https://fabric-sdk-node.github.io/tutorial-network-config.html for more information
+
+### HSM Support
+
+Support for HSM (Hardware Security Module)is now possible so long as you have PKCS#11 support for your HSM and the PKCS#11 module is configured as per the vendor documentation. To drive management of identities through a HSM you need to provide the connection profile with information about your HSM setup. This information needs to go into the client section, for example
+
+```
+"client": {
+    "organization": "Org1",
+    "connection": {
+        "timeout": {
+            "peer": {
+                "endorser": "300",
+                "eventHub": "300",
+                "eventReg": "300"
+            },
+            "orderer": "300"
+        }
+    },
+    "x-hsm": {
+        "library": "/usr/local/lib/myhsm.so",
+        "slot": 0,
+        "pin": 98765432
+    }
+},
+```
+ 
+  - `library` is the absolute path to the pkcs#11 library required for communication with your specific HSM
+  - `slot` is the configured slot number for the HSM
+  - `pin` is the pin defined for access to that slot.
+
+To be able to ensure connection profiles remain portable as well as not hard coding the slot and pin in the connection profile, each of the hsm properties can be referenced from an environment variable. For example if you define environment variables on your system called `PKCS_LIBRARY`, `PKCS_SLOT` and `PKCS_PIN` to hold the hsm information, for example
+
+```
+export PKCS_LIBRARY=/usr/local/lib/myhsm.so
+export PKCS_SLOT=0
+export PKCS_PIN=98765432
+```
+
+then you can reference these in the connection profile as follows
+
+```
+"x-hsm": {
+    "library": "{PKCS_LIBRARY}",
+    "slot": "{PKCS_SLOT}",
+    "pin": "{PKCS_PIN}"
+}
+```

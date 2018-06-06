@@ -26,10 +26,6 @@ Network access control affects the following CLI commands:
 
 #### Composer Network
 
-**composer network deploy**
-
-Network access is required to use the CREATE operation for registries and networks.
-
 **composer network download**
 
 Network access is required to use the READ operation for registries and networks.
@@ -45,14 +41,6 @@ Network access is required to use the UPDATE operation for networks.
 **composer network ping**
 
 Network access is required to use the READ operation on registries and networks.
-
-**composer network undeploy**
-
-Network access is required to use the DELETE operation on registries and networks.
-
-**composer network update**
-
-Network access is required to use the UPDATE or CREATE operation on registries, or the UPDATE operation on networks.
 
 
 #### Composer Identity
@@ -77,15 +65,15 @@ Network access is required to use the CREATE operation on participants or the UP
 
 ### Granting network access control
 
-Network access is granted using the system namespace. The system namespace is always `org.hyperledger.composer.system.Network` for network access, and `org.hyperledger.composer.system` for all access. The following access control rules gives the **networkControl** participant the authority to use all operations with network commands.
+Network access is granted using the system namespace. The system namespace is always `org.hyperledger.composer.system.Network` for network access, and `org.hyperledger.composer.system` for all access. The following access control rules gives the **NetworkControl** participant the authority to use all operations with network commands.
 
 ```
-rule networkControlPermission {
-  description:  "networkControl can access network commands"
-  participant: "org.acme.vehicle.auction.networkControl"
+rule NetworkControlPermission {
+  description:  "NetworkControl can access network commands"
+  participant: "org.example.basic.NetworkControl"
   operation: ALL
   resource: "org.hyperledger.composer.system.Network"
-  action: ALLOW  
+  action: ALLOW
 }
 ```
 
@@ -110,7 +98,7 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 ## Access Control Rule Grammar
 
-There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
+There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace or asset by a participant type or participant instance.
 
 For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampleAsset`.
 
@@ -172,7 +160,7 @@ Resource Examples:
 
 **Transaction** defines the transaction that the participant must have submitted in order to perform the specified operation against the specified resource. If this clause is specified, and the participant did not submit a transaction of this type - for example, they are using the CRUD APIs - then the ACL rule does not allow access.
 
-**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an `if(...)` expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.
+**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal within an `if(...)` expression may be used here. JavaScript expressions used for the condition of an ACL rule can refer to JavaScript utility functions in a script file. This allows a user to easily implement complex access control logic, and re-use the same access control logic functions across multiple ACL rules.
 
 **Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 

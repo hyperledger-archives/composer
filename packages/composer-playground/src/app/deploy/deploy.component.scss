@@ -1,0 +1,218 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../assets/styles/base/colors';
+@import '../../assets/styles/base/variables';
+
+deploy-business-network {
+
+    display: flex;
+    flex-direction: row;
+
+    div.choose-network {
+        background-color: $white;
+        margin-right: $space-large;
+        flex: 1;
+
+        h2 {
+            padding: $space-large $space-large 0;
+        }
+
+        section {
+            display: flex;
+            border-bottom: 1px solid $fourth-highlight;
+
+            h3.title {
+                flex-basis: 30%;
+                text-transform: uppercase;
+                color: $second-highlight;
+                padding: $space-large;
+            }
+
+            & > div {
+                flex-basis: 70%;
+                padding: $space-large;
+            }
+
+            .information {
+                padding: $space-medium $space-large;
+
+                input {
+                    margin-bottom: 0;
+                }
+
+                textarea {
+                    border-bottom: 2px solid transparent;
+                    height: auto;
+                    margin-bottom: 0;
+                }
+                .credentials {
+                    margin-top: $space-medium;
+                }
+            }
+
+            .sample-network-list-container {
+                background-color: $white;
+
+                .sample-network-list {
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin: $space-medium 0;
+
+                    file-importer.sample-network-list-item {
+                        &:hover {
+                            border: 1px dashed $second-highlight;
+                        }
+                    }
+
+                    .sample-network-list-item {
+                        background-color: $white;
+                        border: 2px solid $fourth-highlight;
+                        padding: $space-smedium;
+                        text-align: center;
+                        margin-right: $space-smedium;
+                        margin-bottom: $space-smedium;
+                        width: 150px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-end;
+                        position: relative;
+                        cursor: pointer;
+
+                        img {
+                            max-width: 120px;
+                            margin-left: auto;
+                            margin-top: 2rem;
+                            margin-right: auto;
+                            margin-bottom: auto;
+                            max-height: 70px;
+                        }
+
+                        svg {
+                            max-width: 120px;
+                            margin-left: auto;
+                            margin-top: 2rem;
+                            margin-right: auto;
+                            margin-bottom: auto;
+                            max-height: 70px;
+                        }
+
+                        &.file-importer {
+                            height: 182px;
+
+                            svg.ibm-icon {
+                                width: 100px;
+                                height: 100px;
+                                margin-bottom: $space-large;
+                            }
+                        }
+
+                        &.selected-network {
+                            border-color: $second-highlight;
+                        }
+
+                        &:hover {
+                            border-color: $second-highlight;
+                        }
+
+                        &.drag {
+                            border: 1px dashed $second-highlight;
+                        }
+
+                        .sample-network-name {
+                            margin-top: $space-medium;
+                            flex-basis: 20%;
+                        }
+
+                        button.close-dropped {
+                            position: absolute;
+                            top: -44px;
+                            right: -11px;
+
+                            svg {
+                                fill: $first-highlight;
+                                width: 20px;
+                                height: 20px;
+                                background-color: $white;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    div.chosen-network {
+        .image {
+            margin: 0 auto;
+            width: 50%;
+            padding-top: $space-large;
+        }
+
+        .replace-message {
+            background-color: $white;
+            padding: $space-large;
+        }
+
+        div.chosen-network-info {
+            display: block;
+            box-shadow: 3px 6px 15px 0 rgba(0, 0, 0, 0.20);
+            background-color: $white;
+            margin-bottom: $space-large;
+            width: 275px;
+
+            .animated-image {
+                width: 125px;
+                height: 125px;
+            }
+
+            section {
+                &:first-child {
+                    padding-top: $space-large
+                }
+
+                &:last-child {
+                    padding-bottom: $space-large;
+                }
+
+                padding: $space-medium $space-large;
+                text-align: center;
+
+                .title {
+                    color: $secondary-text;
+                    text-transform: uppercase;
+                }
+
+                .network-info {
+                    color: $secondary-text;
+
+                    span {
+                        display: inline-block;
+                    }
+                }
+
+                .network-desc {
+                    word-wrap: break-word;
+                }
+
+            }
+        }
+
+        div.deploy {
+            width: 50%;
+            margin: 0 auto;
+            display: block;
+        }
+    }
+}

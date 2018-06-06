@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.17.1",
+  "version": "0.19.8",
   "description": "The web runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
-    "licchk": "license-check",
+    "licchk": "license-check-and-add",
     "postlicchk": "npm run doc",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "postdoc": "npm run lint",
@@ -28,42 +28,66 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-core": "6.21.0",
+    "babel-loader": "6.2.10",
+    "babel-polyfill": "6.23.0",
+    "babel-preset-latest": "6.24.1",
     "brfs": "1.4.3",
-    "browserify": "13.3.0",
-    "browserify-istanbul": "2.0.0",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "eslint": "3.17.1",
     "global": "4.3.2",
     "jsdoc": "3.5.5",
     "karma": "1.3.0",
-    "karma-browserify": "5.1.0",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "2.0.0",
     "karma-coverage": "1.1.1",
     "karma-mocha": "1.3.0",
     "karma-spec-reporter": "0.0.26",
-    "license-check": "1.1.5",
+    "karma-webpack": "2.0.2",
+    "license-check-and-add": "2.3.1",
     "mocha": "3.4.2",
     "sinon": "2.3.8",
+    "transform-loader": "0.2.4",
     "watchify": "3.7.0"
   },
-  "license-check-config": {
-    "src": [
-      "**/*.js",
-      "!./coverage/**/*",
-      "!./node_modules/**/*",
-      "!./out/**/*"
+  "license-check-and-add-config": {
+    "folder": ".",
+    "license": "LICENSE.txt",
+    "exact_paths_method": "EXCLUDE",
+    "exact_paths": [
+      "coverage",
+      "node_modules",
+      "out",
+      ".tern-project"
     ],
-    "path": "header.txt",
-    "blocking": true,
-    "logInfo": false,
-    "logError": true
+    "file_type_method": "EXCLUDE",
+    "file_types": [
+      ".yml"
+    ],
+    "insert_license": false,
+    "license_formats": {
+      "js": {
+        "prepend": "/*",
+        "append": " */",
+        "eachLine": {
+          "prepend": " * "
+        }
+      },
+      "npmrc|editorconfig": {
+        "eachLine": {
+          "prepend": "# "
+        }
+      },
+      "md": {
+        "file": "../../markdown-license.txt"
+      }
+    }
   },
   "dependencies": {
-    "composer-common": "0.17.1",
-    "composer-runtime": "0.17.1",
-    "composer-runtime-pouchdb": "0.17.1",
+    "composer-common": "0.19.8",
+    "composer-runtime": "0.19.8",
+    "composer-runtime-pouchdb": "0.19.8",
     "pouchdb-adapter-idb": "6.2.0",
     "pouchdb-adapter-websql": "6.2.0",
     "xhr": "2.4.0"

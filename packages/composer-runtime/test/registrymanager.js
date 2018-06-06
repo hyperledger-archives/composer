@@ -15,20 +15,24 @@
 'use strict';
 
 const AccessController = require('../lib/accesscontroller');
+const AssetDeclaration = require('composer-common').AssetDeclaration;
+const ClassDeclaration = require('composer-common').ClassDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const EventEmitter = require('events');
 const Introspector = require('composer-common').Introspector;
 const Factory = require('composer-common').Factory;
+const ModelFile = require('composer-common').ModelFile;
 const ModelManager = require('composer-common').ModelManager;
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Serializer = require('composer-common').Serializer;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
-chai.use(require('chai-subset'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
@@ -127,7 +131,7 @@ describe('RegistryManager', () => {
             sinon.stub(registryManager, 'ensure').resolves(mockRegistry);
             return registryManager.createSystemDefaults()
                 .then(() => {
-                    sinon.assert.callCount(registryManager.ensure,20);
+                    sinon.assert.callCount(registryManager.ensure, 19);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.HistorianRecord', 'Asset registry for org.hyperledger.composer.system.HistorianRecord', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.Identity', 'Asset registry for org.hyperledger.composer.system.Identity', true);
                     sinon.assert.calledWith(registryManager.ensure, 'Asset', 'org.hyperledger.composer.system.AssetRegistry', sinon.match.any, sinon.match.any);
@@ -249,14 +253,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -272,14 +274,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -287,7 +287,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -295,7 +294,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             });
@@ -308,15 +306,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }, {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
@@ -330,14 +319,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Participant',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -345,7 +332,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: false
             });
@@ -355,11 +341,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(1);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }]);
                 });
         });
 
@@ -368,14 +349,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -383,7 +362,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -391,7 +369,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             });
@@ -404,11 +381,6 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(1);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([ {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
@@ -417,14 +389,12 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             }, {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             }]);
@@ -432,7 +402,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'doges',
                 type: 'Asset',
-                id: 'doges',
                 name: 'The doges registry',
                 system: false
             });
@@ -440,7 +409,6 @@ describe('RegistryManager', () => {
                 $class: 'org.hyperledger.composer.system.AssetRegistry',
                 registryId: 'cats',
                 type: 'Asset',
-                id: 'cats',
                 name: 'The cats registry',
                 system: true
             });
@@ -453,18 +421,114 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.containSubset([{
-                        type: 'Asset',
-                        id: 'cats',
-                        name: 'The cats registry'
-                    }, {
-                        type: 'Asset',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    }]);
                 });
         });
 
+    });
+
+    describe('#isComposerGenerated', () => {
+
+        it('should return false if error thrown', async () => {
+            let result = await registryManager.isComposerGenerated('no-type', 'no-id');
+            result.should.be.false;
+        });
+
+        it('should return true if a standard known Participant type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new ParticipantDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Participant', 'org.hyperledger.composer.system.NetworkAdmin');
+            result.should.be.true;
+        });
+
+        it('should return true if a standard known Asset type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new AssetDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Asset', 'org.hyperledger.composer.system.HistorianRecord');
+            result.should.be.true;
+        });
+
+        it('should return true if a standard known Transaction type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new TransactionDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Transaction', 'org.hyperledger.composer.system.AddAsset');
+            result.should.be.true;
+        });
+
+        it('should return false if a virtual type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new TransactionDeclaration(modelFile, {
+                id: {
+                    name: 'Network'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Transaction', 'org.hyperledger.composer.system.AddAsset');
+            result.should.be.false;
+        });
+
+        it('should return false if not an instance of Asset/Participant/Transaction type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new ClassDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Woof', 'org.not.standard');
+            result.should.be.false;
+        });
+
+        it('should return false if an abstract type', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge abstract participant Doge identified by id {o String id}');
+            let clz = new ParticipantDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            clz.isAbstract = true;
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            let result = await registryManager.isComposerGenerated('Participant', 'org.hyperledger.composer.system.Participant');
+            result.should.be.false;
+        });
     });
 
     describe('#get', () => {
@@ -490,18 +554,94 @@ describe('RegistryManager', () => {
             return registryManager.get('Asset', 'doges')
                 .then((registry) => {
                     registry.should.be.an.instanceOf(Registry);
-                    registry.should.containSubset({
-                        type: 'Asset',
-                        // registryId: 'doges',
-                        id: 'doges',
-                        name: 'The doges registry'
-                    });
                 });
         });
 
         it('should return errors from the data service', () => {
             mockSystemRegistries.get.rejects();
             return registryManager.get('Asset', 'doges').should.be.rejected;
+        });
+
+        it('should bypass lookup from world state if a Composer generated type and not being called by ensure()', async () => {
+            let modelFile = new ModelFile(modelManager, 'namespace org.doge');
+            let clz = new ParticipantDeclaration(modelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+
+            sinon.stub(registryManager, 'isComposerGenerated').returns(true);
+
+            sinon.stub(introspector, 'getClassDeclaration').returns(clz);
+            mockDataService.getCollection.withArgs('Asset:doges', false).throws('wrong call');
+            mockDataService.getCollection.withArgs('Asset:doges', true).resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry',
+                system: true
+            });
+
+            try {
+                let registry = await registryManager.get('Asset', 'doges', false);
+                registry.should.be.an.instanceOf(Registry);
+            } catch (err) {
+                should.fail(null,null,`${err}: unexpected code path`);
+            }
+        });
+
+        it('should not bypass lookup from world state if NOT a Composer generated type', async () => {
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry',
+                system: false
+            });
+            mockDataService.getCollection.withArgs('Asset:doges', true).throws('wrong call');
+            mockDataService.getCollection.withArgs('Asset:doges', false).resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry',
+                system: true
+            });
+
+            try {
+                let registry = await registryManager.get('Asset', 'doges', false);
+                registry.should.be.an.instanceOf(Registry);
+            } catch (err) {
+                should.fail(null,null,`${err}: unexpected code path`);
+            }
+        });
+
+        it('should not bypass lookup from world state if a Composer generated type but being called by ensure()', async () => {
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry',
+                system: false
+            });
+            mockDataService.getCollection.withArgs('Asset:doges', true).throws('wrong call');
+            mockDataService.getCollection.withArgs('Asset:doges', false).resolves({
+                $class: 'org.hyperledger.composer.system.AssetRegistry',
+                registryId: 'doges',
+                type: 'Asset',
+                name: 'The doges registry',
+                system: true
+            });
+
+            try {
+                let registry = await registryManager.get('Asset', 'doges', true);
+                registry.should.be.an.instanceOf(Registry);
+            } catch (err) {
+                should.fail(null,null,`${err}: unexpected code path`);
+            }
         });
 
     });
@@ -669,14 +809,14 @@ describe('RegistryManager', () => {
         it('should return an existing registry', () => {
 
             const mockRegistry = sinon.createStubInstance(Registry);
-            sinon.stub(registryManager, 'get').withArgs('Asset', 'doges').resolves(mockRegistry);
+            sinon.stub(registryManager, 'get').withArgs('Asset', 'doges', true).resolves(mockRegistry);
             return registryManager.ensure('Asset', 'doges', 'The doges registry')
                 .should.eventually.be.equal(mockRegistry);
         });
 
         it('should add a registry that does not exist', () => {
             const mockRegistry = sinon.createStubInstance(Registry);
-            sinon.stub(registryManager, 'get').withArgs('Asset', 'doges').rejects(new Error('no such collection!'));
+            sinon.stub(registryManager, 'get').withArgs('Asset', 'doges', true).rejects(new Error('no such collection!'));
             sinon.stub(registryManager, 'add').withArgs('Asset', 'doges', 'The doges registry').resolves(mockRegistry);
             return registryManager.ensure('Asset', 'doges', 'The doges registry')
                 .should.eventually.be.equal(mockRegistry);

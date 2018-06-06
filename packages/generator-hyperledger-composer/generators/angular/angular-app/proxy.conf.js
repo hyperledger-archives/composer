@@ -15,7 +15,7 @@
 function getTarget() {
     if (process.env.REST_SERVER_URLS) {
         const restServerURLs = JSON.parse(process.env.REST_SERVER_URLS);
-        const restServerURL = restServerURLs['test'];
+        const restServerURL = restServerURLs['tutorial-network'];
         if (restServerURL) {
             return restServerURL;
         }

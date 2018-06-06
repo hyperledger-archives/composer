@@ -1,0 +1,145 @@
+{#
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+#}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>{{core.name}}</title>
+
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" type="image/x-icon" href="/api-doc/composer/unstable/favicon.ico">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+    <link href="./assets/css/normalize.css" rel="stylesheet">
+    <link href="./assets/css/new-style.min.css" rel="stylesheet">
+    <link href="./assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
+</head>
+
+
+<body class="">
+
+    <div class="SiteWrapper">
+        <div class="content">
+            <article class="docs-container">
+
+                 <div class="page-sidebar-grid" id="off-canvas">
+                
+                    <div class="docs-pagenav-grid">
+                        <!-- Navigation -->
+                        <nav class="navbar-docs" role="navigation">
+                            <div class="search-form">
+                            <img width="200px" src="{{core.networkImage}}"></img>
+                            </div>
+
+                            <!-- Brand and toggle get grouped for better mobile display -->
+                            <a class="navbar-brand" href="./index.html">
+                                <b>{{core.name}}</b>@</a>{{core.version}}
+                            <!-- Collect the nav links, forms, and other content for toggling -->
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <div class="top-nav-docs">
+                                    <a href="./index.html">Summary</a>
+                                    <a href="./assets.html">Assets</a>
+                                    <a href="./transactions.html">Transactions</a>
+                                    <a href="./participants.html">Participants</a>          
+                                    <a href="./events.html">Events</a>                          
+                                    <a href="./enums.html">Enums</a>  
+                {% if queries %}    <a href="./queries.html">Queries</a>            {% endif %}
+                {% if acls %}       <a href="./acls.html">ACLs</a>                  {% endif %}
+                                </div>
+                            </div>
+                        </nav>
+                          
+                           {% if 'index' in basename %}
+                          
+                           {% else %}
+                            <div class="docs-current-page-grid">
+                                <p>{% if 'acls' in basename %}ACLs{% else %}{{ basename | title }}{% endif %}</p>
+                            </div>
+                            {% endif %}
+                    </div>
+                    
+                  <nav class="context-nav">
+                    <ul>
+                    {% if 'assets' in basename %}
+                        {% for asset in types.asset %}
+                           <li><p><a href="#{{asset.name | lower}}"><b>{{asset.name}}</b></a></p></li>
+                        {% endfor %}
+                    {% elif 'transactions' in basename %}   
+                            {% for fn in scripts.files %}
+                                <li><p><a href="#{{fn.identifier | lower}}"><b>{{fn.identifier}}</b></a></p>
+                                <ul>
+                                 {% for f in fn.functions %}
+                                    <li><p><a href="#{{f.name | lower}}"><b>{{f.name}}</b></a></p></li>             
+                                {% endfor %}
+                                </ul></li>
+                            {% endfor %}
+                    {% elif 'acls' in basename %}   
+                        {% for rule in acls.rules %}
+                             <li><p><a href="#{{rule.name | lower | replace("_","-") }}"><b>{{rule.name }}</b></a></p></li>  
+                        {% endfor %}
+                    {% elif 'index' in basename %}   
+
+                    {% elif 'participants' in basename %}   
+                            {% for pt in types.participant %}
+                            <li><p><a href="#{{pt.name | lower}}"><b>{{pt.name}}</b></a></p></li>
+                            {% endfor %}
+                    {% elif 'queries' in basename %}   
+                            {% for query in queries %}
+                           <li><p><a href="#{{query.name | lower | replace("_","-") }}"><b>{{query.name }}</b></a></p></li>  
+                            {% endfor %}
+
+                    {% endif %}
+
+                    </ul>
+
+                    </nav>
+  
+                </div>
+
+
+
+                <div class="page-content-grid">
+                    <section class="content-chunk" id="readme">
+                    {{body}} 
+                    </section>
+                </div>
+                <!-- Otherwise, have the main content fill all 12 columns... -->
+
+                <div class="PageNavigation">
+
+
+                </div>
+            </article>
+        </div>
+
+
+
+
+
+    </div>
+    <script src="./assets/js/nav.js"></script>
+</body>
+
+</html>
+
+
+
+
+

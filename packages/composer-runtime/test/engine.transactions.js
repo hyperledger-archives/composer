@@ -186,9 +186,16 @@ describe('EngineTransactions', () => {
                 });
         });
 
-        it('should execute the transaction using a user handler - but with an error', () => {
+        it('should throw an error if ACL rules prevent interaction with the transaction registry', () => {
             mockCompiledScriptBundle.execute.resolves(1);
             mockRegistry.testAdd.resolves(new Error('uh-oh'));
+            return engine.invoke(mockContext, 'submitTransaction', [ JSON.stringify(fakeJSON)])
+                .should.be.rejectedWith(/uh-oh/);
+        });
+
+        it('should throw an error if ACL rules prevent interaction with the historian registry', () => {
+            mockCompiledScriptBundle.execute.resolves(1);
+            mockHistorian.testAdd.resolves(new Error('uh-oh'));
             return engine.invoke(mockContext, 'submitTransaction', [ JSON.stringify(fakeJSON)])
                 .should.be.rejectedWith(/uh-oh/);
         });

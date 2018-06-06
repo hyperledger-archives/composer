@@ -32,19 +32,6 @@ const sinon = require('sinon');
 
 const CARD_DIRECTORY_ROOT = path.join(__dirname, 'data', 'id-cards');
 
-const readIdCardAsync = function(idCardName) {
-    const zip = new JSZip();
-    const cardDirectory = path.join(CARD_DIRECTORY_ROOT, idCardName);
-    const cardRootIndex = cardDirectory.length + 1;
-    const visitor = new DirectoryVisitor(cardDirectory, (filename) => {
-        const relativeFilename = filename.slice(cardRootIndex);
-        const fileData = fs.readFileSync(filename);
-        zip.file(relativeFilename, fileData);
-    });
-    visitor.visit();
-    return zip.generateAsync({ type: 'nodebuffer' });
-};
-
 /**
  * Helper class that recursively walks a given directory and invoking a callback for each file.
  */
@@ -81,6 +68,19 @@ class DirectoryVisitor {
         }
     }
 }
+
+const readIdCardAsync = function(idCardName) {
+    const zip = new JSZip();
+    const cardDirectory = path.join(CARD_DIRECTORY_ROOT, idCardName);
+    const cardRootIndex = cardDirectory.length + 1;
+    const visitor = new DirectoryVisitor(cardDirectory, (filename) => {
+        const relativeFilename = filename.slice(cardRootIndex);
+        const fileData = fs.readFileSync(filename);
+        zip.file(relativeFilename, fileData);
+    });
+    visitor.visit();
+    return zip.generateAsync({ type: 'nodebuffer' });
+};
 
 describe('IdCard', function() {
     let minimalMetadata;
@@ -491,6 +491,11 @@ describe('IdCard', function() {
             const connectionProfile = minimalCard.getConnectionProfile();
             connectionProfile.CONGA = 'CONGA';
             minimalCard.getConnectionProfile().should.not.equal(connectionProfile);
+        });
+        it('should make not include the wallet option if present', function() {
+            minimalCard.wallet = { 'I should':'not be included'};
+            const connectionProfile = minimalCard.getConnectionProfile();
+            chai.expect(connectionProfile.wallet).to.be.undefined;
         });
     });
 

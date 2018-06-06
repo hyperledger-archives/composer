@@ -40,7 +40,7 @@ In order to deploy the REST server as a Docker container with additional LoopBac
 
 Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:
 
-    FROM hyperledger/composer-rest-server:next
+    FROM hyperledger/composer-rest-server
     RUN npm install --production loopback-connector-mongodb passport-github && \
         npm cache clean --force && \
         ln -s node_modules .node_modules
@@ -55,7 +55,7 @@ You may need to publish this Docker image to a Docker image repository, for exam
 
 The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.
 
-The examples are based on the business network that is deployed to {{site.data.conrefs.hlf_full}} v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
+The examples are based on the business network that is deployed to {{site.data.conrefs.hlf_full}} {{site.data.conrefs.hlf_latest}} as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
 
 1. Ensure that a valid business network card for your business network is in your local business network card store by running the following `composer network ping` command. This example uses a business network card for the `admin` user on the `my-network` business network:
 
@@ -76,7 +76,7 @@ The examples are based on the business network that is deployed to {{site.data.c
 3. Extend the Docker image for the REST server by adding the LoopBack connector for MongoDB and the Passport strategy for GitHub authentication. Create a new, empty directory on your local file system, and create a new file named `Dockerfile` in the new directory, with the following contents:
 
     ```
-    FROM hyperledger/composer-rest-server:next
+    FROM hyperledger/composer-rest-server
     RUN npm install --production loopback-connector-mongodb passport-github && \
         npm cache clean --force && \
         ln -s node_modules .node_modules

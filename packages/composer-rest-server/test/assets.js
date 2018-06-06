@@ -19,7 +19,7 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdCard = require('composer-common').IdCard;
 require('loopback-component-passport');
-const MemoryCardStore = require('composer-common').MemoryCardStore;
+const NetworkCardStoreManager= require('composer-common').NetworkCardStoreManager;
 const server = require('../server/server');
 
 const chai = require('chai');
@@ -121,6 +121,51 @@ const clone = require('clone');
                     periodMultiplier: 6
                 }
             }
+        }, {
+            $class: 'org.acme.bond.ExtendedBondAsset',
+            ISINCode: 'ISIN_5',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOM',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 4000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#1',
+                maturity: '2018-02-27T21:03:52.000Z',
+                parValue: 4000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            },
+            arrayProp1: []
+        }, {
+            $class: 'org.acme.bond.ExtendedBondAsset',
+            ISINCode: 'ISIN_6',
+            bond: {
+                $class: 'org.acme.bond.Bond',
+                dayCountFraction: 'EOM',
+                exchangeId: [
+                    'NYSE'
+                ],
+                faceAmount: 4000,
+                instrumentId: [
+                    'DogeCorp'
+                ],
+                issuer: 'resource:org.acme.bond.Issuer#1',
+                maturity: '2018-02-27T21:03:52.000Z',
+                parValue: 4000,
+                paymentFrequency: {
+                    $class: 'org.acme.bond.PaymentFrequency',
+                    period: 'MONTH',
+                    periodMultiplier: 6
+                }
+            }
         }];
 
         let app;
@@ -131,7 +176,8 @@ const clone = require('clone');
         let idCard;
 
         before(() => {
-            const cardStore = new MemoryCardStore();
+
+            const cardStore = NetworkCardStoreManager.getCardStore( { type: 'composer-wallet-inmemory' } );
             adminConnection = new AdminConnection({ cardStore });
             let metadata = { version:1, userName: 'admin', enrollmentSecret: 'adminpw', roles: ['PeerAdmin', 'ChannelAdmin'] };
             const deployCardName = 'deployer-card';
@@ -149,10 +195,10 @@ const clone = require('clone');
             .then((result) => {
                 businessNetworkDefinition = result;
                 serializer = businessNetworkDefinition.getSerializer();
-                return adminConnection.install(businessNetworkDefinition.getName());
+                return adminConnection.install(businessNetworkDefinition);
             })
             .then(()=>{
-                return adminConnection.start(businessNetworkDefinition,{networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
+                return adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {networkAdmins :[{userName:'admin',enrollmentSecret:'adminpw'}] });
             })
             .then(() => {
                 idCard = new IdCard({ userName: 'admin', enrollmentSecret: 'adminpw', businessNetwork: 'bond-network' }, { name: 'defaultProfile', 'x-type': 'embedded' });
@@ -180,6 +226,10 @@ const clone = require('clone');
                     serializer.fromJSON(assetData[1])
                 ]);
             });
+        });
+
+        after(() => {
+            return adminConnection.undeploy();
         });
 
         describe(`GET / namespaces[${namespaces}]`, () => {
@@ -229,6 +279,30 @@ const clone = require('clone');
                         json.should.deep.equal(assetData[3]);
                         return assetRegistry.remove('ISIN_4');
                     });
+            });
+
+            it('should create the specified asset with an empty array property', async () => {
+                const res = await chai.request(app)
+                    .post(`/api/${prefix}ExtendedBondAsset`)
+                    .send(assetData[4]);
+                res.should.have.status(200);
+                const assetRegistry = await businessNetworkConnection.getAssetRegistry('org.acme.bond.ExtendedBondAsset');
+                const asset = await assetRegistry.get('ISIN_5');
+                const json = serializer.toJSON(asset);
+                json.arrayProp1.should.deep.equal([]);
+                await assetRegistry.remove('ISIN_5');
+            });
+
+            it('should create the specified asset with a missing array property', async () => {
+                const res = await chai.request(app)
+                    .post(`/api/${prefix}ExtendedBondAsset`)
+                    .send(assetData[5]);
+                res.should.have.status(200);
+                const assetRegistry = await businessNetworkConnection.getAssetRegistry('org.acme.bond.ExtendedBondAsset');
+                const asset = await assetRegistry.get('ISIN_6');
+                const json = serializer.toJSON(asset);
+                json.arrayProp1.should.deep.equal([]);
+                await assetRegistry.remove('ISIN_6');
             });
 
             it('should return a 500 if the specified asset already exists', () => {

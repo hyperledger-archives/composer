@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Injectable } from '@angular/core';
 import { EditorFile } from './editor-file';
 import { ModelFile, AclFile, QueryFile, Script, BusinessNetworkDefinition } from 'composer-common';
@@ -5,6 +18,7 @@ import { ClientService } from './client.service';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { sortBy } from 'lodash';
+import * as semver from 'semver';
 
 @Injectable()
 export class FileService {
@@ -22,7 +36,7 @@ export class FileService {
 
     private currentFile: any = null;
 
-    private currentBusinessNetwork;
+    private currentBusinessNetwork: BusinessNetworkDefinition;
 
     constructor(private clientService: ClientService) {
     }
@@ -88,7 +102,7 @@ export class FileService {
 
         let packageJson = this.getMetaData().getPackageJson();
         if (packageJson) {
-            this.addFile('package', 'package.json', packageJson, 'package');
+            this.addFile('package', 'package.json', JSON.stringify(packageJson, null, 2), 'package');
         }
 
         let allFiles = this.getEditorFiles();
@@ -131,6 +145,7 @@ export class FileService {
             case 'readme':
                 file = this.readMe;
                 break;
+            // Deal with the addition of a package file.
             case 'package':
                 file = this.packageJson;
                 break;
@@ -176,10 +191,14 @@ export class FileService {
         return this.packageJson;
     }
 
-    getEditorFiles(includePackageJson = false): Array<EditorFile> {
+    getEditorFiles(): Array<EditorFile> {
         let files = [];
+
         if (this.getEditorReadMe() !== null) {
             files.push(this.getEditorReadMe());
+        }
+        if (this.getEditorPackageFile() !== null) {
+            files.push(this.getEditorPackageFile());
         }
 
         files = files.concat(this.getEditorModelFiles());
@@ -190,9 +209,7 @@ export class FileService {
         if (this.getEditorQueryFile() !== null) {
             files.push(this.getEditorQueryFile());
         }
-        if (includePackageJson && this.getEditorPackageFile() !== null) {
-            files.push(this.getEditorPackageFile());
-        }
+
         return files;
     }
 
@@ -335,11 +352,12 @@ export class FileService {
                 this.readMe.setContent(content);
                 updatedFile = this.readMe;
                 break;
+            // Deal with the update of a package file.
             case 'package':
                 if (this.packageJson === null) {
                     throw new Error('PackageJson file does not exist in file service');
                 }
-                this.packageJson.setContent(JSON.parse(content));
+                this.packageJson.setContent(content);
                 updatedFile = this.packageJson;
                 validationError = this.validateFile(id, type);
                 if (validationError) {
@@ -352,6 +370,24 @@ export class FileService {
         this.dirty = true;
 
         return updatedFile;
+    }
+
+    // Handle the update of the package version
+    updateBusinessNetworkVersion(version: string) {
+        let packageJsonContent = JSON.parse(this.packageJson.getContent());
+        packageJsonContent.version = version;
+
+        return this.updateFile(this.packageJson.getId(), JSON.stringify(packageJsonContent, null, 2), this.packageJson.getType());
+    }
+
+    // Handle package version bump
+    incrementBusinessNetworkVersion() {
+        let packageJsonContent = JSON.parse(this.packageJson.getContent());
+
+        packageJsonContent.version = semver.inc(packageJsonContent.version, 'prerelease', 'deploy');
+
+        this.packageJson.setJsonContent(packageJsonContent);
+        this.businessNetworkChanged$.next(true);
     }
 
     // Handle the deletion of a file.
@@ -384,6 +420,11 @@ export class FileService {
             default:
                 throw new Error('Attempted deletion of file unknown type: ' + type);
         }
+
+        if (this.currentFile && this.currentFile.id === id) {
+            this.currentFile = null;
+        }
+
         this.dirty = true;
     }
 
@@ -472,8 +513,16 @@ export class FileService {
                     this.queryFile.validate(this.currentBusinessNetwork.getModelManager());
                     break;
                 case 'package':
-                    if (this.packageJson.getContent().name !== this.clientService.getBusinessNetwork().getName()) {
+                    let packageJsonContent = JSON.parse(this.packageJson.getContent());
+                    if (packageJsonContent.name !== this.getBusinessNetworkName()) {
                         throw new Error('Unsupported attempt to update Business Network Name.');
+                    }
+
+                    const deployedVersion = this.clientService.getDeployedBusinessNetworkVersion();
+                    if (semver.gt(deployedVersion, packageJsonContent.version)) {
+                        throw new Error('A more recent version of the Business Network has already been deployed.');
+                    } else if (deployedVersion === packageJsonContent.version) {
+                        throw new Error('The Business Network has already been deployed at the current version.');
                     }
                     break;
                 default:
@@ -518,6 +567,8 @@ export class FileService {
             this.updateBusinessNetworkFile(oldId, editorFile.getContent(), editorFile.getType());
         } else if (editorFile.isPackage()) {
             this.updateBusinessNetworkFile(oldId, editorFile.getContent(), editorFile.getType());
+        } else {
+            throw new Error('Attempted update of unknown file of type: ' + editorFile.getType());
         }
     }
 
@@ -604,21 +655,13 @@ export class FileService {
         }
     }
 
-    setBusinessNetworkPackageJson(packageJson) {
-        this.currentBusinessNetwork.setPackageJson(packageJson);
+    setBusinessNetworkPackageJson(packageJson: string) {
+        this.currentBusinessNetwork.setPackageJson(JSON.parse(packageJson));
         this.dirty = true;
     }
 
-    setBusinessNetworkReadme(readme) {
+    setBusinessNetworkReadme(readme: string) {
         this.currentBusinessNetwork.setReadme(readme);
-        this.dirty = true;
-    }
-
-    setBusinessNetworkVersion(version: string) {
-        let packageJson = this.currentBusinessNetwork.getMetadata().getPackageJson();
-        packageJson.version = version;
-        this.currentBusinessNetwork.setPackageJson(packageJson);
-        this.businessNetworkChanged$.next(true);
         this.dirty = true;
     }
 
@@ -628,6 +671,10 @@ export class FileService {
 
     getBusinessNetworkName() {
         return this.getBusinessNetwork().getMetadata().getName();
+    }
+
+    getBusinessNetworkVersion() {
+        return this.getBusinessNetwork().getMetadata().getVersion();
     }
 
     getBusinessNetworkDescription() {

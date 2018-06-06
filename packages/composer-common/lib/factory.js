@@ -180,8 +180,8 @@ class Factory {
     /**
      * Create a new Relationship with a given namespace, type and identifier.
      * A relationship is a typed pointer to an instance. I.e the relationship
-     * with `namespace = 'org.acme'`, `type = 'Vehicle'` and `id = 'ABC' creates`
-     * a pointer that points at an instance of org.acme.Vehicle with the id
+     * with `namespace = 'org.example'`, `type = 'Vehicle'` and `id = 'ABC' creates`
+     * a pointer that points at an instance of org.example.Vehicle with the id
      * ABC.
      *
      * @param {String} ns - the namespace of the Resource

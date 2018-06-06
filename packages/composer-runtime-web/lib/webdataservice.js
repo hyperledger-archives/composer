@@ -28,6 +28,23 @@ PouchDBDataService.registerPouchDBPlugin(require('pouchdb-adapter-websql'));
  * @protected
  */
 class WebDataService extends PouchDBDataService {
+    /**
+     * Get a new data service for storing network (blockchain) data.
+     * @param {String} containerName Name of the runtime container.
+     * @param {boolean} [autocommit] true if the data service should be auto-commit; otherwise false.
+     * @return {DataService} the data service.
+     */
+    static newNetworkDataService(containerName, autocommit = false) {
+        return new WebDataService(containerName, autocommit);
+    }
+
+    /**
+     * Get the top-level Composer data service.
+     * @return {DataService} the data service.
+     */
+    static newComposerDataService() {
+        return new WebDataService(null, true);
+    }
 
     /**
      * Constructor.

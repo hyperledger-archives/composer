@@ -1,0 +1,39 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="connect-confirm" tabindex="-1">
+  <div class="modal-header">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-warn_32"></use>
+    </svg>
+    <h1>Business network {{network}} cannot be updated</h1>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </div>
+  <section class="modal-body">
+    <section class="information">
+      <p>You can only connect to <b>{{network}}</b> to view and test the deployed business network version.</p>
+      <p>
+        You must import business network cards with the correct admin rights before you can deploy new versions of a business network.
+        <a href="{{ config.docURL }}/business-network/bnd-deploy.html" target="_blank">Learn more</a>.
+      </p>
+    </section>
+  </section>
+  <footer>
+    <button id="replace_cancel" type="button" class="secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button id="replace_confirm" type="button" class="primary" (click)="activeModal.close(true)">Connect</button>
+  </footer>
+</div>

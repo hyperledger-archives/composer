@@ -17,7 +17,7 @@
 
 // not using the config file module as this could be run anwhere so suppress warning
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
-
+const cmdUtil = require('./lib/cmds/utils/cmdutils');
 const yargs = require('yargs');
 const chalk = require('chalk');
 const version = 'v' +require('./package.json').version;
@@ -25,7 +25,7 @@ const version = 'v' +require('./package.json').version;
 let results = yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('composer archive create\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
+    .example('composer archive create\ncomposer identity issue\ncomposer network install\ncomposer participant add\ncomposer transaction submit')
     .demand(1)
     .wrap(null)
     .strict()
@@ -39,11 +39,11 @@ if (typeof(results.thePromise) !== 'undefined'){
     results.thePromise.then( () => {
 
         if (!results.quiet) {
-            console.log(chalk.green('\nCommand succeeded\n'));
+            cmdUtil.log(chalk.green('\nCommand succeeded\n'));
         }
         process.exit(0);
     }).catch((error) => {
-        console.log(error+chalk.red('\nCommand failed\n'));
+        cmdUtil.log(error+chalk.red('\nCommand failed\n'));
         process.exit(1);
     });
 } else {

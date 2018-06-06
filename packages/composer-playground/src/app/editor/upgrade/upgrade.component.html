@@ -1,0 +1,72 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<div class="modal-header">
+    <h1>Upgrade business betwork</h1>
+    <button id="upgrade-file_exit" class="icon modal-exit" (click)="activeModal.dismiss()">
+        <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-close_new"></use>
+        </svg>
+    </button>
+</div>
+<section class="modal-body">
+    <div>
+        <p>Please select the business network cards with the correct permissions for installing and upgrading the business network.</p>
+    </div>
+
+    <div class="card-select">
+        <div class="card-select-label">
+            <p>Installation card</p>
+        </div>
+        <div class="card-select-item">
+            <div ngbDropdown class="d-inline-block">
+                <button type="button" class="action" id="peerAdminDropdownMenu" ngbDropdownToggle><span
+                    title="{{selectedPeerCardRef}}">{{selectedPeerCardRef}}</span></button>
+                <div class="dropdown-menu" id="peerAdminDropdownOptions" aria-labelledby="peerAdminDropdownMenu">
+                    <button class="dropdown-item action " *ngFor="let cardRef of peerCardRefs"
+                            (click)="onPeerCardSelect(cardRef)">{{cardRef}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-select">
+        <div class="card-select-label">
+            <p>Upgrade card</p>
+        </div>
+        <div class="card-select-item">
+            <div ngbDropdown class="d-inline-block">
+                <button type="button" class="action" id="channelAdminDropdownMenu" ngbDropdownToggle><span
+                    title="{{selectedChannelCardRef}}">{{selectedChannelCardRef}}</span></button>
+                <div class="dropdown-menu" id="channelAdminDropdownOptions" aria-labelledby="channelAdminDropdownMenu">
+                    <button class="dropdown-item action " *ngFor="let cardRef of channelCardRefs"
+                            (click)="onChannelCardSelect(cardRef)">{{cardRef}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <p>Upgrading a business network may take several minutes, ensure you've included all the intended changes.</p>
+    </div>
+</section>
+<footer>
+    <button id="upgrade_cancel" type="button" class="secondary" (click)="activeModal.dismiss();">
+        <span>Cancel</span>
+    </button>
+    <button autofocus id="upgrade_confirm" type="button" class="primary" (click)="upgrade()"
+            [disabled]="!selectedPeerCardRef || !selectedChannelCardRef">
+        <span>Upgrade</span>
+    </button>
+</footer>

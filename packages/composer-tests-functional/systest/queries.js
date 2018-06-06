@@ -16,14 +16,14 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
-
 const fs = require('fs');
 const path = require('path');
-
 const TestUtil = require('./testutil');
+
 const chai = require('chai');
-chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+chai.should();
 
 describe('Query system tests', function() {
 
@@ -39,6 +39,7 @@ describe('Query system tests', function() {
     let transactionsAsResources;
     let serializer;
     let cardStore;
+
     /**
      * Generate the common part of the resource.
      * @param {Number} i The index.
@@ -189,7 +190,8 @@ describe('Query system tests', function() {
         return result;
     }
 
-    before(function () {
+    before(async () => {
+        await TestUtil.setUp();
         const modelFiles = [
             { fileName: 'models/queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.cto'), 'utf8') }
         ];
@@ -211,74 +213,51 @@ describe('Query system tests', function() {
             let scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
-        return TestUtil.deploy(businessNetworkDefinition)
-            .then((_cardStore) => {
-                cardStore = _cardStore;
-                return TestUtil.getClient(cardStore,'systest-queries')
-                    .then((result) => {
-                        client = result;
-                    });
-            })
-            .then(() => {
-                serializer = client.getBusinessNetwork().getSerializer();
-                assetsAsJSON = []; assetsAsResources = [];
-                participantsAsJSON = []; participantsAsResources = [];
-                transactionsAsJSON = []; transactionsAsResources = [];
-                for (let i = 0; i < 32; i++) {
-                    const asset = generateAsset(i);
-                    assetsAsJSON.push(asset);
-                    assetsAsResources.push(serializer.fromJSON(asset));
-                    const participant = generateParticipant(i);
-                    participantsAsJSON.push(participant);
-                    participantsAsResources.push(serializer.fromJSON(participant));
-                    const transaction = generateTransaction(i);
-                    transactionsAsJSON.push(transaction);
-                    transactionsAsResources.push(serializer.fromJSON(transaction));
-                }
-                assetsAsJSON.sort((a, b) => {
-                    return a.assetId.localeCompare(b.assetId);
-                });
-                participantsAsJSON.sort((a, b) => {
-                    return a.participantId.localeCompare(b.participantId);
-                });
-                return client.getAssetRegistry('systest.queries.SampleAsset');
-            })
-            .then((assetRegistry) => {
-                return assetRegistry.addAll(assetsAsResources);
-            })
-            .then(() => {
-                return client.getParticipantRegistry('systest.queries.SampleParticipant');
-            })
-            .then((participantRegistry) => {
-                return participantRegistry.addAll(participantsAsResources);
-            })
-            .then(() => {
-                return transactionsAsResources.reduce((promise, transaction) => {
-                    return promise.then(() => {
-                        return client.submitTransaction(transaction);
-                    });
-                }, Promise.resolve());
-            })
-            .then(() => {
-                return client.getTransactionRegistry('systest.queries.SampleTransaction');
-            })
-            .then((transactionRegistry) => {
-                return transactionRegistry.getAll();
-            })
-            .then((transactions) => {
-                transactionsAsResources = transactions.filter((transaction) => {
-                    return transaction.getFullyQualifiedType() === 'systest.queries.SampleTransaction';
-                }).sort((a, b) => {
-                    return a.transactionId.localeCompare(b.transactionId);
-                });
-                transactionsAsJSON = transactionsAsResources.map((transaction) => {
-                    return serializer.toJSON(transaction);
-                });
-            });
+        cardStore = await TestUtil.deploy(businessNetworkDefinition);
+        client = await TestUtil.getClient(cardStore,'systest-queries');
+        serializer = client.getBusinessNetwork().getSerializer();
+        assetsAsJSON = []; assetsAsResources = [];
+        participantsAsJSON = []; participantsAsResources = [];
+        transactionsAsJSON = []; transactionsAsResources = [];
+        for (let i = 0; i < 32; i++) {
+            const asset = generateAsset(i);
+            assetsAsJSON.push(asset);
+            assetsAsResources.push(serializer.fromJSON(asset));
+            const participant = generateParticipant(i);
+            participantsAsJSON.push(participant);
+            participantsAsResources.push(serializer.fromJSON(participant));
+            const transaction = generateTransaction(i);
+            transactionsAsJSON.push(transaction);
+            transactionsAsResources.push(serializer.fromJSON(transaction));
+        }
+        assetsAsJSON.sort((a, b) => {
+            return a.assetId.localeCompare(b.assetId);
+        });
+        participantsAsJSON.sort((a, b) => {
+            return a.participantId.localeCompare(b.participantId);
+        });
+        const assetRegistry = await client.getAssetRegistry('systest.queries.SampleAsset');
+        await assetRegistry.addAll(assetsAsResources);
+        const participantRegistry = await client.getParticipantRegistry('systest.queries.SampleParticipant');
+        await participantRegistry.addAll(participantsAsResources);
+        for (const transaction of transactionsAsResources) {
+            await client.submitTransaction(transaction);
+        }
+        const transactionRegistry = await client.getTransactionRegistry('systest.queries.SampleTransaction');
+        const transactions = await transactionRegistry.getAll();
+        transactionsAsResources = transactions.filter((transaction) => {
+            return transaction.getFullyQualifiedType() === 'systest.queries.SampleTransaction';
+        }).sort((a, b) => {
+            return a.transactionId.localeCompare(b.transactionId);
+        });
+        transactionsAsJSON = transactionsAsResources.map((transaction) => {
+            return serializer.toJSON(transaction);
+        });
     });
 
-    after(function () {
-        return TestUtil.undeploy(businessNetworkDefinition);
+    after(async () => {
+        await TestUtil.undeploy(businessNetworkDefinition);
+        await TestUtil.tearDown();
     });
 
     ['assets', 'participants', 'transactions'].forEach((type) => {

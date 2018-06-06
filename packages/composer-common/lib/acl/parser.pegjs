@@ -1,4 +1,17 @@
 /*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/*
  * Simple ACL Grammar
  * ==========================
  *
@@ -1373,7 +1386,7 @@ SimpleRule
         type: "SimpleRule",
         id: ruleId,
         noun: noun,
-        verbs: verbs,
+        operation: verbs,
         participant: participant,
         transaction: transaction,
         action: action,
@@ -1404,7 +1417,7 @@ VariableBinding
         id: ruleId,
         noun: noun,
         nounVariable: nounVariable,
-        verbs: verbs,
+        operation: verbs,
         participant: participant,
         participantVariable: participantVariable,
         transaction: transaction,
@@ -1482,7 +1495,10 @@ AdditionalBasicVerb = __ "," __ verb:BasicVerb
  */
 BasicVerbList = first:BasicVerb others:(AdditionalBasicVerb)*
 {
-    return [first].concat(others);
+    return {
+      verbs: [first].concat(others),
+      location: location()
+    };
 }
 
 /**
@@ -1490,7 +1506,10 @@ BasicVerbList = first:BasicVerb others:(AdditionalBasicVerb)*
  */
 AllVerb = 'ALL'
 {
-    return ['ALL']
+    return {
+      verbs: ['ALL'],
+      location: location()
+    };
 }
 
 /**

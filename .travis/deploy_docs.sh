@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # Exit on first error, print all commands.
 set -ev
@@ -36,8 +49,8 @@ if [[ "${BUILD_RELEASE}" == "unstable" ]]; then
         DOCS_DIR="unstable"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         DOCS_DIR="next-unstable"
-    else 
-        _exit "Unknown build focus" 1 
+    else
+        _exit "Unknown build focus" 1
     fi
 
 elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
@@ -46,8 +59,8 @@ elif [[ "${BUILD_RELEASE}" == "stable" ]]; then
         DOCS_DIR="latest"
     elif [[ "${BUILD_FOCUS}" = "next" ]]; then
         DOCS_DIR="next"
-    else 
-        _exit "Unknown build focus" 1 
+    else
+        _exit "Unknown build focus" 1
     fi
 
 else
@@ -63,8 +76,13 @@ cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/${DOCS_DIR}/
 
 # Add all the changes, commit, and push to the GitHub repository.
 cd ${TODIR}
-git add .
-git commit -m "Automatic deployment of website"
-git push origin gh-pages
+if git status --porcelain | grep . > /dev/null; then
+    echo "Found doc changes to push"
+    git add .
+    git commit -m "Automatic deployment of website"
+    git push origin gh-pages
+else
+    echo "No doc changes to push"
+fi
 
 _exit "All complete" 0

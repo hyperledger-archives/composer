@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -24,7 +37,7 @@ import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
 import { DrawerModule } from './common/drawer';
 import { TutorialLinkModule } from './common/tutorial-link';
-import { ImportModule } from './import/import.module';
+import { DeployModule } from './deploy/deploy.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -65,7 +78,7 @@ type StoreType = {
     imports: [ // import Angular's modules
         AppRoutingModule,
         BasicModalsModule,
-        ImportModule,
+        DeployModule,
         BrowserAnimationsModule,
         BrowserModule,
         HttpModule,

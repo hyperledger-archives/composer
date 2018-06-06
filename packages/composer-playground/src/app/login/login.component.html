@@ -1,10 +1,23 @@
+<!--
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <section *ngIf="!showSubScreen" class="header">
     <h1>My Business Networks</h1>
     <div *ngIf="!showSubScreen">
         <button id="importIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="importIdentity()">
             <span>Import Business Network Card</span>
         </button>
-        <button id="createIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="createIdCard()">
+        <button id="createIdCard" *ngIf="usingLocally" type="button" class="secondary" (click)="goCreateCard()">
             <span>Create Business Network Card</span>
         </button>
     </div>
@@ -24,13 +37,13 @@
                            [identity]="idCards.get(cardRef)"
                            [indestructible]="(indestructibleCards.indexOf(cardRef) > -1)"
                            [cardRef]="cardRef"
-                           (onConnect)="changeIdentity(cardRef)"
+                           (onConnect)="changeIdentity(cardRef, connectionProfileRef)"
                            (onExport)="exportIdentity(cardRef)"
                            (onDelete)="removeIdentity(cardRef)">
             </identity-card>
             <button type="button" class="connection-profile-card"
                     *ngIf="canDeploy(connectionProfileRef)"
-                    (click)="deployNetwork(connectionProfileRef)">
+                    (click)="goDeploy(connectionProfileRef)">
                 <span class="card-content">
                     <svg class="ibm-icon" aria-hidden="true">
                         <use xlink:href="#icon-Network_Create"></use>
@@ -43,14 +56,14 @@
                     <use xlink:href="#icon-get-information_64"></use>
                 </svg>
                 <p>You must <a href="javascript:void(0);" (click)="importIdentity()">import</a> identity cards with the correct admin rights for deploying new business networks.</p>
-                <p><a href="https://hyperledger.github.io/composer/business-network/bnd-deploy.html" target="_blank">Learn more</a>.</p>
+                <p><a href="{{ config.docURL }}/business-network/bnd-deploy.html" target="_blank">Learn more</a>.</p>
             </div>
         </div>
     </div>
 </section>
 <section class="sub-view" *ngIf="showSubScreen">
     <div class="header">
-        <button type="button" class="action" (click)="closeSubView()">
+        <button type="button" class="action" (click)="goLoginMain()">
             <svg class="ibm-icon vertical-top rotate" aria-hidden="true">
                 <use xlink:href="#icon-forward_16"></use>
             </svg>

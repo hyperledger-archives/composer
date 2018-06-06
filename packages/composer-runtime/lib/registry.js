@@ -17,6 +17,12 @@
 const EventEmitter = require('events');
 const Resource = require('composer-common').Resource;
 
+const baseDefaultOptions = {
+    convertResourcesToRelationships: true,
+    permitResourcesForRelationships: false,
+    forceAdd: false
+};
+
 /**
  * A class for managing and persisting resources.
  * @protected
@@ -64,28 +70,20 @@ class Registry extends EventEmitter {
      * @return {Promise} A promise that will be resolved with an array of {@link
      * Resource} objects when complete, or rejected with an error.
      */
-    getAll() {
-        return this.dataCollection.getAll()
-            .then((objects) => {
-                return objects.reduce((promiseChain, resource) => {
-                    return promiseChain.then((newResources) => {
-                        let object = Registry.removeInternalProperties(resource);
-                        try {
-                            let resourceToCheckAccess = this.serializer.fromJSON(object);
-                            return this.accessController.check(resourceToCheckAccess, 'READ')
-                            .then(() => {
-                                newResources.push(resourceToCheckAccess);
-                                return newResources;
-                            }).catch((e) => {
-                                return newResources;
-                            });
-                        } catch (err) {
-                            return newResources;
-                        }
-
-                    });
-                }, Promise.resolve([]));
-            });
+    async getAll() {
+        const objects = await this.dataCollection.getAll();
+        const resources = [];
+        for (let object of objects) {
+            object = Registry.removeInternalProperties(object);
+            try {
+                const resource = this.serializer.fromJSON(object);
+                await this.accessController.check(resource, 'READ');
+                resources.push(resource);
+            } catch (error) {
+                // Ignore the error; we don't have access.
+            }
+        }
+        return resources;
     }
 
     /**
@@ -94,19 +92,16 @@ class Registry extends EventEmitter {
      * @return {Promise} A promise that will be resolved with a {@link Resource}
      * object when complete, or rejected with an error.
      */
-    get(id) {
-        return this.dataCollection.get(id)
-            .then((object) => {
-                object = Registry.removeInternalProperties(object);
-                let result = this.serializer.fromJSON(object);
-                return this.accessController.check(result, 'READ')
-                    .then(() => {
-                        return result;
-                    })
-                    .catch((error) => {
-                        throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
-                    });
-            });
+    async get(id) {
+        let object = await this.dataCollection.get(id);
+        object = Registry.removeInternalProperties(object);
+        try {
+            const resource = this.serializer.fromJSON(object);
+            await this.accessController.check(resource, 'READ');
+            return resource;
+        } catch (error) {
+            throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
+        }
     }
 
     /**
@@ -115,25 +110,20 @@ class Registry extends EventEmitter {
      * @return {Promise} A promise that will be resolved with a boolean
      * indicating whether the asset exists.
      */
-    exists(id) {
-        return this.dataCollection.exists(id)
-            .then((exists) => {
-                if (!exists) {
-                    return false;
-                }
-                return this.dataCollection.get(id)
-                    .then((object) => {
-                        object = Registry.removeInternalProperties(object);
-                        let result = this.serializer.fromJSON(object);
-                        return this.accessController.check(result, 'READ');
-                    })
-                    .then(() => {
-                        return true;
-                    })
-                    .catch((error) => {
-                        return false;
-                    });
-            });
+    async exists(id) {
+        const exists = await this.dataCollection.exists(id);
+        if (!exists) {
+            return false;
+        }
+        let object = await this.dataCollection.get(id);
+        object = Registry.removeInternalProperties(object);
+        try {
+            const resource = this.serializer.fromJSON(object);
+            await this.accessController.check(resource, 'READ');
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -152,16 +142,11 @@ class Registry extends EventEmitter {
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
      *  @param {boolean} [options.forceAdd] Forces adding the object even if it present (default to false)
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    addAll(resources, options) {
-        options = options || { forceAdd: false };
-        return resources.reduce((result, resource) => {
-            return result.then(() => {
-                return this.add(resource, options);
-            });
-        }, Promise.resolve());
+    async addAll(resources, options = {}) {
+        for (const resource of resources) {
+            await this.add(resource, options);
+        }
     }
 
     /**
@@ -171,31 +156,26 @@ class Registry extends EventEmitter {
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
      * @param {boolean} [options.forceAdd] Forces adding the object even if it present (default to false)
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * @param {boolean} [options.noTest] skips application of the testAdd method (default to false)
      */
-    add(resource, options) {
+    async add(resource, options = {}) {
 
-        return this.testAdd(resource)
-            .then((result) => {
-                if (result){
-                    // uh-oh something is not permitted
-                    throw result;
-                }
-                options = options || { forceAdd: false };
-                let id = resource.getIdentifier();
-                let object = this.serializer.toJSON(resource, {
-                    convertResourcesToRelationships: options.convertResourcesToRelationships
-                });
-                object = this.addInternalProperties(object);
-                return this.dataCollection.add(id, object, options.forceAdd);
-            })
-            .then(() => {
-                this.emit('resourceadded', {
-                    registry: this,
-                    resource: resource
-                });
-            });
+        if (!options.noTest){
+            const error = await this.testAdd(resource);
+            if (error) {
+                throw error;
+            }
+        }
+
+        const id = resource.getIdentifier();
+        options = Object.assign({}, baseDefaultOptions, options);
+        let object = this.serializer.toJSON(resource, options);
+        object = this.addInternalProperties(object);
+        await this.dataCollection.add(id, object, options.forceAdd);
+        this.emit('resourceadded', {
+            registry: this,
+            resource: resource
+        });
     }
 
     /**
@@ -206,29 +186,19 @@ class Registry extends EventEmitter {
      * @return {Promise} A promise that will be resolved with null if this resource could be added, or resolved with the
      * error that would have been thrown.
      */
-    testAdd(resource) {
-
-        return Promise.resolve().then(() => {
-            if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');                }
-            else if (this.type !== resource.getClassDeclaration().getSystemType()){
-                throw new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
-            }
-        })
-        .then(() => {
-            return this.accessController.check(resource, 'CREATE');
-        })
-        .then(()=>{
+    async testAdd(resource) {
+        if (!(resource instanceof Resource)) {
+            return new Error('Expected a Resource or Concept.');                }
+        else if (this.type !== resource.getClassDeclaration().getSystemType()){
+            return new Error('Cannot add type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+        }
+        try {
+            await this.accessController.check(resource, 'CREATE');
             return null;
-        })
-        .catch((error)=>{
-            // access has not been granted, so return the error that would have been thrown in the
-            // promise
+        } catch (error) {
             return error;
-        });
-
+        }
     }
-
 
     /**
      * An event signalling that a resource has been updated in this registry.
@@ -246,16 +216,11 @@ class Registry extends EventEmitter {
      * @param {Object} [options] Options for processing the resources.
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    updateAll(resources, options) {
-        options = options || {};
-        return resources.reduce((result, resource) => {
-            return result.then(() => {
-                return this.update(resource, options);
-            });
-        }, Promise.resolve());
+    async updateAll(resources, options = {}) {
+        for (const resource of resources) {
+            await this.update(resource, options);
+        }
     }
 
     /**
@@ -264,45 +229,27 @@ class Registry extends EventEmitter {
      * @param {Object} [options] Options for processing the resources.
      * @param {boolean} [options.convertResourcesToRelationships] Permit resources
      * in the place of relationships, defaults to false.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    update(resource, options) {
-        let id;
-        let object;
-
-        return Promise.resolve().then(() => {
-            if (!(resource instanceof Resource)) {
-                throw new Error('Expected a Resource or Concept.');                }
-            else if (this.type !== resource.getClassDeclaration().getSystemType()){
-                throw new Error('Cannot update type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
-            }
-            options = options || {};
-            id = resource.getIdentifier();
-            object = this.serializer.toJSON(resource, {
-                convertResourcesToRelationships: options.convertResourcesToRelationships
-            });
-            object = this.addInternalProperties(object);
-
-            return this.dataCollection.get(id);
-        })
-            .then((oldResource) => {
-                return this.serializer.fromJSON(oldResource);
-            })
-            .then((oldResource) => {
-                // We must perform access control checks on the old version of the resource!
-                return this.accessController.check(oldResource, 'UPDATE')
-                    .then(() => {
-                        return this.dataCollection.update(id, object);
-                    })
-                    .then(() => {
-                        this.emit('resourceupdated', {
-                            registry: this,
-                            oldResource: oldResource,
-                            newResource: resource
-                        });
-                    });
-            });
+    async update(resource, options = {}) {
+        if (!(resource instanceof Resource)) {
+            throw new Error('Expected a Resource or Concept.');                }
+        else if (this.type !== resource.getClassDeclaration().getSystemType()){
+            throw new Error('Cannot update type: ' + resource.getClassDeclaration().getSystemType() + ' to ' + this.type);
+        }
+        const id = resource.getIdentifier();
+        options = Object.assign({}, baseDefaultOptions, options);
+        let object = this.serializer.toJSON(resource, options);
+        object = this.addInternalProperties(object);
+        const oldObject = await this.dataCollection.get(id);
+        const oldResource = this.serializer.fromJSON(oldObject);
+        // We must perform access control checks on the old version of the resource!
+        await this.accessController.check(oldResource, 'UPDATE');
+        await this.dataCollection.update(id, object);
+        this.emit('resourceupdated', {
+            registry: this,
+            oldResource: oldResource,
+            newResource: resource
+        });
     }
 
     /**
@@ -317,53 +264,34 @@ class Registry extends EventEmitter {
     /**
      * Remove all of the specified resources from this registry.
      * @param {string[]|Resource[]} resources The resources to remove from this registry.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    removeAll(resources) {
-        return resources.reduce((result, resource) => {
-            return result.then(() => {
-                return this.remove(resource);
-            });
-        }, Promise.resolve());
+    async removeAll(resources) {
+        for (const resource of resources) {
+            await this.remove(resource);
+        }
     }
 
     /**
      * Remove the specified resource from this registry.
      * @param {string|Resource} resource The resource to remove from this registry.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
-    remove(resource) {
-        return Promise.resolve()
-            .then(() => {
-                // If the resource is a string, then we need to retrieve
-                // the resource using its ID from the registry. We need to
-                // do this to figure out the type of the resource for
-                // access control.
-                if (resource instanceof Resource) {
-                    return resource;
-                } else {
-                    return this.dataCollection.get(resource)
-                        .then((object) => {
-                            object = Registry.removeInternalProperties(object);
-                            return this.serializer.fromJSON(object);
-                        });
-                }
-            })
-            .then((resource) => {
-                let id = resource.getIdentifier();
-                return this.accessController.check(resource, 'DELETE')
-                    .then(() => {
-                        return this.dataCollection.remove(id);
-                    })
-                    .then(() => {
-                        this.emit('resourceremoved', {
-                            registry: this,
-                            resourceID: id
-                        });
-                    });
-            });
+    async remove(resource) {
+        if (!(resource instanceof Resource)) {
+            // If the resource is a string, then we need to retrieve
+            // the resource using its ID from the registry. We need to
+            // do this to figure out the type of the resource for
+            // access control.
+            let object = await this.dataCollection.get(resource);
+            object = Registry.removeInternalProperties(object);
+            resource = this.serializer.fromJSON(object);
+        }
+        const id = resource.getIdentifier();
+        await this.accessController.check(resource, 'DELETE');
+        await this.dataCollection.remove(id);
+        this.emit('resourceremoved', {
+            registry: this,
+            resourceID: id
+        });
     }
 
     /**

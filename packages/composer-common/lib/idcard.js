@@ -130,7 +130,9 @@ class IdCard {
      * @return {Object} connection profile.
      */
     getConnectionProfile() {
-        return Object.assign({}, this.connectionProfile);
+        let newprofile = Object.assign({}, this.connectionProfile);
+        delete newprofile.wallet;
+        return newprofile;
     }
 
     /**
@@ -434,7 +436,7 @@ class IdCard {
             return Promise.all(credentialPromises);
         }).catch(cause => {
             LOG.error(method, cause);
-            throw newErrorWithCause('Failed to save card to directory: ' + cardDirectory, cause);
+            throw newErrorWithCause(`Failed to save card to directory: ${cardDirectory}. Reason: ${cause.message}`, cause);
         });
     }
 

@@ -33,6 +33,7 @@ class NodeUtils {
     static async getAllResults(iterator) {
         const method = 'getAllResults';
         LOG.entry(method, iterator);
+        const t0 = Date.now();
 
         let results = [];
         let logResults = [];
@@ -57,6 +58,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }
@@ -67,11 +69,13 @@ class NodeUtils {
      *
      * @static
      * @param {any} iterator the chaincode iterator
+     * @param {any} stub the stub for this invocation
      * @returns {promise} a promise that is resolved with the results or rejected or error
      */
     static async deleteAllResults(iterator, stub) {
         const method = 'deleteAllResults';
         LOG.entry(method, iterator, stub);
+        const t0 = Date.now();
 
         let results = [];
         let logResults = [];
@@ -93,6 +97,7 @@ class NodeUtils {
                     LOG.warn(warnMsg);
                 }
                 LOG.exit(method, logResults);
+                LOG.debug('@PERF ' + method, 'Total (ms) duration: ' + (Date.now() - t0).toFixed(2));
                 return results;
             }
         }

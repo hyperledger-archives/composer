@@ -1,21 +1,35 @@
 {
+  "engines": {
+    "composer": "<%= composerversion %>"
+  },
   "name": "<%= appname %>",
   "version": "0.0.1",
   "description": "<%= appdescription %>",
   "scripts": {
-    "test": "mocha --recursive"
+    "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/<%= appname %>.bna",
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "test": "nyc mocha -t 0 test/*.js && cucumber-js"
   },
+  "keywords": [
+    "composer",
+    "composer-network"
+  ],
   "author": "<%= appauthor %>",
   "email": "<%= appemail %>",
   "license": "<%= applicense %>",
   "devDependencies": {
-    "composer-admin": "latest",
-    "composer-client": "latest",
-    "composer-common": "latest",
-    "composer-connector-embedded": "latest",
+    "composer-admin": "<%= composerversion %>",
+    "composer-cli": "<%= composerversion %>",
+    "composer-client": "<%= composerversion %>",
+    "composer-common": "<%= composerversion %>",
+    "composer-connector-embedded": "<%= composerversion %>",
+    "composer-cucumber-steps": "<%= composerversion %>",
     "chai": "latest",
+    "chai-as-promised": "latest",
+    "cucumber": "^2.2.0",
     "eslint": "latest",
-    "istanbul": "latest",
+    "nyc": "latest",
     "mkdirp": "latest",
     "mocha": "latest"
   }

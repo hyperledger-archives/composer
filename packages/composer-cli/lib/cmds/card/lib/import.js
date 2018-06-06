@@ -17,8 +17,10 @@
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const IdCard = require('composer-common').IdCard;
+const Validate = require('./validate');
 const path = require('path');
 const chalk = require('chalk');
+const prettyjson = require('prettyjson');
 /**
  * Composer "card import" command
  * @private
@@ -35,13 +37,23 @@ class Import {
         let adminConnection;
         return Import.readCardFromFile(args.file).then(card => {
             cardToImport = card;
-            cardName = args.name || cmdUtil.getDefaultCardName(card);
+            cardName = args.card || cmdUtil.getDefaultCardName(card);
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.hasCard(cardName);
         }).then((existingCard) => {
             if (existingCard) {
                 throw new Error('Card already exists: ' + cardName);
             }
+
+            let errors = Validate.validateProfile(cardToImport.getConnectionProfile());
+            if(errors) {
+                cmdUtil.log(chalk.red.bold('\nFailed to import the business network card'));
+                errors.forEach((err) => {
+                    cmdUtil.log(prettyjson.render(err, {keysColor: 'red',stringColor: 'white'}) + '\n');
+                });
+                throw new Error(chalk.red.bold('Errors found in the connection profile in the card'));
+            }
+
             return adminConnection.importCard(cardName, cardToImport);
         }).then(() => {
             cmdUtil.log(chalk.blue.bold('\nSuccessfully imported business network card'));

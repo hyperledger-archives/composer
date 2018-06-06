@@ -4,14 +4,13 @@ env:
     mocha: true
 extends: 'eslint:recommended'
 parserOptions:
-    ecmaVersion: 2015
+    ecmaVersion: 8
     sourceType:
         - script
 rules:
     indent:
         - error
         - 4
-        - SwitchCase: 1
     linebreak-style:
         - error
         - unix

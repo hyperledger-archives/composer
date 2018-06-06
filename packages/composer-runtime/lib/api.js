@@ -47,10 +47,12 @@ class Api {
             'getAssetRegistry',
             'getParticipantRegistry',
             'getCurrentParticipant',
+            'getCurrentIdentity',
             'post',
             'emit',
             'buildQuery',
-            'query'
+            'query',
+            'getNativeAPI'
         ];
     }
 
@@ -67,6 +69,7 @@ class Api {
         const factory = context.getFactory();
         const serializer = context.getSerializer();
         const participant = context.getParticipant();
+        const identity = context.getIdentity();
         const registryManager = context.getRegistryManager();
         const httpService = context.getHTTPService();
         const eventService = context.getEventService();
@@ -119,7 +122,7 @@ class Api {
          * existing assets, or create new assets.
          * @example
          * // Get the vehicle asset registry.
-         * return getAssetRegistry('org.acme.Vehicle')
+         * return getAssetRegistry('org.example.Vehicle')
          *   .then(function (vehicleAssetRegistry) {
          *     // Call methods on the vehicle asset registry.
          *   })
@@ -153,7 +156,7 @@ class Api {
          * existing participants, or create new participants.
          * @example
          * // Get the driver participant registry.
-         * return getParticipantRegistry('org.acme.Driver')
+         * return getParticipantRegistry('org.example.Driver')
          *   .then(function (driverParticipantRegistry) {
          *     // Call methods on the driver participant registry.
          *   })
@@ -188,12 +191,12 @@ class Api {
          * // Get the current participant.
          * var currentParticipant = getCurrentParticipant();
          * // Check to see if the current participant is a driver.
-         * if (currentParticipant.getFullyQualifiedType() !== 'org.acme.Driver') {
+         * if (currentParticipant.getFullyQualifiedType() !== 'org.example.Driver') {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not a driver');
          * }
          * // Check to see if the current participant is the first driver.
-         * if (currentParticipant.getFullyQualifiedIdentifier() !== 'org.acme.Driver#DRIVER_1') {
+         * if (currentParticipant.getFullyQualifiedIdentifier() !== 'org.example.Driver#DRIVER_1') {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not the first driver');
          * }
@@ -212,11 +215,34 @@ class Api {
         };
 
         /**
+         * Get the current identity. The current identity is the identity
+         * that was used to submit the current transaction.
+         * @example
+         * // Get the current identity.
+         * var currentIdentity = getCurrentIdentity();
+         * // Get the certificate from the current identity.
+         * var certificate = currentIdentity.certificate;
+         * @method module:composer-runtime#getCurrentIdentity
+         * @public
+         * @return {module:composer-common.Resource} The current identity,
+         * or null if the transaction was submitted using an identity that does
+         * not map to a participant.
+         */
+        this.getCurrentIdentity = function getCurrentIdentity() {
+            const method = 'getCurrentIdentity';
+            LOG.entry(method);
+            let result = identity;
+            LOG.exit(method, result);
+            return result;
+        };
+
+        /**
          * Post a typed instance to a HTTP URL
          * @method module:composer-runtime#post
          * @param {string} url The URL to post the data to
          * @param {Typed} typed The typed instance to be posted. The instance will be serialized to JSON.
          * @param {object} options The options that are passed to Serializer.toJSON
+         * @deprecated since v0.18.1, use the built-in request module instead
          * @return {Promise} A promise. The promise is resolved with a HttpResponse
          * that represents the result of the HTTP POST.
          * @public
@@ -246,7 +272,8 @@ class Api {
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
             event.timestamp = context.getTransaction().timestamp;
             let serializedEvent = serializer.toJSON(event, {
-                convertResourcesToRelationships: true
+                convertResourcesToRelationships: true,
+                permitResourcesForRelationships: false
             });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
@@ -263,7 +290,7 @@ class Api {
          * configured with the CouchDB database for the world state.
          * @example
          * // Build a query.
-         * var query = buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
+         * var query = buildQuery('SELECT org.example.sample.SampleAsset WHERE (value == _$inputValue)');
          * // Execute the query.
          * return query(query, { inputValue: 'blue' })
          *   .then(function (assets) {
@@ -348,10 +375,31 @@ class Api {
                 });
         };
 
+        /**
+         * Get the native api for a runtime
+         *
+         * This functionality is blockchain specific
+         * and will throw an error if used with a runtime that doesn't support it
+         *
+         * @example
+         * // Get the native api
+         * getNativeAPI().getChannelID();
+         *
+         * @method module:composer-runtime#getNativeAPI
+         * @public
+         * @returns {NativeAPI} the native api for a runtime
+         */
+        this.getNativeAPI = function () {
+            const method = 'getNativeAPI';
+            LOG.entry(method);
+            const nativeAPI = context.getNativeAPI();
+            LOG.exit(method, nativeAPI);
+            return nativeAPI;
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }
-
 }
 
 module.exports = Api;

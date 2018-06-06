@@ -39,8 +39,6 @@ class NodeEventService extends EventService {
 
     /**
      * set the events stored in eventBuffer
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
      */
     async transactionCommit() {
         const method = 'transactionCommit';
@@ -48,7 +46,9 @@ class NodeEventService extends EventService {
 
         await super.transactionCommit();
         const jsonEvent = this.getEvents();
-        this.stub.setEvent('composer', Buffer.from(JSON.stringify(jsonEvent)));
+        if (jsonEvent && jsonEvent.length > 0) {
+            this.stub.setEvent('composer', Buffer.from(JSON.stringify(jsonEvent)));
+        }
         LOG.exit(method);
     }
 }

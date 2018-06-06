@@ -79,9 +79,9 @@ XVMHPa0iyC497vdNURA=\
     describe('#getIdentifier', () => {
 
         it('should return the identifier', () => {
-            should.equal(identityService.getIdentifier(), '2be26f6d4757b49fbae46f9fbb0c225b2f77508a882e4dd899700b56f62ad639');
+            should.equal(identityService.getIdentifier(), '114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457');
             // test it again to see if we still get the same results
-            should.equal(identityService.getIdentifier(), '2be26f6d4757b49fbae46f9fbb0c225b2f77508a882e4dd899700b56f62ad639');
+            should.equal(identityService.getIdentifier(), '114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457');
         });
 
     });
@@ -99,9 +99,9 @@ XVMHPa0iyC497vdNURA=\
     describe('#getIssuer', () => {
 
         it('should return the issuer', () => {
-            should.equal(identityService.getIssuer(), '5c190e9b33a76439b267695599e4af13011540535cf7560b68f323f7fc3bd24e');
+            should.equal(identityService.getIssuer(), 'ac3dbcbe135ba48b29f97665bb103f8260c38d3872473e584314392797c595f3');
             // test it again to see if we still get the same results
-            should.equal(identityService.getIssuer(), '5c190e9b33a76439b267695599e4af13011540535cf7560b68f323f7fc3bd24e');
+            should.equal(identityService.getIssuer(), 'ac3dbcbe135ba48b29f97665bb103f8260c38d3872473e584314392797c595f3');
         });
 
     });

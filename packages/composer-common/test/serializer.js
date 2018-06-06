@@ -18,6 +18,7 @@ const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
 const Relationship = require('../lib/model/relationship');
 const Resource = require('../lib/model/resource');
+const Concept = require('../lib/model/concept');
 const Serializer = require('../lib/serializer');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 
@@ -55,6 +56,11 @@ describe('Serializer', () => {
         o String newValue
         }
 
+        concept Address {
+            o String city
+            o String country
+        }
+
         event SampleEvent{
         --> SampleAsset asset
         o String newValue
@@ -90,7 +96,7 @@ describe('Serializer', () => {
         it('should throw if resource not a Resource', () => {
             (() => {
                 serializer.toJSON([{}]);
-            }).should.throw(/only accepts instances of Resource/);
+            }).should.throw(/only accepts/);
         });
 
         it('should throw if the class declaration cannot be found', () => {
@@ -153,6 +159,37 @@ describe('Serializer', () => {
             }).should.throw(/Generated invalid JSON/);
         });
 
+        it('should not validate if the default options specifies the validate flag set to false', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            let json = serializer.toJSON(resource);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1'
+            });
+        });
+
+        it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
+            (() => {
+                serializer.toJSON(resource, {
+                    validate: true
+                });
+            }).should.throw(/missing required field/);
+        });
+
+        it('should serialize a concept', () => {
+            let address = factory.newConcept('org.acme.sample', 'Address');
+            address.city = 'Winchester';
+            address.country = 'UK';
+            const json = serializer.toJSON(address);
+            json.should.deep.equal({
+                $class: 'org.acme.sample.Address',
+                country: 'UK',
+                city: 'Winchester'
+            });
+        });
     });
 
     describe('#fromJSON', () => {
@@ -215,6 +252,18 @@ describe('Serializer', () => {
             resource.newValue.should.equal('the value');
         });
 
+        it('should deserialize a valid concept', () => {
+            let json = {
+                $class: 'org.acme.sample.Address',
+                city: 'Winchester',
+                country: 'UK'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Concept);
+            resource.city.should.equal('Winchester');
+            resource.country.should.equal('UK');
+        });
+
         it('should throw validation errors if the validate flag is not specified', () => {
             let json = {
                 $class: 'org.acme.sample.SampleAsset',
@@ -250,6 +299,55 @@ describe('Serializer', () => {
             should.equal(resource.value, undefined);
         });
 
+        it('should not validate if the default options specifies the validate flag set to false', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Resource);
+            resource.assetId.should.equal('1');
+            resource.owner.should.be.an.instanceOf(Relationship);
+            should.equal(resource.value, undefined);
+        });
+
+        it('should validate if the default options specifies the validate flag set to false but the input options specify true', () => {
+            serializer.setDefaultOptions({ validate: false });
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com'
+            };
+            (() => {
+                serializer.fromJSON(json, { validate: true });
+            }).should.throw(/missing required field/);
+        });
+
+        it('should error on unexpected properties', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: 'blah'
+            };
+            (() => serializer.fromJSON(json))
+                .should.throw(/WRONG/);
+        });
+
+        it('should not error on unexpected properties if their value is undefined', () => {
+            const json = {
+                $class: 'org.acme.sample.SampleParticipant',
+                participantId: 'alphablock',
+                firstName: 'Block',
+                lastName: 'Norris',
+                WRONG: undefined
+            };
+            const result = serializer.fromJSON(json);
+            result.should.be.an.instanceOf(Resource);
+        });
     });
 
 });

@@ -1,23 +1,61 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import '../../../assets/styles/base/_colors.scss';
 @import '../../../assets/styles/base/_variables.scss';
 
 busy {
-    .contents {
+    .modal-body {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: $space-medium;
-
-        span + span {
-            margin-left: $space-xsmall;
-        }
+        flex-direction: row;
 
         .ibm-spinner-indeterminate {
             padding: 0;
         }
 
-        .busy-text {
-            font-size: 14px;
+        .busy-details {
+            position: absolute;
+            left: 275 + $space-medium; // the size of an ID card + padding
+            padding: 0 $space-medium $space-medium $space-medium;
+
+            .busy-title {
+                display: flex;
+                align-items: stretch;
+                justify-content: space-between;
+                padding: 0;
+                margin-bottom: $space-medium;
+
+                svg.ibm-icon {
+                    width: 32px;
+                    height: 32px;
+                }
+            }
+        }
+
+        .contents {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: $space-medium;
+    
+            span + span {
+                margin-left: $space-xsmall;
+            }
+    
+            .busy-text {
+                font-size: 14px;
+            }
         }
     }
 }
