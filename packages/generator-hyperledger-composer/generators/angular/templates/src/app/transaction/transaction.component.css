@@ -124,7 +124,7 @@ label {
     border-color: #4d21a8;  
     color: #4d21a8;      
 }
-.asset-title{
+.transaction-title{
     font-family: inherit;
     font-size: 24px;
     color: #4E4E4E;
@@ -146,7 +146,7 @@ label {
     line-height: 24px;
     padding-left: 24px;
 }
-.asset-properties{
+.transaction-properties{
     font-family: inherit;
     font-size: 14px;
     color: #848484;
@@ -161,7 +161,7 @@ label {
     fill: currentColor;
 }
 
-/***.asset-properties:hover, .asset-properties:hover span{  
+/***.transaction-properties:hover, .transaction-properties:hover span{  
 overflow: visible;
 position: relative;
  make readable design 
@@ -173,5 +173,6 @@ padding: 3px;
 margin-left: -4px;
 }
 ***/
+
 
 

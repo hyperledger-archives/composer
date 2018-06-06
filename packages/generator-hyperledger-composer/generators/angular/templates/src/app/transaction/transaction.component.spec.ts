@@ -21,28 +21,28 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Configuration } from '../configuration';
 import { DataService } from '../data.service';
-import { <%= assetName %>Component } from './<%= assetName %>.component';
-import {<%= assetName %>Service} from './<%= assetName %>.service';
-describe('<%= assetName %>Component', () => {
-  let component: <%= assetName %>Component;
-  let fixture: ComponentFixture<<%= assetName %>Component>;
+import { <%= transactionName %>Component } from './<%= transactionName %>.component';
+import {<%= transactionName %>Service} from './<%= transactionName %>.service';
+describe('<%= transactionName %>Component', () => {
+  let component: <%= transactionName %>Component;
+  let fixture: ComponentFixture<<%= transactionName %>Component>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ <%= assetName %>Component ],
+      declarations: [ <%= transactionName %>Component ],
 imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule
   ],
-providers: [<%= assetName %>Service,DataService,Configuration]
+providers: [<%= transactionName %>Service,DataService,Configuration]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(<%= assetName %>Component);
+    fixture = TestBed.createComponent(<%= transactionName %>Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -51,3 +51,4 @@ providers: [<%= assetName %>Service,DataService,Configuration]
     expect(component).toBeTruthy();
   });
 });
+

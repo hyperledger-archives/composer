@@ -15,40 +15,41 @@
 import { Injectable } from '@angular/core';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs/Observable';
-import { <%= assetName %> } from '../<%= namespace %>';
+import { <%= transactionName %> } from '../<%= namespace %>';
 import 'rxjs/Rx';
 
 // Can be injected into a constructor
 @Injectable()
-export class <%= assetName %>Service {
+export class <%= transactionName %>Service {
 
-	<%_ if(apiNamespace == 'always') { _%>
-  private NAMESPACE = '<%= namespace %>.<%= assetName %>';
-	<%_ } else { _%>
-  private NAMESPACE = '<%= assetName %>';
-	<%_ } _%>
+      	<%_ if(apiNamespace == 'always'){ _%>
+  <% _%>  private NAMESPACE = '<%= namespace %>.<%= transactionName %>';
+      	<%_ }else{ _%>
+  <% _%>  private NAMESPACE = '<%= transactionName %>';
+      	<%_ } _%>
 
-  constructor(private dataService: DataService<<%= assetName %>>) {
+  constructor(private dataService: DataService<<%= transactionName %>>) {
   };
 
-  public getAll(): Observable<<%= assetName %>[]> {
-    return this.dataService.getAll(this.NAMESPACE);
+  public getAll(): Observable<<%= transactionName %>[]> {
+      return this.dataService.getAll(this.NAMESPACE);
   }
 
-  public getAsset(id: any): Observable<<%= assetName %>> {
+  public getTransaction(id: any): Observable<<%= transactionName %>> {
     return this.dataService.getSingle(this.NAMESPACE, id);
   }
 
-  public addAsset(itemToAdd: any): Observable<<%= assetName %>> {
+  public addTransaction(itemToAdd: any): Observable<<%= transactionName %>> {
     return this.dataService.add(this.NAMESPACE, itemToAdd);
   }
 
-  public updateAsset(id: any, itemToUpdate: any): Observable<<%= assetName %>> {
+  public updateTransaction(id: any, itemToUpdate: any): Observable<<%= transactionName %>> {
     return this.dataService.update(this.NAMESPACE, id, itemToUpdate);
   }
 
-  public deleteAsset(id: any): Observable<<%= assetName %>> {
+  public deleteTransaction(id: any): Observable<<%= transactionName %>> {
     return this.dataService.delete(this.NAMESPACE, id);
   }
 
 }
+

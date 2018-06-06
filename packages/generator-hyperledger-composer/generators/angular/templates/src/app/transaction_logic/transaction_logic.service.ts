@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 
 // Can be injected into a constructor
 @Injectable()
-export class <%= transactionName %>LogicService {
+export class <%= transactionName %>Service {
     actionUrl:string = "";
     headers = null
 
@@ -18,6 +18,8 @@ export class <%= transactionName %>LogicService {
 	<% }else{ %>
 	       NAMESPACE:string = '<%= transactionName %>';
 	<% } %>
+
+
 
     constructor(private _configuration: Configuration, private http:HttpClient) {
         this.actionUrl = _configuration.ServerWithApiUrl;
@@ -43,14 +45,14 @@ export class <%= transactionName %>LogicService {
         var counter = 0;
         for (let key in obj)
             counter++;
-
-
+    
+    
         return (counter === 0) ? 1 : 0;
     }
 
     private removeUnusedValue(obj){
         if (typeof obj === "number"){
-
+            
             return obj;
         }else if (typeof obj === "string") {
             if (obj !== "")

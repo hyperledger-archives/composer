@@ -21,28 +21,28 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Configuration } from '../configuration';
 import { DataService } from '../data.service';
-import { <%= assetName %>Component } from './<%= assetName %>.component';
-import {<%= assetName %>Service} from './<%= assetName %>.service';
-describe('<%= assetName %>Component', () => {
-  let component: <%= assetName %>Component;
-  let fixture: ComponentFixture<<%= assetName %>Component>;
+import { <%= participantName %>Component } from './<%= participantName %>.component';
+import {<%= participantName %>Service} from './<%= participantName %>.service';
+describe('<%= participantName %>Component', () => {
+  let component: <%= participantName %>Component;
+  let fixture: ComponentFixture<<%= participantName %>Component>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ <%= assetName %>Component ],
+      declarations: [ <%= participantName %>Component ],
 imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule
   ],
-providers: [<%= assetName %>Service,DataService,Configuration]
+providers: [<%= participantName %>Service,DataService,Configuration]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(<%= assetName %>Component);
+    fixture = TestBed.createComponent(<%= participantName %>Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

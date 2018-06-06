@@ -5,13 +5,22 @@
   "author": "<%= authorName %>",
   "email": "<%= authorEmail %>",
   "license": "<%= license %>",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "bin": {
+      "<%= appName %>": "app.js"
+  },
   "scripts": {
     "ng": "ng",
+    "build": "ng build",
+    "prepack": "npm run build",
 <% if(apiServer == 'generate'){ %>
-    "app": "composer-rest-server --card <%= cardName %> -n <%= apiNamespace %> -p <%= apiPort %>",
-    "start": "concurrently \"ng serve --host 0.0.0.0\" \"npm run app\"",
+    "api": "composer-rest-server --card <%= cardName %> --namespaces <%= apiNamespace %> --port <%= apiPort %>",
+    "start": "concurrently \"ng serve --proxy-config proxy.conf.js --host 0.0.0.0\" \"npm run api\"",
 <% }else{ %>
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.js --host 0.0.0.0",
 <% } %>
     "lint": "tslint \"src/**/*.ts\"",
     "test": "ng test --watch false",
@@ -30,11 +39,15 @@
     "@angular/router": "^4.0.0",
     "ngx-cookie-service": "^1.0.9",
     "bootstrap": "^3.3.7",
-    "composer-client": "latest",
-    "composer-rest-server": "latest",
+    "cfenv": "^1.0.4",
+<% if(apiServer == 'generate'){ %>
+    "composer-rest-server": "<%= composerversion %>",
+<% } %>
     "concurrently": "^3.1.0",
     "config": "^1.21.0",
     "core-js": "^2.4.1",
+    "express": "^4.16.3",
+    "http-proxy-middleware": "^0.18.0",
     "jquery": "^3.2.1",
     "rxjs": "^5.1.0",
     "tether": "^1.4.0",
@@ -43,8 +56,9 @@
   "devDependencies": {
     "@angular/cli": "1.0.1",
     "@angular/compiler-cli": "^4.0.0",
-    "@types/jasmine": "2.5.38",
-    "@types/node": "~6.0.60",
+    "@types/jasmine": "2.5.52",
+    "@types/node": "7.0.5",
+    
     "codelyzer": "~2.0.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
