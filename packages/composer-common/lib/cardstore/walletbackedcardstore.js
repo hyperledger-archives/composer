@@ -21,7 +21,7 @@ const path = require('path');
 
 const Logger = require('../log/logger');
 const LOG = Logger.getLog('ProxyCardStore');
-const _ = require('lodash');
+const cloneDeep = require('lodash.clonedeep');
 /**
  * Manages persistence of business network cards to the IBM Cloud Object Store
  * @private
@@ -41,7 +41,7 @@ class WalletBackedCardStore extends BusinessNetworkCardStore {
         if (!options) {
             throw new Error('Options must be given');
         }
-        this.storeOptions = _.cloneDeep(options);
+        this.storeOptions = cloneDeep(options);
         this.storeOptions.namePrefix='cards';
         this.store = options.StoreModule.getStore(this.storeOptions);
     }
@@ -53,7 +53,7 @@ class WalletBackedCardStore extends BusinessNetworkCardStore {
     */
     async getWallet(name){
         name = name || 'wallet';
-        let walletOptions = _.cloneDeep(this.storeOptions);
+        let walletOptions = cloneDeep(this.storeOptions);
         walletOptions.namePrefix=path.join('client-data',name);
         let wallet = await walletOptions.StoreModule.getStore(walletOptions);
         return wallet;
