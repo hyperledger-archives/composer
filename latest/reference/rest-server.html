@@ -436,11 +436,18 @@
 <div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_TLS_KEY=/tmp/key.pem
 </code></pre></div></li>
 <li><p><code>COMPOSER_APIKEY</code></p>
-<div class="highlight"><pre><code class="language-" data-lang="">You can use the `COMPOSER_APIKEY` environment variable to specify the API key the server should accept for each request as a header parameter `x-api-key`.
 
-For example:
+<p>You can use the <code>COMPOSER_APIKEY</code> environment variable to specify the API key the server should accept for each request as a header parameter <code>x-api-key</code>.</p>
 
-COMPOSER_APIKEY=REPLACE_WITH_YOUR_API_KEY
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_APIKEY=REPLACE_WITH_YOUR_API_KEY
+</code></pre></div></li>
+<li><p><code>COMPOSER_WEBSOCKETS</code></p>
+
+<p>You can use the <code>COMPOSER_WEBSOCKETS</code> environment variable to specify whether the REST server publishes events.  The default value is true</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_WEBSOCKETS=true
 </code></pre></div></li>
 </ol>
 

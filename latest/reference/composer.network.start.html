@@ -351,7 +351,7 @@
 Before using this command, read the topic <a href="../business-network/bnd-deploy.html">Deploying and Updating Business Networks</a>.</p>
 
 <p><em>Please Note</em>: You <strong>must</strong> first install the business network to the Hyperledger Fabric peers by using the <code>composer network install</code> command.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName &lt;business-network-name&gt; --networkVersion &lt;business-network-version&gt; --networkAdmin &lt;admin-name&gt; --networkAdminEnrollSecret adminpw --card &lt;peer-admin-card&gt; --file &lt;admin-card-file-name&gt;
+<div class="highlight"><pre><code class="language-" data-lang="">composer network start --networkName &lt;business-network-name&gt; --networkVersion &lt;business-network-version&gt; --networkAdmin &lt;admin-name&gt; --networkAdminEnrollSecret &lt;enroll-secret&gt; --card &lt;peer-admin-card&gt; --file &lt;admin-card-file-name&gt;
 </code></pre></div>
 <h2 id="considerations">Considerations</h2>
 
@@ -366,7 +366,7 @@ Options:
   --networkName, -n                  Name of the business network to start  [required]
   --networkVersion, -V               Version of the business network to start  [required]
   --loglevel, -l                     The initial loglevel to set  [choices: "INFO", "WARNING", "ERROR", "DEBUG"]
-  --option, -o                       Options that are specific specific to connection. Multiple options are specified by repeating this option  [string]
+  --option, -o                       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
   --optionsFile, -O                  A file containing options that are specific to connection  [string]
   --networkAdmin, -A                 The identity name of the business network administrator  [string] [required]
   --networkAdminCertificateFile, -C  The certificate of the business network administrator  [string]

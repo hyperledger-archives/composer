@@ -533,7 +533,7 @@ composer network ping -c restadmin@trade-network
 <li>Because we are hosting our REST server in another location with its own specific network IP information, we need to update the connection.json - so that the docker hostnames (from within the persistent REST server instance) can resolve each other&#39;s IP addresses.</li>
 </ol>
 
-<p>The one liner below will substitute the &#39;localhost&#39; addresses with docker hostnames and create a new connection.json - which goes into the card of our REST administrator. We will also use this custom connection.json file for our &#39;test&#39; authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.</p>
+<p>The one-liner below will substitute the &#39;localhost&#39; addresses with docker hostnames and create a new <code>connection.json</code> - which goes into the card of our REST administrator. We will also use this custom connection.json file for our &#39;test&#39; authenticated user later on in the OAUTH2.0 REST authentication sequence, nearer the end of this tutorial. To quickly change the hostnames - copy-and-paste then run this one-liner (below) in the command line from the $HOME directory.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  &lt; $HOME/.composer/cards/restadmin@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/restadmin@trade-network/ 
 </code></pre></div>
 <h2 class='everybody'> Step 7:  Launch the persistent REST server instance   </h2>
@@ -558,11 +558,13 @@ myorg/composer-rest-server
 <p>This will output the ID of the Docker container eg . <code>690f2a5f10776c15c11d9def917fc64f2a98160855a1697d53bd46985caf7934</code> and confirm that the REST server has been indeed started.</p>
 
 <ol>
-<li>Check that all is ok with our ocontainer - you can see that it is running using the following commands:</li>
+<li>Check that all is ok with our container - you can see that it is running using the following commands:</li>
 </ol>
 <div class="highlight"><pre><code class="language-" data-lang="">docker ps |grep rest
 docker logs rest
 </code></pre></div>
+<p>Look for &quot; Browse your REST API at <a href="http://localhost:3000/explorer">http://localhost:3000/explorer</a> &quot; at the end of the log - and retrace steps (above) if not there.</p>
+
 <h2 class='everybody'> Step 8:  Test the REST APIs are protected and require authorization   </h2>
 
 <ol>
@@ -613,7 +615,7 @@ composer card import -f kcoe.card
 
 sed -e 's/localhost:7051/peer0.org1.example.com:7051/' -e 's/localhost:7053/peer0.org1.example.com:7053/' -e 's/localhost:7054/ca.org1.example.com:7054/'  -e 's/localhost:7050/orderer.example.com:7050/'  &lt; $HOME/.composer/cards/kcoe@trade-network/connection.json  &gt; /tmp/connection.json &amp;&amp; cp -p /tmp/connection.json $HOME/.composer/cards/kcoe@trade-network/ 
 
-composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
+composer card export -f kcoe_exp.card -c kcoe@trade-network ; rm kcoe.card
 </code></pre></div>
 <p>These cards can now be imported, then used into the REST client (ie the browser) in the next section.</p>
 
@@ -640,7 +642,7 @@ composer card export -f kcoe_exp.card -n kcoe@trade-network ; rm kcoe.card
 
 <p><img src="../assets/img/tutorials/auth/rest-server-token.png" alt="REST Server with Access Token"></p>
 
-<p>While our REST server has authenticated to Google+ OAUTH2.0 service - defined by its project/client scope and using the client credentials set up in the Appendix for our OAUTH2.0 service - we have not actually done anything yet in terms of blockchain identity or using business network cards to interact with our Trade Commodity business network - we will do that next,  using the <code>jdoe</code> identity we created earlier.</p>
+<p>While our REST server has authenticated to Google+ OAUTH2.0 service (defined by its project/client scope, and using the client credentials set up in the Appendix for our OAUTH2.0 service), we have not actually done anything yet, in terms of blockchain identity or using business network cards to interact with our Trade Commodity business network - we will do that next,  using the <code>jdoe</code> identity we created earlier.</p>
 
 <h2 class='everybody'> Step 11:  Check the Default Wallet and Import the card and set a default Identity  </h2>
 

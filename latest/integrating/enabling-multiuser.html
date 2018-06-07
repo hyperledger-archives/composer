@@ -369,7 +369,7 @@
 <p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -c admin@my-network -m true
 </code></pre></div>
-<p>The <code>-m true</code> argument automatically enables REST API authentication. You can alternatively supply both arguments, <code>-a true -m true</code>, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism.</p>
+<p>The <code>-m true</code> argument automatically enables REST API authentication. You can alternatively supply both arguments, <code>-a true -m true</code>, if you wish to be explicit. Before continuing, you must authenticate to the REST API using the configured authentication mechanism. The environment variable <code>COMPOSER_MULTIUSER</code> can be set to <code>true</code> or <code>false</code> inplace of using <code>-m</code> on the command line. </p>
 
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If multiple user mode has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>A business network card has not been specified</code> error message.</p>
 
