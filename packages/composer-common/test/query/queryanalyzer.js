@@ -398,5 +398,15 @@ describe('QueryAnalyzer', () => {
             }).should.throw(/A CONTAINS expression cannot be nested within another CONTAINS expression/);
         });
 
-    });
+        it('should process select with same parameter twice', () => {
+            const ast = parser.parse('SELECT org.acme.Driver WHERE ((age > _$param1) AND (age < _$param1))', { startRule: 'SelectStatement' });
+            const select = new Select(mockQuery, ast);
+            mockQuery.getSelect.returns(select);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
+            const result = queryAnalyzer.visit(mockQuery, {});
+            result.should.not.be.null;
+            result.length.should.equal(1);
+            result[0].name.should.equal('param1');
+            result[0].type.should.equal('Integer');
+        });
 });

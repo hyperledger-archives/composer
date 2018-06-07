@@ -279,8 +279,18 @@ class QueryAnalyzer {
         let result = [];
         result = result.concat(this.visit(ast.left, parameters));
         result = result.concat(this.visit(ast.right, parameters));
-        LOG.exit(method, result);
-        return result;
+
+        // Removing duplicate parameters
+        let paramNames = [];
+        for (let i = 0; i < result.length; i++) {
+            paramNames[result[i].name] = result[i];
+        }
+        let resultNoDuplicates = [];
+        for (let key in paramNames) {
+            resultNoDuplicates.push(paramNames[key]);
+        }
+        LOG.exit(method, resultNoDuplicates);
+        return resultNoDuplicates;
     }
 
     /**
