@@ -115,7 +115,7 @@ class JobQueue extends EventEmitter {
         // If a job is running, or we are waiting on a startDelay, just retry later
         if (this.jobRunning || this.timer) {
 
-            setTimeout(() => this.processQueue(), 10000);
+            setTimeout(() => this.processQueue(), 500);
             return;
         }
 
