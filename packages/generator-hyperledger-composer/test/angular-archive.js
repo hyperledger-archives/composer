@@ -289,6 +289,7 @@ import {Event} from './org.hyperledger.composer.system';
             'karma-jasmine': '~1.1.0',
             'karma-jasmine-html-reporter': '^0.2.2',
             protractor: '~5.1.0',
+            sinon: '2.3.8',
             'ts-node': '~2.0.0',
             tslint: '~4.5.0',
             typescript: '~2.2.0',

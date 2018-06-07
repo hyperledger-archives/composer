@@ -26,10 +26,6 @@ Network access control affects the following CLI commands:
 
 #### Composer Network
 
-**composer network deploy**
-
-Network access is required to use the CREATE operation for registries and networks.
-
 **composer network download**
 
 Network access is required to use the READ operation for registries and networks.
@@ -45,10 +41,6 @@ Network access is required to use the UPDATE operation for networks.
 **composer network ping**
 
 Network access is required to use the READ operation on registries and networks.
-
-**composer network update**
-
-Network access is required to use the UPDATE or CREATE operation on registries, or the UPDATE operation on networks.
 
 
 #### Composer Identity

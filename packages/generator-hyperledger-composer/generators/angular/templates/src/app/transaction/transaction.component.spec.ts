@@ -19,36 +19,47 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Configuration } from '../configuration';
+import * as sinon from 'sinon';
 import { DataService } from '../data.service';
 import { <%= transactionName %>Component } from './<%= transactionName %>.component';
 import {<%= transactionName %>Service} from './<%= transactionName %>.service';
+
 describe('<%= transactionName %>Component', () => {
   let component: <%= transactionName %>Component;
   let fixture: ComponentFixture<<%= transactionName %>Component>;
 
+  let mock<%= transactionName %>Service;
+  let mockDataService
+
   beforeEach(async(() => {
+
+    mock<%= transactionName %>Service = sinon.createStubInstance(<%= transactionName %>Service);
+    mock<%= transactionName %>Service.getAll.returns([]);
+    mockDataService = sinon.createStubInstance(DataService);
+
     TestBed.configureTestingModule({
       declarations: [ <%= transactionName %>Component ],
-imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule
-  ],
-providers: [<%= transactionName %>Service,DataService,Configuration]
-    })
-    .compileComponents();
-  }));
+      imports: [
+        BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpModule
+      ],
+      providers: [
+        {provide: <%= transactionName %>Service, useValue: mock<%= transactionName %>Service },
+        {provide: DataService, useValue: mockDataService },
+      ]
+    });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(<%= transactionName %>Component);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+
+  }));
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });
 

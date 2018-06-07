@@ -22,6 +22,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
 import { ConnectConfirmComponent } from './connect-confirm.component';
+import { ConfigService } from '../../services/config.service';
+import { Config } from '../../services/config/configStructure.service';
 
 @Component({
     template: `
@@ -35,13 +37,23 @@ describe('ConnectConfirmComponent', () => {
     let fixture: ComponentFixture<TestHostComponent>;
 
     let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+    let mockConfigService;
+    let mockConfig;
 
     let connectElement: DebugElement;
 
     beforeEach(() => {
+        mockConfig = sinon.createStubInstance(Config);
+        mockConfigService = sinon.createStubInstance(ConfigService);
+        mockConfigService.getConfig.returns(mockConfig);
+
         TestBed.configureTestingModule({
             declarations: [ConnectConfirmComponent, TestHostComponent],
-            providers: [{provide: NgbActiveModal, useValue: mockActiveModal}]
+            providers: [
+                {provide: NgbActiveModal, useValue: mockActiveModal},
+                {provide: ConfigService, useValue: mockConfigService},
+                {provide: Config, useValue: mockConfig}
+            ]
         });
         fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
@@ -51,6 +63,15 @@ describe('ConnectConfirmComponent', () => {
 
     it('should create', () => {
         component.should.be.ok;
+    });
+
+    it('should load config if required', () => {
+        mockConfigService.getConfig.throws(new Error('error'));
+        mockConfigService.loadConfig.resolves(mockConfig);
+
+        fixture.detectChanges();
+
+        mockConfigService.loadConfig.should.have.been.called;
     });
 
     it('should set the business network name', () => {
@@ -82,5 +103,16 @@ describe('ConnectConfirmComponent', () => {
 
         okButton.triggerEventHandler('click', null);
         mockActiveModal.close.should.have.been.calledWith(true);
+    });
+
+    it('should include link to the documentation site in the config', () => {
+        mockConfig.docURL = 'https://doc_url';
+
+        fixture.detectChanges();
+
+        let infoSection: DebugElement = connectElement.query(By.css('.information'));
+        let learnMoreLink: DebugElement = infoSection.query(By.css('a'));
+
+        learnMoreLink.nativeElement.href.should.equal('https://doc_url/business-network/bnd-deploy.html');
     });
 });
