@@ -13,7 +13,7 @@
     "postlicchk": "npm run lint",
     "lint": "eslint .",
     "test": "exit 0",
-    "test-tagged": "cucumber-js --fail-fast --tags @cli-generate",
+    "test-tagged": "cucumber-js --fail-fast --tags @generator-loopback",
     "test-inner": "cucumber-js  --fail-fast",
     "test-inner-nohsm": "cucumber-js --fail-fast --tags 'not @hsm'",
     "setup": "npm run pretest && npm run lint && npm run start_verdaccio && node ./scripts/npm_serve",
