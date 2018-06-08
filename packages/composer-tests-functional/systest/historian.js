@@ -117,7 +117,7 @@ let validateParticipant = (participant, participantId) => {
     participant.enumValues.should.deep.equal(['SUCH', 'MANY', 'MUCH']);
 };
 
-describe('Historian', function() {
+describe.only('Historian', function() {
 
     this.retries(TestUtil.retries());
 
@@ -127,11 +127,12 @@ describe('Historian', function() {
             { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/accesscontrols.cto'), 'utf8')},
             { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/participants.cto'), 'utf8')},
             { fileName: 'models/assets.cto',       contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/assets.cto'), 'utf8')},
-            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')}
-
+            { fileName: 'models/transactions.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.cto'), 'utf8')},
+            { fileName: 'models/events.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.cto'), 'utf8') }
         ];
         const scriptFiles = [
-           { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') }
+           { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/common-network/transactions.js'), 'utf8') },
+           { identifier: 'events.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest-historian@0.0.1', 'The network for the access controls system tests');
         modelFiles.forEach((modelFile) => {
@@ -514,6 +515,37 @@ describe('Historian', function() {
                 }).then((tx) => {
                     tx.should.deep.equal(transaction);
                 });
+        });
+
+        it('Successful transaction should have events recorded',async () => {
+            let factory = client.getBusinessNetwork().getFactory();
+            let transaction = factory.newTransaction('systest.events', 'EmitComplexEvent');
+            let historian, txRegistry;
+            let emitted;
+            this.timeout(1000); // Delay to prevent transaction failing
+
+            // Listen for the event
+            const promise = new Promise((resolve, reject) => {
+                client.on('event', (ev) => {
+                    emitted = ev;
+                    resolve();
+                });
+            });
+
+            await client.submitTransaction(transaction);
+            await promise;
+            historian = await client.getHistorian();
+            txRegistry = await client.getTransactionRegistry('systest.events.EmitComplexEvent');
+
+
+            let historianRecord= await historian.get(transaction.getIdentifier());
+
+                    // got the record - need to validate it
+            historianRecord.transactionType.should.equals('systest.events.EmitComplexEvent');
+            let tx = await txRegistry.get(historianRecord.transactionInvoked.getIdentifier());
+            historianRecord.eventsEmitted[0].should.deep.equal(emitted);
+            tx.should.deep.equal(transaction);
+
         });
 
         it('Unsuccessful transaction should not cause issues', () => {
