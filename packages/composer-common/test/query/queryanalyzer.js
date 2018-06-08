@@ -110,10 +110,10 @@ describe('QueryAnalyzer', () => {
     describe('#visitQuery', () => {
 
         it('should process select with a single string param', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == _$param1) LIMIT 10 SKIP 5', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == _$param1) LIMIT 10 SKIP 5', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -122,10 +122,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a single integer LIMIT param', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == \'Dan\') LIMIT _$param1 SKIP 5', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == \'Dan\') LIMIT _$param1 SKIP 5', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -134,10 +134,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a single integer SKIP param', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == \'Dan\') LIMIT 5 SKIP _$param1', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == \'Dan\') LIMIT 5 SKIP _$param1', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -146,10 +146,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with an order by', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == _$param1) ORDER BY name DESC', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (name == _$param1) ORDER BY name DESC', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -158,10 +158,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a member expression', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.city == _$param1)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.city == _$param1)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -170,10 +170,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a member expression with param on RHS', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (_$param1 == address.city)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (_$param1 == address.city)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -182,10 +182,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with an array combination operator', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE ((address.city == _$param1) AND (age > _$param2))', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE ((address.city == _$param1) AND (age > _$param2))', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(2);
@@ -196,10 +196,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a 3 level member expression', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.phoneDetails.phoneNumber == _$param1)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.phoneDetails.phoneNumber == _$param1)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -208,10 +208,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a 3 level member expression on enum', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.phoneDetails.contactType == _$param1)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE (address.phoneDetails.contactType == _$param1)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -220,10 +220,10 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with relationship', () => {
-            const ast = parser.parse('SELECT org.acme.Vehicle WHERE (_$driverParam == driver)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Vehicle WHERE (_$driverParam == driver)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -232,30 +232,30 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select without a WHERE', () => {
-            const ast = parser.parse('SELECT org.acme.Vehicle', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Vehicle', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
         });
 
         it('should process select with a hardcoded limit', () => {
-            const ast = parser.parse('SELECT org.acme.Vehicle LIMIT 5', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Vehicle LIMIT 5', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
         });
 
         it('should process select with a hardcoded skip', () => {
-            const ast = parser.parse('SELECT org.acme.Vehicle SKIP 5', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Vehicle SKIP 5', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
@@ -263,10 +263,10 @@ describe('QueryAnalyzer', () => {
 
         it('should throw when using missing property', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.Driver WHERE (address.foo == _$param1)', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.Driver WHERE (address.foo == _$param1)', { startRule: 'SelectStatement' });
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 const result = queryAnalyzer.visit(mockQuery, {});
                 result.should.not.be.null;
                 result.length.should.equal(0);
@@ -275,10 +275,10 @@ describe('QueryAnalyzer', () => {
 
         it('should throw when parameter is not a primitive, enum or relationship', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.Driver WHERE (address == _$param1)', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.Driver WHERE (address == _$param1)', { startRule: 'SelectStatement' });
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 const result = queryAnalyzer.visit(mockQuery, {});
                 result.should.not.be.null;
                 result.length.should.equal(0);
@@ -287,11 +287,11 @@ describe('QueryAnalyzer', () => {
 
         it('should throw when using invalid AST', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.Driver WHERE (address == _$param1)', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.Driver WHERE (address == _$param1)', { startRule: 'SelectStatement' });
                 ast.where.type = 'DAN';
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 const result = queryAnalyzer.visit(mockQuery, {});
                 result.should.not.be.null;
                 result.length.should.equal(0);
@@ -299,70 +299,70 @@ describe('QueryAnalyzer', () => {
         });
 
         it('should process select with a contains and a literal value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS "foo")', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS "foo")', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
         });
 
         it('should process select with a contains and an array value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS ["foo", "bar"])', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS ["foo", "bar"])', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
         });
 
         it('should process select with a contains and a parameter value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS _$inputStringValue)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (stringValues CONTAINS _$inputStringValue)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
         });
 
         it('should process select with a contains and a reversed parameter value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (_$inputStringValue CONTAINS stringValues)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (_$inputStringValue CONTAINS stringValues)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
         });
 
         it('should process select with a contains and a nested expression', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == "foo"))', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == "foo"))', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(0);
         });
 
         it('should process select with a contains and a nested expression with a parameter value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == _$inputStringValue))', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value == _$inputStringValue))', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
         });
 
         it('should process select with a contains and a nested expression with a reversed parameter value', () => {
-            const ast = parser.parse('SELECT org.acme.TestAsset WHERE ((value == _$inputStringValue) CONTAINS conceptValues)', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.TestAsset WHERE ((value == _$inputStringValue) CONTAINS conceptValues)', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
@@ -370,39 +370,39 @@ describe('QueryAnalyzer', () => {
 
         it('should throw for a select with a contains without a property name', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.TestAsset WHERE ("foo" CONTAINS "moo")', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE ("foo" CONTAINS "moo")', { startRule: 'SelectStatement' });
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 queryAnalyzer.visit(mockQuery, {});
             }).should.throw(/A property name is required on one side of a CONTAINS expression/);
         });
 
         it('should throw for a select with a contains and an invalid nested expression with a parameter value', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (LULZ == _$inputStringValue))', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (LULZ == _$inputStringValue))', { startRule: 'SelectStatement' });
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 queryAnalyzer.visit(mockQuery, {});
             }).should.throw(/Property LULZ does not exist/);
         });
 
         it('should throw for a select with a contains and an invalid nested contains', () => {
             (() => {
-                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value CONTAINS "blah"))', {startRule: 'SelectStatement'});
+                const ast = parser.parse('SELECT org.acme.TestAsset WHERE (conceptValues CONTAINS (value CONTAINS "blah"))', { startRule: 'SelectStatement' });
                 const select = new Select(mockQuery, ast);
                 mockQuery.getSelect.returns(select);
-                queryAnalyzer = new QueryAnalyzer(mockQuery);
+                queryAnalyzer = new QueryAnalyzer( mockQuery );
                 queryAnalyzer.visit(mockQuery, {});
             }).should.throw(/A CONTAINS expression cannot be nested within another CONTAINS expression/);
         });
 
         it('should process select with same parameter twice', () => {
-            const ast = parser.parse('SELECT org.acme.Driver WHERE ((age > _$param1) AND (age < _$param1))', {startRule: 'SelectStatement'});
+            const ast = parser.parse('SELECT org.acme.Driver WHERE ((age > _$param1) AND (age < _$param1))', { startRule: 'SelectStatement' });
             const select = new Select(mockQuery, ast);
             mockQuery.getSelect.returns(select);
-            queryAnalyzer = new QueryAnalyzer(mockQuery);
+            queryAnalyzer = new QueryAnalyzer( mockQuery );
             const result = queryAnalyzer.visit(mockQuery, {});
             result.should.not.be.null;
             result.length.should.equal(1);
