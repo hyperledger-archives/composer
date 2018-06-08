@@ -117,7 +117,7 @@ let validateParticipant = (participant, participantId) => {
     participant.enumValues.should.deep.equal(['SUCH', 'MANY', 'MUCH']);
 };
 
-describe.only('Historian', function() {
+describe('Historian', function() {
 
     this.retries(TestUtil.retries());
 
