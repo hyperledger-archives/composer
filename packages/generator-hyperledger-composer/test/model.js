@@ -25,15 +25,15 @@ let helpers = require('yeoman-test');
  * @param {*} fileList file list to append
  * @returns {*} list of files in directory
  */
-function getFiles(dir, fileList){
+function getFiles(dir, fileList) {
     fileList = fileList || [];
     let files = fs.readdirSync(dir);
-    for(let i in files){
-        if (!files.hasOwnProperty(i)){
+    for (let i in files) {
+        if (!files.hasOwnProperty(i)) {
             continue;
         }
         let name = dir + '/' + files[i];
-        if (fs.statSync(name).isDirectory()){
+        if (fs.statSync(name).isDirectory()) {
             getFiles(name, fileList);
         } else {
             fileList.push(name);
@@ -53,22 +53,22 @@ describe('hyperledger-composer:model for generating a template business network 
     const passedLic = 'For exclusive conga';
 
     // Run the business network generator
-    before(function() {
+    before(function () {
         return helpers.run(path.join(__dirname, '../generators/model'))
-        .inTmpDir(function (dir) {
-            tmpDir = dir;
-        })
-        .withPrompts({
-            appname: passedBusNetName,
-            appdescription: passedBusNetDescription,
-            appauthor: passedAuthor,
-            appemail: passedEmail,
-            applicense: passedLic,
-            ns: passedNS,
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
-        });
+            .inTmpDir(function (dir) {
+                tmpDir = dir;
+            })
+            .withPrompts({
+                appname: passedBusNetName,
+                appdescription: passedBusNetDescription,
+                appauthor: passedAuthor,
+                appemail: passedEmail,
+                applicense: passedLic,
+                ns: passedNS,
+            })
+            .on('error', function (error) {
+                assert.fail('Error found:', error);
+            });
     });
 
     it('should create all required business network files within a directory that is the passed business network name', () => {
@@ -76,7 +76,7 @@ describe('hyperledger-composer:model for generating a template business network 
         let myExpectedFiles = [
             busNetDir + '/README.md',
             busNetDir + '/package.json',
-            busNetDir + '/models/' + passedNS +'.cto'
+            busNetDir + '/models/' + passedNS + '.cto'
         ];
         assert.file(myExpectedFiles);
     });
@@ -88,17 +88,17 @@ describe('hyperledger-composer:model for generating a template business network 
         let myExpectedFiles = [
             busNetDir + '/README.md',
             busNetDir + '/package.json',
-            busNetDir + '/models/' + passedNS +'.cto'
+            busNetDir + '/models/' + passedNS + '.cto'
         ];
 
-        let unexpectedFiles =[];
-        for (let file of dirFiles){
-            if(myExpectedFiles.indexOf(file) === -1){
+        let unexpectedFiles = [];
+        for (let file of dirFiles) {
+            if (myExpectedFiles.indexOf(file) === -1) {
                 unexpectedFiles.push(file);
             }
         }
 
-        if(unexpectedFiles.length > 0){
+        if (unexpectedFiles.length > 0) {
             assert.fail('Unexpected files generated: ', unexpectedFiles);
         }
 
@@ -124,7 +124,7 @@ describe('hyperledger-composer:model for generating a template business network 
     });
 
     it('should create a valid model file that contains mapped input', () => {
-        let modelFilePath = tmpDir + '/' + passedBusNetName + '/models/' + passedNS +'.cto';
+        let modelFilePath = tmpDir + '/' + passedBusNetName + '/models/' + passedNS + '.cto';
         let definitions = `/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,7 +162,7 @@ transaction ChangeAssetValue {
         assert(fs.existsSync(modelFilePath), 'No model file detected in test run');
 
         let manager = new common.ModelManager();
-        let model = fs.readFileSync(modelFilePath,'utf8');
+        let model = fs.readFileSync(modelFilePath, 'utf8');
         // add to model manager, which will throw if invalid
         manager.addModelFile(model, passedNS, false);
 

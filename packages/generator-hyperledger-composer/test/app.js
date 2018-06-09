@@ -67,17 +67,17 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
     it('should call Business Network generator if provided the option', async () => {
 
         await helpers.run(appGen)
-        .withGenerators([
-            [AngularDummy, require.resolve('../generators/angular')],
-            [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
-        ])
-        .withPrompts({
-            generatorType: 'businessnetwork'
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
-        });
+            .withGenerators([
+                [AngularDummy, require.resolve('../generators/angular')],
+                [BusNetDummy, require.resolve('../generators/businessnetwork')],
+                [ModelDummy, require.resolve('../generators/model')]
+            ])
+            .withPrompts({
+                generatorType: 'businessnetwork'
+            })
+            .on('error', function (error) {
+                assert.fail('Error found:', error);
+            });
 
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.calledOnce);
@@ -87,17 +87,17 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
     it('should call Model generator if provided the option', async () => {
 
         await helpers.run(appGen)
-        .withGenerators([
-            [AngularDummy, require.resolve('../generators/angular')],
-            [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
-        ])
-        .withPrompts({
-            generatorType: 'model'
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
-        });
+            .withGenerators([
+                [AngularDummy, require.resolve('../generators/angular')],
+                [BusNetDummy, require.resolve('../generators/businessnetwork')],
+                [ModelDummy, require.resolve('../generators/model')]
+            ])
+            .withPrompts({
+                generatorType: 'model'
+            })
+            .on('error', function (error) {
+                assert.fail('Error found:', error);
+            });
 
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.notCalled);
@@ -107,17 +107,17 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
     it('should not call generators if provided an unknown option', async () => {
 
         await helpers.run(appGen)
-        .withGenerators([
-            [AngularDummy, require.resolve('../generators/angular')],
-            [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
-        ])
-        .withPrompts({
-            generatorType: 'penguin'
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
-        });
+            .withGenerators([
+                [AngularDummy, require.resolve('../generators/angular')],
+                [BusNetDummy, require.resolve('../generators/businessnetwork')],
+                [ModelDummy, require.resolve('../generators/model')]
+            ])
+            .withPrompts({
+                generatorType: 'penguin'
+            })
+            .on('error', function (error) {
+                assert.fail('Error found:', error);
+            });
 
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.notCalled);

@@ -26,15 +26,15 @@ const version = require('../package.json').version;
  * @param {*} fileList file list to append
  * @returns {*} list of files in directory
  */
-function getFiles(dir, fileList){
+function getFiles(dir, fileList) {
     fileList = fileList || [];
     let files = fs.readdirSync(dir);
-    for(let i in files){
-        if (!files.hasOwnProperty(i)){
+    for (let i in files) {
+        if (!files.hasOwnProperty(i)) {
             continue;
         }
         let name = dir + '/' + files[i];
-        if (fs.statSync(name).isDirectory()){
+        if (fs.statSync(name).isDirectory()) {
             getFiles(name, fileList);
         } else {
             fileList.push(name);
@@ -57,23 +57,23 @@ describe('hyperledger-composer:businessnetwork', function () {
         let empty = 'No';
 
         // Run the business network generator
-        before(function() {
+        before(function () {
             return helpers.run(path.join(__dirname, '../generators/businessnetwork'))
-            .inTmpDir(function (dir) {
-                tmpDir = dir;
-            })
-            .withPrompts({
-                appname: passedBusNetName,
-                appdescription: passedBusNetDescription,
-                appauthor: passedAuthor,
-                appemail: passedEmail,
-                applicense: passedLic,
-                ns: passedNS,
-                empty: empty
-            })
-            .on('error', function (error) {
-                assert.fail('Error found:', error);
-            });
+                .inTmpDir(function (dir) {
+                    tmpDir = dir;
+                })
+                .withPrompts({
+                    appname: passedBusNetName,
+                    appdescription: passedBusNetDescription,
+                    appauthor: passedAuthor,
+                    appemail: passedEmail,
+                    applicense: passedLic,
+                    ns: passedNS,
+                    empty: empty
+                })
+                .on('error', function (error) {
+                    assert.fail('Error found:', error);
+                });
         });
 
         it('should create all required business network files within a directory that is the passed business network name', () => {
@@ -83,7 +83,7 @@ describe('hyperledger-composer:businessnetwork', function () {
                 busNetDir + '/README.md',
                 busNetDir + '/package.json',
                 busNetDir + '/permissions.acl',
-                busNetDir + '/models/' + passedNS +'.cto',
+                busNetDir + '/models/' + passedNS + '.cto',
                 busNetDir + '/lib/logic.js',
                 busNetDir + '/test/logic.js',
                 busNetDir + '/features/sample.feature',
@@ -101,21 +101,21 @@ describe('hyperledger-composer:businessnetwork', function () {
                 busNetDir + '/README.md',
                 busNetDir + '/package.json',
                 busNetDir + '/permissions.acl',
-                busNetDir + '/models/' + passedNS +'.cto',
+                busNetDir + '/models/' + passedNS + '.cto',
                 busNetDir + '/lib/logic.js',
                 busNetDir + '/test/logic.js',
                 busNetDir + '/features/sample.feature',
                 busNetDir + '/features/support/index.js'
             ];
 
-            let unexpectedFiles =[];
-            for (let file of dirFiles){
-                if(myExpectedFiles.indexOf(file) === -1){
+            let unexpectedFiles = [];
+            for (let file of dirFiles) {
+                if (myExpectedFiles.indexOf(file) === -1) {
                     unexpectedFiles.push(file);
                 }
             }
 
-            if(unexpectedFiles.length > 0){
+            if (unexpectedFiles.length > 0) {
                 assert.fail('Unexpected files generated: ', unexpectedFiles);
             }
 
@@ -145,7 +145,7 @@ describe('hyperledger-composer:businessnetwork', function () {
                 'composer-connector-embedded': `^${version}`,
                 'composer-cucumber-steps': `^${version}`,
             });
-            assert.objectContent(myPackage.engines, { composer: `^${version}`});
+            assert.objectContent(myPackage.engines, { composer: `^${version}` });
         });
     });
 
@@ -154,23 +154,23 @@ describe('hyperledger-composer:businessnetwork', function () {
         let empty = 'Yes';
 
         // Run the business network generator
-        before(function() {
+        before(function () {
             return helpers.run(path.join(__dirname, '../generators/businessnetwork'))
-            .inTmpDir(function (dir) {
-                tmpDir = dir;
-            })
-            .withPrompts({
-                appname: passedBusNetName,
-                appdescription: passedBusNetDescription,
-                appauthor: passedAuthor,
-                appemail: passedEmail,
-                applicense: passedLic,
-                ns: passedNS,
-                empty: empty
-            })
-            .on('error', function (error) {
-                assert.fail('Error found:', error);
-            });
+                .inTmpDir(function (dir) {
+                    tmpDir = dir;
+                })
+                .withPrompts({
+                    appname: passedBusNetName,
+                    appdescription: passedBusNetDescription,
+                    appauthor: passedAuthor,
+                    appemail: passedEmail,
+                    applicense: passedLic,
+                    ns: passedNS,
+                    empty: empty
+                })
+                .on('error', function (error) {
+                    assert.fail('Error found:', error);
+                });
         });
 
         it('should create all required business network files within a directory that is the passed business network name', () => {
@@ -180,7 +180,7 @@ describe('hyperledger-composer:businessnetwork', function () {
                 busNetDir + '/README.md',
                 busNetDir + '/package.json',
                 busNetDir + '/permissions.acl',
-                busNetDir + '/models/' + passedNS +'.cto'
+                busNetDir + '/models/' + passedNS + '.cto'
             ];
             assert.file(myExpectedFiles);
         });
@@ -194,17 +194,17 @@ describe('hyperledger-composer:businessnetwork', function () {
                 busNetDir + '/README.md',
                 busNetDir + '/package.json',
                 busNetDir + '/permissions.acl',
-                busNetDir + '/models/' + passedNS +'.cto'
+                busNetDir + '/models/' + passedNS + '.cto'
             ];
 
-            let unexpectedFiles =[];
-            for (let file of dirFiles){
-                if(myExpectedFiles.indexOf(file) === -1){
+            let unexpectedFiles = [];
+            for (let file of dirFiles) {
+                if (myExpectedFiles.indexOf(file) === -1) {
                     unexpectedFiles.push(file);
                 }
             }
 
-            if(unexpectedFiles.length > 0){
+            if (unexpectedFiles.length > 0) {
                 assert.fail('Unexpected files generated: ', unexpectedFiles);
             }
 

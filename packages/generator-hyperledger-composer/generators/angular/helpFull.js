@@ -1,13 +1,16 @@
+'use strict';
+
 module.exports = {
     mergeSuperType : (list) => {
-        var newList = [];
+        let newList = [];
         list.forEach(data => {
-            if (data.superType != undefined){
+            if (data.superType !== undefined){
                 for (let i = 0 ; i < list.length; i++){
                     if (list[i].type === data.superType || list[i].name === data.superType){
                         for (let j = 0; j < list[i].properties.length; j++){
-                            if (data.properties.indexOf(list[i].properties[j]) == -1)
+                            if (data.properties.indexOf(list[i].properties[j]) === -1){
                                 data.properties.push(list[i].properties[j]); 
+                            }
                         }
                         break;
                     }
@@ -16,12 +19,12 @@ module.exports = {
             newList.push(data);
         });
 
-        return newList
+        return newList;
     },
     removeOptionalValue: (asset) => {
-        var assetRes = [];
+        let assetRes = [];
         asset.forEach(data => {
-            var newP = []
+            let newP = [];
             data.properties.forEach(prop => {
                 if (prop.optional === undefined || prop.optional !== true) {
                     newP.push(prop);
@@ -35,7 +38,7 @@ module.exports = {
     fillProperties : (assets, conceptList) => {
 
         for (let q = 0 ; q < assets.length ; q++){
-            var asset = assets[q];
+            let asset = assets[q];
             for (let qq = 0 ; qq < asset.properties.length; qq++){
                 if (asset.properties[qq].constructor.name === 'RelationshipDeclaration'){ continue; }
 
@@ -52,7 +55,7 @@ module.exports = {
         return assets;
     },
     fillNamespaceMap : (objs, assetList) => {
-        var namepspacesMap = []
+        let namepspacesMap = [];
         objs.forEach(obj => {
             obj.forEach(data => {
                 namepspacesMap[data.name] = (data.fqn !== undefined) ? data.fqn : data.namespace;
@@ -60,7 +63,7 @@ module.exports = {
         });
 
         assetList.forEach((data) => {
-            namepspacesMap[data.name] = ((data.fqn !== undefined) ? data.fqn : data.namespace) + '.' +  data.name
+            namepspacesMap[data.name] = ((data.fqn !== undefined) ? data.fqn : data.namespace) + '.' +  data.name;
         });
 
         return namepspacesMap;
@@ -95,5 +98,4 @@ module.exports = {
         }
         return tranasctions;
     }
-
-}
+};

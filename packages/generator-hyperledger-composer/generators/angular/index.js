@@ -25,7 +25,7 @@ const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
 const optionOrPrompt = require('yeoman-option-or-prompt');
 const { URL } = require('url');
-let helpfulUtils = require("./helpFull");
+let helpfulUtils = require('./helpFull');
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
@@ -58,15 +58,10 @@ let networkIdentifier;
 let connectionProfileName;
 let enrollmentId;
 let enrollmentSecret;
-let authentication;
-let apiIP;
-let apiPort;
 let apiNamespace;
-let fileName;
-let cardName;
 let transactionListLogic = [];
-let transactionLogicServiceNames = []
-let transactionLogicComponentNames = []
+let transactionLogicServiceNames = [];
+let transactionLogicComponentNames = [];
 
 module.exports = yeoman.Base.extend({
 
@@ -719,7 +714,7 @@ module.exports = yeoman.Base.extend({
                             'properties': tempList,
                             'identifier': transaction.getIdentifierFieldName()
                         });
-                        
+
                         shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
 
                     });
@@ -855,22 +850,20 @@ module.exports = yeoman.Base.extend({
                     }
                 );
             }
-            
-            for (let x = 0; x < transactionListLogic.length; x++) {
-                
+
+            for (let x = 0; x < transactionListLogic.length; x++) {                
                 participantList = helpfulUtils.mergeSuperType(participantList);
                 assetList = helpfulUtils.mergeSuperType(assetList);
 
-
                 participantList = helpfulUtils.removeOptionalValue(participantList);
                 assetList = helpfulUtils.removeOptionalValue(assetList);
-                transactionListLogic = helpfulUtils.removeOptionalValue(transactionListLogic)
+                transactionListLogic = helpfulUtils.removeOptionalValue(transactionListLogic);
 
                 participantList = helpfulUtils.fillProperties(participantList, conceptList);
                 assetList = helpfulUtils.fillProperties(assetList, conceptList);
-                transactionListLogic = helpfulUtils.fillTranascationProperties(transactionListLogic, conceptList, participantList, assetList)
+                transactionListLogic = helpfulUtils.fillTranascationProperties(transactionListLogic, conceptList, participantList, assetList);
 
-                var namepspacesMap = helpfulUtils.fillNamespaceMap([participantList, conceptList, transactionListLogic], assetList);
+                const namepspacesMap = helpfulUtils.fillNamespaceMap([participantList, conceptList, transactionListLogic], assetList);
 
                 this.fs.copyTpl(
                     this.templatePath('src/app/transaction_logic/transaction_logic.component.ts'),

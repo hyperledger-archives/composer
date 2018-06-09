@@ -49,7 +49,7 @@ class Util {
         try {
             new BusinessNetworkMetadata(packageJson, readme);
             return true;
-        } catch(err) {
+        } catch (err) {
             return false;
         }
     }
@@ -61,7 +61,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateDescription(description) {
-        if(description !== null && description !== undefined && description !== '') {
+        if (description !== null && description !== undefined && description !== '') {
             return true;
         } else {
             return 'Description cannot be null or empty.';
@@ -75,7 +75,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateCardName(name) {
-        if(name !== null && name !== undefined && name !== '') {
+        if (name !== null && name !== undefined && name !== '') {
             return true;
         } else {
             return 'CardName cannot be null or empty.';
@@ -90,9 +90,10 @@ class Util {
      * @return {*} return true or error message
      */
     static validateNamespace(namespace) {
-        if(namespace !== null && namespace !== undefined && namespace.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
+        if (namespace !== null && namespace !== undefined && namespace.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
             return true;
         } else {
+            /*eslint-disable no-useless-escape */
             return 'Namespace must match: ^(?:[a-z]\d*(?:\.[a-z])?)+$';
         }
     }
@@ -104,7 +105,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateLicense(license) {
-        if(license !== null && license !== undefined && license !== '') {
+        if (license !== null && license !== undefined && license !== '') {
             return true;
         } else {
             return 'Licence cannot be null or empty.';
@@ -118,7 +119,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateAuthorName(name) {
-        if(name !== null && name !== undefined && name !== '') {
+        if (name !== null && name !== undefined && name !== '') {
             return true;
         } else {
             return 'Author name cannot be null or empty.';
@@ -132,7 +133,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateAuthorEmail(email) {
-        if(email !== null && email !== undefined && email !== '') {
+        if (email !== null && email !== undefined && email !== '') {
             return true;
         } else {
             return 'Author email cannot be null or empty.';
@@ -146,7 +147,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateAppName(name) {
-        if(name !== null && name !== undefined && name.match(/^[\w-]+$/)) {
+        if (name !== null && name !== undefined && name.match(/^[\w-]+$/)) {
             return true;
         } else {
             return 'App name cannon be null or empty';
@@ -160,7 +161,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateConnectionProfileName(name) {
-        if(name !== null && name !== undefined && name !== '') {
+        if (name !== null && name !== undefined && name !== '') {
             return true;
         }
         else {
@@ -175,7 +176,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateEnrollmentId(id) {
-        if(id !== null && id !== undefined && id !== '') {
+        if (id !== null && id !== undefined && id !== '') {
             return true;
         }
         else {
@@ -190,7 +191,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateEnrollmentSecret(secret) {
-        if(secret !== null && secret !== undefined && secret !== '') {
+        if (secret !== null && secret !== undefined && secret !== '') {
             return true;
         }
         else {
@@ -220,7 +221,7 @@ class Util {
      * @return {*} return true or error message
      */
     static validateGeneratorType(type) {
-        if(type !== null && type !== undefined) {
+        if (type !== null && type !== undefined) {
             return true;
         } else {
             return 'Generator type must be defined';
@@ -245,7 +246,7 @@ class Util {
      * Simple log method to output to the console
      * @param {string} msg the message to log
      */
-    static log(msg){
+    static log(msg) {
         // eslint-disable-next-line no-console
         console.log(msg);
     }
