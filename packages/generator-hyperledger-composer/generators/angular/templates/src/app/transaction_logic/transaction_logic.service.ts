@@ -14,9 +14,9 @@ export class <%= transactionName %>Service {
     headers = null
 
 	<% if(apiNamespace == 'always'){ %>
-	       NAMESPACE:string = '<%= namespace %>.<%= transactionName %>';
+	       NAMESPACE:string = '<%= namespace %>.<%= apiName %>';
 	<% }else{ %>
-	       NAMESPACE:string = '<%= transactionName %>';
+	       NAMESPACE:string = '<%= apiName %>';
 	<% } %>
 
 

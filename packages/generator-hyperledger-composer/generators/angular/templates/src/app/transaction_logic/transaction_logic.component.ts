@@ -13,11 +13,19 @@ export class <%= currentTransaction.name %>Component implements OnInit {
   myForm: FormGroup;
   transaction = {}
 
-	<% function printnameSpace(transaction){ %>
-		<% if (namespaces[transaction.type] === undefined ) { %>
-			"<%= namespaces[transaction.name] %>"
+	<% function printnameSpace(transaction , api){ %>
+		<% if (api !== true) { %>
+			<% if (namespaces[transaction.type] === undefined ) { %>
+				"<%= namespaces[transaction.name] %>"
+			<% } else { %>
+				"<%= namespaces[transaction.type] %>"
+			<% } %>
 		<% } else { %>
-			"<%= namespaces[transaction.type] %>"
+			<% if (namespaces[transaction.type] === undefined ) { %>
+				"<%= namespaces[transaction.name] %>.<%= apiName %>"
+			<% } else { %>
+				"<%= namespaces[transaction.type] %>.<%= apiName %>"
+			<% } %>
 		<% } %>
 	<% } %>
 
@@ -123,9 +131,9 @@ export class <%= currentTransaction.name %>Component implements OnInit {
 	clearValue(){
 		this.transaction = {
             <% if (currentTransaction.properties === undefined) { %>
-                "$class" : <% printnameSpace(currentTransaction) %>
+                "$class" : <% printnameSpace(currentTransaction, true) %>
             <% } else { %>
-                "$class" : <% printnameSpace(currentTransaction) %>,
+                "$class" : <% printnameSpace(currentTransaction, true) %>,
             <% } %>
 			<% for(var x = 0 ; x < currentTransaction.properties.length;  x++){ %>
 

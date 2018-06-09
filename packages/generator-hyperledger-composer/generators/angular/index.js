@@ -711,12 +711,15 @@ module.exports = yeoman.Base.extend({
                             'properties': tempList,
                             'identifier': transaction.getIdentifierFieldName()
                         });
+
                         transactionListLogic.push({
+                            'apiName' : transaction.name,
                             'name': transaction.name + 'Logic',
                             'namespace': transaction.getNamespace(),
                             'properties': tempList,
                             'identifier': transaction.getIdentifierFieldName()
                         });
+                        
                         shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
 
                     });
@@ -873,7 +876,8 @@ module.exports = yeoman.Base.extend({
                     this.templatePath('src/app/transaction_logic/transaction_logic.component.ts'),
                     this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.transaction.ts'), {
                         currentTransaction: transactionListLogic[x],
-                        namespaces: namepspacesMap
+                        namespaces: namepspacesMap,
+                        apiName : transactionListLogic[x].apiName
                     }
                 );
 
@@ -891,22 +895,25 @@ module.exports = yeoman.Base.extend({
                     this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.service.ts'), {
                         transactionName: transactionListLogic[x].name,
                         namespace: transactionListLogic[x].fqn,
+                        apiNamespace: apiNamespace,
+                        apiName : transactionListLogic[x].apiName
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.spec.ts'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.component.spec.ts'), {
+                        transactionName: transactionListLogic[x].name,
+                        namespace: transactionListLogic[x].fqn,
                         apiNamespace: apiNamespace
                     }
                 );
-                // this.fs.copyTpl(
-                //     this.templatePath('src/app/Transaction/Transaction.component.spec.ts'),
-                //     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.spec.ts'), {
-                //         assetName: assetList[x].name
-                //     }
-                // );
 
-                // this.fs.copyTpl(
-                //     this.templatePath('src/app/Transaction/Transaction.component.css'),
-                //     this.destinationPath('src/app/' + transactionList[x].name + '/' + transactionList[x].name + '.component.css'), {
-                //         styling: '{}'
-                //     }
-                // );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.css'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
+                );
             }
 
             let visitor = new TypescriptVisitor();
