@@ -851,7 +851,7 @@ module.exports = yeoman.Base.extend({
                 );
             }
 
-            for (let x = 0; x < transactionListLogic.length; x++) {                
+            for (let x = 0; x < transactionListLogic.length; x++) {
                 participantList = helpfulUtils.mergeSuperType(participantList);
                 assetList = helpfulUtils.mergeSuperType(assetList);
 

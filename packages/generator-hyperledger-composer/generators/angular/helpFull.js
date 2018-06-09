@@ -9,7 +9,7 @@ module.exports = {
                     if (list[i].type === data.superType || list[i].name === data.superType){
                         for (let j = 0; j < list[i].properties.length; j++){
                             if (data.properties.indexOf(list[i].properties[j]) === -1){
-                                data.properties.push(list[i].properties[j]); 
+                                data.properties.push(list[i].properties[j]);
                             }
                         }
                         break;
