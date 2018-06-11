@@ -39,6 +39,13 @@ Feature: Angular Application Generator
             | ../my-angular-app/src/app/Trader/Trader.component.ts |
             | ../my-angular-app/e2e/app.e2e-spec.ts |
 
+    Scenario: I can run the generated unit tests
+        When I run the following expected pass CLI command
+            """
+            npm test --prefix ./my-angular-app
+            """
+        Then The stdout information should include text matching /Executed 5 of 5 SUCCESS/
+
     Scenario: I can start the generated application and test it with generated integration tests
         When I spawn the following background task GENERATED_APP, and wait for /webpack: Compiled successfully./
             """
