@@ -20,6 +20,7 @@ const expect = chai.expect;
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
+const fs = require('fs');
 
 const CLOUD_CONFIG = require('./config');
 const cloneDeep = require('lodash').cloneDeep;
@@ -32,9 +33,13 @@ describe('Composer wallet implementation', function () {
     describe('Wrong Config settings', function () {
 
         CLOUD_CONFIG.wrongConfigs.forEach((cfg) => {
-            it('should fail to create with faulty config', function () {
+            it(`should fail to create with faulty config: \"${cfg.text}\"`, function () {
                 (function () {
-                    CLOUD_CONFIG.getStore(cfg.c);
+                    try {
+                        CLOUD_CONFIG.getStore(cfg.c);
+                    } catch (err){
+                        throw err;
+                    }
                 }).should.throw(Error, cfg.text);
 
             });
@@ -51,7 +56,7 @@ describe('Composer wallet implementation', function () {
                 let wallet;
                 beforeEach(async () => {
                     sandbox = sinon.sandbox.create();
-                    let config = cfg;
+                    let config = cfg.c;
                     config.namePrefix = 'testing';
 
                     await CLOUD_CONFIG.clean();
@@ -64,6 +69,10 @@ describe('Composer wallet implementation', function () {
                 });
 
                 describe('#listNames', async function () {
+                    it('should be rejected if an error', async function () {
+                        sandbox.stub(fs,'readdirSync').throws(new Error('Error'));
+                        return wallet.listNames().should.be.rejectedWith(/Error/);
+                    });
                     it('should return empty list for nothing present', async function () {
                         let result = await wallet.listNames();
                         return expect(result).to.be.an('array').that.is.empty;
@@ -73,6 +82,7 @@ describe('Composer wallet implementation', function () {
                         await wallet.put('Batman-Reloaded', 'It\'s not who I am underneath, but what I do that defines me');
 
                         let result = await wallet.listNames();
+
                         let expected = ['Batman-Original','Batman-Reloaded'];
                         expect(result).to.be.an('array');
                         expect(result.length).to.equal(2);
@@ -188,6 +198,18 @@ describe('Composer wallet implementation', function () {
                     it('should reject other types', async function () {
                         let Umbrella = class Umbrella { };
                         return wallet.put('ThePenguin', new Umbrella()).should.be.rejectedWith('Unkown type being stored');
+                    });
+
+                    it('should return error if unable to write to the filesystem (for string values)', async function(){
+                        sandbox.stub(fs,'writeFile').callsArgWith(2,new Error('Alfred says no'));
+                        return wallet.put('Batman','I only work in black and sometimes very, very dark grey.').should.be.rejectedWith('Alfred says no');
+                    });
+
+                    it('should return error if unable to write to the filesystem (for buffer values)', async function () {
+                        sandbox.stub(fs,'writeFile').callsArgWith(2,new Error('Alfred says no'));
+                        // Creates a Buffer containing [0x1, 0x2, 0x3].
+                        const buffer = Buffer.from([1, 2, 3]);
+                        return wallet.put('Batman', buffer).should.be.rejectedWith('Alfred says no');
                     });
                 });
             });
