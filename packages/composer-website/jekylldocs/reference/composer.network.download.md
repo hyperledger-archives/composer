@@ -6,7 +6,7 @@ sidebar: sidebars/accordion-toc0.md
 excerpt: Hyperledger Composer Network Download Command
 ---
 
-# Composer Identity Issue
+# Composer Network Download
 
 ---
 
