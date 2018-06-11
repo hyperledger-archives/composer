@@ -43,6 +43,7 @@
     "license-check-and-add": "2.3.1",
     "mocha": "3.4.2",
     "nyc": "11.1.0",
+    "rewire": "4.0.1",
     "tslint": "4.5.1",
     "tslint-loader": "3.3.0",
     "typings": "2.1.0",
@@ -66,7 +67,12 @@
       "generators/angular/templates/Dockerfile",
       "generators/angular/templates/README.md",
       "generators/businessnetwork/templates/README.md",
-      "generators/model/templates/README.md"
+      "generators/model/templates/README.md",
+      "generators/loopback/templates/skeleton/.editorconfig",
+      "generators/loopback/templates/skeleton/.eslintignore",
+      "generators/loopback/templates/skeleton/.eslintrc",
+      "generators/loopback/templates/skeleton/.gitignore",
+      "generators/loopback/templates/skeleton/client/README.md"
     ],
     "file_type_method": "EXCLUDE",
     "file_types": [
@@ -98,6 +104,7 @@
       "test/**",
       "generators/businessnetwork/templates/**",
       "generators/angular/templates/**",
+      "generators/loopback/templates/**",
       "generators/util.js",
       "generators/angular"
     ],
