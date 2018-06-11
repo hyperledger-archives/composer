@@ -25,6 +25,7 @@ const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
 const optionOrPrompt = require('yeoman-option-or-prompt');
 const { URL } = require('url');
+let helpfulUtils = require('./helpFull');
 
 let businessNetworkConnection;
 let businessNetworkDefinition;
@@ -57,6 +58,10 @@ let networkIdentifier;
 let connectionProfileName;
 let enrollmentId;
 let enrollmentSecret;
+let apiNamespace;
+let transactionListLogic = [];
+let transactionLogicServiceNames = [];
+let transactionLogicComponentNames = [];
 
 module.exports = yeoman.Base.extend({
 
@@ -404,73 +409,74 @@ module.exports = yeoman.Base.extend({
             namespaceList = modelManager.getNamespaces();
             enumerations = modelManager.getEnumDeclarations();
 
+            // ASSET
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let assetDeclarations = modelFile.getAssetDeclarations();
 
                 assetDeclarations
-                .filter((assetDeclaration) =>{
-                    return !assetDeclaration.isAbstract();
-                })
-                .filter((assetDeclaration) => {
-                    if (assetDeclaration.isSystemType()) {
-                        return assetDeclaration.isSystemCoreType();
-                    }
-                    return true;
-                })
-                .forEach((asset) => {
+                    .filter((assetDeclaration) => {
+                        return !assetDeclaration.isAbstract();
+                    })
+                    .filter((assetDeclaration) => {
+                        if (assetDeclaration.isSystemType()) {
+                            return assetDeclaration.isSystemCoreType();
+                        }
+                        return true;
+                    })
+                    .forEach((asset) => {
 
-                    let tempList = [];
-                    assetProperties = asset.getProperties();
+                        let tempList = [];
+                        assetProperties = asset.getProperties();
 
-                    assetProperties.forEach((property) => {
-                        if (property.constructor.name === 'Field') {
-                            if (property.isTypeEnum()) {
-                                // handle enumerations
-                                let enumValues = [];
-                                // compose array of enumeration values
-                                enumerations.forEach(enumeration => {
-                                    if (enumeration.name === property.getType()) {
-                                        enumValues = enumeration.properties;
-                                    }
-                                });
-                                // add meta information to the field list
-                                tempList.push({
-                                    'name': property.getName(),
-                                    'type': property.getType(),
-                                    'enum': true,
-                                    'array': property.array === true,
-                                    enumValues,
-                                });
-                            } else if (property.isPrimitive() || !property.isPrimitive()) {
+                        assetProperties.forEach((property) => {
+                            if (property.constructor.name === 'Field') {
+                                if (property.isTypeEnum()) {
+                                    // handle enumerations
+                                    let enumValues = [];
+                                    // compose array of enumeration values
+                                    enumerations.forEach(enumeration => {
+                                        if (enumeration.name === property.getType()) {
+                                            enumValues = enumeration.properties;
+                                        }
+                                    });
+                                    // add meta information to the field list
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType(),
+                                        'enum': true,
+                                        'array': property.array === true,
+                                        enumValues,
+                                    });
+                                } else if (property.isPrimitive() || !property.isPrimitive()) {
 
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType()
+                                    });
+                                } else {
+                                    console.log('Unknown property type: ' + property);
+                                }
+                            } else if (property.constructor.name === 'RelationshipDeclaration') {
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
                                 });
                             } else {
-                                console.log('Unknown property type: ' + property);
+                                console.log('Unknown property constructor name: ' + property);
                             }
-                        } else if (property.constructor.name === 'RelationshipDeclaration') {
-                            tempList.push({
-                                'name': property.getName(),
-                                'type': property.getType()
-                            });
-                        } else {
-                            console.log('Unknown property constructor name: ' + property );
-                        }
-                    });
+                        });
 
-                    assetList.push({
-                        'name': asset.name,
-                        'namespace': asset.getNamespace(),
-                        'properties': tempList,
-                        'identifier': asset.getIdentifierFieldName()
-                    });
-                    shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
+                        assetList.push({
+                            'name': asset.name,
+                            'namespace': asset.getNamespace(),
+                            'properties': tempList,
+                            'identifier': asset.getIdentifierFieldName()
+                        });
+                        shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
 
-                });
+                    });
             });
 
             assetList.forEach((asset) => {
@@ -480,73 +486,75 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name + 'Component');
             });
+
+            // Participant
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let participantDeclarations = modelFile.getParticipantDeclarations();
 
                 participantDeclarations
-                .filter((participantDeclaration) =>{
-                    return !participantDeclaration.isAbstract();
-                })
-                .filter((participantDeclaration) => {
-                    if (participantDeclaration.isSystemType()) {
-                        return participantDeclaration.isSystemCoreType();
-                    }
-                    return true;
-                })
-                .forEach((participant) => {
+                    .filter((participantDeclaration) => {
+                        return !participantDeclaration.isAbstract();
+                    })
+                    .filter((participantDeclaration) => {
+                        if (participantDeclaration.isSystemType()) {
+                            return participantDeclaration.isSystemCoreType();
+                        }
+                        return true;
+                    })
+                    .forEach((participant) => {
 
-                    let tempList = [];
-                    participantProperties = participant.getProperties();
+                        let tempList = [];
+                        participantProperties = participant.getProperties();
 
-                    participantProperties.forEach((property) => {
-                        if (property.constructor.name === 'Field') {
-                            if (property.isTypeEnum()) {
-                                // handle enumerations
-                                let enumValues = [];
-                                // compose array of enumeration values
-                                enumerations.forEach(enumeration => {
-                                    if (enumeration.name === property.getType()) {
-                                        enumValues = enumeration.properties;
-                                    }
-                                });
-                                // add meta information to the field list
-                                tempList.push({
-                                    'name': property.getName(),
-                                    'type': property.getType(),
-                                    'enum': true,
-                                    'array': property.array === true,
-                                    enumValues,
-                                });
-                            } else if (property.isPrimitive() || !property.isPrimitive()) {
+                        participantProperties.forEach((property) => {
+                            if (property.constructor.name === 'Field') {
+                                if (property.isTypeEnum()) {
+                                    // handle enumerations
+                                    let enumValues = [];
+                                    // compose array of enumeration values
+                                    enumerations.forEach(enumeration => {
+                                        if (enumeration.name === property.getType()) {
+                                            enumValues = enumeration.properties;
+                                        }
+                                    });
+                                    // add meta information to the field list
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType(),
+                                        'enum': true,
+                                        'array': property.array === true,
+                                        enumValues,
+                                    });
+                                } else if (property.isPrimitive() || !property.isPrimitive()) {
 
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType()
+                                    });
+                                } else {
+                                    console.log('Unknown property type: ' + property);
+                                }
+                            } else if (property.constructor.name === 'RelationshipDeclaration') {
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType()
                                 });
                             } else {
-                                console.log('Unknown property type: ' + property);
+                                console.log('Unknown property constructor name: ' + property);
                             }
-                        } else if (property.constructor.name === 'RelationshipDeclaration') {
-                            tempList.push({
-                                'name': property.getName(),
-                                'type': property.getType()
-                            });
-                        } else {
-                            console.log('Unknown property constructor name: ' + property );
-                        }
-                    });
+                        });
 
-                    participantList.push({
-                        'name': participant.name,
-                        'namespace': participant.getNamespace(),
-                        'properties': tempList,
-                        'identifier': participant.getIdentifierFieldName()
-                    });
-                    shell.mkdir('-p', destinationPath + '/src/app/' + participant.name);
+                        participantList.push({
+                            'name': participant.name,
+                            'namespace': participant.getNamespace(),
+                            'properties': tempList,
+                            'identifier': participant.getIdentifierFieldName()
+                        });
+                        shell.mkdir('-p', destinationPath + '/src/app/' + participant.name);
 
-                });
+                    });
             });
 
             participantList.forEach((participant) => {
@@ -557,72 +565,74 @@ module.exports = yeoman.Base.extend({
                 participantComponentNames.push(participant.name + 'Component');
             });
 
+            // CONCEPT
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let conceptDeclarations = modelFile.getConceptDeclarations();
 
                 conceptDeclarations
-            .filter((conceptDeclaration) =>{
-                return conceptDeclaration.isAbstract();
-            })
-            .filter((conceptDeclaration) => {
-                if (conceptDeclaration.isSystemType()) {
-                    return conceptDeclaration.isSystemCoreType();
-                }
-                return true;
-            })
-            .forEach((concept) => {
-                let tempList = [];
-                conceptProperties = concept.getProperties();
-
-                conceptProperties.forEach((property) => {
-                    if (property.constructor.name === 'Field') {
-                        if (property.isTypeEnum()) {
-                            // handle enumerations
-                            let enumValues = [];
-                            // compose array of enumeration values
-                            enumerations.forEach(enumeration => {
-                                if (enumeration.name === property.getType()) {
-                                    enumValues = enumeration.properties;
-                                }
-                            });
-                            // add meta information to the field list
-                            tempList.push({
-                                'name': property.getName(),
-                                'type': property.getType(),
-                                'enum': true,
-                                'array': property.array === true,
-                                enumValues,
-                            });
-                        } else if (property.isPrimitive() || !property.isPrimitive()) {
-
-                            tempList.push({
-                                'name': property.getName(),
-                                'type': property.getType()
-                            });
-                        } else {
-                            console.log('Unknown property type: ' + property);
+                    .filter((conceptDeclaration) => {
+                        return conceptDeclaration.isAbstract();
+                    })
+                    .filter((conceptDeclaration) => {
+                        if (conceptDeclaration.isSystemType()) {
+                            return conceptDeclaration.isSystemCoreType();
                         }
-                    } else if (property.constructor.name === 'RelationshipDeclaration') {
-                        tempList.push({
-                            'name': property.getName(),
-                            'type': property.getType()
-                        });
-                    } else {
-                        console.log('Unknown property constructor name: ' + property );
-                    }
-                });
-                conceptList.push({
-                    'name': concept.name,
-                    'namespace': concept.getNamespace(),
-                    'properties': tempList,
-                    'identifier': concept.getIdentifierFieldName()
-                });
-                shell.mkdir('-p', destinationPath + '/src/app/' + concept.name);
+                        return true;
+                    })
+                    .forEach((concept) => {
+                        let tempList = [];
+                        conceptProperties = concept.getProperties();
 
+                        conceptProperties.forEach((property) => {
+                            if (property.constructor.name === 'Field') {
+                                if (property.isTypeEnum()) {
+                                    // handle enumerations
+                                    let enumValues = [];
+                                    // compose array of enumeration values
+                                    enumerations.forEach(enumeration => {
+                                        if (enumeration.name === property.getType()) {
+                                            enumValues = enumeration.properties;
+                                        }
+                                    });
+                                    // add meta information to the field list
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType(),
+                                        'enum': true,
+                                        'array': property.array === true,
+                                        enumValues,
+                                    });
+                                } else if (property.isPrimitive() || !property.isPrimitive()) {
+
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType()
+                                    });
+                                } else {
+                                    console.log('Unknown property type: ' + property);
+                                }
+                            } else if (property.constructor.name === 'RelationshipDeclaration') {
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType()
+                                });
+                            } else {
+                                console.log('Unknown property constructor name: ' + property);
+                            }
+                        });
+                        conceptList.push({
+                            'name': concept.name,
+                            'namespace': concept.getNamespace(),
+                            'properties': tempList,
+                            'identifier': concept.getIdentifierFieldName()
+                        });
+                        shell.mkdir('-p', destinationPath + '/src/app/' + concept.name);
+
+                    });
             });
-            });
+
             conceptList.forEach((concept) => {
                 conceptServiceNames.push(concept.name + 'Service');
             });
@@ -630,81 +640,94 @@ module.exports = yeoman.Base.extend({
                 conceptComponentNames.push(concept.name + 'Component');
             });
 
+            // TRNASCTION AND TRANSACTION LOGIC
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let transactionDeclarations = modelFile.getTransactionDeclarations();
 
                 transactionDeclarations
-                .filter((transactionDeclaration) =>{
-                    return !transactionDeclaration.isAbstract();
-                })
-                .filter((transactionDeclaration) => {
-                    if (transactionDeclaration.isSystemType()) {
-                        return transactionDeclaration.isSystemCoreType();
-                    }
-                    return true;
-                })
-                .forEach((transaction) => {
+                    .filter((transactionDeclaration) => {
+                        return !transactionDeclaration.isAbstract();
+                    })
+                    .filter((transactionDeclaration) => {
+                        if (transactionDeclaration.isSystemType()) {
+                            return transactionDeclaration.isSystemCoreType();
+                        }
+                        return true;
+                    })
+                    .forEach((transaction) => {
 
-                    let tempList = [];
-                    transactionProperties = transaction.getProperties();
+                        let tempList = [];
+                        transactionProperties = transaction.getProperties();
 
-                    transactionProperties.forEach((property) => {
-                        if (property.constructor.name === 'Field') {
-                            if (property.isTypeEnum()) {
-                                // handle enumerations
-                                let enumValues = [];
-                                // compose array of enumeration values
-                                enumerations.forEach(enumeration => {
-                                    if (enumeration.name === property.getType()) {
-                                        enumValues = enumeration.properties;
-                                    }
-                                });
-                                // add meta information to the field list
+                        transactionProperties.forEach((property) => {
+                            if (property.constructor.name === 'Field') {
+                                if (property.isTypeEnum()) {
+                                    // handle enumerations
+                                    let enumValues = [];
+                                    // compose array of enumeration values
+                                    enumerations.forEach(enumeration => {
+                                        if (enumeration.name === property.getType()) {
+                                            enumValues = enumeration.properties;
+                                        }
+                                    });
+                                    // add meta information to the field list
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType(),
+                                        'enum': true,
+                                        'array': property.array === true,
+                                        enumValues,
+                                    });
+                                } else if (property.isPrimitive() || !property.isPrimitive()) {
+
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType()
+                                    });
+                                } else {
+                                    console.log('Unknown property type: ' + property);
+                                }
+                            } else if (property.constructor.name === 'RelationshipDeclaration') {
                                 tempList.push({
                                     'name': property.getName(),
                                     'type': property.getType(),
-                                    'enum': true,
-                                    'array': property.array === true,
-                                    enumValues,
-                                });
-                            } else if (property.isPrimitive() || !property.isPrimitive()) {
-
-                                tempList.push({
-                                    'name': property.getName(),
-                                    'type': property.getType()
+                                    'isRelational' : true
                                 });
                             } else {
-                                console.log('Unknown property type: ' + property);
+                                console.log('Unknown property constructor name: ' + property);
                             }
-                        } else if (property.constructor.name === 'RelationshipDeclaration') {
-                            tempList.push({
-                                'name': property.getName(),
-                                'type': property.getType()
-                            });
-                        } else {
-                            console.log('Unknown property constructor name: ' + property );
-                        }
-                    });
+                        });
 
-                    transactionList.push({
-                        'name': transaction.name,
-                        'namespace': transaction.getNamespace(),
-                        'properties': tempList,
-                        'identifier': transaction.getIdentifierFieldName()
-                    });
-                    shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
+                        transactionList.push({
+                            'name': transaction.name,
+                            'namespace': transaction.getNamespace(),
+                            'properties': tempList,
+                            'identifier': transaction.getIdentifierFieldName()
+                        });
 
-                });
+                        transactionListLogic.push({
+                            'apiName' : transaction.name,
+                            'name': transaction.name + 'Logic',
+                            'namespace': transaction.getNamespace(),
+                            'properties': tempList,
+                            'identifier': transaction.getIdentifierFieldName()
+                        });
+
+                        shell.mkdir('-p', destinationPath + '/src/app/' + transaction.name);
+
+                    });
             });
 
             transactionList.forEach((transaction) => {
                 transactionServiceNames.push(transaction.name + 'Service');
+                transactionComponentNames.push(transaction.name + 'Component');
             });
 
-            transactionList.forEach((transaction) => {
-                transactionComponentNames.push(transaction.name + 'Component');
+            transactionListLogic.forEach((transaction) => {
+                transactionLogicServiceNames.push(transaction.name + 'Service');
+                transactionLogicComponentNames.push(transaction.name + 'Component');
             });
 
             let model = this._generateTemplateModel();
@@ -828,6 +851,64 @@ module.exports = yeoman.Base.extend({
                 );
             }
 
+            for (let x = 0; x < transactionListLogic.length; x++) {
+                participantList = helpfulUtils.mergeSuperType(participantList);
+                assetList = helpfulUtils.mergeSuperType(assetList);
+
+                participantList = helpfulUtils.removeOptionalValue(participantList);
+                assetList = helpfulUtils.removeOptionalValue(assetList);
+                transactionListLogic = helpfulUtils.removeOptionalValue(transactionListLogic);
+
+                participantList = helpfulUtils.fillProperties(participantList, conceptList);
+                assetList = helpfulUtils.fillProperties(assetList, conceptList);
+                transactionListLogic = helpfulUtils.fillTranascationProperties(transactionListLogic, conceptList, participantList, assetList);
+
+                const namepspacesMap = helpfulUtils.fillNamespaceMap([participantList, conceptList, transactionListLogic], assetList);
+
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.ts'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.transaction.ts'), {
+                        currentTransaction: transactionListLogic[x],
+                        namespaces: namepspacesMap,
+                        apiName : transactionListLogic[x].apiName
+                    }
+                );
+
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.html'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.transaction.html'), {
+                        currentTransaction: transactionListLogic[x],
+                        properties: transactionListLogic[x].properties,
+                        name: transactionListLogic[x].name
+                    }
+                );
+
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.service.ts'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.service.ts'), {
+                        transactionName: transactionListLogic[x].name,
+                        namespace: transactionListLogic[x].fqn,
+                        apiNamespace: apiNamespace,
+                        apiName : transactionListLogic[x].apiName
+                    }
+                );
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.spec.ts'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.component.spec.ts'), {
+                        transactionName: transactionListLogic[x].name,
+                        namespace: transactionListLogic[x].fqn,
+                        apiNamespace: apiNamespace
+                    }
+                );
+
+                this.fs.copyTpl(
+                    this.templatePath('src/app/transaction_logic/transaction_logic.component.css'),
+                    this.destinationPath('src/app/' + transactionListLogic[x].name + '/' + transactionListLogic[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
+                );
+            }
+
             let visitor = new TypescriptVisitor();
             let parameters = {
                 fileWriter: new FileWriter(this.destinationPath() + '/src/app')
@@ -885,6 +966,9 @@ module.exports = yeoman.Base.extend({
             transactionList = [];
             transactionComponentNames = [];
             transactionServiceNames = [];
+            transactionListLogic = [];
+            transactionLogicComponentNames = [];
+            transactionLogicServiceNames = [];
 
             resolve();
         });
@@ -915,6 +999,9 @@ module.exports = yeoman.Base.extend({
             businessNetworkName: businessNetworkName,
             businessNetworkVersion: businessNetworkVersion,
             businessNetworkIdentifier: businessNetworkIdentifier,
+            transactionLogicServiceNames : transactionLogicServiceNames,
+            transactionLogicComponentNames : transactionLogicComponentNames,
+            transactionListLogic : transactionListLogic,
             assetList: assetList,
             assetServiceNames: assetServiceNames,
             assetComponentNames: assetComponentNames,

@@ -22,32 +22,32 @@ const path = require('path');
 describe('hyperledger-composer:angular for digitalPropertyNetwork running against a business network archive file', function () {
 
     let tmpDir; // This is the directory which we will create our app into
-    before(function() {
+    before(function () {
         return helpers.run(path.resolve(__dirname, '../generators/angular'))
-        .inTmpDir(function (dir) {
-            tmpDir = dir;
-        })
-        .withOptions({ skipInstall: true })
-        .withPrompts({
-            liveNetwork: false,
-            appName: 'digitalPropertyNetwork',
-            appDescription: 'A digitalPropertyNetwork application',
-            authorName: 'TestUser',
-            authorEmail: 'TestUser@TestApp.com',
-            fileName: (path.join(__dirname, '/data/digitalPropertyNetwork.bna')),
-            apiIP: 'http://localhost',
-            apiPort: 3000,
-            apiNamespace: 'never'
-        })
-        .on('error', function (error) {
-            assert.fail(error);
-        });
+            .inTmpDir(function (dir) {
+                tmpDir = dir;
+            })
+            .withOptions({ skipInstall: true })
+            .withPrompts({
+                liveNetwork: false,
+                appName: 'digitalPropertyNetwork',
+                appDescription: 'A digitalPropertyNetwork application',
+                authorName: 'TestUser',
+                authorEmail: 'TestUser@TestApp.com',
+                fileName: (path.join(__dirname, '/data/digitalPropertyNetwork.bna')),
+                apiIP: 'http://localhost',
+                apiPort: 3000,
+                apiNamespace: 'never'
+            })
+            .on('error', function (error) {
+                assert.fail(error);
+            });
     });
 
-    it('creates typescript classes', function(){
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts');
-        assert.fileContent(tmpDir+'/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts',
-`import {Asset} from './org.hyperledger.composer.system';
+    it('creates typescript classes', function () {
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts');
+        assert.fileContent(tmpDir + '/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts',
+            `import {Asset} from './org.hyperledger.composer.system';
 import {Participant} from './org.hyperledger.composer.system';
 import {Transaction} from './org.hyperledger.composer.system';
 import {Event} from './org.hyperledger.composer.system';
@@ -78,31 +78,31 @@ import {Event} from './org.hyperledger.composer.system';
     });
 
     it('creates LandTitle component typescript', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.ts');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.ts');
     });
 
     it('creates LandTitle component css', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.css');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.css');
     });
 
     it('creates SalesAgreement component typescript', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.ts');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.ts');
     });
 
     it('creates SalesAgreement component test', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.spec.ts');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.spec.ts');
     });
 
     it('creates SalesAgreement service', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.service.ts');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.service.ts');
     });
 
     it('creates SalesAgreement component html', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.html');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.html');
     });
 
     it('creates SalesAgreement component css', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.css');
+        assert.file(tmpDir + '/digitalPropertyNetwork/src/app/SalesAgreement/SalesAgreement.component.css');
     });
 
 });
@@ -112,26 +112,26 @@ describe('hyperledger-composer:angular for CarAuction-Network running against a 
 
     let tmpDir; // This is the directory which we will create our app into
 
-    before(function() {
+    before(function () {
         return helpers.run(path.join(__dirname, '../generators/angular'))
-        .inTmpDir(function (dir) {
-            tmpDir = dir;
-        })
-        .withPrompts({
-            liveNetwork: false,
-            appName: 'CarAuction-Network',
-            appDescription: 'A CarAuction-Network application',
-            authorName: 'TestUser',
-            authorEmail: 'TestUser@TestApp.com',
-            fileName: __dirname+'/data/carAuction.bna',
-            apiServer: 'connect',
-            apiIP: 'https://dogescoolrestserver.dogecorp.com',
-            apiPort: 3000,
-            apiNamespace: 'always'
-        })
-        .on('error', function (error) {
-            assert.fail('Error found:', error);
-        });
+            .inTmpDir(function (dir) {
+                tmpDir = dir;
+            })
+            .withPrompts({
+                liveNetwork: false,
+                appName: 'CarAuction-Network',
+                appDescription: 'A CarAuction-Network application',
+                authorName: 'TestUser',
+                authorEmail: 'TestUser@TestApp.com',
+                fileName: __dirname + '/data/carAuction.bna',
+                apiServer: 'connect',
+                apiIP: 'https://dogescoolrestserver.dogecorp.com',
+                apiPort: 3000,
+                apiNamespace: 'always'
+            })
+            .on('error', function (error) {
+                assert.fail('Error found:', error);
+            });
     });
 
     beforeEach(() => {
@@ -144,10 +144,10 @@ describe('hyperledger-composer:angular for CarAuction-Network running against a 
         delete process.env.REST_SERVER_URLS;
     });
 
-    it('creates typescript classes', function(){
-        assert.file(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts');
-        assert.fileContent(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts',
-        `import {Asset} from './org.hyperledger.composer.system';
+    it('creates typescript classes', function () {
+        assert.file(tmpDir + '/CarAuction-Network/src/app/org.acme.vehicle.auction.ts');
+        assert.fileContent(tmpDir + '/CarAuction-Network/src/app/org.acme.vehicle.auction.ts',
+            `import {Asset} from './org.hyperledger.composer.system';
 import {Participant} from './org.hyperledger.composer.system';
 import {Transaction} from './org.hyperledger.composer.system';
 import {Event} from './org.hyperledger.composer.system';
@@ -191,43 +191,43 @@ import {Event} from './org.hyperledger.composer.system';
     });
 
     it('creates VehicleListing component typescript', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.ts');
     });
 
     it('creates VehicleListing component test', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.spec.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.spec.ts');
     });
 
     it('creates VehicleListing service', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/VehicleListing/VehicleListing.service.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/VehicleListing/VehicleListing.service.ts');
     });
 
     it('creates VehicleListing component html', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.html');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.html');
     });
 
     it('creates VehicleListing component css', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.css');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/VehicleListing/VehicleListing.component.css');
     });
 
     it('creates Vehicle component typescript', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/Vehicle/Vehicle.component.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/Vehicle/Vehicle.component.ts');
     });
 
     it('creates Vehicle component test', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/Vehicle/Vehicle.component.spec.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/Vehicle/Vehicle.component.spec.ts');
     });
 
     it('creates Vehicle service', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/Vehicle/Vehicle.service.ts');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/Vehicle/Vehicle.service.ts');
     });
 
     it('creates Vehicle component html', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/Vehicle/Vehicle.component.html');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/Vehicle/Vehicle.component.html');
     });
 
     it('creates Vehicle component css', function () {
-        assert.file(tmpDir+'/CarAuction-Network/src/app/Vehicle/Vehicle.component.css');
+        assert.file(tmpDir + '/CarAuction-Network/src/app/Vehicle/Vehicle.component.css');
     });
 
     it('should create a package.json file that contains mapped input', () => {
@@ -253,7 +253,7 @@ import {Event} from './org.hyperledger.composer.system';
         assert.equal(myPackage.scripts.prepack, 'npm run build', 'missing or invalid prepack script');
         assert.equal(myPackage.scripts.build, 'ng build', 'missing or invalid build script');
         assert.equal(myPackage.scripts.start, 'ng serve --proxy-config proxy.conf.js --host 0.0.0.0', 'missing or invalid start script');
-        assert.deepStrictEqual(myPackage.dependencies,        {
+        assert.deepStrictEqual(myPackage.dependencies, {
             '@angular/common': '^4.0.0',
             '@angular/compiler': '^4.0.0',
             '@angular/core': '^4.0.0',

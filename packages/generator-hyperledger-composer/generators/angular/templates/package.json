@@ -37,6 +37,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "ngx-cookie-service": "^1.0.9",
     "bootstrap": "^3.3.7",
     "cfenv": "^1.0.4",
 <% if(apiServer == 'generate'){ %>
@@ -57,6 +58,7 @@
     "@angular/compiler-cli": "^4.0.0",
     "@types/jasmine": "2.5.52",
     "@types/node": "7.0.5",
+    
     "codelyzer": "~2.0.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",

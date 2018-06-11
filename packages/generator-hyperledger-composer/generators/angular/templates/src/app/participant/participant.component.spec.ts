@@ -59,5 +59,4 @@ describe('<%= participantName %>Component', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 });

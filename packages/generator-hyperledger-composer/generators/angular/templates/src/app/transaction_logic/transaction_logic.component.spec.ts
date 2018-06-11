@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -21,7 +20,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as sinon from 'sinon';
 import { DataService } from '../data.service';
-import { <%= transactionName %>Component } from './<%= transactionName %>.component';
+import { <%= transactionName %>Component } from './<%= transactionName %>.transaction';
 import {<%= transactionName %>Service} from './<%= transactionName %>.service';
 
 describe('<%= transactionName %>Component', () => {

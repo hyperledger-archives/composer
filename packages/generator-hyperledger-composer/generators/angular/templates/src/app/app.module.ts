@@ -19,6 +19,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { DataService } from './data.service';
 import { AppComponent } from './app.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NoopInterceptor } from 'app/http.interceptor';
+import { Configuration }     from './configuration';
+import { CookieService } from 'ngx-cookie-service';
+
 import { HomeComponent } from './home/home.component';
 <%_ _%>
 <%_ for(var x=0;x<assetComponentNames.length;x++){ %>
@@ -30,10 +35,17 @@ import { <%= participantComponentNames[x] %> } from './<%= participantList[x].na
 <%_ for(var x=0;x<transactionComponentNames.length;x++){ %>
 import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.component';<% } %>
 
+<% for(var x=0;x<transactionLogicComponentNames.length;x++){ %>
+  import { <%= transactionLogicComponentNames[x] %> } from './<%= transactionListLogic[x].name %>/<%= transactionListLogic[x].name %>.transaction';<% } %>
+
   @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
+    <% for(var x=0;x<transactionLogicComponentNames.length;x++){ %>
+      <%= transactionLogicComponentNames[x] %>,
+      <% } %>
+    
           <%_ for(var x=0;x<assetComponentNames.length;x++){ _%>
             <%_ if(x == assetComponentNames.length-1) {_%>
     <%_ %>    <%= assetComponentNames[x] _%>
@@ -61,10 +73,19 @@ import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].na
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    HttpClientModule,
     AppRoutingModule
   ],
   providers: [
-    DataService
+    Configuration,
+    DataService,
+    CookieService ,
+   {
+       provide: HTTP_INTERCEPTORS,
+       useClass: NoopInterceptor,
+       multi: true,
+    }
+
   ],
   bootstrap: [AppComponent]
 })

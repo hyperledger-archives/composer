@@ -25,6 +25,9 @@ import { <%= participantComponentNames[x] %> } from './<%= participantList[x].na
 <%_ for(var x=0;x<transactionComponentNames.length;x++){ %>
 import { <%= transactionComponentNames[x] %> } from './<%= transactionList[x].name %>/<%= transactionList[x].name %>.component';<% } %>
 
+<% for(var x=0;x<transactionLogicComponentNames.length;x++){ %>
+  import { <%= transactionLogicComponentNames[x] %> } from './<%= transactionListLogic[x].name %>/<%= transactionListLogic[x].name %>.transaction';<% } %>
+
 const routes: Routes = [
   { path: '', component: HomeComponent },
 		<%_ for(var x=0;x<assetComponentNames.length;x++){ _%>
@@ -36,6 +39,10 @@ const routes: Routes = [
     <%_ for(var x=0;x<transactionComponentNames.length;x++){ _%>
   { path: '<%= transactionList[x].name %>', component: <%= transactionComponentNames[x] %> },
         <%_ } _%>
+        <% for(var x=0;x<transactionLogicComponentNames.length;x++){ %>
+          { path: '<%= transactionListLogic[x].name %>', component: <%= transactionLogicComponentNames[x] %>},
+          <% } %>
+    
   { path: '**', redirectTo: '' }
 ];
 
