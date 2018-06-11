@@ -23,13 +23,14 @@ const sinon = require('sinon');
 
 describe('hyperledger-composer:app for generating a template artifacts', () => {
 
-    let myAngularSpy, myBusNetSpy, myModelSpy;
-    let AngularDummy, BusNetDummy, ModelDummy;
+    let myAngularSpy, myBusNetSpy, myModelSpy, myLoopBackSpy;
+    let AngularDummy, BusNetDummy, ModelDummy, LoopBackDummy;
 
     beforeEach(async () => {
         myAngularSpy = sinon.spy();
         myBusNetSpy = sinon.spy();
         myModelSpy = sinon.spy();
+        myLoopBackSpy = sinon.spy();
 
         AngularDummy = generators.Base.extend({
             exec: myAngularSpy
@@ -42,6 +43,10 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         ModelDummy = generators.Base.extend({
             exec: myModelSpy
         });
+
+        LoopBackDummy = generators.Base.extend({
+            exec: myLoopBackSpy
+        });
     });
 
     it('should call Angular generator if provided the Angular option', async () => {
@@ -50,7 +55,8 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
             .withGenerators([
                 [AngularDummy, require.resolve('../generators/angular')],
                 [BusNetDummy, require.resolve('../generators/businessnetwork')],
-                [ModelDummy, require.resolve('../generators/model')]
+                [ModelDummy, require.resolve('../generators/model')],
+                [LoopBackDummy, require.resolve('../generators/loopback')]
             ])
             .withPrompts({
                 generatorType: 'Angular'
@@ -62,6 +68,7 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         assert(myAngularSpy.calledOnce);
         assert(myBusNetSpy.notCalled);
         assert(myModelSpy.notCalled);
+        assert(myLoopBackSpy.notCalled);
     });
 
     it('should call Business Network generator if provided the option', async () => {
@@ -70,7 +77,8 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         .withGenerators([
             [AngularDummy, require.resolve('../generators/angular')],
             [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
+            [ModelDummy, require.resolve('../generators/model')],
+            [LoopBackDummy, require.resolve('../generators/loopback')]
         ])
         .withPrompts({
             generatorType: 'businessnetwork'
@@ -82,6 +90,7 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.calledOnce);
         assert(myModelSpy.notCalled);
+        assert(myLoopBackSpy.notCalled);
     });
 
     it('should call Model generator if provided the option', async () => {
@@ -90,7 +99,8 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         .withGenerators([
             [AngularDummy, require.resolve('../generators/angular')],
             [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
+            [ModelDummy, require.resolve('../generators/model')],
+            [LoopBackDummy, require.resolve('../generators/loopback')]
         ])
         .withPrompts({
             generatorType: 'model'
@@ -102,6 +112,29 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.notCalled);
         assert(myModelSpy.calledOnce);
+        assert(myLoopBackSpy.notCalled);
+    });
+
+    it('should call LoopBack generator if provided the option', async () => {
+
+        await helpers.run(appGen)
+        .withGenerators([
+            [AngularDummy, require.resolve('../generators/angular')],
+            [BusNetDummy, require.resolve('../generators/businessnetwork')],
+            [ModelDummy, require.resolve('../generators/model')],
+            [LoopBackDummy, require.resolve('../generators/loopback')]
+        ])
+        .withPrompts({
+            generatorType: 'loopback'
+        })
+        .on('error', function (error) {
+            assert.fail('Error found:', error);
+        });
+
+        assert(myAngularSpy.notCalled);
+        assert(myBusNetSpy.notCalled);
+        assert(myModelSpy.notCalled);
+        assert(myLoopBackSpy.calledOnce);
     });
 
     it('should not call generators if provided an unknown option', async () => {
@@ -110,7 +143,8 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         .withGenerators([
             [AngularDummy, require.resolve('../generators/angular')],
             [BusNetDummy, require.resolve('../generators/businessnetwork')],
-            [ModelDummy, require.resolve('../generators/model')]
+            [ModelDummy, require.resolve('../generators/model')],
+            [LoopBackDummy, require.resolve('../generators/loopback')]
         ])
         .withPrompts({
             generatorType: 'penguin'
@@ -122,6 +156,7 @@ describe('hyperledger-composer:app for generating a template artifacts', () => {
         assert(myAngularSpy.notCalled);
         assert(myBusNetSpy.notCalled);
         assert(myModelSpy.notCalled);
+        assert(myLoopBackSpy.notCalled);
     });
 
 });

@@ -11,8 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ConfigService } from '../../services/config.service';
+import { Config } from '../../services/config/configStructure.service';
 
 @Component({
     selector: 'connect-confirm',
@@ -20,10 +23,24 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./connect-confirm.component.scss'.toString()]
 })
 
-export class ConnectConfirmComponent {
+export class ConnectConfirmComponent implements OnInit {
 
     @Input() network: string = null;
 
-    constructor(public activeModal: NgbActiveModal) {
+    private config = new Config();
+
+    constructor(public activeModal: NgbActiveModal,
+                private configService: ConfigService) {
+    }
+
+    ngOnInit() {
+        try {
+            this.config = this.configService.getConfig();
+        } catch (err) {
+            this.configService.loadConfig()
+            .then((config) => {
+                this.config = config;
+            });
+        }
     }
 }

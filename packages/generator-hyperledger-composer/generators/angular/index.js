@@ -368,6 +368,9 @@ module.exports = yeoman.Base.extend({
                     });
             } else {
                 fs.readFile(this.fileName, (err, buffer) => {
+                    if (err) {
+                        throw err;
+                    }
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;

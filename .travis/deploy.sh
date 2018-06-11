@@ -68,10 +68,12 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
 export ALL_NPM_MODULES="composer-admin composer-cli composer-client composer-common composer-connector-embedded composer-connector-hlfv1 composer-connector-proxy composer-connector-server composer-connector-web composer-cucumber-steps composer-documentation composer-playground composer-playground-api composer-report composer-rest-server composer-runtime composer-runtime-embedded composer-runtime-hlfv1 composer-runtime-pouchdb composer-runtime-web composer-wallet-filesystem composer-wallet-inmemory generator-hyperledger-composer loopback-connector-composer"
 
 # This is the list of npm modules required by docker images
-export DOCKER_NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-report composer-playground composer-playground-api composer-rest-server loopback-connector-composer"
+export DOCKER_NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-report composer-playground composer-playground-api composer-rest-server loopback-connector-composer composer-wallet-filesystem composer-wallet-inmemory composer-connector-server composer-documentation composer-connector-hlfv1 composer-connector-proxy"
 
-# This is the list of Docker images to build and publish.
-export ALL_DOCKER_IMAGES="composer-playground composer-rest-server composer-cli"
+# This is the array of Docker images to build and publish.
+export ALL_DOCKER_IMAGES=("composer-playground" "composer-rest-server" "composer-cli")
+# This is the final array of Docker images that will be published
+export PUBLISH_DOCKER_IMAGES=("composer-playground" "composer-rest-server" "composer-cli")
 
 # Change from HTTPS to SSH.
 ./.travis/fix_github_https_repo.sh
@@ -141,36 +143,32 @@ done
 # Check which Docker images to publish, we need to temporarily disable the 'e' flag here as we rely on a failure
 set +e
 echo "Checking for Docker images with version ${VERSION}"
-export PUBLISH_DOCKER=""
-for i in ${ALL_DOCKER_IMAGES}; do
+for i in "${ALL_DOCKER_IMAGES[@]}"; do
     echo "Checking for existence of Docker image ${i}"
     # Perform a pull on the version, it will fail if it does not exist
     if exists "${i}:${VERSION}" ; then
         echo "-image ${i}:${VERSION} exists, will not publish"
-    else
-        PUBLISH_DOCKER+="${i} "
+        # Remove from publish array
+        for (( j=0; j<${#PUBLISH_DOCKER_IMAGES[@]}; j++ )); do 
+            if [[ ${PUBLISH_DOCKER_IMAGES[j]} == ${i} ]]; then
+                PUBLISH_DOCKER_IMAGES=( "${PUBLISH_DOCKER_IMAGES[@]:0:$j}" "${PUBLISH_DOCKER_IMAGES[@]:$((j + 1))}" )
+            fi
+        done
     fi
 done
 set -e
 
-# Now remove trailing whitespace character in the above list
-PUBLISH_DOCKER="${PUBLISH_DOCKER%"${PUBLISH_DOCKER##*[![:space:]]}"}"
+# Conditionally build, tag, and publish Docker images based on the resulting array
+for i in ${PUBLISH_DOCKER_IMAGES[@]}; do
 
-# Conditionally build, tag, and publish Docker images
-if ${#PUBLISH_DOCKER}; then
-    for i in ${PUBLISH_DOCKER}; do
+    # Build the image and tag it with the version and unstable.
+    docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
+    docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:"${TAG}"
 
-        # Build the image and tag it with the version and unstable.
-        docker build --build-arg VERSION=${VERSION} -t hyperledger/${i}:${VERSION} ${DIR}/packages/${i}/docker
-        docker tag hyperledger/${i}:${VERSION} hyperledger/${i}:"${TAG}"
-
-        # Push both the version and unstable.
-        docker push hyperledger/${i}:${VERSION}
-        docker push hyperledger/${i}:${TAG}
-    done
-else
-    echo "All images published; skipping publish phase"
-fi
+    # Push both the version and unstable.
+    docker push hyperledger/${i}:${VERSION}
+    docker push hyperledger/${i}:${TAG}
+done
 
 # Push to public Bluemix for stable and unstable, latest and next release builds
 if [[ "${BUILD_FOCUS}" != "v0.16" ]]; then

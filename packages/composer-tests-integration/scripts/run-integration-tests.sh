@@ -52,6 +52,7 @@ rm -rf ./my-bus-net      # a business network created from generator
 rm -rf ./tutorial-network      # business network created from generator in dev tut
 rm -f ./networkadmin.card
 rm -f ./composer-report-*
+rm -rf ./my-loopback-app
 
 # remove anything already there
 docker kill $(docker ps -q) && docker rm $(docker ps -qa) --force
@@ -167,10 +168,11 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
        docker run -p 6379:6379 --name composer-wallet-redis -d redis  && \
        docker exec composer-wallet-redis redis-cli -c flushall
 
-    docker run -d --name="logspout" \
-	    --volume=/var/run/docker.sock:/var/run/docker.sock \
-	    --publish=127.0.0.1:8000:80 \
-	    gliderlabs/logspout
+    (docker rm -f logspout || true) && \
+        docker run -d --name="logspout" \
+            --volume=/var/run/docker.sock:/var/run/docker.sock \
+            --publish=127.0.0.1:8000:80 \
+            gliderlabs/logspout
 
     # Run the integration tests.
     if [[ ${INTEST} == *nohsm ]]; then
@@ -215,6 +217,7 @@ for INTEST in $(echo ${INTEST} | tr "," " "); do
     rm -rf ${HOME}/.npmrc
     rm -f ./networkadmin.card
     rm -f ./composer-report-*
+    rm -rf ./my-loopback-app
     if [ "${DOCKER_FILE}" != "" ]; then
         cd ../composer-runtime-hlfv1
         rm /tmp/npmrc

@@ -46,6 +46,10 @@ module.exports = generators.Base.extend({
                     value: 'businessnetwork'
                 },
                 {
+                    name: 'LoopBack',
+                    value: 'loopback'
+                },
+                {
                     name: 'Model',
                     value: 'model'
                 }
@@ -67,6 +71,9 @@ module.exports = generators.Base.extend({
         } else if (this.generatorType === 'businessnetwork') {
             Util.log('You can run this generator using: \'yo hyperledger-composer:businessnetwork\'');
             this.composeWith(require.resolve('../businessnetwork'));
+        } else if (this.generatorType === 'loopback') {
+            Util.log('You can run this generator using: \'yo hyperledger-composer:loopback\'');
+            this.composeWith(require.resolve('../loopback'));
         } else if (this.generatorType === 'model') {
             Util.log('You can run this generator using: \'yo hyperledger-composer:model\'');
             this.composeWith(require.resolve('../model'));
