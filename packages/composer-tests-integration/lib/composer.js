@@ -472,7 +472,8 @@ class Composer {
             return new Promise((resolve, reject) => {
 
                 const options = {
-                    env : env
+                    env : env,
+                    maxBuffer: 100000000
                 };
                 let childCliProcess = childProcess.exec(command, options);
 
@@ -481,11 +482,13 @@ class Composer {
 
                 childCliProcess.stdout.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log('STDOUT', data);
                     stdout += data;
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log('STDERR', data);
                     stderr += data;
                 });
 
