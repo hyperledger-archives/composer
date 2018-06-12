@@ -41,8 +41,8 @@ module.exports = function () {
         return this.composer.extractSecret(alias, cardFile);
     });
 
-    this.Given(/^I have deployed the business network (.+?)$/, {timeout: 360 * 1000}, async function (name) {
-        await this.composer.deployBusinessNetworkFromDirectory(name);
+    this.Given(/^I have deployed the business network (.+?)(?: as (.+?))?$/, {timeout: 360 * 1000}, async function (name, networkName) {
+        await this.composer.deployBusinessNetworkFromDirectory(name, networkName);
     });
 
     this.Given(/^I have a deployed the bna (.+?)$/, {timeout: 360 * 1000}, async function (name) {

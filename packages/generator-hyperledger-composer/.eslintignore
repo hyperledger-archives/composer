@@ -16,3 +16,4 @@ coverage
 node_modules
 out
 generators/angular/templates/**
+generators/loopback/templates/**

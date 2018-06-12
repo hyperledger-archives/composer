@@ -1,0 +1,37 @@
+{
+  "name": "<%= appName %>",
+  "version": "1.0.0",
+  "description": "<%= appDescription %>",
+  "author": "<%= authorName %> <<%= authorEmail %>>",
+  "license": "<%= license %>",
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node .",
+    "posttest": "npm run lint && nsp check"
+  },
+  "dependencies": {
+    "compression": "^1.0.3",
+    "cors": "^2.5.2",
+    "helmet": "^3.10.0",
+    "loopback-boot": "^2.6.5",
+    "serve-favicon": "^2.0.1",
+    "strong-error-handler": "^2.0.0",
+    "loopback-component-explorer": "^6.0.0",
+    "loopback-connector-composer": "<%= version %>",
+    "loopback": "^3.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-loopback": "^8.0.0",
+    "nsp": "^2.1.0"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  }
+}

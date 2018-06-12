@@ -107,6 +107,20 @@ class EngineTransactions {
         LOG.debug(method, 'Storing executed transaction in Transaction registry');
         await txRegistry.add(transaction, {noTest: true});
 
+        // Get the events that are generated - getting these as Resources - and add to the historian record
+        let evtSvr = context.getEventService();
+        record.eventsEmitted = [];
+
+        if(evtSvr) {
+            let s = evtSvr.getEvents();
+            if (s) {
+                s.forEach((element) => {
+                    let r = context.getSerializer().fromJSON(element);
+                    record.eventsEmitted.push(r);
+                } );
+            }
+        }
+
         // Store the transaction in the historian registry.
         LOG.debug(method, 'Storing Historian record in Historian registry');
         await historian.add(record, {noTest: true});
@@ -156,20 +170,6 @@ class EngineTransactions {
         record.transactionInvoked = factory.newRelationship(transaction.getNamespace(),transaction.getType(),transaction.getIdentifier());
         record.transactionTimestamp = transaction.timestamp;
         record.transactionType = transaction.getFullyQualifiedType();
-
-        // Get the events that are generated - getting these as Resources
-        let evtSvr = context.getEventService();
-        record.eventsEmitted = [];
-
-        if(evtSvr) {
-            let s = evtSvr.getEvents();
-            if (s) {
-                s.forEach((element) => {
-                    let r = context.getSerializer().fromJSON(element);
-                    record.eventsEmitted.push(r);
-                } );
-            }
-        }
 
         // get the cached indentity
         // TODO there is the issue with the Admin userid that will be resolved in due course

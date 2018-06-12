@@ -18,7 +18,7 @@ const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkCardStore = require('composer-common').BusinessNetworkCardStore;
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const childProcess = require('child_process');
-const fs = require('fs');
+const fs = require('fs-extra');
 const IdCard = require('composer-common').IdCard;
 const matchPattern = require('lodash-match-pattern');
 const net = require('net');
@@ -472,7 +472,8 @@ class Composer {
             return new Promise((resolve, reject) => {
 
                 const options = {
-                    env : env
+                    env : env,
+                    maxBuffer: 100000000
                 };
                 let childCliProcess = childProcess.exec(command, options);
 
@@ -481,11 +482,13 @@ class Composer {
 
                 childCliProcess.stdout.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log('STDOUT', data);
                     stdout += data;
                 });
 
                 childCliProcess.stderr.on('data', (data) => {
                     data = stripAnsi(data);
+                    console.log('STDERR', data);
                     stderr += data;
                 });
 
@@ -851,22 +854,29 @@ class Composer {
     }
 
     /**
-     * deploy the specified business network from a directory
-     * @param {*} name the name of the business network
+     * deploy the specified business network from a directory, renaming it if a different
+     * name is specified for the target name.
+     * @param {*} sourceNetworkName the name of the source business network
+     * @param {*} [targetNetworkName] the optional name of the target business network
      */
-    async deployBusinessNetworkFromDirectory (name) {
+    async deployBusinessNetworkFromDirectory (sourceNetworkName, targetNetworkName) {
         // These steps assume that the arg «name» is the business network path,
         // and is located in ./resource/sample-networks
 
-        if (this.busnets[name]) {
+        const renamingNetwork = !!targetNetworkName;
+        if (!renamingNetwork) {
+            targetNetworkName = sourceNetworkName;
+        }
+
+        if (this.busnets[targetNetworkName]) {
             // Already deployed
             return;
         } else {
-            this.busnets[name] = name;
+            this.busnets[targetNetworkName] = targetNetworkName;
         }
 
-        const bnaFile = `./tmp/${name}.bna`;
-        const adminId = `admin@${name}`;
+        const bnaFile = `./tmp/${targetNetworkName}.bna`;
+        const adminId = `admin@${targetNetworkName}`;
         const success = /Command succeeded/;
         const checkOutput = (response) => {
             if (!response.stdout.match(success)) {
@@ -874,13 +884,26 @@ class Composer {
             }
         };
 
-        const packageJsonPath = path.join(__dirname, '../resources/sample-networks/' + name + '/package.json');
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-        const networkName = packageJson.name;
-        const networkVersion = packageJson.version;
+        let actualNetworkDir, actualNetworkName, actualNetworkVersion;
+        if (!renamingNetwork) {
+            actualNetworkDir = path.join(__dirname, '..', 'resources', 'sample-networks', sourceNetworkName);
+            const packageJsonPath = path.join(actualNetworkDir, 'package.json');
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+            actualNetworkName = packageJson.name;
+            actualNetworkVersion = packageJson.version;
+        } else {
+            const sourceNetworkDir = path.join(__dirname, '..', 'resources', 'sample-networks', sourceNetworkName);
+            const targetNetworkDir = actualNetworkDir = path.join(__dirname, '..', 'tmp', targetNetworkName);
+            fs.copySync(sourceNetworkDir, targetNetworkDir, { errorOnExist: true });
+            const packageJsonPath = path.join(targetNetworkDir, 'package.json');
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+            actualNetworkName = packageJson.name = targetNetworkName;
+            actualNetworkVersion = packageJson.version;
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4), 'utf8');
+        }
 
         let response = await
-            this.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ./resources/sample-networks/${name}`);
+            this.runCLI(true, `composer archive create -t dir -a ${bnaFile} -n ${actualNetworkDir}`);
         checkOutput(response);
         response = await
             this.runCLI(true, `composer network install --card TestPeerAdmin@org1 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
@@ -889,7 +912,7 @@ class Composer {
             this.runCLI(true, `composer network install --card TestPeerAdmin@org2 --archiveFile ${bnaFile} -o npmrcFile=/tmp/npmrc`);
         checkOutput(response);
         response = await
-            this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${networkName} --networkVersion ${networkVersion} --file networkadmin.card`);
+            this.runCLI(true, `composer network start --card TestPeerAdmin@org1 --networkAdmin admin --networkAdminEnrollSecret adminpw --networkName ${actualNetworkName} --networkVersion ${actualNetworkVersion} --file networkadmin.card`);
         checkOutput(response);
         response = await
             this.runCLI(undefined, `composer card delete -c ${adminId}`);
