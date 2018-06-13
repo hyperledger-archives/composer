@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Issue Command | Hyperledger Composer</title>
+    <title>Customizing the REST server for a business network | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -148,7 +148,7 @@
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Identity Issue Command</p>
+          <p>Customizing the REST server for a business network</p>
           </div>
 
           <nav class="context-nav">
@@ -344,59 +344,86 @@
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-identity-issue">Composer Identity Issue</h1>
+              <h1 id="customizing-the-rest-server-for-a-business-network">Customizing the REST server for a business network</h1>
 
 <hr>
 
-<p>The <code>composer identity issue</code> command issues a new identity to a participant in a participant registry relating to a business network. See the task <a href="../managing/identity-issue.html">Issuing a new identity to a participant</a> for a walkthrough of using this command or the API.</p>
+<p>By default, the Hyperledger Composer REST server includes functionality that generates a set of RESTful APIs for all of the assets, participants, and transactions within a deployed business network.</p>
 
-<h2 id="considerations">Considerations</h2>
+<p>The Hyperledger Composer REST server also includes functionality for the following features:</p>
 
-<p>This command creates a new card file. The connection profile in this card file comes from the card defined in the <code>-c|--card</code> option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.</p>
+<ul>
+<li><a href="./publishing-events.html">Publishing events</a> using WebSockets.</li>
+<li><a href="./enabling-rest-authentication.html">Enabling authentication</a> using the open source Passport authentication middleware.</li>
+<li><a href="./enabling-multiuser.html">Enabling multiple user mode</a> so authenticated users can supply their own blockchain credentials.</li>
+<li><a href="./securing-the-rest-server.html">Enabling HTTPS and TLS</a> for secure client-server communications.</li>
+</ul>
 
-<h2 id="syntax">Syntax</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">$ composer identity issue
+<p>These features are all designed to be general purpose and easy to use out of the box. The Hyperledger Composer REST server is distributed as an application called <code>composer-rest-server</code>, which can be installed using either npm or Docker, and includes all of these features.</p>
 
-Business Network Cards
-  --card, -c  Name of the network card to use for issuing  [string]
-  --file, -f  The card file name for the new identity  [string]
+<p>However, these features may not meet all of the requirements of all users. For example, a user of the Hyperledger Composer REST server may wish to use a different form of authentication middleware, instead of using Passport.</p>
 
-Identity Options
-  --newUserId, -u      The user ID for the new identity  [string]
-  --participantId, -a  The participant to issue the new identity to  [string] [required]
-  --issuer, -x         If the new identity should be able to issue other new identities  [boolean]
+<p>As an alternative to using the Hyperledger Composer REST server application <code>composer-rest-server</code>, you can generate a LoopBack application on disk that is equivalent in functionality. By editing the code in this generated LoopBack application, you can customize the REST server to meet all of your requirements.</p>
 
-Options:
-  --help             Show help  [boolean]
-  -v, --version      Show version number  [boolean]
-  --option, -o       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O  A file containing options that are specific to connection  [string]
+<h3 id="generating-a-loopback-application">Generating a LoopBack application</h3>
 
+<p>You can use the Yeoman generator to generate a LoopBack application. Before running the Yeoman generator, you must have deployed a business network, and you must have a business network card that can be used to access that business network.</p>
+
+<p>In the example below, we have deployed the <code>tutorial-network</code> business network, and we can use the business network card <code>admin@tutorial-network</code> to connect to that business network.</p>
+
+<p>Run the Yeoman generator by issuing the following command in a terminal:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer
 </code></pre></div>
-<h2 id="options">Options</h2>
+<p>The Yeoman generator will ask a series of questions before generating the LoopBack application. Ensure that you pick <code>LoopBack</code> as the project type, and specify the correct name for the business network card instead of that shown in the example below:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer project generator
+? Please select the type of project: LoopBack
+You can run this generator using: 'yo hyperledger-composer:loopback'
+Welcome to the Hyperledger Composer LoopBack project generator
+? Do you want to connect to a running Business Network? Yes
+? Project name: my-loopback-app
+? Description: Hyperledger Composer LoopBack project
+? Author name: Simon Stone
+? Author email: simon@congaverse.com
+? License: Apache-2.0
+? Name of the Business Network card: admin@tutorial-network
+</code></pre></div>
+<p>If successful, the Yeoman generator will create an application in a sub directory of the current working directory named after the specified <code>Project name</code>. In the example above, the sub directory would be called <code>my-loopback-app</code>.</p>
 
-<p><code>--card, -c</code></p>
+<p>You can start the generated application by entering the sub directory, and running the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm start
+</code></pre></div>
+<p>The generated application will give you a URL that you can use to interact with the RESTful APIs:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">&gt; my-loopback-app@1.0.0 start /private/tmp/my-loopback-app
+&gt; node .
 
-<p>The name of the business network card to use to issue the identity.
-Example: <code>admin@tutorial-network</code></p>
+Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
+</code></pre></div>
+<h3 id="customizing-the-loopback-application">Customizing the LoopBack application</h3>
 
-<p><code>--file, -f</code></p>
+<p>The generated LoopBack application is a standard LoopBack application. It contains a set of LoopBack model files, one for each modelled type in the business network, under the subdirectory <code>common/models</code>. Each model file is comprised of a JSON file (e.g. <code>Commodity.json</code>) and a JavaScript file (e.g. <code>Commodity.js</code>).  There are also LoopBack model files for generic business network RESTful APIs, such as the <code>/system/ping</code> API.</p>
 
-<p>The file name of the card file to be created, note this is not the name of the identity to be created.
-Example: <code>DanSelman</code></p>
-
-<p><code>--newUserId, -u</code>
-The user ID for the new identity, this is the name of the new identity.
-Example: <code>Dan</code></p>
-
-<p><code>--participantId, -a</code>
-The fully qualified identifier (in URI form) of the participant that the identity should be issued to.<br>
-Example: <code>resource:net.biz.tutorial-network.Person#DanSelman@biznet.org</code></p>
-
-<p><code>--issuer, -x</code>
-Whether the new identity will be able to issue other new identities.</p>
-
-<p>Please refer to <a href="../managing/connector-information.html">Connector specific information</a> for more information about connecting to Hyperledger Fabric v1.1.</p>
+<p>The generated LoopBack application includes a single data source named <code>composer</code> that uses the LoopBack connector for Hyperledger Composer, <code>loopback-connector-composer</code>. The data source configuration, in the file <code>server/datasources.json</code>, includes the name of the business network card; if you change the name of the business network card, you must also change the data source configuration:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "composer": {
+        "name": "composer",
+        "connector": "loopback-connector-composer",
+        "card": "admin@tutorial-network",
+        "namespaces": false
+    }
+}
+</code></pre></div>
+<p>The generated LoopBack application includes model configuration that binds all of the LoopBack model files to the data source named <code>composer</code>, and exposes them over RESTful APIs by setting the flag <code>public</code> to <code>true</code>. The model configuration, in the file <code>server/model-config.json</code>, can be edited to hide or disable the RESTful APIs for a particular modelled type:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    ...
+    "Commodity": {
+        "dataSource": "composer",
+        "public": true
+    }
+    ...
+}
+</code></pre></div>
+<p>For further information about the structure of a LoopBack application, including how to customize and add additional functionality to the application, read the LoopBack documentation. The generated LoopBack application uses Loopback v3.0, and the documentation for LoopBack v3.0 can be found here: <a href="https://loopback.io/doc/en/lb3/">https://loopback.io/doc/en/lb3/</a></p>
 
             
           </section>

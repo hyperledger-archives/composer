@@ -217,6 +217,9 @@
 <loc>https://hyperledger.github.io/composer/unstable/reference/composer.identity.revoke</loc>
 </url>
 <url>
+<loc>https://hyperledger.github.io/composer/unstable/reference/composer.network.download</loc>
+</url>
+<url>
 <loc>https://hyperledger.github.io/composer/unstable/reference/composer.network.install</loc>
 </url>
 <url>
@@ -251,6 +254,9 @@
 </url>
 <url>
 <loc>https://hyperledger.github.io/composer/unstable/reference/cto_language</loc>
+</url>
+<url>
+<loc>https://hyperledger.github.io/composer/unstable/integrating/customizing-the-rest-server</loc>
 </url>
 <url>
 <loc>https://hyperledger.github.io/composer/unstable/tutorials/deploy-to-fabric-multi-org</loc>

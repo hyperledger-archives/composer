@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Issue Command | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network Download Command | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -148,7 +148,7 @@
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Identity Issue Command</p>
+          <p>Hyperledger Composer Network Download Command</p>
           </div>
 
           <nav class="context-nav">
@@ -344,59 +344,31 @@
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-identity-issue">Composer Identity Issue</h1>
+              <h1 id="composer-network-download">Composer Network Download</h1>
 
 <hr>
 
-<p>The <code>composer identity issue</code> command issues a new identity to a participant in a participant registry relating to a business network. See the task <a href="../managing/identity-issue.html">Issuing a new identity to a participant</a> for a walkthrough of using this command or the API.</p>
+<p>The <code>composer network download</code> command downloads a business network from a Hyperledger Fabric, without undeploying it.</p>
 
-<h2 id="considerations">Considerations</h2>
-
-<p>This command creates a new card file. The connection profile in this card file comes from the card defined in the <code>-c|--card</code> option used to perform the request and the connection profile defines whether an identity in a card should be HSM managed or not. If the card used for the request is not HSM managed (as defined in the connection profle) then the card file created will not be HSM managed. Conversely if the card used for the request is HSM managed then the card file created will also be HSM managed.</p>
+<p><code>composer network download -a businessnetworkv1.1.4 -c admin@examplenetwork</code></p>
 
 <h2 id="syntax">Syntax</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">$ composer identity issue
-
-Business Network Cards
-  --card, -c  Name of the network card to use for issuing  [string]
-  --file, -f  The card file name for the new identity  [string]
-
-Identity Options
-  --newUserId, -u      The user ID for the new identity  [string]
-  --participantId, -a  The participant to issue the new identity to  [string] [required]
-  --issuer, -x         If the new identity should be able to issue other new identities  [boolean]
-
-Options:
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
   --help             Show help  [boolean]
   -v, --version      Show version number  [boolean]
-  --option, -o       Options that are specific to connection. Multiple options are specified by repeating this option  [string]
-  --optionsFile, -O  A file containing options that are specific to connection  [string]
-
+  --archiveFile, -a  The business network archive file name to write  [string] [required]
+  --card, -c         The cardname to use to download the network  [string] [required]
 </code></pre></div>
 <h2 id="options">Options</h2>
 
+<p><code>--archiveFile, -a</code></p>
+
+<p>The business network archive file name to create.
+Example: <code>businessnetworkv1.1.4</code></p>
+
 <p><code>--card, -c</code></p>
 
-<p>The name of the business network card to use to issue the identity.
-Example: <code>admin@tutorial-network</code></p>
-
-<p><code>--file, -f</code></p>
-
-<p>The file name of the card file to be created, note this is not the name of the identity to be created.
-Example: <code>DanSelman</code></p>
-
-<p><code>--newUserId, -u</code>
-The user ID for the new identity, this is the name of the new identity.
-Example: <code>Dan</code></p>
-
-<p><code>--participantId, -a</code>
-The fully qualified identifier (in URI form) of the participant that the identity should be issued to.<br>
-Example: <code>resource:net.biz.tutorial-network.Person#DanSelman@biznet.org</code></p>
-
-<p><code>--issuer, -x</code>
-Whether the new identity will be able to issue other new identities.</p>
-
-<p>Please refer to <a href="../managing/connector-information.html">Connector specific information</a> for more information about connecting to Hyperledger Fabric v1.1.</p>
+<p>The business network card to use to download the network.</p>
 
             
           </section>
