@@ -303,7 +303,7 @@ class IdCard {
      */
     static fromDirectory(cardDirectory, fs) {
         const method = 'fromDirectory';
-        LOG.entry(method, cardDirectory, fs);
+        LOG.entry(method, cardDirectory);
 
         if (!fs) {
             fs = nodeFs;

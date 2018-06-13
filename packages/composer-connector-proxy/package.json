@@ -77,7 +77,8 @@
     "watchify": "3.7.0"
   },
   "dependencies": {
-    "socket.io-client": "1.7.3"
+    "socket.io-client": "1.7.3",
+    "uuid": "3.0.1"
   },
   "nyc": {
     "exclude": [

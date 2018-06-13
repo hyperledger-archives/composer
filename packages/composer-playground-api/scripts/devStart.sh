@@ -26,12 +26,12 @@ packagesDir="$(cd "${scriptDir}/../.." && pwd)"
 if [ `uname` = "Darwin" ]; then
     gateway=docker.for.mac.localhost
 else
-    gateway="$(docker inspect hlfv1_default | grep Gateway | cut -d \" -f4)"
+    gateway="$(docker inspect composer_default | grep Gateway | cut -d \" -f4)"
 fi
 echo "registry=http://${gateway}:4873" > "${NPMRC_FILE}"
 
 # Start the npm proxy
-docker-compose --file "${scriptDir}/docker-compose.yaml" up --detach
+docker-compose -f "${scriptDir}/docker-compose.yaml" up -d
 
 # Publish development versions of packages required at runtime
 for package in composer-common composer-runtime composer-runtime-hlfv1; do
@@ -42,4 +42,4 @@ done
 npm start
 
 # Stop the npm proxy
-docker-compose --file "${scriptDir}/docker-compose.yaml" down
+docker-compose -f "${scriptDir}/docker-compose.yaml" down
