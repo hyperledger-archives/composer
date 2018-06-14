@@ -17,7 +17,8 @@
 const { AdminConnection } = require('composer-admin');
 const assert = require('yeoman-assert');
 const fs = require('fs');
-const { BusinessNetworkDefinition, IdCard } = require('composer-common');
+const { BusinessNetworkDefinition, IdCard, NetworkCardStoreManager } = require('composer-common');
+const generator = require('../generators/loopback');
 const helpers = require('yeoman-test');
 const path = require('path');
 const rewire = require('rewire');
@@ -60,6 +61,7 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
 
             before(async () => {
                 if (liveNetwork) {
+                    const cardStore = NetworkCardStoreManager.getCardStore({ type: 'composer-wallet-inmemory' });
                     const blockchainNetworkCard = new IdCard({
                         userName : 'admin',
                         enrollmentSecret : 'adminpw'
@@ -67,10 +69,10 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                         'x-type' : 'embedded',
                         name : 'generatorProfile'
                     });
-                    const adminConnection = new AdminConnection({ wallet: { type: 'composer-wallet-inmemory' }});
+                    const adminConnection = new AdminConnection({ cardStore });
                     await adminConnection.importCard('admin@blockchain-network', blockchainNetworkCard);
                     await adminConnection.connect('admin@blockchain-network');
-                    const businessNetworkArchive = fs.readFileSync(path.resolve(__dirname + '/data/', 'digitalPropertyNetwork.bna'));
+                    const businessNetworkArchive = fs.readFileSync(path.resolve(__dirname + '/data/', 'carAuction.bna'));
                     const businessNetworkDefinition = await BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
                     await adminConnection.install(businessNetworkDefinition);
                     await adminConnection.start(businessNetworkDefinition.getName(), businessNetworkDefinition.getVersion(), {
@@ -79,19 +81,29 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                             enrollmentSecret : 'adminpw'
                         }]
                     });
+                    const businessNetworkCard = new IdCard({
+                        userName : 'admin',
+                        enrollmentSecret: 'adminpw',
+                        businessNetwork : 'carauction-network'
+                    }, {
+                        'x-type' : 'embedded',
+                        name : 'generatorProfile'
+                    });
+                    await adminConnection.importCard('admin@carauction-network', businessNetworkCard);
+                    generator.setBusinessNetworkConnectionOptions({ cardStore });
                 }
             });
 
             before(() => {
                 const prompts = {
                     liveNetwork,
-                    appName: 'digitalPropertyNetwork',
-                    appDescription: 'A digitalPropertyNetwork application',
+                    appName: 'loopback-carauction',
+                    appDescription: 'A LoopBack application for car auctions',
                     authorName: 'TestUser',
                     authorEmail: 'TestUser@TestApp.com',
                     license: 'Apache-2.0',
-                    fileName: (path.join(__dirname, '/data/digitalPropertyNetwork.bna')),
-                    cardName: 'admin@digitalproperty-network'
+                    fileName: (path.join(__dirname, '/data/carAuction.bna')),
+                    cardName: 'admin@carauction-network'
                 };
                 if (liveNetwork) {
                     delete prompts.fileName;
@@ -99,7 +111,7 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                 return helpers.run(path.resolve(__dirname, '../generators/loopback'))
                     .inTmpDir((dir) => {
                         tmpDir = dir;
-                        appDir = path.join(tmpDir, 'digitalPropertyNetwork');
+                        appDir = path.join(tmpDir, 'loopback-carauction');
                     })
                     .withOptions({ skipInstall: true })
                     .withPrompts(prompts)
@@ -165,14 +177,18 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                     return builtInModelFiles.indexOf(fileName) === -1;
                 });
                 fileNames.should.deep.equal([
-                    'LandTitle.js',
-                    'LandTitle.json',
-                    'Person.js',
-                    'Person.json',
-                    'RegisterPropertyForSale.js',
-                    'RegisterPropertyForSale.json',
-                    'SalesAgreement.js',
-                    'SalesAgreement.json',
+                    'Auctioneer.js',
+                    'Auctioneer.json',
+                    'CloseBidding.js',
+                    'CloseBidding.json',
+                    'Member.js',
+                    'Member.json',
+                    'Offer.js',
+                    'Offer.json',
+                    'Vehicle.js',
+                    'Vehicle.json',
+                    'VehicleListing.js',
+                    'VehicleListing.json'
                 ]);
                 files.forEach((file) => {
                     if (file.endsWith('.js')) {
@@ -187,7 +203,7 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                         sinon.assert.calledWith(mockComposer.restrictModelMethods, mockModel);
                     } else {
                         const modelJSON = require(file);
-                        modelJSON.options.composer.namespace.should.equal('net.biz.digitalPropertyNetwork');
+                        modelJSON.options.composer.namespace.should.equal('org.acme.vehicle.auction');
                     }
                 });
             });
@@ -215,7 +231,7 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                 const datasources = require(file);
                 datasources.should.deep.equal({
                     composer: {
-                        card: 'admin@digitalproperty-network',
+                        card: 'admin@carauction-network',
                         connector: 'loopback-connector-composer',
                         name: 'composer',
                         namespaces: false
@@ -250,19 +266,27 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                         dataSource: 'composer',
                         public: false
                     },
-                    LandTitle: {
+                    Auctioneer: {
                         dataSource: 'composer',
                         public: true
                     },
-                    SalesAgreement: {
+                    CloseBidding: {
                         dataSource: 'composer',
                         public: true
                     },
-                    Person: {
+                    Member: {
                         dataSource: 'composer',
                         public: true
                     },
-                    RegisterPropertyForSale: {
+                    Offer: {
+                        dataSource: 'composer',
+                        public: true
+                    },
+                    Vehicle: {
+                        dataSource: 'composer',
+                        public: true
+                    },
+                    VehicleListing: {
                         dataSource: 'composer',
                         public: true
                     }
@@ -273,9 +297,9 @@ describe('hyperledger-composer:loopback for generating a LoopBack application', 
                 const file = path.join(appDir, 'package.json');
                 assert.file(file);
                 const packageJSON = require(file);
-                packageJSON.name.should.equal('digitalPropertyNetwork');
+                packageJSON.name.should.equal('loopback-carauction');
                 packageJSON.version.should.equal('1.0.0');
-                packageJSON.description.should.equal('A digitalPropertyNetwork application');
+                packageJSON.description.should.equal('A LoopBack application for car auctions');
                 packageJSON.license.should.equal('Apache-2.0');
                 packageJSON.author.should.equal('TestUser <TestUser@TestApp.com>');
                 packageJSON.engines.should.deep.equal({
