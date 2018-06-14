@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Updating the development environment | Hyperledger Composer</title>
+    <title>Hyperledger Composer Network Download Command | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/latest/favicon.ico">
@@ -148,7 +148,7 @@
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Updating the development environment</p>
+          <p>Hyperledger Composer Network Download Command</p>
           </div>
 
           <nav class="context-nav">
@@ -344,52 +344,31 @@
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="updating-the-development-environment">Updating the development environment</h1>
+              <h1 id="composer-network-download">Composer Network Download</h1>
 
-<p>Follow these instructions if you have already installed the Hyperledger Composer development tools, and you wish to update your installation to the latest version of Hyperledger Composer.</p>
+<hr>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<p>The <code>composer network download</code> command downloads a business network from a Hyperledger Fabric, without undeploying it.</p>
 
-<p>These instructions assume that you&#39;ve installed the development tools and used them before. If you have not installed the development tools before, then follow the instructions in <a href="./development-tools.html"><strong>Installing the development environment</strong></a>.</p>
+<p><code>composer network download -a businessnetworkv1.1.4 -c admin@examplenetwork</code></p>
 
-<h1 id="updating-components">Updating components</h1>
+<h2 id="syntax">Syntax</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">Options:
+  --help             Show help  [boolean]
+  -v, --version      Show version number  [boolean]
+  --archiveFile, -a  The business network archive file name to write  [string] [required]
+  --card, -c         The cardname to use to download the network  [string] [required]
+</code></pre></div>
+<h2 id="options">Options</h2>
 
-<h3 id="step-1-update-the-cli-tools">Step 1: Update the CLI tools</h3>
+<p><code>--archiveFile, -a</code></p>
 
-<p>Any running instances of the CLI tools should be stopped before continuing. If you have any running instances of the Composer REST server, ensure that those instances are stopped before continuing. You can look for the process <code>composer-rest-server</code> if you are not sure if there are any running instances.</p>
+<p>The business network archive file name to create.
+Example: <code>businessnetworkv1.1.4</code></p>
 
-<ol>
-<li><p>Uninstall the currently installed version of all the CLI tools:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-cli composer-rest-server generator-hyperledger-composer
-</code></pre></div></li>
-<li><p>Install the latest version of all of the CLI tools:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli composer-rest-server generator-hyperledger-composer
-</code></pre></div></li>
-</ol>
+<p><code>--card, -c</code></p>
 
-<h3 id="step-2-update-playground">Step 2: Update Playground</h3>
-
-<p>If you have installed the browser app &quot;Playground&quot; on your development machine, you will need to update this as well. If you have any running instances of the browser app, ensure that those instances are stopped before continuing. You can look for the process <code>composer-playground</code> if you are not sure if there are any running instances.</p>
-
-<ol>
-<li><p>Uninstall the currently installed version of the browser app:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-playground
-</code></pre></div></li>
-<li><p>Install the latest version of the browser app:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
-</code></pre></div></li>
-</ol>
-
-<blockquote>
-<p>Congratulations, you have updated your development environment with the latest version of the development tools. You can now continue developing your blockchain applications using the latest features and bug fixes!</p>
-</blockquote>
-
-<h2 id="what-next">What Next?</h2>
-
-<ul>
-<li>Learn how to use the web app UI with the <a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
-<li>Learn how to use the CLI and VSCode tools with the <a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
-</ul>
+<p>The business network card to use to download the network.</p>
 
             
           </section>

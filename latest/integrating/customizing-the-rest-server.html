@@ -46,7 +46,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Updating the development environment | Hyperledger Composer</title>
+    <title>Customizing the REST server for a business network | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/latest/favicon.ico">
@@ -148,7 +148,7 @@
             </div>
 
           <div class="docs-current-page-grid">
-          <p>Updating the development environment</p>
+          <p>Customizing the REST server for a business network</p>
           </div>
 
           <nav class="context-nav">
@@ -344,52 +344,86 @@
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="updating-the-development-environment">Updating the development environment</h1>
+              <h1 id="customizing-the-rest-server-for-a-business-network">Customizing the REST server for a business network</h1>
 
-<p>Follow these instructions if you have already installed the Hyperledger Composer development tools, and you wish to update your installation to the latest version of Hyperledger Composer.</p>
+<hr>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<p>By default, the Hyperledger Composer REST server includes functionality that generates a set of RESTful APIs for all of the assets, participants, and transactions within a deployed business network.</p>
 
-<p>These instructions assume that you&#39;ve installed the development tools and used them before. If you have not installed the development tools before, then follow the instructions in <a href="./development-tools.html"><strong>Installing the development environment</strong></a>.</p>
-
-<h1 id="updating-components">Updating components</h1>
-
-<h3 id="step-1-update-the-cli-tools">Step 1: Update the CLI tools</h3>
-
-<p>Any running instances of the CLI tools should be stopped before continuing. If you have any running instances of the Composer REST server, ensure that those instances are stopped before continuing. You can look for the process <code>composer-rest-server</code> if you are not sure if there are any running instances.</p>
-
-<ol>
-<li><p>Uninstall the currently installed version of all the CLI tools:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-cli composer-rest-server generator-hyperledger-composer
-</code></pre></div></li>
-<li><p>Install the latest version of all of the CLI tools:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli composer-rest-server generator-hyperledger-composer
-</code></pre></div></li>
-</ol>
-
-<h3 id="step-2-update-playground">Step 2: Update Playground</h3>
-
-<p>If you have installed the browser app &quot;Playground&quot; on your development machine, you will need to update this as well. If you have any running instances of the browser app, ensure that those instances are stopped before continuing. You can look for the process <code>composer-playground</code> if you are not sure if there are any running instances.</p>
-
-<ol>
-<li><p>Uninstall the currently installed version of the browser app:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm uninstall -g composer-playground
-</code></pre></div></li>
-<li><p>Install the latest version of the browser app:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
-</code></pre></div></li>
-</ol>
-
-<blockquote>
-<p>Congratulations, you have updated your development environment with the latest version of the development tools. You can now continue developing your blockchain applications using the latest features and bug fixes!</p>
-</blockquote>
-
-<h2 id="what-next">What Next?</h2>
+<p>The Hyperledger Composer REST server also includes functionality for the following features:</p>
 
 <ul>
-<li>Learn how to use the web app UI with the <a href="../tutorials/playground-tutorial.html">Playground Tutorial</a></li>
-<li>Learn how to use the CLI and VSCode tools with the <a href="../tutorials/developer-tutorial.html">Developer Tutorial</a></li>
+<li><a href="./publishing-events.html">Publishing events</a> using WebSockets.</li>
+<li><a href="./enabling-rest-authentication.html">Enabling authentication</a> using the open source Passport authentication middleware.</li>
+<li><a href="./enabling-multiuser.html">Enabling multiple user mode</a> so authenticated users can supply their own blockchain credentials.</li>
+<li><a href="./securing-the-rest-server.html">Enabling HTTPS and TLS</a> for secure client-server communications.</li>
 </ul>
+
+<p>These features are all designed to be general purpose and easy to use out of the box. The Hyperledger Composer REST server is distributed as an application called <code>composer-rest-server</code>, which can be installed using either npm or Docker, and includes all of these features.</p>
+
+<p>However, these features may not meet all of the requirements of all users. For example, a user of the Hyperledger Composer REST server may wish to use a different form of authentication middleware, instead of using Passport.</p>
+
+<p>As an alternative to using the Hyperledger Composer REST server application <code>composer-rest-server</code>, you can generate a LoopBack application on disk that is equivalent in functionality. By editing the code in this generated LoopBack application, you can customize the REST server to meet all of your requirements.</p>
+
+<h3 id="generating-a-loopback-application">Generating a LoopBack application</h3>
+
+<p>You can use the Yeoman generator to generate a LoopBack application. Before running the Yeoman generator, you must have deployed a business network, and you must have a business network card that can be used to access that business network.</p>
+
+<p>In the example below, we have deployed the <code>tutorial-network</code> business network, and we can use the business network card <code>admin@tutorial-network</code> to connect to that business network.</p>
+
+<p>Run the Yeoman generator by issuing the following command in a terminal:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">yo hyperledger-composer
+</code></pre></div>
+<p>The Yeoman generator will ask a series of questions before generating the LoopBack application. Ensure that you pick <code>LoopBack</code> as the project type, and specify the correct name for the business network card instead of that shown in the example below:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer project generator
+? Please select the type of project: LoopBack
+You can run this generator using: 'yo hyperledger-composer:loopback'
+Welcome to the Hyperledger Composer LoopBack project generator
+? Do you want to connect to a running Business Network? Yes
+? Project name: my-loopback-app
+? Description: Hyperledger Composer LoopBack project
+? Author name: Simon Stone
+? Author email: simon@congaverse.com
+? License: Apache-2.0
+? Name of the Business Network card: admin@tutorial-network
+</code></pre></div>
+<p>If successful, the Yeoman generator will create an application in a sub directory of the current working directory named after the specified <code>Project name</code>. In the example above, the sub directory would be called <code>my-loopback-app</code>.</p>
+
+<p>You can start the generated application by entering the sub directory, and running the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm start
+</code></pre></div>
+<p>The generated application will give you a URL that you can use to interact with the RESTful APIs:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">&gt; my-loopback-app@1.0.0 start /private/tmp/my-loopback-app
+&gt; node .
+
+Web server listening at: http://localhost:3000
+Browse your REST API at http://localhost:3000/explorer
+</code></pre></div>
+<h3 id="customizing-the-loopback-application">Customizing the LoopBack application</h3>
+
+<p>The generated LoopBack application is a standard LoopBack application. It contains a set of LoopBack model files, one for each modelled type in the business network, under the subdirectory <code>common/models</code>. Each model file is comprised of a JSON file (e.g. <code>Commodity.json</code>) and a JavaScript file (e.g. <code>Commodity.js</code>).  There are also LoopBack model files for generic business network RESTful APIs, such as the <code>/system/ping</code> API.</p>
+
+<p>The generated LoopBack application includes a single data source named <code>composer</code> that uses the LoopBack connector for Hyperledger Composer, <code>loopback-connector-composer</code>. The data source configuration, in the file <code>server/datasources.json</code>, includes the name of the business network card; if you change the name of the business network card, you must also change the data source configuration:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    "composer": {
+        "name": "composer",
+        "connector": "loopback-connector-composer",
+        "card": "admin@tutorial-network",
+        "namespaces": false
+    }
+}
+</code></pre></div>
+<p>The generated LoopBack application includes model configuration that binds all of the LoopBack model files to the data source named <code>composer</code>, and exposes them over RESTful APIs by setting the flag <code>public</code> to <code>true</code>. The model configuration, in the file <code>server/model-config.json</code>, can be edited to hide or disable the RESTful APIs for a particular modelled type:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">{
+    ...
+    "Commodity": {
+        "dataSource": "composer",
+        "public": true
+    }
+    ...
+}
+</code></pre></div>
+<p>For further information about the structure of a LoopBack application, including how to customize and add additional functionality to the application, read the LoopBack documentation. The generated LoopBack application uses Loopback v3.0, and the documentation for LoopBack v3.0 can be found here: <a href="https://loopback.io/doc/en/lb3/">https://loopback.io/doc/en/lb3/</a></p>
 
             
           </section>
