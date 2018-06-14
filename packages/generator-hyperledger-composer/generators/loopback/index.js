@@ -22,7 +22,18 @@ const optionOrPrompt = require('yeoman-option-or-prompt');
 const Util = require('../util');
 const version = require('../../package.json').version;
 const yeoman = require('yeoman-generator');
+
+let businessNetworkConnectionOptions = undefined;
+
 module.exports = class extends yeoman.Base {
+
+    /**
+     * Set the business network connection options.
+     * @param {*} options The business network connection options.
+     */
+    static setBusinessNetworkConnectionOptions(options) {
+        businessNetworkConnectionOptions = options;
+    }
 
     /**
      * Constructor.
@@ -158,7 +169,7 @@ module.exports = class extends yeoman.Base {
 
         // Get the business network definition.
         if (this.liveNetwork) {
-            const businessNetworkConnection = new BusinessNetworkConnection();
+            const businessNetworkConnection = new BusinessNetworkConnection(businessNetworkConnectionOptions);
             this.businessNetworkDefinition = await businessNetworkConnection.connect(this.cardName);
             await businessNetworkConnection.disconnect();
         } else {
@@ -174,7 +185,8 @@ module.exports = class extends yeoman.Base {
         const classDeclarations = introspector.getClassDeclarations().filter((classDeclaration) => {
             return !classDeclaration.isAbstract() &&
                    !classDeclaration.isSystemType() &&
-                   !classDeclaration.isEvent();
+                   !classDeclaration.isEvent() &&
+                   !classDeclaration.isEnum();
         });
 
         // Copy the skeleton project into place.
