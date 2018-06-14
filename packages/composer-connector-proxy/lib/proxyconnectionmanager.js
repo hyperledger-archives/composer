@@ -19,10 +19,15 @@ const ProxyConnection = require('./proxyconnection');
 const ProxyUtil = require('./proxyutil');
 const socketIOClient = require('socket.io-client');
 const Logger = require('composer-common').Logger;
+const uuid = require('uuid');
 
 const LOG = Logger.getLog('ProxyConnectionManager');
 
 let connectorServerURL = 'http://localhost:15699';
+
+let connectorStrategy = {
+    closeOnDisconnect: true
+};
 
 /**
  * Base class representing a connection manager that establishes and manages
@@ -38,6 +43,29 @@ class ProxyConnectionManager extends ConnectionManager {
      */
     static setConnectorServerURL(url) {
         connectorServerURL = url;
+    }
+
+    /**
+     * @typedef Strategy
+     * @property {boolean} closeOnDisconnect true to close socket when all connections are disconnected, false to always leave open
+     */
+
+    /**
+     * Set the connector strategy
+     * @param {Strategy} strategy the connector strategy
+     */
+    static setConnectorStrategy(strategy) {
+        if (strategy) {
+            connectorStrategy = strategy;
+        }
+    }
+
+    /**
+     * get the connector strategy
+     * @returns {Strategy} strategy the connector strategy
+     */
+    static getConnectorStrategy() {
+        return connectorStrategy;
     }
 
     /**
@@ -61,14 +89,25 @@ class ProxyConnectionManager extends ConnectionManager {
      */
     constructor(connectionProfileManager) {
         super(connectionProfileManager);
+        this.connections = new Set();
         this.connected = false;
-        this.socket = socketIOClient(connectorServerURL);
-        this.socket.on('connect', () => {
-            this.connected = true;
-        });
-        this.socket.on('disconnect', () => {
-            this.connected = false;
-        });
+    }
+
+    /**
+     * notification of a connection managed by this instance has disconnected.
+     * @param {string} connectionID the connectionID that was disconnected.
+     */
+    disconnect(connectionID) {
+        if (this.connections.has(connectionID)) {
+            this.connections.delete(connectionID);
+            if (this.connections.size === 0 && connectorStrategy.closeOnDisconnect) {
+                this.socket.close();
+
+                // throw away the socket rather than try to wait for a close and reconnect it if a
+                // connection is required as it's easier
+                this.socket = null;
+            }
+        }
     }
 
     /**
@@ -78,12 +117,33 @@ class ProxyConnectionManager extends ConnectionManager {
      * error.
      */
     ensureConnected() {
-        if (this.connected) {
+        const method = 'ensureConnected';
+        LOG.entry(method);
+
+        if (this.socket && this.connected) {
+            LOG.exit(method, 'socket already connected');
             return Promise.resolve();
         }
+
+        LOG.debug(method, 'no socket or socket not connected, creating a new socket');
+        this.socket = socketIOClient(connectorServerURL);
+        this.socket.once('disconnect', () => {
+            LOG.debug(method, 'socket disconnect received');
+            this.connected = false;
+        });
+
+        // return a promise that will be fulfilled when connection is established
         return new Promise((resolve, reject) => {
             this.socket.once('connect', () => {
+                LOG.debug(method, 'socket connect received');
+                this.connected = true;
                 resolve();
+            });
+            this.socket.once('connect_error', (error) => {
+                LOG.exit(method, 'socket connect failed', error);
+                // socket connect failed, so shouldn't be connected so will create a new
+                // socket when a request to connect is made again.
+                reject(error);
             });
         });
     }
@@ -97,21 +157,22 @@ class ProxyConnectionManager extends ConnectionManager {
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      */
-    importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
+    async importIdentity(connectionProfile, connectionOptions, id, certificate, privateKey) {
         const method = 'importIdentity';
         LOG.entry(method, connectionProfile, connectionOptions, id, certificate);
-        return this.ensureConnected()
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, id, certificate, privateKey, (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        LOG.exit(method);
-                        resolve();
-                    });
-                });
+        let tempConnection = uuid.v4();
+        this.connections.add(tempConnection);
+        await this.ensureConnected();
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionManagerImportIdentity', connectionProfile, connectionOptions, id, certificate, privateKey, (error) => {
+                this.disconnect(tempConnection);
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                LOG.exit(method);
+                resolve();
             });
+        });
     }
 
     /**
@@ -121,21 +182,22 @@ class ProxyConnectionManager extends ConnectionManager {
      * @param {string} id the id to associate with the identity
      * @returns {Promise} a promise
      */
-    removeIdentity(connectionProfile, connectionOptions, id) {
+    async removeIdentity(connectionProfile, connectionOptions, id) {
         const method = 'importIdentity';
         LOG.entry(method, connectionProfile, connectionOptions, id);
-        return this.ensureConnected()
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, id, (error) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        LOG.exit(method);
-                        resolve();
-                    });
-                });
+        let tempConnection = uuid.v4();
+        this.connections.add(tempConnection);
+        await this.ensureConnected();
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionManagerRemoveIdentity', connectionProfile, connectionOptions, id, (error) => {
+                this.disconnect(tempConnection);
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                LOG.exit(method);
+                resolve();
             });
+        });
     }
 
 
@@ -146,21 +208,22 @@ class ProxyConnectionManager extends ConnectionManager {
      * @param {String} id - Name of the identity.
      * @return {Promise} Resolves to credentials in the form <em>{ certificate: String, privateKey: String }</em>.
      */
-    exportIdentity(connectionProfileName, connectionOptions, id) {
+    async exportIdentity(connectionProfileName, connectionOptions, id) {
         const method = 'exportIdentity';
         LOG.entry(method, connectionProfileName, connectionOptions, id);
-        return this.ensureConnected()
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionManagerExportIdentity', connectionProfileName, connectionOptions, id, (error, credentials) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        LOG.exit(method, credentials);
-                        resolve(credentials);
-                    });
-                });
+        let tempConnection = uuid.v4();
+        this.connections.add(tempConnection);
+        await this.ensureConnected();
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionManagerExportIdentity', connectionProfileName, connectionOptions, id, (error, credentials) => {
+                this.disconnect(tempConnection);
+                if (error) {
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                LOG.exit(method, credentials);
+                resolve(credentials);
             });
+        });
     }
 
     /**
@@ -171,29 +234,37 @@ class ProxyConnectionManager extends ConnectionManager {
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      */
-    connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
+    async connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
         const method = 'connect';
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
-        return this.ensureConnected()
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    this.socket.emit('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, (error, connectionID) => {
-                        if (error) {
-                            return reject(ProxyUtil.inflaterr(error));
-                        }
-                        let connection = ProxyConnectionManager.createConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
-                        // Only emit when client
-                        this.socket.on('events', (myConnectionID, events) => {
-                            LOG.debug(method, events);
-                            if (myConnectionID === connectionID) {
-                                connection.emit('events', events);
-                            }
-                        });
-                        LOG.exit(method, connection);
-                        resolve(connection);
-                    });
+
+        // create a temporary connection to avoid a problem with a disconnect breaking a connect
+        // setup due to timing.
+        let tempConnection = uuid.v4();
+        this.connections.add(tempConnection);
+        await this.ensureConnected();
+
+        return new Promise((resolve, reject) => {
+            this.socket.emit('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, (error, connectionID) => {
+                if (error) {
+                    this.disconnect(tempConnection);
+                    return reject(ProxyUtil.inflaterr(error));
+                }
+                let connection = ProxyConnectionManager.createConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
+                this.connections.add(connectionID);
+                // remove the temp connection now the real one has been added
+                this.disconnect(tempConnection);
+                // Only emit when client
+                this.socket.on('events', (myConnectionID, events) => {
+                    LOG.debug(method, events);
+                    if (myConnectionID === connectionID) {
+                        connection.emit('events', events);
+                    }
                 });
+                LOG.exit(method, connection);
+                resolve(connection);
             });
+        });
     }
 
 }

@@ -59,6 +59,7 @@ class ProxyConnection extends Connection {
         })
         .then(() => {
             this.socket.removeListener('events', () => {});
+            this.connectionManager.disconnect(this.connectionID);
             LOG.exit(method);
         });
     }

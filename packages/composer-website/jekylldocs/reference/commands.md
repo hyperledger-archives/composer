@@ -78,6 +78,10 @@ Test the connection to a deployed a Business Network: [composer network ping](./
 
 Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed business network: [composer network upgrade](./composer.network.upgrade.html)
 
+`composer network download`
+
+Download the business network definition that is currently deployed to an instance of Hyperledger Fabric: [composer network download](./composer.network.download.html)
+
 ## Participant and Identity management
 
 `composer participant add`
