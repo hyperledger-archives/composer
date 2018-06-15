@@ -1832,9 +1832,10 @@ describe('EditorComponent', () => {
 
     describe('editorFileVersionChange', () => {
         it('should set the input package version', () => {
-            component.editorFileVersionChange('9.9.9-9');
+            component.editorFileVersionChange({version: '9.9.9-9', jsonErr: false});
 
             component['inputPackageVersion'].should.equal('9.9.9-9');
+            component['invalidPackage'].should.equal(false);
         });
     });
 

@@ -71,6 +71,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     private businessNetworkName = '';
     private deployedPackageVersion = ''; // This is the deployed BND's package version
     private inputPackageVersion = ''; // This is the input 'Version' before the BND is updated
+    private invalidPackage = false;
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
@@ -545,7 +546,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     editorFileVersionChange(event) {
-        this.inputPackageVersion = event;
+        this.inputPackageVersion = event.version;
+        this.invalidPackage = event.jsonErr;
     }
 
     updateVersion() {
