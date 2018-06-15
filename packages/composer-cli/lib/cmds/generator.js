@@ -22,3 +22,5 @@ exports.builder = function (yargs) {
    .commandDir('generator');
 };
 exports.handler = function (argv) {};
+
+module.exports.Create = require('./generator/lib/createCode');

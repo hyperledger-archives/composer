@@ -22,3 +22,9 @@ exports.builder = function (yargs) {
    .commandDir('card');
 };
 exports.handler = function (argv) {};
+
+module.exports.Create = require('./card/lib/create');
+module.exports.Delete = require('./card/lib/delete');
+module.exports.Export = require('./card/lib/export');
+module.exports.Import = require('./card/lib/import');
+module.exports.List = require('./card/lib/list');
