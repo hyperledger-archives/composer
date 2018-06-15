@@ -17,7 +17,7 @@
 module.exports.version = require('./package.json');
 
 /**
- * The command line interface for Hyperledger Composer.
+ * The command line interface for Hyperledger Composer
  * @module composer-cli
  */
 module.exports.Archive = require('./lib/cmds/archive');
