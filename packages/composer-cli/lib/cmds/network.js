@@ -21,6 +21,13 @@ exports.builder = function (yargs) {
     return yargs.demandCommand(1, 'Incorrect command. Please see the list of commands above, or enter "composer network --help".')
         .commandDir('network');
 };
-exports.handler = function (argv) {
+exports.handler = function (argv) {};
 
-};
+module.exports.Download = require('./network/lib/download');
+module.exports.Install = require('./network/lib/install');
+module.exports.List = require('./network/lib/list');
+module.exports.LogLevel = require('./network/lib/loglevel');
+module.exports.Ping = require('./network/lib/ping');
+module.exports.Reset = require('./network/lib/reset');
+module.exports.Start = require('./network/lib/start');
+module.exports.Upgrade = require('./network/lib/upgrade');
