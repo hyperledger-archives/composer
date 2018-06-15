@@ -39,6 +39,7 @@ class AccessController {
         this.context = context;
         this.participant = null;
         this.transaction = null;
+        this.aclRuleStack=[];
         LOG.exit(method);
     }
 
@@ -120,7 +121,8 @@ class AccessController {
 
         // Iterate over the ACL rules in order, but stop at the first rule
         // that permits the action.
-        return filteredAclRules.reduce((promise, aclRule) => {
+        return filteredAclRules.reduce((promise, aclRule,currentIndex) => {
+            LOG.debug(`Processing rule ${aclRule.getName()}, index ${currentIndex} `);
             return promise.then((result) => {
                 if (result) {
                     return result;
@@ -211,10 +213,31 @@ class AccessController {
     checkRule(resource, access, participant, transaction, aclRule) {
         const method = 'checkRule';
         LOG.entry(method, resource, access, participant, transaction, aclRule);
+        let pid='',tx='';
+        if (participant){
+            pid = participant.getFullyQualifiedIdentifier();
+        }
+        if (transaction){
+            tx = transaction.getFullyQualifiedIdentifier();
+        }
+        let checkId = `${aclRule.getName()}/${access}/${pid}/${tx}/`;
+        if (this.aclRuleStack.includes(checkId)){
+            this.aclRuleStack=[];
+
+            // This must be an explicit deny rule, so throw.
+            let e = new Error('Recursive ACL Rule');
+            LOG.error(method, e);
+            this.aclRuleStack=[];
+            throw e;
+        }
+        this.aclRuleStack.push(checkId);
 
         // Is the predicate met?
         return this.matchPredicate(resource, participant, transaction, aclRule)
             .then((result) => {
+
+                // pop...
+                this.aclRuleStack.pop();
 
                 // No, predicate not met.
                 if (!result) {
@@ -232,6 +255,7 @@ class AccessController {
                 // This must be an explicit deny rule, so throw.
                 let e = new AccessException(resource, access, participant, transaction);
                 LOG.error(method, e);
+                this.aclRuleStack=[];
                 throw e;
 
             });
