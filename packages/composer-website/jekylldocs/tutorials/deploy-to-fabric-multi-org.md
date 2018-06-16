@@ -253,8 +253,7 @@ We need a base connection profile that describes this fabric network which can t
         },
         "peers": {
             "peer0.org1.example.com": {
-                "url": "grpcs://localhost:7051",
-                "eventUrl": "grpcs://localhost:7053",
+                "url": "grpcs://localhost:7051"
                 "grpcOptions": {
                     "ssl-target-name-override": "peer0.org1.example.com"
                 },
@@ -264,7 +263,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer1.org1.example.com": {
                 "url": "grpcs://localhost:8051",
-                "eventUrl": "grpcs://localhost:8053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer1.org1.example.com"
                 },
@@ -274,7 +272,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer0.org2.example.com": {
                 "url": "grpcs://localhost:9051",
-                "eventUrl": "grpcs://localhost:9053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer0.org2.example.com"
                 },
@@ -284,7 +281,6 @@ We need a base connection profile that describes this fabric network which can t
             },
             "peer1.org2.example.com": {
                 "url": "grpcs://localhost:10051",
-                "eventUrl": "grpcs://localhost:10053",
                 "grpcOptions": {
                     "ssl-target-name-override": "peer1.org2.example.com"
                 },

@@ -69,8 +69,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
     },
     "peers": {
         "peer0.org1.example.com": {
-            "url": "grpc://peer0.org1.example.com:7051",
-            "eventUrl": "grpc://peer0.org1.example.com:7053"
+            "url": "grpc://peer0.org1.example.com:7051"
         }
     },
     "certificateAuthorities": {
@@ -153,19 +152,17 @@ Here we define all the peers in all organizations in the network. Each has a uni
 ```
 "peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "url": "grpc://peer0.org1.example.com:7051"
     }
 },
 ```
 
-Peer definitions are similar to orderer definitions in structure, but you should define both the `url` and `eventUrl` of a peer. Older connection profile formats required that you only define the eventUrl for peers in your organization. Defining TLS for a peer is similar to orderers
+Peer definitions are similar to orderer definitions in structure.
 
 ```
 "peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "url": "grpc://peer0.org1.example.com:7051"
         "grpcOptions": {
             "ssl-target-name-override": "peer.org1.example.com"
         },
@@ -181,16 +178,13 @@ To define multiple peers, use the following format:
 ```
 "peers": {
     "peer0.org1.example.com": {
-        "url": "grpc://peer0.org1.example.com:7051",
-        "eventUrl": "grpc://peer0.org1.example.com:7053"
+        "url": "grpc://peer0.org1.example.com:7051"
     },
     "peer1.org1.example.com": {
-        "url": "grpc://peer1.org1.example.com:7051",
-        "eventUrl": "grpc://peer1.org1.example.com:7053"
+        "url": "grpc://peer1.org1.example.com:7051"
     },
     "peer0.org2.example.com": {
-        "url": "grpc://peer0.org2.example.com:7051",
-        "eventUrl": "grpc://peer0.org2.example.com:7053"
+        "url": "grpc://peer0.org2.example.com:7051"
     },
 },
 ```
@@ -293,8 +287,7 @@ For example a peer definition might look like:
 
 ```
 "peer0.org1.example.com": {
-    "url": "grpcs://peer0.org1.example.com:7051",
-    "eventUrl": "grpcs://peer0.org1.example.com:7053"
+    "url": "grpcs://peer0.org1.example.com:7051"
     "grpcOptions": {
         "ssl-target-name-override": "peer.org1.example.com",
         "grpc.keepalive_time_ms": 600000,
