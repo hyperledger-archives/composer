@@ -107,7 +107,7 @@ class Registry extends EventEmitter {
                 return resource;
             } catch (error) {
                 let e = new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist; [cause=${error.message}]`);
-                throw new e;
+                throw e;
             }
         }
     }

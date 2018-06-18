@@ -228,7 +228,7 @@ class AccessController {
             let e = new Error('Cyclic ACL Rule detected, rule condition is invoking the same rule');
             LOG.error(method, e);
             this.aclRuleStack=[];
-            throw e;
+            return Promise.reject(e);
         }
         this.aclRuleStack.push(checkId);
 
