@@ -225,7 +225,7 @@ class AccessController {
             this.aclRuleStack=[];
 
             // This must be an explicit deny rule, so throw.
-            let e = new Error('Recursive ACL Rule');
+            let e = new Error('Cyclic ACL Rule detected, rule condition is invoking the same rule');
             LOG.error(method, e);
             this.aclRuleStack=[];
             throw e;
