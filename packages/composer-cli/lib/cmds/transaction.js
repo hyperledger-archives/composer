@@ -22,3 +22,5 @@ exports.builder = function (yargs) {
    .commandDir('transaction');
 };
 exports.handler = function (argv) {};
+
+module.exports.Submit = require('./transaction/lib/submit');
