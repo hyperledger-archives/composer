@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Network Upgrade CLI
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Composer Network Update CLI
+excerpt: Composer Network Upgrade CLI
 ---
 
 # {{site.data.conrefs.composer_full}} Network Upgrade
