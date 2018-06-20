@@ -77,7 +77,7 @@
             <span class="semver-value"><span class="semver">{{deployedPackageVersion}}</span></span>
         </div>
     
-        <div class="busnet-version" [class.error]="invalidAboutFileIDs && invalidAboutFileIDs.length > 0">
+        <div class="busnet-version" *ngIf="!invalidPackage" [class.error]="invalidAboutFileIDs && invalidAboutFileIDs.length > 0">
             <span class="semver-label">To:</span>
             <span *ngIf="!editVersionActive" class="semver-value">
                 <span class="semver">
@@ -94,6 +94,10 @@
             </span>
 
             <input *ngIf="editVersionActive" class="semver-value" type="text" [(ngModel)]="inputPackageVersion" (blur)="updateVersion()" />
+        </div>
+
+        <div class="busnet-version error" *ngIf="invalidPackage" >
+            <span class="semver-value" >Invalid package.json</span>
         </div>
 
         <button id="editor_deploy" type="button" class="primary" (click)="deploy()" [disabled]="!fileService.isDirty() || !noError">

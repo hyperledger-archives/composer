@@ -178,7 +178,46 @@ describe('EditorFileComponent', () => {
 
             fixture.detectChanges();
 
-            myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            myEditorFile = new EditorFile('myId', 'myDisplayId', editedContent, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            let mockLoadFile = sinon.stub(editorFileElement.componentInstance, 'loadFile');
+
+            fixture.detectChanges();
+
+            editorFileElement.componentInstance.previousPackageVersion.should.equal('1.0.1');
+            mockLoadFile.should.have.been.calledTwice;
+        });
+
+        it('should not reload package file if version stays the same', () => {
+            fixture.detectChanges();
+
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('myBusinessNetworkName')
+            });
+
+            let jsonContent = {
+                name: 'my network',
+                version: '1.0.0'
+            };
+            let content = JSON.stringify(jsonContent, null, 2);
+
+            jsonContent = {
+                name: 'my network name',
+                version: '1.0.0'
+            };
+            let editedContent = JSON.stringify(jsonContent, null, 2);
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            myEditorFile = new EditorFile('myId', 'myDisplayId', editedContent, 'package');
             mockFileService.getFile.returns(myEditorFile);
 
             component.editorFile = myEditorFile;
@@ -188,7 +227,47 @@ describe('EditorFileComponent', () => {
             fixture.detectChanges();
 
             editorFileElement.componentInstance.previousPackageVersion.should.equal('1.0.0');
-            mockLoadFile.should.have.been.called;
+            mockLoadFile.should.have.been.calledOnce;
+        });
+
+        it('should handle a package file that is invalid JSON', () => {
+            fixture.detectChanges();
+
+            mockClientService.getBusinessNetwork.returns({
+                getName: sinon.stub().returns('myBusinessNetworkName')
+            });
+
+            let jsonContent = {
+                name: 'my network',
+                version: '1.0.0'
+            };
+            let content = JSON.stringify(jsonContent, null, 2);
+
+            jsonContent = {
+                name: 'my network',
+                version: '1.0.1'
+            };
+            let editedContent = JSON.stringify(jsonContent, null, 2);
+            editedContent = editedContent.replace(',', '');
+
+            let myEditorFile = new EditorFile('myId', 'myDisplayId', content, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            fixture.detectChanges();
+
+            myEditorFile = new EditorFile('myId', 'myDisplayId', editedContent, 'package');
+            mockFileService.getFile.returns(myEditorFile);
+
+            component.editorFile = myEditorFile;
+
+            let mockLoadFile = sinon.stub(editorFileElement.componentInstance, 'loadFile');
+
+            fixture.detectChanges();
+
+            editorFileElement.componentInstance.previousPackageVersion.should.equal('1.0.0');
+            mockLoadFile.should.have.been.calledOnce;
         });
     });
 
@@ -646,10 +725,10 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            component.editorFileVersionChange.should.have.been.calledWith('0.0.3');
+            component.editorFileVersionChange.should.have.been.calledWith({version: '0.0.3', jsonErr: false});
         });
 
-        it('should send version event with an empty sting if the package json cannot be parsed', () => {
+        it('should send event with null version and jsonErr true if the package json cannot be parsed', () => {
             fixture.detectChanges();
 
             let content = `{\n  "name": "my network"\n}`;
@@ -669,7 +748,7 @@ describe('EditorFileComponent', () => {
 
             mockCodeMirrorElement.triggerEventHandler('debounceFunc', null);
 
-            component.editorFileVersionChange.should.have.been.calledWith('');
+            component.editorFileVersionChange.should.have.been.calledWith({ version: null, jsonErr: true });
         });
 
         it('should update code an readme file', () => {

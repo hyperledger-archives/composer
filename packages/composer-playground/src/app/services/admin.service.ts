@@ -35,8 +35,11 @@ export class AdminService {
         if (ENV && ENV !== 'development') {
             ProxyConnectionManager.setConnectorServerURL(window.location.origin);
         }
+        // closing and opening the socket owned by the proxyconnectionmanager causes
+        // slowdown in the browser and also causes hangs when switching between the
+        // different registered connection managers.
+        ProxyConnectionManager.setConnectorStrategy({closeOnDisconnect: false});
         ConnectionProfileManager.registerConnectionManager('proxy', ProxyConnectionManager);
-        ConnectionProfileManager.registerConnectionManager('hlf', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('hlfv1', ProxyConnectionManager);
         ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
     }

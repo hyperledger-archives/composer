@@ -438,7 +438,8 @@ class HLFConnectionManager extends ConnectionManager {
                 });
             LOG.exit(method);
         } catch (error) {
-            let newError = `Failed to import identity. ${error}`;
+            let newError = new Error(`Failed to import identity. ${error}`);
+            newError.cause = error;
             LOG.error(method, newError);
             throw newError;
         }
