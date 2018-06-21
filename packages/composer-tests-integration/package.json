@@ -1,6 +1,6 @@
 {
   "name": "composer-tests-integration",
-  "version": "0.19.10",
+  "version": "0.19.11",
   "description": "Integration tests for Hyperledger Composer",
   "main": "index.js",
   "scripts": {
@@ -35,8 +35,8 @@
   "homepage": "https://github.com/hyperledger/composer#readme",
   "devDependencies": {
     "cheerio": "0.22.0",
-    "composer-admin": "0.19.10",
-    "composer-common": "0.19.10",
+    "composer-admin": "0.19.11",
+    "composer-common": "0.19.11",
     "composer-wallet-redis": "0.0.11-20180318153457",
     "cucumber": "2.2.0",
     "eslint": "3.17.1",
