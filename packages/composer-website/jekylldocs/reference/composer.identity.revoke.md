@@ -36,3 +36,16 @@ Example: `admin@tutorial-network`
 
 The unique identifier of the existing identity that should be revoked.  
 Example: `f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862`
+
+## Javascript API Example
+
+``` javascript
+const IdentityRevoke = require('composer-cli').Identity.Revoke;
+
+let options = {
+  card: 'admin@tutorial-network',
+  identityId: 'f1c5b9fe136d7f2d31b927e0dcb745499aa039b201f83fe34e243f36e1984862'
+};
+
+IdentityRevoke.handler(options);
+```

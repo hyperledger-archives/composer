@@ -20,6 +20,8 @@ The {{site.data.conrefs.composer_full}} command line application can be installe
 
 *Please note: When using Ubuntu this command will fail when running in a root user shell.*
 
+A Javascript API is also available with the same behavior than the {{site.data.conrefs.composer_full}} command line application.
+
 ## Business Network Archives
 
 `composer archive create`

@@ -24,3 +24,16 @@ Options:
   --card, -c     The name to identify the imported card  [string]
 
 ```
+
+## Javascript API Example
+
+```javascript
+const CardImport = require('composer-cli').Card.Import;
+
+let options = {
+  file: 'admin.card',
+  card: 'admin@tutorial-network'
+};
+
+CardImport.handler(options);
+```

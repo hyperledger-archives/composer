@@ -23,3 +23,16 @@ Options:
   --file, -f     The packaged card file name  [string]
   --card, -c     The name of the card to export  [string] [required]
 ```
+
+## Javascript API Example
+
+```javascript
+const CardExport = require('composer-cli').Card.Export;
+
+let options = {
+  file: 'dan.card',
+  card: 'dan@penguin-network'
+};
+
+CardExport.handler(options);
+```

@@ -36,3 +36,15 @@ The connection to the network was successfully tested: tutorial-network
 
 Command succeeded
 ```
+
+## Javascript API Example
+
+``` javascript
+const NetworkPing = require('composer-cli').Network.Ping;
+
+let options = {
+  card: 'admin@tutorial-network'
+};
+
+NetworkPing.handler(options);
+```

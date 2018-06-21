@@ -47,3 +47,16 @@ Here is the entire command:
 ```
 composer transaction submit -c maeid1@digitalproperty-network -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
 ```
+
+## Javascript API Example
+
+``` javascript
+const TransactionSubmit = require('composer-cli').Transaction.Submit;
+
+let options = {
+  card: 'admin@tutorial-network',
+  data: '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
+};
+
+TransactionSubmit.handler(options);
+```
