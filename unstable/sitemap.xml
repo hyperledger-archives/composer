@@ -232,6 +232,9 @@
 <loc>https://hyperledger.github.io/composer/unstable/reference/composer.network.ping</loc>
 </url>
 <url>
+<loc>https://hyperledger.github.io/composer/unstable/reference/composer.network.reset</loc>
+</url>
+<url>
 <loc>https://hyperledger.github.io/composer/unstable/reference/composer.network.start</loc>
 </url>
 <url>
