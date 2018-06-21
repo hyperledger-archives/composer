@@ -82,6 +82,10 @@ Upgrade the {{site.data.conrefs.composer_full}} runtime of a specific deployed b
 
 Download the business network definition that is currently deployed to an instance of Hyperledger Fabric: [composer network download](./composer.network.download.html)
 
+`composer network reset`
+
+Reset the business network that is currently deployed to an instance of Hyperledger Fabric: [composer network reset](./composer.network.reset.html)
+
 ## Participant and Identity management
 
 `composer participant add`

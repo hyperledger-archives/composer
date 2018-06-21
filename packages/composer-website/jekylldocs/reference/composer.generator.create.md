@@ -3,7 +3,7 @@ layout: default
 title: Hyperledger Composer Generator CLI
 section: reference-command
 sidebar: sidebars/accordion-toc0.md
-excerpt: Composer Archive List CLI
+excerpt: Composer Generator Create CLI
 ---
 
 ## Name
