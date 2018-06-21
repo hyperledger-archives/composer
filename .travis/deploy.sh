@@ -65,7 +65,7 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
 # This is the list of all npm modules for composer to be published
-export ALL_NPM_MODULES=("composer-admin composer-cli composer-client composer-common composer-connector-embedded composer-connector-hlfv1 composer-connector-proxy composer-connector-server composer-connector-web composer-cucumber-steps composer-documentation composer-playground composer-playground-api composer-report composer-rest-server composer-runtime composer-runtime-embedded composer-runtime-hlfv1 composer-runtime-pouchdb composer-runtime-web composer-wallet-filesystem composer-wallet-inmemory generator-hyperledger-composer loopback-connector-composer")
+export ALL_NPM_MODULES=("composer-admin" "composer-cli" "composer-client" "composer-common" "composer-connector-embedded" "composer-connector-hlfv1" "composer-connector-proxy" "composer-connector-server" "composer-connector-web" "composer-cucumber-steps" "composer-documentation" "composer-playground" "composer-playground-api" "composer-report" "composer-rest-server" "composer-runtime" "composer-runtime-embedded" "composer-runtime-hlfv1" "composer-runtime-pouchdb" "composer-runtime-web" "composer-wallet-filesystem" "composer-wallet-inmemory" "generator-hyperledger-composer" "loopback-connector-composer")
 
 # This is the list of npm modules required by docker images
 export DOCKER_NPM_MODULES="composer-admin composer-client composer-cli composer-common composer-report composer-playground composer-playground-api composer-rest-server loopback-connector-composer composer-wallet-filesystem composer-wallet-inmemory composer-connector-server composer-documentation composer-connector-hlfv1 composer-connector-proxy"
