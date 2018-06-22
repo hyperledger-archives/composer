@@ -96,15 +96,21 @@ describe('composer start network CLI unit tests', function () {
         });
 
         it('should correctly execute with all required parameters and certificate file', function () {
+            const readFileSyncStub = sandbox.stub(fs,'readFileSync');
+
             const certificate = 'this-is-a-certificate-honest-guv';
-            sandbox.stub(fs,'readFileSync').withArgs('certificate-file').returns(certificate);
+            readFileSyncStub.withArgs('certificate-file').returns(certificate);
+
+            const privateKey = 'this-is-a-private-key-honest-guv';
+            readFileSyncStub.withArgs('private-key-file').returns(privateKey);
 
             let argv = {
                 card: 'cardname',
                 networkName: networkName,
                 networkVersion: networkVersion,
                 networkAdmin: 'admin',
-                networkAdminCertificateFile: 'certificate-file'
+                networkAdminCertificateFile: 'certificate-file',
+                networkAdminPrivateKeyFile: 'private-key-file'
             };
             return StartCmd.handler(argv).then(result => {
                 argv.thePromise.should.be.a('promise');
@@ -113,7 +119,7 @@ describe('composer start network CLI unit tests', function () {
                 sinon.assert.calledOnce(mockAdminConnection.start);
                 sinon.assert.calledWith(mockAdminConnection.start, networkName, networkVersion,
                     {
-                        networkAdmins: [{ certificate: certificate, userName: 'admin' }]
+                        networkAdmins: [{ certificate: certificate, privateKey: privateKey, userName: 'admin' }]
                     });
             });
         });

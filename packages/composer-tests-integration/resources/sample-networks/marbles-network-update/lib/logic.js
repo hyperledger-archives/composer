@@ -20,7 +20,7 @@
   */
  function tradeMarble(tradeMarble) {
    tradeMarble.marble.owner = tradeMarble.newOwner;
-   return getAssetRegistry('org.hyperledger_composer.marbles.Marble')
+   return getAssetRegistry('org.hyperledger_composer.marbles.NewMarble')
      .then(function (assetRegistry) {
        return assetRegistry.update(tradeMarble.marble);
      });

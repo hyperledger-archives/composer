@@ -242,7 +242,8 @@ describe('AdminConnection', () => {
         const identityName = 'admin';
         const networkAdmins = [
             { userName: 'admin', enrollmentSecret: 'adminpw' },
-            { userName: 'adminc', certificate: 'certcertcert'}
+            { userName: 'adminc', certificate: 'certcertcert' },
+            { userName: 'admincp', certificate: 'certcertcert', privateKey: 'keykeykey' },
         ];
         const bootstrapTransactions = [
             {
@@ -298,6 +299,18 @@ describe('AdminConnection', () => {
                     transactionId : sinon.match.string
                 },
                 {
+                    $class : 'org.hyperledger.composer.system.AddParticipant',
+                    resources : [
+                        {
+                            $class : 'org.hyperledger.composer.system.NetworkAdmin',
+                            participantId : 'admincp'
+                        }
+                    ],
+                    targetRegistry : 'resource:org.hyperledger.composer.system.ParticipantRegistry#org.hyperledger.composer.system.NetworkAdmin',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
                     $class : 'org.hyperledger.composer.system.IssueIdentity',
                     identityName : 'admin',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admin',
@@ -308,6 +321,13 @@ describe('AdminConnection', () => {
                     $class : 'org.hyperledger.composer.system.BindIdentity',
                     certificate : 'certcertcert',
                     participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#adminc',
+                    timestamp : '1970-01-01T00:00:00.000Z',
+                    transactionId : sinon.match.string
+                },
+                {
+                    $class : 'org.hyperledger.composer.system.BindIdentity',
+                    certificate : 'certcertcert',
+                    participant : 'resource:org.hyperledger.composer.system.NetworkAdmin#admincp',
                     timestamp : '1970-01-01T00:00:00.000Z',
                     transactionId : sinon.match.string
                 }
@@ -415,6 +435,26 @@ describe('AdminConnection', () => {
                     const actualStartTransactions = JSON.parse(mockConnection.start.getCall(0).args[3]);
                     sinon.assert.match(actualStartTransactions, startOptions);
                 });
+        });
+
+        it('should create network admin cards', async () => {
+            const cards = await adminConnection.start(networkName, networkVersion, { networkAdmins: networkAdmins });
+            cards.size.should.equal(networkAdmins.length);
+            networkAdmins.forEach((networkAdmin) => {
+                const card = cards.get(networkAdmin.userName);
+                should.exist(card);
+
+                if (networkAdmin.enrollmentSecret) {
+                    card.getEnrollmentCredentials().secret.should.equal(networkAdmin.enrollmentSecret);
+                } else {
+                    const expectedCredentials = { certificate: networkAdmin.certificate };
+                    const privateKey = networkAdmin.privateKey;
+                    if (privateKey) {
+                        expectedCredentials.privateKey = privateKey;
+                    }
+                    card.getCredentials().should.deep.equal(expectedCredentials);
+                }
+            });
         });
 
     });

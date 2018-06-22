@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-hlfv1",
-  "version": "0.19.10",
+  "version": "0.19.11",
   "description": "The Hyperledger Fabric v1.x Client connector for Hyperledger Composer",
   "engines": {
     "node": ">=8",
@@ -77,7 +77,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
-    "composer-common": "0.19.10",
+    "composer-common": "0.19.11",
     "eslint": "3.17.1",
     "jsdoc": "3.5.5",
     "license-check-and-add": "2.3.1",

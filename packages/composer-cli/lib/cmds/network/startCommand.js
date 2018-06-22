@@ -28,12 +28,13 @@ module.exports.builder = function (yargs) {
         optionsFile: { alias: 'O', required: false, describe: 'A file containing options that are specific to connection', type: 'string' },
         networkAdmin: { alias: 'A', required: true, description: 'The identity name of the business network administrator', type: 'string' },
         networkAdminCertificateFile: { alias: 'C', required: false, description: 'The certificate of the business network administrator', type: 'string' },
+        networkAdminPrivateKeyFile: { alias: 'K', required: false, description: 'The private key of the business network administrator', type: 'string' },
         networkAdminEnrollSecret: { alias: 'S', required: false, description: 'The enrollment secret for the business network administrator', type: 'string', default: undefined },
         file: { alias: 'f', required: false, description: 'File name of the card to be created', type: 'string'}
     });
 
     // enforce the option after these options
-    yargs.requiresArg(['file','networkName','networkVersion','networkAdmin','networkAdminCertificateFile','networkAdminEnrollSecret','card']);
+    yargs.requiresArg(['file','networkName','networkVersion','networkAdmin','networkAdminCertificateFile','networkAdminPrivateKeyFile','networkAdminEnrollSecret','card']);
 
     yargs.conflicts('C','S');
 
