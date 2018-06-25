@@ -48,7 +48,7 @@ class Registry extends EventEmitter {
         this.id = id;
         this.name = name;
         this.system = system;
-        this.resourceMap = new Map();
+        this.objectMap = new Map();
     }
 
     /**
@@ -80,7 +80,7 @@ class Registry extends EventEmitter {
                 const resource = this.serializer.fromJSON(object);
                 await this.accessController.check(resource, 'READ');
                 resources.push(resource);
-                this.resourceMap.set(resource.getIdentifier(), resource);
+                this.objectMap.set(resource.getIdentifier(), object);
             } catch (error) {
                 // Ignore the error; we don't have access.
             }
@@ -95,18 +95,20 @@ class Registry extends EventEmitter {
      * object when complete, or rejected with an error.
      */
     async get(id) {
-        if (this.resourceMap.has(id)) {
-            return this.resourceMap.get(id);
+        if (this.objectMap.has(id)) {
+            let object = this.objectMap.get(id);
+            return this.serializer.fromJSON(object);
         } else {
             let object = await this.dataCollection.get(id);
             object = Registry.removeInternalProperties(object);
             try {
                 const resource = this.serializer.fromJSON(object);
                 await this.accessController.check(resource, 'READ');
-                this.resourceMap.set(id, resource);
+                this.objectMap.set(id, object);
                 return resource;
             } catch (error) {
-                throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
+                let e = new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist; [cause=${error.message}]`);
+                throw e;
             }
         }
     }
@@ -123,7 +125,7 @@ class Registry extends EventEmitter {
             return false;
         }
 
-        if (this.resourceMap.has(id)) {
+        if (this.objectMap.has(id)) {
             return true;
         } else {
             let object = await this.dataCollection.get(id);
@@ -131,7 +133,7 @@ class Registry extends EventEmitter {
             try {
                 const resource = this.serializer.fromJSON(object);
                 await this.accessController.check(resource, 'READ');
-                this.resourceMap.set(id, resource);
+                this.objectMap.set(id, object);
                 return true;
             } catch (error) {
                 return false;
@@ -255,8 +257,9 @@ class Registry extends EventEmitter {
         object = this.addInternalProperties(object);
 
         let oldResource;
-        if (this.resourceMap.has(id)) {
-            oldResource = this.resourceMap.get(id);
+        if (this.objectMap.has(id)) {
+            let oldObject = this.objectMap.get(id);
+            oldResource = this.serializer.fromJSON(oldObject);
         } else {
             let oldObject = await this.dataCollection.get(id);
             oldResource = this.serializer.fromJSON(oldObject);
@@ -266,9 +269,9 @@ class Registry extends EventEmitter {
         await this.accessController.check(oldResource, 'UPDATE');
         await this.dataCollection.update(id, object);
 
-        // If is within resourceMap cache, update may have changed the ability to READ item, so remove it
-        if (this.resourceMap.has(id)) {
-            this.resourceMap.delete(id);
+        // If is within objectMap cache, update may have changed the ability to READ item, so remove it
+        if (this.objectMap.has(id)) {
+            this.objectMap.delete(id);
         }
 
         this.emit('resourceupdated', {
@@ -307,8 +310,9 @@ class Registry extends EventEmitter {
             // the resource using its ID from the registry. We need to
             // do this to figure out the type of the resource for
             // access control.
-            if (this.resourceMap.has(resource)) {
-                resource = this.resourceMap.get(resource);
+            if (this.objectMap.has(resource)) {
+                let object = this.objectMap.get(resource);
+                resource = this.serializer.fromJSON(object);
             } else {
                 let object = await this.dataCollection.get(resource);
                 object = Registry.removeInternalProperties(object);
@@ -320,8 +324,8 @@ class Registry extends EventEmitter {
         await this.dataCollection.remove(id);
 
         // Remove from cache if present
-        if (this.resourceMap.has(id)) {
-            this.resourceMap.delete(id);
+        if (this.objectMap.has(id)) {
+            this.objectMap.delete(id);
         }
 
         this.emit('resourceremoved', {
