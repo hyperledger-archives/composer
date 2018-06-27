@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Transaction Functions Detail
-
-{% for tx in types.transaction %}
+{% for id,transactions in types.transaction %}
+{% for tx in transactions %}
 ### {{tx.name}}
 The fully qualified name is **{{tx.fqn}}**
 
@@ -30,4 +30,4 @@ The fully qualified name is **{{tx.fqn}}**
 {% for id,info in tx.properties %}| {{id}} | {{info.type}} | {{info.description}} |
 {% endfor %}
 
-{% endfor %}
+{% endfor %}{% endfor %}
