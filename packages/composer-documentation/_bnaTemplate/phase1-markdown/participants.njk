@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Particpant Model
-
-{% for pt in types.participant %}
+{% for id,pts in types.participant %}
+{% for pt in pts %}
 #### {{pt.name}}
 **{{pt.fqn}}** - **{{pt.description}}**
 
@@ -22,5 +22,5 @@
 {% for id,info in pt.properties %}|{{id}}|{{info.type}}|{{info.description}}|
 {% endfor %}
 {% endfor %}
-
+{% endfor %}
 

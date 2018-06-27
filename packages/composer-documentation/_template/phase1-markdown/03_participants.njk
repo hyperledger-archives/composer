@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Participant Model
-
-{% for pt in types.participant %}
+{% for id,participants in types.participant %}
+{% for pt in participants %}
 ### {{pt.name}}
 The fully qualified name is **{{pt.fqn}}**
 
@@ -31,4 +31,5 @@ The fully qualified name is **{{pt.fqn}}**
 {% endfor %}
 
 
+{% endfor %}
 {% endfor %}

@@ -78,8 +78,10 @@
                   <nav class="context-nav">
                     <ul>
                     {% if 'assets' in basename %}
-                        {% for asset in types.asset %}
+                        {% for id,assets in types.asset%}
+                        {% for asset in assets %}
                            <li><p><a href="#{{asset.name | lower}}"><b>{{asset.name}}</b></a></p></li>
+                        {% endfor %}
                         {% endfor %}
                     {% elif 'transactions' in basename %}   
                             {% for fn in scripts.files %}
@@ -97,8 +99,10 @@
                     {% elif 'index' in basename %}   
 
                     {% elif 'participants' in basename %}   
-                            {% for pt in types.participant %}
+                            {% for id,pts in types.participant %}
+                            {% for pt in pts %}
                             <li><p><a href="#{{pt.name | lower}}"><b>{{pt.name}}</b></a></p></li>
+                            {% endfor %}
                             {% endfor %}
                     {% elif 'queries' in basename %}   
                             {% for query in queries %}
