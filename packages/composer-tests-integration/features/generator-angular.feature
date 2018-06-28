@@ -44,7 +44,7 @@ Feature: Angular Application Generator
             """
             npm test --prefix ./my-angular-app
             """
-        Then The stdout information should include text matching /Executed 5 of 5 SUCCESS/
+        Then The stdout information should include text matching /Executed 11 of 11 SUCCESS/
 
     Scenario: I can start the generated application and test it with generated integration tests
         When I spawn the following background task GENERATED_APP, and wait for /webpack: Compiled successfully./

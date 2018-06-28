@@ -745,7 +745,7 @@ module.exports = yeoman.Base.extend({
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.spec.ts'),
                     this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.spec.ts'), {
-                        assetName: assetList[x].name
+                        currentAsset: assetList[x]
                     }
                 );
                 this.fs.copyTpl(
@@ -782,7 +782,7 @@ module.exports = yeoman.Base.extend({
                 this.fs.copyTpl(
                     this.templatePath('src/app/participant/participant.component.spec.ts'),
                     this.destinationPath('src/app/' + participantList[x].name + '/' + participantList[x].name + '.component.spec.ts'), {
-                        participantName: participantList[x].name
+                        currentParticipant: participantList[x]
                     }
                 );
                 this.fs.copyTpl(
