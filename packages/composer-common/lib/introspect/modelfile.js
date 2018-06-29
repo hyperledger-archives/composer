@@ -248,10 +248,15 @@ class ModelFile {
      * Check that the type is valid.
      * @param {string} context - error reporting context
      * @param {string} type - a short type name
+     * @param {Object} [fileLocation] - location details of the error within the model file.
+     * @param {String} fileLocation.start.line - start line of the error location.
+     * @param {String} fileLocation.start.column - start column of the error location.
+     * @param {String} fileLocation.end.line - end line of the error location.
+     * @param {String} fileLocation.end.column - end column of the error location.
      * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
-    resolveType(context,type) {
+    resolveType(context,type,fileLocation) {
         // is the type a primitive?
         if(!ModelUtil.isPrimitiveType(type)) {
             // is it an imported type?
@@ -261,8 +266,8 @@ class ModelFile {
                     let formatter = Globalize('en').messageFormatter('modelfile-resolvetype-undecltype');
                     throw new IllegalModelException(formatter({
                         'type': type,
-                        'context': context
-                    }),this.modelFile);
+                        'context': context,
+                    }),this.modelFile,fileLocation);
                 }
             }
             else {
