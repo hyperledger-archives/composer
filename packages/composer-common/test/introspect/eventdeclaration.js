@@ -68,22 +68,6 @@ describe('EventDeclaration', () => {
         sandbox.restore();
     });
 
-    describe('#constructor', () => {
-
-        it('should throw if modelFile not specified', () => {
-            (() => {
-                new EventDeclaration(null, {});
-            }).should.throw(/required/);
-        });
-
-        it('should throw if ast not specified', () => {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            (() => {
-                new EventDeclaration(mockModelFile, null);
-            }).should.throw(/required/);
-        });
-    });
-
     describe('#validate', () => {
         it('should throw if event is not a system type but named event', () => {
             let event = loadLastDeclaration('test/data/parser/eventdeclaration.systypename.cto', EventDeclaration);
