@@ -102,11 +102,7 @@ class ResourceId {
      */
     toURI() {
         const qualifiedType = ModelUtils.getFullyQualifiedName(this.namespace, this.type);
-        return URI.serialize({
-            scheme: RESOURCE_SCHEME,
-            path: qualifiedType,
-            fragment: this.id
-        });
+        return RESOURCE_SCHEME + ':' +  qualifiedType + '#' + encodeURI(this.id);
     }
 
 }
