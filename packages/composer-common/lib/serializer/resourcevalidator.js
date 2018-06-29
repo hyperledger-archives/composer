@@ -128,6 +128,7 @@ class ResourceValidator {
         }
 
         const toBeAssignedClassDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
+        const toBeAssignedClassDecName = toBeAssignedClassDeclaration.getFullyQualifiedName();
 
         // is the type we are assigning to abstract?
         // the only way this can happen is if the type is non-abstract
@@ -144,10 +145,10 @@ class ResourceValidator {
                 const field = toBeAssignedClassDeclaration.getProperty(propName);
                 if (!field) {
                     if(obj instanceof Identifiable) {
-                        ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                        ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDecName);
                     }
                     else {
-                        ResourceValidator.reportUndeclaredField(parameters.currentIdentifier, propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                        ResourceValidator.reportUndeclaredField(parameters.currentIdentifier, propName, toBeAssignedClassDecName);
                     }
                 }
             }

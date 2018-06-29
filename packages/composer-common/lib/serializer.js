@@ -24,7 +24,6 @@ const Typed = require('./model/typed');
 const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
-const JSONWriter = require('./codegen/jsonwriter');
 
 const baseDefaultOptions = {
     validate: true
@@ -114,21 +113,13 @@ class Serializer {
             options.permitResourcesForRelationships === true,
             options.deduplicateResources === true
         );
-        const writer = new JSONWriter();
-        parameters.writer = writer;
+
         parameters.stack.clear();
         parameters.stack.push(resource);
 
-        // this writes the JSON into the parameters.writer
-        classDeclaration.accept(generator, parameters);
-        const jsonText = parameters.writer.getBuffer();
-
-        try {
-            return JSON.parse(jsonText);
-        }
-        catch(err) {
-            throw new Error( 'Generated invalid JSON: ' + jsonText );
-        }
+        // this performs the conversion of the resouce into a standard JSON object
+        let result = classDeclaration.accept(generator, parameters);
+        return result;
     }
 
     /**
