@@ -51,9 +51,10 @@ class ModelFile {
         this.external = false;
         this.declarations = [];
         this.imports = [];
+        this.importShortNames = new Map();
+        this.importWildcardNamespaces = [];
         this.importUriMap = {};
         this.fileName = 'UNKNOWN';
-
 
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Composer model as a string as input.');
@@ -87,7 +88,11 @@ class ModelFile {
         if(this.ast.imports) {
             this.ast.imports.forEach((imp) => {
                 this.imports.push(imp.namespace);
-
+                this.importShortNames.set(ModelUtil.getShortName(imp.namespace), imp.namespace);
+                if (ModelUtil.isWildcardName(imp.namespace)) {
+                    const wildcardNamespace = ModelUtil.getNamespace(imp.namespace);
+                    this.importWildcardNamespaces.push(wildcardNamespace);
+                }
                 if(imp.uri) {
                     this.importUriMap[imp.namespace] = imp.uri;
                 }
@@ -97,8 +102,10 @@ class ModelFile {
         // if we are not in the system namespace we add imports to all the system types
         if(!this.isSystemModelFile()) {
             const systemTypes = this.modelManager.getSystemTypes();
-            for(let n=0; n < systemTypes.length; n++) {
-                this.imports.unshift(systemTypes[n].getFullyQualifiedName());
+            for(let index in systemTypes) {
+                let fqn = systemTypes[index].getFullyQualifiedName();
+                this.imports.unshift(fqn);
+                this.importShortNames.set(ModelUtil.getShortName(fqn), fqn);
             }
         }
 
@@ -284,20 +291,18 @@ class ModelFile {
      * @private
      */
     isImportedType(type) {
-        //console.log('isImportedType ' + this.getNamespace() + ' ' + type );
-        for(let n=0; n < this.imports.length; n++) {
-            let importName = this.imports[n];
-            if( ModelUtil.getShortName(importName) === type ) {
-                return true;
-            } else if (ModelUtil.isWildcardName(importName)) {
-                const wildcardNamespace = ModelUtil.getNamespace(importName);
+        if (this.importShortNames.has(type)) {
+            return true;
+        } else {
+            for(let index in this.importWildcardNamespaces) {
+                let wildcardNamespace = this.importWildcardNamespaces[index];
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
                 if (modelFile && modelFile.isLocalType(type)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -308,18 +313,18 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        for(let n=0; n < this.imports.length; n++) {
-            let importName = this.imports[n];
-            if( ModelUtil.getShortName(importName) === type ) {
-                return importName;
-            } else if (ModelUtil.isWildcardName(importName)) {
-                const wildcardNamespace = ModelUtil.getNamespace(importName);
+        if (this.importShortNames.has(type)) {
+            return this.importShortNames.get(type);
+        } else {
+            for(let index in this.importWildcardNamespaces) {
+                let wildcardNamespace = this.importWildcardNamespaces[index];
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
                 if (modelFile && modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }
             }
         }
+
         let formatter = Globalize('en').messageFormatter('modelfile-resolveimport-failfindimp');
 
         throw new IllegalModelException(formatter({
