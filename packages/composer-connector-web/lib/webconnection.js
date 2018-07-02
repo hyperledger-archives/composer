@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { Certificate, CertificateUtil, Connection } = require('composer-common');
+const { Certificate, CertificateUtil, Connection, Util } = require('composer-common');
 const { Engine, InstalledBusinessNetwork } = require('composer-runtime');
 const uuid = require('uuid');
 const { WebContainer, WebContext, WebDataService } = require('composer-runtime-web');
@@ -179,16 +179,15 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @return {Promise} A promise that is resolved with the data returned by the
-     * chaincode function once it has been invoked, or rejected with an error.
-     * @async
+     * @return {Buffer} A buffer containing the data returned by the chaincode function,
+     * or null if no data was returned.
      */
     async queryChainCode(securityContext, functionName, args) {
         const identity = securityContext.getIdentity();
         const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
         const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
         const data = await networkInfo.engine.query(context, functionName, args);
-        return Buffer.from(JSON.stringify(data));
+        return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }
 
     /**
@@ -219,13 +218,15 @@ class WebConnection extends Connection {
      * @param {SecurityContext} securityContext The participant's security context.
      * @param {string} functionName The name of the chaincode function to invoke.
      * @param {string[]} args The arguments to pass to the chaincode function.
-     * @async
+     * @return {Buffer} A buffer containing the data returned by the chaincode function,
+     * or null if no data was returned.
      */
     async invokeChainCode(securityContext, functionName, args) {
         const identity = securityContext.getIdentity();
         const networkInfo = await this._getNetworkInfo(securityContext.getNetworkName());
         const context = new WebContext(networkInfo.engine, networkInfo.installedNetwork, identity, this);
-        await networkInfo.engine.invoke(context, functionName, args);
+        const data = await networkInfo.engine.invoke(context, functionName, args);
+        return !Util.isNull(data) ? Buffer.from(JSON.stringify(data)) : null;
     }
 
     /**

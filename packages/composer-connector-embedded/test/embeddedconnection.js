@@ -303,7 +303,45 @@ describe('EmbeddedConnection', () => {
                 .should.be.rejectedWith(/No business network/);
         });
 
-        it('should call the engine query method', async () => {
+        it('should call the engine query method that does not return data', async () => {
+            // Mock a container
+            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
+            mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+            sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
+
+            // Mock an engine
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            mockEngine.init.resolves();
+            mockEngine.query.resolves();
+            sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
+
+            // Mock a security context
+            mockSecurityContext.getIdentity.returns(identity);
+            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+
+            // do required install/start
+            await connection.install(mockSecurityContext, businessNetworkDefinition);
+            await connection.start(mockSecurityContext,
+                businessNetworkDefinition.getName(),
+                businessNetworkDefinition.getVersion(),
+                '{"start":"json"}',
+                { start: 'options' });
+
+            // run test
+            let result = await connection.queryChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2']);
+
+            // validate behaviour
+            sinon.assert.calledOnce(mockEngine.query);
+            sinon.assert.calledWith(mockEngine.query, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
+                return true;
+            }), 'testFunction', ['arg1', 'arg2']);
+            should.equal(result, null);
+        });
+
+        it('should call the engine query method that returns data', async () => {
             // Mock a container
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
             mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -351,8 +389,7 @@ describe('EmbeddedConnection', () => {
                 .should.be.rejectedWith(/No business network/);
         });
 
-
-        it('should call the engine invoke method', async () => {
+        it('should call the engine invoke method that does not return data', async () => {
 
             // Mock a container
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
@@ -363,7 +400,7 @@ describe('EmbeddedConnection', () => {
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             mockEngine.init.resolves();
-            mockEngine.query.resolves({ test: 'data from engine' });
+            mockEngine.invoke.resolves();
             sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
 
             // Mock a security context
@@ -388,7 +425,46 @@ describe('EmbeddedConnection', () => {
                 context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
                 return true;
             }), 'testFunction', ['arg1', 'arg2']);
-            should.equal(result, undefined);
+            should.equal(result, null);
+        });
+
+        it('should call the engine invoke method that does return data', async () => {
+
+            // Mock a container
+            let mockContainer = sinon.createStubInstance(EmbeddedContainer);
+            mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+            sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
+
+            // Mock an engine
+            let mockEngine = sinon.createStubInstance(Engine);
+            mockEngine.getContainer.returns(mockContainer);
+            mockEngine.init.resolves();
+            mockEngine.invoke.resolves({ test: 'data from engine' });
+            sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
+
+            // Mock a security context
+            mockSecurityContext.getIdentity.returns(identity);
+            mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+
+            // do required install/start
+            await connection.install(mockSecurityContext, businessNetworkDefinition);
+            await connection.start(mockSecurityContext,
+                businessNetworkDefinition.getName(),
+                businessNetworkDefinition.getVersion(),
+                '{"start":"json"}',
+                { start: 'options' });
+
+            // test the function
+            let result = await connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2']);
+
+            // validate the behaviour
+            sinon.assert.calledOnce(mockEngine.invoke);
+            sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                context.should.be.an.instanceOf(Context);
+                context.getIdentityService().getIdentifier().should.equal('ae360f8a430cc34deb2a8901ef3efed7a2eed753d909032a009f6984607be65a');
+                return true;
+            }), 'testFunction', ['arg1', 'arg2']);
+            JSON.parse(result.toString()).should.deep.equal({ test: 'data from engine' });
         });
     });
 
