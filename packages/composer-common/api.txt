@@ -251,6 +251,17 @@ class ModelManager {
    + DecoratorFactory[] getDecoratorFactories() 
    + void addDecoratorFactory(DecoratorFactory) 
 }
+class ReturnsDecorator extends Decorator {
+   + void constructor(Object) throws IllegalModelException
+   + string getType() 
+   + ClassDeclaration getResolvedType() 
+   + boolean isArray() 
+   + boolean isPrimitive() 
+   + boolean isTypeEnum() 
+}
+class ReturnsDecoratorFactory extends DecoratorFactory {
+   + Decorator newDecorator(Object) 
+}
 class Serializer {
    + void constructor(Factory,ModelManager) 
    + void setDefaultOptions(Object) 
