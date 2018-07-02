@@ -22,3 +22,9 @@ exports.builder = function (yargs) {
    .commandDir('identity');
 };
 exports.handler = function (argv) {};
+
+module.exports.Bind = require('./identity/lib/bind');
+module.exports.Issue = require('./identity/lib/issue');
+module.exports.List = require('./identity/lib/list');
+module.exports.Request = require('./identity/lib/request');
+module.exports.Revoke = require('./identity/lib/revoke');

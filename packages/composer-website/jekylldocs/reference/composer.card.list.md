@@ -23,3 +23,15 @@ Options:
   --card, -c     The name of the card to list  [string]
   --quiet, -q    Only display the card name  [boolean]
 ```
+
+## Javascript API Example
+
+```javascript
+const CardList = require('composer-cli').Card.List;
+
+let options = {
+  card: 'admin@tutorial-network'
+};
+
+CardList.handler(options);
+```

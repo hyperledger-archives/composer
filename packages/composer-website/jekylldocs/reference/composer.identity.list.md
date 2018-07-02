@@ -31,3 +31,15 @@ Options:
 `--card, -c`
 The business network card to use when listing identities.
 Example: `admin@tutorial-network`
+
+## Javascript API Example
+
+``` javascript
+const IdentityList = require('composer-cli').Identity.List;
+
+let options = {
+  card: 'admin@tutorial-network'
+};
+
+IdentityList.handler(options);
+```

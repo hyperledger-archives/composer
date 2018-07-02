@@ -22,3 +22,6 @@ exports.builder = function (yargs) {
    .commandDir('archive');
 };
 exports.handler = function (argv) {};
+
+module.exports.Create = require('./archive/lib/create');
+module.exports.List = require('./archive/lib/list');

@@ -36,4 +36,20 @@ Options:
 
 Roles are only used by playground when interacting with {{site.data.conrefs.hlf_full}} to determine which card to use when performing the 2 step action of installing new business networks and then either starting or upgrading that business network. Whenever a business network is first deployed or new changes are deployed, the new business network is first installed onto the peer(s) and then a start or upgrade is requested.
 
-In order to perform an installation of a business network, a card with the `PeerAdmin` role is used. To perform a start or upgrade of the business network a card with the `ChannelAdmin` role is used. 
+In order to perform an installation of a business network, a card with the `PeerAdmin` role is used. To perform a start or upgrade of the business network a card with the `ChannelAdmin` role is used.
+
+## Javascript API Example
+
+```javascript
+const CardCreate = require('composer-cli').Card.Create;
+
+let options = {
+  file: 'conga.card',
+  businessNetworkName: 'penguin-network',
+  connectionProfileFile: 'connection.json',
+  user: 'conga',
+  enrollSecret: 'supersecret'
+};
+
+CardCreate.handler(options);
+```
