@@ -30,7 +30,9 @@ function tagMerge(resource,tags){
         if (tags[t].title === 'param'){
             let desc = tags[t].description;
             let name = tags[t].name;
-            resource.properties[name].description = desc;
+            if (resource.properties[name]){
+                resource.properties[name].description = desc;
+            }
         }
     }
 
@@ -64,23 +66,30 @@ function classdeclarations(context,options){
 
     ['asset','concept','transaction','enum','participant','event'].forEach((t)=>{
         // need to added the parsed comments to the existing structure
-        for (let i=0; i<context.types[t].length;i++){
-            let resource = context.types[t][i];
-            if (data[resource.fqn]){
-                context.types[t][i].tags= data[resource.fqn].tags;
-                tagMerge(context.types[t][i],data[resource.fqn].tags);
-            }
 
-            // if there are decorators referring to a markdown file, load that in as well
-            let decorators = context.types[t][i].decorators;
-            if (decorators.docs){
-                for (let d = 0; d< decorators.docs.length;d++){
-                    let name = path.resolve(options.docsPrefix,decorators.docs[d]);
-                    let info = fs.readFileSync(name,'utf8');
-                    context.types[t][i].decorators[decorators.docs[d]] = info;
+        // context.types[t] gives an object whose keys are namespaces
+        let namespaces = Object.keys(context.types[t]);
+        namespaces.forEach((ns)=>{
+
+            let typesArray = context.types[t][ns];
+            for (let i=0; i<typesArray.length;i++){
+                let resource = typesArray[i];
+                if (data[resource.fqn]){
+                    typesArray[i].tags= data[resource.fqn].tags;
+                    tagMerge(typesArray[i],data[resource.fqn].tags);
+                }
+
+                // if there are decorators referring to a markdown file, load that in as well
+                let decorators = typesArray[i].decorators;
+                if (decorators.docs){
+                    for (let d = 0; d< decorators.docs.length;d++){
+                        let name = path.resolve(options.docsPrefix,decorators.docs[d]);
+                        let info = fs.readFileSync(name,'utf8');
+                        typesArray[i].decorators[decorators.docs[d]] = info;
+                    }
                 }
             }
-        }
+        });
     });
 
     return context;

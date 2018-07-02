@@ -71,7 +71,6 @@ class AssetDeclaration extends ClassDeclaration {
 }
 class ClassDeclaration extends Decorated {
    + void constructor(ModelFile,string) throws IllegalModelException
-   + ModelFile getModelFile() 
    + ClassDeclaration _resolveSuperType() 
    + string getSystemType() 
    + boolean isAbstract() 
@@ -100,6 +99,15 @@ class ClassDeclaration extends Decorated {
 class ConceptDeclaration extends ClassDeclaration {
    + void constructor(ModelFile,Object) throws IllegalModelException
    + boolean isConcept() 
+}
+class Decorator {
+   + void constructor(Object) throws IllegalModelException
+   + void getParent() 
+   + string getName() 
+   + object[] getArguments() 
+}
+class DecoratorFactory {
+   + Decorator newDecorator(Object) 
 }
 class EnumDeclaration extends ClassDeclaration {
    + void constructor(ModelFile,Object) throws IllegalModelException
@@ -240,6 +248,19 @@ class ModelManager {
    + ConceptDeclaration[] getConceptDeclarations(Boolean) 
    + Factory getFactory() 
    + Serializer getSerializer() 
+   + DecoratorFactory[] getDecoratorFactories() 
+   + void addDecoratorFactory(DecoratorFactory) 
+}
+class ReturnsDecorator extends Decorator {
+   + void constructor(Object) throws IllegalModelException
+   + string getType() 
+   + ClassDeclaration getResolvedType() 
+   + boolean isArray() 
+   + boolean isPrimitive() 
+   + boolean isTypeEnum() 
+}
+class ReturnsDecoratorFactory extends DecoratorFactory {
+   + Decorator newDecorator(Object) 
 }
 class Serializer {
    + void constructor(Factory,ModelManager) 

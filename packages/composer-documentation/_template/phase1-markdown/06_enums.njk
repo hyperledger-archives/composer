@@ -12,8 +12,8 @@
     limitations under the License.
 #}
 # Enumeration Detail
-
-{% for enum in types.enum %}
+{% for id,enums in types.enum %}
+{% for enum in enums %}
 ### {{enum.name}}
 The fully qualified name is **{{enum.fqn}}**
 
@@ -30,4 +30,4 @@ The fully qualified name is **{{enum.fqn}}**
 {% for id,info in enum.properties %}| {{id}} |
 {% endfor %}
 
-{% endfor %}
+{% endfor %}{% endfor %}

@@ -33,7 +33,7 @@ class Property extends Decorated {
      * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
-        super(ast);
+        super(parent.getModelFile(), ast);
         this.parent = parent;
         this.process();
     }

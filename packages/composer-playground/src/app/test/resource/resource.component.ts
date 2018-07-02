@@ -146,7 +146,7 @@ export class ResourceComponent implements OnInit {
                 allowEmptyId: true
             };
             let resource = factory.newResource(
-                this.resourceDeclaration.getModelFile().getNamespace(),
+                this.resourceDeclaration.getNamespace(),
                 this.resourceDeclaration.getName(),
                 id,
                 generateParameters);
