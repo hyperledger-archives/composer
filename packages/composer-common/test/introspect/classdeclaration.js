@@ -43,18 +43,6 @@ describe('ClassDeclaration', () => {
 
     describe('#constructor', () => {
 
-        it('should throw if modelFile not specified', () => {
-            (() => {
-                new ClassDeclaration(null, {});
-            }).should.throw(/required/);
-        });
-
-        it('should throw if ast not specified', () => {
-            (() => {
-                new ClassDeclaration(modelFile, null);
-            }).should.throw(/required/);
-        });
-
         it('should throw if ast contains invalid type', () => {
             (() => {
                 new ClassDeclaration(modelFile, {
@@ -158,23 +146,6 @@ describe('ClassDeclaration', () => {
             clz.accept(visitor, ['some', 'args']);
             sinon.assert.calledOnce(visitor.visit);
             sinon.assert.calledWith(visitor.visit, clz, ['some', 'args']);
-        });
-
-    });
-
-    describe('#getModelFile', () => {
-
-        it('should return the model file', () => {
-            let clz = new ClassDeclaration(modelFile, {
-                id: {
-                    name: 'suchName'
-                },
-                body: {
-                    declarations: [
-                    ]
-                }
-            });
-            clz.getModelFile().should.equal(modelFile);
         });
 
     });

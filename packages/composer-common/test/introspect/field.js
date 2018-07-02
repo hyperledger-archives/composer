@@ -16,6 +16,7 @@
 
 const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const Field = require('../../lib/introspect/field');
+const ModelFile = require('../../lib/introspect/modelfile');
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -23,9 +24,12 @@ const sinon = require('sinon');
 describe('Field', () => {
 
     let mockClassDeclaration;
+    let mockModelFile;
 
     beforeEach(() => {
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelFile = sinon.createStubInstance(ModelFile);
+        mockClassDeclaration.getModelFile.returns(mockModelFile);
     });
 
     describe('#constructor', () => {

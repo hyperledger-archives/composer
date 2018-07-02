@@ -16,6 +16,7 @@
 
 const AssetDeclaration = require('../lib/introspect/assetdeclaration');
 const ConceptDeclaration = require('../lib/introspect/conceptdeclaration');
+const DecoratorFactory = require('../lib/introspect/decoratorfactory');
 const EnumDeclaration = require('../lib/introspect/enumdeclaration');
 const EventDeclaration = require('../lib/introspect/eventdeclaration');
 const Factory = require('../lib/factory');
@@ -958,6 +959,32 @@ concept Bar {
 
         it('should return a serializer', () => {
             modelManager.getSerializer().should.be.an.instanceOf(Serializer);
+        });
+
+    });
+
+    describe('#getDecoratorFactories', () => {
+
+        it('should return an empty array by default', () => {
+            modelManager.getDecoratorFactories().should.deep.equal([]);
+        });
+
+        it('should return an array of processors', () => {
+            const factory1 = sinon.createStubInstance(DecoratorFactory);
+            const factory2 = sinon.createStubInstance(DecoratorFactory);
+            modelManager.decoratorFactories = [factory1, factory2];
+            modelManager.getDecoratorFactories().should.deep.equal([factory1, factory2]);
+        });
+
+    });
+
+    describe('#addDecoratorFactory', () => {
+
+        it('should add a factory to the array', () => {
+            modelManager.decoratorFactories.should.deep.equal([]);
+            const factory1 = sinon.createStubInstance(DecoratorFactory);
+            modelManager.addDecoratorFactory(factory1);
+            modelManager.decoratorFactories.should.deep.equal([factory1]);
         });
 
     });

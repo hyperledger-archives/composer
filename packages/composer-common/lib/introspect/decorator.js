@@ -16,7 +16,6 @@
 
 /**
  * Decorator encapsulates a decorator (annotation) on a class or property.
- * @private
  * @class
  * @memberof module:composer-common
  */

@@ -15,6 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('../../lib/introspect/classdeclaration');
+const ModelFile = require('../../lib/introspect/modelfile');
 const Property = require('../../lib/introspect/property');
 
 const should = require('chai').should();
@@ -23,9 +24,12 @@ const sinon = require('sinon');
 describe('Property', () => {
 
     let mockClassDeclaration;
+    let mockModelFile;
 
     beforeEach(() => {
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelFile = sinon.createStubInstance(ModelFile);
+        mockClassDeclaration.getModelFile.returns(mockModelFile);
     });
 
     describe('#constructor', () => {
