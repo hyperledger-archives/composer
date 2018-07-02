@@ -42,7 +42,7 @@ class CompiledScriptBundle {
      * @return {Promise} A promise that is resolved when the transaction has been
      * executed, or rejected with an error.
      */
-    execute(api, resolvedTransaction) {
+    async execute(api, resolvedTransaction) {
         const method = 'execute';
         LOG.entry(method, api, resolvedTransaction);
 
@@ -53,25 +53,17 @@ class CompiledScriptBundle {
         const bundle = this.generatorFunction(api);
 
         // Execute each function for the transaction.
-        return functionNames.reduce((result, functionName) => {
-            return result.then(() => {
-                LOG.debug(method, 'Executing function', functionName);
-                const func = bundle[functionName];
-                const funcResult = func(resolvedTransaction);
-                if (funcResult && typeof funcResult.then === 'function') {
-                    return funcResult.then(() => {
-                        LOG.debug(method, 'Function executed (returned promise)');
-                    });
-                } else {
-                    LOG.debug(method, 'Function executed');
-                }
-            });
-        }, Promise.resolve())
-            .then(() => {
-                LOG.exit(method, functionNames.length);
-                return functionNames.length;
-            });
+        const functionReturnValues = [];
+        for (const functionName of functionNames) {
+            LOG.debug(method, 'Executing function', functionName);
+            const func = bundle[functionName];
+            const functionReturnValue = await func(resolvedTransaction);
+            LOG.debug(method, 'Function executed', typeof functionResult);
+            functionReturnValues.push(functionReturnValue);
+        }
 
+        LOG.exit(method, functionNames.length, functionReturnValues);
+        return { executed: functionNames.length, returnValues: functionReturnValues };
     }
 
     /**
