@@ -95,7 +95,13 @@ describe('CompiledScriptBundle', () => {
             doIt3a: sinon.stub(),
             doIt3b: sinon.stub(),
             doIt4a: sinon.stub().resolves(),
-            doIt4b: sinon.stub().resolves()
+            doIt4b: sinon.stub().resolves(),
+            doIt5: sinon.stub().returns('hello world'),
+            doIt6: sinon.stub().resolves('hello world'),
+            doIt7a: sinon.stub().returns('hello donkey'),
+            doIt7b: sinon.stub().returns('hello horsey'),
+            doIt8a: sinon.stub().returns('hello donkey'),
+            doIt8b: sinon.stub().returns('hello horsey')
         };
         mockGeneratorFunction = sinon.stub().returns(bundle);
         compiledScriptBundle = new CompiledScriptBundle(functionDeclarations, mockGeneratorFunction);
@@ -106,13 +112,13 @@ describe('CompiledScriptBundle', () => {
         it('should not throw if no functions could be found', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns([]);
             return compiledScriptBundle.execute(mockApi, transactions[0])
-                .should.eventually.be.equal(0);
+                .should.eventually.be.deep.equal({ executed: 0, returnValues: [] });
         });
 
         it('should call a single function', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
-                .should.eventually.be.equal(1)
+                .should.eventually.be.deep.equal({ executed: 1, returnValues: [undefined] })
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -124,7 +130,7 @@ describe('CompiledScriptBundle', () => {
         it('should call a single function returning a promise', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt2']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
-                .should.eventually.be.equal(1)
+                .should.eventually.be.deep.equal({ executed: 1, returnValues: [undefined] })
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -136,7 +142,7 @@ describe('CompiledScriptBundle', () => {
         it('should call multiple functions', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt3a', 'doIt3b']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
-                .should.eventually.be.equal(2)
+                .should.eventually.be.deep.equal({ executed: 2, returnValues: [undefined, undefined] })
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -150,7 +156,7 @@ describe('CompiledScriptBundle', () => {
         it('should call multiple functions returning a promise', () => {
             sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt4a', 'doIt4b']);
             return compiledScriptBundle.execute(mockApi, transactions[0])
-                .should.eventually.be.equal(2)
+            .should.eventually.be.deep.equal({ executed: 2, returnValues: [undefined, undefined] })
                 .then(() => {
                     sinon.assert.calledOnce(mockGeneratorFunction);
                     sinon.assert.calledWith(mockGeneratorFunction, mockApi);
@@ -158,6 +164,58 @@ describe('CompiledScriptBundle', () => {
                     sinon.assert.calledWith(bundle.doIt4a, transactions[0]);
                     sinon.assert.calledOnce(bundle.doIt4b);
                     sinon.assert.calledWith(bundle.doIt4b, transactions[0]);
+                });
+        });
+
+        it('should call a single function returning a value', () => {
+            sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt5']);
+            return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.deep.equal({ executed: 1, returnValues: ['hello world'] })
+                .then(() => {
+                    sinon.assert.calledOnce(mockGeneratorFunction);
+                    sinon.assert.calledWith(mockGeneratorFunction, mockApi);
+                    sinon.assert.calledOnce(bundle.doIt5);
+                    sinon.assert.calledWith(bundle.doIt5, transactions[0]);
+                });
+        });
+
+        it('should call a single function returning a promise with a value', () => {
+            sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt6']);
+            return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.deep.equal({ executed: 1, returnValues: ['hello world'] })
+                .then(() => {
+                    sinon.assert.calledOnce(mockGeneratorFunction);
+                    sinon.assert.calledWith(mockGeneratorFunction, mockApi);
+                    sinon.assert.calledOnce(bundle.doIt6);
+                    sinon.assert.calledWith(bundle.doIt6, transactions[0]);
+                });
+        });
+
+        it('should call multiple functions returning a value', () => {
+            sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt7a', 'doIt7b']);
+            return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.deep.equal({ executed: 2, returnValues: ['hello donkey', 'hello horsey'] })
+                .then(() => {
+                    sinon.assert.calledOnce(mockGeneratorFunction);
+                    sinon.assert.calledWith(mockGeneratorFunction, mockApi);
+                    sinon.assert.calledOnce(bundle.doIt7a);
+                    sinon.assert.calledWith(bundle.doIt7a, transactions[0]);
+                    sinon.assert.calledOnce(bundle.doIt7b);
+                    sinon.assert.calledWith(bundle.doIt7b, transactions[0]);
+                });
+        });
+
+        it('should call multiple functions returning a promise with a value', () => {
+            sinon.stub(compiledScriptBundle, 'findFunctionNames').returns(['doIt8a', 'doIt8b']);
+            return compiledScriptBundle.execute(mockApi, transactions[0])
+                .should.eventually.be.deep.equal({ executed: 2, returnValues: ['hello donkey', 'hello horsey'] })
+                .then(() => {
+                    sinon.assert.calledOnce(mockGeneratorFunction);
+                    sinon.assert.calledWith(mockGeneratorFunction, mockApi);
+                    sinon.assert.calledOnce(bundle.doIt8a);
+                    sinon.assert.calledWith(bundle.doIt8a, transactions[0]);
+                    sinon.assert.calledOnce(bundle.doIt8b);
+                    sinon.assert.calledWith(bundle.doIt8b, transactions[0]);
                 });
         });
 

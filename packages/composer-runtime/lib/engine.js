@@ -260,48 +260,29 @@ class Engine {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    invoke(context, fcn, args) {
+    async invoke(context, fcn, args) {
         const method = 'invoke';
         LOG.entry(method, context, fcn, args);
-        if (this[fcn]) {
-            LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args,  container: this.getContainer() })
-                .then(() => {
-                    return context.transactionStart(false);
-                })
-                .then(() => {
-                    LOG.debug(method, 'Calling engine function', fcn);
-                    return this[fcn](context, args);
-                })
-                .then((result) => {
-                    return context.transactionPrepare()
-                        .then(() => {
-                            return context.transactionCommit();
-                        })
-                        .then(() => {
-                            return context.transactionEnd();
-                        })
-                        .then(() => {
-                            return result;
-                        });
-                })
-                .catch((error) => {
-                    LOG.error(method, 'Caught error, rethrowing', error);
-                    return context.transactionRollback()
-                        .then(() => {
-                            return context.transactionEnd();
-                        })
-                        .then(() => {
-                            throw error;
-                        });
-                })
-                .then((result) => {
-                    LOG.exit(method, result);
-                    return result;
-                });
-        } else {
+        if (!this[fcn] || fcn.match(/^_/)) {
             LOG.error(method, 'Unsupported function', fcn, args);
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
+        }
+        LOG.debug(method, 'Initializing context');
+        await context.initialize({ function: fcn, arguments: args,  container: this.getContainer() });
+        try {
+            await context.transactionStart(false);
+            LOG.debug(method, 'Calling engine function', fcn);
+            const result = await this[fcn](context, args);
+            await context.transactionPrepare();
+            await context.transactionCommit();
+            await context.transactionEnd();
+            LOG.exit(method, result);
+            return result;
+        } catch (error) {
+            await context.transactionRollback();
+            await context.transactionEnd();
+            LOG.error(method, 'Caught error, rethrowing', error);
+            throw error;
         }
     }
 
@@ -313,48 +294,29 @@ class Engine {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    query(context, fcn, args) {
+    async query(context, fcn, args) {
         const method = 'query';
         LOG.entry(method, context, fcn, args);
-        if (this[fcn]) {
-            LOG.debug(method, 'Initializing context');
-            return context.initialize({ function: fcn, arguments: args, container: this.getContainer() })
-                .then(() => {
-                    return context.transactionStart(true);
-                })
-                .then(() => {
-                    LOG.debug(method, 'Calling engine function', fcn);
-                    return this[fcn](context, args);
-                })
-                .then((result) => {
-                    return context.transactionPrepare()
-                        .then(() => {
-                            return context.transactionCommit();
-                        })
-                        .then(() => {
-                            return context.transactionEnd();
-                        })
-                        .then(() => {
-                            return result;
-                        });
-                })
-                .catch((error) => {
-                    LOG.error(method, 'Caught error, rethrowing', error);
-                    return context.transactionRollback()
-                        .then(() => {
-                            return context.transactionEnd();
-                        })
-                        .then(() => {
-                            throw error;
-                        });
-                })
-                .then((result) => {
-                    LOG.exit(method, result);
-                    return result;
-                });
-        } else {
+        if (!this[fcn] || fcn.match(/^_/)) {
             LOG.error(method, 'Unsupported function', fcn, args);
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
+        }
+        LOG.debug(method, 'Initializing context');
+        await context.initialize({ function: fcn, arguments: args, container: this.getContainer() });
+        try {
+            await context.transactionStart(true);
+            LOG.debug(method, 'Calling engine function', fcn);
+            const result = await this[fcn](context, args);
+            await context.transactionPrepare();
+            await context.transactionCommit();
+            await context.transactionEnd();
+            LOG.exit(method, result);
+            return result;
+        } catch (error) {
+            await context.transactionRollback();
+            await context.transactionEnd();
+            LOG.error(method, 'Caught error, rethrowing', error);
+            throw error;
         }
     }
 

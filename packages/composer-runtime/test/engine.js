@@ -399,96 +399,120 @@ describe('Engine', () => {
 
     describe('#invoke', () => {
 
-        it('should throw for an unrecognized function', () => {
-            (() => {
-                engine.invoke(mockContext, 'blahblahblah', []);
-            }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
+        it('should throw for an unrecognized function', async () => {
+            await engine.invoke(mockContext, 'blahblahblah', [])
+                .should.be.rejectedWith(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context and call the function', () => {
+        it('should throw for a hidden function', async () => {
+            engine._test = sinon.stub().resolves();
+            await engine.invoke(mockContext, '_test', [])
+                .should.be.rejectedWith(/Unsupported function "_test" with arguments "\[\]"/);
+        });
+
+        it('should initialize the context and call the function that returns no data', async () => {
             engine.test = sinon.stub().resolves();
-            return engine.invoke(mockContext, 'test', [])
-                .then(() => {
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledWith(mockContext.initialize, {
-                        function: 'test',
-                        container: {},
-                        arguments: []
-                    });
-                    sinon.assert.calledOnce(engine.test);
-                    sinon.assert.calledWith(engine.test, mockContext, []);
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
+            const result = await engine.invoke(mockContext, 'test', []);
+            should.equal(result, undefined);
+            sinon.assert.calledOnce(mockContext.initialize);
+            sinon.assert.calledWith(mockContext.initialize, {
+                function: 'test',
+                container: {},
+                arguments: []
+            });
+            sinon.assert.calledOnce(engine.test);
+            sinon.assert.calledWith(engine.test, mockContext, []);
+            sinon.assert.calledOnce(mockContext.transactionStart);
+            sinon.assert.calledWith(mockContext.transactionStart, false);
+            sinon.assert.calledOnce(mockContext.transactionPrepare);
+            sinon.assert.calledOnce(mockContext.transactionCommit);
+            sinon.assert.notCalled(mockContext.transactionRollback);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
         });
 
-        it('should handle an error from calling the function', () => {
+        it('should initialize the context and call the function that returns data', async () => {
+            engine.test = sinon.stub().resolves({ hello: 'world' });
+            const result = await engine.invoke(mockContext, 'test', []);
+            result.should.deep.equal({ hello: 'world' });
+            sinon.assert.calledOnce(mockContext.initialize);
+            sinon.assert.calledWith(mockContext.initialize, {
+                function: 'test',
+                container: {},
+                arguments: []
+            });
+            sinon.assert.calledOnce(engine.test);
+            sinon.assert.calledWith(engine.test, mockContext, []);
+            sinon.assert.calledOnce(mockContext.transactionStart);
+            sinon.assert.calledWith(mockContext.transactionStart, false);
+            sinon.assert.calledOnce(mockContext.transactionPrepare);
+            sinon.assert.calledOnce(mockContext.transactionCommit);
+            sinon.assert.notCalled(mockContext.transactionRollback);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
+        });
+
+        it('should handle an error from calling the function', async () => {
             engine.test = sinon.stub().rejects(new Error('ruhroh'));
-            return engine.invoke(mockContext, 'test', [])
-                .should.be.rejectedWith(/ruhroh/)
-                .then(() => {
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledOnce(engine.test);
-                    sinon.assert.calledWith(engine.test, mockContext, []);
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.notCalled(mockContext.transactionPrepare);
-                    sinon.assert.notCalled(mockContext.transactionCommit);
-                    sinon.assert.calledOnce(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
+            await engine.invoke(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/);
+            sinon.assert.calledOnce(mockContext.initialize);
+            sinon.assert.calledOnce(engine.test);
+            sinon.assert.calledWith(engine.test, mockContext, []);
+            sinon.assert.calledOnce(mockContext.transactionStart);
+            sinon.assert.calledWith(mockContext.transactionStart, false);
+            sinon.assert.notCalled(mockContext.transactionPrepare);
+            sinon.assert.notCalled(mockContext.transactionCommit);
+            sinon.assert.calledOnce(mockContext.transactionRollback);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
         });
 
     });
 
     describe('#query', () => {
 
-        it('should throw for an unrecognized function', () => {
-            (() => {
-                engine.query(mockContext, 'blahblahblah', []);
-            }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
+        it('should throw for an unrecognized function', async () => {
+            await engine.query(mockContext, 'blahblahblah', [])
+                .should.be.rejectedWith(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context and call the function', () => {
-            engine.test = sinon.stub().resolves({});
-            return engine.query(mockContext, 'test', [])
-                .then(() => {
-                    sinon.assert.calledWith(mockContext.initialize, {
-                        function: 'test',
-                        container: {},
-                        arguments: []
-                    });
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledOnce(engine.test);
-                    sinon.assert.calledWith(engine.test, mockContext, []);
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, true);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
+        it('should throw for a hidden function', async () => {
+            engine._test = sinon.stub().resolves();
+            await engine.query(mockContext, '_test', [])
+                .should.be.rejectedWith(/Unsupported function "_test" with arguments "\[\]"/);
         });
 
-        it('should handle an error from calling the function', () => {
+        it('should initialize the context and call the function that returns data', async () => {
+            engine.test = sinon.stub().resolves({ hello: 'world' });
+            const result = await engine.query(mockContext, 'test', []);
+            result.should.deep.equal({ hello: 'world' });
+            sinon.assert.calledWith(mockContext.initialize, {
+                function: 'test',
+                container: {},
+                arguments: []
+            });
+            sinon.assert.calledOnce(mockContext.initialize);
+            sinon.assert.calledOnce(engine.test);
+            sinon.assert.calledWith(engine.test, mockContext, []);
+            sinon.assert.calledOnce(mockContext.transactionStart);
+            sinon.assert.calledWith(mockContext.transactionStart, true);
+            sinon.assert.calledOnce(mockContext.transactionPrepare);
+            sinon.assert.calledOnce(mockContext.transactionCommit);
+            sinon.assert.notCalled(mockContext.transactionRollback);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
+        });
+
+        it('should handle an error from calling the function', async () => {
             engine.test = sinon.stub().rejects(new Error('ruhroh'));
-            return engine.query(mockContext, 'test', [])
-                .should.be.rejectedWith(/ruhroh/)
-                .then(() => {
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledOnce(engine.test);
-                    sinon.assert.calledWith(engine.test, mockContext, []);
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, true);
-                    sinon.assert.notCalled(mockContext.transactionPrepare);
-                    sinon.assert.notCalled(mockContext.transactionCommit);
-                    sinon.assert.calledOnce(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
+            await engine.query(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/);
+            sinon.assert.calledOnce(mockContext.initialize);
+            sinon.assert.calledOnce(engine.test);
+            sinon.assert.calledWith(engine.test, mockContext, []);
+            sinon.assert.calledOnce(mockContext.transactionStart);
+            sinon.assert.calledWith(mockContext.transactionStart, true);
+            sinon.assert.notCalled(mockContext.transactionPrepare);
+            sinon.assert.notCalled(mockContext.transactionCommit);
+            sinon.assert.calledOnce(mockContext.transactionRollback);
+            sinon.assert.calledOnce(mockContext.transactionEnd);
         });
 
     });
